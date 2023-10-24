@@ -1170,5 +1170,16 @@
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
     "waitingStudyIndexation": "Waiting for study indexation...",
 
-    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status"
+    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
+
+    "ShortCircuitPredefinedParameters": "Paramètres prédéfinis",
+    "ShortCircuitCharacteristics": "Caractéristiques prises en compte",
+    "ShortCircuitVoltageProfileMode": "Plan de tension initial",
+    "shortCircuitLoads": "Loads",
+    "shortCircuitHvdc": "HVDC(VSC)",
+    "shortCircuitShuntCompensators": "MCS",
+    "shortCircuitNeutralPosition": "'Prises courantes des régleurs en charge",
+    "shortCircuitNominalVoltage": "Nominal voltage(kV)",
+    "shortCircuitInitialTension": "Tension initiale(kV)"
+
 }

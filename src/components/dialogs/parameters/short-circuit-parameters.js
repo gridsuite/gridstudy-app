@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, MenuItem, Select } from '@mui/material';
 import {
@@ -14,7 +14,7 @@ import {
     SwitchWithLabel,
     styles,
 } from './parameters';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
 import {
@@ -27,6 +27,35 @@ import {
 } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../utils/functions';
+import yup from '../../utils/yup-config';
+import {
+    ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
+    FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
+    FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
+    PARAMETER_SENSI_HVDC,
+    PARAMETER_SENSI_INJECTION,
+    PARAMETER_SENSI_INJECTIONS_SET,
+    PARAMETER_SENSI_NODES,
+    PARAMETER_SENSI_PST,
+    SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
+    SHORT_CIRCUIT_PREDEFINED_PARAMS,
+    SHORT_CIRCUIT_WITH_FEEDER_RESULT,
+    SHORT_CIRCUIT_WITH_LOADS,
+    SHORT_CIRCUIT_WITH_NEUTRAL_POSITION,
+    SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
+    SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
+} from '../../utils/field-constants';
+import {
+    getSensiHVDCsFormSchema,
+    getSensiInjectionsFormSchema,
+    getSensiInjectionsSetFormSchema,
+    getSensiNodesFormSchema,
+    getSensiPSTsFormSchema,
+} from './sensi/utils';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
+import { setSensitivityAnalysisParameters } from '../../../services/study/sensitivity-analysis';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -162,6 +191,18 @@ const BasicShortCircuitParameters = ({
     );
 };
 
+const formSchema = yup
+    .object()
+    .shape({
+        [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: yup.boolean(),
+        [SHORT_CIRCUIT_PREDEFINED_PARAMS]: yup.string().required(),
+        [SHORT_CIRCUIT_WITH_LOADS]: yup.boolean(),
+        [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: yup.boolean(),
+        [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: yup.boolean(),
+        [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: yup.boolean(),
+        [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: yup.string().required(),
+    })
+    .required();
 export const ShortCircuitParameters = ({
     hideParameters,
     useShortCircuitParameters,
@@ -208,17 +249,35 @@ export const ShortCircuitParameters = ({
             });
     }, [studyUuid, snackError, setShortCircuitParams]);
 
+    const emptyFormData = useMemo(() => {
+        return {
+            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: false,
+            [SHORT_CIRCUIT_PREDEFINED_PARAMS]:
+                'ICC max avec plan de tension normalisé',
+            [SHORT_CIRCUIT_WITH_LOADS]: false,
+            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: false,
+            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: false,
+            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: false,
+            [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: 'NOMINAL',
+        };
+    }, []);
+    const formMethods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(formSchema),
+    });
+
+    const { reset, handleSubmit } = formMethods;
+    const onSubmit = useCallback((newParams) => {
+        console.log(' new params : ', newParams);
+    }, []);
     return (
-        <>
-            <Grid
-                container
-                key="shortCircuitParameters"
-                sx={styles.scrollableGrid}
-            >
-                <BasicShortCircuitParameters
-                    shortCircuitParams={shortCircuitParams || {}}
-                    commitShortCircuitParams={commitShortCircuitParameter}
-                />
+        <FormProvider validationSchema={formSchema} {...formMethods}>
+            <Grid container paddingTop={1} paddingBottom={1}>
+                <LineSeparator />
+            </Grid>
+
+            <Grid>
+                <ShortCircuitFields />
             </Grid>
             <Grid
                 container
@@ -229,8 +288,11 @@ export const ShortCircuitParameters = ({
                     callback={resetShortCircuitParameters}
                     label="resetToDefault"
                 />
+                <SubmitButton onClick={handleSubmit(onSubmit)}>
+                    <FormattedMessage id="validate" />
+                </SubmitButton>
                 <CloseButton hideParameters={hideParameters} />
             </Grid>
-        </>
+        </FormProvider>
     );
 };
