@@ -31,6 +31,7 @@ const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
+        [MODIFICATIONS_TABLE]: yup.array().min(1).required(),
     })
     .required();
 
@@ -67,48 +68,40 @@ const TabularModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const { reset } = formMethods;
 
-    const fromEditDataToFormValues = useCallback(
-        (editData) => {
+    useEffect(() => {
+        if (editData) {
             const equipmentType = getEquipmentTypeFromModificationType(
                 editData?.modificationType
             );
             const modifications = editData?.modifications.map((modif) => {
-                let modification = {};
-                Object.getOwnPropertyNames(formatModification(modif)).forEach(
-                    (key) => {
-                        const translatedKey = intl.formatMessage({
-                            id: key,
-                        });
-                        if (key === 'equipmentId') {
-                            modification[translatedKey] = modif[key];
-                        } else if (typeof modif[key] === 'object') {
-                            modification[translatedKey] = modif[key]?.value;
-                        }
+                const modification = {};
+                Object.keys(formatModification(modif)).forEach((key) => {
+                    const translatedKey = intl.formatMessage({
+                        id: key,
+                    });
+                    const field = modif[key];
+                    if (key === 'equipmentId') {
+                        modification[translatedKey] = field;
+                    } else if (typeof field === 'object') {
+                        modification[translatedKey] = field?.value;
                     }
-                );
+                });
                 return modification;
             });
             reset({
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: modifications,
             });
-        },
-        [intl, reset]
-    );
-
-    useEffect(() => {
-        if (editData) {
-            fromEditDataToFormValues(editData);
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [editData, reset, intl]);
 
     const onSubmit = useCallback(
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
-            let modifications = getValues(MODIFICATIONS_TABLE)?.map((row) => {
-                let modification = {
+            const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
+                const modification = {
                     type: modificationType,
                 };
                 TABULAR_MODIFICATION_FIELDS[
@@ -117,12 +110,11 @@ const TabularModificationDialog = ({
                     const translatedKey = intl.formatMessage({
                         id: field,
                     });
+                    const value = row[translatedKey];
                     if (field === 'equipmentId') {
-                        modification[field] = row[translatedKey];
+                        modification[field] = value;
                     } else {
-                        modification[field] = toModificationOperation(
-                            row[translatedKey]
-                        );
+                        modification[field] = toModificationOperation(value);
                     }
                 });
                 return modification;
@@ -141,7 +133,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, getValues, intl, snackError, studyUuid]
+        [currentNodeUuid, editData, intl, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

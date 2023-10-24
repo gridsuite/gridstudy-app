@@ -42,6 +42,5 @@ export const getEquipmentTypeFromModificationType = (type: string) => {
     );
 };
 export const styles = {
-    csvButton: { mt: 'auto', mb: 'auto' },
     grid: { height: 500, width: '100%' },
 };

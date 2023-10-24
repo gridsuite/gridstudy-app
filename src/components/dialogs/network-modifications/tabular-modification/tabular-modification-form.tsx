@@ -24,6 +24,7 @@ import {
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
+import { ColDef } from 'ag-grid-community/dist/lib/main';
 
 const richTypeEquals = (a: any, b: any) => a === b;
 
@@ -46,19 +47,19 @@ const TabularModificationForm = () => {
         });
     }, [intl, watchType]);
 
-    const [typeChanged, setTypeChanged] = useState(false);
+    const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
         header: csvColumns,
         maxTapNumber: undefined,
         disabled: !csvColumns,
-        resetTrigger: typeChanged,
+        resetTrigger: typeChangedTrigger,
     });
 
     const postProcessFile = useCallback(
         (fileData: any) => {
             fileData = fileData.map((row: any) => {
-                let modification: Modification = {};
+                const modification: Modification = {};
                 Object.getOwnPropertyNames(row).forEach((key) => {
                     modification[key] = row[key];
                 });
@@ -80,7 +81,7 @@ const TabularModificationForm = () => {
             Papa.parse(selectedFile as any, {
                 header: true,
                 skipEmptyLines: true,
-                complete: function (results) {
+                complete: (results) => {
                     postProcessFile(results.data);
                 },
             });
@@ -110,9 +111,9 @@ const TabularModificationForm = () => {
     }, []);
 
     const handleChange = useCallback(() => {
-        setTypeChanged(!typeChanged);
+        setTypeChangedTrigger(!typeChangedTrigger);
         setValue(MODIFICATIONS_TABLE, []);
-    }, [setValue, typeChanged]);
+    }, [setValue, typeChangedTrigger]);
 
     const equipmentTypeField = (
         <AutocompleteInput
@@ -140,18 +141,16 @@ const TabularModificationForm = () => {
         }),
         []
     );
-    interface ColumnDefinition {
-        [key: string]: any;
-    }
 
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
-            let colunmDef: ColumnDefinition = {};
+            const colunmDef: ColDef = {};
             if (field === 'equipmentId') {
                 colunmDef.pinned = true;
             }
-            colunmDef.field = intl.formatMessage({ id: field });
-            colunmDef.headerName = intl.formatMessage({ id: field });
+            const translatedField = intl.formatMessage({ id: field });
+            colunmDef.field = translatedField;
+            colunmDef.headerName = translatedField;
             colunmDef.cellRenderer = DefaultCellRenderer;
             return colunmDef;
         });
@@ -159,14 +158,12 @@ const TabularModificationForm = () => {
 
     return (
         <>
-            <Grid container spacing={2}>
-                <Grid container item xs={12} spacing={2}>
+            <Grid container spacing={2} direction={'row'}>
+                <Grid container item spacing={2} alignItems={'center'}>
                     {gridItem(equipmentTypeField, 4)}
-                    <Grid item sx={styles.csvButton}>
-                        {FileField}
-                    </Grid>
+                    <Grid item>{FileField}</Grid>
                 </Grid>
-                <Grid item sx={styles.csvButton}>
+                <Grid item>
                     <CsvDownloader
                         columns={csvColumns}
                         datas={[]}
@@ -187,7 +184,7 @@ const TabularModificationForm = () => {
                         rowData={watchTable}
                         defaultColDef={defaultColDef}
                         columnDefs={columnDefs}
-                        pagination={true}
+                        pagination
                         paginationPageSize={100}
                     />
                 </Grid>
