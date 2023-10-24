@@ -186,6 +186,7 @@ const TabularModificationForm = () => {
                         columnDefs={columnDefs}
                         pagination
                         paginationPageSize={100}
+                        suppressDragLeaveHidesColumns
                     />
                 </Grid>
             </Grid>
