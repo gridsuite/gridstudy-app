@@ -1175,5 +1175,6 @@
 
     "EditedField": "Champ modifié",
     "ReferenceFieldOrValue": "Champ de référence ou valeur",
-    "Operator": "Opérateur"
+    "Operator": "Opérateur",
+    "Use#ToSelectField": "Utiliser # pour sélectionner un champ"
 }

@@ -22,6 +22,7 @@ import DirectoryItemsInput from '../../../../utils/rhf-inputs/directory-items-in
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
+import { useIntl } from "react-intl";
 
 interface FormulaProps {
     name: String;
@@ -36,19 +37,33 @@ const OPERATOR_OPTIONS = [
     { id: 'MODULUS', label: '%' },
 ];
 const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
+    const intl = useIntl();
     const [referenceFieldOptions1, setReferenceFieldOptions1] = useState([]);
     const [referenceFieldOptions2, setReferenceFieldOptions2] = useState([]);
+    const [displayOptions1, setDisplayOptions1] = useState(false);
+    const [displayOptions2, setDisplayOptions2] = useState(false);
 
     const equipmentTypeWatch = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
     });
 
-    const equipmentFields = EQUIPMENTS_FIELDS[equipmentTypeWatch];
+    const equipmentFields = equipmentTypeWatch ? EQUIPMENTS_FIELDS[equipmentTypeWatch] ?? [] : [];
 
     const handleInputChange = useCallback(
-        (evt: SyntheticEvent, setOptions: SetStateAction<any>) => {
-            console.log('evt ', evt);
-            console.log('evt target ', evt?.target);
+        (evt: SyntheticEvent, setOptions: SetStateAction<any>, setDisplayOptions: SetStateAction<any>) => {
+            const element = evt.target as HTMLInputElement;
+            if (element.value && element.value.startsWith('#')) {
+                const keyWord = element.value.substring(1).toLowerCase();
+                console.log('equipmentField : ', equipmentFields);
+                const newOptions =  equipmentFields.filter((field) => {
+                    const translatedOption = intl.formatMessage({id: field.label}).toLowerCase();
+                    console.log('test : ', translatedOption, keyWord, translatedOption.startsWith(keyWord));
+                    return translatedOption.startsWith(keyWord);
+                });
+                console.log('newOptions : ', newOptions);
+                setOptions(newOptions);
+                setDisplayOptions(true);
+            }
         },
         []
     );
@@ -69,6 +84,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             name={`${name}.${index}.${EDITED_FIELD}`}
             options={equipmentFields}
             label={'EditedField'}
+            size={'small'}
         />
     );
 
@@ -78,8 +94,16 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             options={referenceFieldOptions1}
             label={'ReferenceFieldOrValue'}
             onInputChange={(evt) =>
-                handleInputChange(evt, setReferenceFieldOptions1)
+                handleInputChange(evt, setReferenceFieldOptions1, setDisplayOptions1)
             }
+            size={'small'}
+            open={displayOptions1}
+            sx={{
+                "& .MuiAutocomplete-endAdornment": {
+                    display: "none",
+                },
+            }}
+            onBlur={() => setDisplayOptions1(false)}
         />
     );
 
@@ -88,6 +112,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             name={`${name}.${index}.${OPERATOR}`}
             options={OPERATOR_OPTIONS}
             label={'Operator'}
+            size={'small'}
         />
     );
 
@@ -97,19 +122,27 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             options={referenceFieldOptions2}
             label={'ReferenceFieldOrValue'}
             onInputChange={(evt) =>
-                handleInputChange(evt, setReferenceFieldOptions2)
+                handleInputChange(evt, setReferenceFieldOptions2, setDisplayOptions2)
             }
+            size={'small'}
+            open={displayOptions2}
+            sx={{
+                "& .MuiAutocomplete-endAdornment": {
+                    display: "none",
+                },
+            }}
+            onBlur={() => setDisplayOptions2(false)}
         />
     );
 
     return (
-        <Grid container spacing={2} columns={14}>
-            {gridItem(filtersField, 3)}
-            {gridItem(editedField, 3)}
-            {gridItem(referenceField1, 3)}
-            {gridItem(operatorField, 2)}
-            {gridItem(referenceField2, 3)}
-        </Grid>
+        <>
+            {gridItem(filtersField, 2.5)}
+            {gridItem(editedField, 2.5)}
+            {gridItem(referenceField1, 2.5)}
+            {gridItem(operatorField, 1)}
+            {gridItem(referenceField2, 2.5)}
+        </>
     );
 };
 

@@ -86,9 +86,9 @@ const ByFormulaDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-by-formula"
-                maxWidth={'md'}
                 titleId="CreateByFormula"
                 open={open}
+                maxWidth={'lg'}
                 isDataFetching={
                     isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }

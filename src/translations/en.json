@@ -1154,5 +1154,7 @@
 
     "EditedField": "Edited field",
     "ReferenceFieldOrValue": "Reference field or value",
-    "Operator": "Operator"
+    "Operator": "Operator",
+
+    "Use#ToSelectField": "Use # to select a field"
 }
