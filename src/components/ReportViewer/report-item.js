@@ -34,7 +34,7 @@ const styles = {
             fontWeight: theme.typography.fontWeightRegular,
         },
         /* &.MuiTreeItem-content.Mui-focused to increase specifity because mui5 has a rule for &.Mui-selected.Mui-focused */
-        '&.MuiTreeItem-content.Mui-focused, &.Mui-selected': {
+        '&.Mui-selected': {
             backgroundColor: `var(--tree-view-bg-color, ${theme.palette.action.selected})`,
             color: 'var(--tree-view-color)',
         },
@@ -48,6 +48,9 @@ const styles = {
                         theme.palette.action.hoverOpacity
                 ),
             },
+        '&.Mui-focused': {
+            backgroundColor: 'transparent',
+        },
         '&.Mui-focused .MuiTreeItem-label, &:hover .MuiTreeItem-label, &Mui-selected .MuiTreeItem-label':
             {
                 backgroundColor: 'transparent',
