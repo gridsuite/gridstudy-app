@@ -24,7 +24,6 @@ import {
 } from 'ag-grid-community';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 
@@ -49,12 +48,17 @@ import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { fetchLimitViolations } from '../../../services/study';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Box } from '@mui/system';
+import LinearProgress from '@mui/material/LinearProgress';
+import { RunningStatus } from '../../utils/running-status';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
     studyUuid,
     nodeUuid,
     tabIndex,
+    isWaiting,
 }) => {
     const styles = {
         cell: {
@@ -79,12 +83,45 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         OverloadedEquipment[]
     >([]);
 
-    const limitReductionParam = useSelector((state: ReduxState) =>
-        Number(state[PARAM_LIMIT_REDUCTION])
-    );
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
     );
+
+    const [isFetchComplete, setIsFetchComplete] = useState(false);
+
+    const [isCurrentViolationReady, setIsCurrentViolationReady] =
+        useState(false);
+    const [isVoltageViolationReady, setIsVoltageViolationReady] =
+        useState(false);
+
+    //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
+    const openLoaderCurrentTab = useOpenLoaderShortWait({
+        isLoading:
+            // We want the loader to start when the loadflow begins
+            loadFlowStatus === RunningStatus.RUNNING ||
+            // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
+            // and "the data is post processed and can be displayed"
+            (isFetchComplete && !isCurrentViolationReady) ||
+            isWaiting,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
+    const openLoaderVoltageTab = useOpenLoaderShortWait({
+        isLoading:
+            // We want the loader to start when the loadflow begins
+            loadFlowStatus === RunningStatus.RUNNING ||
+            // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
+            // and "the data is post processed and can be displayed"
+            (isFetchComplete && !isVoltageViolationReady) ||
+            isWaiting,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
+    const openLoaderStatusTab = useOpenLoaderShortWait({
+        isLoading: loadFlowStatus === RunningStatus.RUNNING || isWaiting,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
     const { snackError } = useSnackMessage();
 
     const defaultColDef = useMemo(
@@ -150,11 +187,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     useEffect(() => {
         if (result) {
-            fetchLimitViolations(
-                studyUuid,
-                nodeUuid,
-                limitReductionParam / 100.0
-            )
+            fetchLimitViolations(studyUuid, nodeUuid)
                 .then((overloadedEquipments: OverloadedEquipmentFromBack[]) => {
                     const sortedLines = overloadedEquipments
                         .map((overloadedEquipment) =>
@@ -168,9 +201,10 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         messageTxt: error.message,
                         headerId: 'ErrFetchViolationsMsg',
                     });
-                });
+                })
+                .finally(() => setIsFetchComplete(true));
         }
-    }, [studyUuid, nodeUuid, intl, limitReductionParam, result, snackError]);
+    }, [studyUuid, nodeUuid, intl, result, snackError]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
@@ -192,23 +226,35 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             overloadedEquipment.limitType === LimitTypes.CURRENT
     );
 
+    useEffect(() => {
+        if (currentViolations && isFetchComplete) {
+            setIsCurrentViolationReady(true);
+        }
+    }, [currentViolations, isFetchComplete]);
+
     const renderLoadFlowCurrentViolations = () => {
         const message = getNoRowsMessage(
             messages,
             currentViolations,
-            loadFlowStatus
+            loadFlowStatus,
+            isCurrentViolationReady
         );
         const rowsToShow = getRows(currentViolations, loadFlowStatus);
         return (
-            <CustomAGGrid
-                rowData={rowsToShow}
-                defaultColDef={defaultColDef}
-                enableCellTextSelection={true}
-                columnDefs={loadFlowCurrentViolationsColumns}
-                onGridReady={onGridReady}
-                getRowStyle={getRowStyle}
-                overlayNoRowsTemplate={message}
-            />
+            <>
+                <Box sx={{ height: '4px' }}>
+                    {openLoaderCurrentTab && <LinearProgress />}
+                </Box>
+                <CustomAGGrid
+                    rowData={rowsToShow}
+                    defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
+                    columnDefs={loadFlowCurrentViolationsColumns}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
+                    overlayNoRowsTemplate={message}
+                />
+            </>
         );
     };
 
@@ -217,24 +263,37 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             overloadedEquipment.limitType === LimitTypes.HIGH_VOLTAGE ||
             overloadedEquipment.limitType === LimitTypes.LOW_VOLTAGE
     );
+
+    useEffect(() => {
+        if (voltageViolations && isFetchComplete) {
+            setIsVoltageViolationReady(true);
+        }
+    }, [voltageViolations, isFetchComplete]);
+
     const renderLoadFlowVoltageViolations = () => {
         const message = getNoRowsMessage(
             messages,
             voltageViolations,
-            loadFlowStatus
+            loadFlowStatus,
+            isVoltageViolationReady
         );
 
         const rowsToShow = getRows(voltageViolations, loadFlowStatus);
         return (
-            <CustomAGGrid
-                rowData={rowsToShow}
-                defaultColDef={defaultColDef}
-                enableCellTextSelection={true}
-                columnDefs={loadFlowVoltageViolationsColumns}
-                onGridReady={onGridReady}
-                getRowStyle={getRowStyle}
-                overlayNoRowsTemplate={message}
-            />
+            <>
+                <Box sx={{ height: '4px' }}>
+                    {openLoaderVoltageTab && <LinearProgress />}
+                </Box>
+                <CustomAGGrid
+                    rowData={rowsToShow}
+                    defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
+                    columnDefs={loadFlowVoltageViolationsColumns}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
+                    overlayNoRowsTemplate={message}
+                />
+            </>
         );
     };
 
@@ -242,20 +301,26 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         const message = getNoRowsMessage(
             messages,
             result?.componentResults,
-            loadFlowStatus
+            loadFlowStatus,
+            result?.componentResults ? true : false
         );
 
         const rowsToShow = getRows(result?.componentResults, loadFlowStatus);
         return (
-            <CustomAGGrid
-                rowData={rowsToShow}
-                columnDefs={loadFlowResultColumns}
-                defaultColDef={defaultColDef}
-                enableCellTextSelection={true}
-                onGridReady={onGridReady}
-                getRowStyle={getRowStyle}
-                overlayNoRowsTemplate={message}
-            />
+            <>
+                <Box sx={{ height: '4px' }}>
+                    {openLoaderStatusTab && <LinearProgress />}
+                </Box>
+                <CustomAGGrid
+                    rowData={rowsToShow}
+                    columnDefs={loadFlowResultColumns}
+                    defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
+                    overlayNoRowsTemplate={message}
+                />
+            </>
         );
     };
     return (

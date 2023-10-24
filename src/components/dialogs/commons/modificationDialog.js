@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
@@ -46,8 +46,28 @@ const ModificationDialog = ({
         closeAndClear(data, 'validateButtonClick');
     };
 
-    const handleValidationError = (errors) =>
+    const handleScrollWhenError = useCallback(() => {
+        // When scrolling to the field with focus, you can end up with the label not completely displayed
+        // We ensure that field with focus is displayed in the middle of the dialog
+        // Delay focusing to ensure it happens after the validation. without timout, document.activeElement will return the validation button.
+        const timeoutId = setTimeout(() => {
+            const focusedElement = document.activeElement;
+
+            if (focusedElement instanceof HTMLElement) {
+                focusedElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }
+        }, 0); // Delay of 0 milliseconds, effectively running at the next opportunity
+
+        return () => clearTimeout(timeoutId);
+    }, []);
+
+    const handleValidationError = (errors) => {
         onValidationError && onValidationError(errors);
+        handleScrollWhenError();
+    };
 
     const submitButton = (
         <SubmitButton
@@ -69,6 +89,8 @@ const ModificationDialog = ({
 };
 
 ModificationDialog.propTypes = {
+    showNodeNotBuiltWarning: PropTypes.bool,
+    isDataFetching: PropTypes.bool,
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
@@ -78,7 +100,7 @@ ModificationDialog.propTypes = {
     fullWidth: PropTypes.bool,
     open: PropTypes.bool,
     titleId: PropTypes.string,
-    maxWidth: PropTypes.string,
+    maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     children: PropTypes.node,
 };
 

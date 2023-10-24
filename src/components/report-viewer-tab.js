@@ -17,6 +17,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { fetchReport } from '../services/study';
 import { Box } from '@mui/system';
+import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 
 const styles = {
     div: {
@@ -48,17 +49,7 @@ export const ReportViewerTab = ({
         (state) => state.networkModificationTreeModel
     );
 
-    const loadflowNotif = useSelector((state) => state.loadflowNotif);
-    const saNotif = useSelector((state) => state.saNotif);
-    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
-    const sensiNotif = useSelector((state) => state.sensiNotif);
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
-    const dynamicSimulationNotif = useSelector(
-        (state) => state.dynamicSimulationNotif
-    );
-    const oneBusShortCircuitNotif = useSelector(
-        (state) => state.oneBusShortCircuitNotif
-    );
+    const notificationsCount = useComputationNotificationCount();
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
@@ -114,7 +105,10 @@ export const ReportViewerTab = ({
         [nodeOnlyReport, setNodeName, snackError]
     );
 
+    // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
+    // and when the application receives a notification.
     useEffect(() => {
+        // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
             fetchAndProcessReport(studyId, currentNode);
         }
@@ -131,16 +125,7 @@ export const ReportViewerTab = ({
     ]);
 
     useEffect(() => {
-        const anyNotificationTriggered =
-            loadflowNotif ||
-            saNotif ||
-            voltageInitNotif ||
-            sensiNotif ||
-            shortCircuitNotif ||
-            dynamicSimulationNotif ||
-            oneBusShortCircuitNotif;
-
-        if (visible && !disabled && anyNotificationTriggered) {
+        if (visible && !disabled && notificationsCount > 0) {
             fetchAndProcessReport(studyId, currentNode);
         }
     }, [
@@ -152,14 +137,8 @@ export const ReportViewerTab = ({
         nodeOnlyReport,
         disabled,
         snackError,
-        saNotif,
-        loadflowNotif,
-        voltageInitNotif,
-        sensiNotif,
-        shortCircuitNotif,
-        dynamicSimulationNotif,
+        notificationsCount,
         fetchAndProcessReport,
-        oneBusShortCircuitNotif,
     ]);
 
     return (

@@ -42,6 +42,7 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
+import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 
 const styles = {
     container: {
@@ -160,6 +161,11 @@ export const NetworkModificationTreePane = ({
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
+    const isEventScenarioDrawerOpen = useSelector(
+        (state) => state.isEventScenarioDrawerOpen
+    );
+    const isStudyDrawerOpen =
+        isModificationsDrawerOpen || isEventScenarioDrawerOpen;
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const width = useStore((state) => state.width);
@@ -655,19 +661,20 @@ export const NetworkModificationTreePane = ({
                     onNodeContextMenu={onNodeContextMenu}
                     studyUuid={studyUuid}
                     studyMapTreeDisplay={studyMapTreeDisplay}
-                    isModificationsDrawerOpen={isModificationsDrawerOpen}
+                    isStudyDrawerOpen={isStudyDrawerOpen}
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
                 <StudyDrawer
-                    open={isModificationsDrawerOpen}
+                    open={isStudyDrawerOpen}
                     anchor={
                         prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
                             ? 'right'
                             : 'left'
                     }
                 >
-                    <NodeEditor />
+                    {isModificationsDrawerOpen && <NodeEditor />}
+                    {isEventScenarioDrawerOpen && <ScenarioEditor />}
                 </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
