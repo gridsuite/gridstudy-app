@@ -24,7 +24,6 @@ import {
 } from 'ag-grid-community';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 
@@ -84,9 +83,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         OverloadedEquipment[]
     >([]);
 
-    const limitReductionParam = useSelector((state: ReduxState) =>
-        Number(state[PARAM_LIMIT_REDUCTION])
-    );
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
     );
@@ -191,11 +187,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     useEffect(() => {
         if (result) {
-            fetchLimitViolations(
-                studyUuid,
-                nodeUuid,
-                limitReductionParam / 100.0
-            )
+            fetchLimitViolations(studyUuid, nodeUuid)
                 .then((overloadedEquipments: OverloadedEquipmentFromBack[]) => {
                     const sortedLines = overloadedEquipments
                         .map((overloadedEquipment) =>
@@ -212,7 +204,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 })
                 .finally(() => setIsFetchComplete(true));
         }
-    }, [studyUuid, nodeUuid, intl, limitReductionParam, result, snackError]);
+    }, [studyUuid, nodeUuid, intl, result, snackError]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {

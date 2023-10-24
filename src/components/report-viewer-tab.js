@@ -17,6 +17,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { fetchReport } from '../services/study';
 import { Box } from '@mui/system';
+import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 
 const styles = {
     div: {
@@ -48,17 +49,7 @@ export const ReportViewerTab = ({
         (state) => state.networkModificationTreeModel
     );
 
-    const loadflowNotif = useSelector((state) => state.loadflowNotif);
-    const saNotif = useSelector((state) => state.saNotif);
-    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
-    const sensiNotif = useSelector((state) => state.sensiNotif);
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
-    const dynamicSimulationNotif = useSelector(
-        (state) => state.dynamicSimulationNotif
-    );
-    const oneBusShortCircuitNotif = useSelector(
-        (state) => state.oneBusShortCircuitNotif
-    );
+    const notificationsCount = useComputationNotificationCount();
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
@@ -121,21 +112,33 @@ export const ReportViewerTab = ({
         if (visible && !disabled) {
             fetchAndProcessReport(studyId, currentNode);
         }
-        // It is important to keep the notifications in the useEffect's dependencies (even if it is not
-        // apparent that they are used) to trigger the update of reports when a notification happens.
     }, [
         visible,
         studyId,
         currentNode,
+        nodesNames,
+        setNodeName,
+        nodeOnlyReport,
         disabled,
-        saNotif,
-        loadflowNotif,
-        voltageInitNotif,
-        sensiNotif,
-        shortCircuitNotif,
-        dynamicSimulationNotif,
+        snackError,
         fetchAndProcessReport,
-        oneBusShortCircuitNotif,
+    ]);
+
+    useEffect(() => {
+        if (visible && !disabled && notificationsCount > 0) {
+            fetchAndProcessReport(studyId, currentNode);
+        }
+    }, [
+        visible,
+        studyId,
+        currentNode,
+        nodesNames,
+        setNodeName,
+        nodeOnlyReport,
+        disabled,
+        snackError,
+        notificationsCount,
+        fetchAndProcessReport,
     ]);
 
     return (
