@@ -219,8 +219,6 @@ export const NetworkModificationTreePane = ({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeCreated'
             ) {
-                console.log('MMT inside our scope');
-
                 fetchNetworkModificationTreeNode(
                     studyUuid,
                     studyUpdatedForce.eventData.headers['newNode']
@@ -258,40 +256,8 @@ export const NetworkModificationTreePane = ({
                         ) {
                             resetNodeClipboard();
                         }
-
-                        console.log(
-                            'MMT networkModificationTreeModel',
-                            networkModificationTreeModel
-                        );
                     });
                 });
-                // .then((node) => {
-                //     dispatch(
-                //         networkModificationTreeNodeAdded(
-                //             node,
-                //             studyUpdatedForce.eventData.headers[
-                //                 'parentNode'
-                //             ],
-                //             studyUpdatedForce.eventData.headers[
-                //                 'insertMode'
-                //             ],
-                //             studyUpdatedForce.eventData.headers[
-                //                 'referenceNodeUuid'
-                //             ]
-                //         )
-                //     );
-                //     return node;
-                // })
-                // .then((node) => {
-                //     newModel.addChild(
-                //         node,
-                //         studyUpdatedForce.eventData.headers['parentNode'],
-                //         studyUpdatedForce.eventData.headers['insertMode'],
-                //         studyUpdatedForce.eventData.headers[
-                //             'referenceNodeUuid'
-                //         ]
-                //     );
-                // });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'subtreeCreated'

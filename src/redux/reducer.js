@@ -1187,13 +1187,11 @@ function updateEquipments(currentEquipments, newOrUpdatedEquipments) {
 }
 
 function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
-    console.log('MMT avant ', state.currentTreeNode);
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );
     //  we need to overwrite state.currentTreeNode to consider label change for example.
     state.currentTreeNode = { ...nextCurrentNode };
-    console.log('MMT après ', state.currentTreeNode);
 }
 
 function unravelSubTree(treeModel, subtreeParentId, node) {
