@@ -86,7 +86,10 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
                         domLayout={'autoHeight'}
                         rowDragEntireRow
                         suppressBrowserResizeObserver
-                        columnDefs={columnDefs}
+                        columnDefs={columnDefs.map((colDef) => ({
+                            ...colDef,
+                            editable: true,
+                        }))}
                         detailRowAutoHeight={true}
                         rowSelection={'multiple'}
                         // onSelectionChanged={(event) => {
