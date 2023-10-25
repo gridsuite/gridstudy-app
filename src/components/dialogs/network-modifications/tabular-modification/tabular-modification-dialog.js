@@ -30,7 +30,10 @@ const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [MODIFICATIONS_TABLE]: yup.array().min(1).required(),
+        [MODIFICATIONS_TABLE]: yup
+            .array()
+            .min(1, 'ModificationsRequiredTabError')
+            .required(),
     })
     .required();
 

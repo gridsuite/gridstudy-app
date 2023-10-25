@@ -119,7 +119,6 @@
     "NominalVoltageSide1": "Tension nominale 1 (kV)",
     "NominalVoltageSide2": "Tension nominale 2 (kV)",
     "NominalVoltageSide3": "Tension nominale 3 (kV)",
-    "ActivePower": "p (MW)",
     "ActivePowerSide1": "p1 (MW)",
     "ActivePowerSide2": "p2 (MW)",
     "ActivePowerSide3": "p3 (MW)",
@@ -627,6 +626,7 @@
     "maxActivePower": "P max (MW)",
     "activePowerSetpoint": "p (MW)",
     "minActivePower": "P min (MW)",
+    "ModificationsRequiredTabError": "Au moins une modification est requise",
 
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",

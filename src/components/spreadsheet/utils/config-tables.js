@@ -1088,7 +1088,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1134,7 +1134,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxP',
+                id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1367,7 +1367,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1523,7 +1523,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1595,7 +1595,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1691,7 +1691,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxP',
+                id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1805,7 +1805,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxP',
+                id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1887,7 +1887,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hvdcLineId',
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1962,7 +1962,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hvdcLineId',
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2052,7 +2052,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
