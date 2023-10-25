@@ -17,10 +17,13 @@ import {
 import {
     flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
+    FROM_COLUMN_TO_FIELD,
     handlePostSortRows,
     PAGE_OPTIONS,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
+    securityAnalysisTableNmKConstraintsFilterDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
+    securityAnalysisTableNmKContingenciesFilterDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
@@ -30,6 +33,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Theme } from '@mui/material/styles';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { DATA_KEY_TO_FILTER_KEY } from '../sensitivity-analysis/sensitivity-analysis-content';
 
 const styles = {
     container: {
@@ -54,6 +58,10 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     paginationProps,
     onSortChanged,
     sortConfig,
+    //@ts-ignore
+    updateFilter,
+    //@ts-ignore
+    filterSelector,
 }) => {
     const { content } = result || {};
 
@@ -127,6 +135,14 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [onClickNmKConstraint]
     );
 
+    const filtersDef = useMemo(
+        () =>
+            isFromContingency
+                ? securityAnalysisTableNmKContingenciesFilterDefinition(intl)
+                : securityAnalysisTableNmKConstraintsFilterDefinition(intl),
+        [intl]
+    );
+
     const makeColumn = useCallback(
         ({
             headerName,
@@ -135,7 +151,16 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             cellRenderer,
             isSortable = false,
             isHidden = false,
+            isFilterable = false,
         }: CustomColDef) => {
+            const { options: filterOptions = [] } =
+                filtersDef.find((filterDef) => filterDef?.field === field) ||
+                {};
+
+            const filterSelectedOptions =
+                FROM_COLUMN_TO_FIELD[field] &&
+                filterSelector?.[FROM_COLUMN_TO_FIELD[field]];
+
             return {
                 headerName,
                 field,
@@ -151,11 +176,14 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                         onSortChanged(field, newSortValue);
                     },
                     isSortable,
-                    isFilterable: false,
+                    isFilterable,
+                    filterOptions,
+                    updateFilter,
+                    filterSelectedOptions,
                 },
             };
         },
-        [sortConfig, onSortChanged]
+        [filtersDef, filterSelector, sortConfig, updateFilter, onSortChanged]
     );
 
     const columnDefs = useMemo(

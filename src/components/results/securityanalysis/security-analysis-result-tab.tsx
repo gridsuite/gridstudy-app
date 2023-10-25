@@ -26,17 +26,20 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import {
+    FilterSelectorType,
     QueryParamsType,
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
 import {
     DEFAULT_PAGE_COUNT,
+    FILTER_TYPES,
     FROM_COLUMN_TO_FIELD,
     NMK_TYPE,
     RESULT_TYPE,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useRowFilter } from '../../../hooks/use-row-filter';
 
 const styles = {
     container: {
@@ -79,6 +82,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
+    const { updateFilter, filterSelector } = useRowFilter(FROM_COLUMN_TO_FIELD);
 
     const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 
@@ -108,7 +112,16 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 };
             }
 
-            // queryParams['filter'] = filter;
+            if (filterSelector) {
+                queryParams['filters'] = Object.keys(filterSelector).map(
+                    (field: string) => ({
+                        dataType: 'text',
+                        field,
+                        type: FILTER_TYPES.EQUALS,
+                        value: (filterSelector as FilterSelectorType)[field],
+                    })
+                );
+            }
 
             return fetchSecurityAnalysisResult(
                 studyUuid,
@@ -116,7 +129,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams
             );
         },
-        [nmkType, page, tabIndex, rowsPerPage, sortConfig]
+        [nmkType, page, tabIndex, rowsPerPage, sortConfig, filterSelector]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
@@ -244,6 +257,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                         onSortChanged={onSortChanged}
                         sortConfig={sortConfig}
+                        //@ts-ignore
+                        updateFilter={updateFilter}
+                        //@ts-ignore
+                        filterSelector={filterSelector}
                     />
                 )}
             </Box>

@@ -70,7 +70,7 @@ export function fetchSecurityAnalysisResult(
         currentNodeUuid
     )}/security-analysis/result`;
 
-    const { resultType, page, size, sort, filter } = queryParams || {};
+    const { resultType, page, size, sort, filters } = queryParams || {};
 
     const params = new URLSearchParams({ resultType });
 
@@ -78,8 +78,8 @@ export function fetchSecurityAnalysisResult(
         params.append('sort', `${sort.colKey},${sort.sortValue}`);
     }
 
-    if (filter?.length) {
-        params.append('filter', JSON.stringify(filter));
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
     }
 
     if (typeof page === 'number') {

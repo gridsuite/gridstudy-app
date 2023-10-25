@@ -28,7 +28,7 @@ interface Element {
 }
 
 export interface ContingencyItem {
-    computationStatus?: string;
+    status?: string;
     contingencyId?: string;
     elements?: Element[];
 }
@@ -41,7 +41,7 @@ export interface Contingency {
 export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
     acceptableDuration?: number;
-    computationStatus?: string;
+    status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;
@@ -75,6 +75,10 @@ export interface PreContingencyResult {
     };
 }
 
+type filterValueType = string | string[];
+
+export type FilterSelectorType = Record<string, filterValueType>;
+
 export type SortTableStateType = {
     colKey: string;
     sortValue?: string;
@@ -84,7 +88,7 @@ export type FilterTableStateType = {
     dataType?: string;
     field?: string;
     type?: string;
-    value?: string;
+    value?: filterValueType;
 };
 
 export type QueryParamsType = Record<
@@ -123,6 +127,7 @@ type PaginationProps = {
 export interface CustomColDef extends ColDef {
     isSortable?: boolean;
     isHidden?: boolean;
+    isFilterable?: boolean;
 }
 
 export interface SecurityAnalysisNmkResult {
@@ -164,6 +169,8 @@ export interface SecurityAnalysisResultNmkProps {
     paginationProps: PaginationProps;
     onSortChanged: (colKey: string, sortWay: number) => void;
     sortConfig?: ISortConfig;
+    updateFilter: (field: string, value: string) => void;
+    filterSelector: FilterSelectorType;
 }
 
 export interface SecurityAnalysisNTableRow {

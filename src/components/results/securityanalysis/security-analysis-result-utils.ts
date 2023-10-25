@@ -61,7 +61,7 @@ export const flattenNmKResultsContingencies = (
             if (!!subjectLimitViolations.length) {
                 const {
                     contingencyId,
-                    computationStatus,
+                    status,
                     elements = [],
                 } = contingency || {};
                 rows.push({
@@ -69,7 +69,7 @@ export const flattenNmKResultsContingencies = (
                     contingencyEquipmentsIds: elements.map(
                         (element) => element.id
                     ),
-                    computationStatus,
+                    status,
                     violationCount: subjectLimitViolations.length,
                 });
                 subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -113,7 +113,7 @@ export const flattenNmKResultsConstraints = (
                             contingencyEquipmentsIds: contingency.elements?.map(
                                 (element) => element.id
                             ),
-                            computationStatus: contingency.computationStatus,
+                            status: contingency.status,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
                             }),
@@ -186,7 +186,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'computationStatus',
-            isSortable: true,
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
@@ -196,6 +196,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -233,7 +234,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         //it is used for sorting actions
         makeColumn({
             field: 'linkedElementId',
-            hide: true,
+            isHidden: true,
         }),
     ];
 };
@@ -250,7 +251,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            sortable: true,
+            isSortable: true,
             // filter: 'agTextColumnFilter',
             // filterParams: {
             //     debounceMs: 1200, // we don't want to fetch the back end too fast
@@ -268,10 +269,12 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'computationStatus',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -309,8 +312,42 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         //it is used for sorting actions
         makeColumn({
             field: 'linkedElementId',
-            hide: true,
+            isHidden: true,
         }),
+    ];
+};
+
+export const securityAnalysisTableNmKContingenciesFilterDefinition = (
+    intl: IntlShape
+) => {
+    return [
+        {
+            field: 'computationStatus',
+            label: intl.formatMessage({ id: 'computationStatus' }),
+            options: ['CONVERGED'],
+        },
+        {
+            field: 'limitType',
+            label: intl.formatMessage({ id: 'LimitType' }),
+            options: ['HIGH_VOLTAGE', 'LOW_VOLTAGE'],
+        },
+    ];
+};
+
+export const securityAnalysisTableNmKConstraintsFilterDefinition = (
+    intl: IntlShape
+) => {
+    return [
+        {
+            field: 'computationStatus',
+            label: intl.formatMessage({ id: 'computationStatus' }),
+            options: ['CONVERGED'],
+        },
+        {
+            field: 'limitType',
+            label: intl.formatMessage({ id: 'LimitType' }),
+            options: ['HIGH_VOLTAGE', 'LOW_VOLTAGE'],
+        },
     ];
 };
 
@@ -386,3 +423,9 @@ export enum RESULT_TYPE {
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
+
+export const FILTER_TYPES = {
+    EQUALS: 'equals',
+    CONTAINS: 'contains',
+    STARTS_WITH: 'startsWith',
+};
