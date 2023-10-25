@@ -119,6 +119,7 @@
     "NominalVoltageSide1": "Nominal voltage 1 (kV)",
     "NominalVoltageSide2": "Nominal voltage 2 (kV)",
     "NominalVoltageSide3": "Nominal voltage 3 (kV)",
+    "ActivePower": "p (MW)",
     "ActivePowerSide1": "p1 (MW)",
     "ActivePowerSide2": "p2 (MW)",
     "ActivePowerSide3": "p3 (MW)",
@@ -146,7 +147,7 @@
     "PhaseTap2": "Phase tap 2",
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
-    "voltageRegulationOn": "Voltage regulation",
+    "VoltageRegulatorOn": "Voltage regulation",
     "RegulatingTerminal": "Regulated node",
 
     "LoadFlow": "LoadFlow",
@@ -365,9 +366,9 @@
     "LOW_VOLTAGE": "Low voltage",
 
     "HighVoltageLimit": "High voltage limit",
-    "highVoltageLimit": "High voltage limit (kV)",
+    "HighVoltageLimitkV": "High voltage limit (kV)",
     "LowVoltageLimit": "Low voltage limit",
-    "lowVoltageLimit": "Low voltage limit (kV)",
+    "LowVoltageLimitkV": "Low voltage limit (kV)",
 
     "descLfVoltageInitMode": "Voltage initialisation mode",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers",
@@ -625,6 +626,7 @@
     "maxActivePower": "Max P (MW)",
     "activePowerSetpoint": "p (MW)",
     "minActivePower": "Min P (MW)",
+    "voltageRegulationOn": "Voltage regulation",
     "ModificationsRequiredTabError": "At least one modification is required",
 
     "UnableToDeleteEquipment": "Unable to delete the equipment",

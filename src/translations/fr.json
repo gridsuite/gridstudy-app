@@ -119,6 +119,7 @@
     "NominalVoltageSide1": "Tension nominale 1 (kV)",
     "NominalVoltageSide2": "Tension nominale 2 (kV)",
     "NominalVoltageSide3": "Tension nominale 3 (kV)",
+    "ActivePower": "p (MW)",
     "ActivePowerSide1": "p1 (MW)",
     "ActivePowerSide2": "p2 (MW)",
     "ActivePowerSide3": "p3 (MW)",
@@ -146,7 +147,7 @@
     "PhaseTap2": "Plot déphaseur 2",
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
-    "voltageRegulationOn": "Réglage de tension",
+    "VoltageRegulatorOn": "Réglage de tension",
     "RegulatingTerminal": "Nœud réglé",
 
     "LoadFlow": "Calcul de répartition",
@@ -365,9 +366,9 @@
     "LOW_VOLTAGE": "Tension basse",
 
     "HighVoltageLimit": "Limite tension haute",
-    "highVoltageLimit": "Limite tension haute (kV)",
+    "HighVoltageLimitkV": "Limite tension haute (kV)",
     "LowVoltageLimit": "Limite tension basse",
-    "lowVoltageLimit": "Limite tension basse (kV)",
+    "LowVoltageLimitkV": "Limite tension basse (kV)",
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge",
@@ -626,6 +627,7 @@
     "maxActivePower": "P max (MW)",
     "activePowerSetpoint": "p (MW)",
     "minActivePower": "P min (MW)",
+    "voltageRegulationOn": "Réglage de tension",
     "ModificationsRequiredTabError": "Au moins une modification est requise",
 
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",

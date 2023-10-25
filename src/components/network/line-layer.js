@@ -909,7 +909,7 @@ class LineLayer extends CompositeLayer {
             // lines active power
             const lineActivePowerLabelsLayer = new TextLayer(
                 this.getSubLayerProps({
-                    id: 'activePower' + compositeData.nominalVoltage,
+                    id: 'ActivePower' + compositeData.nominalVoltage,
                     data: compositeData.activePower,
                     getText: (activePower) =>
                         activePower.p !== undefined
