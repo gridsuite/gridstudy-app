@@ -175,25 +175,27 @@ const TabularModificationForm = () => {
                     {gridItem(equipmentTypeField, 4)}
                     <Grid item>{FileField}</Grid>
                 </Grid>
-                <Grid item>
-                    <CsvDownloader
-                        columns={csvColumns}
-                        datas={[]}
-                        filename={watchType + '_skeleton'}
-                    >
-                        <Button variant="contained" disabled={!csvColumns}>
-                            <FormattedMessage id="GenerateSkeleton" />
-                        </Button>
-                    </CsvDownloader>
-                </Grid>
-                <Grid item>
-                    <ErrorInput
-                        name={MODIFICATIONS_TABLE}
-                        InputField={FieldErrorAlert}
-                    />
-                    {selectedFileError && (
-                        <Alert severity="error">{selectedFileError}</Alert>
-                    )}
+                <Grid container item spacing={2} alignItems={'center'}>
+                    <Grid item>
+                        <CsvDownloader
+                            columns={csvColumns}
+                            datas={[]}
+                            filename={watchType + '_skeleton'}
+                        >
+                            <Button variant="contained" disabled={!csvColumns}>
+                                <FormattedMessage id="GenerateSkeleton" />
+                            </Button>
+                        </CsvDownloader>
+                    </Grid>
+                    <Grid item>
+                        <ErrorInput
+                            name={MODIFICATIONS_TABLE}
+                            InputField={FieldErrorAlert}
+                        />
+                        {selectedFileError && (
+                            <Alert severity="error">{selectedFileError}</Alert>
+                        )}
+                    </Grid>
                 </Grid>
                 <Grid item xs={12} sx={styles.grid}>
                     <CustomAGGrid
