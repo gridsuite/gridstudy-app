@@ -38,7 +38,7 @@ const richTypeEquals = (a: any, b: any) => a === b;
 const TabularModificationForm = () => {
     const intl = useIntl();
 
-    const { setValue, clearErrors } = useFormContext();
+    const { setValue, clearErrors, getValues } = useFormContext();
 
     const richTypeLabel = (rt: any) => {
         return intl.formatMessage({ id: rt });
@@ -69,7 +69,7 @@ const TabularModificationForm = () => {
                 const modification: Modification = {};
                 Object.keys(row).forEach((key) => {
                     const fieldKey = TABULAR_MODIFICATION_FIELDS[
-                        watchType
+                        getValues(TYPE)
                     ]?.find(
                         (field) => intl.formatMessage({ id: field }) === key
                     );
@@ -82,7 +82,7 @@ const TabularModificationForm = () => {
             clearErrors(MODIFICATIONS_TABLE);
             setValue(MODIFICATIONS_TABLE, fileData, { shouldDirty: true });
         },
-        [clearErrors, intl, setValue, watchType]
+        [clearErrors, getValues, intl, setValue]
     );
 
     const watchTable = useWatch({
