@@ -74,11 +74,7 @@ const TabularModificationForm = () => {
                         (field) => intl.formatMessage({ id: field }) === key
                     );
                     if (fieldKey) {
-                        if (fieldKey === 'voltageRegulationOn') {
-                            modification[fieldKey] = row[key] === 'true';
-                        } else {
-                            modification[fieldKey] = row[key];
-                        }
+                        modification[fieldKey] = row[key];
                     }
                 });
                 return modification;
@@ -101,6 +97,7 @@ const TabularModificationForm = () => {
             Papa.parse(selectedFile as any, {
                 header: true,
                 skipEmptyLines: true,
+                dynamicTyping: true,
                 complete: (results) => {
                     postProcessFile(results.data);
                 },
