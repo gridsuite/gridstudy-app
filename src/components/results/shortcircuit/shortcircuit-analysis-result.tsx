@@ -8,6 +8,8 @@
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
+    ColumnFilter,
+    ColumnSort,
     SCAFaultResult,
     SCAFeederResult,
     SCAPagedResults,
@@ -58,8 +60,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
-    const [filter, setFilter] = useState([]);
-    const [sort, setSort] = useState([]);
+    const [filter, setFilter] = useState<ColumnFilter[]>([]);
+    const [sort, setSort] = useState<ColumnSort[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
@@ -67,7 +69,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         (state: ReduxState) => state.currentTreeNode
     );
 
-    const updateFilter = useCallback((newFilter: any) => {
+    const updateFilter = useCallback((newFilter: ColumnFilter[]) => {
         setFilter(newFilter);
         setPage(0); // we need to reset the page after updating the filter
     }, []);

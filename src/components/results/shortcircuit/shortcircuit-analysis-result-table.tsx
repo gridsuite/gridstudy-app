@@ -10,6 +10,8 @@ import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
+    ColumnFilter,
+    ColumnSort,
     SCAFaultResult,
     SCAFeederResult,
     ShortCircuitAnalysisType,
@@ -37,8 +39,8 @@ import { DATA_KEY_TO_SORT_KEY } from 'components/results/shortcircuit/shortcircu
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
     analysisType: ShortCircuitAnalysisType;
-    updateFilter: (filter: any) => void;
-    updateSort: (sort: any) => void;
+    updateFilter: (filter: ColumnFilter[]) => void;
+    updateSort: (sort: ColumnSort[]) => void;
     isFetching: boolean;
 }
 
