@@ -10,6 +10,8 @@ import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
+import SitePropertiesDialog from 'components/dialogs/equipements-table/site-properties-dialog';
+import { SelectOptionsDialog } from 'utils/dialogs';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -33,6 +35,9 @@ export const EquipmentTable = ({
 }) => {
     const theme = useTheme();
     const intl = useIntl();
+    const [popupSelectEditSiteProperties, setPopupSelectEditSiteProperties] =
+        React.useState(false);
+
     const getRowStyle = useCallback(
         (params) => {
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
@@ -102,39 +107,67 @@ export const EquipmentTable = ({
         };
     }, [intl]);
 
+    const handleCancelPopupSelectEditSiteProperties = () => {
+        setPopupSelectEditSiteProperties(false);
+    };
+    const handleSavePopupSelectEditSiteProperties = () => {
+        //TODO: save data
+        setPopupSelectEditSiteProperties(false);
+    };
+
+    const handleOnClickOnCell = (params) => {
+        // onCellClicked();
+        setPopupSelectEditSiteProperties(!popupSelectEditSiteProperties);
+        // console.log('site', params);
+    };
+    // console.log('site', getRowId());
+
     return (
-        <CustomAGGrid
-            ref={gridRef}
-            getRowId={getRowId}
-            rowData={rowsToShow}
-            pinnedTopRowData={topPinnedData}
-            debounceVerticalScrollbar={true}
-            getRowStyle={getRowStyle}
-            columnDefs={columnData}
-            defaultColDef={defaultColDef}
-            enableCellTextSelection={true}
-            undoRedoCellEditing={true}
-            editType={'fullRow'}
-            onCellValueChanged={handleCellEditing}
-            onRowValueChanged={handleRowEditing}
-            onRowDataUpdated={handleRowDataUpdated}
-            onRowEditingStarted={handleEditingStarted}
-            onRowEditingStopped={handleEditingStopped}
-            onColumnMoved={handleColumnDrag}
-            suppressDragLeaveHidesColumns={true}
-            suppressColumnVirtualisation={true}
-            suppressClickEdit={true}
-            context={gridContext}
-            onGridReady={handleGridReady}
-            shouldHidePinnedHeaderRightBorder={
-                shouldHidePinnedHeaderRightBorder
-            }
-            getRowHeight={getRowHeight}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
-            onCellClicked={onCellClicked}
-        />
+        <>
+            <CustomAGGrid
+                ref={gridRef}
+                getRowId={getRowId}
+                rowData={rowsToShow}
+                pinnedTopRowData={topPinnedData}
+                debounceVerticalScrollbar={true}
+                getRowStyle={getRowStyle}
+                columnDefs={columnData}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                undoRedoCellEditing={true}
+                editType={'fullRow'}
+                onCellValueChanged={handleCellEditing}
+                onRowValueChanged={handleRowEditing}
+                onRowDataUpdated={handleRowDataUpdated}
+                onRowEditingStarted={handleEditingStarted}
+                onRowEditingStopped={handleEditingStopped}
+                onColumnMoved={handleColumnDrag}
+                suppressDragLeaveHidesColumns={true}
+                suppressColumnVirtualisation={true}
+                suppressClickEdit={true}
+                context={gridContext}
+                onGridReady={handleGridReady}
+                shouldHidePinnedHeaderRightBorder={
+                    shouldHidePinnedHeaderRightBorder
+                }
+                getRowHeight={getRowHeight}
+                overlayNoRowsTemplate={message}
+                loadingOverlayComponent={loadingOverlayComponent}
+                loadingOverlayComponentParams={loadingOverlayComponentParams}
+                showOverlay={true}
+                onCellClicked={handleOnClickOnCell}
+            />
+            <SelectOptionsDialog
+                open={popupSelectEditSiteProperties}
+                onClose={handleCancelPopupSelectEditSiteProperties}
+                onClick={handleSavePopupSelectEditSiteProperties}
+                title={intl.formatMessage({
+                    id: 'editSiteProperties',
+                })}
+                child={<SitePropertiesDialog
+                    getRowId={getRowId}
+                    ></SitePropertiesDialog>}
+            ></SelectOptionsDialog>
+        </>
     );
 };

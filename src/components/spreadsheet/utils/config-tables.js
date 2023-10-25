@@ -102,8 +102,9 @@ const onCellSitePropertiesClicked = (event) => {
     if (event.data.type === EQUIPMENT_TYPES.SUBSTATION &&
         event.column.colId === 'properties') {
         console.log('sites', event.data);
+        //open pop
     }
-}
+};
 
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
