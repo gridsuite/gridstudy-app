@@ -12,8 +12,6 @@ export const EQUIPMENTS_FIELDS = {
     {id: 'MARGINAL_COST', label: 'MarginalCost'},
     {id: 'PLANNED_OUTAGE_RATE', label: 'PlannedOutageRate'},
     {id: 'FORCED_OUTAGE_RATE', label: 'ForcedOutageRate'},
-    {id: 'MINIMUM_REACTIVE_POWER', label: 'MinimumReactivePower'},
-    {id: 'MAXIMUM_REACTIVE_POWER', label: 'MaximumReactivePower'},
     {id: 'DROOP', label: 'Droop'},
     {id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm'},
     {id: 'STEP_UP_TRANSFORMER_REACTANCE', label: 'TransformerReactanceForm'},
@@ -24,8 +22,6 @@ export const EQUIPMENTS_FIELDS = {
     {id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText'},
     {id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText'},
     {id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText'},
-    {id: 'MINIMUM_REACTIVE_POWER', label: 'MinimumReactivePower'},
-    {id: 'MAXIMUM_REACTIVE_POWER', label: 'MaximumReactivePower'},
     {id: 'DROOP', label: 'Droop'}
   ]
 }

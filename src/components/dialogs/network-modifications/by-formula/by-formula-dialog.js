@@ -12,40 +12,50 @@ import { useCallback } from 'react';
 import { FetchStatus } from '../../../../services/utils';
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useOpenShortWaitFetching } from "../../commons/handle-modification-form";
-import { FORM_LOADING_DELAY } from "../../../network/constants";
-import ByFormulaForm from "./by-formula-form";
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from '../../../network/constants';
+import ByFormulaForm from './by-formula-form';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
     FORMULAS,
     ID,
-    NAME, OPERATOR, REFERENCE_FIELD_OR_VALUE_1, REFERENCE_FIELD_OR_VALUE_2,
+    NAME,
+    OPERATOR,
+    REFERENCE_FIELD_OR_VALUE_1,
+    REFERENCE_FIELD_OR_VALUE_2,
     SPECIFIC_METADATA,
-    TYPE
-} from "../../../utils/field-constants";
+    TYPE,
+} from '../../../utils/field-constants';
+import { modifyByFormula } from '../../../../services/study/network-modifications';
 
-const formSchema = yup.object().shape({
-    [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-    [FORMULAS]: yup.array().of(yup.object().shape({
-        [FILTERS]: yup
-          .array()
-          .of(
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
+        [FORMULAS]: yup.array().of(
             yup.object().shape({
-                [ID]: yup.string().required(),
-                [NAME]: yup.string().required(),
-                [SPECIFIC_METADATA]: yup.object().shape({
-                    [TYPE]: yup.string(),
-                }),
+                [FILTERS]: yup
+                    .array()
+                    .of(
+                        yup.object().shape({
+                            [ID]: yup.string().required(),
+                            [NAME]: yup.string().required(),
+                            [SPECIFIC_METADATA]: yup.object().shape({
+                                [TYPE]: yup.string(),
+                            }),
+                        })
+                    )
+                    .required(),
+                [EDITED_FIELD]: yup.string().required(),
+                [REFERENCE_FIELD_OR_VALUE_1]: yup.string().required(),
+                [REFERENCE_FIELD_OR_VALUE_2]: yup.string().required(),
+                [OPERATOR]: yup.string().required(),
             })
-          ).required(),
-        [EDITED_FIELD]: yup.string().required(),
-        [REFERENCE_FIELD_OR_VALUE_1]: yup.string().required(),
-        [REFERENCE_FIELD_OR_VALUE_2]: yup.string().required(),
-        [OPERATOR]: yup.string().required(),
-    }))
-}).required();
+        ),
+    })
+    .required();
 
 const emptyFormData = {};
 
@@ -67,17 +77,34 @@ const ByFormulaDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-          !isUpdate ||
-          editDataFetchStatus === FetchStatus.SUCCEED ||
-          editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
     const { reset } = formMethods;
 
-    const clear = useCallback(() => {}, []);
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
 
-    const onSubmit = useCallback(() => {}, []);
+    const onSubmit = useCallback((data) => {
+      console.log('data : ', data);
+        /*modifyByFormula(
+            studyUuid,
+            currentNodeUuid,
+            data[EQUIPMENT_TYPE_FIELD],
+            data[FORMULAS],
+            !!editData,
+            editData?.uuid ?? null
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'ByFormulaModification',
+            });
+        });*/
+    }, []);
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -88,7 +115,7 @@ const ByFormulaDialog = ({
                 aria-labelledby="dialog-by-formula"
                 titleId="CreateByFormula"
                 open={open}
-                maxWidth={'lg'}
+                maxWidth={'xl'}
                 isDataFetching={
                     isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }

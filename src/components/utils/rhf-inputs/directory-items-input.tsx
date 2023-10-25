@@ -26,7 +26,7 @@ import { ErrorInput } from '@gridsuite/commons-ui';
 import { MidFormError } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
-import { isFieldFromContextRequired, isFieldRequired } from '../utils';
+import { isFieldFromContextRequired } from '../utils';
 import Tooltip from '@mui/material/Tooltip';
 import { mergeSx } from '../functions';
 

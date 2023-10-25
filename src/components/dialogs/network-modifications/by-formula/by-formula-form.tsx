@@ -20,6 +20,7 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = ({}) => {
             name={EQUIPMENT_TYPE_FIELD}
             label={'EquipmentType'}
             options={EQUIPMENT_TYPE_OPTIONS}
+            size={'small'}
         />
     );
 
@@ -29,7 +30,7 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = ({}) => {
 
     return (
         <>
-            <Grid container>{gridItem(equipmentTypeField, 4)}</Grid>
+            <Grid container>{gridItem(equipmentTypeField, 2.15)}</Grid>
             <Grid container>{gridItem(formulasField, 12)}</Grid>
         </>
     );
