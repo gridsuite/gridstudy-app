@@ -57,9 +57,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     paginationProps,
     onSortChanged,
     sortConfig,
-    //@ts-ignore
     updateFilter,
-    //@ts-ignore
     filterSelector,
 }) => {
     const { content } = result || {};
