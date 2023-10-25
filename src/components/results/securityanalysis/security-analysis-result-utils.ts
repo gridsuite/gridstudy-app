@@ -185,7 +185,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            field: 'computationStatus',
+            field: 'status',
             isFilterable: true,
         }),
         makeColumn({
@@ -268,7 +268,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            field: 'computationStatus',
+            field: 'status',
             isFilterable: true,
         }),
         makeColumn({
@@ -322,7 +322,7 @@ export const securityAnalysisTableNmKContingenciesFilterDefinition = (
 ) => {
     return [
         {
-            field: 'computationStatus',
+            field: 'status',
             label: intl.formatMessage({ id: 'computationStatus' }),
             options: ['CONVERGED'],
         },
@@ -339,7 +339,7 @@ export const securityAnalysisTableNmKConstraintsFilterDefinition = (
 ) => {
     return [
         {
-            field: 'computationStatus',
+            field: 'status',
             label: intl.formatMessage({ id: 'computationStatus' }),
             options: ['CONVERGED'],
         },
@@ -399,7 +399,7 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     subjectId: 'subjectId',
     contingencyId: 'contingencyId',
-    computationStatus: 'status',
+    status: 'status',
     limitType: 'limit_type',
     limitName: 'limit_name',
     side: 'side',
