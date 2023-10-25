@@ -17,8 +17,6 @@ import {
 import {
     FilterChangedEvent,
     GridReadyEvent,
-    IRowNode,
-    PostSortRowsParams,
     RowClassParams,
     SortChangedEvent,
 } from 'ag-grid-community';
@@ -33,6 +31,8 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { DATA_KEY_TO_SORT_KEY } from 'components/results/shortcircuit/shortcircuit-analysis-result-content';
+import CustomSetFilter from 'components/utils/aggrid/custom-set-filter';
+import { Option } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -40,6 +40,8 @@ interface ShortCircuitAnalysisResultProps {
     updateFilter: (filter: any) => void;
     updateSort: (sort: any) => void;
     isFetching: boolean;
+    faultTypeOptions: Option[];
+    limitViolationTypeOptions: Option[];
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -77,9 +79,39 @@ interface ShortCircuitAnalysisResultsFeederResult {
 
 const ShortCircuitAnalysisResultTable: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ result, analysisType, updateFilter, updateSort, isFetching }) => {
+> = ({
+    result,
+    analysisType,
+    updateFilter,
+    updateSort,
+    isFetching,
+    faultTypeOptions,
+    limitViolationTypeOptions,
+}) => {
     const intl = useIntl();
     const theme = useTheme();
+
+    const textFilterParams = useMemo(() => {
+        return {
+            debounceMs: 1200, // we don't want to fetch the back end too fast
+            maxNumConditions: 1,
+            filterOptions: ['contains', 'startsWith'],
+            textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
+        };
+    }, []);
+
+    const numberFilterParams = useMemo(() => {
+        return {
+            debounceMs: 1200, // we don't want to fetch the back end too fast
+            maxNumConditions: 1,
+            filterOptions: [
+                'notEqual',
+                'lessThanOrEqual',
+                'greaterThanOrEqual',
+            ],
+            // didn't find a way to disable filters here
+        };
+    }, []);
 
     const columns = useMemo(
         () => [
@@ -87,11 +119,23 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                filter:
+                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
+                        ? 'agTextColumnFilter'
+                        : null,
+                filterParams: textFilterParams,
             },
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                filter:
+                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
+                        ? CustomSetFilter
+                        : null,
+                filterParams: {
+                    options: faultTypeOptions,
+                },
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -101,12 +145,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     analysisType === ShortCircuitAnalysisType.ONE_BUS
                         ? 'agTextColumnFilter'
                         : null,
-                filterParams: {
-                    debounceMs: 1200, // we don't want to fetch the back end too fast
-                    maxNumConditions: 1,
-                    filterOptions: ['contains', 'startsWith'],
-                    textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
-                },
+                filterParams: textFilterParams,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscKA' }),
@@ -114,25 +153,20 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: true,
-                filter:
-                    analysisType === ShortCircuitAnalysisType.ONE_BUS
-                        ? 'agNumberColumnFilter'
-                        : null,
-                filterParams: {
-                    debounceMs: 1200, // we don't want to fetch the back end too fast
-                    maxNumConditions: 1,
-                    filterOptions: [
-                        'notEqual',
-                        'lessThanOrEqual',
-                        'greaterThanOrEqual',
-                    ],
-                    // didn't find a way to disable filters here
-                },
+                filter: 'agNumberColumnFilter',
+                filterParams: numberFilterParams,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                filter:
+                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
+                        ? CustomSetFilter
+                        : null,
+                filterParams: {
+                    options: limitViolationTypeOptions,
+                },
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
@@ -174,7 +208,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 hide: true,
             },
         ],
-        [intl, analysisType]
+        [
+            textFilterParams,
+            numberFilterParams,
+            intl,
+            analysisType,
+            faultTypeOptions,
+            limitViolationTypeOptions,
+        ]
     );
 
     const shortCircuitAnalysisStatus = useSelector(
@@ -187,33 +228,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     );
 
     const messages = useIntlResultStatusMessages(intl, true);
-    const groupPostSort = (
-        sortedRows: IRowNode[],
-        idField: string,
-        linkedIdField: string
-    ) => {
-        // Because Map remembers the original insertion order of the keys.
-        const rowsMap = new Map<string, IRowNode[]>();
-        // first index by main resource idField
-        sortedRows.forEach((row) => {
-            if (row.data[idField] != null) {
-                rowsMap.set(row.data[idField], [row]);
-            }
-        });
-
-        // then index by linked resource linkedIdField
-        let currentRows;
-        sortedRows.forEach((row) => {
-            if (row.data[idField] == null) {
-                currentRows = rowsMap.get(row.data[linkedIdField]);
-                if (currentRows) {
-                    currentRows.push(row);
-                    rowsMap.set(row.data[linkedIdField], currentRows);
-                }
-            }
-        });
-        return [...rowsMap.values()].flat();
-    };
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
@@ -237,7 +251,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     };
 
     // When we filter / sort the 'current' column in one bus, it's actually the 'fortescueCurrent.positiveMagnitude' field in the back-end
-    const fromColumnToField = useCallback(
+    const fromFrontColumnToBack = useCallback(
         (column: string) => {
             if (
                 analysisType === ShortCircuitAnalysisType.ONE_BUS &&
@@ -245,7 +259,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             ) {
                 return 'fortescueCurrent.positiveMagnitude';
             }
-            return column;
+            return DATA_KEY_TO_SORT_KEY[column];
         },
         [analysisType]
     );
@@ -302,6 +316,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                             : null,
                     limitName: lv.limitName,
                     current: lv.value,
+                    elementId: '', // we have to add this otherwise it's automatically filtered
+                    faultType: '', // we have to add this otherwise it's automatically filtered
+                    connectableId: '', // we have to add this otherwise it's automatically filtered
                 });
             });
             const feederResults = faultResult.feederResults ?? [];
@@ -312,6 +329,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     connectableId: feederResult.connectableId,
                     linkedElementId: fault.id,
                     current: current,
+                    elementId: '', // we have to add this otherwise it's automatically filtered
+                    faultType: '', // we have to add this otherwise it's automatically filtered
+                    limitType: '', // we have to add this otherwise it's automatically filtered
                 });
             });
         });
@@ -347,7 +367,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                                 dataType: filter.filterType,
                                 type: filter.type,
                                 value: filter.filter,
-                                field: fromColumnToField(column),
+                                field: fromFrontColumnToBack(column),
                             },
                         ];
                     }
@@ -358,7 +378,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                                 dataType: condition.filterType,
                                 type: condition.type,
                                 value: condition.filter,
-                                field: fromColumnToField(column),
+                                field: fromFrontColumnToBack(column),
                             };
                         });
                     }
@@ -367,7 +387,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
 
             updateFilter(formattedFilter);
         },
-        [updateFilter, fromColumnToField]
+        [updateFilter, fromFrontColumnToBack]
     );
 
     const onSortChanged = useCallback(
@@ -387,23 +407,15 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 })
                 .map(function (s) {
                     return {
-                        colId: fromColumnToField(DATA_KEY_TO_SORT_KEY[s.colId]),
+                        colId: fromFrontColumnToBack(s.colId),
                         sort: s.sort,
                     };
                 });
 
             updateSort(columnStates);
         },
-        [updateSort, fromColumnToField]
+        [updateSort, fromFrontColumnToBack]
     );
-
-    const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
-        const rows = params.nodes;
-        Object.assign(
-            rows,
-            groupPostSort(rows, 'elementId', 'linkedElementId')
-        );
-    }, []);
 
     const rows = flattenResult(result);
     const message = getNoRowsMessage(
@@ -422,7 +434,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
                 enableCellTextSelection={true}
-                postSortRows={handlePostSortRows}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
                 onFilterChanged={onFilterChanged}

@@ -91,6 +91,11 @@ export enum ShortCircuitAnalysisType {
     ONE_BUS = 1,
 }
 
+export type Option = {
+    value: string;
+    label: string;
+};
+
 export const getShortCircuitAnalysisTypeFromEnum = (
     type: ShortCircuitAnalysisType
 ) => {
