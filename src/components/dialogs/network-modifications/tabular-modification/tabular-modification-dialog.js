@@ -19,7 +19,6 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
-    TABULAR_MODIFICATION_FIELDS,
     TABULAR_MODIFICATION_TYPES,
     formatModification,
     getEquipmentTypeFromModificationType,
@@ -78,14 +77,11 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    const translatedKey = intl.formatMessage({
-                        id: key,
-                    });
                     const field = modif[key];
                     if (key === 'equipmentId') {
-                        modification[translatedKey] = field;
+                        modification[key] = field;
                     } else if (typeof field === 'object') {
-                        modification[translatedKey] = field?.value;
+                        modification[key] = field?.value;
                     }
                 });
                 return modification;
@@ -104,17 +100,12 @@ const TabularModificationDialog = ({
                 const modification = {
                     type: modificationType,
                 };
-                TABULAR_MODIFICATION_FIELDS[
-                    getEquipmentTypeFromModificationType(modificationType)
-                ].forEach((field) => {
-                    const translatedKey = intl.formatMessage({
-                        id: field,
-                    });
-                    const value = row[translatedKey];
-                    if (field === 'equipmentId') {
-                        modification[field] = value;
+                Object.keys(row).forEach((key) => {
+                    const value = row[key];
+                    if (key === 'equipmentId') {
+                        modification[key] = value;
                     } else {
-                        modification[field] = toModificationOperation(value);
+                        modification[key] = toModificationOperation(value);
                     }
                 });
                 return modification;
@@ -133,7 +124,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, intl, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

@@ -17,13 +17,16 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'minActivePower',
         'activePowerSetpoint',
         'maxActivePower',
+        'voltageRegulationOn',
     ],
     LOAD: ['equipmentId', 'activePower'],
+    VOLTAGE_LEVEL: ['equipmentId', 'lowVoltageLimit', 'highVoltageLimit'],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
+    VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
 };
 
 export interface Modification {

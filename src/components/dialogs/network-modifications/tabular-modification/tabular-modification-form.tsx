@@ -9,7 +9,11 @@ import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    ErrorInput,
+    FieldErrorAlert,
+} from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -22,7 +26,10 @@ import {
     styles,
 } from './tabular-modification-utils';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
-import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import {
+    BooleanCellRenderer,
+    DefaultCellRenderer,
+} from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community/dist/lib/main';
 
@@ -31,7 +38,7 @@ const richTypeEquals = (a: any, b: any) => a === b;
 const TabularModificationForm = () => {
     const intl = useIntl();
 
-    const { setValue } = useFormContext();
+    const { setValue, clearErrors } = useFormContext();
 
     const richTypeLabel = (rt: any) => {
         return intl.formatMessage({ id: rt });
@@ -60,14 +67,26 @@ const TabularModificationForm = () => {
         (fileData: any) => {
             fileData = fileData.map((row: any) => {
                 const modification: Modification = {};
-                Object.getOwnPropertyNames(row).forEach((key) => {
-                    modification[key] = row[key];
+                Object.keys(row).forEach((key) => {
+                    const fieldKey = TABULAR_MODIFICATION_FIELDS[
+                        watchType
+                    ]?.find(
+                        (field) => intl.formatMessage({ id: field }) === key
+                    );
+                    if (fieldKey) {
+                        if (fieldKey === 'voltageRegulationOn') {
+                            modification[fieldKey] = row[key] === 'true';
+                        } else {
+                            modification[fieldKey] = row[key];
+                        }
+                    }
                 });
                 return modification;
             });
+            clearErrors(MODIFICATIONS_TABLE);
             setValue(MODIFICATIONS_TABLE, fileData, { shouldDirty: true });
         },
-        [setValue]
+        [clearErrors, intl, setValue, watchType]
     );
 
     const watchTable = useWatch({
@@ -77,6 +96,7 @@ const TabularModificationForm = () => {
     useEffect(() => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
+            clearErrors(MODIFICATIONS_TABLE);
         } else if (selectedFile) {
             Papa.parse(selectedFile as any, {
                 header: true,
@@ -86,34 +106,26 @@ const TabularModificationForm = () => {
                 },
             });
         }
-    }, [postProcessFile, selectedFile, selectedFileError, setValue]);
+    }, [
+        clearErrors,
+        postProcessFile,
+        selectedFile,
+        selectedFileError,
+        setValue,
+    ]);
 
     const typesOptions = useMemo(() => {
-        const equipmentTypesToExclude = new Set([
-            EQUIPMENT_TYPES.SWITCH,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-            EQUIPMENT_TYPES.DANGLING_LINE,
-            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-            EQUIPMENT_TYPES.HVDC_LINE,
-            EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-            EQUIPMENT_TYPES.SUBSTATION,
-            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-            EQUIPMENT_TYPES.LINE,
-            EQUIPMENT_TYPES.BATTERY,
-        ]);
-        return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
+        //only available types for tabular modification
+        return Object.keys(TABULAR_MODIFICATION_FIELDS).filter(
+            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );
     }, []);
 
     const handleChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
+        clearErrors(MODIFICATIONS_TABLE);
         setValue(MODIFICATIONS_TABLE, []);
-    }, [setValue, typeChangedTrigger]);
+    }, [clearErrors, setValue, typeChangedTrigger]);
 
     const equipmentTypeField = (
         <AutocompleteInput
@@ -148,10 +160,13 @@ const TabularModificationForm = () => {
             if (field === 'equipmentId') {
                 colunmDef.pinned = true;
             }
-            const translatedField = intl.formatMessage({ id: field });
-            colunmDef.field = translatedField;
-            colunmDef.headerName = translatedField;
-            colunmDef.cellRenderer = DefaultCellRenderer;
+            colunmDef.field = field;
+            colunmDef.headerName = intl.formatMessage({ id: field });
+            if (field === 'voltageRegulationOn') {
+                colunmDef.cellRenderer = BooleanCellRenderer;
+            } else {
+                colunmDef.cellRenderer = DefaultCellRenderer;
+            }
             return colunmDef;
         });
     }, [intl, watchType]);
@@ -169,13 +184,17 @@ const TabularModificationForm = () => {
                         datas={[]}
                         filename={watchType + '_skeleton'}
                     >
-                        <Button variant="contained">
+                        <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />
                         </Button>
                     </CsvDownloader>
                 </Grid>
                 <Grid item>
-                    {selectedFile && selectedFileError && (
+                    <ErrorInput
+                        name={MODIFICATIONS_TABLE}
+                        InputField={FieldErrorAlert}
+                    />
+                    {selectedFileError && (
                         <Alert severity="error">{selectedFileError}</Alert>
                     )}
                 </Grid>

@@ -147,7 +147,7 @@
     "PhaseTap2": "Phase tap 2",
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
-    "VoltageRegulatorOn": "Voltage regulation",
+    "voltageRegulationOn": "Voltage regulation",
     "RegulatingTerminal": "Regulated node",
 
     "LoadFlow": "LoadFlow",
@@ -366,9 +366,9 @@
     "LOW_VOLTAGE": "Low voltage",
 
     "HighVoltageLimit": "High voltage limit",
-    "HighVoltageLimitkV": "High voltage limit (kV)",
+    "highVoltageLimit": "High voltage limit (kV)",
     "LowVoltageLimit": "Low voltage limit",
-    "LowVoltageLimitkV": "Low voltage limit (kV)",
+    "lowVoltageLimit": "Low voltage limit (kV)",
 
     "descLfVoltageInitMode": "Voltage initialisation mode",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers",
@@ -463,7 +463,7 @@
     "TargetDeadband": "Target deadband",
     "ConverterStationId1": "Converter Station Id 1",
     "ConverterStationId2": "Converter Station Id 2",
-    "NominalV": "Nominal V",
+    "nominalVoltage": "Nominal V",
     "HvdcLineId": "HVDC Line Id",
     "OprFromCS1toCS2": "Operational limit (side_1 to side_2) (MW)",
     "OprFromCS2toCS1": "Operational limit (side_2 to side_1) (MW)",

@@ -164,7 +164,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             generateEditableNumericColumnDefinition(
-                'LowVoltageLimitkV',
+                'lowVoltageLimit',
                 'lowVoltageLimit',
                 1,
                 'equipment.setLowVoltageLimit({})\n',
@@ -174,7 +174,7 @@ export const TABLES_DEFINITIONS = {
                 excludeFromGlobalFilter
             ),
             generateEditableNumericColumnDefinition(
-                'HighVoltageLimitkV',
+                'highVoltageLimit',
                 'highVoltageLimit',
                 1,
                 'equipment.setHighVoltageLimit({})\n',

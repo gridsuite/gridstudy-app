@@ -389,9 +389,7 @@ export const useCSVPicker = ({
     const [_acceptedFile, setAcceptedFile] = useState();
     const [fileError, setFileError] = useState();
 
-    const equals = (a, b) =>
-        a.length === b.length && a.every((v, i) => v === b[i]);
-
+    const equals = (a, b) => a.every((item) => b.includes(item));
     useEffect(() => {
         setAcceptedFile();
     }, [resetTrigger]);

@@ -147,7 +147,7 @@
     "PhaseTap2": "Plot déphaseur 2",
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
-    "VoltageRegulatorOn": "Réglage de tension",
+    "voltageRegulationOn": "Réglage de tension",
     "RegulatingTerminal": "Nœud réglé",
 
     "LoadFlow": "Calcul de répartition",
@@ -366,9 +366,9 @@
     "LOW_VOLTAGE": "Tension basse",
 
     "HighVoltageLimit": "Limite tension haute",
-    "HighVoltageLimitkV": "Limite tension haute (kV)",
+    "highVoltageLimit": "Limite tension haute (kV)",
     "LowVoltageLimit": "Limite tension basse",
-    "LowVoltageLimitkV": "Limite tension basse (kV)",
+    "lowVoltageLimit": "Limite tension basse (kV)",
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge",
