@@ -33,7 +33,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Theme } from '@mui/material/styles';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
-import { DATA_KEY_TO_FILTER_KEY } from '../sensitivity-analysis/sensitivity-analysis-content';
 
 const styles = {
     container: {
@@ -140,7 +139,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isFromContingency
                 ? securityAnalysisTableNmKContingenciesFilterDefinition(intl)
                 : securityAnalysisTableNmKConstraintsFilterDefinition(intl),
-        [intl]
+        [isFromContingency, intl]
     );
 
     const makeColumn = useCallback(
