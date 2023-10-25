@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
-import { Grid, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
     SHORT_CIRCUIT_PREDEFINED_PARAMS,
@@ -25,20 +25,56 @@ import {
 } from '@gridsuite/commons-ui';
 
 import {
+    INITIAL_TENSION,
     INITIAL_VOLTAGE_PROFILE_MODE,
     PREDEFINED_PARAMETERS,
+    STATUS,
 } from '../../../utils/constants';
 import { gridItem, GridSection } from '../../dialogUtils';
 import { useIntl } from 'react-intl';
+import { Lens } from '@mui/icons-material';
+import { green, red } from '@mui/material/colors';
+import { useWatch } from 'react-hook-form';
+import TensionTable from './short-circuit-tension-table';
 
-const ShortCircuitFields: FunctionComponent = () => {
+interface ShortCircuitFieldsProps {
+    resetAll: (predefinedParams: string) => void;
+}
+const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
+    resetAll,
+}) => {
+    const [status, setStatus] = useState(STATUS.SUCCESS);
+    const watchInitialVoltageProfileMode = useWatch({
+        name: SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
+    });
+
+    const watchPredefinedParams = useWatch({
+        name: SHORT_CIRCUIT_PREDEFINED_PARAMS,
+    });
+
+    const styles = {
+        cell: {
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
+            boxSizing: 'border-box',
+            flex: 1,
+            cursor: 'initial',
+        },
+        succeed: {
+            color: green[500],
+        },
+        fail: {
+            color: red[500],
+        },
+    };
+
     const intl = useIntl();
 
     const predefinedParameter = (
         <SelectInput
             name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
             options={PREDEFINED_PARAMETERS}
-            size={'small'}
         />
     );
 
@@ -83,75 +119,62 @@ const ShortCircuitFields: FunctionComponent = () => {
         />
     );
 
-    function createData(
-        name: string,
-        v1: number,
-        v2: number,
-        v3: number,
-        v4: number,
-        v5: number,
-        v6: number
-    ) {
-        return { name, v1, v2, v3, v4, v5, v6 };
-    }
+    const getStatus = (status: STATUS) => {
+        const color = status === STATUS.SUCCESS ? styles.succeed : styles.fail;
+        return <Lens fontSize={'medium'} sx={color} />;
+    };
+    const statusRender = getStatus(status);
 
-    const rows = [
-        createData(
-            intl.formatMessage({ id: 'shortCircuitNominalVoltage' }),
-            380,
-            225,
-            150,
-            90,
-            63,
-            45
-        ),
-        createData(
-            intl.formatMessage({ id: 'shortCircuitInitialTension' }),
-            420,
-            245,
-            165,
-            99,
-            69.3,
-            49.5
-        ),
-    ];
+    useEffect(() => {
+        setStatus(STATUS.SUCCESS);
+        if (
+            watchInitialVoltageProfileMode === 'NOMINAL' &&
+            watchPredefinedParams !== 'NOMINAL'
+        ) {
+            setStatus(STATUS.ERROR);
+        }
+        if (
+            watchInitialVoltageProfileMode === 'CONFIGURED' &&
+            watchPredefinedParams !== 'CONFIGURED'
+        ) {
+            setStatus(STATUS.ERROR);
+        }
+    }, [watchInitialVoltageProfileMode]);
+    useEffect(() => {
+        // todo: add more control when backEnd is done
+        resetAll(watchPredefinedParams);
+    }, [watchPredefinedParams, resetAll]);
 
     return (
         <Grid container spacing={2} paddingLeft={2}>
-            <Grid container spacing={2} paddingTop={2}>
+            <Grid container paddingTop={2}>
                 {gridItem(feederResult, 12)}
             </Grid>
-            <GridSection title="ShortCircuitPredefinedParameters" />
-            <Grid container spacing={2}>
+            <GridSection
+                title="ShortCircuitPredefinedParameters"
+                heading={'4'}
+            />
+            <Grid container spacing={1} alignItems={'center'}>
                 {gridItem(predefinedParameter, 8)}
+                {gridItem(statusRender, 4)}
             </Grid>
-            <GridSection title="ShortCircuitCharacteristics" />
-            <Grid spacing={2}>
+            <GridSection title="ShortCircuitCharacteristics" heading={'4'} />
+            <Grid>
                 {gridItem(loads, 6)}
-                {gridItem(vsc, 6)}
+                {gridItem(shuntCompensators, 6)}
             </Grid>
-            <Grid spacing={2}>
-                {gridItem(shuntCompensators, 4)}
+            <Grid marginLeft={4}>
+                {gridItem(vsc, 4)}
                 {gridItem(neutralPosition, 8)}
             </Grid>
 
-            <GridSection title="ShortCircuitVoltageProfileMode" />
-            <Grid spacing={2}>{gridItem(variationTypeField, 12)}</Grid>
-            <Table>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.name}>
-                            <TableCell>{row.name}</TableCell>
-                            <TableCell>{row.v1}</TableCell>
-                            <TableCell>{row.v2}</TableCell>
-                            <TableCell>{row.v3}</TableCell>
-                            <TableCell>{row.v4}</TableCell>
-                            <TableCell>{row.v5}</TableCell>
-                            <TableCell>{row.v6}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+            <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
+            <Grid>{gridItem(variationTypeField, 12)}</Grid>
+            <TensionTable
+                isNominal={
+                    watchInitialVoltageProfileMode === INITIAL_TENSION.NOMINAL
+                }
+            />
         </Grid>
     );
 };

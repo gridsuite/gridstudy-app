@@ -19,3 +19,12 @@ export const INITIAL_VOLTAGE_PROFILE_MODE = {
     NOMINAL: { id: 'NOMINAL', label: 'Normalisé' },
     CONFIGURED: { id: 'CONFIGURED', label: 'CEI 909' },
 };
+
+export enum STATUS {
+    SUCCESS = 'SUCCESS',
+    ERROR = 'ERROR',
+}
+export enum INITIAL_TENSION {
+    NOMINAL = 'NOMINAL',
+    CONFIGURED = 'CONFIGURED',
+}

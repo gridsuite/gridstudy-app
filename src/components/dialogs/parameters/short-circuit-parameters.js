@@ -8,12 +8,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, MenuItem, Select } from '@mui/material';
-import {
-    CloseButton,
-    LabelledButton,
-    SwitchWithLabel,
-    styles,
-} from './parameters';
+import { CloseButton, SwitchWithLabel, styles } from './parameters';
 import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
@@ -29,14 +24,6 @@ import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-st
 import { mergeSx } from '../../utils/functions';
 import yup from '../../utils/yup-config';
 import {
-    ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
-    PARAMETER_SENSI_HVDC,
-    PARAMETER_SENSI_INJECTION,
-    PARAMETER_SENSI_INJECTIONS_SET,
-    PARAMETER_SENSI_NODES,
-    PARAMETER_SENSI_PST,
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
     SHORT_CIRCUIT_PREDEFINED_PARAMS,
     SHORT_CIRCUIT_WITH_FEEDER_RESULT,
@@ -45,17 +32,10 @@ import {
     SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
     SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
 } from '../../utils/field-constants';
-import {
-    getSensiHVDCsFormSchema,
-    getSensiInjectionsFormSchema,
-    getSensiInjectionsSetFormSchema,
-    getSensiNodesFormSchema,
-    getSensiPSTsFormSchema,
-} from './sensi/utils';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
-import { setSensitivityAnalysisParameters } from '../../../services/study/sensitivity-analysis';
+import { INITIAL_TENSION } from '../../utils/constants';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -251,17 +231,17 @@ export const ShortCircuitParameters = ({
 
     const emptyFormData = useMemo(() => {
         return {
-            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: false,
-            [SHORT_CIRCUIT_PREDEFINED_PARAMS]:
-                'ICC max avec plan de tension normalisé',
+            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: true,
+            [SHORT_CIRCUIT_PREDEFINED_PARAMS]: 'NOMINAL',
             [SHORT_CIRCUIT_WITH_LOADS]: false,
-            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: false,
+            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: true,
             [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: false,
             [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: false,
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: 'NOMINAL',
         };
     }, []);
     const formMethods = useForm({
+        //todo : use api to get the default values from back
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -270,6 +250,27 @@ export const ShortCircuitParameters = ({
     const onSubmit = useCallback((newParams) => {
         console.log(' new params : ', newParams);
     }, []);
+
+    const resetAll = useCallback(
+        (initialVoltageProfileMode) => {
+            let dataToReset = { ...emptyFormData };
+            if (initialVoltageProfileMode === INITIAL_TENSION.NOMINAL) {
+                dataToReset = {
+                    ...dataToReset,
+                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: 'NOMINAL',
+                };
+            }
+            if (initialVoltageProfileMode === INITIAL_TENSION.CONFIGURED) {
+                dataToReset = {
+                    ...dataToReset,
+                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: 'CONFIGURED',
+                    [SHORT_CIRCUIT_PREDEFINED_PARAMS]: 'CONFIGURED',
+                };
+            }
+            reset(dataToReset);
+        },
+        [reset, emptyFormData]
+    );
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <Grid container paddingTop={1} paddingBottom={1}>
@@ -277,17 +278,13 @@ export const ShortCircuitParameters = ({
             </Grid>
 
             <Grid>
-                <ShortCircuitFields />
+                <ShortCircuitFields resetAll={resetAll} />
             </Grid>
             <Grid
                 container
                 sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
-                <LabelledButton
-                    callback={resetShortCircuitParameters}
-                    label="resetToDefault"
-                />
                 <SubmitButton onClick={handleSubmit(onSubmit)}>
                     <FormattedMessage id="validate" />
                 </SubmitButton>

@@ -1197,7 +1197,7 @@
     "shortCircuitLoads": "Charges",
     "shortCircuitHvdc": "HVDC(VSC)",
     "shortCircuitShuntCompensators": "MCS",
-    "shortCircuitNeutralPosition": "'Prises courantes des régleurs en charge",
+    "shortCircuitNeutralPosition": "Prises courantes des régleurs en charge",
     "shortCircuitNominalVoltage": "Tension nominal(kV)",
     "shortCircuitInitialTension": "Tension initiale(kV)"
 }
