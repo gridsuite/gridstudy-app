@@ -11,6 +11,7 @@ import React, {
     useState,
     useCallback,
     useMemo,
+    useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -24,9 +25,18 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
-import { SecurityAnalysisTabProps } from './security-analysis.type';
-import { NMK_TYPE, RESULT_TYPE } from './security-analysis-result-utils';
+import {
+    QueryParamsType,
+    SecurityAnalysisTabProps,
+} from './security-analysis.type';
+import {
+    DEFAULT_PAGE_COUNT,
+    FROM_COLUMN_TO_FIELD,
+    NMK_TYPE,
+    RESULT_TYPE,
+} from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
+import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 
 const styles = {
     container: {
@@ -57,15 +67,22 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [nmkType, setNmkType] = useState(
         NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
     );
+    const [rowsPerPage, setRowsPerPage] = useState<number>(
+        DEFAULT_PAGE_COUNT as number
+    );
+    const [count, setCount] = useState<number>(0);
+    const [page, setPage] = useState<number>(0);
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
+    const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
+
     const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 
-    const fetchSecurityAnalysisResultWithResultType = useCallback(
+    const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
             const resultType =
                 tabIndex === 0
@@ -74,15 +91,38 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     ? RESULT_TYPE.NMK_CONTINGENCIES
                     : RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
 
-            return fetchSecurityAnalysisResult(studyUuid, nodeUuid, resultType);
+            const queryParams: QueryParamsType = {
+                resultType,
+            };
+
+            if (tabIndex) {
+                queryParams['page'] = page;
+                queryParams['size'] = rowsPerPage;
+            }
+
+            if (sortConfig) {
+                const { sortWay, colKey } = sortConfig;
+                queryParams['sort'] = {
+                    colKey: FROM_COLUMN_TO_FIELD[colKey],
+                    sortValue: getSortValue(sortWay),
+                };
+            }
+
+            // queryParams['filter'] = filter;
+
+            return fetchSecurityAnalysisResult(
+                studyUuid,
+                nodeUuid,
+                queryParams
+            );
         },
-        [nmkType, tabIndex]
+        [nmkType, page, tabIndex, rowsPerPage, sortConfig]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
         studyUuid,
         nodeUuid,
-        fetchSecurityAnalysisResultWithResultType,
+        fetchSecurityAnalysisResultWithQueryParams,
         securityAnalysisResultInvalidations,
         null
     );
@@ -93,8 +133,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const handleChangeNmkType = () => {
+    const resetResultStates = () => {
         setResult(null);
+        setCount(0);
+        setPage(0);
+        resetSortConfig();
+    };
+
+    const handleChangeNmkType = () => {
+        resetResultStates();
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                 ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
@@ -103,9 +150,25 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
-        setResult(null);
+        resetResultStates();
         setTabIndex(newTabIndex);
     };
+
+    // Pagination, sort and filter
+    const handleChangePage = useCallback(
+        (_: any, newPage: number) => {
+            setPage(newPage);
+        },
+        [setPage]
+    );
+
+    const handleChangeRowsPerPage = useCallback(
+        (event: any) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        },
+        [setPage]
+    );
 
     const result = useMemo(
         () =>
@@ -114,6 +177,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 : securityAnalysisResult,
         [securityAnalysisResult]
     );
+
+    useEffect(() => {
+        if (result?.totalElements) {
+            setCount(result.totalElements);
+        }
+    }, [result]);
 
     return (
         <>
@@ -166,6 +235,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
+                        paginationProps={{
+                            count,
+                            rowsPerPage,
+                            page,
+                            onPageChange: handleChangePage,
+                            onRowsPerPageChange: handleChangeRowsPerPage,
+                        }}
+                        onSortChanged={onSortChanged}
+                        sortConfig={sortConfig}
                     />
                 )}
             </Box>

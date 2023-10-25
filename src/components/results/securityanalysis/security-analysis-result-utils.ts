@@ -12,6 +12,7 @@ import {
     LimitViolation,
     SecurityAnalysisNmkTableRow,
     Constraint,
+    CustomColDef,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -171,66 +172,69 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined
+    ) => React.JSX.Element | undefined,
+    makeColumn: (customColDef: CustomColDef) => any
 ): ColDef[] => {
     return [
-        {
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-        },
-        {
+            isSortable: true,
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'computationStatus',
-        },
-        {
+            isSortable: true,
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
-        },
+        }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        {
+        makeColumn({
             field: 'linkedElementId',
             hide: true,
-        },
+        }),
     ];
 };
 
@@ -238,70 +242,78 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined
+    ) => React.JSX.Element | undefined,
+    makeColumn: (customColDef: CustomColDef) => any
 ): ColDef[] => {
     return [
-        {
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-        },
-        {
+            sortable: true,
+            // filter: 'agTextColumnFilter',
+            // filterParams: {
+            //     debounceMs: 1200, // we don't want to fetch the back end too fast
+            //     maxNumConditions: 1,
+            //     filterOptions: ['contains', 'startsWith'],
+            //     textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
+            // },
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'computationStatus',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
-        },
+        }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        {
+        makeColumn({
             field: 'linkedElementId',
             hide: true,
-        },
+        }),
     ];
 };
 
-// TODO This needs to be modified when the sort is done on backend.
 export const handlePostSortRows = (params: PostSortRowsParams) => {
     const isFromContingency = !params.nodes.find(
         (node) => Object.keys(node.data).length === 1
@@ -347,6 +359,19 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
 
+export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
+    subjectId: 'subjectId',
+    contingencyId: 'contingencyId',
+    computationStatus: 'status',
+    limitType: 'limit_type',
+    limitName: 'limit_name',
+    side: 'side',
+    acceptableDuration: 'acceptable_duration',
+    limit: 'limit_value',
+    value: 'value',
+    loading: 'loading',
+};
+
 export enum NMK_TYPE {
     CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
     CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
@@ -357,3 +382,7 @@ export enum RESULT_TYPE {
     NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
 }
+
+export const PAGE_OPTIONS = [25, 100, 500, 1000];
+
+export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];

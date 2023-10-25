@@ -10,6 +10,7 @@ import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
+    CustomColDef,
     SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
@@ -17,18 +18,26 @@ import {
     flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
     handlePostSortRows,
+    PAGE_OPTIONS,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { ICellRendererParams, RowClassParams } from 'ag-grid-community';
-import { Button, useTheme } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Theme } from '@mui/material/styles';
+import CustomTablePagination from '../../utils/custom-table-pagination';
+import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     button: {
         color: (theme: Theme) => theme.link.color,
     },
@@ -43,7 +52,12 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     openVoltageLevelDiagram,
     studyUuid,
     nodeUuid,
+    paginationProps,
+    onSortChanged,
+    sortConfig,
 }) => {
+    const { content } = result || {};
+
     const theme = useTheme();
     const intl: IntlShape = useIntl();
     const { snackError } = useSnackMessage();
@@ -114,28 +128,61 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [onClickNmKConstraint]
     );
 
+    const makeColumn = useCallback(
+        ({
+            headerName,
+            field = '',
+            valueGetter,
+            cellRenderer,
+            isSortable = false,
+            isHidden = false,
+        }: CustomColDef) => {
+            return {
+                headerName,
+                field,
+                valueGetter,
+                cellRenderer,
+                hide: isHidden,
+                headerComponent: CustomHeaderComponent,
+                headerComponentParams: {
+                    field,
+                    displayName: headerName,
+                    sortConfig,
+                    onSortChanged: (newSortValue: number = 0) => {
+                        onSortChanged(field, newSortValue);
+                    },
+                    isSortable,
+                    isFilterable: false,
+                },
+            };
+        },
+        [sortConfig, onSortChanged]
+    );
+
     const columnDefs = useMemo(
         () =>
             isFromContingency
                 ? securityAnalysisTableNmKContingenciesColumnsDefinition(
                       intl,
-                      SubjectIdRenderer
+                      SubjectIdRenderer,
+                      makeColumn
                   )
                 : securityAnalysisTableNmKConstraintsColumnsDefinition(
                       intl,
-                      SubjectIdRenderer
+                      SubjectIdRenderer,
+                      makeColumn
                   ),
-        [intl, SubjectIdRenderer, isFromContingency]
+        [intl, SubjectIdRenderer, isFromContingency, makeColumn]
     );
 
     const rows = isFromContingency
         ? flattenNmKResultsContingencies(
               intl,
-              result as ConstraintsFromContingencyItem[]
+              content as ConstraintsFromContingencyItem[]
           )
         : flattenNmKResultsConstraints(
               intl,
-              result as ContingenciesFromConstraintItem[]
+              content as ContingenciesFromConstraintItem[]
           );
 
     const getRowStyle = useCallback(
@@ -159,11 +206,21 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     };
 
     return (
-        <SecurityAnalysisTable
-            rows={rows}
-            columnDefs={columnDefs}
-            isLoadingResult={isLoadingResult}
-            agGridProps={agGridProps}
-        />
+        <Box sx={styles.container}>
+            <Box sx={{ flexGrow: 1 }}>
+                <SecurityAnalysisTable
+                    rows={rows}
+                    columnDefs={columnDefs}
+                    isLoadingResult={isLoadingResult}
+                    agGridProps={agGridProps}
+                />
+            </Box>
+            <Box>
+                <CustomTablePagination
+                    rowsPerPageOptions={PAGE_OPTIONS}
+                    {...paginationProps}
+                />
+            </Box>
+        </Box>
     );
 };
