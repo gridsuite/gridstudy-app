@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Grid, useTheme, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
+import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
+import {
+    ColDef,
+    ColGroupDef,
+    GetRowIdFunc,
+    GetRowIdParams,
+    GridOptions,
+} from 'ag-grid-community';
 
 type Props = {
     data: any;
@@ -12,6 +20,9 @@ type Props = {
 
 const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
     const theme = useTheme();
+    const gridRef = useRef<AgGridReact>(null);
+    const [gridApi, setGridApi] = useState<any>(null);
+    const [newRowAdded, setNewRowAdded] = useState(false);
     const [columnDefs, setColumnDefs] = useState([
         { field: 'key' },
         { field: 'value' },
@@ -23,10 +34,36 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
         });
         return rowData;
     });
+    useEffect(() => {
+        if (gridApi) {
+            gridApi.api.sizeColumnsToFit();
+        }
+    }, [columnDefs, gridApi]);
+    const { control, register } = useForm();
+    const useFieldArrayOutput = useFieldArray({
+        control,
+        name: 'properties editor',
+    });
+    const { append, remove, update, swap, move } = useFieldArrayOutput;
+    const getRowId = (params: GetRowIdParams) => {
+        console.log('sites1', params.data.key);
+        return params.data.key;
+    };
+    const onGridReady = (params:any) => {
+        setGridApi(params);
+    };
 
-    
+    const onRowDataUpdated = () => {
+        setNewRowAdded(false);
+        if (gridApi?.api) {
+            // update due to new appended row, let's scroll
+            const lastIndex = rowData.length - 1;
+            gridApi.api.paginationGoToLastPage();
+            gridApi.api.ensureIndexVisible(lastIndex, 'bottom');
+        }
+    };
+
     console.log('sites', data.data.properties);
-    
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -41,8 +78,9 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
                 <Grid item xs={12} className={theme.aggrid}>
                     <AgGridReact
                         // rowData={gridApi && rowData?.length ? rowData : null} // to display loader at first render before we get the initial data and before the columns are sized to avoid glitch
+                        ref={gridRef}
                         rowData={rowData}
-                        // onGridReady={onGridReady}
+                        onGridReady={onGridReady}
                         // getLocaleText={getLocaleText}
                         cacheOverflowSize={10}
                         domLayout={'autoHeight'}
@@ -50,17 +88,21 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
                         suppressBrowserResizeObserver
                         columnDefs={columnDefs}
                         detailRowAutoHeight={true}
-                        rowSelection={'single'}
+                        rowSelection={'multiple'}
                         // onSelectionChanged={(event) => {
                         //     setSelectedRows(gridApi.api.getSelectedRows());
                         // }}
-                        // onRowDataUpdated={
-                        //     newRowAdded ? onRowDataUpdated : undefined
-                        // }
-                        // onCellEditingStopped={(event) => {
-                        //     update(event.rowIndex, event.data);
-                        // }}
-                        // getRowId={(row) => row.data[AG_GRID_ROW_UUID]}
+                        onRowDataUpdated={
+                            newRowAdded ? onRowDataUpdated : undefined
+                        }
+                        onCellEditingStopped={(event) => {
+                            if (event.rowIndex) {
+                                console.log('sites', event.data);
+                                update(event.rowIndex, event.data);
+                            }
+                        }}
+                        getRowId={getRowId}
+                        // enableCellChangeFlash={true}
                         // {...props}
                     ></AgGridReact>
                 </Grid>
