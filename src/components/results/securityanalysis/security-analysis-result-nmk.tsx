@@ -23,9 +23,8 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import { ICellRendererParams, RowClassParams } from 'ag-grid-community';
+import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
 import { Box, Button, useTheme } from '@mui/material';
-import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Theme } from '@mui/material/styles';
