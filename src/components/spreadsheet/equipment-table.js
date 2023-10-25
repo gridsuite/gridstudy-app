@@ -51,6 +51,7 @@ export const EquipmentTable = ({
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
+    const [clickedCellData, setClickedCellData] = React.useState({});
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
@@ -118,9 +119,8 @@ export const EquipmentTable = ({
     const handleOnClickOnCell = (params) => {
         // onCellClicked();
         setPopupSelectEditSiteProperties(!popupSelectEditSiteProperties);
-        // console.log('site', params);
+        setClickedCellData(params);
     };
-    // console.log('site', getRowId());
 
     return (
         <>
@@ -164,9 +164,11 @@ export const EquipmentTable = ({
                 title={intl.formatMessage({
                     id: 'editSiteProperties',
                 })}
-                child={<SitePropertiesDialog
-                    getRowId={getRowId}
-                    ></SitePropertiesDialog>}
+                child={
+                    <SitePropertiesDialog
+                        data={clickedCellData}
+                    ></SitePropertiesDialog>
+                }
             ></SelectOptionsDialog>
         </>
     );

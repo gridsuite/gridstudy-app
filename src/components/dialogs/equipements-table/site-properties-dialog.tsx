@@ -1,4 +1,3 @@
-import { RadioInput } from '@gridsuite/commons-ui';
 import React, { useState } from 'react';
 import { Grid, useTheme, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -6,26 +5,28 @@ import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 
 type Props = {
-    text: string;
+    data: any;
     onOK: () => void;
     onCancel: () => void;
 };
 
-const SitePropertiesDialog: React.FC<Props> = ({ text, onOK, onCancel }) => {
+const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
     const theme = useTheme();
     const [columnDefs, setColumnDefs] = useState([
-        { field: 'make' },
-        { field: 'model' },
-        { field: 'price' },
+        { field: 'key' },
+        { field: 'value' },
     ]);
+    const [rowData, setRowData] = useState(() => {
+        const keys = Object.keys(data.data.properties);
+        const rowData = keys.map((key) => {
+            return { key: key, value: data.data.properties[key] };
+        });
+        return rowData;
+    });
 
-    const rowDataA = [
-        { make: 'Toyota', model: 'Celica', price: 35000 },
-        { make: 'Jamal', model: 'Zineb', price: 35000 },
-        { make: 'Porsche', model: 'Boxster', price: 72000 },
-        { make: 'Aston Martin', model: 'DBX', price: 190000 },
-    ];
-
+    
+    console.log('sites', data.data.properties);
+    
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -40,7 +41,7 @@ const SitePropertiesDialog: React.FC<Props> = ({ text, onOK, onCancel }) => {
                 <Grid item xs={12} className={theme.aggrid}>
                     <AgGridReact
                         // rowData={gridApi && rowData?.length ? rowData : null} // to display loader at first render before we get the initial data and before the columns are sized to avoid glitch
-                        rowData={rowDataA}
+                        rowData={rowData}
                         // onGridReady={onGridReady}
                         // getLocaleText={getLocaleText}
                         cacheOverflowSize={10}
