@@ -109,7 +109,7 @@ export function fetchShortCircuitAnalysisPagedResults({
 
     const urlSearchParams = new URLSearchParams();
 
-    urlSearchParams.append('paged', "true");
+    urlSearchParams.append('paged', 'true');
     urlSearchParams.append('mode', 'FULL');
 
     if (analysisType) {
