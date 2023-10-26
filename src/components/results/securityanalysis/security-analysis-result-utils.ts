@@ -403,10 +403,10 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     contingencyId: 'contingencyId',
     status: 'status',
     limitType: 'limitType',
-    limitName: 'limit_name',
+    limitName: 'limitName',
     side: 'side',
-    acceptableDuration: 'acceptable_duration',
-    limit: 'limit_value',
+    acceptableDuration: 'acceptableDuration',
+    limit: 'limit',
     value: 'value',
     loading: 'loading',
 };
