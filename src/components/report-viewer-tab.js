@@ -16,14 +16,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    fetchAllNodesReportElements,
-    fetchNodeReportTree,
-    fetchReporterElements,
-    fetchSingleNodeReportElements,
-} from '../services/study';
+import { fetchNodeReport, fetchSubReport } from '../services/study';
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
+import LogReportItem from './ReportViewer/log-report-item';
 
 const styles = {
     div: {
@@ -114,12 +110,6 @@ export const ReportViewerTab = ({
                     return {
                         taskKey: GLOBAL_NODE_TASK_KEY,
                         defaultName: GLOBAL_NODE_TASK_KEY,
-                        taskValues: {
-                            globalReport: {
-                                value: true,
-                                type: 'UNTYPED',
-                            },
-                        },
                         reports: [],
                         subReporters: reportData.map((r) => setNodeName(r)),
                     };
@@ -132,7 +122,14 @@ export const ReportViewerTab = ({
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
             setWaitingLoadReport(true);
-            fetchNodeReportTree(studyId, currentNode.id, nodeOnlyReport)
+            fetchNodeReport(
+                studyId,
+                currentNode.id,
+                nodeOnlyReport,
+                true,
+                null,
+                LogReportItem.getDefaultSeverityList()
+            )
                 .then((fetchedReport) => {
                     setReport(makeSingleReport(fetchedReport));
                 })
@@ -174,28 +171,33 @@ export const ReportViewerTab = ({
         oneBusShortCircuitNotif,
     ]);
 
-    const nodeElementsPromise = (nodeId, reportId, severityFilterList) => {
-        return fetchSingleNodeReportElements(
+    const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
+        return fetchNodeReport(
             studyId,
             nodeId,
+            true,
+            true,
             reportId,
             severityFilterList
         );
     };
 
-    const allLogsElementsPromise = (severityFilterList) => {
-        return fetchAllNodesReportElements(
+    const globalReportPromise = (severityFilterList) => {
+        return fetchNodeReport(
             studyId,
             currentNode.id,
+            false,
+            true,
+            null,
             severityFilterList
         );
     };
 
-    const reporterElementsPromise = (reporterId, severityFilterList) => {
-        return fetchReporterElements(
+    const subReportPromise = (reportId, severityFilterList) => {
+        return fetchSubReport(
             studyId,
             currentNode.id,
-            reporterId,
+            reportId,
             severityFilterList
         );
     };
@@ -227,10 +229,9 @@ export const ReportViewerTab = ({
                 {!!report && !disabled && (
                     <ReportViewer
                         jsonReportTree={report}
-                        visible={visible && !disabled}
-                        reporterElementsPromise={reporterElementsPromise}
-                        nodeElementsPromise={nodeElementsPromise}
-                        allLogsElementsPromise={allLogsElementsPromise}
+                        subReportPromise={subReportPromise}
+                        nodeReportPromise={nodeReportPromise}
+                        globalReportPromise={globalReportPromise}
                     />
                 )}
             </Paper>

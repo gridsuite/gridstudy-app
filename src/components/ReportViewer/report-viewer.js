@@ -40,10 +40,9 @@ const styles = {
 
 export default function ReportViewer({
     jsonReportTree,
-    visible,
-    reporterElementsPromise,
-    nodeElementsPromise,
-    allLogsElementsPromise,
+    subReportPromise,
+    nodeReportPromise,
+    globalReportPromise,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -122,7 +121,7 @@ export default function ReportViewer({
                 reportTreeData.current[nodeId].getType() ===
                 LogReportType.NodeReport
             ) {
-                return nodeElementsPromise(
+                return nodeReportPromise(
                     reportTreeData.current[nodeId].getKey(),
                     reportTreeData.current[nodeId].getId(),
                     severityList
@@ -131,13 +130,13 @@ export default function ReportViewer({
                 reportTreeData.current[nodeId].getType() ===
                 LogReportType.GlobalReport
             ) {
-                return allLogsElementsPromise(severityList);
+                return globalReportPromise(severityList);
             } else {
                 // SubReport
-                return reporterElementsPromise(nodeId, severityList);
+                return subReportPromise(nodeId, severityList);
             }
         },
-        [nodeElementsPromise, allLogsElementsPromise, reporterElementsPromise]
+        [nodeReportPromise, globalReportPromise, subReportPromise]
     );
 
     const buildLogReport = useCallback((jsonData) => {
@@ -192,21 +191,17 @@ export default function ReportViewer({
     );
 
     useEffect(() => {
-        if (visible && rootReport.current === null) {
-            rootReport.current = buildLogReport(jsonReportTree);
-            let rootId = rootReport.current.getNodeId().toString();
-            treeView.current = createReporterItem(rootReport.current);
-            setSelectedNode(rootId);
-            setExpandedNodes([rootId]);
-            refreshNode(rootId, LogReportItem.getDefaultSeverityFilter());
-        }
-    }, [
-        jsonReportTree,
-        createReporterItem,
-        refreshNode,
-        visible,
-        buildLogReport,
-    ]);
+        const reportType =
+            jsonReportTree.taskKey === GLOBAL_NODE_TASK_KEY
+                ? LogReportType.GlobalReport
+                : LogReportType.NodeReport;
+        rootReport.current = new LogReport(reportType, jsonReportTree);
+        let rootId = rootReport.current.getNodeId().toString();
+        treeView.current = createReporterItem(rootReport.current);
+        setSelectedNode(rootId);
+        setExpandedNodes([rootId]);
+        setLogs(rootReport.current.getAllLogs());
+    }, [jsonReportTree, createReporterItem]);
 
     const handleToggleNode = (event, nodeIds) => {
         event.persist();

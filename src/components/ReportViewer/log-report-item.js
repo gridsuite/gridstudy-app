@@ -61,9 +61,19 @@ export default class LogReportItem {
         return filterConfig;
     }
 
+    static getDefaultSeverityList() {
+        // return name list like ['WARN', 'INFO']
+        return Object.values(LogReportItem.SEVERITY)
+            .filter((s) => s.displayedByDefault)
+            .map((s) => s.name);
+    }
+
     static resolveTemplateMessage(templateMessage, templateValues) {
-        if (!templateMessage || !templateValues) {
+        if (!templateMessage) {
             return '';
+        }
+        if (!templateValues) {
+            return templateMessage;
         }
         const templateVars = {};
         for (const [key, value] of Object.entries(templateValues)) {
@@ -91,10 +101,6 @@ export default class LogReportItem {
 
     getReportId() {
         return this.reportId;
-    }
-
-    getSeverity() {
-        return this.severity;
     }
 
     getSeverityName() {
