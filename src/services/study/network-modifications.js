@@ -583,7 +583,8 @@ export function createGenerator(
     reactiveCapabilityCurve,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -635,6 +636,7 @@ export function createGenerator(
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
