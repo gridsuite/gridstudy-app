@@ -231,13 +231,20 @@ export const ShortCircuitParameters = ({
 
     const emptyFormData = useMemo(() => {
         return {
-            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: true,
-            [SHORT_CIRCUIT_PREDEFINED_PARAMS]: 'NOMINAL',
-            [SHORT_CIRCUIT_WITH_LOADS]: false,
-            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: true,
-            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: false,
-            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: false,
-            [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: 'NOMINAL',
+            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]:
+                shortCircuitParams.withFeederResult,
+            //todo: to change
+            [SHORT_CIRCUIT_PREDEFINED_PARAMS]:
+                shortCircuitParams.initialVoltageProfileMode,
+            [SHORT_CIRCUIT_WITH_LOADS]: shortCircuitParams.withLoads,
+            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]:
+                shortCircuitParams.withVSCConverterStations,
+            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]:
+                shortCircuitParams.withShuntCompensators,
+            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]:
+                shortCircuitParams.withNeutralPosition,
+            [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
+                shortCircuitParams.initialVoltageProfileMode,
         };
     }, []);
     const formMethods = useForm({
@@ -249,8 +256,21 @@ export const ShortCircuitParameters = ({
     const { reset, handleSubmit } = formMethods;
     const onSubmit = useCallback((newParams) => {
         console.log(' new params : ', newParams);
-    }, []);
+        const oldParams = { ...shortCircuitParams };
+        console.log(' oldParams params : ', oldParams);
 
+        setShortCircuitParams(newParams);
+        console.log(' before  call : ');
+        setShortCircuitParameters(studyUuid, newParams).catch((error) => {
+            console.log(' error : ');
+
+            setShortCircuitParams(oldParams);
+            snackError({
+                messageTxt: error.message,
+                headerId: 'paramsChangingError',
+            });
+        });
+    }, []);
     const resetAll = useCallback(
         (initialVoltageProfileMode) => {
             let dataToReset = { ...emptyFormData };

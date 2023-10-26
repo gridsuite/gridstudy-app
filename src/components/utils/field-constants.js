@@ -288,7 +288,7 @@ export const SHORT_CIRCUIT_WITH_FEEDER_RESULT = 'withFeederResult';
 export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParams';
 export const SHORT_CIRCUIT_WITH_LOADS = 'withLoads';
 export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS =
-    'withVscConverterStations';
+    'withVSCConverterStations';
 export const SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS = 'withShuntCompensators';
 export const SHORT_CIRCUIT_WITH_NEUTRAL_POSITION = 'withNeutralPosition';
 export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE =

@@ -143,15 +143,29 @@ export function getShortCircuitParameters(studyUuid) {
 
 export function setShortCircuitParameters(studyUuid, newParams) {
     console.info('set short-circuit parameters');
+
+    const { predefinedParams } = newParams;
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('predefinedParam', 'NOMINAL');
     const setShortCircuitParametersUrl =
-        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+        getStudyUrl(studyUuid) +
+        '/short-circuit-analysis/parameters?' +
+        urlSearchParams.toString();
     console.debug(setShortCircuitParametersUrl);
+    delete newParams.predefinedParams;
+
+    console.log(' data*********** ', newParams);
+
     return backendFetch(setShortCircuitParametersUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newParams),
+        body: JSON.stringify({
+            ...newParams,
+            initialVoltageProfileMode: 'NOMINAL',
+            voltageRanges: [],
+        }),
     });
 }
