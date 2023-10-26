@@ -272,6 +272,25 @@
     "DynamicSimulationFetchVoltageLevelError": "An error occurred while fetching voltage levels",
     "DynamicSimulationFetchSubstationError": "An error occurred while fetching substations",
     "DynamicSimulationFetchEquipmentError": "An error occurred while fetching equipments",
+    "DynamicSimulationEventPropertyTEvent": "Event Time",
+    "DynamicSimulationEventPropertySide": "Only Side",
+    "DynamicSimulationEventSaveError": "An error occurred while saving an event",
+    "DynamicSimulationEventScenario": "Event scenario",
+    "DynamicSimulationEventDeleteError": "Event deletion error",
+    "DynamicSimulationEventCount": "{hide, select, false {{count, plural, =0 {no event} =1 {{count} event} other {{count} events}}} other {...}}",
+    "DynamicSimulationEventUpdatingList": "Updating event list ...",
+    "DynamicSimulationEventCreating": "Creating event ...",
+    "DynamicSimulationEventUpdating": "Updating event ...",
+    "DynamicSimulationEventDeleting": "Deleting event ...",
+
+    "DisconnectLine": "Trip the line",
+    "Disconnect2WTransformer": "Trip the transformer",
+
+    "Disconnect/LINE": "Trip line {computedLabel}",
+    "Disconnect/TWO_WINDINGS_TRANSFORMER": "Trip transformer {computedLabel}",
+
+    "Branch.Side.ONE": "Origin side",
+    "Branch.Side.TWO": "Extremity side",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
@@ -1100,6 +1119,7 @@
     "chooseElement": "Choose element",
     "studyNetworkRecovered": "Study network has been recreated successfully",
     "recreatingNetworkStudy": "Impossible to get the study network. Reconstruction of the network from the initial situation...",
+    "invalidStudyError": "Invalid study : Root situation can not be found",
     "importNewSituation": "Import situation",
     "networkRecreationError": "An error occurred when recreating study network",
     "checkNetworkExistenceError": "An error occurred when checking study network existence",
@@ -1149,5 +1169,7 @@
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
-    "waitingStudyIndexation": "Waiting for Study indexation..."
+    "waitingStudyIndexation": "Waiting for study indexation...",
+
+    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status"
 }

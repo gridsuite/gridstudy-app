@@ -20,6 +20,7 @@ import { fetchNodeReport, fetchSubReport } from '../services/study';
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
 import LogReportItem from './ReportViewer/log-report-item';
+import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 
 const styles = {
     div: {
@@ -51,19 +52,7 @@ export const ReportViewerTab = ({
         (state) => state.networkModificationTreeModel
     );
 
-    const loadflowNotif = useSelector((state) => state.loadflowNotif);
-    const saNotif = useSelector((state) => state.saNotif);
-    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
-    const sensiNotif = useSelector((state) => state.sensiNotif);
-    const allBusesShortCircuitNotif = useSelector(
-        (state) => state.allBusesShortCircuitNotif
-    );
-    const dynamicSimulationNotif = useSelector(
-        (state) => state.dynamicSimulationNotif
-    );
-    const oneBusShortCircuitNotif = useSelector(
-        (state) => state.oneBusShortCircuitNotif
-    );
+    const notificationsCount = useComputationNotificationCount();
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
@@ -161,14 +150,8 @@ export const ReportViewerTab = ({
         studyId,
         currentNode,
         disabled,
-        saNotif,
-        loadflowNotif,
-        voltageInitNotif,
-        sensiNotif,
-        allBusesShortCircuitNotif,
-        dynamicSimulationNotif,
+        notificationsCount,
         fetchAndProcessReport,
-        oneBusShortCircuitNotif,
     ]);
 
     const nodeReportPromise = (nodeId, reportId, severityFilterList) => {

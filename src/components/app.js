@@ -46,6 +46,7 @@ import {
     selectEnableDeveloperMode,
     setParamsLoaded,
     setOptionalServices,
+    limitReductionModified,
 } from '../redux/actions';
 
 import {
@@ -350,7 +351,12 @@ const App = () => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
-                    .then((param) => updateParams([param]))
+                    .then((param) => {
+                        updateParams([param]);
+                        if (param.name === 'limitReduction') {
+                            dispatch(limitReductionModified(true));
+                        }
+                    })
                     .catch((error) =>
                         snackError({
                             messageTxt: error.message,
@@ -363,7 +369,7 @@ const App = () => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [updateParams, snackError]);
+    }, [updateParams, snackError, dispatch]);
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
