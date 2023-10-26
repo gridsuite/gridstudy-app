@@ -37,6 +37,7 @@ export const EquipmentTable = ({
     const intl = useIntl();
     const [popupSelectEditSiteProperties, setPopupSelectEditSiteProperties] =
         React.useState(false);
+    const [propertiesSite, setPropertiesSite] = React.useState({});//todo to be renamed with a better name
 
     const getRowStyle = useCallback(
         (params) => {
@@ -112,6 +113,8 @@ export const EquipmentTable = ({
         setPopupSelectEditSiteProperties(false);
     };
     const handleSavePopupSelectEditSiteProperties = () => {
+        console.log('sites', 'on save', propertiesSite);
+
         //TODO: save data
         setPopupSelectEditSiteProperties(false);
     };
@@ -167,9 +170,14 @@ export const EquipmentTable = ({
                 child={
                     <SitePropertiesDialog
                         data={clickedCellData}
+                        onDataChanged={(data) => {
+                            setPropertiesSite(data);
+                        }}
                     ></SitePropertiesDialog>
                 }
             ></SelectOptionsDialog>
         </>
     );
 };
+
+

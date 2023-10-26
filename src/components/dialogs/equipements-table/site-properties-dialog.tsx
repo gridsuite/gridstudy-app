@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
 import {
+    CellEditRequestEvent,
     CellValueChangedEvent,
     ColDef,
     ColGroupDef,
@@ -15,11 +16,17 @@ import {
 
 type Props = {
     data: any;
+    onDataChanged: (data: any) => void;
     onOK: () => void;
     onCancel: () => void;
 };
 
-const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
+const SitePropertiesDialog: React.FC<Props> = ({
+    data,
+    onDataChanged,
+    onOK,
+    onCancel,
+}) => {
     const theme = useTheme();
     const gridRef = useRef<AgGridReact>(null);
     const [gridApi, setGridApi] = useState<any>(null);
@@ -28,6 +35,7 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
         { field: 'key' },
         { field: 'value' },
     ]);
+
     const [rowData, setRowData] = useState(() => {
         const keys = Object.keys(data.data.properties);
         const rowData = keys.map((key) => {
@@ -41,7 +49,6 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
         }
     }, [columnDefs, gridApi]);
     const getRowId = (params: GetRowIdParams) => {
-        console.log('sites1', params.data.key);
         return params.data.key;
     };
     const onGridReady = (params: any) => {
@@ -56,11 +63,37 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
                 return row;
             });
             setRowData(updatedRowData);
+            
         },
         [rowData]
     );
 
-    // console.log('sites', data.data.properties);
+
+    const onCellEditRequest = useCallback((event: CellEditRequestEvent) => {
+        const oldData = event.data;
+        const field = event.colDef.field;
+        const newValue = event.newValue;
+        const newData = { ...oldData };
+        newData[field!] = event.newValue;
+        console.log(
+            'sitesAAA',
+            'onCellEditRequest, updating ' + field + ' to ' + newValue
+        );
+        const tx = {
+            update: [newData],
+        };
+        event.api.applyTransaction(tx);
+    }, []);
+
+    useEffect(() => {
+        if (gridApi) {
+            gridApi.api.refreshCells({
+                force: true,
+            });
+        }
+    }, [gridApi, rowData]);
+
+    // console.log('sites', 'state Row data', rowData);
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -93,11 +126,14 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
                         //     setSelectedRows(gridApi.api.getSelectedRows());
                         // }}
                         // onRowDataUpdated={newRowAdded ? onRowDataUpdated : undefined}
-                        onCellValueChanged={onCellValueChanged}
+                        // onCellValueChanged={onCellValueChanged}
+                        // onCellEditRequest={onCellEditRequest}
                         onCellEditingStopped={(event) => {
-                            if (event.rowIndex) {
-                                console.log('sites', event.data);
-                                // update(event.rowIndex, event.data);
+                            if (event.rowIndex !== null) {
+                                const updatedRowData = [...rowData];
+                                updatedRowData[event.rowIndex] = event.data;
+                                setRowData(updatedRowData);
+                                onDataChanged(updatedRowData);
                             }
                         }}
                         getRowId={getRowId}
