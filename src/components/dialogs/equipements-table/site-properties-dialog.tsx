@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Grid, useTheme, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
 import {
+    CellValueChangedEvent,
     ColDef,
     ColGroupDef,
     GetRowIdFunc,
@@ -39,31 +40,27 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
             gridApi.api.sizeColumnsToFit();
         }
     }, [columnDefs, gridApi]);
-    const { control, register } = useForm();
-    const useFieldArrayOutput = useFieldArray({
-        control,
-        name: 'properties editor',
-    });
-    const { append, remove, update, swap, move } = useFieldArrayOutput;
     const getRowId = (params: GetRowIdParams) => {
         console.log('sites1', params.data.key);
         return params.data.key;
     };
-    const onGridReady = (params:any) => {
+    const onGridReady = (params: any) => {
         setGridApi(params);
     };
 
-    const onRowDataUpdated = () => {
-        setNewRowAdded(false);
-        if (gridApi?.api) {
-            // update due to new appended row, let's scroll
-            const lastIndex = rowData.length - 1;
-            gridApi.api.paginationGoToLastPage();
-            gridApi.api.ensureIndexVisible(lastIndex, 'bottom');
-        }
-    };
+    const onCellValueChanged = useCallback((event: CellValueChangedEvent) => {
+            const updatedRowData = rowData.map((row) => {
+                if (row.key === event.data.key) {
+                    return { ...row, value: event.newValue };
+                }
+                return row;
+            });
+            setRowData(updatedRowData);
+        },
+        [rowData]
+    );
 
-    console.log('sites', data.data.properties);
+    // console.log('sites', data.data.properties);
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -95,13 +92,12 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
                         // onSelectionChanged={(event) => {
                         //     setSelectedRows(gridApi.api.getSelectedRows());
                         // }}
-                        onRowDataUpdated={
-                            newRowAdded ? onRowDataUpdated : undefined
-                        }
+                        // onRowDataUpdated={newRowAdded ? onRowDataUpdated : undefined}
+                        onCellValueChanged={onCellValueChanged}
                         onCellEditingStopped={(event) => {
                             if (event.rowIndex) {
                                 console.log('sites', event.data);
-                                update(event.rowIndex, event.data);
+                                // update(event.rowIndex, event.data);
                             }
                         }}
                         getRowId={getRowId}
@@ -112,6 +108,7 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onOK, onCancel }) => {
             </Grid>
         </Grid>
     );
+    
 };
 
 export default SitePropertiesDialog;
