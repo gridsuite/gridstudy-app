@@ -124,6 +124,8 @@ type PaginationProps = {
     >;
 };
 
+export type FilterEnums = Record<string, string[] | null>;
+
 export interface CustomColDef extends ColDef {
     isSortable?: boolean;
     isHidden?: boolean;
@@ -172,6 +174,7 @@ export interface SecurityAnalysisResultNmkProps {
     sortConfig?: ISortConfig;
     updateFilter: (field: string, value: string) => void;
     filterSelector: FilterSelectorType | undefined;
+    filterEnums: FilterEnums;
 }
 
 export interface SecurityAnalysisNTableRow {

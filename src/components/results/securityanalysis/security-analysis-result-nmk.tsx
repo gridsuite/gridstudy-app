@@ -21,9 +21,8 @@ import {
     handlePostSortRows,
     PAGE_OPTIONS,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
-    securityAnalysisTableNmKConstraintsFilterDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
-    securityAnalysisTableNmKContingenciesFilterDefinition,
+    securityAnalysisTableNmKFilterDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
@@ -59,6 +58,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     sortConfig,
     updateFilter,
     filterSelector,
+    filterEnums,
 }) => {
     const { content } = result || {};
 
@@ -133,11 +133,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     );
 
     const filtersDef = useMemo(
-        () =>
-            isFromContingency
-                ? securityAnalysisTableNmKContingenciesFilterDefinition(intl)
-                : securityAnalysisTableNmKConstraintsFilterDefinition(intl),
-        [isFromContingency, intl]
+        () => securityAnalysisTableNmKFilterDefinition(intl, filterEnums),
+        [filterEnums, intl]
     );
 
     const makeColumn = useCallback(

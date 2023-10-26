@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
@@ -13,6 +13,7 @@ import {
     SecurityAnalysisNmkTableRow,
     Constraint,
     CustomColDef,
+    FilterEnums,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -24,6 +25,11 @@ import {
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { FILTER_UI_TYPES } from '../../custom-aggrid/custom-aggrid-header';
+import {
+    fetchSecurityAnalysisAvailableBranchSides,
+    fetchSecurityAnalysisAvailableComputationStatus,
+    fetchSecurityAnalysisAvailableLimitTypes,
+} from '../../../services/security-analysis';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -183,6 +189,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
             isSortable: true,
+            isFilterable: true,
+            filterType: FILTER_UI_TYPES.TEXT,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -193,6 +201,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
+            isFilterable: true,
+            filterType: FILTER_UI_TYPES.TEXT,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -202,10 +212,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            isFilterable: true,
+            filterType: FILTER_UI_TYPES.TEXT,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -267,6 +280,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
+            isFilterable: true,
+            filterType: FILTER_UI_TYPES.TEXT,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -281,10 +296,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            isFilterable: true,
+            filterType: FILTER_UI_TYPES.TEXT,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -319,36 +337,37 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     ];
 };
 
-export const securityAnalysisTableNmKContingenciesFilterDefinition = (
-    intl: IntlShape
+const translatedFilterEnums = (
+    intl: IntlShape,
+    filterEnums: string[] | null
 ) => {
-    return [
-        {
-            field: 'status',
-            label: intl.formatMessage({ id: 'computationStatus' }),
-            options: ['CONVERGED'],
-        },
-        {
-            field: 'limitType',
-            label: intl.formatMessage({ id: 'LimitType' }),
-            options: ['HIGH_VOLTAGE', 'LOW_VOLTAGE'],
-        },
-    ];
+    return filterEnums?.map((filterEnum) =>
+        intl.formatMessage({ id: filterEnum })
+    );
 };
 
-export const securityAnalysisTableNmKConstraintsFilterDefinition = (
-    intl: IntlShape
+export const securityAnalysisTableNmKFilterDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnums = {}
 ) => {
     return [
         {
             field: 'status',
             label: intl.formatMessage({ id: 'computationStatus' }),
-            options: ['CONVERGED'],
+            options: translatedFilterEnums(
+                intl,
+                filterEnums.computationsStatus
+            ),
         },
         {
             field: 'limitType',
             label: intl.formatMessage({ id: 'LimitType' }),
-            options: ['HIGH_VOLTAGE', 'LOW_VOLTAGE'],
+            options: translatedFilterEnums(intl, filterEnums.limitTypes),
+        },
+        {
+            field: 'side',
+            label: intl.formatMessage({ id: 'LimitSide' }),
+            options: translatedFilterEnums(intl, filterEnums.branchSides),
         },
     ];
 };
@@ -397,6 +416,57 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
+
+export const useFetchFiltersEnums = (isEmptyResult: boolean) => {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [result, setResult] = useState({
+        computationsStatus: null,
+        limitTypes: null,
+        branchSides: null,
+    });
+
+    useEffect(() => {
+        const fetchAllData = () => {
+            const promises = [
+                fetchSecurityAnalysisAvailableLimitTypes(),
+                fetchSecurityAnalysisAvailableBranchSides(),
+                fetchSecurityAnalysisAvailableComputationStatus(),
+            ];
+
+            setLoading(true);
+            Promise.all(promises)
+                .then(
+                    ([
+                        limitTypesResult,
+                        branchSidesResult,
+                        computationsStatusResult,
+                    ]) => {
+                        setResult({
+                            computationsStatus: computationsStatusResult,
+                            limitTypes: limitTypesResult,
+                            branchSides: branchSidesResult,
+                        });
+                        setLoading(false);
+                    }
+                )
+                .catch((err) => {
+                    setError(err);
+                    setLoading(false);
+                });
+        };
+
+        if (!isEmptyResult) {
+            fetchAllData();
+        }
+    }, [isEmptyResult]);
+
+    return [loading, result, error];
+};
+
+export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
+    'securityAnalysisResult',
+];
 
 export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     subjectId: 'subjectId',

@@ -26,6 +26,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import {
+    FilterEnums,
     QueryParamsType,
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
@@ -34,6 +35,8 @@ import {
     FROM_COLUMN_TO_FIELD,
     NMK_TYPE,
     RESULT_TYPE,
+    useFetchFiltersEnums,
+    SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -83,8 +86,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
     const { updateFilter, filterSelector, initFilters } =
         useRowFilter(FROM_COLUMN_TO_FIELD);
-
-    const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -145,15 +146,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         studyUuid,
         nodeUuid,
         fetchSecurityAnalysisResultWithQueryParams,
-        securityAnalysisResultInvalidations,
+        SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
         null
     );
-
-    const shouldOpenLoader = useOpenLoaderShortWait({
-        isLoading:
-            securityAnalysisStatus === RunningStatus.RUNNING || isLoadingResult,
-        delay: RESULTS_LOADING_DELAY,
-    });
 
     const resetResultStates = () => {
         setResult(null);
@@ -201,11 +196,23 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [securityAnalysisResult]
     );
 
+    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(
+        result?.empty
+    );
+
     useEffect(() => {
         if (result?.totalElements) {
             setCount(result.totalElements);
         }
     }, [result]);
+
+    const shouldOpenLoader = useOpenLoaderShortWait({
+        isLoading:
+            securityAnalysisStatus === RunningStatus.RUNNING ||
+            isLoadingResult ||
+            filterEnumsLoading,
+        delay: RESULTS_LOADING_DELAY,
+    });
 
     return (
         <>
@@ -269,6 +276,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         sortConfig={sortConfig}
                         updateFilter={updateFilter}
                         filterSelector={filterSelector}
+                        filterEnums={filterEnums as FilterEnums}
                     />
                 )}
             </Box>
