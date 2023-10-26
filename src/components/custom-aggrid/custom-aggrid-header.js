@@ -247,10 +247,31 @@ const CustomHeaderComponent = ({
                             }}
                             size="small"
                             sx={{ minWidth: FILTER_TEXT_FIELD_WIDTH }}
-                            renderInput={(params) => <TextField {...params} />}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    placeholder={intl.formatMessage({
+                                        id: 'grid.filterOoo',
+                                    })}
+                                />
+                            )}
                         />
                     ) : (
                         <Box p={0.8}>
+                            <TextField
+                                size={'small'}
+                                fullWidth
+                                sx={{
+                                    minWidth: FILTER_TEXT_FIELD_WIDTH,
+                                }}
+                                value={filterSelectedOptions?.[0]?.text}
+                                onChange={(event) => {
+                                    handleFilterChange(field, event);
+                                }}
+                                placeholder={intl.formatMessage({
+                                    id: 'grid.filterOoo',
+                                })}
+                            />
                             <RadioGroup
                                 value={selectedFilterType}
                                 onChange={(event) =>
@@ -277,17 +298,6 @@ const CustomHeaderComponent = ({
                                     })}
                                 />
                             </RadioGroup>
-                            <TextField
-                                size={'small'}
-                                fullWidth
-                                sx={{
-                                    minWidth: FILTER_TEXT_FIELD_WIDTH,
-                                }}
-                                value={filterSelectedOptions?.[0]?.text}
-                                onChange={(event) => {
-                                    handleFilterChange(field, event);
-                                }}
-                            />
                         </Box>
                     )}
                 </Popover>

@@ -26,7 +26,6 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import {
-    FilterSelectorType,
     QueryParamsType,
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
@@ -82,7 +81,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
-    const { updateFilter, filterSelector } = useRowFilter(FROM_COLUMN_TO_FIELD);
+    const { updateFilter, filterSelector, initFilters } =
+        useRowFilter(FROM_COLUMN_TO_FIELD);
 
     const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 
@@ -115,11 +115,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             if (filterSelector) {
                 queryParams['filters'] = Object.keys(filterSelector).map(
                     (field: string) => {
-                        const selectedValue = (
-                            filterSelector as FilterSelectorType
-                        )[field];
+                        const selectedValue =
+                            filterSelector[
+                                field as keyof typeof filterSelector
+                            ];
 
-                        //@ts-ignore
                         const { text, type } = selectedValue?.[0];
 
                         return {
@@ -160,6 +160,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         setCount(0);
         setPage(0);
         resetSortConfig();
+        initFilters();
     };
 
     const handleChangeNmkType = () => {
@@ -267,7 +268,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         onSortChanged={onSortChanged}
                         sortConfig={sortConfig}
                         updateFilter={updateFilter}
-                        //@ts-ignore
                         filterSelector={filterSelector}
                     />
                 )}

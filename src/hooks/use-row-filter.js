@@ -44,7 +44,10 @@ export const useRowFilter = (filterSelectorKeys) => {
         setRowFilters((oldRowFilters) => {
             let updatedFilters;
 
-            if (!value?.length) {
+            if (
+                !value?.length ||
+                (typeof value?.[0] === 'object' && !value[0].text)
+            ) {
                 updatedFilters = removeElementFromArrayWithFieldValue(
                     oldRowFilters,
                     field

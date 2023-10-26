@@ -75,9 +75,9 @@ export interface PreContingencyResult {
     };
 }
 
-type FilterValueType = string | string[];
+type FilterValueType = string[] | { text: string; type: string }[];
 
-export type FilterSelectorType = Record<string, FilterValueType>;
+export type FilterSelectorType = Record<string, FilterValueType> | null;
 
 export type SortTableStateType = {
     colKey: string;
@@ -171,7 +171,7 @@ export interface SecurityAnalysisResultNmkProps {
     onSortChanged: (colKey: string, sortWay: number) => void;
     sortConfig?: ISortConfig;
     updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType;
+    filterSelector: FilterSelectorType | undefined;
 }
 
 export interface SecurityAnalysisNTableRow {
