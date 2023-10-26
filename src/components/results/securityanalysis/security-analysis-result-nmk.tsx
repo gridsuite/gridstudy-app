@@ -149,6 +149,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isSortable = false,
             isHidden = false,
             isFilterable = false,
+            filterType,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
@@ -177,6 +178,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     filterOptions,
                     updateFilter,
                     filterSelectedOptions,
+                    filterType,
                 },
             };
         },

@@ -15,8 +15,24 @@ import {
     Autocomplete,
     TextField,
     Badge,
+    Radio,
+    Box,
+    FormControlLabel,
+    RadioGroup,
 } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useIntl } from 'react-intl';
+
+export const FILTER_UI_TYPES = {
+    TEXT: 'text',
+    AUTO_COMPLETE: 'autoComplete',
+};
+
+export const FILTER_TYPES = {
+    EQUALS: 'equals',
+    CONTAINS: 'contains',
+    STARTS_WITH: 'startsWith',
+};
 
 const FILTER_TEXT_FIELD_WIDTH = '250px';
 
@@ -30,12 +46,18 @@ const CustomHeaderComponent = ({
     filterSelectedOptions = [],
     isSortable = true,
     isFilterable = true,
+    filterType = FILTER_UI_TYPES.AUTO_COMPLETE,
 }) => {
+    const intl = useIntl();
+
     const { colKey, sortWay } = sortConfig;
     const isSortActive = colKey === field;
 
     const [filterAnchorEl, setFilterAnchorEl] = useState(null);
     const [isHoveringHeader, setIsHoveringHeader] = useState(false);
+    const [selectedFilterType, setSelectedFilterType] = useState(
+        FILTER_TYPES.STARTS_WITH
+    );
 
     const handleShowFilter = (event) => {
         setFilterAnchorEl(event.currentTarget);
@@ -48,8 +70,25 @@ const CustomHeaderComponent = ({
 
     const handleFilterChange = (field, data) => {
         if (typeof updateFilter === 'function') {
-            updateFilter(field, data);
+            if (filterType === FILTER_UI_TYPES.TEXT) {
+                updateFilter(field, [
+                    {
+                        text: data.target.value?.toUpperCase(),
+                        type: selectedFilterType,
+                    },
+                ]);
+            } else {
+                updateFilter(field, data, FILTER_TYPES.EQUALS);
+            }
         }
+    };
+
+    const handleChangeSelectedFilterType = (event, field) => {
+        const newType = event.target.value;
+        setSelectedFilterType(newType);
+        updateFilter(field, [
+            { text: filterSelectedOptions?.[0]?.text, type: newType },
+        ]);
     };
 
     const handleSortChange = () => {
@@ -75,7 +114,8 @@ const CustomHeaderComponent = ({
 
     const isFilterOpened = Boolean(filterAnchorEl);
     const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
-    const isFilterActive = !!filterOptions.length;
+    const isFilterActive =
+        FILTER_UI_TYPES.TEXT === filterType || !!filterOptions.length;
     const isFilterIconDisplayed =
         isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
 
@@ -197,19 +237,59 @@ const CustomHeaderComponent = ({
                         horizontal: 'left',
                     }}
                 >
-                    <Autocomplete
-                        multiple
-                        value={filterSelectedOptions}
-                        options={filterOptions}
-                        onChange={(_, data) => {
-                            handleFilterChange(field, data);
-                        }}
-                        size="small"
-                        sx={{ minWidth: FILTER_TEXT_FIELD_WIDTH }}
-                        renderInput={(params) => (
-                            <TextField {...params} fullWidth />
-                        )}
-                    />
+                    {filterType === FILTER_UI_TYPES.AUTO_COMPLETE ? (
+                        <Autocomplete
+                            multiple
+                            value={filterSelectedOptions}
+                            options={filterOptions}
+                            onChange={(_, data) => {
+                                handleFilterChange(field, data);
+                            }}
+                            size="small"
+                            sx={{ minWidth: FILTER_TEXT_FIELD_WIDTH }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    ) : (
+                        <Box p={0.8}>
+                            <RadioGroup
+                                value={selectedFilterType}
+                                onChange={(event) =>
+                                    handleChangeSelectedFilterType(event, field)
+                                }
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    padding: '0 8px',
+                                }}
+                            >
+                                <FormControlLabel
+                                    value={FILTER_TYPES.STARTS_WITH}
+                                    control={<Radio size={'small'} />}
+                                    label={intl.formatMessage({
+                                        id: 'filterStartWithType',
+                                    })}
+                                />
+                                <FormControlLabel
+                                    value={FILTER_TYPES.CONTAINS}
+                                    control={<Radio size={'small'} />}
+                                    label={intl.formatMessage({
+                                        id: 'filterContainsType',
+                                    })}
+                                />
+                            </RadioGroup>
+                            <TextField
+                                size={'small'}
+                                fullWidth
+                                sx={{
+                                    minWidth: FILTER_TEXT_FIELD_WIDTH,
+                                }}
+                                value={filterSelectedOptions?.[0]?.text}
+                                onChange={(event) => {
+                                    handleFilterChange(field, event);
+                                }}
+                            />
+                        </Box>
+                    )}
                 </Popover>
             )}
         </Grid>
@@ -229,7 +309,15 @@ CustomHeaderComponent.propTypes = {
     }),
     onSortChanged: PropTypes.func,
     updateFilter: PropTypes.func,
-    filterSelectedOptions: PropTypes.arrayOf(PropTypes.string),
+    filterSelectedOptions: PropTypes.arrayOf(
+        PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.shape({
+                type: PropTypes.string,
+                value: PropTypes.string,
+            }),
+        ])
+    ),
     isSortable: PropTypes.bool,
     isFilterable: PropTypes.bool,
 };

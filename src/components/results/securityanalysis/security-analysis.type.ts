@@ -75,9 +75,9 @@ export interface PreContingencyResult {
     };
 }
 
-type filterValueType = string | string[];
+type FilterValueType = string | string[];
 
-export type FilterSelectorType = Record<string, filterValueType>;
+export type FilterSelectorType = Record<string, FilterValueType>;
 
 export type SortTableStateType = {
     colKey: string;
@@ -88,7 +88,7 @@ export type FilterTableStateType = {
     dataType?: string;
     field?: string;
     type?: string;
-    value?: filterValueType;
+    value?: FilterValueType;
 };
 
 export type QueryParamsType = Record<
@@ -128,6 +128,7 @@ export interface CustomColDef extends ColDef {
     isSortable?: boolean;
     isHidden?: boolean;
     isFilterable?: boolean;
+    filterType?: string;
 }
 
 export interface SecurityAnalysisNmkResult {

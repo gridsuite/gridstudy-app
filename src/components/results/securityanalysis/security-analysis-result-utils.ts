@@ -23,6 +23,7 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { FILTER_UI_TYPES } from '../../custom-aggrid/custom-aggrid-header';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -252,7 +253,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             isSortable: true,
-            // filter: 'agTextColumnFilter',
+            isFilterable: true,
+            filterType: FILTER_UI_TYPES.TEXT,
             // filterParams: {
             //     debounceMs: 1200, // we don't want to fetch the back end too fast
             //     maxNumConditions: 1,
@@ -400,7 +402,7 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     subjectId: 'subjectId',
     contingencyId: 'contingencyId',
     status: 'status',
-    limitType: 'limit_type',
+    limitType: 'limitType',
     limitName: 'limit_name',
     side: 'side',
     acceptableDuration: 'acceptable_duration',
@@ -423,9 +425,3 @@ export enum RESULT_TYPE {
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
-export const FILTER_TYPES = {
-    EQUALS: 'equals',
-    CONTAINS: 'contains',
-    STARTS_WITH: 'startsWith',
-};

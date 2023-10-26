@@ -32,7 +32,6 @@ import {
 } from './security-analysis.type';
 import {
     DEFAULT_PAGE_COUNT,
-    FILTER_TYPES,
     FROM_COLUMN_TO_FIELD,
     NMK_TYPE,
     RESULT_TYPE,
@@ -40,6 +39,7 @@ import {
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useRowFilter } from '../../../hooks/use-row-filter';
+import { FILTER_TYPES } from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
     container: {
@@ -114,12 +114,21 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
             if (filterSelector) {
                 queryParams['filters'] = Object.keys(filterSelector).map(
-                    (field: string) => ({
-                        dataType: 'text',
-                        field,
-                        type: FILTER_TYPES.EQUALS,
-                        value: (filterSelector as FilterSelectorType)[field],
-                    })
+                    (field: string) => {
+                        const selectedValue = (
+                            filterSelector as FilterSelectorType
+                        )[field];
+
+                        //@ts-ignore
+                        const { text, type } = selectedValue?.[0];
+
+                        return {
+                            dataType: 'text',
+                            column: field,
+                            type: text ? type : FILTER_TYPES.EQUALS,
+                            value: text ? text : selectedValue,
+                        };
+                    }
                 );
             }
 
@@ -257,7 +266,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                         onSortChanged={onSortChanged}
                         sortConfig={sortConfig}
-                        //@ts-ignore
                         updateFilter={updateFilter}
                         //@ts-ignore
                         filterSelector={filterSelector}

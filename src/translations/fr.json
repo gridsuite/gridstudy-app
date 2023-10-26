@@ -1191,5 +1191,8 @@
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
 
-    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition"
+    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
+
+    "filterStartWithType": "Commence par",
+    "filterContainsType": "Contient"
 }

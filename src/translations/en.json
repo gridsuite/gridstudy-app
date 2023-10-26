@@ -1170,5 +1170,7 @@
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
     "waitingStudyIndexation": "Waiting for study indexation...",
 
-    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status"
+    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
+    "filterStartWithType": "Starts with",
+    "filterContainsType": "Contains"
 }
