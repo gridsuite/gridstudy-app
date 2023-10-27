@@ -234,9 +234,11 @@ export const ConnectivityForm = ({
         >
             <Tooltip
                 title={intl.formatMessage({
-                    id: isNodeBuilt(currentNode)
+                    id: !isNodeBuilt(currentNode)
+                        ? 'NodeNotBuildPositionMessage'
+                        : watchVoltageLevelId
                         ? 'DisplayTakenPositions'
-                        : 'NodeNotBuildPositionMessage',
+                        : 'NoVoltageLevelPositionMessage',
                 })}
             >
                 {isNodeBuilt(currentNode) && watchVoltageLevelId ? (
