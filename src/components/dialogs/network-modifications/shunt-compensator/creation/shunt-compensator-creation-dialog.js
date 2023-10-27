@@ -135,8 +135,8 @@ const ShuntCompensatorCreationDialog = ({
                     voltageLevelId: shuntCompensator.voltageLevelId,
                 }),
                 ...getCharacteristicsCreateFormData({
-                    maxSusceptance: shuntCompensator.maxSusceptance,
-                    maxQAtNominalV: shuntCompensator.maxQAtNominalV,
+                    maxSusceptance: shuntCompensator.maxSusceptance ?? null,
+                    maxQAtNominalV: shuntCompensator.maxQAtNominalV ?? null,
                     shuntCompensatorType: shuntCompensator.shuntCompensatorType,
                     sectionCount: shuntCompensator.sectionCount,
                     maximumSectionCount: shuntCompensator.maximumSectionCount,
