@@ -11,6 +11,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    CONNECTED,
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
@@ -161,6 +162,7 @@ export function getConverterStationCreationData(converterStation: any) {
             UNDEFINED_CONNECTION_DIRECTION,
         connectionPosition:
             converterStation[CONNECTIVITY]?.[CONNECTION_POSITION],
+        connected: converterStation[CONNECTIVITY]?.[CONNECTED],
         reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
         minimumReactivePower: isReactiveCapabilityCurveOn
             ? null
@@ -244,7 +246,7 @@ export function getConverterStationFromSearchCopy(
                     converterStation?.connectablePositionInfos?.connectionName,
                 connectionPosition: null,
                 busbarSectionName: null,
-                connected: null,
+                connected: true,
             }),
             ...getReactiveLimitsFormData({
                 reactiveCapabilityCurveChoice:
