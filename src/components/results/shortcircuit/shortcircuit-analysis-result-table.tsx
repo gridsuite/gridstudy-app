@@ -10,6 +10,8 @@ import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
+    ColumnFilter,
+    ColumnSort,
     SCAFaultResult,
     SCAFeederResult,
     ShortCircuitAnalysisType,
@@ -37,8 +39,8 @@ import { Option } from 'components/results/shortcircuit/shortcircuit-analysis-re
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
     analysisType: ShortCircuitAnalysisType;
-    updateFilter: (filter: any) => void;
-    updateSort: (sort: any) => void;
+    updateFilter: (filter: ColumnFilter[]) => void;
+    updateSort: (sort: ColumnSort[]) => void;
     isFetching: boolean;
     faultTypeOptions: Option[];
     limitViolationTypeOptions: Option[];
@@ -358,32 +360,16 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const onFilterChanged = useCallback(
         (e: FilterChangedEvent) => {
             // to see what contains filter model : https://www.ag-grid.com/javascript-data-grid/filter-api/
-            const formattedFilter = Object.entries(e.api.getFilterModel())
-                .map(([column, filter]) => {
-                    // if a column has only one filter, then 'conditions' is not present
-                    if (!filter.conditions) {
-                        return [
-                            {
-                                dataType: filter.filterType,
-                                type: filter.type,
-                                value: filter.filter,
-                                field: fromFrontColumnToBack(column),
-                            },
-                        ];
-                    }
-                    // otherwise, if a column has several filters, then 'conditions' is present and contains the list of filters
-                    else {
-                        return filter.conditions.map((condition: any) => {
-                            return {
-                                dataType: condition.filterType,
-                                type: condition.type,
-                                value: condition.filter,
-                                field: fromFrontColumnToBack(column),
-                            };
-                        });
-                    }
-                })
-                .flat();
+            const formattedFilter = Object.entries(e.api.getFilterModel()).map(
+                ([column, filter]) => {
+                    return {
+                        dataType: filter.filterType,
+                        type: filter.type,
+                        value: filter.filter,
+                        field: fromFrontColumnToBack(column),
+                    };
+                }
+            );
 
             updateFilter(formattedFilter);
         },

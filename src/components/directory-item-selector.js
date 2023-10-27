@@ -17,7 +17,6 @@ import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
 import { fetchDirectoryContent, fetchRootFolders } from '../services/directory';
 import { fetchElementsMetadata } from '../services/explore';
-import { isObjectEmpty } from 'utils/functions';
 
 const styles = {
     icon: (theme) => ({
@@ -26,6 +25,11 @@ const styles = {
         height: '18px',
     }),
 };
+
+// this method checks if an object (as map here) is empty or has at least one property
+function isObjectEmpty(obj) {
+    return obj == null || Object.keys(obj).length === 0;
+}
 
 const DirectoryItemSelector = (props) => {
     const { types, equipmentTypes, itemFilter } = props;

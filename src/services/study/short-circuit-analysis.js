@@ -109,6 +109,7 @@ export function fetchShortCircuitAnalysisPagedResults({
 
     const urlSearchParams = new URLSearchParams();
 
+    urlSearchParams.append('paged', 'true');
     urlSearchParams.append('mode', 'FULL');
 
     if (analysisType) {
@@ -131,7 +132,7 @@ export function fetchShortCircuitAnalysisPagedResults({
 
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/shortcircuit/results/paged?' +
+        '/shortcircuit/result?' +
         urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);

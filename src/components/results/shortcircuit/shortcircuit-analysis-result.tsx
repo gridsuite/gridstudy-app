@@ -9,6 +9,8 @@ import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-tabl
 import { useSelector } from 'react-redux';
 import {
     Option,
+    ColumnFilter,
+    ColumnSort,
     SCAFaultResult,
     SCAFeederResult,
     SCAPagedResults,
@@ -63,8 +65,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
-    const [filter, setFilter] = useState([]);
-    const [sort, setSort] = useState([]);
+    const [filter, setFilter] = useState<ColumnFilter[]>([]);
+    const [sort, setSort] = useState<ColumnSort[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [faultTypeOptions, setFaultTypeOptions] = useState<Option[]>([]);
     const [limitViolationTypeOptions, setLimitViolationTypeOptions] = useState<
@@ -76,7 +78,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         (state: ReduxState) => state.currentTreeNode
     );
 
-    const updateFilter = useCallback((newFilter: any) => {
+    const updateFilter = useCallback((newFilter: ColumnFilter[]) => {
         setFilter((oldFilter) => {
             // to avoid useless rerender and fetch
             if (newFilter.length || oldFilter.length) {
