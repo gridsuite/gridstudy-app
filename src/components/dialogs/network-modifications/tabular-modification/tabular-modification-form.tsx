@@ -57,7 +57,8 @@ const TabularModificationForm = () => {
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
-        header: csvColumns,
+        // for now only the ID is mandatory
+        header: ['ID'],
         maxTapNumber: undefined,
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,

@@ -625,7 +625,7 @@
     "equipmentId": "ID",
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
-    "activePowerSetpoint": "p (MW)",
+    "activePowerSetpoint": "P consigne (MW)",
     "minActivePower": "P min (MW)",
     "voltageRegulationOn": "Réglage de tension",
     "ModificationsRequiredTabError": "Au moins une modification est requise",
