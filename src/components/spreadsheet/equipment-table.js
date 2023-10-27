@@ -12,6 +12,7 @@ import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
 import SitePropertiesDialog from 'components/dialogs/equipements-table/site-properties-dialog';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import { modifySubstation } from 'services/study/network-modifications';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -21,6 +22,10 @@ export const EquipmentTable = ({
     topPinnedData,
     columnData,
     gridRef,
+    studyUuid,
+    currentNode,
+    equipmentId,
+    equipmentType,
     handleColumnDrag,
     handleRowEditing,
     handleCellEditing,
@@ -114,7 +119,14 @@ export const EquipmentTable = ({
     };
     const handleSavePopupSelectEditSiteProperties = () => {
         console.log('sites', 'on save', propertiesSite);
-
+        // modifySubstation(studyUuid,
+        //     currentNode.id,
+        //     id,
+        //     undefined,
+        //     undefined,
+        //     false,
+        //     undefined,
+        //     properties);
         //TODO: save data
         setPopupSelectEditSiteProperties(false);
     };
@@ -125,6 +137,11 @@ export const EquipmentTable = ({
         setClickedCellData(params);
     };
 
+    console.log('sites',studyUuid,
+    currentNode,
+    equipmentId,
+    equipmentType);
+    
     return (
         <>
             <CustomAGGrid

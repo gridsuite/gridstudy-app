@@ -846,7 +846,10 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
+                        equipmentId={props.equipmentId}
+                        equipmentType={props.equipmentType}
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
