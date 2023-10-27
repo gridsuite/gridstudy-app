@@ -199,21 +199,21 @@ export const CharacteristicsForm = ({
                 {gridItem(sectionCountField, 4)}
                 {gridItem(characteristicsChoiceField, 12)}
                 {characteristicsChoice ===
-                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
-                    gridItem(maxSusceptanceField, 4)}
+                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
+                    <Grid item container spacing={2}>
+                        {gridItem(maxSusceptanceField, 4)}
+                        {gridItem(switchedOnSusceptanceField, 4)}
+                    </Grid>
+                )}
                 {characteristicsChoice ===
-                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
-                    gridItem(switchedOnSusceptanceField, 4)}
-                {characteristicsChoice ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(shuntCompensatorTypeField, 4)}
-                <Box sx={{ width: '100%' }} />
-                {characteristicsChoice ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(maxQAtNominalVField, 4)}
-                {characteristicsChoice ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(switchedOnMaxQAtNominalVField, 4)}
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
+                    <Grid item container spacing={2}>
+                        {gridItem(shuntCompensatorTypeField, 4)}
+                        <Box sx={{ width: '100%' }} />
+                        {gridItem(maxQAtNominalVField, 4)}
+                        {gridItem(switchedOnMaxQAtNominalVField, 4)}
+                    </Grid>
+                )}
             </Grid>
         </>
     );

@@ -16,8 +16,7 @@ import {
 } from 'components/utils/field-constants';
 import { Box } from '@mui/material';
 import { useWatch } from 'react-hook-form';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { RadioInput } from '@gridsuite/commons-ui';
+import { FloatInput, RadioInput } from '@gridsuite/commons-ui';
 import {
     gridItem,
     ReactivePowerAdornment,

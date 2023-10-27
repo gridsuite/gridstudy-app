@@ -157,15 +157,6 @@ export const getCharacteristicsCreateFormData = ({
     sectionCount,
     maximumSectionCount,
 }) => {
-    console.log(
-        maxSusceptance
-            ? computeSwitchedOnValue(
-                  sectionCount,
-                  maximumSectionCount,
-                  maxSusceptance
-              )
-            : null
-    );
     return {
         [CHARACTERISTICS_CHOICE]: maxSusceptance
             ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
