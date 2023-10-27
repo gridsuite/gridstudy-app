@@ -656,7 +656,8 @@ export function createShuntCompensator(
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -687,6 +688,7 @@ export function createShuntCompensator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
