@@ -42,6 +42,7 @@ import {
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
  * @param id optional id that has to be defined if the component is used more than once in a form
+ * @param voltageLevelSelectLabel label to display for the voltage level auto complete component
  * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
  * @param withDirectionsInfos
  * @param withPosition
@@ -54,7 +55,7 @@ import {
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
-    label = 'VoltageLevel',
+    voltageLevelSelectLabel = 'VoltageLevel',
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
@@ -160,7 +161,7 @@ export const ConnectivityForm = ({
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
-            label={label}
+            label={voltageLevelSelectLabel}
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             size={'small'}
@@ -229,6 +230,7 @@ export const ConnectivityForm = ({
             {...(isNodeBuilt(currentNode) &&
                 watchVoltageLevelId && { onClick: handleClickOpenDiagramPane })}
             disableRipple={!isNodeBuilt(currentNode) || !watchVoltageLevelId}
+            edge="start"
         >
             <Tooltip
                 title={intl.formatMessage({
@@ -248,12 +250,17 @@ export const ConnectivityForm = ({
 
     const gridSize =
         direction && (direction === 'column' || direction === 'column-reverse')
-            ? 12
+            ? 24
             : 6;
-    const conditionalSize = withPosition && withDirectionsInfos ? 4 : gridSize;
+    const conditionalSize = withPosition && withDirectionsInfos ? 8 : gridSize;
     return (
         <>
-            <Grid container direction={direction || 'row'} spacing={2}>
+            <Grid
+                container
+                direction={direction || 'row'}
+                spacing={2}
+                columns={24}
+            >
                 <Grid item xs={conditionalSize} align="start">
                     {newVoltageLevelField}
                 </Grid>
@@ -266,12 +273,6 @@ export const ConnectivityForm = ({
 
                 {withDirectionsInfos && (
                     <>
-                        {withPosition && (
-                            <>
-                                <Grid item xs={gridSize} align="start" />
-                                <Grid item xs={gridSize} align="start" />
-                            </>
-                        )}
                         <Grid item xs={conditionalSize} align="start">
                             {newConnectionNameField}
                         </Grid>
