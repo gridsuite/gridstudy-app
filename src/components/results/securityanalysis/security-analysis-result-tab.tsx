@@ -123,11 +123,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
                         const { text, type } = selectedValue?.[0];
 
+                        const isTextFilter = !!text;
+
                         return {
                             dataType: 'text',
                             column: field,
-                            type: text ? type : FILTER_TYPES.EQUALS,
-                            value: text ? text : selectedValue,
+                            type: isTextFilter ? type : FILTER_TYPES.EQUALS,
+                            value: isTextFilter ? text : selectedValue,
                         };
                     }
                 );
