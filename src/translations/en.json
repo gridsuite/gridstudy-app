@@ -1155,6 +1155,13 @@
     "EditedField": "Edited field",
     "ReferenceFieldOrValue": "Reference field or value",
     "Operator": "Operator",
+    "+": "+",
+    "-": "-",
+    "/": "/",
+    "*": "*",
+    "%": "%",
 
-    "Use#ToSelectField": "Use # to select a field"
+    "ModifyByFormula": "Modify by formula",
+    "Use#ToSelectField": "Use # to select a field",
+    "WrongRefOrValueError": "Please enter a valid numeric value or a valid field reference. Use # to select a field"
 }

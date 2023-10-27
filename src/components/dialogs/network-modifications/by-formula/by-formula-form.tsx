@@ -10,11 +10,11 @@ import { gridItem } from '../../dialogUtils';
 interface ByFormulaFormProps {}
 
 const EQUIPMENT_TYPE_OPTIONS = [
-    {id: EQUIPMENT_TYPES.GENERATOR, label: EQUIPMENT_TYPES.GENERATOR},
-    {id: EQUIPMENT_TYPES.BATTERY, label: EQUIPMENT_TYPES.BATTERY},
+    { id: EQUIPMENT_TYPES.GENERATOR, label: EQUIPMENT_TYPES.GENERATOR },
+    { id: EQUIPMENT_TYPES.BATTERY, label: EQUIPMENT_TYPES.BATTERY },
 ];
 
-const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = ({}) => {
+const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
     const equipmentTypeField = (
         <SelectInput
             name={EQUIPMENT_TYPE_FIELD}
@@ -30,7 +30,9 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = ({}) => {
 
     return (
         <>
-            <Grid container>{gridItem(equipmentTypeField, 2.15)}</Grid>
+            <Grid container paddingTop={'20px'}>
+                {gridItem(equipmentTypeField, 2.15)}
+            </Grid>
             <Grid container>{gridItem(formulasField, 12)}</Grid>
         </>
     );

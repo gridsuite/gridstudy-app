@@ -1164,7 +1164,7 @@
     "RatedNominalPower": "Puissance nominale (MVA)",
 
     "ShortcircuitInProgress": "Calcul de court-circuit en cours...",
-    
+
     "tableChangingError": "Une erreur est survenue lors de la modification des données",
     "studyIndexationDone": "L'indexation de l'étude est terminée. La fonctionnalité de recherche est disponible",
     "studyIndexationNotIndexed": "Alerte côté serveur :Un incident s'est produit, les équipements de l'étude ne sont plus indexés. Merci de rafraîchir la page (F5)",
@@ -1176,5 +1176,13 @@
     "EditedField": "Champ modifié",
     "ReferenceFieldOrValue": "Champ de référence ou valeur",
     "Operator": "Opérateur",
-    "Use#ToSelectField": "Utiliser # pour sélectionner un champ"
+    "+": "+",
+    "-": "-",
+    "/": "/",
+    "*": "*",
+    "%": "%",
+
+    "ModifyByFormula": "Modification par formule",
+    "Use#ToSelectField": "Utiliser # pour sélectionner un champ",
+    "WrongRefOrValueError": "Veuillez saisir une valeur numérique valide ou une référence de champ valide. Utiliser # pour sélectionner un champ"
 }

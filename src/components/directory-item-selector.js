@@ -31,7 +31,9 @@ function isObjectEmpty(obj) {
     return obj == null || Object.keys(obj).length === 0;
 }
 
-const DirectoryItemSelector = ({ types, equipmentTypes, itemFilter, ...props }) => {
+const DirectoryItemSelector = (props) => {
+    const { types, equipmentTypes, itemFilter } = props;
+
     const [data, setData] = useState([]);
     const [rootDirectories, setRootDirectories] = useState([]);
     const nodeMap = useRef({});
@@ -236,6 +238,7 @@ DirectoryItemSelector.propTypes = {
     multiselect: PropTypes.bool,
     validationButtonText: PropTypes.string,
     titleId: PropTypes.string,
+    itemFilter: PropTypes.func,
 };
 
 export default DirectoryItemSelector;

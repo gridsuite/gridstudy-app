@@ -8,7 +8,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../services/utils';
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
@@ -17,47 +17,46 @@ import { FORM_LOADING_DELAY } from '../../../network/constants';
 import ByFormulaForm from './by-formula-form';
 import {
     EDITED_FIELD,
+    EQUIPMENT_FIELD,
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
     FORMULAS,
-    ID,
-    NAME,
     OPERATOR,
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
-    SPECIFIC_METADATA,
-    TYPE,
+    VALUE,
 } from '../../../utils/field-constants';
 import { modifyByFormula } from '../../../../services/study/network-modifications';
+import { formulaSchema } from './formula/formula-utils';
+
+function getFieldOrValue(input: string | { id: string, label: string }) {
+    const isNumber = !isNaN(parseFloat(input));
+    return {
+        [VALUE]: isNumber ? input : null,
+        [EQUIPMENT_FIELD]: isNumber ? null : input?.id,
+    };
+}
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        [FORMULAS]: yup.array().of(
-            yup.object().shape({
-                [FILTERS]: yup
-                    .array()
-                    .of(
-                        yup.object().shape({
-                            [ID]: yup.string().required(),
-                            [NAME]: yup.string().required(),
-                            [SPECIFIC_METADATA]: yup.object().shape({
-                                [TYPE]: yup.string(),
-                            }),
-                        })
-                    )
-                    .required(),
-                [EDITED_FIELD]: yup.string().required(),
-                [REFERENCE_FIELD_OR_VALUE_1]: yup.string().required(),
-                [REFERENCE_FIELD_OR_VALUE_2]: yup.string().required(),
-                [OPERATOR]: yup.string().required(),
-            })
-        ),
+        ...formulaSchema(FORMULAS),
     })
     .required();
 
-const emptyFormData = {};
+const emptyFormData = {
+    [EQUIPMENT_TYPE_FIELD]: null,
+    [FORMULAS]: [
+        {
+            [FILTERS]: [],
+            [EDITED_FIELD]: null,
+            [REFERENCE_FIELD_OR_VALUE_1]: null,
+            [OPERATOR]: null,
+            [REFERENCE_FIELD_OR_VALUE_2]: null,
+        },
+    ],
+};
 
 const ByFormulaDialog = ({
     editData,
@@ -85,26 +84,63 @@ const ByFormulaDialog = ({
 
     const { reset } = formMethods;
 
+    useEffect(() => {
+        if (editData) {
+            const formulas = editData.formulaInfosList?.map((formula) => {
+                const ref1 =
+                    formula?.fieldOrValue1?.value?.toString() ??
+                    formula?.fieldOrValue1?.equipmentField;
+                const ref2 =
+                    formula?.fieldOrValue2?.value?.toString() ??
+                    formula?.fieldOrValue2?.equipmentField;
+                return {
+                    [REFERENCE_FIELD_OR_VALUE_1]: ref1 ?? null,
+                    [REFERENCE_FIELD_OR_VALUE_2]: ref2 ?? null,
+                    ...formula,
+                };
+            });
+            reset({
+                [EQUIPMENT_TYPE_FIELD]: editData.identifiableType,
+                [FORMULAS]: formulas,
+            });
+        }
+    }, [editData, reset]);
+
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
 
-    const onSubmit = useCallback((data) => {
-      console.log('data : ', data);
-        /*modifyByFormula(
-            studyUuid,
-            currentNodeUuid,
-            data[EQUIPMENT_TYPE_FIELD],
-            data[FORMULAS],
-            !!editData,
-            editData?.uuid ?? null
-        ).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'ByFormulaModification',
+    const onSubmit = useCallback(
+        (data) => {
+            const formulas = data[FORMULAS].map((formula) => {
+                const fieldOrValue1 = getFieldOrValue(
+                    formula[REFERENCE_FIELD_OR_VALUE_1]
+                );
+                const fieldOrValue2 = getFieldOrValue(
+                    formula[REFERENCE_FIELD_OR_VALUE_2]
+                );
+                return {
+                    fieldOrValue1,
+                    fieldOrValue2,
+                    ...formula,
+                };
             });
-        });*/
-    }, []);
+            modifyByFormula(
+                studyUuid,
+                currentNodeUuid,
+                data[EQUIPMENT_TYPE_FIELD],
+                formulas,
+                !!editData,
+                editData?.uuid ?? null
+            ).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'ByFormulaModification',
+                });
+            });
+        },
+        [currentNodeUuid, editData, snackError, studyUuid]
+    );
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -113,7 +149,7 @@ const ByFormulaDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-by-formula"
-                titleId="CreateByFormula"
+                titleId="ModifyByFormula"
                 open={open}
                 maxWidth={'xl'}
                 isDataFetching={

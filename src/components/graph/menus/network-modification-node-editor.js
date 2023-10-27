@@ -61,7 +61,7 @@ import BatteryModificationDialog from 'components/dialogs/network-modifications/
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
-import ByFormulaDialog from "components//dialogs/network-modifications/by-formula/by-formula-dialog";
+import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
@@ -332,8 +332,8 @@ const NetworkModificationNodeEditor = () => {
                 {
                     id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                     label: 'BY_FORMULA',
-                    action: () => adapt(ByFormulaDialog)
-                }
+                    action: () => adapt(ByFormulaDialog),
+                },
             ],
         },
         {

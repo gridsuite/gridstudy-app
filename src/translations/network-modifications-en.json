@@ -33,5 +33,6 @@
     "network_modifications/updatingModification": "Updating modification ...",
     "network_modifications/modifications": "Updating modification list ...",
     "network_modifications/GENERATION_DISPATCH": "Generation dispatch {computedLabel}",
-    "network_modifications/VOLTAGE_INIT_MODIFICATION": "Voltage profile initialization {computedLabel}"
+    "network_modifications/VOLTAGE_INIT_MODIFICATION": "Voltage profile initialization {computedLabel}",
+    "network_modifications/BY_FORMULA_MODIFICATION": "By formula modification {computedLabel}"
 }
