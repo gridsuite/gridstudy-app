@@ -371,8 +371,8 @@
     "SOLVER_FAILED" :"Echec du solveur",
     "CONVERGED" : "Convergence",
     "FAILED" : "Echec",
-    "ONE" : "Côté 1 (FR)",
-    "TWO" : "Côté 2 (FR)",
+    "ONE" : "Côté 1",
+    "TWO" : "Côté 2",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
