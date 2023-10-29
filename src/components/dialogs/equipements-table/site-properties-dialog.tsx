@@ -63,11 +63,9 @@ const SitePropertiesDialog: React.FC<Props> = ({
                 return row;
             });
             setRowData(updatedRowData);
-            
         },
         [rowData]
     );
-
 
     const onCellEditRequest = useCallback((event: CellEditRequestEvent) => {
         const oldData = event.data;

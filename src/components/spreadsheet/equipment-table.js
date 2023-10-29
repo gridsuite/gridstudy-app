@@ -42,7 +42,10 @@ export const EquipmentTable = ({
     const intl = useIntl();
     const [popupSelectEditSiteProperties, setPopupSelectEditSiteProperties] =
         React.useState(false);
-    const [propertiesSite, setPropertiesSite] = React.useState({});//todo to be renamed with a better name
+
+    const [propertiesSite, setPropertiesSite] = React.useState({}); //todo to be renamed with a better name
+    const [siteId, setSiteId] = React.useState(''); //todo to be renamed with a better name
+    const [siteName, setSiteName] = React.useState(''); //todo to be renamed with a better name
 
     const getRowStyle = useCallback(
         (params) => {
@@ -116,32 +119,49 @@ export const EquipmentTable = ({
 
     const handleCancelPopupSelectEditSiteProperties = () => {
         setPopupSelectEditSiteProperties(false);
+        setSiteId('');
+        setSiteName('');
     };
     const handleSavePopupSelectEditSiteProperties = () => {
-        console.log('sites', 'on save', propertiesSite);
-        // modifySubstation(studyUuid,
-        //     currentNode.id,
-        //     id,
-        //     undefined,
-        //     undefined,
-        //     false,
-        //     undefined,
-        //     properties);
+        const properties = Object.keys(propertiesSite).map((key) => {
+            return {
+                name: propertiesSite[key].key,
+                value: propertiesSite[key].value,
+            };
+        });
+        console.log('sites', 'key', properties);
+        modifySubstation(
+            studyUuid,
+            currentNode.id,
+            siteId,
+            equipmentId,
+            null,
+            false,
+            null,
+            properties
+        )
+            .then((res) => {
+                console.log('sites', 'create modification', res);
+            })
+            .catch((err) => {
+                console.log('sites', 'error', err);
+        });
+
         //TODO: save data
         setPopupSelectEditSiteProperties(false);
+        setSiteId('');
+        setSiteName('');
     };
 
     const handleOnClickOnCell = (params) => {
         // onCellClicked();
+        console.log('sites', 'on click on cell', params.data.id);
+        setSiteId(params.data.id);
+        setSiteName(params.data.name);
         setPopupSelectEditSiteProperties(!popupSelectEditSiteProperties);
         setClickedCellData(params);
     };
 
-    console.log('sites',studyUuid,
-    currentNode,
-    equipmentId,
-    equipmentType);
-    
     return (
         <>
             <CustomAGGrid
@@ -188,6 +208,7 @@ export const EquipmentTable = ({
                     <SitePropertiesDialog
                         data={clickedCellData}
                         onDataChanged={(data) => {
+                            console.log('sites', 'on data changed', data);
                             setPropertiesSite(data);
                         }}
                     ></SitePropertiesDialog>
@@ -196,5 +217,3 @@ export const EquipmentTable = ({
         </>
     );
 };
-
-

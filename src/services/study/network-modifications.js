@@ -1050,6 +1050,17 @@ export function modifySubstation(
         console.info('Creating substation modification');
     }
 
+    console.log('sites', modifyUrl);
+    console.log(
+        'sites',
+        'body',
+        JSON.stringify({
+            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            substationCountry: toModificationOperation(substationCountry),
+            properties: properties,
+    }));
     return backendFetchText(modifyUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
