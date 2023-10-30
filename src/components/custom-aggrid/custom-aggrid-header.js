@@ -72,7 +72,7 @@ const CustomHeaderComponent = ({
     const isFilterOpened = Boolean(filterAnchorEl);
     const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
     const isFilterActive =
-        filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions.length;
+        filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length;
     const isFilterIconDisplayed =
         isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
 
