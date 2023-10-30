@@ -137,7 +137,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '25%',
+        width: '30%',
     },
     {
         label: 'Injections',
@@ -148,8 +148,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'ContingencyLists',
@@ -159,8 +158,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        maxWidth: '30%',
-        minWidth: '30%',
+        width: '30%',
     },
     {
         label: 'Actif',
@@ -168,8 +166,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        maxWidth: '5%',
-        minWidth: '5%',
+        width: '5%',
     },
 ];
 export const COLUMNS_DEFINITIONS_HVDCS = [
@@ -182,8 +179,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'SensitivityType',
@@ -192,8 +188,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
-        maxWidth: '30%',
-        minWidth: '30%',
+        width: '10%',
     },
     {
         label: 'HvdcLines',
@@ -204,8 +199,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         equipmentTypes: HVDC_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'ContingencyLists',
@@ -215,8 +209,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'Actif',
@@ -224,8 +217,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        maxWidth: '5%',
-        minWidth: '5%',
+        width: '5%',
     },
 ];
 export const COLUMNS_DEFINITIONS_PSTS = [
@@ -238,8 +230,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'SensitivityType',
@@ -248,8 +239,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '5%',
     },
     {
         label: 'PSTS',
@@ -260,8 +250,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         equipmentTypes: PSTS_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'ContingencyLists',
@@ -271,8 +260,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'Actif',
@@ -280,8 +268,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        maxWidth: '5%',
-        minWidth: '5%',
+        width: '5%',
     },
 ];
 export const COLUMNS_DEFINITIONS_NODES = [
@@ -294,8 +281,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         equipmentTypes: MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'EquipmentsInVoltageRegulation',
@@ -306,8 +292,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         equipmentTypes: EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'ContingencyLists',
@@ -317,8 +302,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        maxWidth: '25%',
-        minWidth: '25%',
+        width: '30%',
     },
     {
         label: 'Actif',
@@ -326,8 +310,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        maxWidth: '5%',
-        minWidth: '5%',
+        width: '5%',
     },
 ];
 

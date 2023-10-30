@@ -111,7 +111,7 @@ export const SensitivityAnalysisParameters = ({
     const handlePopupConfirm = useCallback(() => {
         hideParameters();
         setPopupConfirm(false);
-    }, []);
+    }, [hideParameters]);
 
     const handleClosePopupConfirm = useCallback(() => {
         setPopupConfirm(false);
@@ -144,7 +144,7 @@ export const SensitivityAnalysisParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit, formState, register } = formMethods;
+    const { reset, handleSubmit, formState } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
