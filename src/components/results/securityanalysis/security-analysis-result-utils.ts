@@ -143,36 +143,42 @@ export const flattenNmKResultsConstraints = (
 };
 
 export const securityAnalysisTableNColumnsDefinition = (
-    intl: IntlShape
+    intl: IntlShape,
+    makeColumn: (customColDef: CustomColDef) => any
 ): ColDef[] => [
-    {
+    makeColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
         field: 'subjectId',
-        filter: 'agTextColumnFilter',
-    },
-    {
+       /*  valueGetter: contingencyGetterValues,
+        cellRenderer: ContingencyCellRenderer, */
+        isSortable: true,
+        isFilterable: true,
+        filterType: FILTER_UI_TYPES.TEXT,
+    }),
+
+    makeColumn({
         headerName: intl.formatMessage({ id: 'LimitType' }),
         field: 'limitType',
-        filter: 'agTextColumnFilter',
-    },
-    {
+        isFilterable: true,
+    }),
+    makeColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
         field: 'limit',
         valueFormatter: (params: ValueFormatterParams) =>
             params.data?.limit?.toFixed(1),
-    },
-    {
+    }),
+    makeColumn({
         headerName: intl.formatMessage({ id: 'Value' }),
         field: 'value',
         valueFormatter: (params: ValueFormatterParams) =>
             params.data?.value?.toFixed(1),
-    },
-    {
+    }),
+    makeColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
         valueFormatter: (params: ValueFormatterParams) =>
-            params.data.loading?.toFixed(1),
-    },
+            params.data?.loading?.toFixed(1),
+    }),
 ];
 
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
@@ -372,6 +378,42 @@ export const securityAnalysisTableNmKFilterDefinition = (
     ];
 };
 
+export const securityAnalysisTableNFilterDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnums = {}
+) => {
+    return [
+        {
+            field: 'subjectId',
+            label: intl.formatMessage({ id: 'Equipment' }),
+            options: translatedFilterEnums(
+                intl,
+                filterEnums.computationsStatus
+            ),
+        },
+        {
+            field: 'limitType',
+            label: intl.formatMessage({ id: 'LimitType' }),
+            options: translatedFilterEnums(intl, filterEnums.limitTypes),
+        },
+        {
+            field: 'limit',
+            label: intl.formatMessage({ id: 'Limit' }),
+            options: translatedFilterEnums(intl, filterEnums.branchSides),
+        },
+        {
+            field: 'value',
+            label: intl.formatMessage({ id: 'Value' }),
+            options: translatedFilterEnums(intl, filterEnums.branchSides),
+        },
+        {
+            field: 'loading',
+            label: intl.formatMessage({ id: 'Loading' }),
+            options: translatedFilterEnums(intl, filterEnums.branchSides),
+        },
+    ];
+};
+
 export const handlePostSortRows = (params: PostSortRowsParams) => {
     const isFromContingency = !params.nodes.find(
         (node) => Object.keys(node.data).length === 1
@@ -476,7 +518,7 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     limitName: 'limitName',
     side: 'side',
     acceptableDuration: 'acceptableDuration',
-    limit: 'limit',
+    limit: 'limitValue',
     value: 'value',
     loading: 'loading',
 };
