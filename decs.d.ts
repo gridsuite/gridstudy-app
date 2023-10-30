@@ -69,7 +69,7 @@ declare module '@gridsuite/commons-ui' {
         >
     >;
 
-    export const FieldErrorAlert: FunctionComponent<{}>;
+    export const FieldErrorAlert: FunctionComponent<>;
 
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps
