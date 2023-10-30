@@ -152,13 +152,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         null
     );
 
-    const resetResultStates = () => {
+    const resetResultStates = useCallback(() => {
         setResult(null);
         setCount(0);
         setPage(0);
         resetSortConfig();
         initFilters();
-    };
+    }, [initFilters, resetSortConfig, setResult]);
 
     const handleChangeNmkType = () => {
         resetResultStates();
