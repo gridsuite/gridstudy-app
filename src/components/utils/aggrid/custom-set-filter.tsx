@@ -15,7 +15,7 @@ import { IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { Option } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 
 // TODO temporary, remove it when SCA results will use full custom headers and filters
-export default forwardRef((props: IFilterParams, ref) => {
+export const CustomSetFilter = forwardRef((props: IFilterParams, ref) => {
     const [selectedValues, setSelectedValues] = useState<string[]>(
         props.colDef.filterParams.options.map((option: Option) => option.value)
     );

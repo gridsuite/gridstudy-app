@@ -63,7 +63,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
                 );
                 return;
             }
-            setFaultResult(result.faults[0]);
+            setFaultResult(result?.faults[0] ?? []);
         });
     }, [
         snackError,

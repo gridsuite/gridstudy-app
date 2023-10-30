@@ -33,7 +33,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { DATA_KEY_TO_SORT_KEY } from 'components/results/shortcircuit/shortcircuit-analysis-result-content';
-import CustomSetFilter from 'components/utils/aggrid/custom-set-filter';
+import { CustomSetFilter } from 'components/utils/aggrid/custom-set-filter';
 import { Option } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 
 interface ShortCircuitAnalysisResultProps {
