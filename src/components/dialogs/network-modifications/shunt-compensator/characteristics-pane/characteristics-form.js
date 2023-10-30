@@ -20,14 +20,17 @@ import {
 } from 'components/utils/field-constants';
 import { Box } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { RadioInput } from '@gridsuite/commons-ui';
+import {
+    FloatInput,
+    IntegerInput,
+    RadioInput,
+    SelectInput,
+} from '@gridsuite/commons-ui';
 import {
     gridItem,
     ReactivePowerAdornment,
     SusceptanceAdornment,
 } from '../../../dialogUtils';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -37,7 +40,12 @@ export const CharacteristicsForm = ({
     isModification = false,
 }) => {
     const intl = useIntl();
-    const { setValue, trigger, clearErrors } = useFormContext();
+    const {
+        setValue,
+        trigger,
+        clearErrors,
+        formState: { isSubmitted },
+    } = useFormContext();
 
     const [
         sectionCount,
@@ -56,7 +64,7 @@ export const CharacteristicsForm = ({
     });
 
     const maximumSectionCountField = (
-        <FloatInput
+        <IntegerInput
             name={MAXIMUM_SECTION_COUNT}
             label={'MaximumSectionCount'}
             previousValue={previousValues?.maximumSectionCount}
@@ -65,7 +73,7 @@ export const CharacteristicsForm = ({
     );
 
     const sectionCountField = (
-        <FloatInput
+        <IntegerInput
             name={SECTION_COUNT}
             label={'ShuntSectionCount'}
             previousValue={previousValues?.sectionCount}
@@ -166,13 +174,23 @@ export const CharacteristicsForm = ({
                     } else {
                         setValue(SWITCHED_ON_FIELD, null);
                     }
+
+                    if (!isSubmitted) {
+                        clearErrors(SECTION_COUNT);
+                    }
                 });
             } else {
                 setValue(SWITCHED_ON_FIELD, null);
-                clearErrors(SECTION_COUNT);
             }
         },
-        [maximumSectionCount, sectionCount, clearErrors, setValue, trigger]
+        [
+            sectionCount,
+            maximumSectionCount,
+            isSubmitted,
+            trigger,
+            setValue,
+            clearErrors,
+        ]
     );
 
     useEffect(() => {
