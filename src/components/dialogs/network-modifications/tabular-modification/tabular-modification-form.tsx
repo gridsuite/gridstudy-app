@@ -27,7 +27,7 @@ import {
 } from './tabular-modification-utils';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
-    BooleanCellRenderer,
+    BooleanNullableCellRenderer,
     DefaultCellRenderer,
 } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
@@ -161,7 +161,7 @@ const TabularModificationForm = () => {
             colunmDef.field = field;
             colunmDef.headerName = intl.formatMessage({ id: field });
             if (field === 'voltageRegulationOn') {
-                colunmDef.cellRenderer = BooleanCellRenderer;
+                colunmDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 colunmDef.cellRenderer = DefaultCellRenderer;
             }
