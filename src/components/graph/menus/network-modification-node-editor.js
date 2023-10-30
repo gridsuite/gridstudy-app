@@ -75,7 +75,7 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 
-const styles = {
+export const styles = {
     listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
@@ -132,11 +132,11 @@ const styles = {
     }),
 };
 
-function isChecked(s1) {
+export function isChecked(s1) {
     return s1 !== 0;
 }
 
-function isPartial(s1, s2) {
+export function isPartial(s1, s2) {
     if (s1 === 0) {
         return false;
     }
@@ -189,8 +189,8 @@ const NetworkModificationNodeEditor = () => {
                 snackInfo({
                     messageId: 'CopiedModificationInvalidationMessage',
                 });
-                return [];
             }
+            return [];
         });
     }, [snackInfo]);
 
