@@ -364,6 +364,9 @@
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
     "LOW_VOLTAGE": "Tension basse",
+    "ACTIVE_POWER": "Puissance active",
+    "APPARENT_POWER": "Puissance apparente",
+    "OTHER": "Autre",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",

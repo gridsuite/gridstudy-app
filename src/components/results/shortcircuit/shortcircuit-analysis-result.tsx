@@ -107,6 +107,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     // Effects
     useEffect(() => {
+        if (analysisStatus !== RunningStatus.SUCCEED) {
+            return;
+        }
+
         let active = true; // to manage race condition
         setIsFetching(true);
         updateResult([]);
@@ -124,9 +128,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             type: analysisType,
             selector,
         })
-            .then((result: SCAPagedResults) => {
+            .then((result: SCAPagedResults | null) => {
                 if (active) {
-                    const { content, totalElements } = result;
+                    const { content = [], totalElements } = result || {};
                     updateResult(content);
                     if (totalElements && content.length) {
                         setCount(totalElements);
@@ -155,6 +159,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         rowsPerPage,
         snackError,
         analysisType,
+        analysisStatus,
         updateResult,
         studyUuid,
         currentNode?.id,

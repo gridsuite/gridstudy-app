@@ -18,6 +18,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from 'components/utils/running-status';
 
 export const ShortCircuitAnalysisOneBusResult = () => {
     const { snackError } = useSnackMessage();
@@ -40,13 +41,17 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     useEffect(() => {
+        if (oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED) {
+            return;
+        }
+
         fetchShortCircuitAnalysisResult({
             studyUuid,
             currentNodeUuid: currentNode?.id,
             type: ShortCircuitAnalysisType.ONE_BUS,
             mode: 'BASIC',
-        }).then((result: SCAResult) => {
-            if (result.faults.length !== 1) {
+        }).then((result: SCAResult | null) => {
+            if (result?.faults.length !== 1) {
                 snackError({
                     messageId: 'ShortCircuitAnalysisResultsError',
                 });
@@ -57,7 +62,13 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             }
             setFaultResult(result.faults[0]);
         });
-    }, [snackError, studyUuid, currentNode]);
+    }, [
+        snackError,
+        studyUuid,
+        currentNode,
+        oneBusShortCircuitNotif,
+        oneBusShortCircuitAnalysisStatus,
+    ]);
 
     useEffect(() => {
         if (!faultResult || !feederResults.length) {
