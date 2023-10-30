@@ -95,14 +95,13 @@ export const ReportViewerTab = ({
             } else {
                 if (reportData.length === 1) {
                     return setNodeName(reportData[0]);
-                } else {
-                    return {
-                        taskKey: GLOBAL_NODE_TASK_KEY,
-                        defaultName: GLOBAL_NODE_TASK_KEY,
-                        reports: [],
-                        subReporters: reportData.map((r) => setNodeName(r)),
-                    };
                 }
+                return {
+                    taskKey: GLOBAL_NODE_TASK_KEY,
+                    defaultName: GLOBAL_NODE_TASK_KEY,
+                    reports: [],
+                    subReporters: reportData.map((r) => setNodeName(r)),
+                };
             }
         },
         [setNodeName]

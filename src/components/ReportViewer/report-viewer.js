@@ -104,14 +104,13 @@ export default function ReportViewer({
         } else {
             if (reportData.length === 1) {
                 return reportData[0];
-            } else {
-                return {
-                    taskKey: GLOBAL_NODE_TASK_KEY,
-                    defaultName: GLOBAL_NODE_TASK_KEY,
-                    reports: [],
-                    subReporters: reportData,
-                };
             }
+            return {
+                taskKey: GLOBAL_NODE_TASK_KEY,
+                defaultName: GLOBAL_NODE_TASK_KEY,
+                reports: [],
+                subReporters: reportData,
+            };
         }
     };
 
@@ -131,10 +130,8 @@ export default function ReportViewer({
                 LogReportType.GlobalReport
             ) {
                 return globalReportPromise(severityList);
-            } else {
-                // SubReport
-                return subReportPromise(nodeId, severityList);
             }
+            return subReportPromise(nodeId, severityList);
         },
         [nodeReportPromise, globalReportPromise, subReportPromise]
     );

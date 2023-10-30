@@ -107,11 +107,11 @@ export default class LogReport {
             let reporterSeverity =
                 jsonReporter.taskValues.reporterSeverity.value;
             Object.values(LogReportItem.SEVERITY).some((value) => {
-                let severityFound = reporterSeverity === value.name;
-                if (severityFound) {
+                if (reporterSeverity === value.name) {
                     severity = value;
+                    return true;
                 }
-                return severityFound;
+                return false;
             });
         }
         return severity;
