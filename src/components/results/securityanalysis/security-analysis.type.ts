@@ -177,6 +177,11 @@ export interface SecurityAnalysisTabProps {
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult;
     isLoadingResult: boolean;
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig?: ISortConfig;
+    updateFilter: (field: string, value: string) => void;
+    filterSelector: FilterSelectorType | undefined;
+    filterEnums: FilterEnums;
 }
 
 export interface SecurityAnalysisResultNmkProps {

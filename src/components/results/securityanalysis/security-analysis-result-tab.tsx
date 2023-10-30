@@ -265,6 +265,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
+                        onSortChanged={onSortChanged}
+                        sortConfig={sortConfig}
+                        filterSelector={filterSelector}
+                        updateFilter={updateFilter}
+                        filterEnums={filterEnums as FilterEnums}
                     />
                 ) : (
                     <SecurityAnalysisResultNmk
