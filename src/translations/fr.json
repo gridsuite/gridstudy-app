@@ -364,6 +364,15 @@
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
     "LOW_VOLTAGE": "Tension basse",
+    "ACTIVE_POWER" : "Puissance active",
+    "APPARENT_POWER" :"Puissance apparente",
+    "MAX_ITERATION_REACHED" : "Nombre maximum d'itérations atteint",
+    "OTHER" : "Autre",
+    "SOLVER_FAILED" :"Echec du solveur",
+    "CONVERGED" : "Convergence",
+    "FAILED" : "Echec",
+    "ONE" : "Côté 1",
+    "TWO" : "Côté 2",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
@@ -1193,6 +1202,6 @@
 
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
 
-    "filterStartWithType": "Commence par",
-    "filterContainsType": "Contient"
+    "customAgGridFilter.startsWith": "Commence par",
+    "customAgGridFilter.contains": "Contient"
 }

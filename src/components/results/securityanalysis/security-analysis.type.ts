@@ -124,13 +124,27 @@ type PaginationProps = {
     >;
 };
 
+type SortProps = {
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig?: ISortConfig;
+};
+
+type FilterProps = {
+    updateFilter: (field: string, value: string) => void;
+    filterSelector: FilterSelectorType | undefined;
+    filterEnums: FilterEnums;
+};
+
 export type FilterEnums = Record<string, string[] | null>;
 
 export interface CustomColDef extends ColDef {
     isSortable?: boolean;
     isHidden?: boolean;
     isFilterable?: boolean;
-    filterType?: string;
+    filterParams?: {
+        filterUIType?: string;
+        filterComparators?: string[];
+    };
 }
 
 export interface SecurityAnalysisNmkResult {
@@ -175,11 +189,8 @@ export interface SecurityAnalysisResultNmkProps {
     studyUuid?: string;
     nodeUuid?: string;
     paginationProps: PaginationProps;
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig?: ISortConfig;
-    updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | undefined;
-    filterEnums: FilterEnums;
+    sortProps: SortProps;
+    filterProps: FilterProps;
 }
 
 export interface SecurityAnalysisNTableRow {

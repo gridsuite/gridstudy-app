@@ -24,7 +24,10 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import { FILTER_UI_TYPES } from '../../custom-aggrid/custom-aggrid-header';
+import {
+    FILTER_TYPES,
+    FILTER_UI_TYPES,
+} from '../../custom-aggrid/custom-aggrid-header';
 import {
     fetchSecurityAnalysisAvailableBranchSides,
     fetchSecurityAnalysisAvailableComputationStatus,
@@ -196,7 +199,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             cellRenderer: ContingencyCellRenderer,
             isSortable: true,
             isFilterable: true,
-            filterType: FILTER_UI_TYPES.TEXT,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TYPES.STARTS_WITH,
+                    FILTER_TYPES.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -208,7 +217,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             isFilterable: true,
-            filterType: FILTER_UI_TYPES.TEXT,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TYPES.STARTS_WITH,
+                    FILTER_TYPES.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -219,7 +234,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
             isFilterable: true,
-            filterType: FILTER_UI_TYPES.TEXT,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TYPES.STARTS_WITH,
+                    FILTER_TYPES.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -273,13 +294,17 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             cellRenderer: subjectIdRenderer,
             isSortable: true,
             isFilterable: true,
-            filterType: FILTER_UI_TYPES.TEXT,
-            // filterParams: {
-            //     debounceMs: 1200, // we don't want to fetch the back end too fast
-            //     maxNumConditions: 1,
-            //     filterOptions: ['contains', 'startsWith'],
-            //     textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
-            // },
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TYPES.STARTS_WITH,
+                    FILTER_TYPES.CONTAINS,
+                ],
+                //     debounceMs: 1200, // we don't want to fetch the back end too fast
+                //     maxNumConditions: 1,
+                //     filterOptions: ['contains', 'startsWith'],
+                //     textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
@@ -287,7 +312,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
             isFilterable: true,
-            filterType: FILTER_UI_TYPES.TEXT,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TYPES.STARTS_WITH,
+                    FILTER_TYPES.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -303,7 +334,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
             isFilterable: true,
-            filterType: FILTER_UI_TYPES.TEXT,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TYPES.STARTS_WITH,
+                    FILTER_TYPES.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -343,15 +380,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     ];
 };
 
-const translatedFilterEnums = (
-    intl: IntlShape,
-    filterEnums: string[] | null
-) => {
-    return filterEnums?.map((filterEnum) =>
-        intl.formatMessage({ id: filterEnum })
-    );
-};
-
 export const securityAnalysisTableNmKFilterDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnums = {}
@@ -359,21 +387,15 @@ export const securityAnalysisTableNmKFilterDefinition = (
     return [
         {
             field: 'status',
-            label: intl.formatMessage({ id: 'computationStatus' }),
-            options: translatedFilterEnums(
-                intl,
-                filterEnums.computationsStatus
-            ),
+            options: filterEnums.computationsStatus,
         },
         {
             field: 'limitType',
-            label: intl.formatMessage({ id: 'LimitType' }),
-            options: translatedFilterEnums(intl, filterEnums.limitTypes),
+            options: filterEnums.limitTypes,
         },
         {
             field: 'side',
-            label: intl.formatMessage({ id: 'LimitSide' }),
-            options: translatedFilterEnums(intl, filterEnums.branchSides),
+            options: filterEnums.branchSides,
         },
     ];
 };

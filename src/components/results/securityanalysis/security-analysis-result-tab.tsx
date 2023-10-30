@@ -123,11 +123,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
                         const { text, type } = selectedValue?.[0];
 
+                        const isTextFilter = !!text;
+
                         return {
                             dataType: 'text',
                             column: field,
-                            type: text ? type : FILTER_TYPES.EQUALS,
-                            value: text ? text : selectedValue,
+                            type: isTextFilter ? type : FILTER_TYPES.EQUALS,
+                            value: isTextFilter ? text : selectedValue,
                         };
                     }
                 );
@@ -277,11 +279,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             onPageChange: handleChangePage,
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
-                        onSortChanged={onSortChanged}
-                        sortConfig={sortConfig}
-                        updateFilter={updateFilter}
-                        filterSelector={filterSelector}
-                        filterEnums={filterEnums as FilterEnums}
+                        sortProps={{
+                            onSortChanged,
+                            sortConfig,
+                        }}
+                        filterProps={{
+                            updateFilter,
+                            filterSelector,
+                            filterEnums: filterEnums as FilterEnums,
+                        }}
                     />
                 )}
             </Box>
