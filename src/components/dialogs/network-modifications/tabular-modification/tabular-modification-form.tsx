@@ -65,7 +65,8 @@ const TabularModificationForm = () => {
 
     const postProcessFile = useCallback(
         (fileData: any) => {
-            fileData = fileData.map((row: any) => {
+            // map the csv columns to the modification fields
+            fileData = fileData.map((row: Modification) => {
                 const modification: Modification = {};
                 Object.keys(row).forEach((key) => {
                     const fieldKey = TABULAR_MODIFICATION_FIELDS[
