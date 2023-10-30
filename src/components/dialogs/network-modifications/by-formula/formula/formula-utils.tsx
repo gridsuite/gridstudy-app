@@ -63,7 +63,15 @@ export const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (
         : false;
 };
 
-export function formulaSchema(id: string) {
+export const getFormulaInitialValue = () => ({
+    [FILTERS]: [],
+    [EDITED_FIELD]: null,
+    [REFERENCE_FIELD_OR_VALUE_1]: null,
+    [OPERATOR]: null,
+    [REFERENCE_FIELD_OR_VALUE_2]: null,
+});
+
+export function getFormulaSchema(id: string) {
     return {
         [id]: yup.array().of(
             yup.object().shape({

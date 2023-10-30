@@ -10,10 +10,10 @@ import {
 } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import DirectoryItemsInput from '../../../../utils/rhf-inputs/directory-items-input';
-import Grid from '@mui/material/Grid';
 import { gridItem } from '../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 
 interface FormulaProps {
     name: String;
@@ -82,9 +82,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         <>
             {gridItem(filtersField, 2.25)}
             {gridItem(editedField, 2.25)}
-            <Grid item xs={0.25} alignSelf={'center'} paddingBottom={'25px'}>
-                =
-            </Grid>
+            {gridItem(<DragHandleIcon />, 0.25)}
             {gridItem(referenceField1, 2.5)}
             {gridItem(operatorField, 1.25)}
             {gridItem(referenceField2, 2.5)}

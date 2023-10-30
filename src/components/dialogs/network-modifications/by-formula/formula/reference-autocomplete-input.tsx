@@ -19,7 +19,10 @@ const ReferenceAutocompleteInput: FunctionComponent<{
     });
 
     const handleFilterOptions = useCallback(
-        (options: string[], state: FilterOptionsState<string>) => {
+        (
+            options: ({ id: string; label: string } | string)[],
+            state: FilterOptionsState<string | { id: string; label: string }>
+        ) => {
             if (state.inputValue?.startsWith('#')) {
                 const keyword = state.inputValue?.substring(1);
                 if (!keyword) {
@@ -69,8 +72,10 @@ const ReferenceAutocompleteInput: FunctionComponent<{
                 onChange(value);
             }}
             filterOptions={(
-                options: string[],
-                state: FilterOptionsState<string>
+                options: ({ id: string; label: string } | string)[],
+                state: FilterOptionsState<
+                    string | { id: string; label: string }
+                >
             ) => handleFilterOptions(options, state)}
             formProps={{
                 helperText: intl.formatMessage({

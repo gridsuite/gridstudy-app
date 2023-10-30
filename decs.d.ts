@@ -134,7 +134,8 @@ declare module '@gridsuite/commons-ui' {
 
     interface OverflowableTextProps {
         text: any;
-        style: any;
+        style?: any;
+        sx?: any;
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;

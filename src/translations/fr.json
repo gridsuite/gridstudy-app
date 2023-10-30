@@ -1206,6 +1206,7 @@
     "ModifyByFormula": "Modification par formule",
     "Use#ToSelectField": "Utiliser # pour sélectionner un champ",
     "WrongRefOrValueError": "Veuillez saisir une valeur numérique valide ou une référence de champ valide. Utiliser # pour sélectionner un champ",
+    "addNewFormula": "Ajouter une nouvelle formule",
 
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition"
 }

@@ -13,12 +13,11 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 import { styles } from '../../dialogs/dialogUtils';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { MidFormError } from '@gridsuite/commons-ui';
 import { mergeSx } from '../functions';
-
 
 interface ExpandableInputProps {
     name: string;

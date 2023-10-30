@@ -6,6 +6,7 @@ import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
 import FormulaForm from './formula/formula-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
+import { getFormulaInitialValue } from './formula/formula-utils';
 
 interface ByFormulaFormProps {}
 
@@ -25,7 +26,12 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
     );
 
     const formulasField = (
-        <ExpandableInput name={FORMULAS} Field={FormulaForm} />
+        <ExpandableInput
+            name={FORMULAS}
+            Field={FormulaForm}
+            addButtonLabel={'addNewFormula'}
+            initialValue={getFormulaInitialValue()}
+        />
     );
 
     return (
