@@ -7,7 +7,6 @@
 
 import React, { useState } from 'react';
 import { ArrowDownward, ArrowUpward, Menu } from '@mui/icons-material';
-
 import {
     Popover,
     IconButton,
@@ -20,6 +19,8 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import { useDebounce } from '@gridsuite/commons-ui';
+import Paper from '@mui/material/Paper';
 
 const styles = {
     iconSize: {
@@ -49,23 +50,24 @@ const CustomHeaderComponent = ({
     sortConfig = {},
     onSortChanged,
     updateFilter,
-    filterSelectedOptions = [],
     isSortable = true,
     isFilterable = true,
-    filterParams,
+    filterParams = {},
 }) => {
     const intl = useIntl();
 
     const {
         filterUIType = FILTER_UI_TYPES.AUTO_COMPLETE,
         filterComparators = [],
-    } = filterParams || {};
+        debounceMs,
+    } = filterParams;
 
     const [filterAnchorEl, setFilterAnchorEl] = useState(null);
     const [isHoveringHeader, setIsHoveringHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState(
         filterComparators[0]
     );
+    const [selectedFilterData, setSelectedFilterData] = useState();
 
     const { colKey, sortWay } = sortConfig;
     const isSortActive = colKey === field;
@@ -74,7 +76,7 @@ const CustomHeaderComponent = ({
     const isFilterActive =
         filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions.length;
     const isFilterIconDisplayed =
-        isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
+        isHoveringHeader || !!selectedFilterData?.length || isFilterOpened;
 
     const handleShowFilter = (event) => {
         setFilterAnchorEl(event.currentTarget);
@@ -85,26 +87,29 @@ const CustomHeaderComponent = ({
         setIsHoveringHeader(false);
     };
 
-    const handleFilterChange = (field, data) => {
-        if (typeof updateFilter === 'function') {
-            if (filterUIType === FILTER_UI_TYPES.TEXT) {
-                updateFilter(field, [
-                    {
-                        text: data.target.value?.toUpperCase(),
-                        type: selectedFilterComparator,
-                    },
-                ]);
-            } else {
-                updateFilter(field, data, FILTER_TYPES.EQUALS);
-            }
+    const debouncedUpdateFilter = useDebounce(updateFilter, debounceMs);
+
+    const handleFilterDataChange = (field, data) => {
+        if (filterUIType === FILTER_UI_TYPES.TEXT) {
+            setSelectedFilterData(data.target.value?.toUpperCase());
+            debouncedUpdateFilter(field, [
+                {
+                    text: data.target.value?.toUpperCase(),
+                    type: selectedFilterComparator,
+                },
+            ]);
+        } else {
+            setSelectedFilterData(data);
+            debouncedUpdateFilter(field, data, FILTER_TYPES.EQUALS);
         }
     };
 
-    const handleChangeSelectedFilterType = (event, field) => {
+    const handleFilterDataTypeChange = (event, field) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-        updateFilter(field, [
-            { text: filterSelectedOptions?.[0]?.text, type: newType },
+
+        debouncedUpdateFilter(field, [
+            { text: selectedFilterData, type: newType },
         ]);
     };
 
@@ -216,11 +221,11 @@ const CustomHeaderComponent = ({
                                         <Badge
                                             color="secondary"
                                             variant={
-                                                filterSelectedOptions?.length
+                                                selectedFilterData?.length
                                                     ? 'dot'
                                                     : null
                                             }
-                                            invisible={!filterSelectedOptions}
+                                            invisible={!selectedFilterData}
                                         >
                                             <Menu sx={styles.iconSize} />
                                         </Badge>
@@ -252,7 +257,7 @@ const CustomHeaderComponent = ({
                     {filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE ? (
                         <Autocomplete
                             multiple
-                            value={filterSelectedOptions}
+                            value={selectedFilterData}
                             options={filterOptions}
                             getOptionLabel={(option) =>
                                 intl.formatMessage({
@@ -261,16 +266,26 @@ const CustomHeaderComponent = ({
                                 })
                             }
                             onChange={(_, data) => {
-                                handleFilterChange(field, data);
+                                handleFilterDataChange(field, data);
                             }}
                             size="small"
+                            disableCloseOnSelect
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     placeholder={intl.formatMessage({
-                                        id: 'grid.filterOoo',
+                                        id: 'customAgGridFilter.filterOoo',
                                     })}
                                 />
+                            )}
+                            PaperComponent={({ children }) => (
+                                <Paper
+                                    sx={{
+                                        width: '100%',
+                                    }}
+                                >
+                                    {children}
+                                </Paper>
                             )}
                             sx={{ width: '100%' }}
                         />
@@ -284,7 +299,7 @@ const CustomHeaderComponent = ({
                             <Select
                                 value={selectedFilterComparator}
                                 onChange={(event) =>
-                                    handleChangeSelectedFilterType(event, field)
+                                    handleFilterDataTypeChange(event, field)
                                 }
                                 displayEmpty
                                 size={'small'}
@@ -301,12 +316,12 @@ const CustomHeaderComponent = ({
                             <TextField
                                 size={'small'}
                                 fullWidth
-                                value={filterSelectedOptions?.[0]?.text}
+                                value={selectedFilterData}
                                 onChange={(event) => {
-                                    handleFilterChange(field, event);
+                                    handleFilterDataChange(field, event);
                                 }}
                                 placeholder={intl.formatMessage({
-                                    id: 'grid.filterOoo',
+                                    id: 'customAgGridFilter.filterOoo',
                                 })}
                                 sx={styles.input}
                             />
@@ -331,15 +346,6 @@ CustomHeaderComponent.propTypes = {
     }),
     onSortChanged: PropTypes.func,
     updateFilter: PropTypes.func,
-    filterSelectedOptions: PropTypes.arrayOf(
-        PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.shape({
-                type: PropTypes.string,
-                value: PropTypes.string,
-            }),
-        ])
-    ),
     isSortable: PropTypes.bool,
     isFilterable: PropTypes.bool,
 };

@@ -1082,7 +1082,6 @@
     "grid.orCondition": "OU",
     "grid.inRangeStart": "Début",
     "grid.inRangeEnd": "Fin",
-    "grid.filterOoo": "Filtrer...",
     "grid.noRowsToShow": "Aucune Donnée",
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
@@ -1203,5 +1202,6 @@
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
 
     "customAgGridFilter.startsWith": "Commence par",
-    "customAgGridFilter.contains": "Contient"
+    "customAgGridFilter.contains": "Contient",
+    "customAgGridFilter.filterOoo": "Filtrer..."
 }

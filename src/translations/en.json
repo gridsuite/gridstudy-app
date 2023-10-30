@@ -1136,7 +1136,6 @@
     "grid.failed": "Calculation failed",
     "grid.running": "In progress...",
     "grid.noLimitViolation": "No limit violation",
-    "grid.filterOoo": "Filter...",
     "deleteNodeConfirmation": "Are you sure you want to delete this node \"{nodeName}\"?",
     "deleteSubTreeConfirmation": "Are you sure you want to delete node \"{nodeName}\" and its sub-tree with {nodesNumber} nodes ?",
 
@@ -1182,5 +1181,6 @@
 
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
     "customAgGridFilter.startsWith": "Starts with",
-    "customAgGridFilter.contains": "Contains"
+    "customAgGridFilter.contains": "Contains",
+    "customAgGridFilter.filterOoo": "Filter..."
 }

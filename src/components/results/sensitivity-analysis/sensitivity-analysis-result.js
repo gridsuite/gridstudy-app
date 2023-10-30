@@ -61,10 +61,6 @@ const SensitivityAnalysisResult = ({
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
 
-            const filterSelectedOptions =
-                DATA_KEY_TO_FILTER_KEY[field] &&
-                filterSelector?.[DATA_KEY_TO_FILTER_KEY[field]];
-
             return {
                 field,
                 numeric: isNum,
@@ -78,7 +74,6 @@ const SensitivityAnalysisResult = ({
                     onSortChanged: (newSortValue) =>
                         onSortChanged(field, newSortValue),
                     updateFilter,
-                    filterSelectedOptions,
                 },
                 minWidth: isSortActive && sortWay ? 95 : 65,
                 maxWidth: maxWidth,

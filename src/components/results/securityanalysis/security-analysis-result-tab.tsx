@@ -280,7 +280,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                         filterProps={{
                             updateFilter,
-                            filterSelector,
                             filterEnums: filterEnums as FilterEnums,
                         }}
                     />

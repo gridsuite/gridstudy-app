@@ -294,10 +294,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TYPES.STARTS_WITH,
                     FILTER_TYPES.CONTAINS,
                 ],
-                //     debounceMs: 1200, // we don't want to fetch the back end too fast
-                //     maxNumConditions: 1,
-                //     filterOptions: ['contains', 'startsWith'],
-                //     textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
+                debounceMs: 1200, // we don't want to fetch the back end too fast
             },
         }),
         makeColumn({

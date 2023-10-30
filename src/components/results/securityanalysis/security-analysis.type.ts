@@ -131,8 +131,13 @@ type SortProps = {
 
 type FilterProps = {
     updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | undefined;
     filterEnums: FilterEnums;
+};
+
+type FilterParams = {
+    filterUIType?: string;
+    filterComparators?: string[];
+    debounceMs?: number;
 };
 
 export type FilterEnums = Record<string, string[] | null>;
@@ -141,10 +146,7 @@ export interface CustomColDef extends ColDef {
     isSortable?: boolean;
     isHidden?: boolean;
     isFilterable?: boolean;
-    filterParams?: {
-        filterUIType?: string;
-        filterComparators?: string[];
-    };
+    filterParams?: FilterParams;
 }
 
 export interface SecurityAnalysisNmkResult {
