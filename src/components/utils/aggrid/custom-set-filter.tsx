@@ -66,11 +66,11 @@ export default forwardRef((props: IFilterParams, ref) => {
                 flexDirection: 'column',
                 padding: 8,
             }}
-            onChange={onChange}
         >
             <div style={{ fontWeight: 'bold', margin: 2 }}>Select values</div>
             {props.colDef.filterParams.options.map((option: Option) => (
                 <label
+                    key={option.value}
                     style={{ display: 'flex', alignItems: 'center', margin: 1 }}
                 >
                     <input
@@ -79,6 +79,7 @@ export default forwardRef((props: IFilterParams, ref) => {
                         name="filter"
                         value={option.value}
                         checked={selectedValues.includes(option.value)}
+                        onChange={onChange}
                     />{' '}
                     {option.label}
                 </label>

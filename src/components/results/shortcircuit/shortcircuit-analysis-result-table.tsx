@@ -102,19 +102,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         };
     }, []);
 
-    const numberFilterParams = useMemo(() => {
-        return {
-            debounceMs: 1200, // we don't want to fetch the back end too fast
-            maxNumConditions: 1,
-            filterOptions: [
-                'notEqual',
-                'lessThanOrEqual',
-                'greaterThanOrEqual',
-            ],
-            // didn't find a way to disable filters here
-        };
-    }, []);
-
     const columns = useMemo(
         () => [
             {
@@ -155,8 +142,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: true,
-                filter: 'agNumberColumnFilter',
-                filterParams: numberFilterParams,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -212,7 +197,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         ],
         [
             textFilterParams,
-            numberFilterParams,
             intl,
             analysisType,
             faultTypeOptions,
