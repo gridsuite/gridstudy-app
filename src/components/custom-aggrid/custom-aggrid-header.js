@@ -15,10 +15,8 @@ import {
     Autocomplete,
     TextField,
     Badge,
-    Radio,
-    Box,
-    FormControlLabel,
-    RadioGroup,
+    Select,
+    MenuItem,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -26,6 +24,10 @@ import { useIntl } from 'react-intl';
 const styles = {
     iconSize: {
         fontSize: '1rem',
+    },
+    input: {
+        minWidth: '250px',
+        maxWidth: '40%',
     },
 };
 
@@ -40,8 +42,6 @@ export const FILTER_TYPES = {
     STARTS_WITH: 'startsWith',
 };
 
-const FILTER_TEXT_FIELD_WIDTH = '250px';
-
 const CustomHeaderComponent = ({
     field,
     displayName,
@@ -52,18 +52,29 @@ const CustomHeaderComponent = ({
     filterSelectedOptions = [],
     isSortable = true,
     isFilterable = true,
-    filterType = FILTER_UI_TYPES.AUTO_COMPLETE,
+    filterParams,
 }) => {
     const intl = useIntl();
 
-    const { colKey, sortWay } = sortConfig;
-    const isSortActive = colKey === field;
+    const {
+        filterUIType = FILTER_UI_TYPES.AUTO_COMPLETE,
+        filterComparators = [],
+    } = filterParams || {};
 
     const [filterAnchorEl, setFilterAnchorEl] = useState(null);
     const [isHoveringHeader, setIsHoveringHeader] = useState(false);
-    const [selectedFilterType, setSelectedFilterType] = useState(
-        FILTER_TYPES.STARTS_WITH
+    const [selectedFilterComparator, setSelectedFilterComparator] = useState(
+        filterComparators[0]
     );
+
+    const { colKey, sortWay } = sortConfig;
+    const isSortActive = colKey === field;
+    const isFilterOpened = Boolean(filterAnchorEl);
+    const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
+    const isFilterActive =
+        filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions.length;
+    const isFilterIconDisplayed =
+        isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
 
     const handleShowFilter = (event) => {
         setFilterAnchorEl(event.currentTarget);
@@ -76,11 +87,11 @@ const CustomHeaderComponent = ({
 
     const handleFilterChange = (field, data) => {
         if (typeof updateFilter === 'function') {
-            if (filterType === FILTER_UI_TYPES.TEXT) {
+            if (filterUIType === FILTER_UI_TYPES.TEXT) {
                 updateFilter(field, [
                     {
                         text: data.target.value?.toUpperCase(),
-                        type: selectedFilterType,
+                        type: selectedFilterComparator,
                     },
                 ]);
             } else {
@@ -91,7 +102,7 @@ const CustomHeaderComponent = ({
 
     const handleChangeSelectedFilterType = (event, field) => {
         const newType = event.target.value;
-        setSelectedFilterType(newType);
+        setSelectedFilterComparator(newType);
         updateFilter(field, [
             { text: filterSelectedOptions?.[0]?.text, type: newType },
         ]);
@@ -117,13 +128,6 @@ const CustomHeaderComponent = ({
     const handleMouseLeave = () => {
         setIsHoveringHeader(false);
     };
-
-    const isFilterOpened = Boolean(filterAnchorEl);
-    const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
-    const isFilterActive =
-        FILTER_UI_TYPES.TEXT === filterType || !!filterOptions.length;
-    const isFilterIconDisplayed =
-        isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
 
     return (
         <Grid
@@ -151,8 +155,7 @@ const CustomHeaderComponent = ({
                     alignItems={'center'}
                     sx={{
                         height: '100%',
-                        cursor:
-                            isSortable || isFilterable ? 'pointer' : 'default',
+                        cursor: isSortable ? 'pointer' : 'default',
                     }}
                     direction={'row'}
                     wrap={'nowrap'}
@@ -242,8 +245,11 @@ const CustomHeaderComponent = ({
                         vertical: 'top',
                         horizontal: 'left',
                     }}
+                    PaperProps={{
+                        sx: styles.input,
+                    }}
                 >
-                    {filterType === FILTER_UI_TYPES.AUTO_COMPLETE ? (
+                    {filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE ? (
                         <Autocomplete
                             multiple
                             value={filterSelectedOptions}
@@ -258,7 +264,6 @@ const CustomHeaderComponent = ({
                                 handleFilterChange(field, data);
                             }}
                             size="small"
-                            sx={{ minWidth: FILTER_TEXT_FIELD_WIDTH }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -267,15 +272,35 @@ const CustomHeaderComponent = ({
                                     })}
                                 />
                             )}
+                            sx={{ width: '100%' }}
                         />
                     ) : (
-                        <Box p={0.8}>
+                        <Grid
+                            container
+                            direction={'column'}
+                            gap={0.8}
+                            sx={{ padding: '8px' }}
+                        >
+                            <Select
+                                value={selectedFilterComparator}
+                                onChange={(event) =>
+                                    handleChangeSelectedFilterType(event, field)
+                                }
+                                displayEmpty
+                                size={'small'}
+                                sx={styles.input}
+                            >
+                                {filterComparators.map((filterComparator) => (
+                                    <MenuItem value={filterComparator}>
+                                        {intl.formatMessage({
+                                            id: `customAgGridFilter.${filterComparator}`,
+                                        })}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                             <TextField
                                 size={'small'}
                                 fullWidth
-                                sx={{
-                                    minWidth: FILTER_TEXT_FIELD_WIDTH,
-                                }}
                                 value={filterSelectedOptions?.[0]?.text}
                                 onChange={(event) => {
                                     handleFilterChange(field, event);
@@ -283,34 +308,9 @@ const CustomHeaderComponent = ({
                                 placeholder={intl.formatMessage({
                                     id: 'grid.filterOoo',
                                 })}
+                                sx={styles.input}
                             />
-                            <RadioGroup
-                                value={selectedFilterType}
-                                onChange={(event) =>
-                                    handleChangeSelectedFilterType(event, field)
-                                }
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    padding: '0 8px',
-                                }}
-                            >
-                                <FormControlLabel
-                                    value={FILTER_TYPES.STARTS_WITH}
-                                    control={<Radio size={'small'} />}
-                                    label={intl.formatMessage({
-                                        id: 'filterStartWithType',
-                                    })}
-                                />
-                                <FormControlLabel
-                                    value={FILTER_TYPES.CONTAINS}
-                                    control={<Radio size={'small'} />}
-                                    label={intl.formatMessage({
-                                        id: 'filterContainsType',
-                                    })}
-                                />
-                            </RadioGroup>
-                        </Box>
+                        </Grid>
                     )}
                 </Popover>
             )}

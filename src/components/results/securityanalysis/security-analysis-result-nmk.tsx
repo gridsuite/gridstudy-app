@@ -54,13 +54,12 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     studyUuid,
     nodeUuid,
     paginationProps,
-    onSortChanged,
-    sortConfig,
-    updateFilter,
-    filterSelector,
-    filterEnums,
+    sortProps,
+    filterProps,
 }) => {
     const { content } = result || {};
+    const { onSortChanged, sortConfig } = sortProps || {};
+    const { updateFilter, filterSelector, filterEnums } = filterProps || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
@@ -146,7 +145,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isSortable = false,
             isHidden = false,
             isFilterable = false,
-            filterType,
+            filterParams,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
@@ -162,6 +161,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 valueGetter,
                 cellRenderer,
                 hide: isHidden,
+                headerTooltip: headerName,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     field,
@@ -173,9 +173,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     isSortable,
                     isFilterable,
                     filterOptions,
-                    updateFilter,
                     filterSelectedOptions,
-                    filterType,
+                    updateFilter,
+                    filterParams,
                 },
             };
         },

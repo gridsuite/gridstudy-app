@@ -1181,6 +1181,6 @@
     "waitingStudyIndexation": "Waiting for study indexation...",
 
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
-    "filterStartWithType": "Starts with",
-    "filterContainsType": "Contains"
+    "customAgGridFilter.startsWith": "Starts with",
+    "customAgGridFilter.contains": "Contains"
 }

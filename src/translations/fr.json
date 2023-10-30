@@ -1202,6 +1202,6 @@
 
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
 
-    "filterStartWithType": "Commence par",
-    "filterContainsType": "Contient"
+    "customAgGridFilter.startsWith": "Commence par",
+    "customAgGridFilter.contains": "Contient"
 }

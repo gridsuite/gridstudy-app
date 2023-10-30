@@ -274,11 +274,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             onPageChange: handleChangePage,
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
-                        onSortChanged={onSortChanged}
-                        sortConfig={sortConfig}
-                        updateFilter={updateFilter}
-                        filterSelector={filterSelector}
-                        filterEnums={filterEnums as FilterEnums}
+                        sortProps={{
+                            onSortChanged,
+                            sortConfig,
+                        }}
+                        filterProps={{
+                            updateFilter,
+                            filterSelector,
+                            filterEnums: filterEnums as FilterEnums,
+                        }}
                     />
                 )}
             </Box>
