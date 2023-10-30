@@ -141,7 +141,13 @@ export const securityAnalysisTableNColumnsDefinition = (
         cellRenderer: ContingencyCellRenderer, */
         isSortable: true,
         isFilterable: true,
-        filterType: FILTER_UI_TYPES.TEXT,
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.TEXT,
+            filterComparators: [
+                FILTER_TYPES.STARTS_WITH,
+                FILTER_TYPES.CONTAINS,
+            ],
+        },
     }),
 
     makeColumn({
@@ -344,31 +350,23 @@ export const securityAnalysisTableNFilterDefinition = (
     return [
         {
             field: 'subjectId',
-            label: intl.formatMessage({ id: 'Equipment' }),
-            options: translatedFilterEnums(
-                intl,
-                filterEnums.computationsStatus
-            ),
+            options: filterEnums?.subjectId,
         },
         {
             field: 'limitType',
-            label: intl.formatMessage({ id: 'LimitType' }),
-            options: translatedFilterEnums(intl, filterEnums.limitTypes),
+            options: filterEnums?.limitTypes,
         },
         {
             field: 'limit',
-            label: intl.formatMessage({ id: 'Limit' }),
-            options: translatedFilterEnums(intl, filterEnums.branchSides),
+            options: filterEnums?.limit,
         },
         {
             field: 'value',
-            label: intl.formatMessage({ id: 'Value' }),
-            options: translatedFilterEnums(intl, filterEnums.branchSides),
+            options: filterEnums?.value,
         },
         {
             field: 'loading',
-            label: intl.formatMessage({ id: 'Loading' }),
-            options: translatedFilterEnums(intl, filterEnums.branchSides),
+            options: filterEnums?.loading,
         },
     ];
 };

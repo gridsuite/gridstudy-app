@@ -65,7 +65,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
             isSortable = false,
             isHidden = false,
             isFilterable = false,
-            filterType,
+            filterParams,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
@@ -81,6 +81,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
                 valueGetter,
                 cellRenderer,
                 hide: isHidden,
+                headerTooltip: headerName,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     field,
@@ -92,9 +93,9 @@ export const SecurityAnalysisResultN: FunctionComponent<
                     isSortable,
                     isFilterable,
                     filterOptions,
-                    updateFilter,
                     filterSelectedOptions,
-                    filterType,
+                    updateFilter,
+                    filterParams,
                 },
             };
         },
