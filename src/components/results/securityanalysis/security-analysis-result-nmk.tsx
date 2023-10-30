@@ -196,15 +196,19 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [intl, SubjectIdRenderer, isFromContingency, makeColumn]
     );
 
-    const rows = isFromContingency
-        ? flattenNmKResultsContingencies(
-              intl,
-              content as ConstraintsFromContingencyItem[]
-          )
-        : flattenNmKResultsConstraints(
-              intl,
-              content as ContingenciesFromConstraintItem[]
-          );
+    const rows = useMemo(
+        () =>
+            isFromContingency
+                ? flattenNmKResultsContingencies(
+                      intl,
+                      content as ConstraintsFromContingencyItem[]
+                  )
+                : flattenNmKResultsConstraints(
+                      intl,
+                      content as ContingenciesFromConstraintItem[]
+                  ),
+        [content, intl, isFromContingency]
+    );
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {

@@ -210,9 +210,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const shouldOpenLoader = useOpenLoaderShortWait({
         isLoading:
-            securityAnalysisStatus === RunningStatus.RUNNING ||
-            isLoadingResult ||
-            filterEnumsLoading,
+            securityAnalysisStatus === RunningStatus.RUNNING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -260,7 +258,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 ) : (
                     <SecurityAnalysisResultNmk
                         result={result}
-                        isLoadingResult={isLoadingResult}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
                         isFromContingency={
                             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                         }
