@@ -1029,6 +1029,57 @@ export function createSubstation(
     });
 }
 
+/**
+ * Formats the properties of an array of properties so it can be consumed by the backend.
+ * @param {Array<{key: string, value: any}>} previousPropertiesArray - The previous propeties va.
+ * @param {Array<{key: string, value: any}>} newPropertiesArray - The new properties values.
+ * @returns {Array<{name: string, value: any, previousValue: any, added: boolean, deletionMark: boolean}>} - The modified properties.
+ */
+export function formatPropertiesForBackend(
+    previousPropertiesArray,
+    newPropertiesArray
+) {
+    const propertiesModifications = [];
+
+    previousPropertiesArray.forEach((oldObj) => {
+        const newObj = newPropertiesArray.find(
+            (newObj) => newObj.name === oldObj.name
+        );
+
+        if (!newObj) {
+            propertiesModifications.push({
+                ...oldObj,
+                previousValue: oldObj.value,
+                value: null,
+                // added: false,
+                deletionMark: true,
+            });
+        } else if (newObj.value !== oldObj.value) {
+            propertiesModifications.push({
+                ...newObj,
+                added: false,
+                deletionMark: false,
+                previousValue: oldObj.value,
+            });
+        }
+    });
+
+    newPropertiesArray.forEach((newObj) => {
+        const oldObj = previousPropertiesArray.find(
+            (oldObj) => oldObj.name === newObj.name
+        );
+
+        if (!oldObj) {
+            propertiesModifications.push({
+                ...newObj,
+                added: true,
+                deletionMark: false,
+            });
+        }
+    });
+    return propertiesModifications;
+}
+
 export function modifySubstation(
     studyUuid,
     currentNodeUuid,
@@ -1050,17 +1101,6 @@ export function modifySubstation(
         console.info('Creating substation modification');
     }
 
-    console.log('sites', modifyUrl);
-    console.log(
-        'sites',
-        'body',
-        JSON.stringify({
-            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
-            equipmentId: id,
-            equipmentName: toModificationOperation(name),
-            substationCountry: toModificationOperation(substationCountry),
-            properties: properties,
-    }));
     return backendFetchText(modifyUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {

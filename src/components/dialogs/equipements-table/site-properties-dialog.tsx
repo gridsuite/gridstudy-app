@@ -1,87 +1,69 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { Grid, useTheme, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
-import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
-import {
-    CellEditRequestEvent,
-    CellValueChangedEvent,
-    ColDef,
-    ColGroupDef,
-    GetRowIdFunc,
-    GetRowIdParams,
-    GridOptions,
-} from 'ag-grid-community';
+import { GetRowIdParams } from 'ag-grid-community';
+import { useIntl } from 'react-intl';
 
 type Props = {
     data: any;
-    onDataChanged: (data: any) => void;
-    onOK: () => void;
-    onCancel: () => void;
+    onDataChanged: (data: IData[]) => void;
 };
 
-const SitePropertiesDialog: React.FC<Props> = ({
-    data,
-    onDataChanged,
-    onOK,
-    onCancel,
-}) => {
+type IData = {
+    id: number;
+    key: string;
+    value: any;
+};
+
+const SitePropertiesDialog: React.FC<Props> = ({ data, onDataChanged }) => {
     const theme = useTheme();
     const gridRef = useRef<AgGridReact>(null);
     const [gridApi, setGridApi] = useState<any>(null);
-    const [newRowAdded, setNewRowAdded] = useState(false);
-    const [columnDefs, setColumnDefs] = useState([
-        { field: 'key' },
-        { field: 'value' },
-    ]);
+    const intl = useIntl();
+    const columnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'Key' }),
+                field: 'key',
+                editable: true,
+                singleClickEdit: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'value',
+                editable: true,
+                singleClickEdit: true,
+            },
+        ];
+    }, [intl]);
 
-    const [rowData, setRowData] = useState(() => {
+    const [rowData, setRowData] = useState<IData[]>(() => {
         const keys = Object.keys(data.data.properties);
-        const rowData = keys.map((key) => {
-            return { key: key, value: data.data.properties[key] };
+        const rowData = keys.map((key, index) => {
+            return { id: index, key: key, value: data.data.properties[key] };
         });
         return rowData;
     });
+
     useEffect(() => {
         if (gridApi) {
             gridApi.api.sizeColumnsToFit();
         }
     }, [columnDefs, gridApi]);
     const getRowId = (params: GetRowIdParams) => {
-        return params.data.key;
+        return params.data.id;
     };
     const onGridReady = (params: any) => {
         setGridApi(params);
     };
-
-    const onCellValueChanged = useCallback((event: CellValueChangedEvent) => {
-            const updatedRowData = rowData.map((row) => {
-                if (row.key === event.data.key) {
-                    return { ...row, value: event.newValue };
-                }
-                return row;
-            });
-            setRowData(updatedRowData);
-        },
-        [rowData]
-    );
-
-    const onCellEditRequest = useCallback((event: CellEditRequestEvent) => {
-        const oldData = event.data;
-        const field = event.colDef.field;
-        const newValue = event.newValue;
-        const newData = { ...oldData };
-        newData[field!] = event.newValue;
-        console.log(
-            'sitesAAA',
-            'onCellEditRequest, updating ' + field + ' to ' + newValue
-        );
-        const tx = {
-            update: [newData],
-        };
-        event.api.applyTransaction(tx);
-    }, []);
 
     useEffect(() => {
         if (gridApi) {
@@ -91,41 +73,53 @@ const SitePropertiesDialog: React.FC<Props> = ({
         }
     }, [gridApi, rowData]);
 
-    // console.log('sites', 'state Row data', rowData);
+    const handleAddRow = useCallback(() => {
+        const newRow = { id: rowData.length, key: '', value: '' };
+        const updatedRowData = [...rowData, newRow];
+        setRowData(updatedRowData);
+    }, [rowData]);
+
+    const handleDeleteRow = useCallback(() => {
+        const selectedNodes = gridApi.api.getSelectedNodes();
+        let updatedRowData = [...rowData];
+        selectedNodes.forEach((node: any) => {
+            const index = updatedRowData.indexOf(node.data);
+            if (index !== -1) {
+                updatedRowData.splice(index, 1);
+            }
+        });
+        // Update the IDs of the rows to match their index in the array
+        updatedRowData.forEach((row, index) => {
+            row.id = index;
+        });
+        setRowData(updatedRowData);
+        onDataChanged(updatedRowData);
+    }, [gridApi, rowData, onDataChanged]);
+
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} style={{ width: '500px' }}>
             <Grid item xs={12}>
-                <IconButton aria-label="delete">
+                <IconButton aria-label="delete" onClick={handleDeleteRow}>
                     <DeleteIcon />
                 </IconButton>
-                <IconButton aria-label="add">
+                <IconButton aria-label="add" onClick={handleAddRow}>
                     <AddIcon />
                 </IconButton>
             </Grid>
             <Grid item xs={12}>
                 <Grid item xs={12} className={theme.aggrid}>
                     <AgGridReact
-                        // rowData={gridApi && rowData?.length ? rowData : null} // to display loader at first render before we get the initial data and before the columns are sized to avoid glitch
                         ref={gridRef}
                         rowData={rowData}
                         onGridReady={onGridReady}
-                        // getLocaleText={getLocaleText}
                         cacheOverflowSize={10}
                         domLayout={'autoHeight'}
                         rowDragEntireRow
                         suppressBrowserResizeObserver
-                        columnDefs={columnDefs.map((colDef) => ({
-                            ...colDef,
-                            editable: true,
-                        }))}
+                        columnDefs={columnDefs}
                         detailRowAutoHeight={true}
                         rowSelection={'multiple'}
-                        // onSelectionChanged={(event) => {
-                        //     setSelectedRows(gridApi.api.getSelectedRows());
-                        // }}
-                        // onRowDataUpdated={newRowAdded ? onRowDataUpdated : undefined}
-                        // onCellValueChanged={onCellValueChanged}
-                        // onCellEditRequest={onCellEditRequest}
+                        animateRows={true}
                         onCellEditingStopped={(event) => {
                             if (event.rowIndex !== null) {
                                 const updatedRowData = [...rowData];
@@ -135,14 +129,11 @@ const SitePropertiesDialog: React.FC<Props> = ({
                             }
                         }}
                         getRowId={getRowId}
-                        // enableCellChangeFlash={true}
-                        // {...props}
                     ></AgGridReact>
                 </Grid>
             </Grid>
         </Grid>
     );
-    
 };
 
 export default SitePropertiesDialog;

@@ -95,14 +95,13 @@ const generateEditableNumericColumnDefinition = (
     };
 };
 //const onCellClicked = event: CellClickedEvent<TData>
-const onCellSitePropertiesClicked = (event) => {
-    // console.log('sites', event);
-    console.log('sites', event.column.colId);
-    console.log('sites', event.data.type);
-    if (event.data.type === EQUIPMENT_TYPES.SUBSTATION &&
-        event.column.colId === 'properties') {
-        console.log('sites', event.data);
-        //open pop
+const onCellSiteCellClicked = (event, callBack) => {
+    switch (event.colDef.id) {
+        case 'Properties':
+            callBack(event.data);
+            break;
+        default:
+            break;
     }
 };
 
@@ -112,7 +111,7 @@ export const TABLES_DEFINITIONS = {
         name: 'Substations',
         type: EQUIPMENT_TYPES.SUBSTATION,
         fetchers: EQUIPMENT_FETCHERS.SUBSTATION,
-        onCellClicked: onCellSitePropertiesClicked,
+        onCellClicked: onCellSiteCellClicked,
         columns: [
             {
                 id: 'ID',
@@ -122,10 +121,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: true,
             },
             {
                 id: 'Country',
                 field: 'countryName',
+                editable: true,
             },
             {
                 id: 'Properties',

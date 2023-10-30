@@ -356,6 +356,7 @@
     "PermanentLimitName": "IST",
     "LimitAcceptableDuration": "Durée",
     "ErrFetchViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes",
+    "Key": "Clé",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
@@ -477,6 +478,7 @@
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
+
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",

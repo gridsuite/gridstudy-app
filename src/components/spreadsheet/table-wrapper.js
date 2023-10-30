@@ -42,6 +42,7 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifySubstation,
     modifyBattery,
     modifyGenerator,
     modifyLoad,
@@ -303,13 +304,8 @@ const TableWrapper = (props) => {
     );
 
     const onCellClicked = useMemo(() => {
-        const onClickedOnOther = (event) => {
-            console.log('sites', 'other');
-        };
-
         const onCellClickedFunction =
-            TABLES_DEFINITION_INDEXES.get(tabIndex)?.onCellClicked ||
-            onClickedOnOther;
+            TABLES_DEFINITION_INDEXES.get(tabIndex)?.onCellClicked || null;
         return onCellClickedFunction;
     }, [tabIndex]);
 
@@ -534,6 +530,17 @@ const TableWrapper = (props) => {
     const buildEditPromise = useCallback(
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
+                case EQUIPMENT_TYPES.SUBSTATION:
+                    return modifySubstation(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.countryName,
+                        false,
+                        undefined,
+                        undefined
+                    );
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
                         props.studyUuid,

@@ -356,6 +356,7 @@
     "PermanentLimitName": "IST",
     "LimitAcceptableDuration": "Duration",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
+    "Key": "Key",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
@@ -477,6 +478,7 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
+
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
