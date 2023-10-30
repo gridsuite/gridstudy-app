@@ -107,7 +107,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     // Effects
     useEffect(() => {
-        if (analysisStatus !== RunningStatus.SUCCEED) {
+        if (!shortCircuitNotif || analysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
 

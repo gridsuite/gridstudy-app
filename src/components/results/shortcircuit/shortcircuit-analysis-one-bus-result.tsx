@@ -41,7 +41,10 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     useEffect(() => {
-        if (oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED) {
+        if (
+            !oneBusShortCircuitNotif ||
+            oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED
+        ) {
             return;
         }
 
