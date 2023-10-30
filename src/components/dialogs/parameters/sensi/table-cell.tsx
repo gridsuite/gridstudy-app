@@ -11,7 +11,11 @@ import React from 'react';
 import SelectInputItem from './selected-input';
 import { SwitchInput } from '@gridsuite/commons-ui';
 
-function EditableTableCell(arrayFormName, rowIndex, column) {
+function EditableTableCell(
+    arrayFormName: string,
+    rowIndex: number,
+    column: any
+) {
     return (
         <TableCell key={column.dataKey} sx={{ width: column.width }}>
             {column.directoryItems && (
@@ -21,6 +25,8 @@ function EditableTableCell(arrayFormName, rowIndex, column) {
                     elementType={column.elementType}
                     titleId={column.titleId}
                     hideErrorMessage={true}
+                    label={undefined}
+                    itemFilter={undefined}
                 />
             )}
             {column.menuItems && (

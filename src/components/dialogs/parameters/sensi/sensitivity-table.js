@@ -12,7 +12,6 @@ import {
     TableHead,
     TableRow,
 } from '@mui/material';
-import PropTypes from 'prop-types';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -58,7 +57,6 @@ const SensitivityTable = ({
     function handleDeleteButton(index) {
         const currentRowsValues = getValues(arrayFormName);
         if (index >= 0 && index < currentRowsValues.length) {
-            //setValue(`${arrayFormName}[${index}].${SELECTED}`, true);
             remove(index);
         }
     }
@@ -70,12 +68,7 @@ const SensitivityTable = ({
                 border: 'solid 0px rgba(0,0,0,0.1)',
             }}
         >
-            <Table
-                stickyHeader
-                size="small"
-                /*                ref={tableRef}
-                style={{ width: tableWidth }}*/
-            >
+            <Table stickyHeader size="small">
                 <TableHead>
                     <TableRow>
                         {columnsDefinition.map((column) => (
@@ -123,14 +116,6 @@ const SensitivityTable = ({
             </Table>
         </TableContainer>
     );
-};
-
-SensitivityTable.prototype = {
-    arrayFormName: PropTypes.string,
-    useFieldArrayOutput: PropTypes.object,
-    columnsDefinition: PropTypes.object,
-    allowedToAddRows: PropTypes.func,
-    createRows: PropTypes.func,
 };
 
 export default SensitivityTable;
