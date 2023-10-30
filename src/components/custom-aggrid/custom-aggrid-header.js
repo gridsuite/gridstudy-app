@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowDownward, ArrowUpward, Menu } from '@mui/icons-material';
 
 import {
@@ -22,6 +22,12 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+
+const styles = {
+    iconSize: {
+        fontSize: '1rem',
+    },
+};
 
 export const FILTER_UI_TYPES = {
     TEXT: 'text',
@@ -175,14 +181,14 @@ const CustomHeaderComponent = ({
                             <Grid item>
                                 {isSortActive && sortWay && (
                                     <Grid item>
-                                        <IconButton size={'small'}>
+                                        <IconButton>
                                             {sortWay === 1 ? (
                                                 <ArrowUpward
-                                                    fontSize={'small'}
+                                                    sx={styles.iconSize}
                                                 />
                                             ) : (
                                                 <ArrowDownward
-                                                    fontSize={'small'}
+                                                    sx={styles.iconSize}
                                                 />
                                             )}
                                         </IconButton>
@@ -213,7 +219,7 @@ const CustomHeaderComponent = ({
                                             }
                                             invisible={!filterSelectedOptions}
                                         >
-                                            <Menu fontSize={'small'} />
+                                            <Menu sx={styles.iconSize} />
                                         </Badge>
                                     </IconButton>
                                 </Grid>
@@ -242,6 +248,12 @@ const CustomHeaderComponent = ({
                             multiple
                             value={filterSelectedOptions}
                             options={filterOptions}
+                            getOptionLabel={(option) =>
+                                intl.formatMessage({
+                                    id: option,
+                                    defaultMessage: option,
+                                })
+                            }
                             onChange={(_, data) => {
                                 handleFilterChange(field, data);
                             }}
