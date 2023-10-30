@@ -19,7 +19,14 @@ export interface ReduxState {
     computingStatus: ComputingStatus;
     optionalServices: IOptionalService[];
     limitReduction: string;
+    loadflowNotif: boolean;
+    saNotif: boolean;
+    sensiNotif: boolean;
+    voltageInitNotif: boolean;
+    dynamicSimulationNotif: boolean;
+    user: User;
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
+    notificationIdList: UUID[];
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
@@ -72,4 +79,20 @@ export interface ComputingStatus {
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INIT]: RunningStatus;
+}
+
+export interface User {
+    id_token: string;
+    access_token: string;
+    token_type: string;
+    scope: string;
+    profile: Profile;
+    expires_at: number;
+}
+
+interface Profile {
+    sub: string;
+    name: string;
+    email: string;
+    s_hash: string;
 }

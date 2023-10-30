@@ -30,24 +30,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-    addLoadflowNotif,
-    addSANotif,
-    addSensiNotif,
-    addAllBusesShortCircuitNotif,
-    addDynamicSimulationNotif,
     centerOnSubstation,
     openDiagram,
-    resetLoadflowNotif,
-    resetSANotif,
-    resetSensiNotif,
-    resetAllBusesShortCircuitNotif,
-    resetDynamicSimulationNotif,
     STUDY_DISPLAY_MODE,
-    addVoltageInitNotif,
-    resetVoltageInitNotif,
     STUDY_INDEXATION_STATUS,
-    addOneBusShortCircuitNotif,
-    resetOneBusShortCircuitNotif,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -60,8 +46,6 @@ import {
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
-import { ComputingType } from './computing-status/computing-type';
-import { RunningStatus } from './utils/running-status';
 import { fetchNetworkElementInfos } from '../services/study/network';
 import {
     EQUIPMENT_INFOS_TYPES,
@@ -69,6 +53,8 @@ import {
 } from './utils/equipment-types';
 import { fetchAppsAndUrls } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
+import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
+import { useComputationNotification } from '../hooks/use-computation-notification';
 
 const styles = {
     tabs: {
@@ -187,25 +173,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
-    const loadflowNotif = useSelector((state) => state.loadflowNotif);
-
-    const saNotif = useSelector((state) => state.saNotif);
-
-    const sensiNotif = useSelector((state) => state.sensiNotif);
-
-    const allBusesShortCircuitNotif = useSelector(
-        (state) => state.allBusesShortCircuitNotif
-    );
-
-    const oneBusShortCircuitNotif = useSelector(
-        (state) => state.oneBusShortCircuitNotif
-    );
-
-    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
-
-    const dynamicSimulationNotif = useSelector(
-        (state) => state.dynamicSimulationNotif
-    );
+    const notificationsCount = useComputationNotificationCount();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
@@ -227,35 +195,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
-    const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
-    );
-
-    const securityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
-    );
-
-    const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
-
-    const allBusesShortCircuitAnalysisStatus = useSelector(
-        (state) =>
-            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
-    );
-
-    const oneBusShortCircuitAnalysisStatus = useSelector(
-        (state) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
-    );
-
-    const dynamicSimulationStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
-    );
-
-    const voltageInitStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
-    );
+    useComputationNotification();
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
@@ -286,99 +226,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             });
         }
     }, [user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (loadFlowStatus === RunningStatus.SUCCEED ||
-                loadFlowStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addLoadflowNotif());
-        } else {
-            dispatch(resetLoadflowNotif());
-        }
-    }, [currentNode, dispatch, loadFlowStatus, tabIndex, user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (securityAnalysisStatus === RunningStatus.SUCCEED ||
-                securityAnalysisStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addSANotif());
-        } else {
-            dispatch(resetSANotif());
-        }
-    }, [currentNode, dispatch, securityAnalysisStatus, tabIndex, user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            sensitivityAnalysisStatus === RunningStatus.SUCCEED
-        ) {
-            dispatch(addSensiNotif());
-        } else {
-            dispatch(resetSensiNotif());
-        }
-    }, [currentNode, dispatch, sensitivityAnalysisStatus, tabIndex, user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            allBusesShortCircuitAnalysisStatus === RunningStatus.SUCCEED
-        ) {
-            dispatch(addAllBusesShortCircuitNotif());
-        } else {
-            dispatch(resetAllBusesShortCircuitNotif());
-        }
-    }, [
-        currentNode,
-        dispatch,
-        allBusesShortCircuitAnalysisStatus,
-        tabIndex,
-        user,
-    ]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            oneBusShortCircuitAnalysisStatus === RunningStatus.SUCCEED
-        ) {
-            dispatch(addOneBusShortCircuitNotif());
-        } else {
-            dispatch(resetOneBusShortCircuitNotif());
-        }
-    }, [
-        currentNode,
-        dispatch,
-        oneBusShortCircuitAnalysisStatus,
-        tabIndex,
-        user,
-    ]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (dynamicSimulationStatus === RunningStatus.SUCCEED ||
-                dynamicSimulationStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addDynamicSimulationNotif());
-        } else {
-            dispatch(resetDynamicSimulationNotif());
-        }
-    }, [currentNode, dispatch, dynamicSimulationStatus, tabIndex, user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (voltageInitStatus === RunningStatus.SUCCEED ||
-                voltageInitStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addVoltageInitNotif());
-        } else {
-            dispatch(resetVoltageInitNotif());
-        }
-    }, [currentNode, dispatch, voltageInitStatus, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
@@ -488,25 +335,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                 let label;
                                 if (
                                     tabName === StudyView.RESULTS &&
-                                    (loadflowNotif ||
-                                        saNotif ||
-                                        sensiNotif ||
-                                        allBusesShortCircuitNotif ||
-                                        oneBusShortCircuitNotif ||
-                                        dynamicSimulationNotif ||
-                                        voltageInitNotif)
+                                    notificationsCount > 0
                                 ) {
                                     label = (
                                         <Badge
-                                            badgeContent={
-                                                loadflowNotif +
-                                                saNotif +
-                                                sensiNotif +
-                                                allBusesShortCircuitNotif +
-                                                oneBusShortCircuitNotif +
-                                                dynamicSimulationNotif +
-                                                voltageInitNotif
-                                            }
+                                            badgeContent={notificationsCount}
                                             color="secondary"
                                         >
                                             <FormattedMessage id={tabName} />
