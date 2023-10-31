@@ -61,6 +61,7 @@ import BatteryModificationDialog from 'components/dialogs/network-modifications/
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
+import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
 
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
@@ -75,7 +76,7 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 
-const styles = {
+export const styles = {
     listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
@@ -132,11 +133,11 @@ const styles = {
     }),
 };
 
-function isChecked(s1) {
+export function isChecked(s1) {
     return s1 !== 0;
 }
 
-function isPartial(s1, s2) {
+export function isPartial(s1, s2) {
     if (s1 === 0) {
         return false;
     }
@@ -189,8 +190,8 @@ const NetworkModificationNodeEditor = () => {
                 snackInfo({
                     messageId: 'CopiedModificationInvalidationMessage',
                 });
-                return [];
             }
+            return [];
         });
     }, [snackInfo]);
 
@@ -327,6 +328,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
                     label: 'SUBSTATION',
                     action: () => adapt(SubstationModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+                    label: 'TABULAR',
+                    action: () => adapt(TabularModificationDialog),
                 },
             ],
         },

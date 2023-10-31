@@ -1,7 +1,7 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { RadioGroupProps, TextFieldProps } from '@mui/material';
+    import { RadioGroupProps, SxProps, TextFieldProps } from "@mui/material";
     import { CaseImportParameters } from 'services/network-conversion';
 
     interface SnackInputs {
@@ -30,7 +30,7 @@ declare module '@gridsuite/commons-ui' {
     interface AutocompleteInputProps
         extends Omit<
             AutocompleteProps<
-                string,
+                string | {id: string; label: string;},
                 boolean | undefined,
                 boolean | undefined,
                 boolean | undefined
@@ -47,6 +47,7 @@ declare module '@gridsuite/commons-ui' {
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
+        getOptionLabel?: (rt: string) => string;
         formProps?: Omit<
             TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
@@ -68,6 +69,8 @@ declare module '@gridsuite/commons-ui' {
             'outputTransform' | 'inputTransform' | 'readOnly' | 'getOptionLabel' // already defined in SelectInput
         >
     >;
+
+    export const FieldErrorAlert: FunctionComponent<>;
 
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps
@@ -157,4 +160,11 @@ declare module '@gridsuite/commons-ui' {
         CONTINGENCY_LIST: 'CONTINGENCY_LIST',
         VOLTAGE_INIT_PARAMETERS: 'VOLTAGE_INIT_PARAMETERS',
     };
+
+    interface OverflowableTextProps {
+        sx: SxProps,
+        text?: string;
+    }
+
+    export const OverflowableText: FunctionComponent<OverflowableTextProps>;
 }

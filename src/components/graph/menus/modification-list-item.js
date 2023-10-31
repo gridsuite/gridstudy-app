@@ -100,10 +100,16 @@ export const ModificationListItem = ({
                     '/' +
                     modificationMetadata?.lineToAttachTo2Id
                 );
+            case 'TABULAR_MODIFICATION':
+                return intl.formatMessage({
+                    id:
+                        'network_modifications/tabular/' +
+                        modif.modificationType,
+                });
             default:
                 return modificationMetadata?.equipmentId || '';
         }
-    }, [modif]);
+    }, [intl, modif]);
 
     const toggle = useCallback(
         () => handleToggle(modif),
