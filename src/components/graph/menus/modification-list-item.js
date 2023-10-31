@@ -104,7 +104,7 @@ export const ModificationListItem = ({
                 return intl.formatMessage({
                     id:
                         'network_modifications/tabular/' +
-                        modif.modificationType,
+                        modificationMetadata?.tabularModificationType,
                 });
             default:
                 return modificationMetadata?.equipmentId || '';
