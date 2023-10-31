@@ -131,7 +131,7 @@ export default function ReportViewer({
             ) {
                 return globalReportPromise(severityList);
             }
-            return subReportPromise(nodeId, severityList);
+            return subReportPromise(reportTreeData.current[nodeId].getId(), severityList);
         },
         [nodeReportPromise, globalReportPromise, subReportPromise]
     );

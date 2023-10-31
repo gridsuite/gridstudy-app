@@ -24,17 +24,13 @@ export const LogReportType = {
 
 export default class LogReport {
     constructor(reportType, jsonReporter, parentReportId) {
-        this.id = undefined;
+        this.nodeId = uuid4(); // tree view node id
+        this.id = undefined; // id coming from report-server
         this.type = reportType;
-        if (reportType === LogReportType.GlobalReport) {
-            // no ID for this kind of report, we have to create one
-            this.nodeId = uuid4();
-        } else if (reportType === LogReportType.NodeReport) {
-            this.id = jsonReporter?.taskValues?.id?.value; // not unique for all nodes
-            this.nodeId = jsonReporter.taskKey; // then use taskkey as unique nodeId
-        } else {
-            this.id = jsonReporter?.taskValues?.id?.value; // unique for all subreports
-            this.nodeId = this.id;
+        if (reportType === LogReportType.NodeReport) {
+            this.id = jsonReporter?.taskValues?.id?.value; // rk: not unique for all nodes
+        } else if (reportType === LogReportType.SubReport) {
+            this.id = jsonReporter?.taskValues?.id?.value; // rk: unique for all subreports
         }
         this.key = jsonReporter.taskKey;
         this.title = LogReportItem.resolveTemplateMessage(
@@ -49,7 +45,7 @@ export default class LogReport {
     }
 
     /**
-     * A unique ID to identify a node in the tree
+     * A unique ID to identify a node in the tree view
      */
     getNodeId() {
         return this.nodeId;
