@@ -73,6 +73,7 @@ const SensitivityAnalysisResult = ({
                     onSortChanged: (newSortValue) =>
                         onSortChanged(field, newSortValue),
                     updateFilter,
+                    filterSelector,
                 },
                 minWidth: isSortActive && sortWay ? 95 : 65,
                 maxWidth: maxWidth,
@@ -80,7 +81,6 @@ const SensitivityAnalysisResult = ({
                 autoHeaderHeight: true,
                 pinned: pinned,
                 headerTooltip: intl.formatMessage({ id: labelId }),
-                filterSelector,
             };
         },
         [
