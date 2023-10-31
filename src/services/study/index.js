@@ -58,16 +58,14 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchNodeReport(
+export function fetchParentNodesReport(
     studyUuid,
     nodeUuid,
     nodeOnlyReport,
-    withElements,
-    reportId,
     severityFilterList
 ) {
     console.info(
-        'get report for node : ' +
+        'get node report with its parent for : ' +
             nodeUuid +
             ' with nodeOnlyReport = ' +
             nodeOnlyReport +
@@ -77,13 +75,31 @@ export function fetchNodeReport(
 
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/report?nodeOnlyReport=' +
-        (nodeOnlyReport ? 'true' : 'false') +
-        '&withElements=' +
-        withElements;
-    if (reportId) {
-        url += '&reportId=' + reportId;
+        '/parent-nodes-report?nodeOnlyReport=' +
+        (nodeOnlyReport ? 'true' : 'false');
+    if (severityFilterList?.length) {
+        url +=
+            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
     }
+
+    return backendFetchJson(url);
+}
+
+export function fetchNodeReport(
+    studyUuid,
+    nodeUuid,
+    reportId,
+    severityFilterList
+) {
+    console.info(
+        'get report for node : ' + nodeUuid + ' in study ' + studyUuid
+    );
+
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/report?nodeOnlyReport=' +
+        '&reportId=' +
+        reportId;
     if (severityFilterList?.length) {
         url +=
             '&' + getRequestParamFromList(severityFilterList, 'severityLevels');

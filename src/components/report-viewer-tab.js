@@ -16,7 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { fetchNodeReport, fetchSubReport } from '../services/study';
+import {fetchNodeReport, fetchParentNodesReport, fetchSubReport} from '../services/study';
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
 import LogReportItem from './ReportViewer/log-report-item';
@@ -110,12 +110,10 @@ export const ReportViewerTab = ({
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
             setWaitingLoadReport(true);
-            fetchNodeReport(
+            fetchParentNodesReport(
                 studyId,
                 currentNode.id,
                 nodeOnlyReport,
-                true,
-                null,
                 LogReportItem.getDefaultSeverityList()
             )
                 .then((fetchedReport) => {
@@ -157,20 +155,16 @@ export const ReportViewerTab = ({
         return fetchNodeReport(
             studyId,
             nodeId,
-            true,
-            true,
             reportId,
             severityFilterList
         );
     };
 
     const globalReportPromise = (severityFilterList) => {
-        return fetchNodeReport(
+        return fetchParentNodesReport(
             studyId,
             currentNode.id,
             false,
-            true,
-            null,
             severityFilterList
         );
     };
