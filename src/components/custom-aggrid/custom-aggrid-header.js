@@ -264,7 +264,7 @@ const CustomHeaderComponent = ({
                     {filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE ? (
                         <Autocomplete
                             multiple
-                            value={selectedFilterData}
+                            value={selectedFilterData || []}
                             options={filterOptions}
                             getOptionLabel={(option) =>
                                 intl.formatMessage({
