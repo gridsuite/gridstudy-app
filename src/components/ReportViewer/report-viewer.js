@@ -67,7 +67,7 @@ export default function ReportViewer({
      */
     const createReporterItem = useCallback(
         (logReport) => {
-            reportTreeData.current[logReport.getNodeId()] = logReport;
+            reportTreeData.current[logReport.getUniqueId()] = logReport;
             if (logReport.getSubReports().length > maxSubReports) {
                 console.warn(
                     'The number (%s) being greater than %s only the first %s subreports will be displayed',
@@ -80,9 +80,9 @@ export default function ReportViewer({
                 <ReportItem
                     labelText={logReport.getTitle()}
                     labelIconColor={logReport.getHighestSeverity().colorName}
-                    key={logReport.getNodeId().toString()}
+                    key={logReport.getUniqueId().toString()}
                     sx={styles.treeItem}
-                    nodeId={logReport.getNodeId().toString()}
+                    nodeId={logReport.getUniqueId().toString()}
                 >
                     {logReport
                         .getSubReports()
@@ -131,7 +131,10 @@ export default function ReportViewer({
             ) {
                 return globalReportPromise(severityList);
             }
-            return subReportPromise(reportTreeData.current[nodeId].getId(), severityList);
+            return subReportPromise(
+                reportTreeData.current[nodeId].getId(),
+                severityList
+            );
         },
         [nodeReportPromise, globalReportPromise, subReportPromise]
     );
@@ -193,7 +196,7 @@ export default function ReportViewer({
                 ? LogReportType.GlobalReport
                 : LogReportType.NodeReport;
         rootReport.current = new LogReport(reportType, jsonReportTree);
-        let rootId = rootReport.current.getNodeId().toString();
+        let rootId = rootReport.current.getUniqueId().toString();
         treeView.current = createReporterItem(rootReport.current);
         setSelectedNode(rootId);
         setExpandedNodes([rootId]);

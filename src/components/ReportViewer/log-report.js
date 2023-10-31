@@ -17,20 +17,18 @@ import { v4 as uuid4 } from 'uuid';
  * - SubReport : contain other SubReport children, and can have some reports (log messages displayed in the right pane)
  */
 export const LogReportType = {
-    GlobalReport: 'global report',
-    NodeReport: 'node report',
-    SubReport: 'reporter',
+    GlobalReport: 'GlobalReport',
+    NodeReport: 'NodeReport',
+    SubReport: 'SubReport',
 };
 
 export default class LogReport {
     constructor(reportType, jsonReporter, parentReportId) {
-        this.nodeId = uuid4(); // tree view node id
+        this.uniqueId = uuid4(); // tree view unique node id
         this.id = undefined; // id coming from report-server
         this.type = reportType;
-        if (reportType === LogReportType.NodeReport) {
-            this.id = jsonReporter?.taskValues?.id?.value; // rk: not unique for all nodes
-        } else if (reportType === LogReportType.SubReport) {
-            this.id = jsonReporter?.taskValues?.id?.value; // rk: unique for all subreports
+        if (reportType === LogReportType.NodeReport || reportType === LogReportType.SubReport) {
+            this.id = jsonReporter?.taskValues?.id?.value;
         }
         this.key = jsonReporter.taskKey;
         this.title = LogReportItem.resolveTemplateMessage(
@@ -47,8 +45,8 @@ export default class LogReport {
     /**
      * A unique ID to identify a node in the tree view
      */
-    getNodeId() {
-        return this.nodeId;
+    getUniqueId() {
+        return this.uniqueId;
     }
 
     /**
@@ -90,10 +88,10 @@ export default class LogReport {
                 ? LogReportType.NodeReport
                 : LogReportType.SubReport;
         jsonReporter.subReporters.map((value) =>
-            this.subReports.push(new LogReport(childType, value, this.nodeId))
+            this.subReports.push(new LogReport(childType, value, this.uniqueId))
         );
         jsonReporter.reports.map((value) =>
-            this.logs.push(new LogReportItem(value, this.nodeId))
+            this.logs.push(new LogReportItem(value, this.uniqueId))
         );
     }
 
