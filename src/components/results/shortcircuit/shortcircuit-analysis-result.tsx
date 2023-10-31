@@ -44,7 +44,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
     analysisStatus: RunningStatus;
     result: SCAFaultResult[];
-    updateResult: (result: SCAFaultResult[] | SCAFeederResult[]) => void;
+    updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     shortCircuitNotif: boolean;
 }
 
@@ -113,7 +113,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
         let active = true; // to manage race condition
         setIsFetching(true);
-        updateResult([]);
+        updateResult(null);
 
         const selector = {
             page,
@@ -130,11 +130,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         })
             .then((result: SCAPagedResults | null) => {
                 if (active) {
-                    const { content = [], totalElements } = result || {};
+                    const { content = [], totalElements = 0 } = result || {};
                     updateResult(content);
-                    if (totalElements && content.length) {
-                        setCount(totalElements);
-                    }
+                    setCount(totalElements);
                 }
             })
             .catch((error) =>

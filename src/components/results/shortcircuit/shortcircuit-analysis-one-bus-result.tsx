@@ -37,7 +37,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     );
 
     const [faultResult, setFaultResult] = useState<SCAFaultResult>();
-    const [feederResults, setFeederResults] = useState<SCAFeederResult[]>([]);
+    const [feederResults, setFeederResults] = useState<SCAFeederResult[]>();
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
                 );
                 return;
             }
-            setFaultResult(result?.faults[0] ?? []);
+            setFaultResult(result?.faults[0]);
         });
     }, [
         snackError,
@@ -74,7 +74,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     ]);
 
     useEffect(() => {
-        if (!faultResult || !feederResults.length) {
+        if (!faultResult || !feederResults) {
             setResult([]);
             return;
         }
@@ -88,8 +88,8 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     }, [faultResult, feederResults]);
 
     const updateResult = useCallback(
-        (results: SCAFaultResult[] | SCAFeederResult[]) => {
-            setFeederResults(results as SCAFeederResult[]);
+        (results: SCAFaultResult[] | SCAFeederResult[] | null) => {
+            setFeederResults((results as SCAFeederResult[]) ?? null);
         },
         []
     );
