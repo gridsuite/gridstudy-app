@@ -39,7 +39,7 @@ const TabularModificationForm = () => {
 
     const { setValue, clearErrors, getValues } = useFormContext();
 
-    const richTypeLabel = (rt: any) => {
+    const richTypeLabel = (rt: string) => {
         return intl.formatMessage({ id: rt });
     };
 
@@ -63,9 +63,9 @@ const TabularModificationForm = () => {
     });
 
     const postProcessFile = useCallback(
-        (fileData: any) => {
+        (fileData: Array<Modification>) => {
             // map the csv columns to the modification fields
-            fileData = fileData.map((row: Modification) => {
+            fileData = fileData.map((row) => {
                 const modification: Modification = {};
                 Object.keys(row).forEach((key) => {
                     const fieldKey = TABULAR_MODIFICATION_FIELDS[
@@ -94,11 +94,11 @@ const TabularModificationForm = () => {
             setValue(MODIFICATIONS_TABLE, []);
             clearErrors(MODIFICATIONS_TABLE);
         } else if (selectedFile) {
-            Papa.parse(selectedFile as any, {
+            Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
                 dynamicTyping: true,
-                complete: (results) => {
+                complete: (results: Papa.ParseResult<object>) => {
                     postProcessFile(results.data);
                 },
             });
