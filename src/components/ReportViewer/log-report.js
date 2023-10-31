@@ -27,7 +27,10 @@ export default class LogReport {
         this.uniqueId = uuid4(); // tree view unique node id
         this.id = undefined; // id coming from report-server
         this.type = reportType;
-        if (reportType === LogReportType.NodeReport || reportType === LogReportType.SubReport) {
+        if (
+            reportType === LogReportType.NodeReport ||
+            reportType === LogReportType.SubReport
+        ) {
             this.id = jsonReporter?.taskValues?.id?.value;
         }
         this.key = jsonReporter.taskKey;

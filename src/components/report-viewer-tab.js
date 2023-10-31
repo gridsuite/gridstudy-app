@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer from '../components/ReportViewer';
+import ReportViewer from '../components/ReportViewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
