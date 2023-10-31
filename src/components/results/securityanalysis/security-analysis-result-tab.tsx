@@ -40,7 +40,7 @@ import {
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import { useRowFilter } from '../../../hooks/use-row-filter';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { FILTER_TYPES } from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
@@ -84,8 +84,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
-    const { updateFilter, filterSelector, initFilters } =
-        useRowFilter(FROM_COLUMN_TO_FIELD);
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+        FROM_COLUMN_TO_FIELD,
+        () => {
+            setPage(0);
+        }
+    );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
