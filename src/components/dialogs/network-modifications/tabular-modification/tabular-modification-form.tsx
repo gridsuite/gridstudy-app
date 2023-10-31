@@ -32,8 +32,7 @@ import {
 } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community/dist/lib/main';
-
-const richTypeEquals = (a: any, b: any) => a === b;
+import { richTypeEquals } from 'components/utils/utils';
 
 const TabularModificationForm = () => {
     const intl = useIntl();

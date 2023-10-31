@@ -83,7 +83,7 @@ const TabularModificationDialog = ({
                     const field = modif[key];
                     if (key === 'equipmentId') {
                         modification[key] = field;
-                    } else if (typeof field === 'object') {
+                    } else {
                         modification[key] = field?.value;
                     }
                 });
