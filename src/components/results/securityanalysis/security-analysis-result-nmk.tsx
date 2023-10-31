@@ -57,7 +57,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
 }) => {
     const { content } = result || {};
     const { onSortChanged, sortConfig } = sortProps || {};
-    const { updateFilter, filterEnums } = filterProps || {};
+    const { updateFilter, filterEnums, filterSelector } = filterProps || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
@@ -174,10 +174,11 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     filterOptions,
                     updateFilter,
                     filterParams,
+                    filterSelector,
                 },
             };
         },
-        [filtersDef, sortConfig, updateFilter, onSortChanged]
+        [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
     );
 
     const columnDefs = useMemo(

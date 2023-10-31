@@ -131,6 +131,7 @@ type SortProps = {
 
 type FilterProps = {
     updateFilter: (field: string, value: string) => void;
+    filterSelector: FilterSelectorType | undefined;
     filterEnums: FilterEnums;
 };
 

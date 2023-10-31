@@ -80,9 +80,17 @@ const SensitivityAnalysisResult = ({
                 autoHeaderHeight: true,
                 pinned: pinned,
                 headerTooltip: intl.formatMessage({ id: labelId }),
+                filterSelector,
             };
         },
-        [filtersDef, intl, sortConfig, updateFilter, onSortChanged]
+        [
+            sortConfig,
+            filtersDef,
+            intl,
+            updateFilter,
+            filterSelector,
+            onSortChanged,
+        ]
     );
 
     const columnsDefs = useMemo(() => {

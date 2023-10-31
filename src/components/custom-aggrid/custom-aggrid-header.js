@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, Menu } from '@mui/icons-material';
 import {
     Popover,
@@ -53,6 +53,7 @@ const CustomHeaderComponent = ({
     isSortable = true,
     isFilterable = true,
     filterParams = {},
+    filterSelector,
 }) => {
     const intl = useIntl();
 
@@ -133,6 +134,12 @@ const CustomHeaderComponent = ({
     const handleMouseLeave = () => {
         setIsHoveringHeader(false);
     };
+
+    useEffect(() => {
+        if (!filterSelector) {
+            setSelectedFilterData(undefined);
+        }
+    }, [filterSelector]);
 
     return (
         <Grid
