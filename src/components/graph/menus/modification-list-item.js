@@ -100,7 +100,7 @@ export const ModificationListItem = ({
                     '/' +
                     modificationMetadata?.lineToAttachTo2Id
                 );
-            case 'TABULAR_MODIFICATION':
+            case MODIFICATION_TYPES.TABULAR_MODIFICATION.type:
                 return intl.formatMessage({
                     id:
                         'network_modifications/tabular/' +
