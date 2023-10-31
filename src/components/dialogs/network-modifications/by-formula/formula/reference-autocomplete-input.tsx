@@ -47,6 +47,13 @@ const ReferenceAutocompleteInput: FunctionComponent<{
         [intl]
     );
 
+    const inputTransform = (value: { id: string; label: string } | string) =>
+        options.find((option) => option?.id === value) || value;
+
+    const outputTransform = (value: any) => {
+        return value?.id ?? value;
+    };
+
     return (
         <AutocompleteInput
             name={name}
@@ -57,6 +64,8 @@ const ReferenceAutocompleteInput: FunctionComponent<{
                     ? intl.formatMessage({ id: option.label })
                     : option;
             }}
+            inputTransform={inputTransform}
+            outputTransform={outputTransform}
             label={'ReferenceFieldOrValue'}
             size={'small'}
             open={displayOptions}
@@ -65,18 +74,9 @@ const ReferenceAutocompleteInput: FunctionComponent<{
             onInputChange={(event, value) => {
                 const displayOption = !!value?.startsWith('#');
                 setDisplayOptions(displayOption);
-
-                const matchingOption = options.find(
-                    (option) =>
-                        intl.formatMessage({ id: option.label }) ===
-                        value?.substring(1)
-                );
-                //if it does, we send the matching option to react hook form
-                if (matchingOption) {
-                    onChange(matchingOption);
-                    return;
+                if (value && !isNaN(parseFloat(value))) {
+                    onChange(value);
                 }
-                onChange(value);
             }}
             filterOptions={(
                 options: ({ id: string; label: string } | string)[],

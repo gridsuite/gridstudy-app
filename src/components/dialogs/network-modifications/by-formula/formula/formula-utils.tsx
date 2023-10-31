@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     EDITED_FIELD,
@@ -23,9 +16,9 @@ import { AnyObject, TestFunction } from 'yup';
 
 export const EQUIPMENTS_FIELDS = {
     [EQUIPMENT_TYPES.GENERATOR]: [
+        { id: 'RATED_NOMINAL_POWER', label: 'RatedNominalPowerText' },
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText' },
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText' },
-        { id: 'RATED_NOMINAL_POWER', label: 'RatedNominalPowerText' },
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText' },
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText' },
         { id: 'VOLTAGE_SET_POINT', label: 'VoltageText' },
@@ -63,9 +56,10 @@ export const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (
 
     // this will return the highest level parent, so we can get the equipment type
     const parent = context.from?.[context.from.length - 1];
+    const equipmentType = parent?.value?.[EQUIPMENT_TYPE_FIELD];
     return parent
-        ? EQUIPMENTS_FIELDS[parent?.value?.[EQUIPMENT_TYPE_FIELD]]?.some(
-              (field) => field.id === value?.id
+        ? EQUIPMENTS_FIELDS[equipmentType]?.some(
+              (field: { id: string; label: string }) => field.id === value
           )
         : false;
 };

@@ -27,7 +27,7 @@ interface FormulaProps {
     index: number;
 }
 
-const OPERATOR_OPTIONS = [
+export const OPERATOR_OPTIONS = [
     { id: 'ADDITION', label: '+' },
     { id: 'SUBTRACTION', label: '-' },
     { id: 'MULTIPLICATION', label: '*' },
@@ -39,9 +39,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         name: EQUIPMENT_TYPE_FIELD,
     });
 
-    const equipmentFields = equipmentTypeWatch
-        ? EQUIPMENTS_FIELDS[equipmentTypeWatch] ?? []
-        : [];
+    const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
 
     const filtersField = (
         <DirectoryItemsInput

@@ -16,16 +16,18 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import ByFormulaForm from './by-formula-form';
 import {
+    EDITED_FIELD,
     EQUIPMENT_FIELD,
     EQUIPMENT_TYPE_FIELD,
+    FILTERS,
     FORMULAS,
+    OPERATOR,
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
     VALUE,
 } from '../../../utils/field-constants';
 import { modifyByFormula } from '../../../../services/study/network-modifications';
 import {
-    EQUIPMENTS_FIELDS,
     getFormulaInitialValue,
     getFormulaSchema,
 } from './formula/formula-utils';
@@ -34,7 +36,7 @@ function getFieldOrValue(input: string | { id: string, label: string }) {
     const isNumber = !isNaN(parseFloat(input));
     return {
         [VALUE]: isNumber ? input : null,
-        [EQUIPMENT_FIELD]: isNumber ? null : input?.id,
+        [EQUIPMENT_FIELD]: isNumber ? null : input,
     };
 }
 
@@ -79,23 +81,19 @@ const ByFormulaDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const fields = EQUIPMENTS_FIELDS[editData?.identifiableType];
-
             const formulas = editData.formulaInfosList?.map((formula) => {
                 const ref1 =
                     formula?.fieldOrValue1?.value?.toString() ??
-                    fields.find(
-                        (f) => (f.id = formula?.fieldOrValue1?.equipmentField)
-                    );
+                    formula?.fieldOrValue1?.equipmentField;
                 const ref2 =
                     formula?.fieldOrValue2?.value?.toString() ??
-                    fields.find(
-                        (f) => (f.id = formula?.fieldOrValue2?.equipmentField)
-                    );
+                    formula?.fieldOrValue2?.equipmentField;
                 return {
-                    [REFERENCE_FIELD_OR_VALUE_1]: ref1 ?? null,
-                    [REFERENCE_FIELD_OR_VALUE_2]: ref2 ?? null,
-                    ...formula,
+                    [REFERENCE_FIELD_OR_VALUE_1]: ref1,
+                    [REFERENCE_FIELD_OR_VALUE_2]: ref2,
+                    [EDITED_FIELD]: formula.editedField,
+                    [OPERATOR]: formula.operator,
+                    [FILTERS]: formula.filters,
                 };
             });
             reset({
