@@ -24,14 +24,22 @@ export const LogReportType = {
 
 export default class LogReport {
     constructor(reportType, jsonReporter, parentReportId) {
-        this.uniqueId = uuid4(); // tree view unique node id
-        this.id = undefined; // id coming from report-server
         this.type = reportType;
-        if (
-            reportType === LogReportType.NodeReport ||
-            reportType === LogReportType.SubReport
-        ) {
-            this.id = jsonReporter?.taskValues?.id?.value;
+        // id : An ID provided by the back to be used to fetch reports from the back
+        // uniqueId : A unique ID to identify a node in the tree view
+        //
+        // Remark: uniqueId must be the same when we fetch data N times from the back
+        // (because of the reverse link when we click on a report Item in the right pane)
+        if (reportType === LogReportType.GlobalReport) {
+            // no ID coming from the back for this kind of report, we have to create one
+            this.id = undefined;
+            this.uniqueId = uuid4();
+        } else if (reportType === LogReportType.NodeReport) {
+            this.id = jsonReporter?.taskValues?.id?.value; // not unique for all nodes
+            this.uniqueId = jsonReporter.taskKey; // then use taskkey as unique Id
+        } else {
+            this.id = jsonReporter?.taskValues?.id?.value; // unique for all subreports
+            this.uniqueId = this.id;
         }
         this.key = jsonReporter.taskKey;
         this.title = LogReportItem.resolveTemplateMessage(
@@ -45,16 +53,10 @@ export default class LogReport {
         this.init(reportType, jsonReporter);
     }
 
-    /**
-     * A unique ID to identify a node in the tree view
-     */
     getUniqueId() {
         return this.uniqueId;
     }
 
-    /**
-     * An ID provided by the back to be used to fetch reports from the back
-     */
     getId() {
         return this.id;
     }
