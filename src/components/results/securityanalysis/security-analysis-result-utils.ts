@@ -436,7 +436,7 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
 
-export const useFetchFiltersEnums = (isEmptyResult: boolean) => {
+export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [result, setResult] = useState({
