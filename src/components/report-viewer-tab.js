@@ -16,7 +16,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {fetchNodeReport, fetchParentNodesReport, fetchSubReport} from '../services/study';
+import {
+    fetchNodeReport,
+    fetchParentNodesReport,
+    fetchSubReport,
+} from '../services/study';
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
 import LogReportItem from './ReportViewer/log-report-item';
@@ -152,12 +156,7 @@ export const ReportViewerTab = ({
     ]);
 
     const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
-        return fetchNodeReport(
-            studyId,
-            nodeId,
-            reportId,
-            severityFilterList
-        );
+        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList);
     };
 
     const globalReportPromise = (severityFilterList) => {

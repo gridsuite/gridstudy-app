@@ -97,8 +97,7 @@ export function fetchNodeReport(
 
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/report?nodeOnlyReport=' +
-        '&reportId=' +
+        '/report?reportId=' +
         reportId;
     if (severityFilterList?.length) {
         url +=
