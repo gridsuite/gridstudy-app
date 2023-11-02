@@ -612,7 +612,7 @@
     "VSC": "Vsc",
     "SHUNT_COMPENSATOR": "Shunt Compensator",
     "STATIC_VAR_COMPENSATOR": "Static Var Compensator",
-    "TABULAR": "Tabular",
+    "BY_TABLE": "By table",
     "TabularModification": "Tabular modification",
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
