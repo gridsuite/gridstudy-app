@@ -8,7 +8,11 @@
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
-import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    REGULATION_TYPES,
+} from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import {
@@ -16,6 +20,8 @@ import {
     unitToKiloUnit,
     unitToMicroUnit,
 } from '../../../utils/rounding';
+import { useIntl } from 'react-intl';
+import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 
 const generateTapPositions = (params) => {
     return params
@@ -54,6 +60,18 @@ const propertiesGetter = (params) => {
             .join(' | ');
     } else {
         return null;
+    }
+};
+
+const RegulationTypeCellRenderer = (params) => {
+    const intl = useIntl();
+    if (
+        params.data?.regulatingTerminalVlId ||
+        params.data?.regulatingTerminalConnectableId
+    ) {
+        return intl.formatMessage({ id: REGULATION_TYPES.DISTANT.label });
+    } else {
+        return intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label });
     }
 };
 
@@ -1280,9 +1298,31 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RegulatingTerminal',
-                field: 'regulatingTerminal',
+                id: 'RegulationTypeText',
                 getQuickFilterText: excludeFromGlobalFilter,
+                cellRenderer: RegulationTypeCellRenderer,
+            },
+            {
+                id: 'ActivePowerRegulationDroop',
+                field: 'activePowerControl.droop',
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ReactivePercentageVoltageRegulation',
+                field: 'coordinatedReactiveControl.qPercent',
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'VoltageLevel',
+                field: 'regulatingTerminalConnectableId',
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Equipment',
+                getQuickFilterText: excludeFromGlobalFilter,
+                cellRenderer: (params) => {
+                    return getTapChangerEquipmentSectionTypeValue(params.data);
+                },
             },
             {
                 id: 'TransientReactance',
