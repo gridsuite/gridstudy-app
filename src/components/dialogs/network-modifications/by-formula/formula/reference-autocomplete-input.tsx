@@ -38,7 +38,8 @@ const ReferenceAutocompleteInput: FunctionComponent<{
                 return options.filter((option) =>
                     intl
                         .formatMessage({ id: state.getOptionLabel(option) })
-                        .startsWith(keyword)
+                        .toLowerCase()
+                        .startsWith(keyword.toLowerCase())
                 );
             }
 
