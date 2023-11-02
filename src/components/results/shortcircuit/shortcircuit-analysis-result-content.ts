@@ -5,6 +5,7 @@ export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 export const DATA_KEY_TO_SORT_KEY: Record<string, string> = {
     elementId: 'fault.id',
     faultType: 'fault.faultType',
+    connectableId: 'connectableId',
     current: 'current',
     limitType: 'limitViolations.limitType',
     limitMin: 'ipMin',

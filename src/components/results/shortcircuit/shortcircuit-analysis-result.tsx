@@ -8,13 +8,14 @@
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
-    SCAResultFault,
-    ShortCircuitAnalysisResultFetch,
-    ShortcircuitAnalysisResult,
-    ShortcircuitAnalysisType,
+    ColumnFilter,
+    ColumnSort,
+    SCAFaultResult,
+    SCAFeederResult,
+    SCAPagedResults,
+    ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
-import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import React, {
     FunctionComponent,
@@ -22,17 +23,12 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import {
-    fetchOneBusShortCircuitAnalysisResult,
-    fetchShortCircuitAnalysisResult,
-} from '../../../services/study/short-circuit-analysis';
+import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
     DEFAULT_PAGE_COUNT,
-    DATA_KEY_TO_SORT_KEY,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
@@ -40,12 +36,22 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 interface IShortCircuitAnalysisGlobalResultProps {
-    analysisType: ShortcircuitAnalysisType;
+    analysisType: ShortCircuitAnalysisType;
+    analysisStatus: RunningStatus;
+    result: SCAFaultResult[];
+    updateResult: (result: SCAFaultResult[] | SCAFeederResult[]) => void;
+    shortCircuitNotif: boolean;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
     IShortCircuitAnalysisGlobalResultProps
-> = ({ analysisType }) => {
+> = ({
+    analysisType,
+    analysisStatus,
+    result,
+    updateResult,
+    shortCircuitNotif,
+}) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
@@ -54,30 +60,19 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
+    const [filter, setFilter] = useState<ColumnFilter[]>([]);
+    const [sort, setSort] = useState<ColumnSort[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-    const [result, setResult] = useState<SCAResultFault[]>([]);
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
-    const oneBusShortCircuitAnalysisState = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
-    );
-    const shortCircuitAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[
-                analysisType === ShortcircuitAnalysisType.ALL_BUSES
-                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
-                    : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
-            ]
-    );
-    const allBusesShortCircuitNotif = useSelector(
-        (state: ReduxState) => state.allBusesShortCircuitNotif
-    );
 
-    const isAllBusesType = analysisType === ShortcircuitAnalysisType.ALL_BUSES;
+    const updateFilter = useCallback((newFilter: ColumnFilter[]) => {
+        setFilter(newFilter);
+        setPage(0); // we need to reset the page after updating the filter
+    }, []);
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -94,87 +89,65 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         [setPage]
     );
 
-    const { onSortChanged, sortConfig } = useAgGridSort();
-
     // Effects
     useEffect(() => {
+        let active = true; // to manage race condition
         setIsFetching(true);
-
-        const { colKey, sortWay } = sortConfig;
-
-        const sortKey = DATA_KEY_TO_SORT_KEY[colKey];
-        const sortWayValue = sortWay && (sortWay > 0 ? 'ASC' : 'DESC');
-
-        const parsedSortConfig =
-            sortKey && sortWayValue ? `${sortKey},${sortWayValue}` : '';
+        updateResult([]);
 
         const selector = {
             page,
             size: rowsPerPage,
-            sort: parsedSortConfig,
+            filter: filter,
+            sort: sort,
         };
 
-        const fetchAnalysisResult = (
-            fetchFunction: ShortCircuitAnalysisResultFetch
-        ) => {
-            setResult([]);
-
-            fetchFunction(studyUuid, currentNode?.id)
-                .then((result: ShortcircuitAnalysisResult) => {
-                    const {
-                        content = [],
-                        totalElements,
-                        faults = [],
-                    } = result || {};
-
-                    setResult(faults.length ? faults : content);
+        fetchShortCircuitAnalysisPagedResults({
+            studyUuid,
+            currentNodeUuid: currentNode?.id,
+            type: analysisType,
+            selector,
+        })
+            .then((result: SCAPagedResults) => {
+                if (active) {
+                    const { content, totalElements } = result;
+                    updateResult(content);
                     if (totalElements && content.length) {
                         setCount(totalElements);
                     }
+                }
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'ShortCircuitAnalysisResultsError',
                 })
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: intl.formatMessage({
-                            id: 'ShortCircuitAnalysisResultsError',
-                        }),
-                    })
-                )
-                .finally(() => setIsFetching(false));
-        };
+            )
+            .finally(() => {
+                if (active) {
+                    setIsFetching(false);
+                }
+            });
 
-        if (isAllBusesType) {
-            fetchAnalysisResult(
-                fetchShortCircuitAnalysisResult.bind(null, {
-                    studyUuid,
-                    currentNodeUuid: currentNode?.id,
-                    selector,
-                })
-            );
-        } else if (oneBusShortCircuitAnalysisState !== RunningStatus.RUNNING) {
-            fetchAnalysisResult(
-                fetchOneBusShortCircuitAnalysisResult.bind(null, {
-                    studyUuid,
-                    currentNodeUuid: currentNode?.id,
-                })
-            );
-        }
+        return () => {
+            active = false;
+        };
     }, [
+        filter,
+        sort,
         page,
         rowsPerPage,
         snackError,
-        isAllBusesType,
-        sortConfig,
+        analysisType,
+        updateResult,
         studyUuid,
         currentNode?.id,
         intl,
-        allBusesShortCircuitNotif,
-        oneBusShortCircuitAnalysisState,
+        shortCircuitNotif,
     ]);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading:
-            shortCircuitAnalysisStatus === RunningStatus.RUNNING || isFetching,
+        isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -183,21 +156,19 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
             <ShortCircuitAnalysisResultTable
                 result={result}
-                onSortChanged={onSortChanged}
-                sortConfig={sortConfig}
                 analysisType={analysisType}
+                updateFilter={updateFilter}
+                updateSort={setSort}
                 isFetching={isFetching}
             />
-            {isAllBusesType && (
-                <CustomTablePagination
-                    rowsPerPageOptions={PAGE_OPTIONS}
-                    count={count}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            )}
+            <CustomTablePagination
+                rowsPerPageOptions={PAGE_OPTIONS}
+                count={count}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
         </>
     );
 };
