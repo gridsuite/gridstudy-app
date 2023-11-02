@@ -18,6 +18,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from 'components/utils/running-status';
 
 export const ShortCircuitAnalysisOneBusResult = () => {
     const { snackError } = useSnackMessage();
@@ -36,17 +37,24 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     );
 
     const [faultResult, setFaultResult] = useState<SCAFaultResult>();
-    const [feederResults, setFeederResults] = useState<SCAFeederResult[]>([]);
+    const [feederResults, setFeederResults] = useState<SCAFeederResult[]>();
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     useEffect(() => {
+        if (
+            !oneBusShortCircuitNotif ||
+            oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED
+        ) {
+            return;
+        }
+
         fetchShortCircuitAnalysisResult({
             studyUuid,
             currentNodeUuid: currentNode?.id,
             type: ShortCircuitAnalysisType.ONE_BUS,
             mode: 'BASIC',
-        }).then((result: SCAResult) => {
-            if (result.faults.length !== 1) {
+        }).then((result: SCAResult | null) => {
+            if (result?.faults.length !== 1) {
                 snackError({
                     messageId: 'ShortCircuitAnalysisResultsError',
                 });
@@ -55,12 +63,18 @@ export const ShortCircuitAnalysisOneBusResult = () => {
                 );
                 return;
             }
-            setFaultResult(result.faults[0]);
+            setFaultResult(result?.faults[0]);
         });
-    }, [snackError, studyUuid, currentNode]);
+    }, [
+        snackError,
+        studyUuid,
+        currentNode,
+        oneBusShortCircuitNotif,
+        oneBusShortCircuitAnalysisStatus,
+    ]);
 
     useEffect(() => {
-        if (!faultResult || !feederResults.length) {
+        if (!faultResult || !feederResults) {
             setResult([]);
             return;
         }
@@ -74,8 +88,8 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     }, [faultResult, feederResults]);
 
     const updateResult = useCallback(
-        (results: SCAFaultResult[] | SCAFeederResult[]) => {
-            setFeederResults(results as SCAFeederResult[]);
+        (results: SCAFaultResult[] | SCAFeederResult[] | null) => {
+            setFeederResults((results as SCAFeederResult[]) ?? null);
         },
         []
     );

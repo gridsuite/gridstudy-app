@@ -8,6 +8,7 @@
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
+    Option,
     ColumnFilter,
     ColumnSort,
     SCAFaultResult,
@@ -23,7 +24,11 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
+import {
+    fetchShortCircuitAnalysisPagedResults,
+    fetchShortCircuitFaultTypes,
+    fetchShortCircuitLimitViolationTypes,
+} from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
     DEFAULT_PAGE_COUNT,
@@ -39,7 +44,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
     analysisStatus: RunningStatus;
     result: SCAFaultResult[];
-    updateResult: (result: SCAFaultResult[] | SCAFeederResult[]) => void;
+    updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     shortCircuitNotif: boolean;
 }
 
@@ -63,6 +68,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const [filter, setFilter] = useState<ColumnFilter[]>([]);
     const [sort, setSort] = useState<ColumnSort[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [faultTypeOptions, setFaultTypeOptions] = useState<Option[]>([]);
+    const [limitViolationTypeOptions, setLimitViolationTypeOptions] = useState<
+        Option[]
+    >([]);
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
@@ -70,8 +79,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     );
 
     const updateFilter = useCallback((newFilter: ColumnFilter[]) => {
-        setFilter(newFilter);
-        setPage(0); // we need to reset the page after updating the filter
+        setFilter((oldFilter) => {
+            // to avoid useless rerender and fetch
+            if (newFilter.length || oldFilter.length) {
+                setPage(0); // we need to reset the page after updating the filter
+                return newFilter;
+            } else {
+                return oldFilter;
+            }
+        });
     }, []);
 
     const handleChangePage = useCallback(
@@ -91,9 +107,13 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     // Effects
     useEffect(() => {
+        if (!shortCircuitNotif || analysisStatus !== RunningStatus.SUCCEED) {
+            return;
+        }
+
         let active = true; // to manage race condition
         setIsFetching(true);
-        updateResult([]);
+        updateResult(null);
 
         const selector = {
             page,
@@ -108,13 +128,11 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             type: analysisType,
             selector,
         })
-            .then((result: SCAPagedResults) => {
+            .then((result: SCAPagedResults | null) => {
                 if (active) {
-                    const { content, totalElements } = result;
+                    const { content = [], totalElements = 0 } = result || {};
                     updateResult(content);
-                    if (totalElements && content.length) {
-                        setCount(totalElements);
-                    }
+                    setCount(totalElements);
                 }
             })
             .catch((error) =>
@@ -139,12 +157,53 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         rowsPerPage,
         snackError,
         analysisType,
+        analysisStatus,
         updateResult,
         studyUuid,
         currentNode?.id,
         intl,
         shortCircuitNotif,
     ]);
+
+    useEffect(() => {
+        fetchShortCircuitFaultTypes()
+            .then((values) => {
+                setFaultTypeOptions(
+                    values.map((v: string) => {
+                        return {
+                            value: v,
+                            label: intl.formatMessage({ id: v }),
+                        };
+                    })
+                );
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'ShortCircuitAnalysisResultsError',
+                })
+            );
+    }, [intl, snackError]);
+
+    useEffect(() => {
+        fetchShortCircuitLimitViolationTypes()
+            .then((values) => {
+                setLimitViolationTypeOptions(
+                    values.map((v: string) => {
+                        return {
+                            value: v,
+                            label: intl.formatMessage({ id: v }),
+                        };
+                    })
+                );
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'ShortCircuitAnalysisResultsError',
+                })
+            );
+    }, [intl, snackError]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,
@@ -160,6 +219,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 updateFilter={updateFilter}
                 updateSort={setSort}
                 isFetching={isFetching}
+                faultTypeOptions={faultTypeOptions}
+                limitViolationTypeOptions={limitViolationTypeOptions}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

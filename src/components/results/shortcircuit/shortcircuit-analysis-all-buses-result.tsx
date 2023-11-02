@@ -29,8 +29,8 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     const updateResult = useCallback(
-        (results: SCAFaultResult[] | SCAFeederResult[]) => {
-            setResult(results as SCAFaultResult[]);
+        (results: SCAFaultResult[] | SCAFeederResult[] | null) => {
+            setResult((results as SCAFaultResult[]) ?? []);
         },
         []
     );
