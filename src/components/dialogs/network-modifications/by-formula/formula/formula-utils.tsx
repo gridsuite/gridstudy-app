@@ -87,7 +87,8 @@ export function getFormulaSchema(id: string) {
                             }),
                         })
                     )
-                    .required(),
+                    .required()
+                    .min(1, 'FieldIsRequired'),
                 [EDITED_FIELD]: yup.string().required(),
                 [REFERENCE_FIELD_OR_VALUE_1]: yup
                     .mixed()

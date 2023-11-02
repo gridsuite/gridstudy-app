@@ -73,7 +73,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
             onBlur={() => setDisplayOptions(false)}
             allowNewValue
             onInputChange={(event, value) => {
-                const displayOption = !!value?.startsWith('#');
+                const displayOption = !!value?.trim()?.startsWith('#');
                 setDisplayOptions(displayOption);
                 if (value && !isNaN(parseFloat(value))) {
                     onChange(value);
