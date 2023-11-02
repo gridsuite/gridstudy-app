@@ -331,7 +331,7 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
-                    label: 'TabularModification',
+                    label: 'BY_TABLE',
                     action: () => adapt(TabularModificationDialog),
                 },
             ],

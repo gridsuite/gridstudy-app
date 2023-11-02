@@ -613,6 +613,7 @@
     "VSC": "Vsc",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
+    "BY_TABLE": "Par table",
     "TabularModification": "Modification tabulaire",
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
