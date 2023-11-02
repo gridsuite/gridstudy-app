@@ -30,7 +30,7 @@ declare module '@gridsuite/commons-ui' {
     interface AutocompleteInputProps
         extends Omit<
             AutocompleteProps<
-                string | { id: string; label: string },
+                string | {id: string; label: string;},
                 boolean | undefined,
                 boolean | undefined,
                 boolean | undefined
@@ -39,7 +39,7 @@ declare module '@gridsuite/commons-ui' {
             'value' | 'onChange' | 'renderInput'
         > {
         name: string;
-        options: ({ id: string; label: string } | string)[];
+        options: ({ id: string, label: string } | string)[];
         label?: string;
         outputTransform?: (
             value: { id: string; label: string } | string
@@ -126,7 +126,7 @@ declare module '@gridsuite/commons-ui' {
     interface SwitchInputProps {
         name: string;
         label?: string;
-        formProps?: Omit<SwitchInputProps, 'disabled'>;
+        formProps?: Omit<SwitchInputProps, 'disabled'>,
     }
 
     export const SwitchInput: FunctionComponent<SwitchInputProps>;
@@ -135,14 +135,6 @@ declare module '@gridsuite/commons-ui' {
         onClick: () => void;
         disabled?: boolean;
     }>;
-
-    interface OverflowableTextProps {
-        text: any;
-        style?: any;
-        sx?: any;
-    }
-
-    export const OverflowableText: FunctionComponent<OverflowableTextProps>;
 
     export const FieldLabel: FunctionComponent<{
         label: string;
@@ -173,8 +165,9 @@ declare module '@gridsuite/commons-ui' {
     };
 
     interface OverflowableTextProps {
-        sx: SxProps;
-        text?: string;
+        sx?: SxProps;
+        text?: string | ReactElement;
+        style?: any;
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
