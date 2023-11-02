@@ -990,6 +990,40 @@ export function modifyTwoWindingsTransformer(
     });
 }
 
+export function createTabulareModification(
+    studyUuid,
+    currentNodeUuid,
+    modificationType,
+    modifications,
+    isUpdate,
+    modificationUuid
+) {
+    let createTabulareModificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createTabulareModificationUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating tabular modification');
+    } else {
+        console.info('Creating tabular modification');
+    }
+
+    return backendFetchText(createTabulareModificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+            modificationType: modificationType,
+            modifications: modifications,
+        }),
+    });
+}
+
 export function createSubstation(
     studyUuid,
     currentNodeUuid,
