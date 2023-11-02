@@ -12,6 +12,7 @@ import {
     ShortCircuitAnalysisResultFetch,
     ShortcircuitAnalysisResult,
     ShortcircuitAnalysisType,
+    getShortcircuitAnalysisTypeFromEnum,
 } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
 import { ComputingType } from 'components/computing-status/computing-type';
@@ -149,6 +150,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     studyUuid,
                     currentNodeUuid: currentNode?.id,
                     selector,
+                    type: getShortcircuitAnalysisTypeFromEnum(
+                        ShortcircuitAnalysisType.ALL_BUSES
+                    ),
                 })
             );
         } else if (oneBusShortCircuitAnalysisState !== RunningStatus.RUNNING) {

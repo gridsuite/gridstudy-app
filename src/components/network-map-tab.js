@@ -5,17 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import GeoData from './network/geo-data';
+import { NetworkMap, GeoData } from '@powsybl/network-map-viewer';
 import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
+import {
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -36,7 +38,9 @@ import {
     fetchLinePositions,
     fetchSubstationPositions,
 } from '../services/study/geo-data';
+import { fetchMapBoxToken } from '../services/utils';
 import { Box } from '@mui/system';
+import EquipmentPopover from './tooltips/equipment-popover';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -899,6 +903,27 @@ export const NetworkMapTab = ({
         );
     }
 
+    const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
+    const currentTreeNode = useSelector((state) => state.currentTreeNode);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const currentNodeBuilt = isNodeBuilt(currentTreeNode);
+    const [mapBoxToken, setMapBoxToken] = useState();
+    useEffect(() => {
+        fetchMapBoxToken().then((token) => setMapBoxToken(token || null));
+    }, []);
+
+    function renderEquipmentPopover(sId, eId, eType, lfStatus, aEl) {
+        return (
+            <EquipmentPopover
+                studyUuid={sId}
+                anchorEl={aEl}
+                equipmentId={eId}
+                equipmentType={eType}
+                loadFlowStatus={lfStatus}
+            />
+        );
+    }
+
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
@@ -936,6 +961,21 @@ export const NetworkMapTab = ({
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
             onReloadMapClick={updateMapEquipmentsAndGeoData}
+            centerOnSubstation={centerOnSubstation}
+            mapManualRefresh={mapManualRefresh}
+            reloadMapNeeded={reloadMapNeeded}
+            currentNodeBuilt={currentNodeBuilt}
+            useName={useName}
+            mapBoxToken={mapBoxToken}
+            renderPopover={(eId, aEl) =>
+                renderEquipmentPopover(
+                    studyUuid,
+                    eId,
+                    EQUIPMENT_TYPES.LINE,
+                    loadFlowStatus,
+                    aEl
+                )
+            }
         />
     );
 
