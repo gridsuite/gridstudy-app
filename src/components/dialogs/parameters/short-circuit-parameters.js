@@ -7,11 +7,11 @@
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Grid, MenuItem, Select } from '@mui/material';
-import { CloseButton, SwitchWithLabel, styles } from './parameters';
+import { Grid } from '@mui/material';
+import { CloseButton, styles } from './parameters';
 import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { LabelledSlider, LineSeparator } from '../dialogUtils';
+import { LineSeparator } from '../dialogUtils';
 import {
     getShortCircuitParameters,
     setShortCircuitParameters,
@@ -65,112 +65,6 @@ export const useGetShortCircuitParameters = () => {
     return [shortCircuitParams, setShortCircuitParams];
 };
 
-function getValue(param, key) {
-    if (!param || param[key] === undefined) {
-        return null;
-    }
-    return param[key];
-}
-
-const DropDown = ({ value, label, values, callback }) => {
-    return (
-        <>
-            <Grid item xs={8} sx={styles.parameterName}>
-                <FormattedMessage id={label} />
-            </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
-                <Select
-                    labelId={label}
-                    value={value}
-                    onChange={callback}
-                    size="small"
-                >
-                    {Object.keys(values).map((key) => (
-                        <MenuItem key={key} value={key}>
-                            <FormattedMessage id={values[key]} />
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Grid>
-        </>
-    );
-};
-
-function makeComponentFor(defParam, key, scParams, setter) {
-    const value = getValue(scParams, key);
-    if (value != null) {
-        if (defParam.type === TYPES.bool) {
-            return (
-                <SwitchWithLabel
-                    value={value}
-                    label={defParam.description}
-                    callback={(ev) =>
-                        setter({ ...scParams, [key]: ev.target.checked })
-                    }
-                />
-            );
-        } else if (defParam.type === TYPES.enum) {
-            return (
-                <DropDown
-                    value={value}
-                    label={defParam.description}
-                    values={defParam.values}
-                    callback={(ev) =>
-                        setter({ ...scParams, [key]: ev.target.value })
-                    }
-                />
-            );
-        } else if (defParam.type === TYPES.slider) {
-            return (
-                <LabelledSlider // TODO We should use the ParameterLine.tsx one instead of this obsolete one. And remove/clean it.
-                    value={Number(value)}
-                    label={defParam.description}
-                    onCommitCallback={(event, currentValue) => {
-                        setter({ ...scParams, [key]: currentValue });
-                    }}
-                    marks={[
-                        { value: Number(0), label: '0' },
-                        { value: Number(100), label: '100' },
-                    ]}
-                />
-            );
-        }
-    }
-}
-
-function makeComponentsFor(defParams, params, setter) {
-    return Object.keys(defParams).map((key) => (
-        <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponentFor(defParams[key], key, params, setter)}
-            <LineSeparator />
-        </Grid>
-    ));
-}
-
-const TYPES = {
-    enum: 'Enum',
-    bool: 'Bool',
-    slider: 'Slider',
-};
-
-const BasicShortCircuitParameters = ({
-    shortCircuitParams,
-    commitShortCircuitParams,
-}) => {
-    const paramsDef = {
-        withFeederResult: {
-            type: TYPES.bool,
-            description: 'descWithFeederResult',
-        },
-    };
-
-    return makeComponentsFor(
-        paramsDef,
-        shortCircuitParams,
-        commitShortCircuitParams
-    );
-};
-
 const formSchema = yup
     .object()
     .shape({
@@ -183,59 +77,24 @@ const formSchema = yup
         [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: yup.string().required(),
     })
     .required();
+
 export const ShortCircuitParameters = ({
     hideParameters,
     useShortCircuitParameters,
 }) => {
-    const { snackError } = useSnackMessage();
-
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [shortCircuitParams, setShortCircuitParams] =
         useShortCircuitParameters;
 
-    const commitShortCircuitParameter = useCallback(
-        (newParams) => {
-            let oldParams = { ...shortCircuitParams };
-            setShortCircuitParams(newParams);
-            setShortCircuitParameters(studyUuid, newParams).catch((error) => {
-                setShortCircuitParams(oldParams);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
-            });
-        },
-        [snackError, studyUuid, shortCircuitParams, setShortCircuitParams]
-    );
-
-    const resetShortCircuitParameters = useCallback(() => {
-        setShortCircuitParameters(studyUuid, null)
-            .then(() => {
-                return getShortCircuitParameters(studyUuid)
-                    .then((params) => setShortCircuitParams(params))
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
-            });
-    }, [studyUuid, snackError, setShortCircuitParams]);
+    const { snackError } = useSnackMessage();
 
     const emptyFormData = useMemo(() => {
         return {
             [SHORT_CIRCUIT_WITH_FEEDER_RESULT]:
                 shortCircuitParams.withFeederResult,
-            //todo: to change
             [SHORT_CIRCUIT_PREDEFINED_PARAMS]:
-                shortCircuitParams.initialVoltageProfileMode,
+                shortCircuitParams.predefinedParameters,
             [SHORT_CIRCUIT_WITH_LOADS]: shortCircuitParams.withLoads,
             [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]:
                 shortCircuitParams.withVSCConverterStations,
@@ -246,48 +105,78 @@ export const ShortCircuitParameters = ({
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
                 shortCircuitParams.initialVoltageProfileMode,
         };
-    }, []);
+    }, [shortCircuitParams]);
+
     const formMethods = useForm({
-        //todo : use api to get the default values from back
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit } = formMethods;
-    const onSubmit = useCallback((newParams) => {
-        console.log(' new params : ', newParams);
-        const oldParams = { ...shortCircuitParams };
-        console.log(' oldParams params : ', oldParams);
+    const {
+        reset,
+        handleSubmit,
+        formState: { isDirty },
+    } = formMethods;
 
-        setShortCircuitParams(newParams);
-        console.log(' before  call : ');
-        setShortCircuitParameters(studyUuid, newParams).catch((error) => {
-            console.log(' error : ');
+    // submit parameters
+    const onSubmit = useCallback(
+        (newParams) => {
+            const oldParams = { ...shortCircuitParams };
+            setShortCircuitParams(newParams);
+            setShortCircuitParameters(studyUuid, {
+                ...oldParams,
+                ...newParams,
+            })
+                .then(() => {
+                    return getShortCircuitParameters(studyUuid)
+                        .then((params) => {
+                            setShortCircuitParams(params);
+                        })
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'paramsRetrievingError',
+                            });
+                        });
+                })
+                .catch((error) => {
+                    setShortCircuitParams(oldParams);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsChangingError',
+                    });
+                });
+        },
+        [setShortCircuitParams, shortCircuitParams, snackError, studyUuid]
+    );
 
-            setShortCircuitParams(oldParams);
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
-        });
-    }, []);
+    // when ever voltage profile mode change we need to reset all parameters
     const resetAll = useCallback(
         (initialVoltageProfileMode) => {
-            let dataToReset = { ...emptyFormData };
+            let dataToReset = {
+                ...emptyFormData,
+            };
             if (initialVoltageProfileMode === INITIAL_TENSION.NOMINAL) {
                 dataToReset = {
                     ...dataToReset,
-                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: 'NOMINAL',
+                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
+                        INITIAL_TENSION.NOMINAL,
+                    [SHORT_CIRCUIT_PREDEFINED_PARAMS]: INITIAL_TENSION.NOMINAL,
                 };
             }
             if (initialVoltageProfileMode === INITIAL_TENSION.CONFIGURED) {
                 dataToReset = {
                     ...dataToReset,
-                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: 'CONFIGURED',
-                    [SHORT_CIRCUIT_PREDEFINED_PARAMS]: 'CONFIGURED',
+                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
+                        INITIAL_TENSION.CONFIGURED,
+                    [SHORT_CIRCUIT_PREDEFINED_PARAMS]:
+                        INITIAL_TENSION.CONFIGURED,
                 };
             }
-            reset(dataToReset);
+
+            // when keepDirty is true isDirty will temporarily remain as the current state until further user's action
+            //todo: fix reset because rerendering twice
+            reset(dataToReset, { keepDirty: true });
         },
         [reset, emptyFormData]
     );
@@ -298,7 +187,11 @@ export const ShortCircuitParameters = ({
             </Grid>
 
             <Grid>
-                <ShortCircuitFields resetAll={resetAll} />
+                <ShortCircuitFields
+                    resetAll={resetAll}
+                    studyUuid={studyUuid}
+                    isDirty={isDirty}
+                />
             </Grid>
             <Grid
                 container

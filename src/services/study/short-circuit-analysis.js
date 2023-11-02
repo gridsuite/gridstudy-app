@@ -146,7 +146,7 @@ export function setShortCircuitParameters(studyUuid, newParams) {
 
     const { predefinedParams } = newParams;
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('predefinedParam', 'NOMINAL');
+    urlSearchParams.append('predefinedParam', predefinedParams);
     const setShortCircuitParametersUrl =
         getStudyUrl(studyUuid) +
         '/short-circuit-analysis/parameters?' +
@@ -156,16 +156,64 @@ export function setShortCircuitParameters(studyUuid, newParams) {
 
     console.log(' data*********** ', newParams);
 
+    const voltageRage = [
+        {
+            voltageRangeCoefficient: '1.1',
+            minimumNominalVoltage: '20',
+            maximumNominalVoltage: '22',
+        },
+
+        {
+            voltageRangeCoefficient: '1.1',
+            minimumNominalVoltage: '45',
+            maximumNominalVoltage: '49.5',
+        },
+
+        {
+            voltageRangeCoefficient: '1.1',
+            minimumNominalVoltage: '63',
+            maximumNominalVoltage: '69.3',
+        },
+
+        {
+            voltageRangeCoefficient: '1.1',
+            minimumNominalVoltage: '90',
+            maximumNominalVoltage: '99',
+        },
+
+        {
+            voltageRangeCoefficient: '1.1',
+            minimumNominalVoltage: '150',
+            maximumNominalVoltage: '165',
+        },
+
+        {
+            voltageRangeCoefficient: '1.09',
+            minimumNominalVoltage: '225',
+            maximumNominalVoltage: '245',
+        },
+        {
+            voltageRangeCoefficient: '1.05',
+            minimumNominalVoltage: '400',
+            maximumNominalVoltage: '420',
+        },
+    ];
+
     return backendFetch(setShortCircuitParametersUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            ...newParams,
-            initialVoltageProfileMode: 'NOMINAL',
-            voltageRanges: [],
-        }),
+        body: JSON.stringify({ ...newParams, voltageRanges: voltageRage }),
+    });
+}
+export function invalidateShortCircuitStatus(studyUuid) {
+    console.info('invalidate short circuit status');
+    const invalidateShortCircuitStatusUrl =
+        getStudyUrl(studyUuid) + '/short-circuit/invalidate-status';
+    console.debug(invalidateShortCircuitStatusUrl);
+    return backendFetch(invalidateShortCircuitStatusUrl, {
+        method: 'PUT',
     });
 }

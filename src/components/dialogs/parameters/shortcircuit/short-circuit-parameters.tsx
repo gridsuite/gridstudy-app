@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -22,12 +22,12 @@ import {
     RadioInput,
     SelectInput,
     SwitchInput,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 import {
     INITIAL_TENSION,
     INITIAL_VOLTAGE_PROFILE_MODE,
-    PREDEFINED_PARAMETERS,
     STATUS,
 } from '../../../utils/constants';
 import { gridItem, GridSection } from '../../dialogUtils';
@@ -36,17 +36,25 @@ import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import TensionTable from './short-circuit-tension-table';
+import { UUID } from 'crypto';
+import { invalidateShortCircuitStatus } from '../../../../services/study/short-circuit-analysis';
 
 interface ShortCircuitFieldsProps {
-    resetAll: (predefinedParams: string) => void;
+    resetAll: (params: any) => void;
+    studyUuid: UUID;
+    isDirty: boolean;
 }
 const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     resetAll,
+    studyUuid,
+    isDirty,
 }) => {
+    //todo: get status from backend response
     const [status, setStatus] = useState(STATUS.SUCCESS);
     const watchInitialVoltageProfileMode = useWatch({
         name: SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
     });
+    const { snackError } = useSnackMessage();
 
     const watchPredefinedParams = useWatch({
         name: SHORT_CIRCUIT_PREDEFINED_PARAMS,
@@ -70,11 +78,27 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     };
 
     const intl = useIntl();
+    const predefinedParams = useMemo(() => {
+        return [
+            {
+                id: 'NOMINAL',
+                label: intl.formatMessage({
+                    id: 'nominalPredefinedParams',
+                }),
+            },
+            {
+                id: 'CONFIGURED',
+                label: intl.formatMessage({
+                    id: 'configuredPredefinedParams',
+                }),
+            },
+        ];
+    }, [intl]);
 
     const predefinedParameter = (
         <SelectInput
             name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
-            options={PREDEFINED_PARAMETERS}
+            options={predefinedParams}
         />
     );
 
@@ -127,6 +151,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
     useEffect(() => {
         setStatus(STATUS.SUCCESS);
+        //todo : simplify this
         if (
             watchInitialVoltageProfileMode === 'NOMINAL' &&
             watchPredefinedParams !== 'NOMINAL'
@@ -139,11 +164,22 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         ) {
             setStatus(STATUS.ERROR);
         }
-    }, [watchInitialVoltageProfileMode]);
+    }, [watchInitialVoltageProfileMode, watchPredefinedParams]);
+
     useEffect(() => {
-        // todo: add more control when backEnd is done
-        resetAll(watchPredefinedParams);
-    }, [watchPredefinedParams, resetAll]);
+        if (isDirty) {
+            resetAll(watchPredefinedParams);
+
+            //todo : this invalidate the status so the result will never be shown  => check with TLs
+            //todo: add checck: if the invalidateShortCircuitStatus is alredy called once no need to recall it
+            invalidateShortCircuitStatus(studyUuid).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'invalidateShortCircuitStatusError',
+                });
+            });
+        }
+    }, [watchPredefinedParams, snackError, resetAll, isDirty, studyUuid]);
 
     return (
         <Grid container spacing={2} paddingLeft={2}>

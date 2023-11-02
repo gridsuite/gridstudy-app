@@ -1172,14 +1172,16 @@
 
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
 
-    "ShortCircuitPredefinedParameters": "Paramètres prédéfinis",
-    "ShortCircuitCharacteristics": "Caractéristiques prises en compte",
-    "ShortCircuitVoltageProfileMode": "Plan de tension initial",
+    "ShortCircuitPredefinedParameters": "Preset parameters",
+    "ShortCircuitCharacteristics": "Features considered",
+    "ShortCircuitVoltageProfileMode": "Initial tension plan",
     "shortCircuitLoads": "Loads",
     "shortCircuitHvdc": "HVDC(VSC)",
     "shortCircuitShuntCompensators": "MCS",
-    "shortCircuitNeutralPosition": "Prises courantes des régleurs en charge",
+    "shortCircuitNeutralPosition": "Neutral position",
     "shortCircuitNominalVoltage": "Nominal voltage(kV)",
-    "shortCircuitInitialTension": "Tension initiale(kV)"
-
+    "shortCircuitInitialTension": "Initial tension(kV)",
+    "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
+    "nominalPredefinedParams": "ISC max with standardized tension plan",
+    "configuredPredefinedParams": "ISC max with IEC 909 standard"
 }
