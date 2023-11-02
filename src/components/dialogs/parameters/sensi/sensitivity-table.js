@@ -36,7 +36,7 @@ const SensitivityTable = ({
 
     function handleAddRowsButton() {
         let numberOfRows = 1;
-        if (currentRows.length + numberOfRows > MAX_ROWS_NUMBER) {
+        if (currentRows.length + 1 > MAX_ROWS_NUMBER) {
             setError(arrayFormName, {
                 type: 'custom',
                 message: {

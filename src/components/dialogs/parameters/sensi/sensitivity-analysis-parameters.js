@@ -10,7 +10,7 @@ import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { CloseButtonWithConfirm, DropDown, styles } from '../parameters';
+import { DropDown, LabelledButton, styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -448,7 +448,7 @@ export const SensitivityAnalysisParameters = ({
                             <FormattedMessage id="validate" />
                         </SubmitButton>
                     </Button>
-                    <CloseButtonWithConfirm
+                    <LabelledButton
                         callback={() => {
                             if (
                                 formState.dirtyFields &&
@@ -459,7 +459,7 @@ export const SensitivityAnalysisParameters = ({
                                 setPopupConfirm(true);
                             }
                         }}
-                        label={'Annuler'}
+                        label="cancel"
                     />
                 </DialogActions>
             </FormProvider>
@@ -470,16 +470,9 @@ export const SensitivityAnalysisParameters = ({
                 onClick={handlePopupConfirm}
                 child={
                     <DialogContentText>
-                        <FormattedMessage
-                            id={'Are you sur that you want to abord ?'}
-                        />
+                        <FormattedMessage id="genericConfirmQuestion" />
                     </DialogContentText>
                 }
-                style={{
-                    '& .MuiPaper-root': {
-                        overflowY: 'visible',
-                    },
-                }}
             />
         </>
     );

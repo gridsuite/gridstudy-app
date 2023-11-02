@@ -476,6 +476,7 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
+    "genericConfirmQuestion": "Êtes-vous sûr(e) que vous voulez aborder ?",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",

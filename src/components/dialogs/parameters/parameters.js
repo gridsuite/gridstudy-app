@@ -87,14 +87,6 @@ export const CloseButton = ({ hideParameters, ...props }) => {
     );
 };
 
-export const CloseButtonWithConfirm = ({ callback, label, ...props }) => {
-    return (
-        <CloseButton onClick={callback} {...props}>
-            <FormattedMessage id={label} />
-        </CloseButton>
-    );
-};
-
 export const LabelledButton = ({ callback, label, ...props }) => {
     return (
         <Button onClick={callback} {...props}>
@@ -682,7 +674,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             open={isParametersOpen}
             onClose={hideParameters}
             aria-labelledby="form-dialog-title"
-            //maxWidth={getDynamicWidth()}
             maxWidth={getDynamicWidth()}
             fullWidth={true}
         >
