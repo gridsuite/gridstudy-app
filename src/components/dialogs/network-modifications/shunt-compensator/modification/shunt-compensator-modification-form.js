@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
+import { CharacteristicsModificationForm } from '../characteristics-pane/characteristics-modification-form';
 import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
@@ -41,7 +41,7 @@ const ShuntCompensatorModificationForm = ({
     );
 
     const characteristicsForm = (
-        <CharacteristicsForm
+        <CharacteristicsModificationForm
             previousValues={shuntCompensatorInfos}
             isModification={true}
         />

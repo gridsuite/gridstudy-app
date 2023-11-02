@@ -448,7 +448,9 @@ const EquipmentFilter = forwardRef(
                             <FormattedMessage
                                 id={'DynamicSimulationCurveEquipment'}
                             ></FormattedMessage>
-                            {` (${selectedRowsLength} / ${equipmentRowData.length})`}
+                            {` (${selectedRowsLength} / ${
+                                equipmentRowData?.length ?? 0
+                            })`}
                         </Typography>
                     </Grid>
                     <Grid xs>
