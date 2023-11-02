@@ -25,7 +25,7 @@ import {
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import {
-    FILTER_TYPES,
+    FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
 import {
@@ -196,8 +196,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -214,8 +214,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -231,8 +231,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -291,8 +291,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
                 debounceMs: 1200, // we don't want to fetch the back end too fast
             },
@@ -306,8 +306,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -328,8 +328,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
