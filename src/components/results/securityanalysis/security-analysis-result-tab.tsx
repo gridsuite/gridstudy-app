@@ -40,8 +40,8 @@ import {
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import { useRowFilter } from '../../../hooks/use-row-filter';
-import { FILTER_TYPES } from '../../custom-aggrid/custom-aggrid-header';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
+import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
     container: {
@@ -84,8 +84,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
-    const { updateFilter, filterSelector, initFilters } =
-        useRowFilter(FROM_COLUMN_TO_FIELD);
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+        FROM_COLUMN_TO_FIELD,
+        () => {
+            setPage(0);
+        }
+    );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -128,7 +132,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         return {
                             dataType: 'text',
                             column: field,
-                            type: isTextFilter ? type : FILTER_TYPES.EQUALS,
+                            type: isTextFilter
+                                ? type
+                                : FILTER_TEXT_COMPARATORS.EQUALS,
                             value: isTextFilter ? text : selectedValue,
                         };
                     }
@@ -152,13 +158,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         null
     );
 
-    const resetResultStates = () => {
+    const resetResultStates = useCallback(() => {
         setResult(null);
         setCount(0);
         setPage(0);
         resetSortConfig();
         initFilters();
-    };
+    }, [initFilters, resetSortConfig, setResult]);
 
     const handleChangeNmkType = () => {
         resetResultStates();
@@ -210,9 +216,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const shouldOpenLoader = useOpenLoaderShortWait({
         isLoading:
-            securityAnalysisStatus === RunningStatus.RUNNING ||
-            isLoadingResult ||
-            filterEnumsLoading,
+            securityAnalysisStatus === RunningStatus.RUNNING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -265,7 +269,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 ) : (
                     <SecurityAnalysisResultNmk
                         result={result}
-                        isLoadingResult={isLoadingResult}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
                         isFromContingency={
                             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                         }

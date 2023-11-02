@@ -17,7 +17,6 @@ import {
 import {
     flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
-    FROM_COLUMN_TO_FIELD,
     handlePostSortRows,
     PAGE_OPTIONS,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
@@ -29,7 +28,6 @@ import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
 import { Box, Button, useTheme } from '@mui/material';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Theme } from '@mui/material/styles';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
@@ -40,7 +38,7 @@ const styles = {
         height: '100%',
     },
     button: {
-        color: (theme: Theme) => theme.link.color,
+        color: 'node.background',
     },
 };
 
@@ -59,7 +57,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
 }) => {
     const { content } = result || {};
     const { onSortChanged, sortConfig } = sortProps || {};
-    const { updateFilter, filterSelector, filterEnums } = filterProps || {};
+    const { updateFilter, filterEnums, filterSelector } = filterProps || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
@@ -151,9 +149,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
 
-            const filterSelectedOptions =
-                FROM_COLUMN_TO_FIELD[field] &&
-                filterSelector?.[FROM_COLUMN_TO_FIELD[field]];
+            const { sortWay } = sortConfig || {};
+
+            const minWidth = isSortable && sortWay ? 140 : isFilterable && 95;
 
             return {
                 headerName,
@@ -162,6 +160,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 cellRenderer,
                 hide: isHidden,
                 headerTooltip: headerName,
+                minWidth,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     field,
@@ -173,13 +172,13 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     isSortable,
                     isFilterable,
                     filterOptions,
-                    filterSelectedOptions,
                     updateFilter,
                     filterParams,
+                    filterSelector,
                 },
             };
         },
-        [filtersDef, filterSelector, sortConfig, updateFilter, onSortChanged]
+        [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
     );
 
     const columnDefs = useMemo(
@@ -198,15 +197,19 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [intl, SubjectIdRenderer, isFromContingency, makeColumn]
     );
 
-    const rows = isFromContingency
-        ? flattenNmKResultsContingencies(
-              intl,
-              content as ConstraintsFromContingencyItem[]
-          )
-        : flattenNmKResultsConstraints(
-              intl,
-              content as ContingenciesFromConstraintItem[]
-          );
+    const rows = useMemo(
+        () =>
+            isFromContingency
+                ? flattenNmKResultsContingencies(
+                      intl,
+                      content as ConstraintsFromContingencyItem[]
+                  )
+                : flattenNmKResultsConstraints(
+                      intl,
+                      content as ContingenciesFromConstraintItem[]
+                  ),
+        [content, intl, isFromContingency]
+    );
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {

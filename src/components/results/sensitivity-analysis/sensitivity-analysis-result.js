@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import { DATA_KEY_TO_FILTER_KEY } from './sensitivity-analysis-content';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import {
@@ -61,10 +60,6 @@ const SensitivityAnalysisResult = ({
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
 
-            const filterSelectedOptions =
-                DATA_KEY_TO_FILTER_KEY[field] &&
-                filterSelector?.[DATA_KEY_TO_FILTER_KEY[field]];
-
             return {
                 field,
                 numeric: isNum,
@@ -78,7 +73,7 @@ const SensitivityAnalysisResult = ({
                     onSortChanged: (newSortValue) =>
                         onSortChanged(field, newSortValue),
                     updateFilter,
-                    filterSelectedOptions,
+                    filterSelector,
                 },
                 minWidth: isSortActive && sortWay ? 95 : 65,
                 maxWidth: maxWidth,
@@ -89,11 +84,11 @@ const SensitivityAnalysisResult = ({
             };
         },
         [
-            filtersDef,
-            filterSelector,
-            intl,
             sortConfig,
+            filtersDef,
+            intl,
             updateFilter,
+            filterSelector,
             onSortChanged,
         ]
     );

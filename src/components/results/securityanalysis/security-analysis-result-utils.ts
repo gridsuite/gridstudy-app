@@ -25,7 +25,7 @@ import {
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import {
-    FILTER_TYPES,
+    FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
 import {
@@ -208,8 +208,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -226,8 +226,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -243,8 +243,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -303,13 +303,10 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
-                //     debounceMs: 1200, // we don't want to fetch the back end too fast
-                //     maxNumConditions: 1,
-                //     filterOptions: ['contains', 'startsWith'],
-                //     textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
+                debounceMs: 1200, // we don't want to fetch the back end too fast
             },
         }),
         makeColumn({
@@ -321,8 +318,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -343,8 +340,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
-                    FILTER_TYPES.STARTS_WITH,
-                    FILTER_TYPES.CONTAINS,
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
@@ -479,7 +476,7 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
 
-export const useFetchFiltersEnums = (isEmptyResult: boolean) => {
+export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [result, setResult] = useState({

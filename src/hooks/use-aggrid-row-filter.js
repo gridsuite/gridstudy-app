@@ -37,32 +37,40 @@ const changeValueFromArrayWithFieldValue = (
     }
 };
 
-export const useRowFilter = (filterSelectorKeys) => {
+export const useAggridRowFilter = (
+    filterSelectorKeys,
+    updateFilterCallback
+) => {
     const [rowFilters, setRowFilters] = useState([]);
 
-    const updateFilter = useCallback((field, value) => {
-        setRowFilters((oldRowFilters) => {
-            let updatedFilters;
+    const updateFilter = useCallback(
+        (field, value) => {
+            setRowFilters((oldRowFilters) => {
+                let updatedFilters;
 
-            if (
-                !value?.length ||
-                (typeof value?.[0] === 'object' && !value[0].text)
-            ) {
-                updatedFilters = removeElementFromArrayWithFieldValue(
-                    oldRowFilters,
-                    field
-                );
-            } else {
-                updatedFilters = changeValueFromArrayWithFieldValue(
-                    oldRowFilters,
-                    field,
-                    value
-                );
-            }
+                if (
+                    !value?.length ||
+                    (typeof value?.[0] === 'object' && !value[0].text)
+                ) {
+                    updatedFilters = removeElementFromArrayWithFieldValue(
+                        oldRowFilters,
+                        field
+                    );
+                } else {
+                    updatedFilters = changeValueFromArrayWithFieldValue(
+                        oldRowFilters,
+                        field,
+                        value
+                    );
+                }
 
-            return updatedFilters;
-        });
-    }, []);
+                updateFilterCallback();
+
+                return updatedFilters;
+            });
+        },
+        [updateFilterCallback]
+    );
 
     const filterSelector = useMemo(() => {
         const result = rowFilters.reduce((selector, { field, value }) => {

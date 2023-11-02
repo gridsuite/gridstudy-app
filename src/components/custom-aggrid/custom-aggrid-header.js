@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, Menu } from '@mui/icons-material';
-
 import {
     Popover,
     IconButton,
@@ -20,6 +19,8 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import { useDebounce } from '@gridsuite/commons-ui';
+import Paper from '@mui/material/Paper';
 
 const styles = {
     iconSize: {
@@ -36,7 +37,7 @@ export const FILTER_UI_TYPES = {
     AUTO_COMPLETE: 'autoComplete',
 };
 
-export const FILTER_TYPES = {
+export const FILTER_TEXT_COMPARATORS = {
     EQUALS: 'equals',
     CONTAINS: 'contains',
     STARTS_WITH: 'startsWith',
@@ -45,72 +46,83 @@ export const FILTER_TYPES = {
 const CustomHeaderComponent = ({
     field,
     displayName,
-    filterOptions = [],
     sortConfig = {},
-    onSortChanged,
-    updateFilter,
-    filterSelectedOptions = [],
+    onSortChanged = () => {},
+    updateFilter = () => {},
     isSortable = true,
     isFilterable = true,
-    filterParams,
+    filterParams = {},
+    filterOptions = [],
+    filterSelector,
 }) => {
-    const intl = useIntl();
-
     const {
         filterUIType = FILTER_UI_TYPES.AUTO_COMPLETE,
         filterComparators = [],
-    } = filterParams || {};
+        debounceMs = 1000,
+    } = filterParams;
+    const { colKey: sortColKey, sortWay } = sortConfig;
 
-    const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-    const [isHoveringHeader, setIsHoveringHeader] = useState(false);
+    const intl = useIntl();
+
+    const [filterAnchorElement, setFilterAnchorElement] = useState(null);
+    const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState(
         filterComparators[0]
     );
+    const [selectedFilterData, setSelectedFilterData] = useState('');
 
-    const { colKey, sortWay } = sortConfig;
-    const isSortActive = colKey === field;
-    const isFilterOpened = Boolean(filterAnchorEl);
-    const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
-    const isFilterActive =
-        filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length;
-    const isFilterIconDisplayed =
-        isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
+    const isColumnSorted = sortColKey === field;
+
+    const shouldActivateFilter =
+        // Filter should be activated for current column
+        isFilterable &&
+        // Filter should be a text type, or we should have options for filter if it is an autocomplete
+        (filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length);
+
+    const shouldDisplayFilterIcon =
+        isHoveringColumnHeader || // user is hovering column header
+        !!selectedFilterData?.length || // user filtered data on current column
+        !!filterAnchorElement; // filter popped-over but user is not hovering current column header
 
     const handleShowFilter = (event) => {
-        setFilterAnchorEl(event.currentTarget);
+        setFilterAnchorElement(event.currentTarget);
     };
 
     const handleCloseFilter = () => {
-        setFilterAnchorEl(null);
-        setIsHoveringHeader(false);
+        setFilterAnchorElement(null);
+        setIsHoveringColumnHeader(false);
     };
 
-    const handleFilterChange = (field, data) => {
-        if (typeof updateFilter === 'function') {
-            if (filterUIType === FILTER_UI_TYPES.TEXT) {
-                updateFilter(field, [
-                    {
-                        text: data.target.value?.toUpperCase(),
-                        type: selectedFilterComparator,
-                    },
-                ]);
-            } else {
-                updateFilter(field, data, FILTER_TYPES.EQUALS);
-            }
+    const debouncedUpdateFilter = useDebounce(updateFilter, debounceMs);
+
+    const handleFilterDataChange = (data) => {
+        if (filterUIType === FILTER_UI_TYPES.TEXT) {
+            const value = data.target.value.toUpperCase();
+            setSelectedFilterData(value);
+            debouncedUpdateFilter(field, [
+                {
+                    text: value,
+                    type: selectedFilterComparator,
+                },
+            ]);
+        } else {
+            setSelectedFilterData(data);
+            debouncedUpdateFilter(field, data, FILTER_TEXT_COMPARATORS.EQUALS);
         }
     };
 
-    const handleChangeSelectedFilterType = (event, field) => {
+    const handleFilterDataTypeChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-        updateFilter(field, [
-            { text: filterSelectedOptions?.[0]?.text, type: newType },
+
+        debouncedUpdateFilter(field, [
+            { text: selectedFilterData, type: newType },
         ]);
     };
 
-    const handleSortChange = () => {
+    const handleSortChange = useCallback(() => {
         let newSort = null;
-        if (!isSortActive || !sortWay) {
+        if (!isColumnSorted || !sortWay) {
             newSort = 1;
         } else if (sortWay > 0) {
             newSort = -1;
@@ -119,15 +131,21 @@ const CustomHeaderComponent = ({
         if (typeof onSortChanged === 'function') {
             onSortChanged(newSort);
         }
-    };
+    }, [isColumnSorted, onSortChanged, sortWay]);
 
-    const handleMouseEnter = () => {
-        setIsHoveringHeader(true);
-    };
+    const handleMouseEnter = useCallback(() => {
+        setIsHoveringColumnHeader(true);
+    }, []);
 
-    const handleMouseLeave = () => {
-        setIsHoveringHeader(false);
-    };
+    const handleMouseLeave = useCallback(() => {
+        setIsHoveringColumnHeader(false);
+    }, []);
+
+    useEffect(() => {
+        if (!filterSelector) {
+            setSelectedFilterData(undefined);
+        }
+    }, [filterSelector]);
 
     return (
         <Grid
@@ -135,7 +153,8 @@ const CustomHeaderComponent = ({
             alignItems="center"
             sx={{ height: '100%' }}
             justifyContent="space-between"
-            {...(isFilterable && {
+            // if column is filterable, we should activate hovering behavior for the filter icon
+            {...(shouldActivateFilter && {
                 onMouseEnter: handleMouseEnter,
                 onMouseLeave: handleMouseLeave,
             })}
@@ -182,7 +201,7 @@ const CustomHeaderComponent = ({
                         </Grid>
                         {isSortable && (
                             <Grid item>
-                                {isSortActive && sortWay && (
+                                {isColumnSorted && sortWay && (
                                     <Grid item>
                                         <IconButton>
                                             {sortWay === 1 ? (
@@ -200,14 +219,14 @@ const CustomHeaderComponent = ({
                             </Grid>
                         )}
                     </Grid>
-                    {isFilterable && (
+                    {shouldActivateFilter && (
                         <Grid
                             item
                             sx={{
                                 overflow: 'visible',
                             }}
                         >
-                            {isFilterActive && isFilterIconDisplayed && (
+                            {shouldDisplayFilterIcon && (
                                 <Grid item>
                                     <IconButton
                                         size={'small'}
@@ -216,11 +235,11 @@ const CustomHeaderComponent = ({
                                         <Badge
                                             color="secondary"
                                             variant={
-                                                filterSelectedOptions?.length
+                                                selectedFilterData?.length
                                                     ? 'dot'
                                                     : null
                                             }
-                                            invisible={!filterSelectedOptions}
+                                            invisible={!selectedFilterData}
                                         >
                                             <Menu sx={styles.iconSize} />
                                         </Badge>
@@ -231,11 +250,11 @@ const CustomHeaderComponent = ({
                     )}
                 </Grid>
             </Grid>
-            {isFilterable && (
+            {shouldActivateFilter && (
                 <Popover
-                    id={popoverId}
-                    open={isFilterOpened}
-                    anchorEl={filterAnchorEl}
+                    id={`${field}-filter-popover`}
+                    open={!!filterAnchorElement}
+                    anchorEl={filterAnchorElement}
                     onClose={handleCloseFilter}
                     anchorOrigin={{
                         vertical: 'bottom',
@@ -252,8 +271,8 @@ const CustomHeaderComponent = ({
                     {filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE ? (
                         <Autocomplete
                             multiple
-                            value={filterSelectedOptions}
-                            options={filterOptions}
+                            value={selectedFilterData || []}
+                            options={filterOptions || []}
                             getOptionLabel={(option) =>
                                 intl.formatMessage({
                                     id: option,
@@ -261,18 +280,22 @@ const CustomHeaderComponent = ({
                                 })
                             }
                             onChange={(_, data) => {
-                                handleFilterChange(field, data);
+                                handleFilterDataChange(data);
                             }}
                             size="small"
+                            disableCloseOnSelect
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     placeholder={intl.formatMessage({
-                                        id: 'grid.filterOoo',
+                                        id: 'customAgGridFilter.filterOoo',
                                     })}
                                 />
                             )}
-                            sx={{ width: '100%' }}
+                            PaperComponent={({ children }) => (
+                                <Paper>{children}</Paper>
+                            )}
+                            fullWidth
                         />
                     ) : (
                         <Grid
@@ -283,15 +306,16 @@ const CustomHeaderComponent = ({
                         >
                             <Select
                                 value={selectedFilterComparator}
-                                onChange={(event) =>
-                                    handleChangeSelectedFilterType(event, field)
-                                }
+                                onChange={handleFilterDataTypeChange}
                                 displayEmpty
                                 size={'small'}
                                 sx={styles.input}
                             >
                                 {filterComparators.map((filterComparator) => (
-                                    <MenuItem value={filterComparator}>
+                                    <MenuItem
+                                        key={filterComparator}
+                                        value={filterComparator}
+                                    >
                                         {intl.formatMessage({
                                             id: `customAgGridFilter.${filterComparator}`,
                                         })}
@@ -301,12 +325,10 @@ const CustomHeaderComponent = ({
                             <TextField
                                 size={'small'}
                                 fullWidth
-                                value={filterSelectedOptions?.[0]?.text}
-                                onChange={(event) => {
-                                    handleFilterChange(field, event);
-                                }}
+                                value={selectedFilterData || ''}
+                                onChange={handleFilterDataChange}
                                 placeholder={intl.formatMessage({
-                                    id: 'grid.filterOoo',
+                                    id: 'customAgGridFilter.filterOoo',
                                 })}
                                 sx={styles.input}
                             />
@@ -331,17 +353,16 @@ CustomHeaderComponent.propTypes = {
     }),
     onSortChanged: PropTypes.func,
     updateFilter: PropTypes.func,
-    filterSelectedOptions: PropTypes.arrayOf(
-        PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.shape({
-                type: PropTypes.string,
-                value: PropTypes.string,
-            }),
-        ])
-    ),
     isSortable: PropTypes.bool,
     isFilterable: PropTypes.bool,
+    filterParams: PropTypes.shape({
+        filterUIType: PropTypes.oneOf([
+            FILTER_UI_TYPES.TEXT,
+            FILTER_UI_TYPES.AUTO_COMPLETE,
+        ]),
+        filterComparators: PropTypes.arrayOf(PropTypes.string),
+        debounceMs: PropTypes.number,
+    }),
 };
 
 export default CustomHeaderComponent;
