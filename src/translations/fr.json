@@ -414,6 +414,7 @@
     "LoadFlowResultsCurrentViolations": "Contraintes de transit",
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsStatus": "Statut",
+    "ComputationResultsLogs": "Logs",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",

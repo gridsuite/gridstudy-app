@@ -53,6 +53,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                             <FormattedMessage id={'LoadFlowResultsStatus'} />
                         }
                     />
+                    <Tab
+                        label={
+                            <FormattedMessage id={'ComputationResultsLogs'} />
+                        }
+                    />
                 </Tabs>
             </div>
             <LoadFlowResult

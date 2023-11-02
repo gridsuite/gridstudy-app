@@ -118,7 +118,8 @@ export const ReportViewerTab = ({
                 studyId,
                 currentNode.id,
                 nodeOnlyReport,
-                LogReportItem.getDefaultSeverityList()
+                LogReportItem.getDefaultSeverityList(),
+                'NETWORK_MODIFICATION'
             )
                 .then((fetchedReport) => {
                     setReport(makeSingleReport(fetchedReport));
@@ -156,7 +157,13 @@ export const ReportViewerTab = ({
     ]);
 
     const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
-        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList);
+        return fetchNodeReport(
+            studyId,
+            nodeId,
+            reportId,
+            severityFilterList,
+            'NETWORK_MODIFICATION'
+        );
     };
 
     const globalReportPromise = (severityFilterList) => {
@@ -164,7 +171,8 @@ export const ReportViewerTab = ({
             studyId,
             currentNode.id,
             false,
-            severityFilterList
+            severityFilterList,
+            'NETWORK_MODIFICATION'
         );
     };
 

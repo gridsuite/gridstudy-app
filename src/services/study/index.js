@@ -62,7 +62,8 @@ export function fetchParentNodesReport(
     studyUuid,
     nodeUuid,
     nodeOnlyReport,
-    severityFilterList
+    severityFilterList,
+    reportType
 ) {
     console.info(
         'get node report with its parent for : ' +
@@ -70,13 +71,17 @@ export function fetchParentNodesReport(
             ' with nodeOnlyReport = ' +
             nodeOnlyReport +
             ' in study ' +
-            studyUuid
+            studyUuid +
+            ' for ' +
+            reportType
     );
 
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
         '/parent-nodes-report?nodeOnlyReport=' +
-        (nodeOnlyReport ? 'true' : 'false');
+        (nodeOnlyReport ? 'true' : 'false') +
+        '&reportType=' +
+        reportType;
     if (severityFilterList?.length) {
         url +=
             '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -89,16 +94,24 @@ export function fetchNodeReport(
     studyUuid,
     nodeUuid,
     reportId,
-    severityFilterList
+    severityFilterList,
+    reportType
 ) {
     console.info(
-        'get report for node : ' + nodeUuid + ' in study ' + studyUuid
+        'get report for node : ' +
+            nodeUuid +
+            ' in study ' +
+            studyUuid +
+            ' for ' +
+            reportType
     );
 
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
         '/report?reportId=' +
-        reportId;
+        reportId +
+        '&reportType=' +
+        reportType;
     if (severityFilterList?.length) {
         url +=
             '&' + getRequestParamFromList(severityFilterList, 'severityLevels');

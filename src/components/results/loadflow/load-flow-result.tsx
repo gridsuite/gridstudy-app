@@ -45,13 +45,20 @@ import {
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import { fetchLimitViolations } from '../../../services/study';
+import {
+    fetchLimitViolations,
+    fetchNodeReport,
+    fetchParentNodesReport,
+    fetchSubReport,
+} from '../../../services/study';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Box } from '@mui/system';
 import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import LogReportItem from '../../ReportViewer/log-report-item';
+import ReportViewer from '../../ReportViewer/report-viewer';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -93,6 +100,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         useState(false);
     const [isVoltageViolationReady, setIsVoltageViolationReady] =
         useState(false);
+
+    const [report, setReport] = useState(null);
 
     //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
     const openLoaderCurrentTab = useOpenLoaderShortWait({
@@ -203,6 +212,30 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     });
                 })
                 .finally(() => setIsFetchComplete(true));
+
+            fetchParentNodesReport(
+                studyUuid,
+                nodeUuid,
+                true,
+                LogReportItem.getDefaultSeverityList(),
+                'LOAD_FLOW'
+            )
+                .then((fetchedReport) => {
+                    if (!Array.isArray(fetchedReport)) {
+                        setReport(fetchedReport);
+                    } else {
+                        if (fetchedReport.length === 1) {
+                            setReport(fetchedReport[0]);
+                        }
+                    }
+                })
+                .catch((error) => {
+                    setReport(null);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ReportFetchError',
+                    });
+                });
         }
     }, [studyUuid, nodeUuid, intl, result, snackError]);
 
@@ -323,11 +356,56 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             </>
         );
     };
+
+    const subReportPromise = (
+        reportId: string,
+        severityFilterList: string[]
+    ) => {
+        return fetchSubReport(
+            studyUuid,
+            nodeUuid,
+            reportId,
+            severityFilterList
+        );
+    };
+
+    const nodeReportPromise = (
+        nodeId: string,
+        reportId: string,
+        severityFilterList: string[]
+    ) => {
+        return fetchNodeReport(
+            studyUuid,
+            nodeId,
+            reportId,
+            severityFilterList,
+            'LOAD_FLOW'
+        );
+    };
+
+    const renderLoadFlowReport = () => {
+        return (
+            <>
+                <Box sx={{ height: '4px' }}></Box>
+                {report && (
+                    <ReportViewer
+                        jsonReportTree={report}
+                        subReportPromise={subReportPromise}
+                        nodeReportPromise={nodeReportPromise}
+                        globalReportPromise={null}
+                    />
+                )}
+                ;
+            </>
+        );
+    };
+
     return (
         <>
             {tabIndex === 0 && renderLoadFlowCurrentViolations()}
             {tabIndex === 1 && renderLoadFlowVoltageViolations()}
             {tabIndex === 2 && renderLoadFlowResult()}
+            {tabIndex === 3 && renderLoadFlowReport()}
         </>
     );
 };
