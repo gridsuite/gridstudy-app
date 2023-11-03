@@ -48,9 +48,7 @@ const SensitivityTable = ({
         }
         clearErrors(arrayFormName);
 
-        const rowsToAdd = createRows(numberOfRows).map((row) => {
-            return { ...row };
-        });
+        const rowsToAdd = createRows(numberOfRows).map((row) => ({ ...row }));
         append(rowsToAdd);
     }
 
