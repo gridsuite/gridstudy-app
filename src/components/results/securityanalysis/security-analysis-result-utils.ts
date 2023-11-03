@@ -205,6 +205,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
             isFilterable: true,
+            isSortable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
