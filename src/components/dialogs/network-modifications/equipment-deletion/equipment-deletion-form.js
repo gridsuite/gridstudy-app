@@ -23,14 +23,16 @@ import {
     HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE,
     TYPE,
 } from 'components/utils/field-constants';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
+import {
+    areIdsEqual,
+    getObjectId,
+    richTypeEquals,
+} from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
 import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
-
-const richTypeEquals = (a, b) => a === b;
 
 const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const intl = useIntl();

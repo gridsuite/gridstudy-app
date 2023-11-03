@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { Box } from '@mui/system';
 import { mergeSx } from '../../utils/functions';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 const styles = {
     editCell: {
@@ -83,6 +84,20 @@ export const BooleanCellRenderer = (props) => {
     );
 };
 
+export const BooleanNullableCellRenderer = (props) => {
+    return (
+        <div>
+            <Checkbox
+                style={{ padding: 0 }}
+                color="default"
+                checked={props.value === true}
+                indeterminate={isBlankOrEmpty(props.value)}
+                disableRipple={true}
+            />
+        </div>
+    );
+};
+
 export const formatCell = (props) => {
     let value = props.value;
     let tooltipValue = undefined;
@@ -133,6 +148,26 @@ export const PropertiesCellRenderer = (props) => {
                 }
             >
                 <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const ContingencyCellRenderer = ({ value }) => {
+    const { cellValue, tooltipValue } = value ?? {};
+
+    if (cellValue == null || tooltipValue == null) {
+        return null;
+    }
+
+    return (
+        <Box sx={styles.tableCell}>
+            <Tooltip
+                title={
+                    <div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>
+                }
+            >
+                <Box sx={styles.overflow} children={cellValue} />
             </Tooltip>
         </Box>
     );

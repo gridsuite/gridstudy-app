@@ -58,20 +58,77 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
+export function fetchParentNodesReport(
+    studyUuid,
+    nodeUuid,
+    nodeOnlyReport,
+    severityFilterList
+) {
     console.info(
-        'get report for node : ' +
-            currentNodeUuid +
+        'get node report with its parent for : ' +
+            nodeUuid +
             ' with nodeOnlyReport = ' +
             nodeOnlyReport +
             ' in study ' +
             studyUuid
     );
-    return backendFetchJson(
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/report?nodeOnlyReport=' +
-            (nodeOnlyReport ? 'true' : 'false')
+
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/parent-nodes-report?nodeOnlyReport=' +
+        (nodeOnlyReport ? 'true' : 'false');
+    if (severityFilterList?.length) {
+        url +=
+            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
+    }
+
+    return backendFetchJson(url);
+}
+
+export function fetchNodeReport(
+    studyUuid,
+    nodeUuid,
+    reportId,
+    severityFilterList
+) {
+    console.info(
+        'get report for node : ' + nodeUuid + ' in study ' + studyUuid
     );
+
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/report?reportId=' +
+        reportId;
+    if (severityFilterList?.length) {
+        url +=
+            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
+    }
+
+    return backendFetchJson(url);
+}
+
+export function fetchSubReport(
+    studyUuid,
+    nodeUuid,
+    reportId,
+    severityFilterList
+) {
+    console.info(
+        'get subReport with Id : ' +
+            reportId +
+            ' with severities ' +
+            severityFilterList
+    );
+
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/subreport?reportId=' +
+        reportId;
+    if (severityFilterList?.length) {
+        url +=
+            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
+    }
+    return backendFetchJson(url);
 }
 
 export function fetchSvg(svgUrl) {
@@ -114,18 +171,11 @@ export function searchEquipmentsInfos(
     );
 }
 
-export function fetchLimitViolations(
-    studyUuid,
-    currentNodeUuid,
-    limitReduction
-) {
-    console.info(
-        `Fetching limit violations with (limit reduction ${limitReduction}) ...`
-    );
+export function fetchLimitViolations(studyUuid, currentNodeUuid) {
+    console.info(`Fetching limit violations ...`);
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/limit-violations?limitReduction=' +
-        limitReduction.toString();
+        '/limit-violations';
     return backendFetchJson(url);
 }
 

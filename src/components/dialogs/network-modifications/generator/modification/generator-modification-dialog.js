@@ -324,7 +324,7 @@ const GeneratorModificationDialog = ({
     }, [selectedId, onEquipmentIdChange]);
 
     const getPreviousRegulationType = useCallback(() => {
-        if (generatorToModify?.voltageRegulationOn) {
+        if (generatorToModify?.voltageRegulatorOn) {
             return generatorToModify?.regulatingTerminalVlId ||
                 generatorToModify?.regulatingTerminalConnectableId
                 ? REGULATION_TYPES.DISTANT.id

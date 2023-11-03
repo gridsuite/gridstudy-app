@@ -25,6 +25,7 @@ import {
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
     STUDY_INDEXATION_STATUS,
+    limitReductionModified,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
@@ -49,7 +50,6 @@ import {
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
 import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
@@ -58,6 +58,8 @@ import {
     fetchStudyIndexationStatus,
 } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { invalidateLoadFlowStatus } from 'services/study/loadflow';
+
 import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
@@ -158,7 +160,7 @@ export function useNodeData(
         studyUuid,
     ]);
 
-    return [result, isPending, errorMessage, update];
+    return [result, isPending, setResult, errorMessage, update];
 }
 
 function useStudy(studyUuidRequest) {
@@ -255,14 +257,11 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
-    const [isImportStudyDialogDisplayed, setIsImportStudyDialogDisplayed] =
-        useState(false);
-
     const wsRef = useRef();
 
-    const closeImportStudyDialog = useCallback(() => {
-        setIsImportStudyDialogDisplayed(false);
-    }, []);
+    const isLimitReductionModified = useSelector(
+        (state) => state.limitReductionModified
+    );
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -547,11 +546,12 @@ export function StudyContainer({ view, onChangeTab }) {
                                     error.status ===
                                     HttpStatusCode.FAILED_DEPENDENCY
                                 ) {
-                                    // when trying to recreate study network, if case can't be found (424 error), we let the user select a new one
-                                    setIsImportStudyDialogDisplayed(true);
-                                    snackError({
-                                        headerId: 'StudyUnrecoverableState',
-                                    });
+                                    // when trying to recreate study network, if case can't be found (424 error), we display an error
+                                    setErrorMessage(
+                                        intlRef.current.formatMessage({
+                                            id: 'invalidStudyError',
+                                        })
+                                    );
                                 } else {
                                     // unknown error when trying to recreate network from study case
                                     setErrorMessage(
@@ -572,7 +572,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
                 });
         },
-        [studyUuid, loadTree, snackError, snackWarning, intlRef]
+        [studyUuid, loadTree, snackWarning, intlRef]
     );
 
     const checkStudyIndexation = useCallback(() => {
@@ -633,14 +633,13 @@ export function StudyContainer({ view, onChangeTab }) {
         studyUuid,
     ]);
 
+    // first time we need to check indexation status by query
+    // studyIndexationStatus = STUDY_INDEXATION_STATUS.NOT_INDEXED by default
     useEffect(() => {
-        if (
-            studyUuid &&
-            studyIndexationStatus === STUDY_INDEXATION_STATUS.NOT_INDEXED
-        ) {
+        if (studyUuid) {
             checkStudyIndexation();
         }
-    }, [checkStudyIndexation, studyIndexationStatus, studyUuid]);
+    }, [checkStudyIndexation, studyUuid]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -741,12 +740,24 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'studyIndexationDone',
                 });
             }
+            // notification that the study is not indexed anymore then ask to refresh
+            if (
+                studyUpdatedForce.eventData.headers?.[
+                    HEADER_INDEXATION_STATUS
+                ] === STUDY_INDEXATION_STATUS.NOT_INDEXED
+            ) {
+                snackWarning({
+                    headerId: 'studyIndexationNotIndexed',
+                });
+            }
         }
     }, [
         studyUpdatedForce,
         checkNetworkExistenceAndRecreateIfNotFound,
         snackInfo,
+        snackWarning,
         dispatch,
+        checkStudyIndexation,
     ]);
 
     //handles map automatic mode network reload
@@ -852,6 +863,21 @@ export function StudyContainer({ view, onChangeTab }) {
         connectDeletedStudyNotifications,
     ]);
 
+    useEffect(() => {
+        if (studyUuid) {
+            if (isLimitReductionModified) {
+                // limit reduction param has changed : we invalidate the load flow status
+                invalidateLoadFlowStatus(studyUuid).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'invalidateLoadFlowStatusError',
+                    });
+                });
+                dispatch(limitReductionModified(false));
+            }
+        }
+    }, [studyUuid, isLimitReductionModified, snackError, dispatch]);
+
     return (
         <>
             <WaitingLoader
@@ -874,9 +900,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     setErrorMessage={setErrorMessage}
                 />
             </WaitingLoader>
-            {isImportStudyDialogDisplayed && (
-                <CreateStudyDialog closeDialog={closeImportStudyDialog} />
-            )}
         </>
     );
 }

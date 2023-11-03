@@ -108,15 +108,15 @@ const VscCreationDialog = ({
                 dcResistance: hvdcLine.dcResistance,
                 maximumActivePower: hvdcLine.maximumActivePower,
                 operatorActivePowerLimitFromSide1ToSide2:
-                    hvdcLine.operatorActivePowerLimitFromSide1ToSide2,
+                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
                 operatorActivePowerLimitFromSide2ToSide1:
-                    hvdcLine.operatorActivePowerLimitFromSide2ToSide1,
+                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
                 convertersMode: hvdcLine.convertersMode,
                 activePower: hvdcLine.activePower,
                 angleDroopActivePowerControl:
-                    hvdcLine.angleDroopActivePowerControl,
-                p0: hvdcLine.p0,
-                droop: hvdcLine.droop,
+                    hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
+                p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
+                droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
             }),
             ...getConverterStationFromSearchCopy(
                 CONVERTER_STATION_1,
@@ -217,6 +217,11 @@ const VscCreationDialog = ({
         if (errors?.[CONVERTER_STATION_2] !== undefined) {
             tabsInError.push(VSC_CREATION_TABS.CONVERTER_STATION_2);
         }
+
+        if (tabsInError.length > 0) {
+            setTabIndex(tabsInError[0]);
+        }
+
         setTabIndexesWithError(tabsInError);
     };
 
