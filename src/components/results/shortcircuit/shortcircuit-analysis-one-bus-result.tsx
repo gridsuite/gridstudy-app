@@ -101,8 +101,9 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             result={result}
             updateResult={updateResult}
             shortCircuitNotif={oneBusShortCircuitNotif}
-            tablePaginationProps={{
-                labelRowsPerPage: 'muiTablePaginationLabelRowsPerPageOneBusSCA',
+            customTablePaginationProps={{
+                labelRowsPerPageId:
+                    'muiTablePaginationLabelRowsPerPageOneBusSCA',
             }}
         />
     );

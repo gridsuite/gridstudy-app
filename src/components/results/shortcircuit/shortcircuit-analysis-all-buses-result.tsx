@@ -42,8 +42,8 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
             result={result}
             updateResult={updateResult}
             shortCircuitNotif={allBusesShortCircuitNotif}
-            tablePaginationProps={{
-                labelRowsPerPage:
+            customTablePaginationProps={{
+                labelRowsPerPageId:
                     'muiTablePaginationLabelRowsPerPageAllBusesSCA',
             }}
         />

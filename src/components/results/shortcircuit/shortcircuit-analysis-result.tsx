@@ -46,7 +46,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     result: SCAFaultResult[];
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     shortCircuitNotif: boolean;
-    tablePaginationProps: any;
+    customTablePaginationProps: any;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
@@ -57,7 +57,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     result,
     updateResult,
     shortCircuitNotif,
-    tablePaginationProps,
+    customTablePaginationProps,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -231,7 +231,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                {...tablePaginationProps}
+                {...customTablePaginationProps}
             />
         </>
     );
