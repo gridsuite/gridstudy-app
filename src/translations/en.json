@@ -365,6 +365,9 @@
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
     "LOW_VOLTAGE": "Low voltage",
+    "ACTIVE_POWER": "Active power",
+    "APPARENT_POWER": "Apparent power",
+    "OTHER": "Other",
 
     "HighVoltageLimit": "High voltage limit",
     "HighVoltageLimitkV": "High voltage limit (kV)",
@@ -616,7 +619,7 @@
     "VSC": "Vsc",
     "SHUNT_COMPENSATOR": "Shunt Compensator",
     "STATIC_VAR_COMPENSATOR": "Static Var Compensator",
-    "TABULAR": "Tabular",
+    "BY_TABLE": "By table",
     "TabularModification": "Tabular modification",
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
@@ -970,6 +973,7 @@
 
     "root": "Root",
     "LogOnlySingleNode": "Log single node",
+    "ReportFetchError": "An error occurred while fetching the logs",
 
     "RegulatingMode": "Phase regulation mode",
     "RegulatingPhase": "Phase regulating",

@@ -365,6 +365,9 @@
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
     "LOW_VOLTAGE": "Tension basse",
+    "ACTIVE_POWER": "Puissance active",
+    "APPARENT_POWER": "Puissance apparente",
+    "OTHER": "Autre",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
@@ -617,7 +620,7 @@
     "VSC": "Vsc",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
-    "TABULAR": "Tabulaire",
+    "BY_TABLE": "Par table",
     "TabularModification": "Modification tabulaire",
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
@@ -972,6 +975,7 @@
 
     "root": "Racine",
     "LogOnlySingleNode": "Log nœud seul",
+    "ReportFetchError": "Erreur lors de la récupération des logs",
 
     "RegulatingMode": "Mode de réglage déphaseur",
     "RegulatingPhase": "Déphaseur en réglage",
