@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ListItemIcon,
-    ListItemText,
-    Menu,
-    MenuItem,
-    Theme,
-    Typography,
-} from '@mui/material';
+import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
 import { FunctionComponent, useCallback, useMemo } from 'react';
@@ -25,6 +18,7 @@ import { ReduxState } from 'redux/reducer.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { CustomMenuItem } from '../utils/custom-nested-menu';
 
 interface BusMenuProps {
     busId: string;
@@ -44,9 +38,6 @@ const styles = {
         // It fix paddings itself then we must force this padding
         // to justify menu items texts
         paddingLeft: '12px',
-        '&:hover': (theme: Theme) => ({
-            color: theme.palette.primary.main,
-        }),
     },
 };
 
@@ -91,7 +82,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             }}
             onClose={closeBusMenu}
         >
-            <MenuItem
+            <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
@@ -111,7 +102,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                         </Typography>
                     }
                 />
-            </MenuItem>
+            </CustomMenuItem>
         </Menu>
     );
 };
