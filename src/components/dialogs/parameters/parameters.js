@@ -583,12 +583,6 @@ const TAB_VALUES = {
     voltageInitParamsTabValue: 'VoltageInit',
 };
 
-const sxDialog = {
-    '& .MuiDialog-container': {
-        alignItems: 'flex-start',
-    },
-};
-
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const [tabValue, setTabValue] = useState(TAB_VALUES.sldParamsTabValue);
 
@@ -686,7 +680,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             aria-labelledby="form-dialog-title"
             maxWidth={'md'}
             fullWidth={true}
-            sx={sxDialog}
+            sx={{
+                '& .MuiDialog-container': {
+                    alignItems: 'flex-start',
+                },
+            }}
         >
             <DialogTitle id="form-dialog-title">
                 <Typography component="span" variant="h5" sx={styles.title}>
