@@ -13,13 +13,10 @@ import {
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ComputingType } from 'components/computing-status/computing-type';
-import { useIntl } from 'react-intl';
 
 export const ShortCircuitAnalysisAllBusesResult = () => {
-    const intl = useIntl();
-
     const allBusesShortCircuitNotif = useSelector(
         (state: ReduxState) => state.allBusesShortCircuitNotif
     );
@@ -38,12 +35,6 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
         []
     );
 
-    const customLabelRowsPerPage = useMemo(() => {
-        return intl.formatMessage({
-            id: 'muiTablePaginationLabelRowsPerPageAllBusesSCA',
-        });
-    }, [intl]);
-
     return (
         <ShortCircuitAnalysisResult
             analysisType={ShortCircuitAnalysisType.ALL_BUSES}
@@ -51,7 +42,10 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
             result={result}
             updateResult={updateResult}
             shortCircuitNotif={allBusesShortCircuitNotif}
-            tablePaginationProps={{ labelRowsPerPage: customLabelRowsPerPage }}
+            tablePaginationProps={{
+                labelRowsPerPage:
+                    'muiTablePaginationLabelRowsPerPageAllBusesSCA',
+            }}
         />
     );
 };

@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import { TablePagination } from '@mui/material';
 
 const CustomTablePagination = (props) => {
+    const { labelRowsPerPage, ...otherProps } = props;
     const intl = useIntl();
 
     const customLabelDisplayedRows = ({ from, to, count }) => {
@@ -19,7 +20,7 @@ const CustomTablePagination = (props) => {
     };
 
     const customLabelRowsPerPage = intl.formatMessage({
-        id: 'muiTablePaginationLabelRowsPerPage',
+        id: labelRowsPerPage ?? 'muiTablePaginationLabelRowsPerPage',
     });
 
     const customLabelNextPage = intl.formatMessage({
@@ -59,7 +60,7 @@ const CustomTablePagination = (props) => {
                         return '';
                 }
             }}
-            {...props}
+            {...otherProps}
         >
             {props.children}
         </TablePagination>
