@@ -1503,8 +1503,7 @@ export function deleteEquipment(
 export function fetchNetworkModifications(
     studyUuid,
     nodeUuid,
-    stashedModifications,
-    onlyMetadata
+    stashedModifications
 ) {
     console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
     const modificationsGetUrl =
