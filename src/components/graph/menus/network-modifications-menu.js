@@ -19,10 +19,11 @@ const styles = {
         color: theme.palette.primary.main,
         transition: 'all 300ms ease',
     }),
-    menuLine: (theme) => ({
+    menuItem: (theme) => ({
         transition: 'all 300ms ease',
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
+            color: theme.palette.primary.main,
             transition: 'all 300ms ease',
         },
     }),
@@ -43,7 +44,7 @@ const NetworkModificationsMenu = ({
     menuDefinition,
     anchorEl,
 }) => {
-    const [openParentId, setOpenParentId] = useState();
+    const [openParentId, setOpenParentId] = useState(undefined);
 
     const intl = useIntl();
     const renderMenuItems = (menuItems, parent = undefined) => {
@@ -63,7 +64,6 @@ const NetworkModificationsMenu = ({
                             action: () => onItemClick(menuItem.id),
                             disabled: false,
                         }}
-                        sx={styles.menuLine}
                     />
                 </Box>
             ) : (
@@ -71,11 +71,10 @@ const NetworkModificationsMenu = ({
                     key={menuItem.id}
                     parentMenuOpen={true}
                     label={intl.formatMessage({ id: menuItem.label })}
-                    className={menuItem.id}
                     sx={
                         openParentId === menuItem.id
                             ? styles.forceHover
-                            : styles.menuLine
+                            : styles.menuItem
                     }
                 >
                     {renderMenuItems(menuItem.subItems, menuItem.id)}

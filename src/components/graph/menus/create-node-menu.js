@@ -16,11 +16,28 @@ import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
 import { NodeInsertModes } from '../../utils/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
+import { Box } from '@mui/system';
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
     REMOVE_SUBTREE: 'REMOVE_SUBTREE',
     NO_ACTION: 'NO_ACTION',
+};
+
+const styles = {
+    forceHover: (theme) => ({
+        backgroundColor: theme.palette.action.hover,
+        color: theme.palette.primary.main,
+        transition: 'all 300ms ease',
+    }),
+    menuItem: (theme) => ({
+        transition: 'all 300ms ease',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+            color: theme.palette.primary.main,
+            transition: 'all 300ms ease',
+        },
+    }),
 };
 
 export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
@@ -72,6 +89,7 @@ const CreateNodeMenu = ({
     handleOpenRestoreNodesDialog,
     disableRestoreNodes,
 }) => {
+    const [openParentId, setOpenParentId] = useState(undefined);
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isModificationsInProgress = useSelector(
@@ -339,29 +357,38 @@ const CreateNodeMenu = ({
         },
     };
 
-    const renderMenuItems = useCallback(
-        (nodeMenuItems) => {
-            return Object.values(nodeMenuItems).map((item) => {
-                if (activeNode?.type === 'ROOT' && !item.onRoot) {
-                    return undefined; // do not show this item in menu
-                }
-                if (item.subMenuItems === undefined) {
-                    return <ChildMenuItem key={item.id} item={item} />;
-                }
+    const renderMenuItems = (nodeMenuItems, parent = undefined) => {
+        return Object.values(nodeMenuItems).map((item) => {
+            if (activeNode?.type === 'ROOT' && !item.onRoot) {
+                return undefined; // do not show this item in menu
+            }
+            if (item.subMenuItems === undefined) {
                 return (
-                    <NestedMenuItem
-                        key={item.id}
-                        label={intl.formatMessage({ id: item.id })}
-                        parentMenuOpen={true}
-                        disabled={item.disabled}
+                    <Box
+                        onMouseEnter={() => setOpenParentId(parent)}
+                        onMouseLeave={() => setOpenParentId(undefined)}
                     >
-                        {renderMenuItems(item.subMenuItems)}
-                    </NestedMenuItem>
+                        <ChildMenuItem key={item.id} item={item} />
+                    </Box>
                 );
-            });
-        },
-        [intl, activeNode?.type]
-    );
+            }
+            return (
+                <NestedMenuItem
+                    key={item.id}
+                    label={intl.formatMessage({ id: item.id })}
+                    parentMenuOpen={true}
+                    disabled={item.disabled}
+                    sx={
+                        openParentId === item.id
+                            ? styles.forceHover
+                            : styles.menuItem
+                    }
+                >
+                    {renderMenuItems(item.subMenuItems, item.id)}
+                </NestedMenuItem>
+            );
+        });
+    };
 
     const content = intl.formatMessage(
         {

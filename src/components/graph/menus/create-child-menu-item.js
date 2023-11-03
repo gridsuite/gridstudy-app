@@ -18,6 +18,9 @@ const styles = {
         // It set paddings itself then we must force this padding
         // to justify menu items texts
         paddingLeft: '12px',
+        '&:hover': (theme) => ({
+            color: theme.palette.primary.main,
+        }),
     },
 };
 
