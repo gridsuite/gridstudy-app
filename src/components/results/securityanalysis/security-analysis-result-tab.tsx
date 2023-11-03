@@ -209,7 +209,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     useEffect(() => {
-        if (result?.totalElements) {
+        if (result) {
             setCount(result.totalElements);
         }
     }, [result]);

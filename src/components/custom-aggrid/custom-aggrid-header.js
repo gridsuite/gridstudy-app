@@ -69,7 +69,7 @@ const CustomHeaderComponent = ({
     const [selectedFilterComparator, setSelectedFilterComparator] = useState(
         filterComparators[0]
     );
-    const [selectedFilterData, setSelectedFilterData] = useState('');
+    const [selectedFilterData, setSelectedFilterData] = useState(undefined);
 
     const isColumnSorted = sortColKey === field;
 
@@ -95,23 +95,23 @@ const CustomHeaderComponent = ({
 
     const debouncedUpdateFilter = useDebounce(updateFilter, debounceMs);
 
-    const handleFilterDataChange = (data) => {
-        if (filterUIType === FILTER_UI_TYPES.TEXT) {
-            const value = data.target.value.toUpperCase();
-            setSelectedFilterData(value);
-            debouncedUpdateFilter(field, [
-                {
-                    text: value,
-                    type: selectedFilterComparator,
-                },
-            ]);
-        } else {
-            setSelectedFilterData(data);
-            debouncedUpdateFilter(field, data, FILTER_TEXT_COMPARATORS.EQUALS);
-        }
+    const handleFilterTextChange = (data) => {
+        const value = data.target.value.toUpperCase();
+        setSelectedFilterData(value);
+        debouncedUpdateFilter(field, [
+            {
+                text: value,
+                type: selectedFilterComparator,
+            },
+        ]);
     };
 
-    const handleFilterDataTypeChange = (event) => {
+    const handleFilterAutoCompleteChange = (_, data) => {
+        setSelectedFilterData(data);
+        debouncedUpdateFilter(field, data);
+    };
+
+    const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
 
@@ -279,9 +279,7 @@ const CustomHeaderComponent = ({
                                     defaultMessage: option,
                                 })
                             }
-                            onChange={(_, data) => {
-                                handleFilterDataChange(data);
-                            }}
+                            onChange={handleFilterAutoCompleteChange}
                             size="small"
                             disableCloseOnSelect
                             renderInput={(params) => (
@@ -306,7 +304,7 @@ const CustomHeaderComponent = ({
                         >
                             <Select
                                 value={selectedFilterComparator}
-                                onChange={handleFilterDataTypeChange}
+                                onChange={handleFilterComparatorChange}
                                 displayEmpty
                                 size={'small'}
                                 sx={styles.input}
@@ -326,7 +324,7 @@ const CustomHeaderComponent = ({
                                 size={'small'}
                                 fullWidth
                                 value={selectedFilterData || ''}
-                                onChange={handleFilterDataChange}
+                                onChange={handleFilterTextChange}
                                 placeholder={intl.formatMessage({
                                     id: 'customAgGridFilter.filterOoo',
                                 })}
