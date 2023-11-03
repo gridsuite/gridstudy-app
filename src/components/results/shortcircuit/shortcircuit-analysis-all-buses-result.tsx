@@ -42,6 +42,10 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
             result={result}
             updateResult={updateResult}
             shortCircuitNotif={allBusesShortCircuitNotif}
+            customTablePaginationProps={{
+                labelRowsPerPageId:
+                    'muiTablePaginationLabelRowsPerPageAllBusesSCA',
+            }}
         />
     );
 };
