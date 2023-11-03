@@ -154,8 +154,6 @@ const CustomHeaderComponent = ({
         }
     }, [filterSelector]);
 
-    console.log({ filterOptions });
-
     return (
         <Grid
             container
