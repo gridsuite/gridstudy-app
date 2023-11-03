@@ -14,13 +14,15 @@ import {
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { useIntl } from 'react-intl';
 
 export const ShortCircuitAnalysisOneBusResult = () => {
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
 
     const oneBusShortCircuitNotif = useSelector(
@@ -94,6 +96,12 @@ export const ShortCircuitAnalysisOneBusResult = () => {
         []
     );
 
+    const customLabelRowsPerPage = useMemo(() => {
+        return intl.formatMessage({
+            id: 'muiTablePaginationLabelRowsPerPageOneBusSCA',
+        });
+    }, [intl]);
+
     return (
         <ShortCircuitAnalysisResult
             analysisType={ShortCircuitAnalysisType.ONE_BUS}
@@ -101,6 +109,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             result={result}
             updateResult={updateResult}
             shortCircuitNotif={oneBusShortCircuitNotif}
+            tablePaginationProps={{ labelRowsPerPage: customLabelRowsPerPage }}
         />
     );
 };
