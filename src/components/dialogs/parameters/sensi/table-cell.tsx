@@ -7,15 +7,18 @@
 
 import { TableCell } from '@mui/material';
 import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
-import React from 'react';
-import SelectInputItem from './selected-input';
-import { SwitchInput } from '@gridsuite/commons-ui';
+import React, { useCallback } from 'react';
+import { SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { SENSITIVITY_TYPES } from './columns-definitions';
 
 function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
     column: any
 ) {
+    const getDynamicWidth = useCallback((options: any[]) => {
+        return options === SENSITIVITY_TYPES ? '100px' : '220px';
+    }, []);
     return (
         <TableCell key={column.dataKey} sx={{ width: column.width }}>
             {column.directoryItems && (
@@ -30,10 +33,12 @@ function EditableTableCell(
                 />
             )}
             {column.menuItems && (
-                <SelectInputItem
-                    arrayFormName={arrayFormName}
-                    column={column}
-                    rowIndex={rowIndex}
+                <SelectInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    options={column.equipmentTypes}
+                    disableClearable={true}
+                    size="small"
+                    sx={{ width: getDynamicWidth(column.equipmentTypes) }}
                 />
             )}
 

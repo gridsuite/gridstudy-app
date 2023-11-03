@@ -15,14 +15,22 @@ import {
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import React from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { MAX_ROWS_NUMBER } from '../../../utils/dnd-table/dnd-table';
 import { useFormContext } from 'react-hook-form';
 import { Box } from '@mui/system';
 import TableRowComponent from './table-row';
 
-const SensitivityTable = ({
+export const MAX_ROWS_NUMBER = 100;
+
+interface SensitivityTableProps {
+    arrayFormName: string;
+    useFieldArrayOutput: any;
+    columnsDefinition: any;
+    tableHeight: number;
+    createRows: (a: number) => void;
+}
+const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
     useFieldArrayOutput,
     columnsDefinition,
@@ -31,33 +39,37 @@ const SensitivityTable = ({
 }) => {
     const intl = useIntl();
     const { getValues, setError, clearErrors } = useFormContext();
-
     const { fields: currentRows, append, remove } = useFieldArrayOutput;
 
-    function handleAddRowsButton() {
-        let numberOfRows = 1;
-        if (currentRows.length + 1 > MAX_ROWS_NUMBER) {
+    const handleAddRowsButton = useCallback(() => {
+        if (currentRows.length >= MAX_ROWS_NUMBER) {
             setError(arrayFormName, {
                 type: 'custom',
-                message: {
-                    id: 'MaximumRowNumberError',
-                    value: MAX_ROWS_NUMBER,
-                },
+                message: 'MaximumRowNumberError',
             });
+
             return;
         }
         clearErrors(arrayFormName);
+        append(createRows(1));
+    }, [
+        append,
+        arrayFormName,
+        clearErrors,
+        createRows,
+        currentRows.length,
+        setError,
+    ]);
 
-        const rowsToAdd = createRows(numberOfRows).map((row) => ({ ...row }));
-        append(rowsToAdd);
-    }
-
-    function handleDeleteButton(index) {
-        const currentRowsValues = getValues(arrayFormName);
-        if (index >= 0 && index < currentRowsValues.length) {
-            remove(index);
-        }
-    }
+    const handleDeleteButton = useCallback(
+        (index: number) => {
+            const currentRowsValues = getValues(arrayFormName);
+            if (index >= 0 && index < currentRowsValues.length) {
+                remove(index);
+            }
+        },
+        [arrayFormName, getValues, remove]
+    );
 
     return (
         <TableContainer
@@ -69,7 +81,7 @@ const SensitivityTable = ({
             <Table stickyHeader size="small">
                 <TableHead>
                     <TableRow>
-                        {columnsDefinition.map((column) => (
+                        {columnsDefinition.map((column: any) => (
                             <TableCell>
                                 <Box
                                     sx={{
@@ -89,7 +101,7 @@ const SensitivityTable = ({
                                 <Box>
                                     <IconButton
                                         color="primary"
-                                        onClick={() => handleAddRowsButton()}
+                                        onClick={handleAddRowsButton}
                                     >
                                         <AddCircleIcon
                                             sx={{ color: 'white' }}
@@ -101,7 +113,7 @@ const SensitivityTable = ({
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {currentRows.map((row, index) => (
+                    {currentRows.map((row: any, index: number) => (
                         <TableRowComponent
                             arrayFormName={arrayFormName}
                             columnsDefinition={columnsDefinition}

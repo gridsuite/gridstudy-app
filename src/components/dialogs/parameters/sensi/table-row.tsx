@@ -28,7 +28,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     index,
     handleDeleteButton,
 }) => {
-    const [hover, setHover] = useState(true);
+    const [hover, setHover] = useState(false);
     const intl = useIntl();
 
     return (
@@ -37,7 +37,6 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >
-            {/* text={<RawReadOnlyInput name={`${arrayFormName}.${index}`} />}*/}
             {columnsDefinition.map((column: any) =>
                 EditableTableCell(arrayFormName, index, column)
             )}

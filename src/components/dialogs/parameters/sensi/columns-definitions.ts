@@ -119,7 +119,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         width: '25%',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
@@ -137,7 +137,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
+        width: '35%',
     },
     {
         label: 'Injections',
@@ -161,7 +161,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         width: '30%',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
@@ -179,7 +179,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
+        width: '25%',
     },
     {
         label: 'SensitivityType',
@@ -212,7 +212,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         width: '30%',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
@@ -263,7 +263,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         width: '30%',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
@@ -292,7 +292,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         equipmentTypes: EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
+        width: '35%',
     },
     {
         label: 'ContingencyLists',
@@ -305,7 +305,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         width: '30%',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,

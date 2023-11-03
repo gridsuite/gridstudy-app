@@ -15,7 +15,7 @@ export const useCreateRowDataSensi = (sensiParam: ISensiParameters) => {
         name: sensiParam.name || '',
     });
     const newRowData = useMemo(() => {
-        const newRowData: { [key: string]: any } = { [SELECTED]: false };
+        const newRowData: { [key: string]: any } = {};
         sensiParam.columnsDef.forEach((column) => {
             newRowData[column.dataKey] = column.initialValue;
         });
