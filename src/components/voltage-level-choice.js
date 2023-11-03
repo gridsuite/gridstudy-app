@@ -75,15 +75,6 @@ const VoltageLevelChoice = ({
                             let color = getNominalVoltageColor(
                                 voltageLevel.nominalVoltage
                             );
-                            let colorString =
-                                'rgb(' +
-                                color[0].toString() +
-                                ',' +
-                                color[1].toString() +
-                                ',' +
-                                color[2].toString() +
-                                ')';
-
                             return (
                                 <MenuItem
                                     sx={styles.nominalVoltageItem}
@@ -98,7 +89,7 @@ const VoltageLevelChoice = ({
                                             sx={styles.nominalVoltageButton}
                                             variant="contained"
                                             style={{
-                                                backgroundColor: colorString,
+                                                backgroundColor: `rgb(${color})`,
                                             }}
                                         >
                                             {voltageLevel.nominalVoltage}

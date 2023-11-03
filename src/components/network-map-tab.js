@@ -943,6 +943,7 @@ export const NetworkMapTab = ({
         return (
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
+                    lineFlowColorMode={lineFlowColorMode}
                     nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
                     onChange={setFilteredNominalVoltages}
