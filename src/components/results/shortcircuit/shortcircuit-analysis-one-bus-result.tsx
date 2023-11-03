@@ -101,6 +101,10 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             result={result}
             updateResult={updateResult}
             shortCircuitNotif={oneBusShortCircuitNotif}
+            customTablePaginationProps={{
+                labelRowsPerPageId:
+                    'muiTablePaginationLabelRowsPerPageOneBusSCA',
+            }}
         />
     );
 };
