@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { CustomMenuItem } from '../../utils/custom-nested-menu';
 
 const styles = {
     menuItem: {
@@ -18,15 +18,12 @@ const styles = {
         // It set paddings itself then we must force this padding
         // to justify menu items texts
         paddingLeft: '12px',
-        '&:hover': (theme) => ({
-            color: theme.palette.primary.main,
-        }),
     },
 };
 
 const ChildMenuItem = ({ item }) => {
     return (
-        <MenuItem
+        <CustomMenuItem
             sx={styles.menuItem}
             onClick={item.action}
             disabled={item.disabled}
@@ -38,7 +35,7 @@ const ChildMenuItem = ({ item }) => {
                     </Typography>
                 }
             />
-        </MenuItem>
+        </CustomMenuItem>
     );
 };
 
