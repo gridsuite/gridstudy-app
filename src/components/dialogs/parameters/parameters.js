@@ -583,6 +583,12 @@ const TAB_VALUES = {
     voltageInitParamsTabValue: 'VoltageInit',
 };
 
+const sxDialog = {
+    '& .MuiDialog-container': {
+        alignItems: 'flex-start',
+    },
+};
+
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const [tabValue, setTabValue] = useState(TAB_VALUES.sldParamsTabValue);
 
@@ -650,6 +656,15 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
+    const handleClose = useCallback(
+        (event, reason) => {
+            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                hideParameters();
+            }
+        },
+        [hideParameters]
+    );
+
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
@@ -667,10 +682,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     return (
         <Dialog
             open={isParametersOpen}
-            onClose={hideParameters}
+            onClose={handleClose}
             aria-labelledby="form-dialog-title"
             maxWidth={'md'}
             fullWidth={true}
+            sx={sxDialog}
         >
             <DialogTitle id="form-dialog-title">
                 <Typography component="span" variant="h5" sx={styles.title}>
