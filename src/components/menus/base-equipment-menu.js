@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 
 import ListItemText from '@mui/material/ListItemText';
@@ -25,6 +25,15 @@ import {
     CustomNestedMenuItem,
 } from '../utils/custom-nested-menu';
 
+const styles = {
+    menuItem: {
+        // NestedMenu item manages only label prop of string type
+        // It fix paddings itself then we must force this padding
+        // to justify menu items texts
+        paddingLeft: '12px',
+    },
+};
+
 const ViewInSpreadsheetItem = ({
     equipmentType,
     equipmentId,
@@ -33,7 +42,7 @@ const ViewInSpreadsheetItem = ({
 }) => {
     return (
         <CustomMenuItem
-            hasIcon
+            sx={styles.menuItem}
             onClick={() => handleViewInSpreadsheet(equipmentType, equipmentId)}
             selected={false}
         >
@@ -58,7 +67,7 @@ const DeleteEquipmentItem = ({
 
     return (
         <CustomMenuItem
-            hasIcon
+            sx={styles.menuItem}
             onClick={() =>
                 handleDeleteEquipment(
                     getFeederTypeFromEquipmentType(equipmentType),
@@ -88,7 +97,7 @@ const ModifyEquipmentItem = ({
 
     return (
         <CustomMenuItem
-            hasIcon
+            sx={styles.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(
                     equipmentId,
@@ -119,7 +128,7 @@ const ItemViewInForm = ({
 
     return (
         <CustomMenuItem
-            hasIcon
+            sx={styles.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(equipmentId, equipmentType)
             }
@@ -142,7 +151,6 @@ const BaseEquipmentMenu = ({
     handleDeleteEquipment,
     handleOpenModificationDialog,
 }) => {
-    const [openParentId, setOpenParentId] = useState(undefined);
     const intl = useIntl();
     const { getNameOrId } = useNameOrId();
 
@@ -257,7 +265,6 @@ const BaseEquipmentMenu = ({
                         ))}
                     </CustomNestedMenuItem>
                     <CustomNestedMenuItem
-                        key={'ModifyFromMenu'}
                         label={intl.formatMessage({ id: 'ModifyFromMenu' })}
                     >
                         {/* menus for the substation */}
@@ -291,7 +298,6 @@ const BaseEquipmentMenu = ({
             {equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL && equipment && (
                 <>
                     <CustomNestedMenuItem
-                        key={'ViewOnSpreadsheet'}
                         label={intl.formatMessage({
                             id: 'ViewOnSpreadsheet',
                         })}
@@ -317,7 +323,6 @@ const BaseEquipmentMenu = ({
                         />
                     </CustomNestedMenuItem>
                     <CustomNestedMenuItem
-                        key={'DeleteFromMenu'}
                         label={intl.formatMessage({ id: 'DeleteFromMenu' })}
                     >
                         {/* menus for the substation */}
@@ -341,7 +346,6 @@ const BaseEquipmentMenu = ({
                         />
                     </CustomNestedMenuItem>
                     <CustomNestedMenuItem
-                        key={'ModifyFromMenu'}
                         label={intl.formatMessage({ id: 'ModifyFromMenu' })}
                     >
                         {/* menus for the substation */}

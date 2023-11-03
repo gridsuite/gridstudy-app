@@ -11,12 +11,12 @@ import MenuItem from '@mui/material/MenuItem';
 import { mergeSx } from './functions';
 
 const styles = {
-    forceHover: (theme) => ({
+    highlightedParentLine: (theme) => ({
         backgroundColor: theme.palette.action.hover,
         color: theme.palette.primary.main,
         transition: 'all 300ms ease',
     }),
-    menuItem: (theme) => ({
+    highlightedLine: (theme) => ({
         transition: 'all 300ms ease',
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
@@ -24,12 +24,6 @@ const styles = {
             transition: 'all 300ms ease',
         },
     }),
-    menuWithIcon: {
-        // NestedMenu item manages only label prop of string type
-        // It fix paddings itself then we must force this padding
-        // to justify menu items texts
-        paddingLeft: '12px',
-    },
 };
 
 export const CustomNestedMenuItem = (props) => {
@@ -40,7 +34,9 @@ export const CustomNestedMenuItem = (props) => {
         <NestedMenuItem
             parentMenuOpen={true}
             sx={mergeSx(
-                isSubMenuActive ? styles.forceHover : styles.menuItem,
+                isSubMenuActive
+                    ? styles.highlightedParentLine
+                    : styles.highlightedLine,
                 sx
             )}
             {...other}
@@ -56,13 +52,10 @@ export const CustomNestedMenuItem = (props) => {
 };
 
 export const CustomMenuItem = (props) => {
-    const { sx, hasIcon = false, children, ...other } = props;
+    const { sx, children, ...other } = props;
 
     return (
-        <MenuItem
-            sx={mergeSx(styles.menuItem, hasIcon && styles.menuWithIcon, sx)}
-            {...other}
-        >
+        <MenuItem sx={mergeSx(styles.highlightedLine, sx)} {...other}>
             {children}
         </MenuItem>
     );
