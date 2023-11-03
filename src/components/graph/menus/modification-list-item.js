@@ -28,7 +28,7 @@ const isEditableModification = (modif) => {
     if (!modif) {
         return false;
     }
-    return !nonEditableModificationTypes.has(modif.messageType);
+    return !nonEditableModificationTypes.has(modif.type);
 };
 
 const styles = {
@@ -222,7 +222,7 @@ export const ModificationListItem = ({
                             isEditableModification(modif) && (
                                 <IconButton
                                     onClick={() =>
-                                        onEdit(modif.uuid, modif.messageType)
+                                        onEdit(modif.uuid, modif.type)
                                     }
                                     size={'small'}
                                     sx={styles.iconEdit}
