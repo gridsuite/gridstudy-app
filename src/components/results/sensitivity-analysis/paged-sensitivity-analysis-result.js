@@ -24,6 +24,7 @@ import {
 import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
+import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -102,7 +103,7 @@ const PagedSensitivityAnalysisResult = ({
 
     const fetchFilterOptions = useCallback(() => {
         const selector = {
-            isJustBefore: !nOrNkIndex,
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
             functionType: FUNCTION_TYPES[sensiKindIndex],
         };
 
@@ -137,7 +138,7 @@ const PagedSensitivityAnalysisResult = ({
                 : {};
 
         const selector = {
-            isJustBefore: !nOrNkIndex,
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
             pageSize: rowsPerPage,
