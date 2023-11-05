@@ -147,69 +147,16 @@ export function getShortCircuitParameters(studyUuid) {
 
 export function setShortCircuitParameters(studyUuid, newParams) {
     console.info('set short-circuit parameters');
+    const url = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(url);
 
-    const { predefinedParams } = newParams;
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('predefinedParam', predefinedParams);
-    const setShortCircuitParametersUrl =
-        getStudyUrl(studyUuid) +
-        '/short-circuit-analysis/parameters?' +
-        urlSearchParams.toString();
-    console.debug(setShortCircuitParametersUrl);
-    delete newParams.predefinedParams;
-
-    console.log(' data*********** ', newParams);
-
-    const voltageRage = [
-        {
-            voltageRangeCoefficient: '1.1',
-            minimumNominalVoltage: '20',
-            maximumNominalVoltage: '22',
-        },
-
-        {
-            voltageRangeCoefficient: '1.1',
-            minimumNominalVoltage: '45',
-            maximumNominalVoltage: '49.5',
-        },
-
-        {
-            voltageRangeCoefficient: '1.1',
-            minimumNominalVoltage: '63',
-            maximumNominalVoltage: '69.3',
-        },
-
-        {
-            voltageRangeCoefficient: '1.1',
-            minimumNominalVoltage: '90',
-            maximumNominalVoltage: '99',
-        },
-
-        {
-            voltageRangeCoefficient: '1.1',
-            minimumNominalVoltage: '150',
-            maximumNominalVoltage: '165',
-        },
-
-        {
-            voltageRangeCoefficient: '1.09',
-            minimumNominalVoltage: '225',
-            maximumNominalVoltage: '245',
-        },
-        {
-            voltageRangeCoefficient: '1.05',
-            minimumNominalVoltage: '400',
-            maximumNominalVoltage: '420',
-        },
-    ];
-
-    return backendFetch(setShortCircuitParametersUrl, {
+    return backendFetch(url, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...newParams, voltageRanges: voltageRage }),
+        body: JSON.stringify(newParams),
     });
 }
 export function invalidateShortCircuitStatus(studyUuid) {
