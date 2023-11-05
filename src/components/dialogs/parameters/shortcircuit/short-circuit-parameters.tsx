@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useState,
+} from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -22,40 +27,35 @@ import {
     RadioInput,
     SelectInput,
     SwitchInput,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
-import {
-    INITIAL_TENSION,
-    INITIAL_VOLTAGE_PROFILE_MODE,
-    STATUS,
-} from '../../../utils/constants';
+import { INITIAL_TENSION, STATUS } from '../../../utils/constants';
 import { gridItem, GridSection } from '../../dialogUtils';
 import { useIntl } from 'react-intl';
-import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import TensionTable from './short-circuit-tension-table';
-import { UUID } from 'crypto';
-import { invalidateShortCircuitStatus } from '../../../../services/study/short-circuit-analysis';
+import {
+    useIntlInitialVoltageProfileMode,
+    useIntlPredefinedParametersOptions,
+    useStatus,
+} from './short-circuit-parameters-utils';
 
 interface ShortCircuitFieldsProps {
-    resetAll: (params: any) => void;
-    studyUuid: UUID;
-    isDirty: boolean;
+    resetAll: (predefinedParams: INITIAL_TENSION) => void;
 }
+
 const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     resetAll,
-    studyUuid,
-    isDirty,
 }) => {
-    //todo: get status from backend response
+    const intl = useIntl();
+
     const [status, setStatus] = useState(STATUS.SUCCESS);
+    const [isChanged, setIsChanged] = useState(false);
+
     const watchInitialVoltageProfileMode = useWatch({
         name: SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
     });
-    const { snackError } = useSnackMessage();
-
     const watchPredefinedParams = useWatch({
         name: SHORT_CIRCUIT_PREDEFINED_PARAMS,
     });
@@ -77,31 +77,16 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         },
     };
 
-    const intl = useIntl();
-    const predefinedParams = useMemo(() => {
-        return [
-            {
-                id: 'NOMINAL',
-                label: intl.formatMessage({
-                    id: 'nominalPredefinedParams',
-                }),
-            },
-            {
-                id: 'CONFIGURED',
-                label: intl.formatMessage({
-                    id: 'configuredPredefinedParams',
-                }),
-            },
-        ];
-    }, [intl]);
+    // the tranlsation of values
+    const predefinedParamsOptions = useIntlPredefinedParametersOptions(intl);
+    const initialVoltageProfileMode = useIntlInitialVoltageProfileMode(intl);
+    const statusToShow = useStatus(status, styles);
 
-    const predefinedParameter = (
-        <SelectInput
-            name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
-            options={predefinedParams}
-        />
-    );
+    const onChangeCallback = useCallback(() => {
+        setIsChanged(true);
+    }, [setIsChanged]);
 
+    // fields definition
     const feederResult = (
         <Grid container alignItems="center" spacing={2} direction={'row'}>
             <Grid item xs={10}>
@@ -112,10 +97,19 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
             </Grid>
         </Grid>
     );
-    const variationTypeField = (
+    const predefinedParameters = (
+        <SelectInput
+            name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
+            options={predefinedParamsOptions}
+            onChangeCallback={onChangeCallback}
+            disableClearable
+        />
+    );
+
+    const initialVoltageProfileModeField = (
         <RadioInput
             name={SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE}
-            options={Object.values(INITIAL_VOLTAGE_PROFILE_MODE)}
+            options={Object.values(initialVoltageProfileMode)}
         />
     );
     const loads = (
@@ -143,43 +137,21 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         />
     );
 
-    const getStatus = (status: STATUS) => {
-        const color = status === STATUS.SUCCESS ? styles.succeed : styles.fail;
-        return <Lens fontSize={'medium'} sx={color} />;
-    };
-    const statusRender = getStatus(status);
-
     useEffect(() => {
-        setStatus(STATUS.SUCCESS);
-        //todo : simplify this
-        if (
-            watchInitialVoltageProfileMode === 'NOMINAL' &&
-            watchPredefinedParams !== 'NOMINAL'
-        ) {
+        if (watchPredefinedParams !== watchInitialVoltageProfileMode) {
             setStatus(STATUS.ERROR);
-        }
-        if (
-            watchInitialVoltageProfileMode === 'CONFIGURED' &&
-            watchPredefinedParams !== 'CONFIGURED'
-        ) {
-            setStatus(STATUS.ERROR);
+        } else {
+            setStatus(STATUS.SUCCESS);
         }
     }, [watchInitialVoltageProfileMode, watchPredefinedParams]);
 
+    // reset all fields when predefined parameters changes
     useEffect(() => {
-        if (isDirty) {
+        if (isChanged) {
             resetAll(watchPredefinedParams);
-
-            //todo : this invalidate the status so the result will never be shown  => check with TLs
-            //todo: add checck: if the invalidateShortCircuitStatus is alredy called once no need to recall it
-            invalidateShortCircuitStatus(studyUuid).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'invalidateShortCircuitStatusError',
-                });
-            });
+            setIsChanged(false);
         }
-    }, [watchPredefinedParams, snackError, resetAll, isDirty, studyUuid]);
+    }, [watchPredefinedParams, resetAll, isChanged]);
 
     return (
         <Grid container spacing={2} paddingLeft={2}>
@@ -191,8 +163,8 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
                 heading={'4'}
             />
             <Grid container spacing={1} alignItems={'center'}>
-                {gridItem(predefinedParameter, 8)}
-                {gridItem(statusRender, 4)}
+                {gridItem(predefinedParameters, 8)}
+                {gridItem(statusToShow, 4)}
             </Grid>
             <GridSection title="ShortCircuitCharacteristics" heading={'4'} />
             <Grid>
@@ -205,7 +177,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
             </Grid>
 
             <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
-            <Grid>{gridItem(variationTypeField, 12)}</Grid>
+            <Grid>{gridItem(initialVoltageProfileModeField, 12)}</Grid>
             <TensionTable
                 isNominal={
                     watchInitialVoltageProfileMode === INITIAL_TENSION.NOMINAL

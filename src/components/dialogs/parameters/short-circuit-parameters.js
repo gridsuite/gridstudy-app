@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { LineSeparator } from '../dialogUtils';
 import {
     getShortCircuitParameters,
+    invalidateShortCircuitStatus,
     setShortCircuitParameters,
 } from '../../../services/study/short-circuit-analysis';
 import {
@@ -89,6 +90,7 @@ export const ShortCircuitParameters = ({
 
     const { snackError } = useSnackMessage();
 
+    // get default values based on shortCircuitParams
     const emptyFormData = useMemo(() => {
         return {
             [SHORT_CIRCUIT_WITH_FEEDER_RESULT]:
@@ -112,23 +114,19 @@ export const ShortCircuitParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        reset,
-        handleSubmit,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, setValue, handleSubmit } = formMethods;
 
-    // submit parameters
+    // submit the new parameters
     const onSubmit = useCallback(
         (newParams) => {
             const oldParams = { ...shortCircuitParams };
-            setShortCircuitParams(newParams);
             setShortCircuitParameters(studyUuid, {
                 ...oldParams,
                 ...newParams,
             })
                 .then(() => {
-                    return getShortCircuitParameters(studyUuid)
+                    // fetch parameters and invalide the short circuit status
+                    getShortCircuitParameters(studyUuid)
                         .then((params) => {
                             setShortCircuitParams(params);
                         })
@@ -138,6 +136,15 @@ export const ShortCircuitParameters = ({
                                 headerId: 'paramsRetrievingError',
                             });
                         });
+
+                    invalidateShortCircuitStatus(studyUuid).catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'invalidateShortCircuitStatusError',
+                        });
+                    });
+                    //used to update isDirty after submit
+                    reset({}, { keepValues: true });
                 })
                 .catch((error) => {
                     setShortCircuitParams(oldParams);
@@ -147,39 +154,54 @@ export const ShortCircuitParameters = ({
                     });
                 });
         },
-        [setShortCircuitParams, shortCircuitParams, snackError, studyUuid]
+        [
+            setShortCircuitParams,
+            shortCircuitParams,
+            snackError,
+            studyUuid,
+            reset,
+        ]
     );
 
     // when ever voltage profile mode change we need to reset all parameters
     const resetAll = useCallback(
         (initialVoltageProfileMode) => {
-            let dataToReset = {
-                ...emptyFormData,
-            };
-            if (initialVoltageProfileMode === INITIAL_TENSION.NOMINAL) {
-                dataToReset = {
-                    ...dataToReset,
-                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
-                        INITIAL_TENSION.NOMINAL,
-                    [SHORT_CIRCUIT_PREDEFINED_PARAMS]: INITIAL_TENSION.NOMINAL,
-                };
-            }
-            if (initialVoltageProfileMode === INITIAL_TENSION.CONFIGURED) {
-                dataToReset = {
-                    ...dataToReset,
-                    [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
-                        INITIAL_TENSION.CONFIGURED,
-                    [SHORT_CIRCUIT_PREDEFINED_PARAMS]:
-                        INITIAL_TENSION.CONFIGURED,
-                };
-            }
+            setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, true, {
+                shouldDirty: true,
+            });
+            setValue(SHORT_CIRCUIT_WITH_LOADS, false, { shouldDirty: true });
+            setValue(SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS, true, {
+                shouldDirty: true,
+            });
+            setValue(SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS, false, {
+                shouldDirty: true,
+            });
+            setValue(SHORT_CIRCUIT_WITH_NEUTRAL_POSITION, false, {
+                shouldDirty: true,
+            });
+            const initalVoltageProfileMode =
+                initialVoltageProfileMode === INITIAL_TENSION.NOMINAL
+                    ? INITIAL_TENSION.NOMINAL
+                    : INITIAL_TENSION.CONFIGURED;
 
-            // when keepDirty is true isDirty will temporarily remain as the current state until further user's action
-            //todo: fix reset because rerendering twice
-            reset(dataToReset, { keepDirty: true });
+            setValue(
+                SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
+                initalVoltageProfileMode,
+                {
+                    shouldDirty: true,
+                }
+            );
+            setValue(
+                SHORT_CIRCUIT_PREDEFINED_PARAMS,
+                initalVoltageProfileMode,
+                {
+                    shouldDirty: true,
+                }
+            );
         },
-        [reset, emptyFormData]
+        [setValue]
     );
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <Grid container paddingTop={1} paddingBottom={1}>
@@ -187,11 +209,7 @@ export const ShortCircuitParameters = ({
             </Grid>
 
             <Grid>
-                <ShortCircuitFields
-                    resetAll={resetAll}
-                    studyUuid={studyUuid}
-                    isDirty={isDirty}
-                />
+                <ShortCircuitFields resetAll={resetAll} />
             </Grid>
             <Grid
                 container

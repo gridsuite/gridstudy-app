@@ -663,7 +663,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             return oldValue;
         });
     }, [enableDeveloperMode]);
-    console.log('blabla');
     return (
         <Dialog
             open={isParametersOpen}
