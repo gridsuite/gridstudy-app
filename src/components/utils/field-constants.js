@@ -291,7 +291,7 @@ export const CONVERTER_STATION_1 = 'converterStation1';
 export const CONVERTER_STATION_2 = 'converterStation2';
 
 export const SHORT_CIRCUIT_WITH_FEEDER_RESULT = 'withFeederResult';
-export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParams';
+export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParameters';
 export const SHORT_CIRCUIT_WITH_LOADS = 'withLoads';
 export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS =
     'withVSCConverterStations';
