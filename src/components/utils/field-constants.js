@@ -227,7 +227,8 @@ export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
 export const SUBSTATION_IDS = 'substationIds';
 
 // voltage init
-export const VOLTAGE_LIMITS = 'voltageLimits';
+export const VOLTAGE_LIMITS_MODIFICATION = 'voltageLimitsModification';
+export const VOLTAGE_LIMITS_DEFAULT = 'voltageLimitsDefault';
 export const FIXED_GENERATORS = 'constantQGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
