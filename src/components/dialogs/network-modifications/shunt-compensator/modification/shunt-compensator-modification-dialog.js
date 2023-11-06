@@ -74,25 +74,39 @@ const ShuntCompensatorModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const {
+        reset,
+        formState: { dirtyFields },
+    } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
             reset({
                 [EQUIPMENT_NAME]: shuntCompensator?.equipmentName?.value ?? '',
                 ...getCharacteristicsFormData({
-                    maxSusceptance: shuntCompensator.maxSusceptance?.value,
-                    maxQAtNominalV: shuntCompensator.maxQAtNominalV?.value,
+                    maxSusceptance:
+                        shuntCompensator.maxSusceptance?.value ?? null,
+                    maxQAtNominalV:
+                        shuntCompensator.maxQAtNominalV?.value ?? null,
                     shuntCompensatorType:
-                        shuntCompensator.shuntCompensatorType?.value,
-                    sectionCount: shuntCompensator.sectionCount?.value,
+                        shuntCompensator.shuntCompensatorType?.value ?? null,
+                    sectionCount: shuntCompensator.sectionCount?.value ?? null,
                     maximumSectionCount:
-                        shuntCompensator.maximumSectionCount?.value,
+                        shuntCompensator.maximumSectionCount?.value ?? null,
                 }),
             });
         },
         [reset]
     );
+
+    // If we only change the characteristics choice without changing the corresponding fields,
+    // we keep the validate button disable: if we choose "susceptance", we have to add a value for
+    // "susceptance per section", and if we choose "Q at nominal voltage", we have to add a value for
+    // "shunt compensator type" or for "Q at nominal voltage" numeric field
+    const disableSave =
+        (Object.keys(dirtyFields).length === 1 &&
+            dirtyFields[CHARACTERISTICS_CHOICE]) ||
+        Object.keys(dirtyFields).length === 0;
 
     useEffect(() => {
         if (editData) {
@@ -207,6 +221,7 @@ const ShuntCompensatorModificationDialog = ({
                 aria-labelledby="dialog-modify-shuntCompensator"
                 titleId="ModifyShuntCompensator"
                 open={open}
+                disabledSave={disableSave}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&

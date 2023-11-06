@@ -140,7 +140,7 @@ export const getCharacteristicsFormData = ({
             ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
             : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [MAX_SUSCEPTANCE]: maxSusceptance,
-        [SHUNT_COMPENSATOR_TYPE]: shuntCompensatorType ?? '',
+        [SHUNT_COMPENSATOR_TYPE]: shuntCompensatorType,
         [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,

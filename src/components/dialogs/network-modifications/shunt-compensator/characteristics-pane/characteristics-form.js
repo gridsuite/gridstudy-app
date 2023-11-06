@@ -33,6 +33,7 @@ import {
 } from '../../../dialogUtils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({
@@ -133,7 +134,7 @@ export const CharacteristicsForm = ({
         />
     );
 
-    const previousHuntCompensatorType = useMemo(
+    const previousShuntCompensatorType = useMemo(
         () =>
             previousValues?.bperSection
                 ? intl.formatMessage({
@@ -152,7 +153,7 @@ export const CharacteristicsForm = ({
             name={SHUNT_COMPENSATOR_TYPE}
             label={'Type'}
             size={'small'}
-            previousValue={previousHuntCompensatorType}
+            previousValue={previousShuntCompensatorType}
         />
     );
 
@@ -188,18 +189,30 @@ export const CharacteristicsForm = ({
     );
 
     const handleSwitchedOnValue = useCallback(
-        (linkedSwitchedOnValue, SWITCHED_ON_FIELD) => {
+        (
+            linkedSwitchedOnValue,
+            currentLinkedSwitchedOnValue,
+            SWITCHED_ON_FIELD
+        ) => {
             if (
                 ![
                     currentSectionCount,
                     currentMaximumSectionCount,
-                    linkedSwitchedOnValue,
+                    currentLinkedSwitchedOnValue,
                 ].includes(null)
             ) {
-                if (currentMaximumSectionCount > currentSectionCount) {
+                if (
+                    currentMaximumSectionCount >= currentSectionCount &&
+                    [
+                        sectionCount,
+                        maximumSectionCount,
+                        linkedSwitchedOnValue,
+                    ].some((value) => !isBlankOrEmpty(value))
+                ) {
                     setValue(
                         SWITCHED_ON_FIELD,
-                        (linkedSwitchedOnValue / currentMaximumSectionCount) *
+                        (currentLinkedSwitchedOnValue /
+                            currentMaximumSectionCount) *
                             currentSectionCount
                     );
                 } else {
@@ -216,6 +229,8 @@ export const CharacteristicsForm = ({
         [
             currentSectionCount,
             currentMaximumSectionCount,
+            sectionCount,
+            maximumSectionCount,
             isSubmitted,
             setValue,
             clearErrors,
@@ -227,6 +242,7 @@ export const CharacteristicsForm = ({
             characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
         ) {
             handleSwitchedOnValue(
+                maxQAtNominalV,
                 currentMaxQAtNominalV,
                 SWITCHED_ON_Q_AT_NOMINAL_V
             );
@@ -234,6 +250,7 @@ export const CharacteristicsForm = ({
             characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
         ) {
             handleSwitchedOnValue(
+                maxSusceptance,
                 currentMaxSusceptance,
                 SWITCHED_ON_SUSCEPTANCE
             );
@@ -244,6 +261,8 @@ export const CharacteristicsForm = ({
         previousValues,
         currentMaxQAtNominalV,
         currentMaxSusceptance,
+        maxQAtNominalV,
+        maxSusceptance,
     ]);
 
     return (
