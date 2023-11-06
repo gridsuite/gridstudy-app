@@ -22,6 +22,7 @@ import { UUID } from 'crypto';
 export enum ComputationReportType {
     LOAD_FLOW = 'LOAD_FLOW',
     SECURITY_ANALYSIS = 'SECURITY_ANALYSIS',
+    SHORT_CIRCUIT_ANALYSIS = 'SHORT_CIRCUIT_ANALYSIS',
 }
 
 interface ComputationReportViewerProps {
