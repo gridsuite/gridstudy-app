@@ -27,6 +27,10 @@ import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { SecurityAnalysisTabProps } from './security-analysis.type';
 import { NMK_TYPE, RESULT_TYPE } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
+import {
+    ComputationReportType,
+    ComputationReportViewer,
+} from './../loadflow/computation-report-viewer';
 
 const styles = {
     container: {
@@ -122,6 +126,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label="N" />
                         <Tab label="N-K" />
+                        <Tab
+                            label={
+                                <FormattedMessage
+                                    id={'ComputationResultsLogs'}
+                                />
+                            }
+                        />
                     </Tabs>
                 </Box>
                 {tabIndex === 1 && (
@@ -151,12 +162,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 {shouldOpenLoader && <LinearProgress />}
             </Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === 0 ? (
+                {tabIndex === 0 && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
                     />
-                ) : (
+                )}
+                {tabIndex === 1 && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult}
@@ -168,6 +180,19 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         nodeUuid={nodeUuid}
                     />
                 )}
+                {tabIndex === 2 &&
+                    securityAnalysisStatus === RunningStatus.SUCCEED && (
+                        <>
+                            <Box sx={{ height: '4px' }}></Box>
+                            <ComputationReportViewer
+                                studyUuid={studyUuid}
+                                nodeUuid={nodeUuid}
+                                reportType={
+                                    ComputationReportType.SECURITY_ANALYSIS
+                                }
+                            />
+                        </>
+                    )}
             </Box>
         </>
     );

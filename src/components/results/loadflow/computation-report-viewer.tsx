@@ -15,15 +15,19 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Box } from '@mui/system';
 import ReportViewer from '../../ReportViewer/report-viewer';
 import LogReportItem from '../../ReportViewer/log-report-item';
-import { LoadFlowTabProps } from './load-flow-result.type';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
+import { UUID } from 'crypto';
 
 export enum ComputationReportType {
     LOAD_FLOW = 'LOAD_FLOW',
+    SECURITY_ANALYSIS = 'SECURITY_ANALYSIS',
 }
 
-interface ComputationReportViewerProps extends LoadFlowTabProps {
+interface ComputationReportViewerProps {
+    // different types for uuid to support LF, SA , etc
+    studyUuid: UUID | string;
+    nodeUuid: UUID | string | undefined;
     reportType: ComputationReportType;
 }
 
@@ -36,16 +40,15 @@ export const ComputationReportViewer: FunctionComponent<
         (state: ReduxState) => state.currentTreeNode
     );
 
-    const makeSingleReport = useCallback(
+    const makeReport = useCallback(
         (reportData: any) => {
             const nodeName = currentNode?.data.label;
-            let singleReport: any = undefined;
-            if (!Array.isArray(reportData)) {
-                singleReport = reportData;
-            } else if (reportData.length === 1) {
-                singleReport = reportData[0];
-            }
-            if (nodeName) {
+            // an array with a single reporter is expected (corresponding to the current Node)
+            let singleReport: any =
+                Array.isArray(reportData) && reportData.length === 1
+                    ? reportData[0]
+                    : undefined;
+            if (nodeName && singleReport) {
                 singleReport.defaultName = nodeName;
             }
             return singleReport;
@@ -62,7 +65,7 @@ export const ComputationReportViewer: FunctionComponent<
             reportType.toString()
         )
             .then((fetchedReport) => {
-                setReport(makeSingleReport(fetchedReport));
+                setReport(makeReport(fetchedReport));
             })
             .catch((error) => {
                 setReport(undefined);
@@ -71,7 +74,7 @@ export const ComputationReportViewer: FunctionComponent<
                     headerId: 'ReportFetchError',
                 });
             });
-    }, [studyUuid, nodeUuid, reportType, snackError, makeSingleReport]);
+    }, [studyUuid, nodeUuid, reportType, snackError, makeReport]);
 
     const subReportPromise = (
         reportId: string,
