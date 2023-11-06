@@ -182,14 +182,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     // Pagination, sort and filter
     const handleChangePage = useCallback(
-        (_: any, newPage: number) => {
-            setPage(newPage);
+        (
+            _: React.MouseEvent<HTMLButtonElement> | null,
+            selectedPage: number
+        ) => {
+            setPage(selectedPage);
         },
         [setPage]
     );
 
     const handleChangeRowsPerPage = useCallback(
-        (event: any) => {
+        (event: React.ChangeEvent<{ value: string }>) => {
             setRowsPerPage(parseInt(event.target.value, 10));
             setPage(0);
         },
@@ -209,8 +212,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     useEffect(() => {
-        if (result?.totalElements) {
+        if (result) {
             setCount(result.totalElements);
+        } else {
+            setCount(0);
         }
     }, [result]);
 

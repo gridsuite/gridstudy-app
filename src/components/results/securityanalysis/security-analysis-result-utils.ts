@@ -68,37 +68,29 @@ export const flattenNmKResultsContingencies = (
             subjectLimitViolations = [],
             contingency,
         }: ConstraintsFromContingencyItem) => {
-            if (!!subjectLimitViolations.length) {
-                const {
-                    contingencyId,
-                    status,
-                    elements = [],
-                } = contingency || {};
-                rows.push({
-                    contingencyId,
-                    contingencyEquipmentsIds: elements.map(
-                        (element) => element.id
-                    ),
-                    status,
-                    violationCount: subjectLimitViolations.length,
-                });
-                subjectLimitViolations?.forEach((constraint: Constraint) => {
-                    const { limitViolation = {} as LimitViolation, subjectId } =
-                        constraint || {};
+            const { contingencyId, status, elements = [] } = contingency || {};
+            rows.push({
+                contingencyId,
+                contingencyEquipmentsIds: elements.map((element) => element.id),
+                status,
+                violationCount: subjectLimitViolations.length,
+            });
+            subjectLimitViolations?.forEach((constraint: Constraint) => {
+                const { limitViolation = {} as LimitViolation, subjectId } =
+                    constraint || {};
 
-                    rows.push({
-                        subjectId,
-                        limitType: intl.formatMessage({
-                            id: limitViolation.limitType,
-                        }),
-                        limit: limitViolation.limit,
-                        value: limitViolation.value,
-                        loading: limitViolation.loading,
-                        side: limitViolation.side,
-                        linkedElementId: contingencyId,
-                    });
+                rows.push({
+                    subjectId,
+                    limitType: intl.formatMessage({
+                        id: limitViolation.limitType,
+                    }),
+                    limit: limitViolation.limit,
+                    value: limitViolation.value,
+                    loading: limitViolation.loading,
+                    side: limitViolation.side,
+                    linkedElementId: contingencyId,
                 });
-            }
+            });
         }
     );
 
@@ -113,32 +105,29 @@ export const flattenNmKResultsConstraints = (
 
     result?.forEach(({ contingencies = [], subjectId }) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
-            if (contingencies.length) {
-                rows.push({ subjectId });
+            rows.push({ subjectId });
 
-                contingencies.forEach(
-                    ({ contingency = {}, limitViolation = {} }) => {
-                        rows.push({
-                            contingencyId: contingency.contingencyId,
-                            contingencyEquipmentsIds: contingency.elements?.map(
-                                (element) => element.id
-                            ),
-                            status: contingency.status,
-                            limitType: intl.formatMessage({
-                                id: limitViolation.limitType,
-                            }),
-                            limitName: limitViolation.limitName,
-                            side: limitViolation.side,
-                            acceptableDuration:
-                                limitViolation.acceptableDuration,
-                            limit: limitViolation.limit,
-                            value: limitViolation.value,
-                            loading: limitViolation.loading,
-                            linkedElementId: subjectId,
-                        });
-                    }
-                );
-            }
+            contingencies.forEach(
+                ({ contingency = {}, limitViolation = {} }) => {
+                    rows.push({
+                        contingencyId: contingency.contingencyId,
+                        contingencyEquipmentsIds: contingency.elements?.map(
+                            (element) => element.id
+                        ),
+                        status: contingency.status,
+                        limitType: intl.formatMessage({
+                            id: limitViolation.limitType,
+                        }),
+                        limitName: limitViolation.limitName,
+                        side: limitViolation.side,
+                        acceptableDuration: limitViolation.acceptableDuration,
+                        limit: limitViolation.limit,
+                        value: limitViolation.value,
+                        loading: limitViolation.loading,
+                        linkedElementId: subjectId,
+                    });
+                }
+            );
         }
     });
 
@@ -217,6 +206,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
             isFilterable: true,
+            isSortable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),

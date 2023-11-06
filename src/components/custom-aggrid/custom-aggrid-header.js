@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowDownward, ArrowUpward, Menu } from '@mui/icons-material';
+import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
 import {
     Popover,
     IconButton,
@@ -20,7 +20,6 @@ import {
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useDebounce } from '@gridsuite/commons-ui';
-import Paper from '@mui/material/Paper';
 
 const styles = {
     iconSize: {
@@ -29,6 +28,13 @@ const styles = {
     input: {
         minWidth: '250px',
         maxWidth: '40%',
+    },
+    autoCompleteInput: {
+        width: '30%',
+    },
+    displayName: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
 };
 
@@ -61,6 +67,7 @@ const CustomHeaderComponent = ({
         debounceMs = 1000,
     } = filterParams;
     const { colKey: sortColKey, sortWay } = sortConfig;
+    const isAutoCompleteFilter = filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE;
 
     const intl = useIntl();
 
@@ -69,7 +76,7 @@ const CustomHeaderComponent = ({
     const [selectedFilterComparator, setSelectedFilterComparator] = useState(
         filterComparators[0]
     );
-    const [selectedFilterData, setSelectedFilterData] = useState('');
+    const [selectedFilterData, setSelectedFilterData] = useState(undefined);
 
     const isColumnSorted = sortColKey === field;
 
@@ -95,23 +102,23 @@ const CustomHeaderComponent = ({
 
     const debouncedUpdateFilter = useDebounce(updateFilter, debounceMs);
 
-    const handleFilterDataChange = (data) => {
-        if (filterUIType === FILTER_UI_TYPES.TEXT) {
-            const value = data.target.value.toUpperCase();
-            setSelectedFilterData(value);
-            debouncedUpdateFilter(field, [
-                {
-                    text: value,
-                    type: selectedFilterComparator,
-                },
-            ]);
-        } else {
-            setSelectedFilterData(data);
-            debouncedUpdateFilter(field, data, FILTER_TEXT_COMPARATORS.EQUALS);
-        }
+    const handleFilterTextChange = (event) => {
+        const value = event.target.value.toUpperCase();
+        setSelectedFilterData(value);
+        debouncedUpdateFilter(field, [
+            {
+                text: value,
+                type: selectedFilterComparator,
+            },
+        ]);
     };
 
-    const handleFilterDataTypeChange = (event) => {
+    const handleFilterAutoCompleteChange = (_, data) => {
+        setSelectedFilterData(data);
+        debouncedUpdateFilter(field, data);
+    };
+
+    const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
 
@@ -190,13 +197,7 @@ const CustomHeaderComponent = ({
                         }}
                         {...(isSortable && { onClick: handleSortChange })}
                     >
-                        <Grid
-                            item
-                            sx={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                            }}
-                        >
+                        <Grid item sx={styles.displayName}>
                             {displayName}
                         </Grid>
                         {isSortable && (
@@ -241,7 +242,7 @@ const CustomHeaderComponent = ({
                                             }
                                             invisible={!selectedFilterData}
                                         >
-                                            <Menu sx={styles.iconSize} />
+                                            <FilterAlt sx={styles.iconSize} />
                                         </Badge>
                                     </IconButton>
                                 </Grid>
@@ -265,10 +266,12 @@ const CustomHeaderComponent = ({
                         horizontal: 'left',
                     }}
                     PaperProps={{
-                        sx: styles.input,
+                        sx: styles[
+                            isAutoCompleteFilter ? 'autoCompleteInput' : 'input'
+                        ],
                     }}
                 >
-                    {filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE ? (
+                    {isAutoCompleteFilter ? (
                         <Autocomplete
                             multiple
                             value={selectedFilterData || []}
@@ -279,21 +282,20 @@ const CustomHeaderComponent = ({
                                     defaultMessage: option,
                                 })
                             }
-                            onChange={(_, data) => {
-                                handleFilterDataChange(data);
-                            }}
+                            onChange={handleFilterAutoCompleteChange}
                             size="small"
                             disableCloseOnSelect
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    placeholder={intl.formatMessage({
-                                        id: 'customAgGridFilter.filterOoo',
-                                    })}
+                                    placeholder={
+                                        !selectedFilterData?.length
+                                            ? intl.formatMessage({
+                                                  id: 'customAgGridFilter.filterOoo',
+                                              })
+                                            : ''
+                                    }
                                 />
-                            )}
-                            PaperComponent={({ children }) => (
-                                <Paper>{children}</Paper>
                             )}
                             fullWidth
                         />
@@ -306,7 +308,7 @@ const CustomHeaderComponent = ({
                         >
                             <Select
                                 value={selectedFilterComparator}
-                                onChange={handleFilterDataTypeChange}
+                                onChange={handleFilterComparatorChange}
                                 displayEmpty
                                 size={'small'}
                                 sx={styles.input}
@@ -326,7 +328,7 @@ const CustomHeaderComponent = ({
                                 size={'small'}
                                 fullWidth
                                 value={selectedFilterData || ''}
-                                onChange={handleFilterDataChange}
+                                onChange={handleFilterTextChange}
                                 placeholder={intl.formatMessage({
                                     id: 'customAgGridFilter.filterOoo',
                                 })}

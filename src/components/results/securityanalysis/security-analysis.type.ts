@@ -115,11 +115,11 @@ type PaginationProps = {
     count?: number;
     rowsPerPage?: number;
     page?: number;
-    onPageChange: (
+    onPageChange?: (
         event: React.MouseEvent<HTMLButtonElement> | null,
         page: number
     ) => void;
-    onRowsPerPageChange: React.ChangeEventHandler<
+    onRowsPerPageChange?: React.ChangeEventHandler<
         HTMLTextAreaElement | HTMLInputElement
     >;
 };
