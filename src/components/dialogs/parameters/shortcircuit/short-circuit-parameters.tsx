@@ -9,6 +9,7 @@ import React, {
     FunctionComponent,
     useCallback,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import { Grid } from '@mui/material';
@@ -36,9 +37,9 @@ import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import TensionTable from './short-circuit-tension-table';
 import {
-    useIntlInitialVoltageProfileMode,
-    useIntlPredefinedParametersOptions,
-    useStatus,
+    getStatus,
+    intlInitialVoltageProfileMode,
+    intlPredefinedParametersOptions,
 } from './short-circuit-parameters-utils';
 
 interface ShortCircuitFieldsProps {
@@ -60,27 +61,24 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         name: SHORT_CIRCUIT_PREDEFINED_PARAMS,
     });
 
-    const styles = {
-        cell: {
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            boxSizing: 'border-box',
-            flex: 1,
-            cursor: 'initial',
-        },
-        succeed: {
-            color: green[500],
-        },
-        fail: {
-            color: red[500],
-        },
-    };
-
     // the tranlsation of values
-    const predefinedParamsOptions = useIntlPredefinedParametersOptions(intl);
-    const initialVoltageProfileMode = useIntlInitialVoltageProfileMode(intl);
-    const statusToShow = useStatus(status, styles);
+    const predefinedParamsOptions = useMemo(() => {
+        return intlPredefinedParametersOptions(intl);
+    }, [intl]);
+    const initialVoltageProfileMode = useMemo(() => {
+        return intlInitialVoltageProfileMode(intl);
+    }, [intl]);
+    const statusToShow = useMemo(() => {
+        const styles = {
+            succeed: {
+                color: green[500],
+            },
+            fail: {
+                color: red[500],
+            },
+        };
+        return getStatus(status, styles);
+    }, [status]);
 
     const onChangeCallback = useCallback(() => {
         setIsChanged(true);
