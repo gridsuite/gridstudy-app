@@ -62,6 +62,6 @@ export const StudyDrawer = ({ open, children, anchor }) => {
 
 StudyDrawer.propTypes = {
     open: PropTypes.bool,
-    children: PropTypes.object,
+    children: PropTypes.node,
     anchor: PropTypes.string,
 };

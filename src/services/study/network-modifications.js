@@ -642,9 +642,11 @@ export function createShuntCompensator(
     currentNodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
-    susceptancePerSection,
-    qAtNominalV,
+    maxSusceptance,
+    maxQAtNominalV,
     shuntCompensatorType,
+    sectionCount,
+    maximumSectionCount,
     connectivity,
     isUpdate,
     modificationUuid,
@@ -673,9 +675,11 @@ export function createShuntCompensator(
             type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: shuntCompensatorName,
-            susceptancePerSection: susceptancePerSection,
-            qAtNominalV: qAtNominalV,
+            maxSusceptance: maxSusceptance,
+            maxQAtNominalV: maxQAtNominalV,
             shuntCompensatorType: shuntCompensatorType,
+            sectionCount: sectionCount,
+            maximumSectionCount: maximumSectionCount,
             voltageLevelId: connectivity.voltageLevel.id,
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
             connectionDirection: connectionDirection,
@@ -982,6 +986,40 @@ export function modifyTwoWindingsTransformer(
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+        }),
+    });
+}
+
+export function createTabulareModification(
+    studyUuid,
+    currentNodeUuid,
+    modificationType,
+    modifications,
+    isUpdate,
+    modificationUuid
+) {
+    let createTabulareModificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createTabulareModificationUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating tabular modification');
+    } else {
+        console.info('Creating tabular modification');
+    }
+
+    return backendFetchText(createTabulareModificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+            modificationType: modificationType,
+            modifications: modifications,
         }),
     });
 }
@@ -1467,7 +1505,10 @@ export function fetchNetworkModifications(
     nodeUuid,
     stashedModifications
 ) {
-    console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
+    console.info(
+        'Fetching network modifications (matadata) for nodeUuid : ',
+        nodeUuid
+    );
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -1475,7 +1516,8 @@ export function fetchNetworkModifications(
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
         '/network-modifications?stashed=' +
-        encodeURIComponent(stashedModifications);
+        encodeURIComponent(stashedModifications) +
+        '&onlyMetadata=true';
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
