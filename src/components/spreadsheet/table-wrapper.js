@@ -624,16 +624,17 @@ const TableWrapper = (props) => {
                             editingDataRef.current?.generatorShortCircuit
                                 ?.stepUpTransformerReactance
                         ),
-                        undefined,
-                        undefined,
-                        undefined,
+                        undefined, //'LOCAL'
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData?.activePowerControl
-                                ?.activePowerControlOn,
-                            editingDataRef.current?.activePowerControl
-                                ?.activePowerControlOn
+                            editingData.activePowerControl.activePowerControlOn,
+                            editingDataRef.current.activePowerControl
+                                .activePowerControlOn
+                        ),
+                        getFieldValue(
+                            editingData.activePowerControl.droop,
+                            editingDataRef.current.activePowerControl.droop
                         )
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:

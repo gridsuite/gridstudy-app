@@ -21,7 +21,6 @@ import {
     unitToMicroUnit,
 } from '../../../utils/rounding';
 import { useIntl } from 'react-intl';
-import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 
 const generateTapPositions = (params) => {
     return params
@@ -1152,6 +1151,41 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
+                id: 'ActivePowerRegulationDroop',
+                field: 'activePowerControl.droop',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.activePowerControl?.droop | 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.activePowerControl?.droop | 0,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...params.data.activePowerControl,
+                        droop: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn:
+                            'activePowerControl.activePowerControlOn',
+                        columnValue: 1,
+                    },
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
                 id: 'minActivePower',
                 field: 'minP',
                 numeric: true,
@@ -1298,19 +1332,37 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RegulationTypeText',
-                getQuickFilterText: excludeFromGlobalFilter,
-                cellRenderer: RegulationTypeCellRenderer,
-            },
-            {
-                id: 'ActivePowerRegulationDroop',
-                field: 'activePowerControl.droop',
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
                 id: 'ReactivePercentageVoltageRegulation',
                 field: 'coordinatedReactiveControl.qPercent',
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                numeric: true,
+                fractionDigits: 1,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: isNaN(
+                            params.data?.coordinatedReactiveControl?.qPercent
+                        )
+                            ? 0
+                            : params.data?.coordinatedReactiveControl?.qPercent,
+
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    isNaN(params.data?.coordinatedReactiveControl?.qPercent)
+                        ? 0
+                        : params.data?.coordinatedReactiveControl?.qPercent,
+                valueSetter: (params) => {
+                    params.data.coordinatedReactiveControl = {
+                        ...params.data.coordinatedReactiveControl,
+                        qPercent: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'VoltageLevel',
@@ -1318,11 +1370,9 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Equipment',
+                id: 'ReactivePercentageVoltageRegulation',
+                field: 'coordinatedReactiveControl.qPercent',
                 getQuickFilterText: excludeFromGlobalFilter,
-                cellRenderer: (params) => {
-                    return getTapChangerEquipmentSectionTypeValue(params.data);
-                },
             },
             {
                 id: 'TransientReactance',
@@ -1451,6 +1501,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
+                        maxExpression: 1,
+                        minExpression: 0,
                         defaultValue:
                             params.data?.generatorStartup?.plannedOutageRate,
                         gridContext: params.context,
@@ -1479,6 +1531,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
+                        maxExpression: 1,
+                        minExpression: 0,
                         defaultValue:
                             params.data.generatorStartup?.forcedOutageRate,
                         gridContext: params.context,
