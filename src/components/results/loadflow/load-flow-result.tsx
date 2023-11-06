@@ -55,7 +55,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import {
     ComputationReportType,
     ComputationReportViewer,
-} from './computation-report-viewer';
+} from '../common/computation-report-viewer';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,

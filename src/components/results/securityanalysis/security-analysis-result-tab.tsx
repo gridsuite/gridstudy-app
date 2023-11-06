@@ -30,7 +30,7 @@ import { useNodeData } from '../../study-container';
 import {
     ComputationReportType,
     ComputationReportViewer,
-} from './../loadflow/computation-report-viewer';
+} from '../common/computation-report-viewer';
 
 const styles = {
     container: {
