@@ -83,8 +83,12 @@ const getCharacteristicsCreateFormValidationSchema = () => {
 
 const getCharacteristicsModificationFormValidationSchema = () => {
     return {
-        [SUSCEPTANCE_PER_SECTION]: yup.number().nullable(),
-        [Q_AT_NOMINAL_V]: yup.number().nullable(),
+        [MAX_Q_AT_NOMINAL_V]: yup.number().nullable(),
+        [MAX_SUSCEPTANCE]: yup.number().nullable(),
+        [MAXIMUM_SECTION_COUNT]: yup.number().nullable(),
+        [SECTION_COUNT]: yup.number().nullable(),
+        [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
+        [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };
 };
 
@@ -94,14 +98,7 @@ export const getCharacteristicsFormValidationSchema = (
     return characteristicsValidationSchema(isModification);
 };
 
-const characteristicsEmptyModificationFormData = () => ({
-    [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-    [SUSCEPTANCE_PER_SECTION]: null,
-    [SHUNT_COMPENSATOR_TYPE]: null,
-    [Q_AT_NOMINAL_V]: null,
-});
-
-const characteristicsEmptyCreateFormData = () => ({
+const characteristicsEmptyFormData = () => ({
     [MAXIMUM_SECTION_COUNT]: null,
     [SECTION_COUNT]: null,
     [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
@@ -112,27 +109,8 @@ const characteristicsEmptyCreateFormData = () => ({
     [SWITCHED_ON_SUSCEPTANCE]: null,
 });
 
-export const getCharacteristicsEmptyCreateFormData = () => {
-    return characteristicsEmptyCreateFormData();
-};
-
-export const getCharacteristicsEmptyModificationFormData = () => {
-    return characteristicsEmptyModificationFormData();
-};
-
-export const getCharacteristicsFormData = ({
-    susceptancePerSection,
-    qAtNominalV,
-    shuntCompensatorType,
-}) => {
-    return {
-        [CHARACTERISTICS_CHOICE]: susceptancePerSection
-            ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-            : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-        [SUSCEPTANCE_PER_SECTION]: susceptancePerSection,
-        [SHUNT_COMPENSATOR_TYPE]: shuntCompensatorType ?? '',
-        [Q_AT_NOMINAL_V]: qAtNominalV,
-    };
+export const getCharacteristicsEmptyFormData = () => {
+    return characteristicsEmptyFormData();
 };
 
 export const getCharacteristicsFormDataFromSearchCopy = ({
@@ -150,7 +128,7 @@ export const getCharacteristicsFormDataFromSearchCopy = ({
     };
 };
 
-export const getCharacteristicsCreateFormData = ({
+export const getCharacteristicsFormData = ({
     maxSusceptance,
     maxQAtNominalV,
     shuntCompensatorType,
@@ -202,7 +180,7 @@ export const getCharacteristicsCreateFormDataFromSearchCopy = ({
     };
 };
 
-const computeSwitchedOnValue = (
+export const computeSwitchedOnValue = (
     sectionCount,
     maximumSectionCount,
     linkedSwitchedOnValue
