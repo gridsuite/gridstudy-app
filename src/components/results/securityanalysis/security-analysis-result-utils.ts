@@ -159,8 +159,8 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterParams: {
             filterUIType: FILTER_UI_TYPES.TEXT,
             filterComparators: [
-                FILTER_TYPES.STARTS_WITH,
-                FILTER_TYPES.CONTAINS,
+                FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
     }),
