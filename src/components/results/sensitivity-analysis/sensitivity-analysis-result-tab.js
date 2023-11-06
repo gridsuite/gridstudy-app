@@ -17,6 +17,14 @@ import {
     DATA_KEY_TO_SORT_KEY,
 } from './sensitivity-analysis-content';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useSelector } from 'react-redux';
+import { ComputingType } from '../../computing-status/computing-type';
+import {
+    ComputationReportType,
+    ComputationReportViewer,
+} from '../common/computation-report-viewer';
+import { RunningStatus } from '../../utils/running-status';
+import { Box } from '@mui/system';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -27,6 +35,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
     const [page, setPage] = useState(0);
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
 
     const { updateFilter, filterSelector, initFilters } = useRowFilter(
         DATA_KEY_TO_FILTER_KEY
@@ -69,23 +80,43 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 sensiKindIndex={sensiKindIndex}
                 setSensiKindIndex={handleSensiKindIndexChange}
             />
-            <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
-                {SensitivityResultTabs.map((tab) => (
-                    <Tab label={tab.label} />
-                ))}
-            </Tabs>
-            <PagedSensitivityAnalysisResult
-                nOrNkIndex={nOrNkIndex}
-                sensiKindIndex={sensiKindIndex}
-                studyUuid={studyUuid}
-                nodeUuid={nodeUuid}
-                updateFilter={updateFilter}
-                filterSelector={filterSelector}
-                onSortChanged={onSortChanged}
-                sortConfig={sortConfig}
-                page={page}
-                setPage={setPage}
-            />
+            {sensiKindIndex < 3 && (
+                <>
+                    <Tabs
+                        value={nOrNkIndex}
+                        onChange={handleSensiNOrNkIndexChange}
+                    >
+                        {SensitivityResultTabs.map((tab) => (
+                            <Tab label={tab.label} />
+                        ))}
+                    </Tabs>
+                    <PagedSensitivityAnalysisResult
+                        nOrNkIndex={nOrNkIndex}
+                        sensiKindIndex={sensiKindIndex}
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        updateFilter={updateFilter}
+                        filterSelector={filterSelector}
+                        onSortChanged={onSortChanged}
+                        sortConfig={sortConfig}
+                        page={page}
+                        setPage={setPage}
+                    />
+                </>
+            )}
+            {sensiKindIndex === 3 &&
+                sensitivityAnalysisStatus === RunningStatus.SUCCEED && (
+                    <>
+                        <Box sx={{ height: '4px' }}></Box>
+                        <ComputationReportViewer
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            reportType={
+                                ComputationReportType.SENSITIVITY_ANALYSIS
+                            }
+                        />
+                    </>
+                )}
         </>
     );
 };
