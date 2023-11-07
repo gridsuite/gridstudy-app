@@ -46,6 +46,7 @@ import {
 } from './voltage-init-utils';
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { getVoltageInitParameters } from 'services/voltage-init';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -113,9 +114,8 @@ const formSchema = yup.object().shape({
                 .nullable()
                 .test((value, context) => {
                     return (
-                        (value !== null && value !== undefined) ||
-                        (context.parent[HIGH_VOLTAGE_LIMIT] !== null &&
-                            context.parent[HIGH_VOLTAGE_LIMIT] !== undefined)
+                        !isBlankOrEmpty(value) ||
+                        !isBlankOrEmpty(context.parent[HIGH_VOLTAGE_LIMIT])
                     );
                 }),
             [HIGH_VOLTAGE_LIMIT]: yup
@@ -124,9 +124,8 @@ const formSchema = yup.object().shape({
                 .nullable()
                 .test((value, context) => {
                     return (
-                        (value !== null && value !== undefined) ||
-                        (context.parent[LOW_VOLTAGE_LIMIT] !== null &&
-                            context.parent[LOW_VOLTAGE_LIMIT] !== undefined)
+                        !isBlankOrEmpty(value) ||
+                        !isBlankOrEmpty(context.parent[LOW_VOLTAGE_LIMIT])
                     );
                 }),
         })
