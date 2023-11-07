@@ -145,6 +145,11 @@ code {
     font-size: 7.43px;
     fill: none;
 }
+.sld-lcc {
+    stroke: var(--sld-vl-color, blue);
+    font-size: 7.43px;
+    fill: none;
+}
 .sld-node-infos {
     stroke: none;
     fill: var(--sld-vl-color, black);
