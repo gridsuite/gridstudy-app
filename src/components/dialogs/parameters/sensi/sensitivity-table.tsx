@@ -46,7 +46,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             return;
         }
         append(createRows(1));
-    }, [append, arrayFormName, createRows, currentRows.length]);
+    }, [append, createRows, currentRows.length]);
 
     const handleDeleteButton = useCallback(
         (index: number) => {
