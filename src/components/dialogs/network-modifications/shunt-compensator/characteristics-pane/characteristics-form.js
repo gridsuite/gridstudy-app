@@ -41,11 +41,7 @@ export const CharacteristicsForm = ({
     isModification = false,
 }) => {
     const intl = useIntl();
-    const {
-        setValue,
-        clearErrors,
-        formState: { isSubmitted },
-    } = useFormContext();
+    const { setValue } = useFormContext();
 
     const [
         sectionCount,

@@ -6,10 +6,8 @@
  */
 
 import {
-    Q_AT_NOMINAL_V,
     SHUNT_COMPENSATOR_TYPE,
     SHUNT_COMPENSATOR_TYPES,
-    SUSCEPTANCE_PER_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     MAXIMUM_SECTION_COUNT,
@@ -111,21 +109,6 @@ const characteristicsEmptyFormData = () => ({
 
 export const getCharacteristicsEmptyFormData = () => {
     return characteristicsEmptyFormData();
-};
-
-export const getCharacteristicsFormDataFromSearchCopy = ({
-    bperSection,
-    qatNominalV,
-}) => {
-    return {
-        [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-        [SUSCEPTANCE_PER_SECTION]: bperSection,
-        [SHUNT_COMPENSATOR_TYPE]:
-            bperSection > 0
-                ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
-                : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
-        [Q_AT_NOMINAL_V]: qatNominalV,
-    };
 };
 
 export const getCharacteristicsFormData = ({
