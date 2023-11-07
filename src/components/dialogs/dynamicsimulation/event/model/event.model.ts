@@ -35,10 +35,37 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     },
 };
 
+export const NODE_FAULT_EVENT_DEFINITION: EventDefinition = {
+    startTime: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyTEvent',
+        isRequired: true,
+        unit: 's',
+    },
+    faultTime: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyNodeFaultDuration',
+        isRequired: true,
+        unit: 's',
+    },
+    rPu: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyRPu',
+        isRequired: true,
+        unit: 'pu',
+    },
+    xPu: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyXPu',
+        isRequired: true,
+        unit: 'pu',
+    },
+};
+
 export const eventDefinitions = {
     [EventType.DISCONNECT]: DISCONNECT_EVENT_DEFINITION,
     [EventType.STEP]: undefined,
-    [EventType.NODE_FAULT]: undefined,
+    [EventType.NODE_FAULT]: NODE_FAULT_EVENT_DEFINITION,
 };
 
 export const getEventType = (equipmentType: string): EventType | undefined => {
@@ -47,6 +74,9 @@ export const getEventType = (equipmentType: string): EventType | undefined => {
         case EQUIPMENT_TYPES.LINE:
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
             eventType = EventType.DISCONNECT;
+            break;
+        case EQUIPMENT_TYPES.BUS:
+            eventType = EventType.NODE_FAULT;
             break;
         default:
     }
