@@ -38,6 +38,9 @@ export function changeNetworkModificationOrder(
 }
 
 export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('stashed', true);
+    urlSearchParams.append('uuids', modificationUuids);
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -45,10 +48,8 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
         '/network-modifications' +
-        '?stashed=' +
-        encodeURIComponent(true) +
-        '&uuids=' +
-        encodeURIComponent(modificationUuids);
+        '?' +
+        urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
         method: 'PUT',
@@ -56,6 +57,9 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
 }
 
 export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('stashed', false);
+    urlSearchParams.append('uuids', modificationUuids);
     const RestoreModificationsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -63,10 +67,7 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
         '/network-modifications' +
-        '?stashed=' +
-        encodeURIComponent(false) +
-        '&uuids=' +
-        encodeURIComponent(modificationUuids);
+        '?' + urlSearchParams.toString();
 
     console.debug(RestoreModificationsUrl);
     return backendFetch(RestoreModificationsUrl, {
@@ -1505,24 +1506,22 @@ export function deleteEquipment(
     });
 }
 
-export function fetchNetworkModifications(
-    studyUuid,
-    nodeUuid,
-    stashedModifications
-) {
+export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
     console.info(
         'Fetching network modifications (matadata) for nodeUuid : ',
         nodeUuid
     );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('onlyStashed', onlyStashed);
+    urlSearchParams.append('onlyMetadata', true);
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications?onlyStashed=' +
-        encodeURIComponent(stashedModifications) +
-        '&onlyMetadata=true';
+        '/network-modifications?' +
+        urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
