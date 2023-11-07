@@ -41,7 +41,7 @@ import {
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
+import { FILTER_TEXT_COMPARATORS, FILTER_UI_TYPES } from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
     container: {
@@ -125,12 +125,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                                 field as keyof typeof filterSelector
                             ];
 
-                        const { text, type } = selectedValue?.[0];
+                        const { text, type, dataType } = selectedValue?.[0];
 
                         const isTextFilter = !!text;
 
                         return {
-                            dataType: 'text',
+                            dataType: dataType ?? FILTER_UI_TYPES.TEXT,
                             column: field,
                             type: isTextFilter
                                 ? type

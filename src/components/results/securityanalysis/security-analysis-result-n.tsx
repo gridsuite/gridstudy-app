@@ -9,13 +9,12 @@ import { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     CustomColDef,
     PreContingencyResult,
+    SecurityAnalysisNTableRow,
     SecurityAnalysisResultNProps,
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
-import { LimitViolation } from './security-analysis.type';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import {
-    computeLoading,
     FROM_COLUMN_TO_FIELD,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNFilterDefinition,
@@ -35,21 +34,19 @@ export const SecurityAnalysisResultN: FunctionComponent<
 }) => {
     const intl: IntlShape = useIntl();
 
-    const limitViolations =
-        (result as PreContingencyResult)?.limitViolationsResult
-            ?.limitViolations || [];
-
-    const rows = limitViolations.map((limitViolation: LimitViolation) => {
-        return {
-            subjectId: limitViolation.subjectId,
-            limitType: intl.formatMessage({
-                id: limitViolation.limitType,
-            }),
-            limit: limitViolation.limit,
-            value: limitViolation.value,
-            loading: computeLoading(limitViolation),
-        };
-    });
+    const rows =
+        result?.map((preContingencyResult: PreContingencyResult) => {
+            const { limitViolation } = preContingencyResult;
+            return {
+                subjectId: preContingencyResult.subjectId,
+                limitType: intl.formatMessage({
+                    id: limitViolation?.limitType,
+                }),
+                limit: limitViolation?.limit,
+                value: limitViolation?.value,
+                loading: limitViolation?.loading,
+            } as SecurityAnalysisNTableRow;
+        }) ?? [];
 
     const filtersDef = useMemo(
         () => securityAnalysisTableNFilterDefinition(intl, filterEnums),

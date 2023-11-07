@@ -25,6 +25,7 @@ import {
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import {
+    FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
@@ -37,20 +38,6 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
             tooltipValue: params.data?.contingencyEquipmentsIds.join('\n'),
         };
     }
-};
-
-export const computeLoading = (
-    limitViolation: LimitViolation
-): number | undefined => {
-    const {
-        value = 0,
-        limit = 0,
-        limitReduction = 0,
-        limitType,
-    } = limitViolation || {};
-    return limitType === 'CURRENT'
-        ? (100 * value) / (limit * limitReduction)
-        : undefined;
 };
 
 export const flattenNmKResultsContingencies = (
@@ -137,7 +124,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
         field: 'subjectId',
-       /*  valueGetter: contingencyGetterValues,
+        /*  valueGetter: contingencyGetterValues,
         cellRenderer: ContingencyCellRenderer, */
         isSortable: true,
         isFilterable: true,
@@ -154,24 +141,55 @@ export const securityAnalysisTableNColumnsDefinition = (
         headerName: intl.formatMessage({ id: 'LimitType' }),
         field: 'limitType',
         isFilterable: true,
+       /*  filterParams: {
+            filterUIType: FILTER_UI_TYPES.TEXT,
+        }, */
     }),
     makeColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
         field: 'limit',
+        numeric: true,
+        isFilterable: true,
         valueFormatter: (params: ValueFormatterParams) =>
             params.data?.limit?.toFixed(1),
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: [
+                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+            ],
+        },
     }),
     makeColumn({
         headerName: intl.formatMessage({ id: 'Value' }),
         field: 'value',
+        isFilterable: true,
         valueFormatter: (params: ValueFormatterParams) =>
             params.data?.value?.toFixed(1),
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: [
+                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+            ],
+        },
     }),
     makeColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
+        isFilterable: true,
         valueFormatter: (params: ValueFormatterParams) =>
             params.data?.loading?.toFixed(1),
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: [
+                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+            ],
+        },
     }),
 ];
 
@@ -465,7 +483,7 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     limitName: 'limitName',
     side: 'side',
     acceptableDuration: 'acceptableDuration',
-    limit: 'limitValue',
+    limit: 'limit',
     value: 'value',
     loading: 'loading',
 };
