@@ -1505,7 +1505,10 @@ export function fetchNetworkModifications(
     nodeUuid,
     stashedModifications
 ) {
-    console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
+    console.info(
+        'Fetching network modifications (matadata) for nodeUuid : ',
+        nodeUuid
+    );
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -1513,7 +1516,8 @@ export function fetchNetworkModifications(
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
         '/network-modifications?stashed=' +
-        encodeURIComponent(stashedModifications);
+        encodeURIComponent(stashedModifications) +
+        '&onlyMetadata=true';
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
