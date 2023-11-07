@@ -218,10 +218,6 @@ export const CharacteristicsForm = ({
                 } else {
                     setValue(SWITCHED_ON_FIELD, null);
                 }
-
-                if (!isSubmitted) {
-                    clearErrors(SECTION_COUNT);
-                }
             } else {
                 setValue(SWITCHED_ON_FIELD, null);
             }
@@ -231,9 +227,7 @@ export const CharacteristicsForm = ({
             currentMaximumSectionCount,
             sectionCount,
             maximumSectionCount,
-            isSubmitted,
             setValue,
-            clearErrors,
         ]
     );
 
