@@ -11,19 +11,18 @@ import MenuItem from '@mui/material/MenuItem';
 import { mergeSx } from './functions';
 
 const styles = {
-    highlightedParentLine: (theme) => ({
-        backgroundColor: theme.palette.action.hover,
-        color: theme.palette.primary.main,
+    highlightedParentLine: {
+        backgroundColor: 'action.hover',
+        color: 'primary.main',
         transition: 'all 300ms ease',
-    }),
-    highlightedLine: (theme) => ({
+    },
+    highlightedLine: {
         transition: 'all 300ms ease',
         '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-            color: theme.palette.primary.main,
-            transition: 'all 300ms ease',
+            backgroundColor: 'action.hover',
+            color: 'primary.main',
         },
-    }),
+    },
 };
 
 export const CustomNestedMenuItem = (props) => {
@@ -52,11 +51,7 @@ export const CustomNestedMenuItem = (props) => {
 };
 
 export const CustomMenuItem = (props) => {
-    const { sx, children, ...other } = props;
+    const { sx, ...other } = props;
 
-    return (
-        <MenuItem sx={mergeSx(styles.highlightedLine, sx)} {...other}>
-            {children}
-        </MenuItem>
-    );
+    return <MenuItem sx={mergeSx(styles.highlightedLine, sx)} {...other} />;
 };
