@@ -33,6 +33,7 @@ const DirectoryItemsInput = ({
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
+    isValidateButtonDisabled,
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -71,6 +72,7 @@ const DirectoryItemsInput = ({
                     });
                 } else {
                     append(otherElementAttributes);
+                    isValidateButtonDisabled && isValidateButtonDisabled(false);
                 }
             });
             setDirectoryItemSelectorOpen(false);

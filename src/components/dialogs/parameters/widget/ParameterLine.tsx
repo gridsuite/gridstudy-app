@@ -226,6 +226,7 @@ const ParamLineDirectoryItemsInput: FunctionComponent<
                     hideErrorMessage={props.hideErrorMessage}
                     label={undefined}
                     itemFilter={undefined}
+                    isValidateButtonDisabled={undefined}
                 />
             </Grid>
         </Grid>

@@ -29,6 +29,7 @@ interface SensitivityTableProps {
     columnsDefinition: any;
     tableHeight: number;
     createRows: (a: number) => void;
+    isValidateButtonDisabled: (b: boolean) => void;
 }
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
@@ -36,6 +37,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     columnsDefinition,
     tableHeight,
     createRows,
+    isValidateButtonDisabled,
 }) => {
     const intl = useIntl();
     const { getValues, setError, clearErrors } = useFormContext();
@@ -43,23 +45,11 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
 
     const handleAddRowsButton = useCallback(() => {
         if (currentRows.length >= MAX_ROWS_NUMBER) {
-            setError(arrayFormName, {
-                type: 'custom',
-                message: 'MaximumRowNumberError',
-            });
-
             return;
         }
-        clearErrors(arrayFormName);
         append(createRows(1));
-    }, [
-        append,
-        arrayFormName,
-        clearErrors,
-        createRows,
-        currentRows.length,
-        setError,
-    ]);
+        isValidateButtonDisabled(true);
+    }, [arrayFormName, currentRows.length]);
 
     const handleDeleteButton = useCallback(
         (index: number) => {
@@ -67,6 +57,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             if (index >= 0 && index < currentRowsValues.length) {
                 remove(index);
             }
+            isValidateButtonDisabled(false);
         },
         [arrayFormName, getValues, remove]
     );
@@ -120,6 +111,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                             row={row}
                             index={index}
                             handleDeleteButton={handleDeleteButton}
+                            isValidateButtonDisabled={isValidateButtonDisabled}
                         />
                     ))}
                 </TableBody>

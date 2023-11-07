@@ -59,6 +59,7 @@ import {
 } from './utils';
 import { SelectOptionsDialog } from '../../../../utils/dialogs';
 import DialogContentText from '@mui/material/DialogContentText';
+import { sensitivityAnalysisFields } from './columns-definitions';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -104,6 +105,8 @@ export const SensitivityAnalysisParameters = ({
     const { snackError } = useSnackMessage();
 
     const [popupConfirm, setPopupConfirm] = useState(false);
+    const [isValidateButtonDisabled, setIsValidateButtonDisabled] =
+        useState(true);
 
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
@@ -403,6 +406,22 @@ export const SensitivityAnalysisParameters = ({
         resetSensitivityParametersAndProvider,
     ]);
 
+    const isDisabled = useCallback(
+        (isValidateButtonDisabled) => {
+            if (isValidateButtonDisabled === false) {
+                return false;
+            }
+            let isDisabled = true;
+            sensitivityAnalysisFields.forEach((value) => {
+                if (formState.name && formState.name?.search(value) !== -1) {
+                    isDisabled = false;
+                }
+            });
+            return isDisabled;
+        },
+        [formState.name]
+    );
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -432,6 +451,7 @@ export const SensitivityAnalysisParameters = ({
                         <LineSeparator />
                     </Grid>
                     <SensitivityParametersSelector
+                        isValidateButtonDisabled={setIsValidateButtonDisabled}
                         reset={reset}
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
@@ -444,19 +464,19 @@ export const SensitivityAnalysisParameters = ({
                     </Button>
 
                     <Button variant="outlined">
-                        <SubmitButton onClick={handleSubmit(onSubmit)}>
+                        <SubmitButton
+                            onClick={handleSubmit(onSubmit)}
+                            disabled={isDisabled(isValidateButtonDisabled)}
+                        >
                             <FormattedMessage id="validate" />
                         </SubmitButton>
                     </Button>
                     <LabelledButton
                         callback={() => {
-                            if (
-                                formState.dirtyFields &&
-                                Object.keys(formState.dirtyFields).length === 0
-                            ) {
-                                hideParameters();
-                            } else {
+                            if (!isValidateButtonDisabled) {
                                 setPopupConfirm(true);
+                            } else {
+                                hideParameters();
                             }
                         }}
                         label="cancel"
