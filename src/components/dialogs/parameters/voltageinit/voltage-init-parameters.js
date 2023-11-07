@@ -284,7 +284,6 @@ export const VoltageInitParameters = ({
 
     const handleOpenSaveDialog = useCallback(() => {
         trigger().then((isValid) => {
-            console.log(isValid);
             if (isValid) {
                 setOpenCreateParameterDialog(true);
             }
