@@ -111,10 +111,21 @@ export function networkModificationTreeNodeAdded(
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
-        networkModificationTreeNode: networkModificationTreeNode,
+        networkModificationTreeNode: { ...networkModificationTreeNode },
         parentNodeId: parentNodeId,
         insertMode: insertMode,
         referenceNodeId: referenceNodeId,
+    };
+}
+
+export const NETWORK_MODIFICATION_TREE_NODE_UPDATED =
+    'NETWORK_MODIFICATION_TREE_NODE_UPDATED';
+export function networkModificationTreeNodeUpdated(
+    networkModificationTreeModel
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODE_UPDATED,
+        networkModificationTreeModel: networkModificationTreeModel,
     };
 }
 

@@ -15,6 +15,7 @@ import {
     STUDY_DISPLAY_MODE,
     networkModificationHandleSubtree,
     setSelectionForCopy,
+    networkModificationTreeNodeUpdated,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -151,6 +152,9 @@ export const NetworkModificationTreePane = ({
     currentNodeRef.current = currentNode;
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const networkModificationTreeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
     const selectionForCopyRef = useRef();
     selectionForCopyRef.current = selectionForCopy;
 
@@ -219,25 +223,41 @@ export const NetworkModificationTreePane = ({
                     studyUuid,
                     studyUpdatedForce.eventData.headers['newNode']
                 ).then((node) => {
-                    dispatch(
-                        networkModificationTreeNodeAdded(
-                            node,
-                            studyUpdatedForce.eventData.headers['parentNode'],
-                            studyUpdatedForce.eventData.headers['insertMode'],
-                            studyUpdatedForce.eventData.headers[
-                                'referenceNodeUuid'
-                            ]
-                        )
-                    );
-                });
-
-                if (
-                    isSubtreeImpacted([
+                    let newModel =
+                        networkModificationTreeModel.newSharedForUpdate();
+                    newModel.addChild(
+                        node,
                         studyUpdatedForce.eventData.headers['parentNode'],
-                    ])
-                ) {
-                    resetNodeClipboard();
-                }
+                        studyUpdatedForce.eventData.headers['insertMode'],
+                        studyUpdatedForce.eventData.headers['referenceNodeUuid']
+                    );
+                    newModel.updateLayout(() => {
+                        dispatch(
+                            networkModificationTreeNodeAdded(
+                                node,
+                                studyUpdatedForce.eventData.headers[
+                                    'parentNode'
+                                ],
+                                studyUpdatedForce.eventData.headers[
+                                    'insertMode'
+                                ],
+                                studyUpdatedForce.eventData.headers[
+                                    'referenceNodeUuid'
+                                ]
+                            )
+                        );
+                        dispatch(networkModificationTreeNodeUpdated(newModel));
+                        if (
+                            isSubtreeImpacted([
+                                studyUpdatedForce.eventData.headers[
+                                    'parentNode'
+                                ],
+                            ])
+                        ) {
+                            resetNodeClipboard();
+                        }
+                    });
+                });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'subtreeCreated'

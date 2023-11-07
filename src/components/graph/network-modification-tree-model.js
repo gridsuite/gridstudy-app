@@ -26,9 +26,14 @@ export default class NetworkModificationTreeModel {
 
     isAnyNodeBuilding = false;
 
-    updateLayout() {
-        this.treeNodes = getLayoutedNodes(this.treeNodes, this.treeEdges);
-        this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
+    updateLayout(callback) {
+        getLayoutedNodes(this.treeNodes, this.treeEdges).then(
+            (layoutedNodes) => {
+                this.treeNodes = layoutedNodes;
+                this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
+                callback();
+            }
+        );
     }
 
     addChild(newNode, parentId, insertMode, referenceNodeId) {
