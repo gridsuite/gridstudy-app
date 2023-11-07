@@ -60,7 +60,7 @@ export interface Constraint {
 }
 
 export interface ContingenciesFromConstraintItem {
-    subjectId?: string;
+    subjectId: string;
     contingencies?: Contingency[];
 }
 
@@ -70,9 +70,9 @@ export interface ConstraintsFromContingencyItem {
 }
 
 export interface PreContingencyResult {
-    limitViolationsResult?: {
-        limitViolations?: LimitViolation[];
-    };
+    subjectId?: string;
+    status: string;
+    limitViolation?: LimitViolation;
 }
 
 type FilterValueType = string[] | { text: string; type: string }[];
@@ -175,7 +175,7 @@ export interface SecurityAnalysisTabProps {
 }
 
 export interface SecurityAnalysisResultNProps {
-    result?: PreContingencyResult;
+    result?: PreContingencyResult[];
     isLoadingResult: boolean;
     onSortChanged: (colKey: string, sortWay: number) => void;
     sortConfig?: ISortConfig;

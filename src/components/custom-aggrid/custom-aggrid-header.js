@@ -40,6 +40,7 @@ const styles = {
 
 export const FILTER_UI_TYPES = {
     TEXT: 'text',
+    NUMBER: 'number',
     AUTO_COMPLETE: 'autoComplete',
 };
 
@@ -47,6 +48,12 @@ export const FILTER_TEXT_COMPARATORS = {
     EQUALS: 'equals',
     CONTAINS: 'contains',
     STARTS_WITH: 'startsWith',
+};
+
+export const FILTER_NUMBER_COMPARATORS = {
+    NOT_EQUAL: 'notEqual',
+    LESS_THAN_OR_EQUAL: 'lessThanOrEqual',
+    GREATER_THAN_OR_EQUAL: 'greaterThanOrEqual',
 };
 
 const CustomHeaderComponent = ({
@@ -83,8 +90,10 @@ const CustomHeaderComponent = ({
     const shouldActivateFilter =
         // Filter should be activated for current column
         isFilterable &&
-        // Filter should be a text type, or we should have options for filter if it is an autocomplete
-        (filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length);
+        // Filter should be a text or number type, or we should have options for filter if it is an autocomplete
+        (filterUIType === FILTER_UI_TYPES.TEXT ||
+            filterUIType === FILTER_UI_TYPES.NUMBER ||
+            !!filterOptions?.length);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -109,6 +118,7 @@ const CustomHeaderComponent = ({
             {
                 text: value,
                 type: selectedFilterComparator,
+                dataType: filterParams.filterUIType,
             },
         ]);
     };

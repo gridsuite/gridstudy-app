@@ -19,7 +19,8 @@ const removeElementFromArrayWithFieldValue = (
 const changeValueFromArrayWithFieldValue = (
     arrayToModify,
     fieldValue,
-    newValue
+    newValue,
+    filterType
 ) => {
     const filterIndex = arrayToModify.findIndex((f) => f.field === fieldValue);
     if (filterIndex === -1) {
@@ -28,6 +29,7 @@ const changeValueFromArrayWithFieldValue = (
             {
                 field: fieldValue,
                 value: newValue,
+                filterType: filterType,
             },
         ];
     } else {
@@ -44,7 +46,7 @@ export const useAggridRowFilter = (
     const [rowFilters, setRowFilters] = useState([]);
 
     const updateFilter = useCallback(
-        (field, value) => {
+        (field, value, filterType) => {
             setRowFilters((oldRowFilters) => {
                 let updatedFilters;
 
@@ -60,7 +62,8 @@ export const useAggridRowFilter = (
                     updatedFilters = changeValueFromArrayWithFieldValue(
                         oldRowFilters,
                         field,
-                        value
+                        value,
+                        filterType
                     );
                 }
 
@@ -73,10 +76,13 @@ export const useAggridRowFilter = (
     );
 
     const filterSelector = useMemo(() => {
-        const result = rowFilters.reduce((selector, { field, value }) => {
-            selector[filterSelectorKeys[field]] = value;
-            return selector;
-        }, {});
+        const result = rowFilters.reduce(
+            (selector, { field, value, filterType }) => {
+                selector[filterSelectorKeys[field]] = value;
+                return selector;
+            },
+            {}
+        );
 
         if (Object.keys(result).length === 0) {
             return null;
