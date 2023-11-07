@@ -25,6 +25,7 @@ export const CONNECTED = 'connected';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
+export const MODIFICATIONS_TABLE = 'modificationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
 export const SERIES_RESISTANCE = 'seriesResistance';

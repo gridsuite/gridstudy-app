@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { Box } from '@mui/system';
 import { mergeSx } from '../../utils/functions';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 const styles = {
     editCell: {
@@ -79,6 +80,20 @@ export const BooleanCellRenderer = (props) => {
                     disableRipple={true}
                 />
             )}
+        </div>
+    );
+};
+
+export const BooleanNullableCellRenderer = (props) => {
+    return (
+        <div>
+            <Checkbox
+                style={{ padding: 0 }}
+                color="default"
+                checked={props.value === true}
+                indeterminate={isBlankOrEmpty(props.value)}
+                disableRipple={true}
+            />
         </div>
     );
 };
