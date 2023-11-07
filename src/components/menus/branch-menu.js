@@ -85,6 +85,10 @@ const withBranchMenu =
                     return 'Line';
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                     return '2WTransformer';
+                case EQUIPMENT_TYPES.LOAD:
+                    return 'Load';
+                case EQUIPMENT_TYPES.GENERATOR:
+                    return 'Generator';
                 default:
                     break;
             }
@@ -237,7 +241,9 @@ const withBranchMenu =
                 {enableDeveloperMode &&
                     (equipmentType === EQUIPMENT_TYPES.LINE ||
                         equipmentType ===
-                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
+                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ||
+                        equipmentType === EQUIPMENT_TYPES.LOAD ||
+                        equipmentType === EQUIPMENT_TYPES.GENERATOR) && (
                         <MenuItem
                             sx={styles.menuItem}
                             onClick={() =>

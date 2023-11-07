@@ -285,10 +285,14 @@
 
     "DisconnectLine": "Déclencher la ligne",
     "Disconnect2WTransformer": "Déclencher le transformateur",
+    "DisconnectLoad": "Déclencher la consommation",
+    "DisconnectGenerator": "Déclencher le group",
     "NodeFaultBus": "Court-circuit sur le bus",
 
     "Disconnect/LINE": "Déclencher ligne {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Déclencher transformateur {computedLabel}",
+    "Disconnect/LOAD": "Déclencher consommation {computedLabel}",
+    "Disconnect/GENERATOR": "Déclencher group {computedLabel}",
     "NodeFault/BUS": "Court-circuit sur le bus {computedLabel}",
 
     "Branch.Side.ONE": "Côté origine",
