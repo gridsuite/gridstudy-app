@@ -40,7 +40,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     isValidateButtonDisabled,
 }) => {
     const intl = useIntl();
-    const { getValues } = useFormContext();
+    const { getValues, setError, clearErrors } = useFormContext();
     const { fields: currentRows, append, remove } = useFieldArrayOutput;
 
     const handleAddRowsButton = useCallback(() => {
@@ -49,7 +49,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
         }
         append(createRows(1));
         isValidateButtonDisabled(true);
-    }, [append, createRows, isValidateButtonDisabled, currentRows.length]);
+    }, [arrayFormName, currentRows.length]);
 
     const handleDeleteButton = useCallback(
         (index: number) => {
@@ -59,7 +59,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             }
             isValidateButtonDisabled(false);
         },
-        [isValidateButtonDisabled, arrayFormName, getValues, remove]
+        [arrayFormName, getValues, remove]
     );
 
     return (
