@@ -38,28 +38,15 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     createRows,
 }) => {
     const intl = useIntl();
-    const { getValues, setError, clearErrors } = useFormContext();
+    const { getValues } = useFormContext();
     const { fields: currentRows, append, remove } = useFieldArrayOutput;
 
     const handleAddRowsButton = useCallback(() => {
         if (currentRows.length >= MAX_ROWS_NUMBER) {
-            setError(arrayFormName, {
-                type: 'custom',
-                message: 'MaximumRowNumberError',
-            });
-
             return;
         }
-        clearErrors(arrayFormName);
         append(createRows(1));
-    }, [
-        append,
-        arrayFormName,
-        clearErrors,
-        createRows,
-        currentRows.length,
-        setError,
-    ]);
+    }, [append, arrayFormName, createRows, currentRows.length]);
 
     const handleDeleteButton = useCallback(
         (index: number) => {

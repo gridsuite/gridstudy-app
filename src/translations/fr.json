@@ -474,7 +474,7 @@
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
-    "genericConfirmQuestion": "Êtes-vous sûr(e) que vouloir annuler ?",
+    "genericConfirmQuestion": "Êtes-vous sûr(e) de vouloir annuler ?",
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
