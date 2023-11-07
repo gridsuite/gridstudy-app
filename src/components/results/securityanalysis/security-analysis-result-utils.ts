@@ -28,11 +28,7 @@ import {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
-import {
-    fetchSecurityAnalysisAvailableBranchSides,
-    fetchSecurityAnalysisAvailableComputationStatus,
-    fetchSecurityAnalysisAvailableLimitTypes,
-} from '../../../services/security-analysis';
+import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
