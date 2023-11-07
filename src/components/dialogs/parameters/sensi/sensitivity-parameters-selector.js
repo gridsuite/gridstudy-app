@@ -24,7 +24,7 @@ import {
 } from './columns-definitions';
 import SensitivityTable from './sensitivity-table';
 
-const SensitivityParametersSelector = ({ isValidateButtonDisabled }) => {
+const SensitivityParametersSelector = () => {
     const intl = useIntl();
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
@@ -139,9 +139,6 @@ const SensitivityParametersSelector = ({ isValidateButtonDisabled }) => {
                                         }
                                         createRows={rowDataInjectionsSet}
                                         tableHeight={300}
-                                        isValidateButtonDisabled={
-                                            isValidateButtonDisabled
-                                        }
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -158,9 +155,6 @@ const SensitivityParametersSelector = ({ isValidateButtonDisabled }) => {
                                         }
                                         createRows={rowDataInjections}
                                         tableHeight={300}
-                                        isValidateButtonDisabled={
-                                            isValidateButtonDisabled
-                                        }
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -177,9 +171,6 @@ const SensitivityParametersSelector = ({ isValidateButtonDisabled }) => {
                                         }
                                         createRows={rowDataHvdc}
                                         tableHeight={300}
-                                        isValidateButtonDisabled={
-                                            isValidateButtonDisabled
-                                        }
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -196,9 +187,6 @@ const SensitivityParametersSelector = ({ isValidateButtonDisabled }) => {
                                         }
                                         createRows={rowDataPst}
                                         tableHeight={300}
-                                        isValidateButtonDisabled={
-                                            isValidateButtonDisabled
-                                        }
                                     />
                                 </TabPanel>
                             </>
@@ -212,9 +200,6 @@ const SensitivityParametersSelector = ({ isValidateButtonDisabled }) => {
                                 useFieldArrayOutput={useFieldArrayOutputNodes}
                                 createRows={rowDataNodes}
                                 tableHeight={367}
-                                isValidateButtonDisabled={
-                                    isValidateButtonDisabled
-                                }
                             />
                         )}
                     </TabPanel>

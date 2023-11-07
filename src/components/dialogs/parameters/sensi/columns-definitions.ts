@@ -7,12 +7,9 @@
 
 import {
     ACTIVATED,
-    ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
     CONTINGENCIES,
     DISTRIBUTION_TYPE,
     EQUIPMENTS_IN_VOLTAGE_REGULATION,
-    FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
     HVDC_LINES,
     INJECTIONS,
     MONITORED_BRANCHES,
@@ -341,21 +338,6 @@ export const SensiNodes: ISensiParameters = {
     columnsDef: COLUMNS_DEFINITIONS_NODES,
     name: PARAMETER_SENSI_NODES,
 };
-
-const mapColumns = (array: any[]) => {
-    return array.map((value) => value?.dataKey);
-};
-
-export const sensitivityAnalysisFields = [
-    FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
-    ...mapColumns(COLUMNS_DEFINITIONS_INJECTIONS_SET),
-    ...mapColumns(COLUMNS_DEFINITIONS_INJECTIONS),
-    ...mapColumns(COLUMNS_DEFINITIONS_HVDCS),
-    ...mapColumns(COLUMNS_DEFINITIONS_PSTS),
-    ...mapColumns(COLUMNS_DEFINITIONS_NODES),
-];
 
 export enum TAB_VALUES {
     'SensitivityBranches' = 0,

@@ -19,7 +19,6 @@ interface TableRowComponentProps {
     row: any;
     index: number;
     handleDeleteButton: (index: number) => void;
-    isValidateButtonDisabled: (a: boolean) => void;
 }
 
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
@@ -28,7 +27,6 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     row,
     index,
     handleDeleteButton,
-    isValidateButtonDisabled,
 }) => {
     const [hover, setHover] = useState(false);
     const intl = useIntl();
@@ -40,12 +38,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
             onMouseLeave={() => setHover(false)}
         >
             {columnsDefinition.map((column: any) =>
-                EditableTableCell(
-                    arrayFormName,
-                    index,
-                    column,
-                    isValidateButtonDisabled
-                )
+                EditableTableCell(arrayFormName, index, column)
             )}
             <TableCell>
                 <Tooltip

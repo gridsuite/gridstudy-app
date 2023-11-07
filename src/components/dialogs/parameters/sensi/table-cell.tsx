@@ -14,8 +14,7 @@ import { SENSITIVITY_TYPES } from './columns-definitions';
 function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
-    column: any,
-    isValidateButtonDisabled: (b: boolean) => void
+    column: any
 ) {
     const getDynamicWidth = useCallback((options: any[]) => {
         return options === SENSITIVITY_TYPES ? '100px' : '220px';
@@ -31,7 +30,6 @@ function EditableTableCell(
                     hideErrorMessage={true}
                     label={undefined}
                     itemFilter={undefined}
-                    isValidateButtonDisabled={isValidateButtonDisabled}
                 />
             )}
             {column.menuItems && (
@@ -41,7 +39,6 @@ function EditableTableCell(
                     disableClearable={true}
                     size="small"
                     sx={{ width: getDynamicWidth(column.equipmentTypes) }}
-                    onChangeCallback={() => isValidateButtonDisabled(false)}
                 />
             )}
 
