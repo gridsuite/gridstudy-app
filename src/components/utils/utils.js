@@ -132,6 +132,8 @@ export const formatTemporaryLimits = (temporaryLimits) =>
         };
     });
 
+export const richTypeEquals = (a, b) => a === b;
+
 export const computeHighTapPosition = (steps) => {
     const values = steps?.map((step) => step['index']);
     return values?.length > 0 ? Math.max(...values) : null;

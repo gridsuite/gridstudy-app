@@ -51,6 +51,7 @@ declare module '@gridsuite/commons-ui' {
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
+        getOptionLabel?: (rt: string) => string;
         formProps?: Omit<
             TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
@@ -74,6 +75,8 @@ declare module '@gridsuite/commons-ui' {
     >;
 
     export const MidFormError: FunctionComponent;
+
+    export const FieldErrorAlert: FunctionComponent;
 
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps

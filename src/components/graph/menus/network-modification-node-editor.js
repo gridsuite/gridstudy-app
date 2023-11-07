@@ -62,6 +62,8 @@ import ShuntCompensatorModificationDialog from 'components/dialogs/network-modif
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
+import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+
 
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
@@ -330,10 +332,15 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(SubstationModificationDialog),
                 },
                 {
+                    id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+                    label: 'BY_TABLE',
+                    action: () => adapt(TabularModificationDialog),
+                },
+                {
                     id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                     label: 'BY_FORMULA',
                     action: () => adapt(ByFormulaDialog),
-                },
+                }
             ],
         },
         {
