@@ -21,7 +21,6 @@ import {
     PAGE_OPTIONS,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
-    securityAnalysisTableNmKFilterDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
@@ -57,7 +56,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
 }) => {
     const { content } = result || {};
     const { onSortChanged, sortConfig } = sortProps || {};
-    const { updateFilter, filterEnums, filterSelector } = filterProps || {};
+    const { updateFilter, filterSelector } = filterProps || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
@@ -129,11 +128,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [onClickNmKConstraint]
     );
 
-    const filtersDef = useMemo(
-        () => securityAnalysisTableNmKFilterDefinition(intl, filterEnums),
-        [filterEnums, intl]
-    );
-
     const makeColumn = useCallback(
         ({
             headerName,
@@ -145,13 +139,10 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isFilterable = false,
             filterParams,
         }: CustomColDef) => {
-            const { options: filterOptions = [] } =
-                filtersDef.find((filterDef) => filterDef?.field === field) ||
-                {};
-
             const { sortWay } = sortConfig || {};
 
-            const minWidth = isSortable && sortWay ? 140 : isFilterable && 95;
+            const minWidth =
+                isSortable && sortWay ? 140 : isFilterable ? 95 : 75;
 
             return {
                 headerName,
@@ -171,14 +162,13 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     },
                     isSortable,
                     isFilterable,
-                    filterOptions,
                     updateFilter,
                     filterParams,
                     filterSelector,
                 },
             };
         },
-        [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
+        [sortConfig, updateFilter, filterSelector, onSortChanged]
     );
 
     const columnDefs = useMemo(

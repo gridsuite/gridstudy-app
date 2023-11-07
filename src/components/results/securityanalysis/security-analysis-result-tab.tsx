@@ -26,7 +26,6 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import {
-    FilterEnums,
     QueryParamsType,
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
@@ -35,7 +34,6 @@ import {
     FROM_COLUMN_TO_FIELD,
     NMK_TYPE,
     RESULT_TYPE,
-    useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
@@ -207,10 +205,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [securityAnalysisResult]
     );
 
-    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(
-        result?.empty
-    );
-
     useEffect(() => {
         if (result) {
             setCount(result.totalElements);
@@ -269,7 +263,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 ) : (
                     <SecurityAnalysisResultNmk
                         result={result}
-                        isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        isLoadingResult={isLoadingResult}
                         isFromContingency={
                             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                         }
@@ -290,7 +284,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         filterProps={{
                             updateFilter,
                             filterSelector,
-                            filterEnums: filterEnums as FilterEnums,
                         }}
                     />
                 )}

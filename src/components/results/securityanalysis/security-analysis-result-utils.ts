@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
@@ -13,7 +13,6 @@ import {
     SecurityAnalysisNmkTableRow,
     Constraint,
     CustomColDef,
-    FilterEnums,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -28,11 +27,6 @@ import {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
-import {
-    fetchSecurityAnalysisAvailableBranchSides,
-    fetchSecurityAnalysisAvailableComputationStatus,
-    fetchSecurityAnalysisAvailableLimitTypes,
-} from '../../../services/security-analysis';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -200,36 +194,18 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -284,7 +260,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
-                debounceMs: 1200, // we don't want to fetch the back end too fast
             },
         }),
         makeColumn({
@@ -292,41 +267,22 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -358,26 +314,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'linkedElementId',
             isHidden: true,
         }),
-    ];
-};
-
-export const securityAnalysisTableNmKFilterDefinition = (
-    intl: IntlShape,
-    filterEnums: FilterEnums = {}
-) => {
-    return [
-        {
-            field: 'status',
-            options: filterEnums.computationsStatus,
-        },
-        {
-            field: 'limitType',
-            options: filterEnums.limitTypes,
-        },
-        {
-            field: 'side',
-            options: filterEnums.branchSides,
-        },
     ];
 };
 
@@ -424,53 +360,6 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     });
 
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
-};
-
-export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [result, setResult] = useState({
-        computationsStatus: null,
-        limitTypes: null,
-        branchSides: null,
-    });
-
-    useEffect(() => {
-        const fetchAllData = () => {
-            const promises = [
-                fetchSecurityAnalysisAvailableLimitTypes(),
-                fetchSecurityAnalysisAvailableBranchSides(),
-                fetchSecurityAnalysisAvailableComputationStatus(),
-            ];
-
-            setLoading(true);
-            Promise.all(promises)
-                .then(
-                    ([
-                        limitTypesResult,
-                        branchSidesResult,
-                        computationsStatusResult,
-                    ]) => {
-                        setResult({
-                            computationsStatus: computationsStatusResult,
-                            limitTypes: limitTypesResult,
-                            branchSides: branchSidesResult,
-                        });
-                        setLoading(false);
-                    }
-                )
-                .catch((err) => {
-                    setError(err);
-                    setLoading(false);
-                });
-        };
-
-        if (!isEmptyResult) {
-            fetchAllData();
-        }
-    }, [isEmptyResult]);
-
-    return [loading, result, error];
 };
 
 export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [

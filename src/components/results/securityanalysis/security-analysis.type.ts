@@ -132,7 +132,6 @@ type SortProps = {
 type FilterProps = {
     updateFilter: (field: string, value: string) => void;
     filterSelector: FilterSelectorType | undefined;
-    filterEnums: FilterEnums;
 };
 
 type FilterParams = {
@@ -140,8 +139,6 @@ type FilterParams = {
     filterComparators?: string[];
     debounceMs?: number;
 };
-
-export type FilterEnums = Record<string, string[] | null>;
 
 export interface CustomColDef extends ColDef {
     isSortable?: boolean;
