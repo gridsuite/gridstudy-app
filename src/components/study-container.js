@@ -645,8 +645,9 @@ export function StudyContainer({ view, onChangeTab }) {
         const payload = studyUpdatedForce.eventData.payload;
         const substationsIds = payload?.impactedSubstationsIds;
         const deletedEquipments = payload?.deletedEquipments;
+        const collectionElementImpacts = payload?.collectionElementImpacts;
 
-        return [substationsIds, deletedEquipments];
+        return [substationsIds, deletedEquipments, collectionElementImpacts];
     }
 
     useEffect(() => {
@@ -657,8 +658,11 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
-                const [substationsIds, deletedEquipments] =
-                    parseStudyNotification(studyUpdatedForce);
+                const [
+                    substationsIds,
+                    deletedEquipments,
+                    collectionElementImpacts,
+                ] = parseStudyNotification(studyUpdatedForce);
                 if (deletedEquipments?.length > 0) {
                     // removing deleted equipment from the network
                     deletedEquipments.forEach((deletedEquipment) => {
@@ -683,21 +687,28 @@ export function StudyContainer({ view, onChangeTab }) {
                     });
                     dispatch(setDeletedEquipments(deletedEquipments));
                 }
+                console.info('Reload network equipments');
+                if (collectionElementImpacts?.length > 0) {
+                    fetchAllEquipments(studyUuid, currentNode?.id).then(
+                        (values) => {
+                            dispatch(updateEquipments(values));
+                        }
+                    );
+                }
                 // updating data related to impacted substations
-                if (substationsIds?.length > 0) {
-                    console.info('Reload network equipments');
+                if (
+                    collectionElementImpacts?.length > 0 ||
+                    substationsIds?.length > 0
+                ) {
                     const substationsIdsToFetch =
-                        substationsIds?.length >
-                        MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                        collectionElementImpacts?.length > 0
                             ? undefined
-                            : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
-                    const updatedEquipments = fetchAllEquipments(
+                            : substationsIds;
+                    fetchAllEquipments(
                         studyUuid,
                         currentNode?.id,
                         substationsIdsToFetch
-                    );
-
-                    updatedEquipments.then((values) => {
+                    ).then((values) => {
                         dispatch(updateEquipments(values));
                     });
 
