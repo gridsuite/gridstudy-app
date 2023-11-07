@@ -165,16 +165,18 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 headerComponentParams: {
                     field,
                     displayName: headerName,
+                    isSortable,
                     sortConfig,
                     onSortChanged: (newSortValue: number = 0) => {
                         onSortChanged(field, newSortValue);
                     },
-                    isSortable,
                     isFilterable,
-                    filterOptions,
-                    updateFilter,
-                    filterParams,
-                    filterSelector,
+                    filterParams: {
+                        ...filterParams,
+                        filterSelector,
+                        filterOptions,
+                        updateFilter,
+                    },
                 },
             };
         },
