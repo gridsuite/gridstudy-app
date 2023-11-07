@@ -67,7 +67,8 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
         '/network-modifications' +
-        '?' + urlSearchParams.toString();
+        '?' +
+        urlSearchParams.toString();
 
     console.debug(RestoreModificationsUrl);
     return backendFetch(RestoreModificationsUrl, {
