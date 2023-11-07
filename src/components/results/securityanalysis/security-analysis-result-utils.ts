@@ -200,36 +200,18 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -292,41 +274,22 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            isFilterable: true,
-            filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
-            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -369,14 +332,6 @@ export const securityAnalysisTableNmKFilterDefinition = (
         {
             field: 'status',
             options: filterEnums.computationsStatus,
-        },
-        {
-            field: 'limitType',
-            options: filterEnums.limitTypes,
-        },
-        {
-            field: 'side',
-            options: filterEnums.branchSides,
         },
     ];
 };
@@ -426,39 +381,29 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
 
+// We can use this custom hook for fetching enums for AutoComplete filter
 export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [result, setResult] = useState({
         computationsStatus: null,
-        limitTypes: null,
-        branchSides: null,
     });
 
     useEffect(() => {
         const fetchAllData = () => {
             const promises = [
-                fetchSecurityAnalysisAvailableLimitTypes(),
-                fetchSecurityAnalysisAvailableBranchSides(),
+                // We can add another fetch for other enums
                 fetchSecurityAnalysisAvailableComputationStatus(),
             ];
 
             setLoading(true);
             Promise.all(promises)
-                .then(
-                    ([
-                        limitTypesResult,
-                        branchSidesResult,
-                        computationsStatusResult,
-                    ]) => {
-                        setResult({
-                            computationsStatus: computationsStatusResult,
-                            limitTypes: limitTypesResult,
-                            branchSides: branchSidesResult,
-                        });
-                        setLoading(false);
-                    }
-                )
+                .then(([computationsStatusResult]) => {
+                    setResult({
+                        computationsStatus: computationsStatusResult,
+                    });
+                    setLoading(false);
+                })
                 .catch((err) => {
                     setError(err);
                     setLoading(false);
