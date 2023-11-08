@@ -10,6 +10,10 @@ import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
+import { modifyGenerator } from 'services/study/network-modifications';
+import { REGULATION_TYPES } from 'components/network/constants';
+import VoltageRegulationModificationDialog from 'components/dialogs/network-modifications/generator/modification/voltage-regulation-modification-dialog';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -19,6 +23,8 @@ export const EquipmentTable = ({
     topPinnedData,
     columnData,
     gridRef,
+    studyUuid,
+    currentNode,
     handleColumnDrag,
     handleRowEditing,
     handleCellEditing,
@@ -29,8 +35,74 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
+    onCellClicked,
 }) => {
     const theme = useTheme();
+    const { snackError } = useSnackMessage();
+    const [clickedCellData, setClickedCellData] = React.useState({});
+    const [generatorId, setGeneratorId] = React.useState('');
+    const [
+        popupGeneratorEditVoltageRegulationFields,
+        setPopupGeneratorEditVoltageRegulationFields,
+    ] = React.useState(false);
+    const onVoltageRegulationPopupClose = () => {
+        setPopupGeneratorEditVoltageRegulationFields(false);
+    };
+    const handleSavePopupGeneratorEditVoltageRegulationFields = (
+        voltageRegulationGenerator
+    ) => {
+        setGeneratorId(clickedCellData.data.id);
+
+        const isDistantRegulation =
+            voltageRegulationGenerator.voltageRegulationType ===
+            REGULATION_TYPES.DISTANT.id;
+
+        modifyGenerator(
+            studyUuid,
+            currentNode.id,
+            generatorId,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            null,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            voltageRegulationGenerator.voltageRegulationType,
+            isDistantRegulation
+                ? voltageRegulationGenerator.equipment.id
+                : null,
+            isDistantRegulation
+                ? voltageRegulationGenerator.equipment?.type
+                : null,
+            isDistantRegulation
+                ? voltageRegulationGenerator.voltageLevel?.id
+                : null,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'GeneratorModificationError',
+            });
+        });
+    };
+
     const intl = useIntl();
     const getRowStyle = useCallback(
         (params) => {
@@ -101,38 +173,68 @@ export const EquipmentTable = ({
         };
     }, [intl]);
 
-    return (
-        <CustomAGGrid
-            ref={gridRef}
-            getRowId={getRowId}
-            rowData={rowsToShow}
-            pinnedTopRowData={topPinnedData}
-            debounceVerticalScrollbar={true}
-            getRowStyle={getRowStyle}
-            columnDefs={columnData}
-            defaultColDef={defaultColDef}
-            enableCellTextSelection={true}
-            undoRedoCellEditing={true}
-            editType={'fullRow'}
-            onCellValueChanged={handleCellEditing}
-            onRowValueChanged={handleRowEditing}
-            onRowDataUpdated={handleRowDataUpdated}
-            onRowEditingStarted={handleEditingStarted}
-            onRowEditingStopped={handleEditingStopped}
-            onColumnMoved={handleColumnDrag}
-            suppressDragLeaveHidesColumns={true}
-            suppressColumnVirtualisation={true}
-            suppressClickEdit={true}
-            context={gridContext}
-            onGridReady={handleGridReady}
-            shouldHidePinnedHeaderRightBorder={
-                shouldHidePinnedHeaderRightBorder
+    const handleOnClickOnCell = (params) => {
+        if (onCellClicked != null) {
+            if (onCellClicked.name === 'onCellGeneratorCellClicked') {
+                onCellClicked(params, () => {
+                    setGeneratorId(params.data.id);
+                    setPopupGeneratorEditVoltageRegulationFields(
+                        !popupGeneratorEditVoltageRegulationFields
+                    );
+                    setClickedCellData(params);
+                });
             }
-            getRowHeight={getRowHeight}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
-        />
+        }
+    };
+    return (
+        <>
+            <CustomAGGrid
+                ref={gridRef}
+                getRowId={getRowId}
+                rowData={rowsToShow}
+                pinnedTopRowData={topPinnedData}
+                debounceVerticalScrollbar={true}
+                getRowStyle={getRowStyle}
+                columnDefs={columnData}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                undoRedoCellEditing={true}
+                editType={'fullRow'}
+                onCellValueChanged={handleCellEditing}
+                onRowValueChanged={handleRowEditing}
+                onRowDataUpdated={handleRowDataUpdated}
+                onRowEditingStarted={handleEditingStarted}
+                onRowEditingStopped={handleEditingStopped}
+                onColumnMoved={handleColumnDrag}
+                suppressDragLeaveHidesColumns={true}
+                suppressColumnVirtualisation={true}
+                suppressClickEdit={true}
+                context={gridContext}
+                onGridReady={handleGridReady}
+                shouldHidePinnedHeaderRightBorder={
+                    shouldHidePinnedHeaderRightBorder
+                }
+                getRowHeight={getRowHeight}
+                overlayNoRowsTemplate={message}
+                loadingOverlayComponent={loadingOverlayComponent}
+                loadingOverlayComponentParams={loadingOverlayComponentParams}
+                showOverlay={true}
+                onCellClicked={handleOnClickOnCell}
+            />
+            <VoltageRegulationModificationDialog
+                open={popupGeneratorEditVoltageRegulationFields}
+                onClose={onVoltageRegulationPopupClose}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                onModifyVoltageRegulationGenerator={(
+                    updatedVoltageRegulation
+                ) => {
+                    handleSavePopupGeneratorEditVoltageRegulationFields(
+                        updatedVoltageRegulation
+                    );
+                }}
+                data={clickedCellData.data}
+            />
+        </>
     );
 };

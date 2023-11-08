@@ -62,6 +62,21 @@ const propertiesGetter = (params) => {
     }
 };
 
+const RegulatingTerminalCellRenderer = (params) => {
+    if (
+        params.data?.regulatingTerminalVlId ||
+        params.data?.regulatingTerminalConnectableId
+    ) {
+        return (
+            params.data.regulatingTerminalConnectableType +
+            ' (' +
+            params.data.regulatingTerminalVlId +
+            ' )'
+        );
+    } else {
+        return null;
+    }
+};
 const RegulationTypeCellRenderer = (params) => {
     const intl = useIntl();
     if (
@@ -110,6 +125,17 @@ const generateEditableNumericColumnDefinition = (
         }),
         ...extraDef,
     };
+};
+
+const onCellGeneratorCellClicked = (event, callBack) => {
+    switch (event.colDef.id) {
+        case 'RegulationTypeText':
+        case 'RatioTapRegulatingTerminal':
+            callBack(event.data);
+            break;
+        default:
+            break;
+    }
 };
 
 export const TABLES_DEFINITIONS = {
@@ -1066,6 +1092,7 @@ export const TABLES_DEFINITIONS = {
         name: 'Generators',
         type: EQUIPMENT_TYPES.GENERATOR,
         fetchers: EQUIPMENT_FETCHERS.GENERATOR,
+        onCellClicked: onCellGeneratorCellClicked,
         columns: [
             {
                 id: 'ID',
@@ -1370,11 +1397,6 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePercentageVoltageRegulation',
-                field: 'coordinatedReactiveControl.qPercent',
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
                 id: 'TransientReactance',
                 field: 'generatorShortCircuit.transientReactance',
                 numeric: true,
@@ -1556,6 +1578,14 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RegulationTypeText',
+                cellRenderer: RegulationTypeCellRenderer,
+            },
+            {
+                id: 'RatioTapRegulatingTerminal',
+                cellRenderer: RegulatingTerminalCellRenderer,
             },
         ],
     },

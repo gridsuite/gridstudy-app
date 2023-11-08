@@ -302,6 +302,12 @@ const TableWrapper = (props) => {
         ]
     );
 
+    const onCellClicked = useMemo(() => {
+        const onCellClickedFunction =
+            TABLES_DEFINITION_INDEXES.get(tabIndex)?.onCellClicked || null;
+        return onCellClickedFunction;
+    }, [tabIndex]);
+
     const equipmentDefinition = useMemo(
         () => ({
             type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
@@ -880,6 +886,7 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}
@@ -896,6 +903,7 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
+                        onCellClicked={onCellClicked}
                     />
                 </Box>
             )}

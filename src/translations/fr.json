@@ -656,6 +656,7 @@
     "MaximumActivePowerText": "Puissance active max",
     "RatedNominalPowerText": "Puissance nominale",
     "VoltageRegulationText": "Réglage de tension",
+    "EditVoltageRegulation": "Modification réglage de tension",
     "RegulationTypeText": "Type de réglage",
     "Local": "Local",
     "Distant": "Distant",
