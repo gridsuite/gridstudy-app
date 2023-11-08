@@ -90,21 +90,11 @@ const withBranchMenu =
             }
         }, []);
 
-        const getRealEquipmentType = useCallback((equipmentType) => {
-            switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE:
-                    return EQUIPMENT_TYPES.LINE;
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
-                default:
-                    break;
-            }
-        }, []);
         useEffect(() => {
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                getRealEquipmentType(equipmentType),
+                equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
                 equipment.id,
                 false
@@ -113,13 +103,7 @@ const withBranchMenu =
                     setBranch(value);
                 }
             });
-        }, [
-            studyUuid,
-            currentNode?.id,
-            equipmentType,
-            equipment.id,
-            getRealEquipmentType,
-        ]);
+        }, [studyUuid, currentNode?.id, equipmentType, equipment.id]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -262,11 +246,7 @@ const withBranchMenu =
                                     equipmentType,
                                     intl.formatMessage({
                                         id: getTranslationKey(
-                                            getEventType(
-                                                getRealEquipmentType(
-                                                    equipmentType
-                                                )
-                                            )
+                                            getEventType(equipmentType)
                                         ),
                                     })
                                 )
@@ -285,11 +265,7 @@ const withBranchMenu =
                                     <Typography noWrap>
                                         {intl.formatMessage({
                                             id: getTranslationKey(
-                                                getEventType(
-                                                    getRealEquipmentType(
-                                                        equipmentType
-                                                    )
-                                                )
+                                                getEventType(equipmentType)
                                             ),
                                         })}
                                         {' ('}
