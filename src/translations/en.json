@@ -1191,8 +1191,6 @@
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
 
-    "waitingStudyIndexation": "Waiting for Study indexation...",
-
     "EditedField": "Edited field",
     "ReferenceFieldOrValue": "Reference field or value",
     "Operator": "Operator",

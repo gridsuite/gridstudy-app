@@ -64,7 +64,6 @@ import VscCreationDialog from 'components/dialogs/network-modifications/vsc/crea
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
 
-
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
@@ -340,7 +339,7 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                     label: 'BY_FORMULA',
                     action: () => adapt(ByFormulaDialog),
-                }
+                },
             ],
         },
         {

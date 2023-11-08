@@ -6,7 +6,7 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { elementType, SelectInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, elementType } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -21,6 +21,8 @@ import { gridItem } from '../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
+import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
+import { useIntl } from 'react-intl';
 
 interface FormulaProps {
     name: String;
@@ -39,6 +41,8 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         name: EQUIPMENT_TYPE_FIELD,
     });
 
+    const intl = useIntl();
+
     const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
 
     const filtersField = (
@@ -52,11 +56,18 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     );
 
     const editedField = (
-        <SelectInput
+        <AutocompleteInput
             name={`${name}.${index}.${EDITED_FIELD}`}
             options={equipmentFields}
             label={'EditedField'}
             size={'small'}
+            inputTransform={(value) =>
+                equipmentFields.find((option) => option?.id === value) || value
+            }
+            outputTransform={(option) => getIdOrValue(option) ?? null}
+            getOptionLabel={(option) =>
+                intl.formatMessage({ id: getLabelOrValue(option) })
+            }
         />
     );
 
@@ -68,11 +79,19 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     );
 
     const operatorField = (
-        <SelectInput
+        <AutocompleteInput
             name={`${name}.${index}.${OPERATOR}`}
             options={OPERATOR_OPTIONS}
+            readOnly
             label={'Operator'}
             size={'small'}
+            inputTransform={(value) =>
+                OPERATOR_OPTIONS.find(
+                    (option) => option?.id === getIdOrValue(value)
+                ) || value
+            }
+            outputTransform={getIdOrValue}
+            getOptionLabel={getLabelOrValue}
         />
     );
 

@@ -129,7 +129,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                                                 name={`${name}.${index}.${NAME}`}
                                             />
                                         }
-                                        style={{ width: '100%' }}
+                                        sx={{ width: '100%' }}
                                     />
                                 }
                             />

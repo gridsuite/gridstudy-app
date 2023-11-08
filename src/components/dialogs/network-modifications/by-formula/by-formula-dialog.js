@@ -32,7 +32,7 @@ import {
     getFormulaSchema,
 } from './formula/formula-utils';
 
-function getFieldOrValue(input: string | { id: string, label: string }) {
+function getFieldOrValue(input) {
     const isNumber = !isNaN(parseFloat(input));
     return {
         [VALUE]: isNumber ? input : null,
