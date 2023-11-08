@@ -255,6 +255,7 @@ export function createBattery(
     connectionName,
     connectionDirection,
     connectionPosition,
+    connected,
     minActivePower,
     maxActivePower,
     isReactiveCapabilityCurveOn,
@@ -294,6 +295,7 @@ export function createBattery(
             connectionName,
             connectionDirection,
             connectionPosition,
+            connected,
             minActivePower,
             maxActivePower,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
@@ -381,7 +383,8 @@ export function createLoad(
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -412,6 +415,7 @@ export function createLoad(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -588,7 +592,8 @@ export function createGenerator(
     reactiveCapabilityCurve,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -640,6 +645,7 @@ export function createGenerator(
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -659,7 +665,8 @@ export function createShuntCompensator(
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -692,6 +699,7 @@ export function createShuntCompensator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
