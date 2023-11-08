@@ -601,6 +601,7 @@
     "BusBarBus": "Bus bar section / bus",
     "Setpoints": "Setpoints",
     "Connectivity": "Connectivity",
+    "Connected": "Connected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",
@@ -1078,8 +1079,9 @@
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
     "DisplayTakenPositions": "Display taken positions",
+    "NodeNotBuildPositionMessage": "Build the node to display taken positions",
+    "NoVoltageLevelPositionMessage": "Select a voltage level to display taken positions",
     "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
-    "NodeNotBuildPositionMessage": "Must choose a voltage level or wait for data to be loaded",
 
     "YupRequired": "This field is required",
     "YupNotTypeNumber": "This field only accepts numeric values",
