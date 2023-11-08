@@ -41,7 +41,10 @@ import {
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { FILTER_TEXT_COMPARATORS, FILTER_UI_TYPES } from '../../custom-aggrid/custom-aggrid-header';
+import {
+    FILTER_TEXT_COMPARATORS,
+    FILTER_UI_TYPES,
+} from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
     container: {
@@ -207,9 +210,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [securityAnalysisResult]
     );
 
-    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(
-        result?.empty
-    );
+    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(!result);
 
     useEffect(() => {
         if (result) {

@@ -29,7 +29,11 @@ import {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
-import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
+import {
+    fetchSecurityAnalysisAvailableBranchSides,
+    fetchSecurityAnalysisAvailableComputationStatus,
+    fetchSecurityAnalysisAvailableLimitTypes,
+} from '../../../services/security-analysis';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -141,9 +145,6 @@ export const securityAnalysisTableNColumnsDefinition = (
         headerName: intl.formatMessage({ id: 'LimitType' }),
         field: 'limitType',
         isFilterable: true,
-       /*  filterParams: {
-            filterUIType: FILTER_UI_TYPES.TEXT,
-        }, */
     }),
     makeColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
@@ -440,6 +441,8 @@ export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
     const [error, setError] = useState(false);
     const [result, setResult] = useState({
         computationsStatus: null,
+        limitTypes: null,
+        branchSides: null,
     });
 
     useEffect(() => {
@@ -447,16 +450,26 @@ export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
             const promises = [
                 // We can add another fetch for other enums
                 fetchSecurityAnalysisAvailableComputationStatus(),
+                fetchSecurityAnalysisAvailableLimitTypes(),
+                fetchSecurityAnalysisAvailableBranchSides(),
             ];
 
             setLoading(true);
             Promise.all(promises)
-                .then(([computationsStatusResult]) => {
-                    setResult({
-                        computationsStatus: computationsStatusResult,
-                    });
-                    setLoading(false);
-                })
+                .then(
+                    ([
+                        computationsStatusResult,
+                        limitTypesResult,
+                        branchSidesResult,
+                    ]) => {
+                        setResult({
+                            computationsStatus: computationsStatusResult,
+                            limitTypes: limitTypesResult,
+                            branchSides: branchSidesResult,
+                        });
+                        setLoading(false);
+                    }
+                )
                 .catch((err) => {
                     setError(err);
                     setLoading(false);
