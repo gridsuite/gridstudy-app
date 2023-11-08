@@ -7,7 +7,7 @@
 
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     isNodeBuilt,
@@ -18,11 +18,20 @@ import { ReduxState } from 'redux/reducer.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { useParameterState } from '../dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
 
 interface BusMenuProps {
     busId: string;
     handleRunShortcircuitAnalysis: (busId: string) => void;
+    handleOpenDynamicSimulationEventDialog: (
+        equipmentId: string,
+        equipmentType: string,
+        dialogTitle: string
+    ) => void;
     position: [number, number];
     closeBusMenu: () => void;
 }
@@ -44,9 +53,13 @@ const styles = {
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
     handleRunShortcircuitAnalysis,
+    handleOpenDynamicSimulationEventDialog,
     position,
     closeBusMenu,
 }) => {
+    const intl = useIntl();
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
@@ -103,6 +116,43 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     }
                 />
             </CustomMenuItem>
+            {enableDeveloperMode && (
+                <CustomMenuItem
+                    sx={styles.menuItem}
+                    onClick={() =>
+                        handleOpenDynamicSimulationEventDialog(
+                            busId,
+                            EQUIPMENT_TYPES.BUS,
+                            intl.formatMessage({
+                                id: `${getEventType(EQUIPMENT_TYPES.BUS)}Bus`,
+                            })
+                        )
+                    }
+                    selected={false}
+                    disabled={!isNodeEditable}
+                >
+                    <ListItemIcon>
+                        <BoltIcon />
+                    </ListItemIcon>
+
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: `${getEventType(
+                                        EQUIPMENT_TYPES.BUS
+                                    )}Bus`,
+                                })}
+                                {' ('}
+                                {intl.formatMessage({
+                                    id: 'DynamicSimulation',
+                                })}
+                                {')'}
+                            </Typography>
+                        }
+                    />
+                </CustomMenuItem>
+            )}
         </Menu>
     );
 };
