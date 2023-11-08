@@ -16,6 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -67,7 +68,7 @@ export const ModificationListItem = ({
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
-    const [computedValues, setComputedValues] = useState();
+    const [computedLabelValues, setComputedLabelValues] = useState();
 
     /*
         this version is more optimized because it uses a switch statement instead of a series of if-else statements.
@@ -76,55 +77,97 @@ export const ModificationListItem = ({
         finally, we uses the default value of equipmentId or empty string
     */
     const getComputedLabel = useCallback(() => {
-        switch (modif.type) {
-            case 'LINE_SPLIT_WITH_VOLTAGE_LEVEL':
-                return modif.lineToSplitId;
-            case 'LINE_ATTACH_TO_VOLTAGE_LEVEL':
-                return modif.lineToAttachToId;
-            case 'LINES_ATTACH_TO_SPLIT_LINES':
-                return modif.attachedLineId;
-            case 'DELETE_VOLTAGE_LEVEL_ON_LINE':
-                return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
-            case 'DELETE_ATTACHING_LINE':
+        const modificationMetadata = JSON.parse(modif.messageValues);
+
+        switch (modif.messageType) {
+            case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
+                return modificationMetadata.lineToSplitId;
+            case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
+                return modificationMetadata.lineToAttachToId;
+            case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
+                return modificationMetadata.attachedLineId;
+            case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
                 return (
-                    modif.attachedLineId +
+                    modificationMetadata.lineToAttachTo1Id +
                     '/' +
-                    modif.lineToAttachTo1Id +
-                    '/' +
-                    modif.lineToAttachTo2Id
+                    modificationMetadata.lineToAttachTo2Id
                 );
+            case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
+                return (
+                    modificationMetadata.attachedLineId +
+                    '/' +
+                    modificationMetadata.lineToAttachTo1Id +
+                    '/' +
+                    modificationMetadata.lineToAttachTo2Id
+                );
+            case MODIFICATION_TYPES.TABULAR_MODIFICATION.type:
+                return intl.formatMessage({
+                    id:
+                        'network_modifications/tabular/' +
+                        modificationMetadata.tabularModificationType,
+                });
             default:
-                return modif.equipmentId || '';
+                return modificationMetadata.equipmentId || '';
         }
-    }, [modif]);
+    }, [intl, modif]);
 
     const toggle = useCallback(
         () => handleToggle(modif),
         [modif, handleToggle]
     );
 
+    const getBranchStatusModificationValues = (modification) => {
+        return {
+            action: modification.action,
+            energizedEnd: modification.energizedVoltageLevelId,
+            computedLabel: <strong>{modification.equipmentId}</strong>,
+        };
+    };
+
+    const getEquipmentAttributeModificationValues = (modification) => {
+        return {
+            equipmentAttributeName: modification.equipmentAttributeName,
+            equipmentAttributeValue: modification.equipmentAttributeValue,
+            computedLabel: <strong>{modification.equipmentId}</strong>,
+        };
+    };
+
     useEffect(() => {
         if (!studyUuid || !currentNode || !modif) {
             return;
         }
-        setComputedValues({
-            energizedEnd: modif.energizedVoltageLevelId,
-            computedLabel: <strong>{getComputedLabel()}</strong>,
-        });
+        const modificationValues = JSON.parse(modif.messageValues);
+
+        switch (modif.messageType) {
+            case MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type:
+                setComputedLabelValues(
+                    getBranchStatusModificationValues(modificationValues)
+                );
+                break;
+            case MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type:
+                setComputedLabelValues(
+                    getEquipmentAttributeModificationValues(modificationValues)
+                );
+                break;
+            default:
+                setComputedLabelValues({
+                    computedLabel: <strong>{getComputedLabel()}</strong>,
+                });
+        }
     }, [modif, studyUuid, currentNode, getComputedLabel]);
 
     const getLabel = useCallback(() => {
-        if (!modif || !computedValues) {
+        if (!modif || !computedLabelValues) {
             return null;
         }
         return intl.formatMessage(
-            { id: 'network_modifications/' + modif.type },
+            { id: 'network_modifications/' + modif.messageType },
             {
                 ...modif,
-                ...computedValues,
+                ...computedLabelValues,
             }
         );
-    }, [modif, intl, computedValues]);
+    }, [modif, intl, computedLabelValues]);
 
     const [hover, setHover] = useState(false);
 
@@ -179,7 +222,7 @@ export const ModificationListItem = ({
                             isEditableModification(modif) && (
                                 <IconButton
                                     onClick={() =>
-                                        onEdit(modif.uuid, modif?.type)
+                                        onEdit(modif.uuid, modif.type)
                                     }
                                     size={'small'}
                                     sx={styles.iconEdit}

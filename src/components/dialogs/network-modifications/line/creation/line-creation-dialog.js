@@ -357,12 +357,18 @@ const LineCreationDialog = ({
 
     const onValidationError = (errors) => {
         let tabsInError = [];
-        if (errors?.[LIMITS] !== undefined) {
-            tabsInError.push(LineCreationDialogTab.LIMITS_TAB);
-        }
         if (errors?.[CHARACTERISTICS] !== undefined) {
             tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
         }
+
+        if (errors?.[LIMITS] !== undefined) {
+            tabsInError.push(LineCreationDialogTab.LIMITS_TAB);
+        }
+
+        if (tabsInError.length > 0) {
+            setTabIndex(tabsInError[0]);
+        }
+
         setTabIndexesWithError(tabsInError);
     };
 

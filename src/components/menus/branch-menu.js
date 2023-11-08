@@ -38,6 +38,9 @@ import {
     tripBranch,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
+import { useParameterState } from '../dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 
 const styles = {
     menuItem: {
@@ -58,6 +61,7 @@ const withBranchMenu =
         handleViewInSpreadsheet,
         handleDeleteEquipment,
         handleOpenModificationDialog,
+        handleOpenDynamicSimulationEventDialog,
         currentNode,
         studyUuid,
         modificationInProgress,
@@ -68,6 +72,8 @@ const withBranchMenu =
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
         const [branch, setBranch] = useState(null);
+
+        const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         const getTranslationKey = (key) => {
             return key.concat(getEquipmentTranslation(equipmentType));
@@ -84,21 +90,11 @@ const withBranchMenu =
             }
         }, []);
 
-        const getRealEquipmentType = useCallback((equipmentType) => {
-            switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE:
-                    return EQUIPMENT_TYPES.LINE;
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
-                default:
-                    break;
-            }
-        }, []);
         useEffect(() => {
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                getRealEquipmentType(equipmentType),
+                equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
                 equipment.id,
                 false
@@ -107,13 +103,7 @@ const withBranchMenu =
                     setBranch(value);
                 }
             });
-        }, [
-            studyUuid,
-            currentNode?.id,
-            equipmentType,
-            equipment.id,
-            getRealEquipmentType,
-        ]);
+        }, [studyUuid, currentNode?.id, equipmentType, equipment.id]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -244,6 +234,50 @@ const withBranchMenu =
                         }
                     />
                 </MenuItem>
+                {enableDeveloperMode &&
+                    (equipmentType === EQUIPMENT_TYPES.LINE ||
+                        equipmentType ===
+                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
+                        <MenuItem
+                            sx={styles.menuItem}
+                            onClick={() =>
+                                handleOpenDynamicSimulationEventDialog(
+                                    equipment.id,
+                                    equipmentType,
+                                    intl.formatMessage({
+                                        id: getTranslationKey(
+                                            getEventType(equipmentType)
+                                        ),
+                                    })
+                                )
+                            }
+                            disabled={
+                                !isNodeEditable ||
+                                branch.branchStatus === 'FORCED_OUTAGE'
+                            }
+                        >
+                            <ListItemIcon>
+                                <OfflineBoltOutlinedIcon />
+                            </ListItemIcon>
+
+                            <ListItemText
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage({
+                                            id: getTranslationKey(
+                                                getEventType(equipmentType)
+                                            ),
+                                        })}
+                                        {' ('}
+                                        {intl.formatMessage({
+                                            id: 'DynamicSimulation',
+                                        })}
+                                        {')'}
+                                    </Typography>
+                                }
+                            />
+                        </MenuItem>
+                    )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
                         sx={styles.menuItem}
@@ -402,6 +436,7 @@ withBranchMenu.propTypes = {
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     handleDeleteEquipment: PropTypes.func.isRequired,
     handleOpenModificationDialog: PropTypes.func.isRequired,
+    handleOpenDynamicSimulationEventDialog: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,
