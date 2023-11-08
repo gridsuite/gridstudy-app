@@ -1194,11 +1194,6 @@
     "EditedField": "Edited field",
     "ReferenceFieldOrValue": "Reference field or value",
     "Operator": "Operator",
-    "+": "+",
-    "-": "-",
-    "/": "/",
-    "*": "*",
-    "%": "%",
 
     "ModifyByFormula": "Modify by formula",
     "Use#ToSelectField": "Use # to select a field",
