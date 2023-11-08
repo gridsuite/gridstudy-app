@@ -145,7 +145,7 @@ export const DynamicSimulationEventDialog = (
         (formObj: { [KEY in EventPropertyName]: any }) => {
             // formObj to EventProperty[]
             const propertyNames = Object.keys(
-                eventDefinition ?? {}
+                formObj ?? {}
             ) as EventPropertyName[];
 
             // new or changed properties
