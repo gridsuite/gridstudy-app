@@ -12,19 +12,18 @@ import {
     ShortcircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import {
-    ResultTabIndexRedirection,
     ResultsTabsLevel,
+    ResultTabIndexRedirection,
     useResultsTab,
 } from '../use-results-tab';
 import { ShortCircuitAnalysisResult } from './shortcircuit-analysis-result';
 import { FormattedMessage } from 'react-intl';
-import {
-    ComputationReportType,
-    ComputationReportViewer,
-} from '../common/computation-report-viewer';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { Box } from '@mui/system';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
+import { ComputingType } from '../../computing-status/computing-type';
+import { RunningStatus } from '../../utils/running-status';
 
 interface ShortCircuitAnalysisResultTabProps {
     resultTabIndexRedirection: ResultTabIndexRedirection;
@@ -36,10 +35,19 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     const [tabIndex, setTabIndex] = useState(
         resultTabIndexRedirection?.[ResultsTabsLevel.ONE] ?? 0
     );
+    const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
+    );
+    const AllBusesShortCircuitStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+    );
+    const OneBusShortCircuitStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     useResultsTab(resultTabIndexRedirection, setTabIndex, ResultsTabsLevel.ONE);
@@ -49,6 +57,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             setTabIndex(newIndex);
         },
         [setTabIndex]
+    );
+
+    const handleSubTabChange = useCallback(
+        (event: React.SyntheticEvent, newIndex: number) => {
+            setResultOrLogIndex(newIndex);
+        },
+        [setResultOrLogIndex]
     );
 
     return (
@@ -68,32 +83,44 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                         />
                     }
                 />
+            </Tabs>
+
+            <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
+                <Tab label={<FormattedMessage id={'Results'} />} />
                 <Tab
                     label={<FormattedMessage id={'ComputationResultsLogs'} />}
                 />
             </Tabs>
-            {tabIndex === ShortcircuitAnalysisResultTabs.ALL_BUSES && (
+
+            {resultOrLogIndex === 0 && (
                 <ShortCircuitAnalysisResult
-                    analysisType={ShortcircuitAnalysisType.ALL_BUSES}
+                    analysisType={
+                        tabIndex === ShortcircuitAnalysisResultTabs.ALL_BUSES
+                            ? ShortcircuitAnalysisType.ALL_BUSES
+                            : ShortcircuitAnalysisType.ONE_BUS
+                    }
                 />
             )}
-            {tabIndex === ShortcircuitAnalysisResultTabs.ONE_BUS && (
-                <ShortCircuitAnalysisResult
-                    analysisType={ShortcircuitAnalysisType.ONE_BUS}
-                />
-            )}
-            {tabIndex === ShortcircuitAnalysisResultTabs.LOGS && (
-                <>
-                    <Box sx={{ height: '4px' }}></Box>
-                    <ComputationReportViewer
-                        studyUuid={studyUuid}
-                        nodeUuid={currentNode?.id}
-                        reportType={
-                            ComputationReportType.SHORT_CIRCUIT_ANALYSIS
-                        }
-                    />
-                </>
-            )}
+            {resultOrLogIndex === 1 &&
+                ((tabIndex === ShortcircuitAnalysisResultTabs.ALL_BUSES &&
+                    AllBusesShortCircuitStatus === RunningStatus.SUCCEED) ||
+                    (tabIndex === ShortcircuitAnalysisResultTabs.ONE_BUS &&
+                        OneBusShortCircuitStatus ===
+                            RunningStatus.SUCCEED)) && (
+                    <>
+                        <Box sx={{ height: '4px' }}></Box>
+                        <ComputationReportViewer
+                            studyUuid={studyUuid}
+                            nodeUuid={currentNode?.id}
+                            reportType={
+                                tabIndex ===
+                                ShortcircuitAnalysisResultTabs.ALL_BUSES
+                                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+                                    : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+                            }
+                        />
+                    </>
+                )}
         </>
     );
 };

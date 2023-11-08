@@ -52,10 +52,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import {
-    ComputationReportType,
-    ComputationReportViewer,
-} from '../common/computation-report-viewer';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -336,7 +333,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     <ComputationReportViewer
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
-                        reportType={ComputationReportType.LOAD_FLOW}
+                        reportType={ComputingType.LOADFLOW}
                     />
                 )}
             </>

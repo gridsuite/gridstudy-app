@@ -87,7 +87,6 @@ export type ShortCircuitAnalysisResultFetch = (
 export enum ShortcircuitAnalysisResultTabs {
     ALL_BUSES = 0,
     ONE_BUS = 1,
-    LOGS = 2,
 }
 
 export enum ShortcircuitAnalysisType {

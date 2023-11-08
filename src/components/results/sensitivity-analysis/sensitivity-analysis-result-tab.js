@@ -19,10 +19,7 @@ import {
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
-import {
-    ComputationReportType,
-    ComputationReportViewer,
-} from '../common/computation-report-viewer';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { Box } from '@mui/system';
 
@@ -111,9 +108,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         <ComputationReportViewer
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
-                            reportType={
-                                ComputationReportType.SENSITIVITY_ANALYSIS
-                            }
+                            reportType={ComputingType.SENSITIVITY_ANALYSIS}
                         />
                     </>
                 )}

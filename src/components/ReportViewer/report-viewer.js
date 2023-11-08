@@ -42,7 +42,7 @@ export default function ReportViewer({
     jsonReportTree,
     subReportPromise,
     nodeReportPromise,
-    globalReportPromise,
+    globalReportPromise = undefined,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
     const [selectedNode, setSelectedNode] = useState(null);

@@ -27,10 +27,7 @@ import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { SecurityAnalysisTabProps } from './security-analysis.type';
 import { NMK_TYPE, RESULT_TYPE } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import {
-    ComputationReportType,
-    ComputationReportViewer,
-} from '../common/computation-report-viewer';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 const styles = {
     container: {
@@ -187,9 +184,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             <ComputationReportViewer
                                 studyUuid={studyUuid}
                                 nodeUuid={nodeUuid}
-                                reportType={
-                                    ComputationReportType.SECURITY_ANALYSIS
-                                }
+                                reportType={ComputingType.SECURITY_ANALYSIS}
                             />
                         </>
                     )}

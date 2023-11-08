@@ -18,19 +18,13 @@ import LogReportItem from '../../ReportViewer/log-report-item';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { UUID } from 'crypto';
-
-export enum ComputationReportType {
-    LOAD_FLOW = 'LOAD_FLOW',
-    SECURITY_ANALYSIS = 'SECURITY_ANALYSIS',
-    SHORT_CIRCUIT_ANALYSIS = 'SHORT_CIRCUIT_ANALYSIS',
-    SENSITIVITY_ANALYSIS = 'SENSITIVITY_ANALYSIS',
-}
+import { ComputingType } from '../../computing-status/computing-type';
 
 interface ComputationReportViewerProps {
     // different types for uuid to support LF, SA , etc
     studyUuid: UUID | string;
     nodeUuid: UUID | string | undefined;
-    reportType: ComputationReportType;
+    reportType: ComputingType;
 }
 
 export const ComputationReportViewer: FunctionComponent<
@@ -112,7 +106,6 @@ export const ComputationReportViewer: FunctionComponent<
                     jsonReportTree={report}
                     subReportPromise={subReportPromise}
                     nodeReportPromise={nodeReportPromise}
-                    globalReportPromise={null}
                 />
             )}
             ;
