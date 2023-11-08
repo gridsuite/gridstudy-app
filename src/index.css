@@ -140,7 +140,7 @@ code {
     stroke: var(--sld-vl-color, blue);
     fill: none;
 }
-.sld-vsc {
+.sld-vsc, .sld-lcc {
     stroke: var(--sld-vl-color, blue);
     font-size: 7.43px;
     fill: none;
