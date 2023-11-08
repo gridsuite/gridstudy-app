@@ -14,6 +14,7 @@ import FormulaForm from './formula/formula-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
 import { getFormulaInitialValue } from './formula/formula-utils';
+import { useFormContext } from 'react-hook-form';
 
 interface ByFormulaFormProps {}
 
@@ -23,12 +24,22 @@ const EQUIPMENT_TYPE_OPTIONS = [
 ];
 
 const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
+    const { setValue, getValues } = useFormContext();
+
     const equipmentTypeField = (
         <SelectInput
             name={EQUIPMENT_TYPE_FIELD}
             label={'EquipmentType'}
             options={EQUIPMENT_TYPE_OPTIONS}
             size={'small'}
+            onChangeCallback={() =>
+                setValue(
+                    FORMULAS,
+                    getValues(FORMULAS).map(() => ({
+                        ...getFormulaInitialValue(),
+                    }))
+                )
+            }
         />
     );
 
