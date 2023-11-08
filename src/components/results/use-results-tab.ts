@@ -6,7 +6,7 @@
  */
 
 import { useEffect } from 'react';
-import { ShortcircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
+import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 
 export enum ResultsTabsLevel {
     ROOT = 0,
@@ -23,7 +23,7 @@ export enum ResultsTabsRootLevel {
 }
 
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)
-type ResultsTabsLevelOne = ShortcircuitAnalysisResultTabs;
+type ResultsTabsLevelOne = ShortCircuitAnalysisResultTabs;
 
 export type ResultTabIndexRedirection =
     | [ResultsTabsRootLevel, ResultsTabsLevelOne]

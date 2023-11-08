@@ -311,6 +311,9 @@ function SingleLineDiagramContent(props) {
                     handleRunShortcircuitAnalysis={
                         handleRunShortcircuitAnalysis
                     }
+                    handleOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
                     busId={busMenu.busId}
                     position={busMenu.position}
                     closeBusMenu={closeBusMenu}

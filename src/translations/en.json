@@ -271,6 +271,9 @@
     "DynamicSimulationFetchEquipmentError": "An error occurred while fetching equipments",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
+    "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
+    "DynamicSimulationEventPropertyRPu": "Fault resistance R",
+    "DynamicSimulationEventPropertyXPu": "Fault reactance X",
     "DynamicSimulationEventSaveError": "An error occurred while saving an event",
     "DynamicSimulationEventScenario": "Event scenario",
     "DynamicSimulationEventDeleteError": "Event deletion error",
@@ -282,9 +285,11 @@
 
     "DisconnectLine": "Trip the line",
     "Disconnect2WTransformer": "Trip the transformer",
+    "NodeFaultBus": "Node fault on bus",
 
     "Disconnect/LINE": "Trip line {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Trip transformer {computedLabel}",
+    "NodeFault/BUS": "Node fault on bus {computedLabel}",
 
     "Branch.Side.ONE": "Origin side",
     "Branch.Side.TWO": "Extremity side",
@@ -361,6 +366,9 @@
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
     "LOW_VOLTAGE": "Low voltage",
+    "ACTIVE_POWER": "Active power",
+    "APPARENT_POWER": "Apparent power",
+    "OTHER": "Other",
 
     "HighVoltageLimit": "High voltage limit",
     "HighVoltageLimitkV": "High voltage limit (kV)",
@@ -612,7 +620,7 @@
     "VSC": "Vsc",
     "SHUNT_COMPENSATOR": "Shunt Compensator",
     "STATIC_VAR_COMPENSATOR": "Static Var Compensator",
-    "TABULAR": "Tabular",
+    "BY_TABLE": "By table",
     "TabularModification": "Tabular modification",
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
@@ -969,6 +977,7 @@
 
     "root": "Root",
     "LogOnlySingleNode": "Log single node",
+    "ReportFetchError": "An error occurred while fetching the logs",
 
     "RegulatingMode": "Phase regulation mode",
     "RegulatingPhase": "Phase regulating",
@@ -1117,7 +1126,9 @@
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
     "partialCopyShuntCompensator": "Partial copy : copying sections is not supported for this shunt compensator",
     "SensitivityAnalysisResultsError": "An error occured while fetching sensitivity results",
-    "muiTablePaginationLabelRowsPerPage": "Rows per Page: ",
+    "muiTablePaginationLabelRowsPerPage": "Rows per page: ",
+    "muiTablePaginationLabelRowsPerPageAllBusesSCA": "Faults per page: ",
+    "muiTablePaginationLabelRowsPerPageOneBusSCA": "Feeders per page: ",
     "muiTablePaginationOfLabel": "of",
     "muiTablePaginationPrevious": "Go to the previous page",
     "muiTablePaginationNext": "Go to the next page",

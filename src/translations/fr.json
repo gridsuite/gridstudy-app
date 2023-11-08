@@ -271,6 +271,9 @@
     "DynamicSimulationFetchEquipmentError": "Une erreur est survenue lors du chargement des ouvrages",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
+    "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
+    "DynamicSimulationEventPropertyRPu": "Résistance du court-circuit R",
+    "DynamicSimulationEventPropertyXPu": "Réactance du court-circuit X",
     "DynamicSimulationEventSaveError": "Une erreur est survenue lors du sauvegarde d'un évènement",
     "DynamicSimulationEventScenario": "Evènements scénario",
     "DynamicSimulationEventDeleteError": "Une erreur est survenue lors de la suppression d'un évènement",
@@ -282,9 +285,11 @@
 
     "DisconnectLine": "Déclencher la ligne",
     "Disconnect2WTransformer": "Déclencher le transformateur",
+    "NodeFaultBus": "Court-circuit sur le bus",
 
     "Disconnect/LINE": "Déclencher ligne {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Déclencher transformateur {computedLabel}",
+    "NodeFault/BUS": "Court-circuit sur le bus {computedLabel}",
 
     "Branch.Side.ONE": "Côté origine",
     "Branch.Side.TWO": "Côté extrémité",
@@ -361,6 +366,9 @@
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
     "LOW_VOLTAGE": "Tension basse",
+    "ACTIVE_POWER": "Puissance active",
+    "APPARENT_POWER": "Puissance apparente",
+    "OTHER": "Autre",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
@@ -613,7 +621,7 @@
     "VSC": "Vsc",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
-    "TABULAR": "Tabulaire",
+    "BY_TABLE": "Par table",
     "TabularModification": "Modification tabulaire",
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
@@ -972,6 +980,7 @@
 
     "root": "Racine",
     "LogOnlySingleNode": "Log nœud seul",
+    "ReportFetchError": "Erreur lors de la récupération des logs",
 
     "RegulatingMode": "Mode de réglage déphaseur",
     "RegulatingPhase": "Déphaseur en réglage",
@@ -1140,7 +1149,9 @@
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
     "partialCopyShuntCompensator": "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     "SensitivityAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
-    "muiTablePaginationLabelRowsPerPage": "Lignes par page: ",
+    "muiTablePaginationLabelRowsPerPage": "Lignes par page : ",
+    "muiTablePaginationLabelRowsPerPageAllBusesSCA": "Défauts par page : ",
+    "muiTablePaginationLabelRowsPerPageOneBusSCA": "Départs par page : ",
     "muiTablePaginationOfLabel": "sur",
     "muiTablePaginationPrevious": "Aller à la page précédente",
     "muiTablePaginationNext": "Aller à la page suivante",
