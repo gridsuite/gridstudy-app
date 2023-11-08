@@ -271,6 +271,9 @@
     "DynamicSimulationFetchEquipmentError": "Une erreur est survenue lors du chargement des ouvrages",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
+    "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
+    "DynamicSimulationEventPropertyRPu": "Résistance du court-circuit R",
+    "DynamicSimulationEventPropertyXPu": "Réactance du court-circuit X",
     "DynamicSimulationEventSaveError": "Une erreur est survenue lors du sauvegarde d'un évènement",
     "DynamicSimulationEventScenario": "Evènements scénario",
     "DynamicSimulationEventDeleteError": "Une erreur est survenue lors de la suppression d'un évènement",
@@ -282,9 +285,11 @@
 
     "DisconnectLine": "Déclencher la ligne",
     "Disconnect2WTransformer": "Déclencher le transformateur",
+    "NodeFaultBus": "Court-circuit sur le bus",
 
     "Disconnect/LINE": "Déclencher ligne {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Déclencher transformateur {computedLabel}",
+    "NodeFault/BUS": "Court-circuit sur le bus {computedLabel}",
 
     "Branch.Side.ONE": "Côté origine",
     "Branch.Side.TWO": "Côté extrémité",

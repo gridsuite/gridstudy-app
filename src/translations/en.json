@@ -271,6 +271,9 @@
     "DynamicSimulationFetchEquipmentError": "An error occurred while fetching equipments",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
+    "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
+    "DynamicSimulationEventPropertyRPu": "Fault resistance R",
+    "DynamicSimulationEventPropertyXPu": "Fault reactance X",
     "DynamicSimulationEventSaveError": "An error occurred while saving an event",
     "DynamicSimulationEventScenario": "Event scenario",
     "DynamicSimulationEventDeleteError": "Event deletion error",
@@ -282,9 +285,11 @@
 
     "DisconnectLine": "Trip the line",
     "Disconnect2WTransformer": "Trip the transformer",
+    "NodeFaultBus": "Node fault on bus",
 
     "Disconnect/LINE": "Trip line {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Trip transformer {computedLabel}",
+    "NodeFault/BUS": "Node fault on bus {computedLabel}",
 
     "Branch.Side.ONE": "Origin side",
     "Branch.Side.TWO": "Extremity side",
