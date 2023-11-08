@@ -11,6 +11,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    CONNECTED,
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
@@ -71,6 +72,7 @@ interface ConverterStationInterfaceEditData {
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
+    connected?: boolean | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: boolean;
     minimumReactivePower: number | null;
@@ -160,6 +162,7 @@ export function getConverterStationCreationData(converterStation: any) {
             UNDEFINED_CONNECTION_DIRECTION,
         connectionPosition:
             converterStation[CONNECTIVITY]?.[CONNECTION_POSITION],
+        connected: converterStation[CONNECTIVITY]?.[CONNECTED],
         reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
         minimumReactivePower: isReactiveCapabilityCurveOn
             ? null
@@ -192,6 +195,7 @@ export function getConverterStationFormEditData(
                 connectionName: converterStation?.connectionName,
                 connectionPosition: converterStation?.connectionPosition,
                 busbarSectionName: converterStation?.busbarSectionName,
+                connected: converterStation?.connected,
             }),
             ...getConverterStationReactiveLimits(converterStation),
         },
@@ -242,6 +246,7 @@ export function getConverterStationFromSearchCopy(
                     converterStation?.connectablePositionInfos?.connectionName,
                 connectionPosition: null,
                 busbarSectionName: null,
+                connected: true,
             }),
             ...getReactiveLimitsFormData({
                 reactiveCapabilityCurveChoice:

@@ -19,6 +19,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    CONNECTED,
     CONNECTIVITY,
     DROOP,
     ENERGY_SOURCE,
@@ -204,6 +205,7 @@ const GeneratorCreationDialog = ({
                 connectionDirection:
                     generator.connectablePosition.connectionDirection,
                 connectionName: generator.connectablePosition.connectionName,
+                // connected is not copied on purpose: we use the default value (true) in all cases
             }),
         });
     };
@@ -263,6 +265,7 @@ const GeneratorCreationDialog = ({
                     connectionDirection: editData.connectionDirection,
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
+                    connected: editData.connected,
                 }),
             });
         }
@@ -323,7 +326,8 @@ const GeneratorCreationDialog = ({
                 generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
-                generator[CONNECTIVITY]?.[CONNECTION_POSITION]
+                generator[CONNECTIVITY]?.[CONNECTION_POSITION],
+                generator[CONNECTIVITY]?.[CONNECTED]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
