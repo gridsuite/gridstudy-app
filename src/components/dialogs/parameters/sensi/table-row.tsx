@@ -19,6 +19,7 @@ interface TableRowComponentProps {
     row: any;
     index: number;
     handleDeleteButton: (index: number) => void;
+    theme: boolean;
 }
 
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
@@ -27,6 +28,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     row,
     index,
     handleDeleteButton,
+    theme,
 }) => {
     const [hover, setHover] = useState(false);
     const intl = useIntl();
@@ -52,7 +54,11 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
                             color="primary"
                             onClick={() => handleDeleteButton(index)}
                         >
-                            <DeleteForeverOutlined sx={{ color: 'white' }} />
+                            <DeleteForeverOutlined
+                                sx={{
+                                    color: theme ? 'white' : 'black',
+                                }}
+                            />
                         </IconButton>
                     </span>
                 </Tooltip>

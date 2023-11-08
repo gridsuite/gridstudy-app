@@ -20,6 +20,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext } from 'react-hook-form';
 import { Box } from '@mui/system';
 import TableRowComponent from './table-row';
+import { DARK_THEME } from '@gridsuite/commons-ui';
+import { getLocalStorageTheme } from '../../../../redux/local-storage';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -38,6 +40,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     createRows,
 }) => {
     const intl = useIntl();
+    const theme = getLocalStorageTheme() === DARK_THEME;
     const { getValues } = useFormContext();
     const { fields: currentRows, append, remove } = useFieldArrayOutput;
 
@@ -91,7 +94,13 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                         onClick={handleAddRowsButton}
                                     >
                                         <AddCircleIcon
-                                            sx={{ color: 'white' }}
+                                            sx={{
+                                                color:
+                                                    getLocalStorageTheme() ===
+                                                    DARK_THEME
+                                                        ? 'white'
+                                                        : 'black',
+                                            }}
                                         />
                                     </IconButton>
                                 </Box>
@@ -107,6 +116,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                             row={row}
                             index={index}
                             handleDeleteButton={handleDeleteButton}
+                            theme={theme}
                         />
                     ))}
                 </TableBody>

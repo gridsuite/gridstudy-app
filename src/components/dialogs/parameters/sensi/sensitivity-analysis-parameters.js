@@ -380,6 +380,17 @@ export const SensitivityAnalysisParameters = ({
         [reset]
     );
 
+    const handleClose = useCallback(() => {
+        if (
+            formState.dirtyFields &&
+            Object.keys(formState.dirtyFields).length === 0
+        ) {
+            hideParameters();
+        } else {
+            setPopupConfirm(true);
+        }
+    }, [hideParameters, formState.dirtyFields]);
+
     useEffect(() => {
         if (sensitivityAnalysisParams) {
             fromSensitivityAnalysisParamsDataToFormValues(
@@ -447,19 +458,7 @@ export const SensitivityAnalysisParameters = ({
                             <FormattedMessage id="validate" />
                         </SubmitButton>
                     </Button>
-                    <LabelledButton
-                        callback={() => {
-                            if (
-                                formState.dirtyFields &&
-                                Object.keys(formState.dirtyFields).length === 0
-                            ) {
-                                hideParameters();
-                            } else {
-                                setPopupConfirm(true);
-                            }
-                        }}
-                        label="cancel"
-                    />
+                    <LabelledButton callback={handleClose} label="cancel" />
                 </DialogActions>
             </FormProvider>
 
