@@ -12,6 +12,11 @@ import {
 } from '../types/event.type';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
+const BRANCH_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.LINE,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+];
+
 export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
         type: PrimitiveTypes.FLOAT,
@@ -32,6 +37,9 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
                 id: 'Branch.Side.TWO',
             },
         ],
+        acceptOnly: (equipmentType: string) => {
+            return BRANCH_EQUIPMENT_TYPES.includes(equipmentType);
+        },
     },
 };
 

@@ -246,6 +246,7 @@ export const DynamicSimulationEventDialog = (
             >
                 <DynamicSimulationEventForm
                     equipmentId={equipmentId}
+                    equipmentType={equipmentType}
                     eventDefinition={
                         eventType ? eventDefinitions[eventType] : undefined
                     }
