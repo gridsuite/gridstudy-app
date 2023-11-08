@@ -69,6 +69,7 @@ export const NumericalField = forwardRef(
             gridContext,
             colDef,
             gridApi,
+            allowZero = false,
         },
         ref
     ) => {
@@ -99,7 +100,8 @@ export const NumericalField = forwardRef(
         }, [gridApi, value]);
 
         const isValid = useCallback(
-            (val, minVal, maxVal) => {
+            (val, minVal, maxVal, allowZero) => {
+                console.log('isValid', val, minVal, maxVal, allowZero);
                 if (val === undefined || val === null) {
                     if (optional) {
                         return true;
@@ -112,6 +114,9 @@ export const NumericalField = forwardRef(
                         }
                     }
                     return false;
+                }
+                if (allowZero && val === 0) {
+                    return true;
                 }
                 return (
                     (minVal === undefined || val >= minVal) &&
@@ -126,7 +131,7 @@ export const NumericalField = forwardRef(
             const minValue = getMin();
             const maxValue = getMax();
             const updatedErrors = { ...gridContext.editErrors };
-            if (isValid(value, minValue, maxValue)) {
+            if (isValid(value, minValue, maxValue, allowZero)) {
                 setError(false);
                 delete updatedErrors[colDef.field];
                 gridContext.editErrors = updatedErrors;
