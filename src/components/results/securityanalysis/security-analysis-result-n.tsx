@@ -89,10 +89,13 @@ export const SecurityAnalysisResultN: FunctionComponent<
                     },
                     isSortable,
                     isFilterable,
-                    filterOptions,
                     filterSelectedOptions,
-                    updateFilter,
-                    filterParams,
+                    filterParams: {
+                        ...filterParams,
+                        filterSelector,
+                        filterOptions,
+                        updateFilter,
+                    },
                 },
             };
         },
