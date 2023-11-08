@@ -140,7 +140,15 @@ export const NumericalField = forwardRef(
                 updatedErrors[colDef.field] = true;
                 gridContext.editErrors = updatedErrors;
             }
-        }, [colDef.field, gridContext, getMin, getMax, value, isValid]);
+        }, [
+            colDef.field,
+            gridContext,
+            getMin,
+            getMax,
+            value,
+            isValid,
+            allowZero,
+        ]);
 
         useImperativeHandle(
             ref,
