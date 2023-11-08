@@ -17,7 +17,7 @@ import {
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import InfoIcon from '@mui/icons-material/Info';
-import { DialogContent, Grid, IconButton, Tooltip } from '@mui/material';
+import { Grid, IconButton, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { elementType } from '@gridsuite/commons-ui';
@@ -151,7 +151,7 @@ const VoltageLimitsParameters = () => {
     });
 
     return (
-        <DialogContent>
+        <Grid container>
             <Grid sx={styles.title}>
                 <FormattedMessage id="AdjustExistingLimits" />
             </Grid>
@@ -181,7 +181,7 @@ const VoltageLimitsParameters = () => {
                 withAddRowsDialog={false}
                 withLeftButtons={false}
             />
-        </DialogContent>
+        </Grid>
     );
 };
 
