@@ -483,6 +483,7 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
+    "genericConfirmQuestion": "Are you sure that you want to abort?",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -1043,7 +1044,7 @@
     "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
-    "Actif": "Actif",
+    "Active": "Active",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
