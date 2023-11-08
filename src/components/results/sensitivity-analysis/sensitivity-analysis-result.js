@@ -68,12 +68,14 @@ const SensitivityAnalysisResult = ({
                 headerComponentParams: {
                     field,
                     displayName: intl.formatMessage({ id: labelId }),
-                    filterOptions,
                     sortConfig,
                     onSortChanged: (newSortValue) =>
                         onSortChanged(field, newSortValue),
-                    updateFilter,
-                    filterSelector,
+                    filterParams: {
+                        filterSelector,
+                        filterOptions,
+                        updateFilter,
+                    },
                 },
                 minWidth: isSortActive && sortWay ? 95 : 65,
                 maxWidth: maxWidth,

@@ -41,7 +41,7 @@ const changeValueFromArrayWithFieldValue = (
 
 export const useAggridRowFilter = (
     filterSelectorKeys,
-    updateFilterCallback
+    updateFilterCallback = () => {}
 ) => {
     const [rowFilters, setRowFilters] = useState([]);
 
