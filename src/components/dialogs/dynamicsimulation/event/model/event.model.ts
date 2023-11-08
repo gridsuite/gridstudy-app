@@ -71,10 +71,10 @@ export const eventDefinitions = {
 export const getEventType = (equipmentType: string): EventType | undefined => {
     let eventType = undefined;
     switch (equipmentType) {
-        case EQUIPMENT_TYPES.GENERATOR:
-        case EQUIPMENT_TYPES.LOAD:
         case EQUIPMENT_TYPES.LINE:
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+        case EQUIPMENT_TYPES.LOAD:
+        case EQUIPMENT_TYPES.GENERATOR:
             eventType = EventType.DISCONNECT;
             break;
         case EQUIPMENT_TYPES.BUS:
