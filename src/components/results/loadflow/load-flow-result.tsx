@@ -93,7 +93,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         useState(false);
     const [isVoltageViolationReady, setIsVoltageViolationReady] =
         useState(false);
-    const [isOverloadedReady, setIsOverloadedReady] = useState(false);
+    const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] =
+        useState(false);
 
     //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
     const openLoaderCurrentTab = useOpenLoaderShortWait({
@@ -102,7 +103,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             loadFlowStatus === RunningStatus.RUNNING ||
             // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
             // and "the data is post processed and can be displayed"
-            (!isOverloadedReady && loadFlowStatus === RunningStatus.SUCCEED) ||
+            (!isOverloadedEquipmentsReady &&
+                loadFlowStatus === RunningStatus.SUCCEED) ||
             isWaiting,
         delay: RESULTS_LOADING_DELAY,
     });
@@ -113,8 +115,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             loadFlowStatus === RunningStatus.RUNNING ||
             // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
             // and "the data is post processed and can be displayed"
-            //(isFetchComplete && !isOverloadedReady) ||
-            (!isOverloadedReady && loadFlowStatus === RunningStatus.SUCCEED) ||
+            (!isOverloadedEquipmentsReady &&
+                loadFlowStatus === RunningStatus.SUCCEED) ||
             isWaiting,
         delay: RESULTS_LOADING_DELAY,
     });
@@ -191,7 +193,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         if (result) {
             fetchLimitViolations(studyUuid, nodeUuid)
                 .then((overloadedEquipments: OverloadedEquipmentFromBack[]) => {
-                    setIsOverloadedReady(true);
+                    setIsOverloadedEquipmentsReady(true);
                     const sortedLines = overloadedEquipments
                         .map((overloadedEquipment) =>
                             makeData(overloadedEquipment, intl)
@@ -206,7 +208,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     });
                 })
                 .finally(() => {
-                    setIsOverloadedReady(true);
+                    setIsOverloadedEquipmentsReady(true);
                     setIsFetchComplete(true);
                 });
         }
@@ -284,7 +286,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             loadFlowStatus === RunningStatus.FAILED ||
             loadFlowStatus === RunningStatus.IDLE
         ) {
-            setIsOverloadedReady(false);
+            setIsOverloadedEquipmentsReady(false);
             setIsVoltageViolationReady(false);
             setIsFetchComplete(false);
             setIsCurrentViolationReady(false);
