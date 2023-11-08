@@ -21,6 +21,7 @@ export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
+export const CONNECTED = 'connected';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -225,7 +226,8 @@ export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
 export const SUBSTATION_IDS = 'substationIds';
 
 // voltage init
-export const VOLTAGE_LIMITS = 'voltageLimits';
+export const VOLTAGE_LIMITS_MODIFICATION = 'voltageLimitsModification';
+export const VOLTAGE_LIMITS_DEFAULT = 'voltageLimitsDefault';
 export const FIXED_GENERATORS = 'constantQGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
