@@ -56,6 +56,9 @@ import { PARAM_THEME } from '../utils/config-params';
 const lightTheme = createTheme({
     palette: {
         mode: 'light',
+        customButton: {
+            main: '#000000DE',
+        },
     },
     link: {
         color: 'blue',
@@ -84,6 +87,9 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
+        customButton: {
+            main: '#FFFFFF',
+        },
     },
     link: {
         color: 'green',
