@@ -30,7 +30,11 @@ import {
     SwitchInput,
 } from '@gridsuite/commons-ui';
 
-import { INITIAL_TENSION, STATUS } from '../../../utils/constants';
+import {
+    INITIAL_TENSION,
+    PREDEFINED_PARAMETERS,
+    STATUS,
+} from '../../../utils/constants';
 import { gridItem, GridSection } from '../../dialogUtils';
 import { useIntl } from 'react-intl';
 import { green, red } from '@mui/material/colors';
@@ -41,13 +45,11 @@ import {
     intlInitialVoltageProfileMode,
     intlPredefinedParametersOptions,
 } from './short-circuit-parameters-utils';
-
-interface ShortCircuitFieldsProps {
-    resetAll: (predefinedParams: INITIAL_TENSION) => void;
-}
+import { ShortCircuitFieldsProps } from './short-circuit-parameters.type';
 
 const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     resetAll,
+    voltageRanges,
 }) => {
     const intl = useIntl();
 
@@ -68,6 +70,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     const initialVoltageProfileMode = useMemo(() => {
         return intlInitialVoltageProfileMode(intl);
     }, [intl]);
+
     const statusToShow = useMemo(() => {
         const styles = {
             succeed: {
@@ -136,10 +139,22 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     );
 
     useEffect(() => {
-        if (watchPredefinedParams !== watchInitialVoltageProfileMode) {
-            setStatus(STATUS.ERROR);
-        } else {
+        // in order to show the right status we need to check the predefinedParams and initial voltage profile mode values
+        // show success only when ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL or ICC_MAX_WITH_CEI909 to CONFIGURED
+        const isNominal =
+            watchPredefinedParams ===
+                PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP &&
+            watchInitialVoltageProfileMode === INITIAL_TENSION.NOMINAL;
+
+        const isConfigured =
+            watchPredefinedParams ===
+                PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909 &&
+            watchInitialVoltageProfileMode === INITIAL_TENSION.CONFIGURED;
+
+        if (isNominal || isConfigured) {
             setStatus(STATUS.SUCCESS);
+        } else {
+            setStatus(STATUS.ERROR);
         }
     }, [watchInitialVoltageProfileMode, watchPredefinedParams]);
 
@@ -177,9 +192,8 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
             <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
             <Grid>{gridItem(initialVoltageProfileModeField, 12)}</Grid>
             <TensionTable
-                isNominal={
-                    watchInitialVoltageProfileMode === INITIAL_TENSION.NOMINAL
-                }
+                voltageProfileMode={watchInitialVoltageProfileMode}
+                values={voltageRanges}
             />
         </Grid>
     );

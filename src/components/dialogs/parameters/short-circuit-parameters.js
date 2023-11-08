@@ -36,7 +36,7 @@ import {
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
-import { INITIAL_TENSION } from '../../utils/constants';
+import { INITIAL_TENSION, PREDEFINED_PARAMETERS } from '../../utils/constants';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -79,6 +79,26 @@ const formSchema = yup
     })
     .required();
 
+const prepareDataToSend = (shortCircuitParams, newParameters) => {
+    const oldParameters = { ...shortCircuitParams.parameters };
+    let parameters = { ...oldParameters, ...newParameters };
+    // we need to add voltageRanges to the parameters only iwhen INITIAL_TENSION is configured
+    if (
+        newParameters.initialVoltageProfileMode === INITIAL_TENSION.CONFIGURED
+    ) {
+        parameters = {
+            ...parameters,
+            voltageRanges: shortCircuitParams.voltageRangesInfo.CONFIGURED,
+        };
+    }
+    // we need to remove the predefinedParameters attribut from parameters because it's not handled on powsybl class
+    delete parameters.predefinedParameters;
+
+    return {
+        predefinedParameters: newParameters.predefinedParameters,
+        parameters: parameters,
+    };
+};
 export const ShortCircuitParameters = ({
     hideParameters,
     useShortCircuitParameters,
@@ -92,20 +112,19 @@ export const ShortCircuitParameters = ({
 
     // get default values based on shortCircuitParams
     const emptyFormData = useMemo(() => {
+        const { parameters, predefinedParameters } = shortCircuitParams;
         return {
-            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]:
-                shortCircuitParams.withFeederResult,
-            [SHORT_CIRCUIT_PREDEFINED_PARAMS]:
-                shortCircuitParams.predefinedParameters,
-            [SHORT_CIRCUIT_WITH_LOADS]: shortCircuitParams.withLoads,
+            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters.withFeederResult,
+            [SHORT_CIRCUIT_PREDEFINED_PARAMS]: predefinedParameters,
+            [SHORT_CIRCUIT_WITH_LOADS]: parameters.withLoads,
             [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]:
-                shortCircuitParams.withVSCConverterStations,
+                parameters.withVSCConverterStations,
             [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]:
-                shortCircuitParams.withShuntCompensators,
+                parameters.withShuntCompensators,
             [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]:
-                shortCircuitParams.withNeutralPosition,
+                parameters.withNeutralPosition,
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
-                shortCircuitParams.initialVoltageProfileMode,
+                parameters.initialVoltageProfileMode,
         };
     }, [shortCircuitParams]);
 
@@ -121,8 +140,7 @@ export const ShortCircuitParameters = ({
         (newParams) => {
             const oldParams = { ...shortCircuitParams };
             setShortCircuitParameters(studyUuid, {
-                ...oldParams,
-                ...newParams,
+                ...prepareDataToSend(shortCircuitParams, newParams),
             })
                 .then(() => {
                     // fetch parameters and invalide the short circuit status
@@ -163,9 +181,9 @@ export const ShortCircuitParameters = ({
         ]
     );
 
-    // when ever voltage profile mode change we need to reset all parameters
+    // when ever the predefined parameter changes we need to reset all parameters
     const resetAll = useCallback(
-        (initialVoltageProfileMode) => {
+        (predefinedParameter) => {
             setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, true, {
                 shouldDirty: true,
             });
@@ -180,7 +198,8 @@ export const ShortCircuitParameters = ({
                 shouldDirty: true,
             });
             const initalVoltageProfileMode =
-                initialVoltageProfileMode === INITIAL_TENSION.NOMINAL
+                predefinedParameter ===
+                PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP
                     ? INITIAL_TENSION.NOMINAL
                     : INITIAL_TENSION.CONFIGURED;
 
@@ -191,13 +210,9 @@ export const ShortCircuitParameters = ({
                     shouldDirty: true,
                 }
             );
-            setValue(
-                SHORT_CIRCUIT_PREDEFINED_PARAMS,
-                initalVoltageProfileMode,
-                {
-                    shouldDirty: true,
-                }
-            );
+            setValue(SHORT_CIRCUIT_PREDEFINED_PARAMS, predefinedParameter, {
+                shouldDirty: true,
+            });
         },
         [setValue]
     );
@@ -209,7 +224,10 @@ export const ShortCircuitParameters = ({
             </Grid>
 
             <Grid>
-                <ShortCircuitFields resetAll={resetAll} />
+                <ShortCircuitFields
+                    resetAll={resetAll}
+                    voltageRanges={shortCircuitParams?.voltageRangesInfo}
+                />
             </Grid>
             <Grid
                 container

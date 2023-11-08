@@ -1202,8 +1202,8 @@
     "shortCircuitNominalVoltage": "Nominal voltage(kV)",
     "shortCircuitInitialTension": "Initial tension(kV)",
     "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
-    "nominalPredefinedParams": "ISC max with standardized tension plan",
-    "configuredPredefinedParams": "ISC max with IEC 909 standard",
+    "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with standardized tension plan",
+    "iccMaxWithCEIPredefinedParams": "ISC max with IEC 909 standard",
     "nominalInitialVoltageProfileMode": "Nominal",
     "configuredInitialVoltageProfileMode": "CEI 909"
 }

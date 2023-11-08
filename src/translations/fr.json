@@ -1221,8 +1221,8 @@
     "shortCircuitNominalVoltage": "Tension nominal(kV)",
     "shortCircuitInitialTension": "Tension initiale(kV)",
     "invalidateShortCircuitStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de court-circuit",
-    "nominalPredefinedParams": "ICC max avec plan de tension normalisé",
-    "configuredPredefinedParams": "ICC max avec norme CEI 909",
+    "iccMawWithNominalVoltageMapPredefinedParams": "ICC max avec plan de tension normalisé",
+    "iccMaxWithCEIPredefinedParams": "ICC max avec norme CEI 909",
     "nominalInitialVoltageProfileMode": "Normalisé",
     "configuredInitialVoltageProfileMode": "CEI 909"
 

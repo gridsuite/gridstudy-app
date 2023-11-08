@@ -6,20 +6,21 @@
  */
 import { IntlShape } from 'react-intl';
 import React from 'react';
-import { STATUS } from '../../../utils/constants';
+import { INITIAL_TENSION, STATUS } from '../../../utils/constants';
 import { Lens } from '@mui/icons-material';
+import { VoltageRange, VoltageRanges } from './short-circuit-parameters.type';
 
 export const intlPredefinedParametersOptions = (intl: IntlShape) => [
     {
-        id: 'NOMINAL',
+        id: 'ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP',
         label: intl.formatMessage({
-            id: 'nominalPredefinedParams',
+            id: 'iccMawWithNominalVoltageMapPredefinedParams',
         }),
     },
     {
-        id: 'CONFIGURED',
+        id: 'ICC_MAX_WITH_CEI909',
         label: intl.formatMessage({
-            id: 'configuredPredefinedParams',
+            id: 'iccMaxWithCEIPredefinedParams',
         }),
     },
 ];
@@ -44,4 +45,26 @@ export const intlInitialVoltageProfileMode = (intl: IntlShape) => {
 export const getStatus = (status: STATUS, styles: any) => {
     const color = status === STATUS.SUCCESS ? styles.succeed : styles.fail;
     return <Lens fontSize={'medium'} sx={color} />;
+};
+
+const getSortedValues = (values: VoltageRange[], isNominal: boolean) => {
+    return values
+        .map((value) =>
+            isNominal
+                ? value.minimumNominalVoltage
+                : value.maximumNominalVoltage
+        )
+        .sort((prev: number, next: number) => next - prev);
+};
+export const getValues = (
+    values: VoltageRanges,
+    voltageProfileMode: INITIAL_TENSION
+): { initialTension: number[]; nominalTension: number[] } => {
+    const voltageRanges =
+        voltageProfileMode === INITIAL_TENSION.NOMINAL
+            ? values.NOMINAL
+            : values.CONFIGURED;
+    const initialTension = getSortedValues(voltageRanges, false);
+    const nominalTension = getSortedValues(voltageRanges, true);
+    return { initialTension, nominalTension };
 };
