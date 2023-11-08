@@ -25,14 +25,6 @@ const SimplifiedSolverParameters = ({
             type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverKReduceStep',
         },
-        nEff: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSimplifiedSolverNEff',
-        },
-        nDeadband: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSimplifiedSolverNDeadband',
-        },
         maxNewtonTry: {
             type: TYPES.integer,
             description: 'DynamicSimulationSimplifiedSolverMaxNewtonTry',
@@ -41,9 +33,149 @@ const SimplifiedSolverParameters = ({
             type: TYPES.text,
             description: 'DynamicSimulationSimplifiedSolverLinearSolverName',
         },
-        recalculateStep: {
+        fnormtol: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverFnormtol',
+        },
+        initialaddtol: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverInitialaddtol',
+        },
+        scsteptol: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverScsteptol',
+        },
+        mxnewtstep: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverMxnewtstep',
+        },
+        msbset: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSimplifiedSolverMsbset',
+        },
+        mxiter: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSimplifiedSolverMxiter',
+        },
+        printfl: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSimplifiedSolverPrintfl',
+        },
+        optimizeAlgebraicResidualsEvaluations: {
             type: TYPES.bool,
-            description: 'DynamicSimulationSimplifiedSolverRecalculateStep',
+            description: 'DynamicSimulationSimplifiedSolverOptimizeAlgebraicResidualsEvaluations',
+        },
+        skipNRIfInitialGuessOK: {
+            type: TYPES.bool,
+            description: 'DynamicSimulationSimplifiedSolverSkipNRIfInitialGuessOK',
+        },
+        enableSilentZ: {
+            type: TYPES.bool,
+            description: 'DynamicSimulationSimplifiedSolverEnableSilentZ',
+        },
+        optimizeReinitAlgebraicResidualsEvaluations: {
+            type: TYPES.bool,
+            description: 'DynamicSimulationSimplifiedSolverOptimizeReinitAlgebraicResidualsEvaluations',
+        },
+        minimumModeChangeTypeForAlgebraicRestoration: {
+            type: TYPES.text,
+            description: 'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestoration',
+        },
+        minimumModeChangeTypeForAlgebraicRestorationInit: {
+            type: TYPES.text,
+            description: 'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestorationInit',
+        },
+        fnormtolAlg: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverFnormtolAlg',
+        },
+        initialaddtolAlg: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverInitialaddtolAlg',
+        },
+        scsteptolAlg: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverScsteptolAlg',
+        },
+        mxnewtstepAlg: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverMxnewtstepAlg',
+        },
+        msbsetAlg: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverMsbsetAlg',
+        },
+        mxiterAlg: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverMxiterAlg',
+        },
+        printflAlg: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverPrintflAlg',
+        },
+        fnormtolAlgJ: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverFnormtolAlgJ',
+        },
+        initialaddtolAlgJ: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverInitialaddtolAlgJ',
+        },
+        scsteptolAlgJ: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverScsteptolAlgJ',
+        },
+        mxnewtstepAlgJ: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverMxnewtstepAlgJ',
+        },
+        msbsetAlgJ: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverMsbsetAlgJ',
+        },
+        mxiterAlgJ: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverMxiterAlgJ',
+        },
+        printflAlgJ: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverPrintflAlgJ',
+        },
+        fnormtolAlgInit: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverFnormtolAlgInit',
+        },
+        initialaddtolAlgInit: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverInitialaddtolAlgInit',
+        },
+        scsteptolAlgInit: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverScsteptolAlgInit',
+        },
+        mxnewtstepAlgInit: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverMxnewtstepAlgInit',
+        },
+        msbsetAlgInit: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverMsbsetAlgInit',
+        },
+        mxiterAlgInit: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverMxiterAlgInit',
+        },
+        printflAlgInit: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverPrintflAlgInit',
+        },
+        maximumNumberSlowStepIncrease: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSolverMaximumNumberSlowStepIncrease',
+        },
+        minimalacceptablestep: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSolverMinimalAcceptableStep',
         },
     };
 
