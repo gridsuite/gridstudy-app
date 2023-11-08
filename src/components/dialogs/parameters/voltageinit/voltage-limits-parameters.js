@@ -17,11 +17,18 @@ import {
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import InfoIcon from '@mui/icons-material/Info';
-import { IconButton, Tooltip, Typography } from '@mui/material';
+import { DialogContent, Grid, IconButton, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { elementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
+
+export const styles = {
+    title: () => ({
+        fontWeight: 'bold',
+        fontSize: '1.2em',
+    }),
+};
 
 const VoltageLimitsParameters = () => {
     const intl = useIntl();
@@ -144,10 +151,10 @@ const VoltageLimitsParameters = () => {
     });
 
     return (
-        <>
-            <Typography component="span" variant="h6">
+        <DialogContent>
+            <Grid sx={styles.title}>
                 <FormattedMessage id="AdjustExistingLimits" />
-            </Typography>
+            </Grid>
             <DndTable
                 arrayFormName={`${VOLTAGE_LIMITS_MODIFICATION}`}
                 columnsDefinition={
@@ -162,9 +169,9 @@ const VoltageLimitsParameters = () => {
                 withLeftButtons={false}
             />
 
-            <Typography component="span" variant="h6">
+            <Grid sx={styles.title}>
                 <FormattedMessage id="SetDefaultLimits" />
-            </Typography>
+            </Grid>
             <DndTable
                 arrayFormName={`${VOLTAGE_LIMITS_DEFAULT}`}
                 columnsDefinition={VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS}
@@ -174,7 +181,7 @@ const VoltageLimitsParameters = () => {
                 withAddRowsDialog={false}
                 withLeftButtons={false}
             />
-        </>
+        </DialogContent>
     );
 };
 
