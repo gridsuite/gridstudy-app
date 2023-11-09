@@ -12,7 +12,7 @@ import {
     TYPE,
 } from '../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
-import { AnyObject, TestFunction } from 'yup';
+import { AnyObject, TestContext, TestFunction } from 'yup';
 
 export const EQUIPMENTS_FIELDS = {
     [EQUIPMENT_TYPES.GENERATOR]: [
@@ -46,14 +46,7 @@ export const EQUIPMENTS_FIELDS = {
     ],
 };
 
-export const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (
-    value,
-    context
-) => {
-    if (!isNaN(parseFloat(value))) {
-        return true;
-    }
-
+function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {
     // this will return the highest level parent, so we can get the equipment type
     const parent = context.from?.[context.from.length - 1];
     const equipmentType = parent?.value?.[EQUIPMENT_TYPE_FIELD];
@@ -62,6 +55,24 @@ export const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (
               (field: { id: string; label: string }) => field.id === value
           )
         : false;
+}
+
+const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (
+    value,
+    context
+) => {
+    if (!isNaN(parseFloat(value))) {
+        return true;
+    }
+
+    return isValueInEquipmentFields(context, value);
+};
+
+const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (
+    value,
+    context
+) => {
+    return isValueInEquipmentFields(context, value);
 };
 
 export const getFormulaInitialValue = () => ({
@@ -90,23 +101,41 @@ export function getFormulaSchema(id: string) {
                     .required()
                     .min(1, 'FieldIsRequired'),
                 [EDITED_FIELD]: yup.string().required(),
+                [OPERATOR]: yup.string().required(),
                 [REFERENCE_FIELD_OR_VALUE_1]: yup
                     .mixed()
                     .required()
                     .test(
                         'checkRefOrValue',
                         'WrongRefOrValueError',
-                        checkValueInEquipmentFields
-                    ),
+                        checkValueInEquipmentFieldsOrNumeric
+                    )
+                    .when([OPERATOR], {
+                        is: 'PERCENTAGE',
+                        then: (schema) =>
+                            schema.test(
+                                'checkValueIsReference',
+                                'ValueMustBeNumericWhenPercentageError',
+                                (value: any) => !isNaN(parseFloat(value))
+                            ),
+                    }),
                 [REFERENCE_FIELD_OR_VALUE_2]: yup
                     .mixed()
                     .required()
                     .test(
                         'checkRefOrValue',
                         'WrongRefOrValueError',
-                        checkValueInEquipmentFields
-                    ),
-                [OPERATOR]: yup.string().required(),
+                        checkValueInEquipmentFieldsOrNumeric
+                    )
+                    .when([OPERATOR], {
+                        is: 'PERCENTAGE',
+                        then: (schema) =>
+                            schema.test(
+                                'checkValueIsReference',
+                                'ValueMustBeRefWhenPercentageError',
+                                checkValueInEquipmentFields
+                            ),
+                    }),
             })
         ),
     };

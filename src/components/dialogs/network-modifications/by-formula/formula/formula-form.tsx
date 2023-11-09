@@ -23,7 +23,7 @@ import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
-import Grid from "@mui/material/Grid";
+import Grid from '@mui/material/Grid';
 
 interface FormulaProps {
     name: String;
@@ -35,7 +35,7 @@ export const OPERATOR_OPTIONS = [
     { id: 'SUBTRACTION', label: '-' },
     { id: 'MULTIPLICATION', label: '*' },
     { id: 'DIVISION', label: '/' },
-    { id: 'MODULUS', label: '%' },
+    { id: 'PERCENTAGE', label: '%' },
 ];
 const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     const equipmentTypeWatch = useWatch({

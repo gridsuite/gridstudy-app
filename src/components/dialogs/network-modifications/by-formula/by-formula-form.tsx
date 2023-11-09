@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
-import { SelectInput } from '@gridsuite/commons-ui';
+import React, { FunctionComponent } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../utils/field-constants';
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
@@ -15,6 +14,7 @@ import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
+import SelectWithConfirmationInput from './select-with-confirmation-input';
 
 interface ByFormulaFormProps {}
 
@@ -27,19 +27,18 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
     const { setValue, getValues } = useFormContext();
 
     const equipmentTypeField = (
-        <SelectInput
+        <SelectWithConfirmationInput
             name={EQUIPMENT_TYPE_FIELD}
             label={'EquipmentType'}
             options={EQUIPMENT_TYPE_OPTIONS}
-            size={'small'}
-            onChangeCallback={() =>
+            onValidate={() => {
                 setValue(
                     FORMULAS,
                     getValues(FORMULAS).map(() => ({
                         ...getFormulaInitialValue(),
                     }))
-                )
-            }
+                );
+            }}
         />
     );
 
