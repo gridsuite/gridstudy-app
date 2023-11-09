@@ -42,6 +42,8 @@ export const SecurityAnalysisResultN: FunctionComponent<
                 limitType: intl.formatMessage({
                     id: limitViolation?.limitType,
                 }),
+                acceptableDuration: limitViolation?.acceptableDuration,
+                limitName: limitViolation?.limitName,
                 limit: limitViolation?.limit,
                 value: limitViolation?.value,
                 loading: limitViolation?.loading,
