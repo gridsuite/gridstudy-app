@@ -378,9 +378,15 @@
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
     "LOW_VOLTAGE": "Tension basse",
-    "ACTIVE_POWER": "Puissance active",
-    "APPARENT_POWER": "Puissance apparente",
-    "OTHER": "Autre",
+    "ACTIVE_POWER" : "Puissance active",
+    "APPARENT_POWER" :"Puissance apparente",
+    "MAX_ITERATION_REACHED" : "Nombre maximum d'itérations atteint",
+    "OTHER" : "Autre",
+    "SOLVER_FAILED" :"Echec du solveur",
+    "CONVERGED" : "Convergence",
+    "FAILED" : "Echec",
+    "ONE" : "Côté 1",
+    "TWO" : "Côté 2",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
@@ -1110,7 +1116,6 @@
     "grid.orCondition": "OU",
     "grid.inRangeStart": "Début",
     "grid.inRangeEnd": "Fin",
-    "grid.filterOoo": "Filtrer...",
     "grid.noRowsToShow": "Aucune Donnée",
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
@@ -1230,5 +1235,9 @@
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
 
-    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition"
+    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
+
+    "customAgGridFilter.startsWith": "Commence par",
+    "customAgGridFilter.contains": "Contient",
+    "customAgGridFilter.filterOoo": "Filtrer..."
 }

@@ -11,8 +11,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import MenuItem from '@mui/material/MenuItem';
 import { useIntl } from 'react-intl';
+import { CustomMenuItem } from '../../utils/custom-nested-menu';
 
 const styles = {
     menuItem: {
@@ -45,7 +45,7 @@ const DynamicSimulationEventMenuItem = (
         disabled,
     } = props;
     return (
-        <MenuItem
+        <CustomMenuItem
             sx={styles.menuItem}
             onClick={() =>
                 handleOpenDynamicSimulationEventDialog(
@@ -79,7 +79,7 @@ const DynamicSimulationEventMenuItem = (
                     </Typography>
                 }
             />
-        </MenuItem>
+        </CustomMenuItem>
     );
 };
 

@@ -234,9 +234,9 @@ DirectoryItemSelector.propTypes = {
     types: PropTypes.array.isRequired,
     equipmentTypes: PropTypes.array,
     title: PropTypes.string.isRequired,
-    onlyLeaves: PropTypes.bool.isRequired,
-    multiselect: PropTypes.bool.isRequired,
-    validationButtonText: PropTypes.string.isRequired,
+    onlyLeaves: PropTypes.bool,
+    multiselect: PropTypes.bool,
+    validationButtonText: PropTypes.string,
     titleId: PropTypes.string,
 };
 

@@ -378,9 +378,15 @@
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
     "LOW_VOLTAGE": "Low voltage",
-    "ACTIVE_POWER": "Active power",
-    "APPARENT_POWER": "Apparent power",
-    "OTHER": "Other",
+    "ACTIVE_POWER" : "Active power",
+    "APPARENT_POWER" :"Apparent power",
+    "MAX_ITERATION_REACHED" : "Maximum number of iterations reached",
+    "OTHER" : "Other",
+    "SOLVER_FAILED" :"Solver failed",
+    "CONVERGED" : "Converged",
+    "FAILED" : "Failed",
+    "ONE" : "Side 1",
+    "TWO" : "Side 2",
 
     "HighVoltageLimit": "High voltage limit",
     "HighVoltageLimitkV": "High voltage limit (kV)",
@@ -1210,5 +1216,8 @@
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
     "waitingStudyIndexation": "Waiting for study indexation...",
 
-    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status"
+    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
+    "customAgGridFilter.startsWith": "Starts with",
+    "customAgGridFilter.contains": "Contains",
+    "customAgGridFilter.filterOoo": "Filter..."
 }
