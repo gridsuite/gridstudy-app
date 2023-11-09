@@ -253,7 +253,7 @@ export const ConnectivityForm = ({
     const gridSize =
         direction && (direction === 'column' || direction === 'column-reverse')
             ? 24
-            : 6;
+            : 12;
     const conditionalSize = withPosition && withDirectionsInfos ? 8 : gridSize;
     return (
         <>
@@ -269,12 +269,12 @@ export const ConnectivityForm = ({
                 <Grid item xs={conditionalSize} align="start">
                     {newBusOrBusbarSectionField}
                 </Grid>
-                <Grid item xs={conditionalSize} align="start">
-                    {connectedField}
-                </Grid>
 
                 {withDirectionsInfos && (
                     <>
+                        <Grid item xs={conditionalSize} align="start">
+                            {connectedField}
+                        </Grid>
                         <Grid item xs={conditionalSize} align="start">
                             {newConnectionNameField}
                         </Grid>
