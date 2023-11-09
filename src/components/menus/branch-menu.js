@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -41,6 +40,9 @@ import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
+import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
+import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
+import { CustomMenuItem } from '../utils/custom-nested-menu';
 
 const styles = {
     menuItem: {
@@ -76,35 +78,14 @@ const withBranchMenu =
         const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         const getTranslationKey = (key) => {
-            return key.concat(getEquipmentTranslation(equipmentType));
+            return key.concat(EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]);
         };
 
-        const getEquipmentTranslation = useCallback((equipmentType) => {
-            switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE:
-                    return 'Line';
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-                    return '2WTransformer';
-                default:
-                    break;
-            }
-        }, []);
-
-        const getRealEquipmentType = useCallback((equipmentType) => {
-            switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE:
-                    return EQUIPMENT_TYPES.LINE;
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
-                default:
-                    break;
-            }
-        }, []);
         useEffect(() => {
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                getRealEquipmentType(equipmentType),
+                equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
                 equipment.id,
                 false
@@ -113,13 +94,7 @@ const withBranchMenu =
                     setBranch(value);
                 }
             });
-        }, [
-            studyUuid,
-            currentNode?.id,
-            equipmentType,
-            equipment.id,
-            getRealEquipmentType,
-        ]);
+        }, [studyUuid, currentNode?.id, equipmentType, equipment.id]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -205,7 +180,7 @@ const withBranchMenu =
                 {(equipmentType === EQUIPMENT_TYPES.LINE ||
                     equipmentType ===
                         EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleLockout()}
                         disabled={
@@ -226,9 +201,9 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
-                <MenuItem
+                <CustomMenuItem
                     sx={styles.menuItem}
                     onClick={() => handleTrip()}
                     disabled={
@@ -249,61 +224,22 @@ const withBranchMenu =
                             </Typography>
                         }
                     />
-                </MenuItem>
-                {enableDeveloperMode &&
-                    (equipmentType === EQUIPMENT_TYPES.LINE ||
-                        equipmentType ===
-                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
-                        <MenuItem
-                            sx={styles.menuItem}
-                            onClick={() =>
-                                handleOpenDynamicSimulationEventDialog(
-                                    equipment.id,
-                                    equipmentType,
-                                    intl.formatMessage({
-                                        id: getTranslationKey(
-                                            getEventType(
-                                                getRealEquipmentType(
-                                                    equipmentType
-                                                )
-                                            )
-                                        ),
-                                    })
-                                )
-                            }
-                            disabled={
-                                !isNodeEditable ||
-                                branch.branchStatus === 'FORCED_OUTAGE'
-                            }
-                        >
-                            <ListItemIcon>
-                                <OfflineBoltOutlinedIcon />
-                            </ListItemIcon>
-
-                            <ListItemText
-                                primary={
-                                    <Typography noWrap>
-                                        {intl.formatMessage({
-                                            id: getTranslationKey(
-                                                getEventType(
-                                                    getRealEquipmentType(
-                                                        equipmentType
-                                                    )
-                                                )
-                                            ),
-                                        })}
-                                        {' ('}
-                                        {intl.formatMessage({
-                                            id: 'DynamicSimulation',
-                                        })}
-                                        {')'}
-                                    </Typography>
-                                }
-                            />
-                        </MenuItem>
-                    )}
+                </CustomMenuItem>
+                {enableDeveloperMode && getEventType(equipmentType) && (
+                    <DynamicSimulationEventMenuItem
+                        equipmentId={equipment.id}
+                        equipmentType={equipmentType}
+                        handleOpenDynamicSimulationEventDialog={
+                            handleOpenDynamicSimulationEventDialog
+                        }
+                        disabled={
+                            !isNodeEditable ||
+                            branch.branchStatus === 'FORCED_OUTAGE'
+                        }
+                    />
+                )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
@@ -335,10 +271,10 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
@@ -370,10 +306,10 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleSwitchOn()}
                         disabled={
@@ -395,9 +331,9 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
-                <MenuItem
+                <CustomMenuItem
                     sx={styles.menuItem}
                     onClick={() =>
                         handleDeleteEquipment(
@@ -420,10 +356,10 @@ const withBranchMenu =
                             </Typography>
                         }
                     />
-                </MenuItem>
+                </CustomMenuItem>
                 {(equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ||
                     equipmentType === EQUIPMENT_TYPES.LINE) && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() =>
                             handleOpenModificationDialog(
@@ -446,7 +382,7 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
             </Menu>
         );
