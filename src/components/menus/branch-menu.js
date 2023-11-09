@@ -7,7 +7,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -43,6 +42,7 @@ import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
+import { CustomMenuItem } from '../utils/custom-nested-menu';
 
 const styles = {
     menuItem: {
@@ -180,7 +180,7 @@ const withBranchMenu =
                 {(equipmentType === EQUIPMENT_TYPES.LINE ||
                     equipmentType ===
                         EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleLockout()}
                         disabled={
@@ -201,9 +201,9 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
-                <MenuItem
+                <CustomMenuItem
                     sx={styles.menuItem}
                     onClick={() => handleTrip()}
                     disabled={
@@ -224,7 +224,7 @@ const withBranchMenu =
                             </Typography>
                         }
                     />
-                </MenuItem>
+                </CustomMenuItem>
                 {enableDeveloperMode && getEventType(equipmentType) && (
                     <DynamicSimulationEventMenuItem
                         equipmentId={equipment.id}
@@ -239,7 +239,7 @@ const withBranchMenu =
                     />
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
@@ -271,10 +271,10 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
@@ -306,10 +306,10 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleSwitchOn()}
                         disabled={
@@ -331,9 +331,9 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
-                <MenuItem
+                <CustomMenuItem
                     sx={styles.menuItem}
                     onClick={() =>
                         handleDeleteEquipment(
@@ -356,10 +356,10 @@ const withBranchMenu =
                             </Typography>
                         }
                     />
-                </MenuItem>
+                </CustomMenuItem>
                 {(equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ||
                     equipmentType === EQUIPMENT_TYPES.LINE) && (
-                    <MenuItem
+                    <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() =>
                             handleOpenModificationDialog(
@@ -382,7 +382,7 @@ const withBranchMenu =
                                 </Typography>
                             }
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 )}
             </Menu>
         );
