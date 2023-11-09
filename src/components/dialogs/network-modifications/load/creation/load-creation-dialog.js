@@ -99,6 +99,7 @@ const LoadCreationDialog = ({
                 connectionDirection:
                     load.connectablePosition.connectionDirection,
                 connectionName: load.connectablePosition.connectionName,
+                // connected is not copied on purpose: we use the default value (true) in all cases
             }),
         });
     };
@@ -117,6 +118,7 @@ const LoadCreationDialog = ({
                     connectionDirection: load.connectionDirection,
                     connectionName: load.connectionName,
                     connectionPosition: load.connectionPosition,
+                    connected: load.connected,
                 }),
             });
         },
@@ -154,7 +156,8 @@ const LoadCreationDialog = ({
                 load.connectivity?.connectionDirection ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(load.connectivity?.connectionName),
-                load.connectivity?.connectionPosition ?? null
+                load.connectivity?.connectionPosition ?? null,
+                load.connectivity?.connected
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

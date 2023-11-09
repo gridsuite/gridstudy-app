@@ -11,6 +11,7 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
+    CONNECTED,
     ID,
     NAME,
     VOLTAGE_LEVEL,
@@ -44,6 +45,7 @@ export const getConnectivityWithPositionValidationSchema = (
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
+        [CONNECTED]: yup.bool().required(),
         ...getConnectivityPropertiesValidationSchema(),
     }),
 });
@@ -60,6 +62,7 @@ export const getConnectivityPropertiesEmptyFormData = () => {
     return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
+        [CONNECTED]: true,
     };
 };
 
@@ -71,6 +74,7 @@ export const getConnectivityWithPositionEmptyFormData = (
         [CONNECTION_DIRECTION]: null,
         [CONNECTION_NAME]: '',
         [CONNECTION_POSITION]: null,
+        [CONNECTED]: true,
     },
 });
 
@@ -141,6 +145,7 @@ export const getConnectivityFormData = (
         connectionDirection,
         connectionName,
         connectionPosition,
+        connected,
     },
     id = CONNECTIVITY
 ) => {
@@ -154,6 +159,7 @@ export const getConnectivityFormData = (
             [CONNECTION_DIRECTION]: connectionDirection ?? null,
             [CONNECTION_NAME]: connectionName ?? '',
             [CONNECTION_POSITION]: connectionPosition ?? null,
+            [CONNECTED]: connected ?? true,
         },
     };
 };
