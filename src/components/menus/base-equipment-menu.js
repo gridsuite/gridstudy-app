@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 
 import ListItemText from '@mui/material/ListItemText';
@@ -14,7 +13,6 @@ import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { NestedMenuItem } from 'mui-nested-menu';
 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -22,6 +20,10 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import {
+    CustomMenuItem,
+    CustomNestedMenuItem,
+} from '../utils/custom-nested-menu';
 
 const styles = {
     menuItem: {
@@ -39,7 +41,7 @@ const ViewInSpreadsheetItem = ({
     handleViewInSpreadsheet,
 }) => {
     return (
-        <MenuItem
+        <CustomMenuItem
             sx={styles.menuItem}
             onClick={() => handleViewInSpreadsheet(equipmentType, equipmentId)}
             selected={false}
@@ -51,7 +53,7 @@ const ViewInSpreadsheetItem = ({
             <ListItemText
                 primary={<Typography noWrap>{itemText}</Typography>}
             />
-        </MenuItem>
+        </CustomMenuItem>
     );
 };
 
@@ -64,7 +66,7 @@ const DeleteEquipmentItem = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     return (
-        <MenuItem
+        <CustomMenuItem
             sx={styles.menuItem}
             onClick={() =>
                 handleDeleteEquipment(
@@ -82,7 +84,7 @@ const DeleteEquipmentItem = ({
             <ListItemText
                 primary={<Typography noWrap>{itemText}</Typography>}
             />
-        </MenuItem>
+        </CustomMenuItem>
     );
 };
 const ModifyEquipmentItem = ({
@@ -94,7 +96,7 @@ const ModifyEquipmentItem = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     return (
-        <MenuItem
+        <CustomMenuItem
             sx={styles.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(
@@ -112,7 +114,7 @@ const ModifyEquipmentItem = ({
             <ListItemText
                 primary={<Typography noWrap>{itemText}</Typography>}
             />
-        </MenuItem>
+        </CustomMenuItem>
     );
 };
 
@@ -125,7 +127,7 @@ const ItemViewInForm = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     return (
-        <MenuItem
+        <CustomMenuItem
             sx={styles.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(equipmentId, equipmentType)
@@ -138,7 +140,7 @@ const ItemViewInForm = ({
             <ListItemText
                 primary={<Typography noWrap>{itemText}</Typography>}
             ></ListItemText>
-        </MenuItem>
+        </CustomMenuItem>
     );
 };
 
@@ -216,9 +218,8 @@ const BaseEquipmentMenu = ({
             {equipmentType === EQUIPMENT_TYPES.SUBSTATION && equipment && (
                 <>
                     {/* menus for the substation */}
-                    <NestedMenuItem
+                    <CustomNestedMenuItem
                         label={intl.formatMessage({ id: 'ViewOnSpreadsheet' })}
-                        parentMenuOpen={true}
                     >
                         <ViewInSpreadsheetItem
                             key={equipment.id}
@@ -240,10 +241,9 @@ const BaseEquipmentMenu = ({
                                 }
                             />
                         ))}
-                    </NestedMenuItem>
-                    <NestedMenuItem
+                    </CustomNestedMenuItem>
+                    <CustomNestedMenuItem
                         label={intl.formatMessage({ id: 'DeleteFromMenu' })}
-                        parentMenuOpen={true}
                     >
                         <DeleteEquipmentItem
                             key={equipment.id}
@@ -263,10 +263,9 @@ const BaseEquipmentMenu = ({
                                 handleDeleteEquipment={handleDeleteEquipment}
                             />
                         ))}
-                    </NestedMenuItem>
-                    <NestedMenuItem
+                    </CustomNestedMenuItem>
+                    <CustomNestedMenuItem
                         label={intl.formatMessage({ id: 'ModifyFromMenu' })}
-                        parentMenuOpen={true}
                     >
                         {/* menus for the substation */}
                         <ModifyEquipmentItem
@@ -291,18 +290,17 @@ const BaseEquipmentMenu = ({
                                 }
                             />
                         ))}
-                    </NestedMenuItem>
+                    </CustomNestedMenuItem>
                 </>
             )}
 
             {/* menus for equipment voltage level */}
             {equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL && equipment && (
                 <>
-                    <NestedMenuItem
+                    <CustomNestedMenuItem
                         label={intl.formatMessage({
                             id: 'ViewOnSpreadsheet',
                         })}
-                        parentMenuOpen={true}
                     >
                         {/* menus for the substation */}
                         <ViewInSpreadsheetItem
@@ -323,10 +321,9 @@ const BaseEquipmentMenu = ({
                             itemText={getNameOrId(equipment)}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
-                    </NestedMenuItem>
-                    <NestedMenuItem
+                    </CustomNestedMenuItem>
+                    <CustomNestedMenuItem
                         label={intl.formatMessage({ id: 'DeleteFromMenu' })}
-                        parentMenuOpen={true}
                     >
                         {/* menus for the substation */}
                         <DeleteEquipmentItem
@@ -347,10 +344,9 @@ const BaseEquipmentMenu = ({
                             itemText={getNameOrId(equipment)}
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
-                    </NestedMenuItem>
-                    <NestedMenuItem
+                    </CustomNestedMenuItem>
+                    <CustomNestedMenuItem
                         label={intl.formatMessage({ id: 'ModifyFromMenu' })}
-                        parentMenuOpen={true}
                     >
                         {/* menus for the substation */}
                         <ModifyEquipmentItem
@@ -375,7 +371,7 @@ const BaseEquipmentMenu = ({
                                 handleOpenModificationDialog
                             }
                         />
-                    </NestedMenuItem>
+                    </CustomNestedMenuItem>
                 </>
             )}
         </>
