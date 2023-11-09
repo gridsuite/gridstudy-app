@@ -63,7 +63,7 @@ export const ReportViewerTab = ({
     const { snackError } = useSnackMessage();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
 
-    const handleChangeValue = useCallback((event) => {
+    const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
     }, []);
 
@@ -189,22 +189,26 @@ export const ReportViewerTab = ({
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
             <Paper className={'singlestretch-child'}>
                 <Box sx={styles.div}>
-                    <FormControlLabel
-                        sx={styles.reportOnlyNode}
-                        control={
-                            <Switch
-                                checked={nodeOnlyReport}
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
-                                onChange={(e) => handleChangeValue(e)}
-                                disabled={disabled}
-                            />
-                        }
-                        label={intl.formatMessage({
-                            id: 'LogOnlySingleNode',
-                        })}
-                    />
+                    {rootNodeId !== currentNode?.id && (
+                        <FormControlLabel
+                            sx={styles.reportOnlyNode}
+                            control={
+                                <Switch
+                                    checked={nodeOnlyReport}
+                                    inputProps={{
+                                        'aria-label': 'primary checkbox',
+                                    }}
+                                    onChange={(e) =>
+                                        handleChangeNodeOnlySwitch(e)
+                                    }
+                                    disabled={disabled}
+                                />
+                            }
+                            label={intl.formatMessage({
+                                id: 'LogOnlySingleNode',
+                            })}
+                        />
+                    )}
                     {disabled && (
                         <AlertCustomMessageNode message={'InvalidNode'} />
                     )}
