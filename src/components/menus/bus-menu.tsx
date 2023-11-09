@@ -13,8 +13,8 @@ import {
     Typography,
 } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FormattedMessage } from 'react-intl';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     isNodeBuilt,
     isNodeReadOnly,
@@ -28,6 +28,7 @@ import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
+import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 
 interface BusMenuProps {
     busId: string;
@@ -62,11 +63,19 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     position,
     closeBusMenu,
 }) => {
-    const intl = useIntl();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
+    // to check is node editable
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
+    );
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const isNodeEditable = useMemo(
+        () =>
+            isNodeBuilt(currentNode) &&
+            !isNodeReadOnly(currentNode) &&
+            !isAnyNodeBuilding,
+        [currentNode, isAnyNodeBuilding]
     );
 
     const oneBusShortcircuitAnalysisState = useSelector(
@@ -74,19 +83,9 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
-
     const handleClickRunShortcircuitAnalysis = useCallback(
         () => handleRunShortcircuitAnalysis(busId),
         [busId, handleRunShortcircuitAnalysis]
-    );
-
-    const isNodeEditable = useMemo(
-        () =>
-            isNodeBuilt(currentNode) &&
-            !isNodeReadOnly(currentNode) &&
-            !isAnyNodeBuilding,
-        [currentNode, isAnyNodeBuilding]
     );
 
     return (
@@ -121,42 +120,15 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     }
                 />
             </MenuItem>
-            {enableDeveloperMode && (
-                <MenuItem
-                    sx={styles.menuItem}
-                    onClick={() =>
-                        handleOpenDynamicSimulationEventDialog(
-                            busId,
-                            EQUIPMENT_TYPES.BUS,
-                            intl.formatMessage({
-                                id: `${getEventType(EQUIPMENT_TYPES.BUS)}Bus`,
-                            })
-                        )
+            {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
+                <DynamicSimulationEventMenuItem
+                    equipmentId={busId}
+                    equipmentType={EQUIPMENT_TYPES.BUS}
+                    handleOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
                     }
-                    selected={false}
                     disabled={!isNodeEditable}
-                >
-                    <ListItemIcon>
-                        <BoltIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({
-                                    id: `${getEventType(
-                                        EQUIPMENT_TYPES.BUS
-                                    )}Bus`,
-                                })}
-                                {' ('}
-                                {intl.formatMessage({
-                                    id: 'DynamicSimulation',
-                                })}
-                                {')'}
-                            </Typography>
-                        }
-                    />
-                </MenuItem>
+                />
             )}
         </Menu>
     );
