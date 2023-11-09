@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SELECTED } from '../components/utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import { ISensiParameters } from '../components/dialogs/parameters/sensi/columns-definitions';
 import { useMemo } from 'react';
@@ -15,7 +14,7 @@ export const useCreateRowDataSensi = (sensiParam: ISensiParameters) => {
         name: sensiParam.name || '',
     });
     const newRowData = useMemo(() => {
-        const newRowData: { [key: string]: any } = { [SELECTED]: false };
+        const newRowData: { [key: string]: any } = {};
         sensiParam.columnsDef.forEach((column) => {
             newRowData[column.dataKey] = column.initialValue;
         });

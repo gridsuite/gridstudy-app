@@ -15,6 +15,7 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
+    CONNECTED,
     ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
@@ -25,7 +26,7 @@ import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, SwitchInput } from '@gridsuite/commons-ui';
 import { IntegerInput } from '@gridsuite/commons-ui';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { TextInput } from '@gridsuite/commons-ui';
@@ -41,6 +42,7 @@ import {
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
  * @param id optional id that has to be defined if the component is used more than once in a form
+ * @param voltageLevelSelectLabel label to display for the voltage level auto complete component
  * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
  * @param withDirectionsInfos
  * @param withPosition
@@ -53,7 +55,7 @@ import {
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
-    label = 'VoltageLevel',
+    voltageLevelSelectLabel = 'VoltageLevel',
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
@@ -159,11 +161,15 @@ export const ConnectivityForm = ({
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
-            label={label}
+            label={voltageLevelSelectLabel}
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             size={'small'}
         />
+    );
+
+    const connectedField = (
+        <SwitchInput name={`${id}.${CONNECTED}`} label="Connected" />
     );
 
     const newBusOrBusbarSectionField = (
@@ -211,68 +217,64 @@ export const ConnectivityForm = ({
         setIsDiagramPaneOpen(false);
     }, []);
 
-    const positionIconAdorment = useCallback(
-        (isNodeBuilt, clickCallback) => {
-            return (
-                <IconButton
-                    {...(isNodeBuilt &&
-                        watchVoltageLevelId && { onClick: clickCallback })}
-                    disableRipple={!isNodeBuilt || !watchVoltageLevelId}
-                >
-                    <Tooltip
-                        title={intl.formatMessage({
-                            id: isNodeBuilt
-                                ? 'DisplayTakenPositions'
-                                : 'NodeNotBuildPositionMessage',
-                        })}
-                    >
-                        {isNodeBuilt && watchVoltageLevelId ? (
-                            <ExploreOutlinedIcon color="action" />
-                        ) : (
-                            <ExploreOffOutlinedIcon color="action" />
-                        )}
-                    </Tooltip>
-                </IconButton>
-            );
-        },
-        [watchVoltageLevelId, intl]
-    );
-
     const newConnectionPositionField = (
         <IntegerInput
             name={`${id}.${CONNECTION_POSITION}`}
             label="ConnectionPosition"
-            customAdornment={positionIconAdorment(
-                isNodeBuilt(currentNode),
-                handleClickOpenDiagramPane
-            )}
             clearable={true}
         />
     );
 
+    const newPositionIconField = (
+        <IconButton
+            {...(isNodeBuilt(currentNode) &&
+                watchVoltageLevelId && { onClick: handleClickOpenDiagramPane })}
+            disableRipple={!isNodeBuilt(currentNode) || !watchVoltageLevelId}
+            edge="start"
+        >
+            <Tooltip
+                title={intl.formatMessage({
+                    id: !isNodeBuilt(currentNode)
+                        ? 'NodeNotBuildPositionMessage'
+                        : watchVoltageLevelId
+                        ? 'DisplayTakenPositions'
+                        : 'NoVoltageLevelPositionMessage',
+                })}
+            >
+                {isNodeBuilt(currentNode) && watchVoltageLevelId ? (
+                    <ExploreOutlinedIcon color="action" />
+                ) : (
+                    <ExploreOffOutlinedIcon color="action" />
+                )}
+            </Tooltip>
+        </IconButton>
+    );
+
     const gridSize =
         direction && (direction === 'column' || direction === 'column-reverse')
-            ? 12
+            ? 24
             : 6;
-    const conditionalSize = withPosition && withDirectionsInfos ? 4 : gridSize;
+    const conditionalSize = withPosition && withDirectionsInfos ? 8 : gridSize;
     return (
         <>
-            <Grid container direction={direction || 'row'} spacing={2}>
+            <Grid
+                container
+                direction={direction || 'row'}
+                spacing={2}
+                columns={24}
+            >
                 <Grid item xs={conditionalSize} align="start">
                     {newVoltageLevelField}
                 </Grid>
                 <Grid item xs={conditionalSize} align="start">
                     {newBusOrBusbarSectionField}
                 </Grid>
+                <Grid item xs={conditionalSize} align="start">
+                    {connectedField}
+                </Grid>
 
                 {withDirectionsInfos && (
                     <>
-                        {withPosition && (
-                            <>
-                                <Grid item xs={gridSize} align="start" />
-                                <Grid item xs={gridSize} align="start" />
-                            </>
-                        )}
                         <Grid item xs={conditionalSize} align="start">
                             {newConnectionNameField}
                         </Grid>
@@ -281,8 +283,15 @@ export const ConnectivityForm = ({
                         </Grid>
                         {withPosition && (
                             <>
-                                <Grid xs={conditionalSize} item align="start">
+                                <Grid
+                                    xs={conditionalSize - 1}
+                                    item
+                                    align="start"
+                                >
                                     {newConnectionPositionField}
+                                </Grid>
+                                <Grid xs={1} item align="start">
+                                    {newPositionIconField}
                                 </Grid>
                             </>
                         )}
