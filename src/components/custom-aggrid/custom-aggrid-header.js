@@ -99,9 +99,10 @@ const CustomHeaderComponent = ({
         setIsHoveringColumnHeader(false);
     };
 
-    const debouncedUpdateFilter = debounce(
-        (data) => updateFilter(field, data),
-        debounceMs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedUpdateFilter = useCallback(
+        debounce((data) => updateFilter(field, data), debounceMs),
+        [field, debounceMs, updateFilter]
     );
 
     const handleFilterTextChange = (event) => {
