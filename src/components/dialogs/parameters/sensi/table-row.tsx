@@ -8,10 +8,10 @@
 import { TableCell, TableRow } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import { DeleteForeverOutlined } from '@mui/icons-material';
 import React, { FunctionComponent, useState } from 'react';
 import { useIntl } from 'react-intl';
 import EditableTableCell from './table-cell';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface TableRowComponentProps {
     arrayFormName: string;
@@ -19,7 +19,6 @@ interface TableRowComponentProps {
     row: any;
     index: number;
     handleDeleteButton: (index: number) => void;
-    theme: boolean;
 }
 
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
@@ -28,7 +27,6 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     row,
     index,
     handleDeleteButton,
-    theme,
 }) => {
     const [hover, setHover] = useState(false);
     const intl = useIntl();
@@ -42,7 +40,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
             {columnsDefinition.map((column: any) =>
                 EditableTableCell(arrayFormName, index, column)
             )}
-            <TableCell>
+            <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
                 <Tooltip
                     title={intl.formatMessage({
                         id: 'DeleteRows',
@@ -51,14 +49,10 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
                 >
                     <span hidden={!hover}>
                         <IconButton
-                            color="primary"
+                            sx={{ border: 'solid 0px rgba(0,0,0,0.26)' }}
                             onClick={() => handleDeleteButton(index)}
                         >
-                            <DeleteForeverOutlined
-                                sx={{
-                                    color: theme ? 'white' : 'black',
-                                }}
-                            />
+                            <DeleteIcon />
                         </IconButton>
                     </span>
                 </Tooltip>

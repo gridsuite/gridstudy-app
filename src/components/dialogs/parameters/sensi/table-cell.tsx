@@ -7,20 +7,22 @@
 
 import { TableCell } from '@mui/material';
 import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { SelectInput, SwitchInput } from '@gridsuite/commons-ui';
-import { SENSITIVITY_TYPES } from './columns-definitions';
 
 function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
     column: any
 ) {
-    const getDynamicWidth = useCallback((options: any[]) => {
-        return options === SENSITIVITY_TYPES ? '100px' : '220px';
-    }, []);
     return (
-        <TableCell key={column.dataKey} sx={{ width: column.width }}>
+        <TableCell
+            key={column.dataKey}
+            sx={{
+                width: column.width,
+                fontSize: '0.5rem',
+            }}
+        >
             {column.directoryItems && (
                 <DirectoryItemsInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
@@ -37,8 +39,15 @@ function EditableTableCell(
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     options={column.equipmentTypes}
                     disableClearable={true}
+                    allowNewValue
                     size="small"
-                    sx={{ width: getDynamicWidth(column.equipmentTypes) }}
+                    fullWidth
+                    sx={{
+                        flexDirection: 'row',
+                        '.MuiInputBase-root': {
+                            boxSizing: 'content-box',
+                        },
+                    }}
                 />
             )}
 

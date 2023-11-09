@@ -167,6 +167,4 @@ declare module '@gridsuite/commons-ui' {
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
-
-    export const DARK_THEME: string;
 }
