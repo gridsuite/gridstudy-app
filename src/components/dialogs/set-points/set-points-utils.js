@@ -152,13 +152,13 @@ yup.addMethod(
     function (isEquipmentModification) {
         return this.test({
             name: 'activePowerSetPoint',
-            message: 'ActivePowerSetPoint',
+            message: 'ACtivePowerZeroOrBteweenMinAndMaxActivePower',
             test: (value, context) => {
                 const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
                 const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
-                // if (isEquipmentModification) {
-                //     return true;
-                // }
+                if (isEquipmentModification) {
+                    return true;
+                }
                 if (value === null) {
                     return false;
                 }
@@ -177,10 +177,14 @@ yup.addMethod(
     }
 );
 
-const getActivePowerSetPointSchema = (isEquipmentModification) => ({
+const getActivePowerSetPointSchema = (
+    isEquipmentModification,
+    minActivePower,
+    maxActivePower
+) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
-        .activePowerSetPoint(isEquipmentModification),
+        .activePowerSetPoint(isEquipmentModification, minActivePower, maxActivePower),
 });
 
 export const getPreviousBooleanValue = (value) => {
