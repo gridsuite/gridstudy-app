@@ -11,7 +11,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
-import { useRowFilter } from '../../../hooks/use-row-filter';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     DATA_KEY_TO_FILTER_KEY,
     DATA_KEY_TO_SORT_KEY,
@@ -28,7 +28,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
     const [page, setPage] = useState(0);
 
-    const { updateFilter, filterSelector, initFilters } = useRowFilter(
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         DATA_KEY_TO_FILTER_KEY
     );
 
