@@ -16,12 +16,15 @@ export function fetchHvdcLineWithShuntCompensators(
     console.info(
         `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map' +
         '/hvdc-lines/' +
         hvdcLineId +
-        '/shunt-compensators';
+        '/shunt-compensators?' +
+        urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }

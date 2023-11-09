@@ -116,7 +116,7 @@ export const getSensiHVDCsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-            [SENSITIVITY_TYPE]: yup.string().nullable(),
+            [SENSITIVITY_TYPE]: yup.string().required(),
             [HVDC_LINES]: yup.array().of(
                 yup.object().shape({
                     [ID]: yup.string().required(),
@@ -129,7 +129,7 @@ export const getSensiHVDCsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-            [ACTIVATED]: yup.boolean().nullable(),
+            [ACTIVATED]: yup.boolean().required(),
         })
     ),
 });
@@ -192,7 +192,7 @@ export const getSensiInjectionsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-            [ACTIVATED]: yup.boolean().nullable(),
+            [ACTIVATED]: yup.boolean().required(),
         })
     ),
 });
@@ -344,7 +344,7 @@ export const getSensiNodesFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-            [ACTIVATED]: yup.boolean().nullable(),
+            [ACTIVATED]: yup.boolean().required(),
         })
     ),
 });
@@ -394,7 +394,7 @@ export const getSensiPSTsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-            [SENSITIVITY_TYPE]: yup.string().nullable(),
+            [SENSITIVITY_TYPE]: yup.string().required(),
             [PSTS]: yup.array().of(
                 yup.object().shape({
                     [ID]: yup.string().required(),
@@ -407,7 +407,7 @@ export const getSensiPSTsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-            [ACTIVATED]: yup.boolean().nullable(),
+            [ACTIVATED]: yup.boolean().required(),
         })
     ),
 });

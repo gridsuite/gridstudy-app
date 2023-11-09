@@ -11,7 +11,8 @@ import {
     SELECTED,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
-    VOLTAGE_LIMITS,
+    VOLTAGE_LIMITS_DEFAULT,
+    VOLTAGE_LIMITS_MODIFICATION,
 } from 'components/utils/field-constants';
 import { UUID } from 'crypto';
 
@@ -38,14 +39,16 @@ type VoltageLimitForm = {
 };
 
 export type VoltageInitParam = {
-    [VOLTAGE_LIMITS]: VoltageLimitParam[];
+    [VOLTAGE_LIMITS_MODIFICATION]: VoltageLimitParam[];
+    [VOLTAGE_LIMITS_DEFAULT]: VoltageLimitParam[];
     [FIXED_GENERATORS]: FilterIdentifier[];
     [VARIABLE_TRANSFORMERS]: FilterIdentifier[];
     [VARIABLE_SHUNT_COMPENSATORS]: FilterIdentifier[];
 };
 
 export type VoltageInitForm = {
-    [VOLTAGE_LIMITS]: VoltageLimitForm[];
+    [VOLTAGE_LIMITS_MODIFICATION]: VoltageLimitForm[];
+    [VOLTAGE_LIMITS_DEFAULT]: VoltageLimitForm[];
     [FIXED_GENERATORS]: Identifier[];
     [VARIABLE_TRANSFORMERS]: Identifier[];
     [VARIABLE_SHUNT_COMPENSATORS]: Identifier[];
@@ -53,19 +56,40 @@ export type VoltageInitForm = {
 
 export const formatNewParams = (newParams: VoltageInitForm) => {
     return {
-        [VOLTAGE_LIMITS]: newParams.voltageLimits.map((voltageLimit) => {
-            return {
-                [PRIORITY]: newParams.voltageLimits.indexOf(voltageLimit),
-                [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
-                [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
-                [FILTERS]: voltageLimit[FILTERS].map((filter) => {
-                    return {
-                        [FILTER_ID]: filter[ID],
-                        [FILTER_NAME]: filter[NAME],
-                    };
-                }),
-            };
-        }),
+        [VOLTAGE_LIMITS_MODIFICATION]: newParams.voltageLimitsModification.map(
+            (voltageLimit) => {
+                return {
+                    [PRIORITY]:
+                        newParams.voltageLimitsModification.indexOf(
+                            voltageLimit
+                        ),
+                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
+                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
+                    [FILTERS]: voltageLimit[FILTERS].map((filter) => {
+                        return {
+                            [FILTER_ID]: filter[ID],
+                            [FILTER_NAME]: filter[NAME],
+                        };
+                    }),
+                };
+            }
+        ),
+        [VOLTAGE_LIMITS_DEFAULT]: newParams.voltageLimitsDefault.map(
+            (voltageLimit) => {
+                return {
+                    [PRIORITY]:
+                        newParams.voltageLimitsDefault.indexOf(voltageLimit),
+                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
+                    [FILTERS]: voltageLimit[FILTERS].map((filter) => {
+                        return {
+                            [FILTER_ID]: filter[ID],
+                            [FILTER_NAME]: filter[NAME],
+                        };
+                    }),
+                };
+            }
+        ),
         [FIXED_GENERATORS]: newParams[FIXED_GENERATORS]?.map((filter) => {
             return {
                 [FILTER_ID]: filter[ID],
@@ -95,8 +119,22 @@ export const fromVoltageInitParamsDataToFormValues = (
     parameters: VoltageInitParam
 ) => {
     return {
-        [VOLTAGE_LIMITS]:
-            parameters.voltageLimits?.map((voltageLimit) => {
+        [VOLTAGE_LIMITS_MODIFICATION]:
+            parameters.voltageLimitsModification?.map((voltageLimit) => {
+                return {
+                    [SELECTED]: false,
+                    [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
+                };
+            }) ?? [],
+        [VOLTAGE_LIMITS_DEFAULT]:
+            parameters.voltageLimitsDefault?.map((voltageLimit) => {
                 return {
                     [SELECTED]: false,
                     [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {

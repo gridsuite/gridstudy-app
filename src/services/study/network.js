@@ -48,6 +48,7 @@ export function getVoltageLevelSingleLineDiagram(
             }),
             sldDisplayMode: sldDisplayMode,
             language: language,
+            inUpstreamBuiltParentNode: true,
         }).toString()
     );
 }
