@@ -73,9 +73,8 @@ const CustomHeaderComponent = ({
 
     const [filterAnchorElement, setFilterAnchorElement] = useState(null);
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
-    const [selectedFilterComparator, setSelectedFilterComparator] = useState(
-        filterComparators[0]
-    );
+    const [selectedFilterComparator, setSelectedFilterComparator] =
+        useState('');
     const [selectedFilterData, setSelectedFilterData] = useState(undefined);
 
     const isColumnSorted = sortColKey === field;
@@ -154,6 +153,12 @@ const CustomHeaderComponent = ({
             setSelectedFilterData(undefined);
         }
     }, [filterSelector]);
+
+    useEffect(() => {
+        if (!selectedFilterComparator) {
+            setSelectedFilterComparator(filterComparators[0]);
+        }
+    }, [selectedFilterComparator, filterComparators]);
 
     return (
         <Grid

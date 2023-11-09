@@ -262,7 +262,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
-                debounceMs: 1200, // we don't want to fetch the back end too fast
             },
         }),
         makeColumn({
