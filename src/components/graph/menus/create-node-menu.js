@@ -12,10 +12,10 @@ import PropTypes from 'prop-types';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
-import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
 import { NodeInsertModes } from '../../utils/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
+import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -349,14 +349,13 @@ const CreateNodeMenu = ({
                     return <ChildMenuItem key={item.id} item={item} />;
                 }
                 return (
-                    <NestedMenuItem
+                    <CustomNestedMenuItem
                         key={item.id}
                         label={intl.formatMessage({ id: item.id })}
-                        parentMenuOpen={true}
                         disabled={item.disabled}
                     >
                         {renderMenuItems(item.subMenuItems)}
-                    </NestedMenuItem>
+                    </CustomNestedMenuItem>
                 );
             });
         },
