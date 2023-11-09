@@ -23,6 +23,7 @@ import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
+import Grid from "@mui/material/Grid";
 
 interface FormulaProps {
     name: String;
@@ -106,7 +107,9 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         <>
             {gridItem(filtersField, 2.25)}
             {gridItem(editedField, 2.25)}
-            {gridItem(<DragHandleIcon />, 0.25)}
+            <Grid item xs={0.25} sx={{ marginTop: 0.75 }}>
+                <DragHandleIcon />
+            </Grid>
             {gridItem(referenceField1, 2.5)}
             {gridItem(operatorField, 1.25)}
             {gridItem(referenceField2, 2.5)}
