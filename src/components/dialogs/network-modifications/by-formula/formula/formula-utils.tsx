@@ -116,7 +116,9 @@ export function getFormulaSchema(id: string) {
                             schema.test(
                                 'checkValueIsReference',
                                 'ValueMustBeNumericWhenPercentageError',
-                                (value: any) => !isNaN(parseFloat(value))
+                                (value: any) =>
+                                    !isNaN(parseFloat(value)) &&
+                                    parseFloat(value) >= 0
                             ),
                     }),
                 [REFERENCE_FIELD_OR_VALUE_2]: yup
