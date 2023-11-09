@@ -5,13 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
     LimitViolation,
     SecurityAnalysisNmkTableRow,
     Constraint,
+    CustomColDef,
+    FilterEnums,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -22,6 +24,11 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import {
+    FILTER_TEXT_COMPARATORS,
+    FILTER_UI_TYPES,
+} from '../../custom-aggrid/custom-aggrid-header';
+import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -57,37 +64,29 @@ export const flattenNmKResultsContingencies = (
             subjectLimitViolations = [],
             contingency,
         }: ConstraintsFromContingencyItem) => {
-            if (!!subjectLimitViolations.length) {
-                const {
-                    contingencyId,
-                    computationStatus,
-                    elements = [],
-                } = contingency || {};
-                rows.push({
-                    contingencyId,
-                    contingencyEquipmentsIds: elements.map(
-                        (element) => element.id
-                    ),
-                    computationStatus,
-                    violationCount: subjectLimitViolations.length,
-                });
-                subjectLimitViolations?.forEach((constraint: Constraint) => {
-                    const { limitViolation = {} as LimitViolation, subjectId } =
-                        constraint || {};
+            const { contingencyId, status, elements = [] } = contingency || {};
+            rows.push({
+                contingencyId,
+                contingencyEquipmentsIds: elements.map((element) => element.id),
+                status,
+                violationCount: subjectLimitViolations.length,
+            });
+            subjectLimitViolations?.forEach((constraint: Constraint) => {
+                const { limitViolation = {} as LimitViolation, subjectId } =
+                    constraint || {};
 
-                    rows.push({
-                        subjectId,
-                        limitType: intl.formatMessage({
-                            id: limitViolation.limitType,
-                        }),
-                        limit: limitViolation.limit,
-                        value: limitViolation.value,
-                        loading: limitViolation.loading,
-                        side: limitViolation.side,
-                        linkedElementId: contingencyId,
-                    });
+                rows.push({
+                    subjectId,
+                    limitType: intl.formatMessage({
+                        id: limitViolation.limitType,
+                    }),
+                    limit: limitViolation.limit,
+                    value: limitViolation.value,
+                    loading: limitViolation.loading,
+                    side: limitViolation.side,
+                    linkedElementId: contingencyId,
                 });
-            }
+            });
         }
     );
 
@@ -102,32 +101,29 @@ export const flattenNmKResultsConstraints = (
 
     result?.forEach(({ contingencies = [], subjectId }) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
-            if (contingencies.length) {
-                rows.push({ subjectId });
+            rows.push({ subjectId });
 
-                contingencies.forEach(
-                    ({ contingency = {}, limitViolation = {} }) => {
-                        rows.push({
-                            contingencyId: contingency.contingencyId,
-                            contingencyEquipmentsIds: contingency.elements?.map(
-                                (element) => element.id
-                            ),
-                            computationStatus: contingency.computationStatus,
-                            limitType: intl.formatMessage({
-                                id: limitViolation.limitType,
-                            }),
-                            limitName: limitViolation.limitName,
-                            side: limitViolation.side,
-                            acceptableDuration:
-                                limitViolation.acceptableDuration,
-                            limit: limitViolation.limit,
-                            value: limitViolation.value,
-                            loading: limitViolation.loading,
-                            linkedElementId: subjectId,
-                        });
-                    }
-                );
-            }
+            contingencies.forEach(
+                ({ contingency = {}, limitViolation = {} }) => {
+                    rows.push({
+                        contingencyId: contingency.contingencyId,
+                        contingencyEquipmentsIds: contingency.elements?.map(
+                            (element) => element.id
+                        ),
+                        status: contingency.status,
+                        limitType: intl.formatMessage({
+                            id: limitViolation.limitType,
+                        }),
+                        limitName: limitViolation.limitName,
+                        side: limitViolation.side,
+                        acceptableDuration: limitViolation.acceptableDuration,
+                        limit: limitViolation.limit,
+                        value: limitViolation.value,
+                        loading: limitViolation.loading,
+                        linkedElementId: subjectId,
+                    });
+                }
+            );
         }
     });
 
@@ -171,66 +167,78 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined
+    ) => React.JSX.Element | undefined,
+    makeColumn: (customColDef: CustomColDef) => any
 ): ColDef[] => {
     return [
-        {
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-        },
-        {
+            isSortable: true,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            field: 'computationStatus',
-        },
-        {
+            field: 'status',
+            isFilterable: true,
+            isSortable: true,
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
-        },
+        }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        {
+        makeColumn({
             field: 'linkedElementId',
-            hide: true,
-        },
+            isHidden: true,
+        }),
     ];
 };
 
@@ -238,70 +246,91 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined
+    ) => React.JSX.Element | undefined,
+    makeColumn: (customColDef: CustomColDef) => any
 ): ColDef[] => {
     return [
-        {
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-        },
-        {
+            isSortable: true,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            field: 'computationStatus',
-        },
-        {
+            field: 'status',
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
-        },
-        {
+        }),
+        makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
-        },
+        }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        {
+        makeColumn({
             field: 'linkedElementId',
-            hide: true,
+            isHidden: true,
+        }),
+    ];
+};
+
+export const securityAnalysisTableNmKFilterDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnums = {}
+) => {
+    return [
+        {
+            field: 'status',
+            options: filterEnums.computationsStatus,
         },
     ];
 };
 
-// TODO This needs to be modified when the sort is done on backend.
 export const handlePostSortRows = (params: PostSortRowsParams) => {
     const isFromContingency = !params.nodes.find(
         (node) => Object.keys(node.data).length === 1
@@ -347,6 +376,60 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
 
+// We can use this custom hook for fetching enums for AutoComplete filter
+export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [result, setResult] = useState({
+        computationsStatus: null,
+    });
+
+    useEffect(() => {
+        const fetchAllData = () => {
+            const promises = [
+                // We can add another fetch for other enums
+                fetchSecurityAnalysisAvailableComputationStatus(),
+            ];
+
+            setLoading(true);
+            Promise.all(promises)
+                .then(([computationsStatusResult]) => {
+                    setResult({
+                        computationsStatus: computationsStatusResult,
+                    });
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    setError(err);
+                    setLoading(false);
+                });
+        };
+
+        if (!isEmptyResult) {
+            fetchAllData();
+        }
+    }, [isEmptyResult]);
+
+    return [loading, result, error];
+};
+
+export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
+    'securityAnalysisResult',
+];
+
+export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
+    subjectId: 'subjectId',
+    contingencyId: 'contingencyId',
+    status: 'status',
+    limitType: 'limitType',
+    limitName: 'limitName',
+    side: 'side',
+    acceptableDuration: 'acceptableDuration',
+    limit: 'limit',
+    value: 'value',
+    loading: 'loading',
+};
+
 export enum NMK_TYPE {
     CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
     CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
@@ -357,3 +440,7 @@ export enum RESULT_TYPE {
     NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
 }
+
+export const PAGE_OPTIONS = [25, 100, 500, 1000];
+
+export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];

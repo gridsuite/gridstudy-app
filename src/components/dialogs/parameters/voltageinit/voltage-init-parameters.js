@@ -25,7 +25,8 @@ import {
     NAME,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
-    VOLTAGE_LIMITS,
+    VOLTAGE_LIMITS_DEFAULT,
+    VOLTAGE_LIMITS_MODIFICATION,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
@@ -45,6 +46,7 @@ import {
 } from './voltage-init-utils';
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { getVoltageInitParameters } from 'services/voltage-init';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -80,7 +82,7 @@ const TAB_VALUES = {
 };
 
 const formSchema = yup.object().shape({
-    [VOLTAGE_LIMITS]: yup.array().of(
+    [VOLTAGE_LIMITS_MODIFICATION]: yup.array().of(
         yup.object().shape({
             [FILTERS]: yup
                 .array()
@@ -93,6 +95,39 @@ const formSchema = yup.object().shape({
                 .min(1, 'FilterInputMinError'),
             [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
             [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
+        })
+    ),
+    [VOLTAGE_LIMITS_DEFAULT]: yup.array().of(
+        yup.object().shape({
+            [FILTERS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [ID]: yup.string().required(),
+                        [NAME]: yup.string().required(),
+                    })
+                )
+                .min(1, 'FilterInputMinError'),
+            [LOW_VOLTAGE_LIMIT]: yup
+                .number()
+                .min(0)
+                .nullable()
+                .test((value, context) => {
+                    return (
+                        !isBlankOrEmpty(value) ||
+                        !isBlankOrEmpty(context.parent[HIGH_VOLTAGE_LIMIT])
+                    );
+                }),
+            [HIGH_VOLTAGE_LIMIT]: yup
+                .number()
+                .min(0)
+                .nullable()
+                .test((value, context) => {
+                    return (
+                        !isBlankOrEmpty(value) ||
+                        !isBlankOrEmpty(context.parent[LOW_VOLTAGE_LIMIT])
+                    );
+                }),
         })
     ),
     [FIXED_GENERATORS]: yup.array().of(
@@ -132,7 +167,8 @@ export const VoltageInitParameters = ({
 
     const emptyFormData = useMemo(() => {
         return {
-            [VOLTAGE_LIMITS]: [],
+            [VOLTAGE_LIMITS_MODIFICATION]: [],
+            [VOLTAGE_LIMITS_DEFAULT]: [],
             [FIXED_GENERATORS]: [],
             [VARIABLE_TRANSFORMERS]: [],
             [VARIABLE_SHUNT_COMPENSATORS]: [],
@@ -143,7 +179,7 @@ export const VoltageInitParameters = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, handleSubmit, getValues } = formMethods;
+    const { reset, handleSubmit, getValues, trigger } = formMethods;
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -245,6 +281,14 @@ export const VoltageInitParameters = ({
         [reset, snackError]
     );
 
+    const handleOpenSaveDialog = useCallback(() => {
+        trigger().then((isValid) => {
+            if (isValid) {
+                setOpenCreateParameterDialog(true);
+            }
+        });
+    }, [trigger]);
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -320,11 +364,7 @@ export const VoltageInitParameters = ({
                             >
                                 <FormattedMessage id="loadParameters" />
                             </Button>
-                            <Button
-                                onClick={() =>
-                                    setOpenCreateParameterDialog(true)
-                                }
-                            >
+                            <Button onClick={handleOpenSaveDialog}>
                                 <FormattedMessage id="save" />
                             </Button>
                             <Button onClick={clear}>

@@ -15,6 +15,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    CONNECTED,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     SHUNT_COMPENSATOR_TYPE,
@@ -42,9 +43,9 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import {
-    getCharacteristicsCreateFormData,
+    getCharacteristicsFormData,
     getCharacteristicsCreateFormDataFromSearchCopy,
-    getCharacteristicsEmptyCreateFormData,
+    getCharacteristicsEmptyFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
@@ -55,7 +56,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getConnectivityWithPositionEmptyFormData(),
-    ...getCharacteristicsEmptyCreateFormData(),
+    ...getCharacteristicsEmptyFormData(),
 };
 
 const formSchema = yup
@@ -110,6 +111,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName:
                         shuntCompensator.connectablePosition.connectionName,
                     voltageLevelId: shuntCompensator.voltageLevelId,
+                    // connected is not copied on purpose: we use the default value (true) in all cases
                 }),
                 ...getCharacteristicsCreateFormDataFromSearchCopy({
                     bperSection: shuntCompensator.bperSection,
@@ -133,8 +135,9 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
                     voltageLevelId: shuntCompensator.voltageLevelId,
+                    connected: shuntCompensator.connected,
                 }),
-                ...getCharacteristicsCreateFormData({
+                ...getCharacteristicsFormData({
                     maxSusceptance: shuntCompensator.maxSusceptance ?? null,
                     maxQAtNominalV: shuntCompensator.maxQAtNominalV ?? null,
                     shuntCompensatorType: shuntCompensator.shuntCompensatorType,
@@ -189,7 +192,8 @@ const ShuntCompensatorCreationDialog = ({
                 sanitizeString(
                     shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
                 ),
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
+                shuntCompensator[CONNECTIVITY]?.[CONNECTED]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
