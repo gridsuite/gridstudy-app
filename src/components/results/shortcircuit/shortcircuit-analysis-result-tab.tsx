@@ -90,13 +90,14 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                 />
             </Tabs>
 
-            {resultOrLogIndex === 0 && (
-              {tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ? (
-                <ShortCircuitAnalysisAllBusesResult />
-              ) : (
-                <ShortCircuitAnalysisOneBusResult />
-              )}
-            )}
+            {resultOrLogIndex === 0 &&
+                tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
+                    <ShortCircuitAnalysisAllBusesResult />
+                )}
+            {resultOrLogIndex === 0 &&
+                tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS && (
+                    <ShortCircuitAnalysisOneBusResult />
+                )}
             {resultOrLogIndex === 1 &&
                 ((tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES &&
                     AllBusesShortCircuitStatus === RunningStatus.SUCCEED) ||

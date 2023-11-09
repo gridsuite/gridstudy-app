@@ -276,32 +276,32 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     />
                 )}
                 {tabIndex === 1 && (
-                  <SecurityAnalysisResultNmk
-                    result={result}
-                    isLoadingResult={isLoadingResult || filterEnumsLoading}
-                    isFromContingency={
-                      nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                    }
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
-                    studyUuid={studyUuid}
-                    nodeUuid={nodeUuid}
-                    paginationProps={{
-                      count,
-                      rowsPerPage,
-                      page,
-                      onPageChange: handleChangePage,
-                      onRowsPerPageChange: handleChangeRowsPerPage,
-                    }}
-                    sortProps={{
-                      onSortChanged,
-                      sortConfig,
-                    }}
-                    filterProps={{
-                      updateFilter,
-                      filterSelector,
-                      filterEnums: filterEnums as FilterEnums,
-                    }}
-                  />
+                    <SecurityAnalysisResultNmk
+                        result={result}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        isFromContingency={
+                            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                        }
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        paginationProps={{
+                            count,
+                            rowsPerPage,
+                            page,
+                            onPageChange: handleChangePage,
+                            onRowsPerPageChange: handleChangeRowsPerPage,
+                        }}
+                        sortProps={{
+                            onSortChanged,
+                            sortConfig,
+                        }}
+                        filterProps={{
+                            updateFilter,
+                            filterSelector,
+                            filterEnums: filterEnums as FilterEnums,
+                        }}
+                    />
                 )}
                 {tabIndex === 2 &&
                     securityAnalysisStatus === RunningStatus.SUCCEED && (
