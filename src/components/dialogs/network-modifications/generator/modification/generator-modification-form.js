@@ -252,7 +252,7 @@ const GeneratorModificationForm = ({
             />
 
             {/* Set points part */}
-            <SetPointsForm
+            <SetPointsForm 
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}

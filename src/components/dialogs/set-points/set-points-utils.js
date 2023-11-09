@@ -22,6 +22,7 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
+    MINIMUM_ACTIVE_POWER,
     MAXIMUM_ACTIVE_POWER,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
@@ -145,20 +146,41 @@ const getReactivePowerSetPointSchema = (isEquipmentModification) => ({
         }),
 });
 
+yup.addMethod(
+    yup.number,
+    'activePowerSetPoint',
+    function (isEquipmentModification) {
+        return this.test({
+            name: 'activePowerSetPoint',
+            message: 'ActivePowerSetPoint',
+            test: (value, context) => {
+                const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
+                const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
+                // if (isEquipmentModification) {
+                //     return true;
+                // }
+                if (value === null) {
+                    return false;
+                }
+                if (value === 0) {
+                    return true;
+                }
+                if (minActivePower === null || maxActivePower === null) {
+                    return false;
+                }
+                if (value <= minActivePower || value >= maxActivePower) {
+                    return false;
+                }
+                return true;
+            },
+        });
+    }
+);
+
 const getActivePowerSetPointSchema = (isEquipmentModification) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
-        .nullable()
-        .when([], {
-            is: () => !isEquipmentModification,
-            then: (schema) =>
-                schema
-                    .required()
-                    .max(
-                        yup.ref(MAXIMUM_ACTIVE_POWER),
-                        'ActivePowerLessThanMaxActivePower'
-                    ),
-        }),
+        .activePowerSetPoint(isEquipmentModification),
 });
 
 export const getPreviousBooleanValue = (value) => {
