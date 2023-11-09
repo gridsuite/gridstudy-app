@@ -672,12 +672,18 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             return oldValue;
         });
     }, [enableDeveloperMode]);
+
+    const getDynamicWidth = useCallback(() => {
+        return tabValue === TAB_VALUES.sensitivityAnalysisParamsTabValue
+            ? 'lg'
+            : 'md';
+    }, [tabValue]);
     return (
         <Dialog
             open={isParametersOpen}
             onClose={handleClose}
             aria-labelledby="form-dialog-title"
-            maxWidth={'md'}
+            maxWidth={getDynamicWidth()}
             fullWidth={true}
             sx={{
                 '& .MuiDialog-container': {
@@ -691,7 +697,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden' }}>
-                <Container maxWidth="md">
+                <Container maxWidth={getDynamicWidth()}>
                     <Tabs
                         value={tabValue}
                         variant="scrollable"

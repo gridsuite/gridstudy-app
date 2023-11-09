@@ -174,4 +174,6 @@ declare module '@gridsuite/commons-ui' {
         formProps?: Omit<CheckboxInputProps, 'disabled'>;
     }
     export const CheckboxInput: FunctionComponent<CheckboxInputProps>;
+
+    export const DARK_THEME: string;
 }

@@ -289,10 +289,14 @@
 
     "DisconnectLine": "Trip the line",
     "Disconnect2WTransformer": "Trip the transformer",
+    "DisconnectLoad": "Trip the load",
+    "DisconnectGenerator": "Trip the generator",
     "NodeFaultBus": "Node fault on bus",
 
     "Disconnect/LINE": "Trip line {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Trip transformer {computedLabel}",
+    "Disconnect/LOAD": "Trip load {computedLabel}",
+    "Disconnect/GENERATOR": "Trip generator {computedLabel}",
     "NodeFault/BUS": "Node fault on bus {computedLabel}",
 
     "Branch.Side.ONE": "Origin side",
@@ -370,9 +374,15 @@
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
     "LOW_VOLTAGE": "Low voltage",
-    "ACTIVE_POWER": "Active power",
-    "APPARENT_POWER": "Apparent power",
-    "OTHER": "Other",
+    "ACTIVE_POWER" : "Active power",
+    "APPARENT_POWER" :"Apparent power",
+    "MAX_ITERATION_REACHED" : "Maximum number of iterations reached",
+    "OTHER" : "Other",
+    "SOLVER_FAILED" :"Solver failed",
+    "CONVERGED" : "Converged",
+    "FAILED" : "Failed",
+    "ONE" : "Side 1",
+    "TWO" : "Side 2",
 
     "HighVoltageLimit": "High voltage limit",
     "HighVoltageLimitkV": "High voltage limit (kV)",
@@ -483,6 +493,7 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
+    "genericConfirmQuestion": "Are you sure that you want to abort?",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -1043,7 +1054,7 @@
     "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
-    "Actif": "Actif",
+    "Active": "Active",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
@@ -1202,6 +1213,9 @@
     "waitingStudyIndexation": "Waiting for study indexation...",
 
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
+    "customAgGridFilter.startsWith": "Starts with",
+    "customAgGridFilter.contains": "Contains",
+    "customAgGridFilter.filterOoo": "Filter...",
 
     "ShortCircuitPredefinedParameters": "Preset parameters",
     "ShortCircuitCharacteristics": "Features considered",
