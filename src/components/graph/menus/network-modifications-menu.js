@@ -9,8 +9,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
-import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
+import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 
 /**
  * Menu to select network modification to create
@@ -43,13 +43,12 @@ const NetworkModificationsMenu = ({
                     }}
                 />
             ) : (
-                <NestedMenuItem
+                <CustomNestedMenuItem
                     key={menuItem.id}
-                    parentMenuOpen={true}
                     label={intl.formatMessage({ id: menuItem.label })}
                 >
                     {renderMenuItems(menuItem.subItems)}
-                </NestedMenuItem>
+                </CustomNestedMenuItem>
             );
         });
     };
