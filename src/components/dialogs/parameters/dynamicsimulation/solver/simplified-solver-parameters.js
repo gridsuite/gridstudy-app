@@ -7,6 +7,7 @@
 
 import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
 import { useCallback } from 'react';
+import { commonDefParams } from './solver-constants';
 
 const SimplifiedSolverParameters = ({
     simplifiedSolver,
@@ -33,150 +34,65 @@ const SimplifiedSolverParameters = ({
             type: TYPES.text,
             description: 'DynamicSimulationSimplifiedSolverLinearSolverName',
         },
-        fnormtol: {
+        fNormTol: {
             type: TYPES.float,
-            description: 'DynamicSimulationSimplifiedSolverFnormtol',
+            description: 'DynamicSimulationSimplifiedSolverFNormTol',
         },
-        initialaddtol: {
+        initialAddTol: {
             type: TYPES.float,
-            description: 'DynamicSimulationSimplifiedSolverInitialaddtol',
+            description: 'DynamicSimulationSimplifiedSolverInitialAddTol',
         },
-        scsteptol: {
+        scStepTol: {
             type: TYPES.float,
-            description: 'DynamicSimulationSimplifiedSolverScsteptol',
+            description: 'DynamicSimulationSimplifiedSolverScStepTol',
         },
-        mxnewtstep: {
+        mxNewTStep: {
             type: TYPES.float,
-            description: 'DynamicSimulationSimplifiedSolverMxnewtstep',
+            description: 'DynamicSimulationSimplifiedSolverMxNewTStep',
         },
         msbset: {
             type: TYPES.integer,
             description: 'DynamicSimulationSimplifiedSolverMsbset',
         },
-        mxiter: {
+        mxIter: {
             type: TYPES.integer,
-            description: 'DynamicSimulationSimplifiedSolverMxiter',
+            description: 'DynamicSimulationSimplifiedSolverMxIter',
         },
-        printfl: {
+        printFl: {
             type: TYPES.integer,
-            description: 'DynamicSimulationSimplifiedSolverPrintfl',
+            description: 'DynamicSimulationSimplifiedSolverPrintFl',
         },
         optimizeAlgebraicResidualsEvaluations: {
             type: TYPES.bool,
-            description: 'DynamicSimulationSimplifiedSolverOptimizeAlgebraicResidualsEvaluations',
+            description:
+                'DynamicSimulationSimplifiedSolverOptimizeAlgebraicResidualsEvaluations',
         },
         skipNRIfInitialGuessOK: {
             type: TYPES.bool,
-            description: 'DynamicSimulationSimplifiedSolverSkipNRIfInitialGuessOK',
+            description:
+                'DynamicSimulationSimplifiedSolverSkipNRIfInitialGuessOK',
         },
         enableSilentZ: {
             type: TYPES.bool,
             description: 'DynamicSimulationSimplifiedSolverEnableSilentZ',
         },
-        optimizeReinitAlgebraicResidualsEvaluations: {
+        optimizeReInitAlgebraicResidualsEvaluations: {
             type: TYPES.bool,
-            description: 'DynamicSimulationSimplifiedSolverOptimizeReinitAlgebraicResidualsEvaluations',
+            description:
+                'DynamicSimulationSimplifiedSolverOptimizeReInitAlgebraicResidualsEvaluations',
         },
         minimumModeChangeTypeForAlgebraicRestoration: {
             type: TYPES.text,
-            description: 'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestoration',
+
+            description:
+                'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestoration',
         },
         minimumModeChangeTypeForAlgebraicRestorationInit: {
             type: TYPES.text,
-            description: 'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestorationInit',
+            description:
+                'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestorationInit',
         },
-        fnormtolAlg: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverFnormtolAlg',
-        },
-        initialaddtolAlg: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverInitialaddtolAlg',
-        },
-        scsteptolAlg: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverScsteptolAlg',
-        },
-        mxnewtstepAlg: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverMxnewtstepAlg',
-        },
-        msbsetAlg: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverMsbsetAlg',
-        },
-        mxiterAlg: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverMxiterAlg',
-        },
-        printflAlg: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverPrintflAlg',
-        },
-        fnormtolAlgJ: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverFnormtolAlgJ',
-        },
-        initialaddtolAlgJ: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverInitialaddtolAlgJ',
-        },
-        scsteptolAlgJ: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverScsteptolAlgJ',
-        },
-        mxnewtstepAlgJ: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverMxnewtstepAlgJ',
-        },
-        msbsetAlgJ: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverMsbsetAlgJ',
-        },
-        mxiterAlgJ: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverMxiterAlgJ',
-        },
-        printflAlgJ: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverPrintflAlgJ',
-        },
-        fnormtolAlgInit: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverFnormtolAlgInit',
-        },
-        initialaddtolAlgInit: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverInitialaddtolAlgInit',
-        },
-        scsteptolAlgInit: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverScsteptolAlgInit',
-        },
-        mxnewtstepAlgInit: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverMxnewtstepAlgInit',
-        },
-        msbsetAlgInit: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverMsbsetAlgInit',
-        },
-        mxiterAlgInit: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverMxiterAlgInit',
-        },
-        printflAlgInit: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverPrintflAlgInit',
-        },
-        maximumNumberSlowStepIncrease: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSolverMaximumNumberSlowStepIncrease',
-        },
-        minimalacceptablestep: {
-            type: TYPES.float,
-            description: 'DynamicSimulationSolverMinimalAcceptableStep',
-        },
+        ...commonDefParams,
     };
 
     const handleUpdateSimplifiedSolver = useCallback(
