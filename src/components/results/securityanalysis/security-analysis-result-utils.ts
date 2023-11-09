@@ -22,6 +22,7 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { convertDuration } from '../loadflow/load-flow-result-utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -206,6 +207,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         },
         {
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -273,6 +276,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         },
         {
             headerName: intl.formatMessage({ id: 'Limit' }),
