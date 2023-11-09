@@ -630,7 +630,7 @@ const TableWrapper = (props) => {
                             editingDataRef.current?.generatorShortCircuit
                                 ?.stepUpTransformerReactance
                         ),
-                        undefined, //'LOCAL'
+                        undefined,
                         undefined,
                         undefined,
                         getFieldValue(

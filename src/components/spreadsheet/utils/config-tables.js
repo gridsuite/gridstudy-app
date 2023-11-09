@@ -70,7 +70,7 @@ const RegulatingTerminalCellRenderer = (params) => {
         return (
             params.data.regulatingTerminalConnectableType +
             ' (' +
-            params.data.regulatingTerminalVlId +
+            params.data.regulatingTerminalConnectableId +
             ' )'
         );
     } else {
@@ -130,7 +130,7 @@ const generateEditableNumericColumnDefinition = (
 const onCellGeneratorCellClicked = (event, callBack) => {
     switch (event.colDef.id) {
         case 'RegulationTypeText':
-        case 'RatioTapRegulatingTerminal':
+        case 'RegulatingTerminalGenerator':
             callBack(event.data);
             break;
         default:
@@ -1409,7 +1409,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.generatorShortCircuit
-                                ?.transientReactance,
+                                ?.transientReactance || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1438,7 +1438,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.generatorShortCircuit
-                                ?.stepUpTransformerReactance,
+                                ?.stepUpTransformerReactance || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1468,7 +1468,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.generatorStartup
-                                ?.plannedActivePowerSetPoint,
+                                ?.plannedActivePowerSetPoint || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1526,7 +1526,8 @@ export const TABLES_DEFINITIONS = {
                         maxExpression: 1,
                         minExpression: 0,
                         defaultValue:
-                            params.data?.generatorStartup?.plannedOutageRate,
+                            params.data?.generatorStartup?.plannedOutageRate ||
+                            0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1556,7 +1557,7 @@ export const TABLES_DEFINITIONS = {
                         maxExpression: 1,
                         minExpression: 0,
                         defaultValue:
-                            params.data.generatorStartup?.forcedOutageRate,
+                            params.data.generatorStartup?.forcedOutageRate || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1584,7 +1585,7 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: RegulationTypeCellRenderer,
             },
             {
-                id: 'RatioTapRegulatingTerminal',
+                id: 'RegulatingTerminalGenerator',
                 cellRenderer: RegulatingTerminalCellRenderer,
             },
         ],

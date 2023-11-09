@@ -12,8 +12,8 @@ import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
 import { modifyGenerator } from 'services/study/network-modifications';
 import { REGULATION_TYPES } from 'components/network/constants';
-import VoltageRegulationModificationDialog from 'components/dialogs/network-modifications/generator/modification/voltage-regulation-modification-dialog';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -42,13 +42,13 @@ export const EquipmentTable = ({
     const [clickedCellData, setClickedCellData] = React.useState({});
     const [generatorId, setGeneratorId] = React.useState('');
     const [
-        popupGeneratorEditVoltageRegulationFields,
-        setPopupGeneratorEditVoltageRegulationFields,
+        popupGeneratorEditRegulatingTerminalFields,
+        setPopupGeneratorEditRegulatingTerminalFields,
     ] = React.useState(false);
-    const onVoltageRegulationPopupClose = () => {
-        setPopupGeneratorEditVoltageRegulationFields(false);
+    const onRegulatingTerminalPopupClose = () => {
+        setPopupGeneratorEditRegulatingTerminalFields(false);
     };
-    const handleSavePopupGeneratorEditVoltageRegulationFields = (
+    const handleSavePopupGeneratorEditRegulatingTerminalFields = (
         voltageRegulationGenerator
     ) => {
         setGeneratorId(clickedCellData.data.id);
@@ -178,8 +178,8 @@ export const EquipmentTable = ({
             if (onCellClicked.name === 'onCellGeneratorCellClicked') {
                 onCellClicked(params, () => {
                     setGeneratorId(params.data.id);
-                    setPopupGeneratorEditVoltageRegulationFields(
-                        !popupGeneratorEditVoltageRegulationFields
+                    setPopupGeneratorEditRegulatingTerminalFields(
+                        !popupGeneratorEditRegulatingTerminalFields
                     );
                     setClickedCellData(params);
                 });
@@ -221,16 +221,16 @@ export const EquipmentTable = ({
                 showOverlay={true}
                 onCellClicked={handleOnClickOnCell}
             />
-            <VoltageRegulationModificationDialog
-                open={popupGeneratorEditVoltageRegulationFields}
-                onClose={onVoltageRegulationPopupClose}
+            <RegulatingTerminalModificationDialog
+                open={popupGeneratorEditRegulatingTerminalFields}
+                onClose={onRegulatingTerminalPopupClose}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
-                onModifyVoltageRegulationGenerator={(
-                    updatedVoltageRegulation
+                onModifyRegulatingTeminalGenerator={(
+                    updatedRegulatedTerminal
                 ) => {
-                    handleSavePopupGeneratorEditVoltageRegulationFields(
-                        updatedVoltageRegulation
+                    handleSavePopupGeneratorEditRegulatingTerminalFields(
+                        updatedRegulatedTerminal
                     );
                 }}
                 data={clickedCellData.data}

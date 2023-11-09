@@ -18,13 +18,13 @@ import RegulatingTerminalForm from 'components/dialogs/regulating-terminal/regul
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { fetchVoltageLevelsListInfos } from 'services/study/network';
 
-const VoltageRegulationModificationDialog = ({
+const RegulatingTerminalModificationDialog = ({
     data,
     currentNode,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
-    onModifyVoltageRegulationGenerator,
+    onModifyRegulatingTeminalGenerator,
     ...dialogProps
 }) => {
     const emptyFormData = useMemo(
@@ -93,9 +93,9 @@ const VoltageRegulationModificationDialog = ({
 
     const onSubmit = useCallback(
         (voltageRegulationGenerator) => {
-            onModifyVoltageRegulationGenerator(voltageRegulationGenerator);
+            onModifyRegulatingTeminalGenerator(voltageRegulationGenerator);
         },
-        [onModifyVoltageRegulationGenerator]
+        [onModifyRegulatingTeminalGenerator]
     );
     const intl = useIntl();
 
@@ -160,13 +160,13 @@ const VoltageRegulationModificationDialog = ({
     );
 };
 
-VoltageRegulationModificationDialog.propTypes = {
+RegulatingTerminalModificationDialog.propTypes = {
     data: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    onModifyVoltageRegulationGenerator: PropTypes.func,
+    onModifyRegulatingTeminalGenerator: PropTypes.func,
     editDataFetchStatus: PropTypes.string,
 };
 
-export default VoltageRegulationModificationDialog;
+export default RegulatingTerminalModificationDialog;
