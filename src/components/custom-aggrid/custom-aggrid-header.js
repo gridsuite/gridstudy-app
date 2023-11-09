@@ -16,10 +16,10 @@ import {
     Badge,
     Select,
     MenuItem,
+    debounce,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import { useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     iconSize: {
@@ -100,12 +100,16 @@ const CustomHeaderComponent = ({
         setIsHoveringColumnHeader(false);
     };
 
-    const debouncedUpdateFilter = useDebounce(updateFilter, debounceMs);
+    const debouncedUpdateFilter = debounce(
+        (data) => updateFilter(field, data),
+        debounceMs
+    );
 
     const handleFilterTextChange = (event) => {
         const value = event.target.value.toUpperCase();
         setSelectedFilterData(value);
-        debouncedUpdateFilter(field, [
+
+        debouncedUpdateFilter([
             {
                 text: value,
                 type: selectedFilterComparator,
@@ -115,16 +119,13 @@ const CustomHeaderComponent = ({
 
     const handleFilterAutoCompleteChange = (_, data) => {
         setSelectedFilterData(data);
-        debouncedUpdateFilter(field, data);
+        debouncedUpdateFilter(data);
     };
 
     const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-
-        debouncedUpdateFilter(field, [
-            { text: selectedFilterData, type: newType },
-        ]);
+        debouncedUpdateFilter([{ text: selectedFilterData, type: newType }]);
     };
 
     const handleSortChange = useCallback(() => {
