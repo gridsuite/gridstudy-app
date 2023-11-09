@@ -177,14 +177,10 @@ yup.addMethod(
     }
 );
 
-const getActivePowerSetPointSchema = (
-    isEquipmentModification,
-    minActivePower,
-    maxActivePower
-) => ({
+const getActivePowerSetPointSchema = (isEquipmentModification) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
-        .activePowerSetPoint(isEquipmentModification, minActivePower, maxActivePower),
+        .activePowerSetPoint(isEquipmentModification),
 });
 
 export const getPreviousBooleanValue = (value) => {
