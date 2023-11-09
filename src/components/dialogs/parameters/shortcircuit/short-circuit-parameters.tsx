@@ -36,7 +36,6 @@ import {
     STATUS,
 } from '../../../utils/constants';
 import { gridItem, GridSection } from '../../dialogUtils';
-import { useIntl } from 'react-intl';
 import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import TensionTable from './short-circuit-tension-table';
@@ -51,8 +50,6 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     resetAll,
     voltageRanges,
 }) => {
-    const intl = useIntl();
-
     const [status, setStatus] = useState(STATUS.SUCCESS);
     const [isChanged, setIsChanged] = useState(false);
 
@@ -65,11 +62,11 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
     // the tranlsation of values
     const predefinedParamsOptions = useMemo(() => {
-        return intlPredefinedParametersOptions(intl);
-    }, [intl]);
+        return intlPredefinedParametersOptions();
+    }, []);
     const initialVoltageProfileMode = useMemo(() => {
-        return intlInitialVoltageProfileMode(intl);
-    }, [intl]);
+        return intlInitialVoltageProfileMode();
+    }, []);
 
     const statusToShow = useMemo(() => {
         const styles = {
@@ -116,25 +113,25 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     const loads = (
         <CheckboxInput
             name={SHORT_CIRCUIT_WITH_LOADS}
-            label={intl.formatMessage({ id: 'shortCircuitLoads' })}
+            label={'shortCircuitLoads'}
         />
     );
     const vsc = (
         <CheckboxInput
             name={SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS}
-            label={intl.formatMessage({ id: 'shortCircuitHvdc' })}
+            label={'shortCircuitHvdc'}
         />
     );
     const shuntCompensators = (
         <CheckboxInput
             name={SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS}
-            label={intl.formatMessage({ id: 'shortCircuitShuntCompensators' })}
+            label={'shortCircuitShuntCompensators'}
         />
     );
     const neutralPosition = (
         <CheckboxInput
             name={SHORT_CIRCUIT_WITH_NEUTRAL_POSITION}
-            label={intl.formatMessage({ id: 'shortCircuitNeutralPosition' })}
+            label={'shortCircuitNeutralPosition'}
         />
     );
 

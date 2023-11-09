@@ -4,40 +4,31 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { IntlShape } from 'react-intl';
 import React from 'react';
 import { INITIAL_TENSION, STATUS } from '../../../utils/constants';
 import { Lens } from '@mui/icons-material';
 import { VoltageRange, VoltageRanges } from './short-circuit-parameters.type';
 
-export const intlPredefinedParametersOptions = (intl: IntlShape) => [
+export const intlPredefinedParametersOptions = () => [
     {
         id: 'ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP',
-        label: intl.formatMessage({
-            id: 'iccMawWithNominalVoltageMapPredefinedParams',
-        }),
+        label: 'iccMawWithNominalVoltageMapPredefinedParams',
     },
     {
         id: 'ICC_MAX_WITH_CEI909',
-        label: intl.formatMessage({
-            id: 'iccMaxWithCEIPredefinedParams',
-        }),
+        label: 'iccMaxWithCEIPredefinedParams',
     },
 ];
 
-export const intlInitialVoltageProfileMode = (intl: IntlShape) => {
+export const intlInitialVoltageProfileMode = () => {
     return {
         NOMINAL: {
             id: 'NOMINAL',
-            label: intl.formatMessage({
-                id: 'nominalInitialVoltageProfileMode',
-            }),
+            label: 'nominalInitialVoltageProfileMode',
         },
         CONFIGURED: {
             id: 'CONFIGURED',
-            label: intl.formatMessage({
-                id: 'configuredInitialVoltageProfileMode',
-            }),
+            label: 'configuredInitialVoltageProfileMode',
         },
     };
 };
