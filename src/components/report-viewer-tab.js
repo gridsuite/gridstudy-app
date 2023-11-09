@@ -189,26 +189,24 @@ export const ReportViewerTab = ({
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
             <Paper className={'singlestretch-child'}>
                 <Box sx={styles.div}>
-                    {rootNodeId !== currentNode?.id && (
-                        <FormControlLabel
-                            sx={styles.reportOnlyNode}
-                            control={
-                                <Switch
-                                    checked={nodeOnlyReport}
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
-                                    onChange={(e) =>
-                                        handleChangeNodeOnlySwitch(e)
-                                    }
-                                    disabled={disabled}
-                                />
-                            }
-                            label={intl.formatMessage({
-                                id: 'LogOnlySingleNode',
-                            })}
-                        />
-                    )}
+                    <FormControlLabel
+                        sx={styles.reportOnlyNode}
+                        control={
+                            <Switch
+                                checked={nodeOnlyReport}
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                                onChange={(e) => handleChangeNodeOnlySwitch(e)}
+                                disabled={
+                                    disabled || rootNodeId === currentNode?.id
+                                }
+                            />
+                        }
+                        label={intl.formatMessage({
+                            id: 'LogOnlySingleNode',
+                        })}
+                    />
                     {disabled && (
                         <AlertCustomMessageNode message={'InvalidNode'} />
                     )}
