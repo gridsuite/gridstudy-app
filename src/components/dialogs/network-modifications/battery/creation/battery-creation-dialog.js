@@ -23,6 +23,7 @@ import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
     CONNECTION_POSITION,
+    CONNECTED,
     ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
     MAXIMUM_REACTIVE_POWER,
@@ -126,6 +127,7 @@ const BatteryCreationDialog = ({
                 connectionDirection:
                     battery.connectablePosition.connectionDirection,
                 connectionName: battery.connectablePosition.connectionName,
+                // connected is not copied on purpose: we use the default value (true) in all cases
             }),
             ...getReactiveLimitsFormData({
                 reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits
@@ -165,6 +167,7 @@ const BatteryCreationDialog = ({
                     connectionDirection: editData.connectionDirection,
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
+                    connected: editData.connected,
                 }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice:
@@ -200,6 +203,7 @@ const BatteryCreationDialog = ({
                 battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 battery[CONNECTIVITY]?.[CONNECTION_POSITION],
+                battery[CONNECTIVITY]?.[CONNECTED],
                 battery[MINIMUM_ACTIVE_POWER],
                 battery[MAXIMUM_ACTIVE_POWER],
                 isReactiveCapabilityCurveOn,

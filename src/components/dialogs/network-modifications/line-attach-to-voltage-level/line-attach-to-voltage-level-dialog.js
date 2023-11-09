@@ -250,6 +250,7 @@ const LineAttachToVoltageLevelDialog = ({
             sectionCount,
             switchKinds,
             couplingDevices,
+            topologyKind,
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
@@ -266,6 +267,7 @@ const LineAttachToVoltageLevelDialog = ({
                     sectionCount: sectionCount,
                     switchKinds: switchKinds,
                     couplingDevices: couplingDevices,
+                    topologyKind: topologyKind,
                 };
                 preparedVoltageLevel.busbarSections = buildNewBusbarSections(
                     preparedVoltageLevel.equipmentId,

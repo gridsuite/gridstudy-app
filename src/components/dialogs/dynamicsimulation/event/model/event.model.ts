@@ -12,6 +12,11 @@ import {
 } from '../types/event.type';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
+const BRANCH_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.LINE,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+];
+
 export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
         type: PrimitiveTypes.FLOAT,
@@ -32,13 +37,43 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
                 id: 'Branch.Side.TWO',
             },
         ],
+        acceptOnly: (equipmentType: string) => {
+            return BRANCH_EQUIPMENT_TYPES.includes(equipmentType);
+        },
+    },
+};
+
+export const NODE_FAULT_EVENT_DEFINITION: EventDefinition = {
+    startTime: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyTEvent',
+        isRequired: true,
+        unit: 's',
+    },
+    faultTime: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyNodeFaultDuration',
+        isRequired: true,
+        unit: 's',
+    },
+    rPu: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyRPu',
+        isRequired: true,
+        unit: 'pu',
+    },
+    xPu: {
+        type: PrimitiveTypes.FLOAT,
+        label: 'DynamicSimulationEventPropertyXPu',
+        isRequired: true,
+        unit: 'pu',
     },
 };
 
 export const eventDefinitions = {
     [EventType.DISCONNECT]: DISCONNECT_EVENT_DEFINITION,
     [EventType.STEP]: undefined,
-    [EventType.NODE_FAULT]: undefined,
+    [EventType.NODE_FAULT]: NODE_FAULT_EVENT_DEFINITION,
 };
 
 export const getEventType = (equipmentType: string): EventType | undefined => {
@@ -46,7 +81,12 @@ export const getEventType = (equipmentType: string): EventType | undefined => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.LINE:
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+        case EQUIPMENT_TYPES.LOAD:
+        case EQUIPMENT_TYPES.GENERATOR:
             eventType = EventType.DISCONNECT;
+            break;
+        case EQUIPMENT_TYPES.BUS:
+            eventType = EventType.NODE_FAULT;
             break;
         default:
     }
