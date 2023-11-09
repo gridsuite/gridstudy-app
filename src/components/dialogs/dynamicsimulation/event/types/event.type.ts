@@ -38,6 +38,7 @@ export type EventPropertyDefinition = {
         label: string;
     }[];
     unit?: string;
+    acceptOnly?: (equipmentType: string) => boolean;
 };
 
 export type EventDefinition = {

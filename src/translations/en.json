@@ -289,10 +289,14 @@
 
     "DisconnectLine": "Trip the line",
     "Disconnect2WTransformer": "Trip the transformer",
+    "DisconnectLoad": "Trip the load",
+    "DisconnectGenerator": "Trip the generator",
     "NodeFaultBus": "Node fault on bus",
 
     "Disconnect/LINE": "Trip line {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Trip transformer {computedLabel}",
+    "Disconnect/LOAD": "Trip load {computedLabel}",
+    "Disconnect/GENERATOR": "Trip generator {computedLabel}",
     "NodeFault/BUS": "Node fault on bus {computedLabel}",
 
     "Branch.Side.ONE": "Origin side",
