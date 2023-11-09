@@ -19,6 +19,16 @@ export const SORT_WAYS = {
     desc: -1,
 };
 
+export const getSortValue = (sortWay: number | null) => {
+    if (sortWay === 1) {
+        return 'asc';
+    } else if (sortWay === -1) {
+        return 'desc';
+    } else {
+        return undefined;
+    }
+};
+
 const getKeyByValue = (
     object: Record<string, any>,
     value: any
@@ -69,5 +79,9 @@ export const useAgGridSort = ({
         [dataKeyToSortKey, initSortWay]
     );
 
-    return { onSortChanged, sortConfig, initSort };
+    const resetSortConfig = useCallback(() => {
+        setSortConfig({ colKey: '', sortWay: 0 });
+    }, []);
+
+    return { onSortChanged, sortConfig, initSort, resetSortConfig };
 };

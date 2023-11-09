@@ -7,6 +7,8 @@
 
 import { ColDef } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
+import { ISortConfig } from '../../../hooks/use-aggrid-sort';
+import * as React from 'react';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -19,16 +21,18 @@ export interface LimitViolation {
     side?: string;
     value?: number;
 }
+
 interface Element {
     elementType?: string;
     id?: string;
 }
 
 export interface ContingencyItem {
-    computationStatus?: string;
+    status?: string;
     contingencyId?: string;
     elements?: Element[];
 }
+
 export interface Contingency {
     contingency?: ContingencyItem;
     limitViolation?: LimitViolation;
@@ -37,7 +41,7 @@ export interface Contingency {
 export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
     acceptableDuration?: number;
-    computationStatus?: string;
+    status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;
@@ -71,11 +75,97 @@ export interface PreContingencyResult {
     };
 }
 
-export type SecurityAnalysisResultType =
-    | PreContingencyResult
-    | ContingenciesFromConstraintItem[]
-    | ConstraintsFromContingencyItem[]
-    | null;
+type FilterValueType = string[] | { text: string; type: string }[];
+
+export type FilterSelectorType = Record<string, FilterValueType> | null;
+
+export type SortTableStateType = {
+    colKey: string;
+    sortValue?: string;
+};
+
+export type FilterTableStateType = {
+    dataType?: string;
+    field?: string;
+    type?: string;
+    value?: FilterValueType;
+};
+
+export type QueryParamsType = Record<
+    string,
+    string | number | SortTableStateType | FilterTableStateType[]
+>;
+
+type Sort = {
+    empty?: boolean;
+    sorted?: boolean;
+    unsorted?: boolean;
+};
+
+type Pageable = {
+    offset?: number;
+    pageNumber?: number;
+    pageSize?: number;
+    paged?: boolean;
+    sort?: Sort;
+    unpaged?: boolean;
+};
+
+type PaginationProps = {
+    count?: number;
+    rowsPerPage?: number;
+    page?: number;
+    onPageChange?: (
+        event: React.MouseEvent<HTMLButtonElement> | null,
+        page: number
+    ) => void;
+    onRowsPerPageChange?: React.ChangeEventHandler<
+        HTMLTextAreaElement | HTMLInputElement
+    >;
+};
+
+type SortProps = {
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig?: ISortConfig;
+};
+
+type FilterProps = {
+    updateFilter: (field: string, value: string) => void;
+    filterSelector: FilterSelectorType | undefined;
+    filterEnums: FilterEnums;
+};
+
+type FilterParams = {
+    filterUIType?: string;
+    filterComparators?: string[];
+    debounceMs?: number;
+};
+
+export type FilterEnums = Record<string, string[] | null>;
+
+export interface CustomColDef extends ColDef {
+    isSortable?: boolean;
+    isHidden?: boolean;
+    isFilterable?: boolean;
+    filterParams?: FilterParams;
+}
+
+export interface SecurityAnalysisNmkResult {
+    content?:
+        | ContingenciesFromConstraintItem[]
+        | ConstraintsFromContingencyItem[]
+        | null;
+    empty?: boolean;
+    first?: boolean;
+    last?: boolean;
+    number?: number;
+    numberOfElements?: number;
+    pageable?: Pageable;
+    size?: number;
+    sort?: Sort;
+    totalElements?: number;
+    totalPages?: number;
+}
 
 // Components props interfaces
 export interface SecurityAnalysisTabProps {
@@ -85,16 +175,20 @@ export interface SecurityAnalysisTabProps {
 }
 
 export interface SecurityAnalysisResultNProps {
-    result: SecurityAnalysisResultType;
+    result?: PreContingencyResult;
     isLoadingResult: boolean;
 }
 
-export interface SecurityAnalysisResultNmkProps
-    extends SecurityAnalysisResultNProps {
+export interface SecurityAnalysisResultNmkProps {
+    result?: SecurityAnalysisNmkResult;
+    isLoadingResult: boolean;
     isFromContingency: boolean;
     openVoltageLevelDiagram?: (voltageLevelId: string) => void;
     studyUuid?: string;
     nodeUuid?: string;
+    paginationProps: PaginationProps;
+    sortProps: SortProps;
+    filterProps: FilterProps;
 }
 
 export interface SecurityAnalysisNTableRow {
