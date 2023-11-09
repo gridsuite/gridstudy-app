@@ -15,6 +15,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    CONNECTED,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     SHUNT_COMPENSATOR_TYPE,
@@ -110,6 +111,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName:
                         shuntCompensator.connectablePosition.connectionName,
                     voltageLevelId: shuntCompensator.voltageLevelId,
+                    // connected is not copied on purpose: we use the default value (true) in all cases
                 }),
                 ...getCharacteristicsCreateFormDataFromSearchCopy({
                     bperSection: shuntCompensator.bperSection,
@@ -133,6 +135,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
                     voltageLevelId: shuntCompensator.voltageLevelId,
+                    connected: shuntCompensator.connected,
                 }),
                 ...getCharacteristicsCreateFormData({
                     maxSusceptance: shuntCompensator.maxSusceptance ?? null,
@@ -189,7 +192,8 @@ const ShuntCompensatorCreationDialog = ({
                 sanitizeString(
                     shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
                 ),
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
+                shuntCompensator[CONNECTIVITY]?.[CONNECTED]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

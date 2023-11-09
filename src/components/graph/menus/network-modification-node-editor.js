@@ -479,7 +479,18 @@ const NetworkModificationNodeEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    setModifications(res);
+                    setModifications(
+                        res.filter(
+                            (networkModification) =>
+                                networkModification.stashed === false
+                        )
+                    );
+                    setModificationsToRestore(
+                        res.filter(
+                            (networkModification) =>
+                                networkModification.stashed === true
+                        )
+                    );
                 }
             })
             .catch((error) => {
@@ -510,16 +521,10 @@ const NetworkModificationNodeEditor = () => {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
-            dofetchNetworkModifications();
-
             setModificationsToRestore([]);
-            dofetchNetworkModificationsToRestore();
+            dofetchNetworkModifications();
         }
-    }, [
-        currentNode,
-        dofetchNetworkModifications,
-        dofetchNetworkModificationsToRestore,
-    ]);
+    }, [currentNode, dofetchNetworkModifications]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -564,7 +569,6 @@ const NetworkModificationNodeEditor = () => {
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allow to append new modifications to the existing list.
                 dofetchNetworkModifications();
-                dofetchNetworkModificationsToRestore();
                 dispatch(
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
@@ -576,7 +580,6 @@ const NetworkModificationNodeEditor = () => {
     }, [
         dispatch,
         dofetchNetworkModifications,
-        dofetchNetworkModificationsToRestore,
         manageNotification,
         studyUpdatedForce,
         cleanClipboard,

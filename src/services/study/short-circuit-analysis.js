@@ -110,7 +110,6 @@ export function fetchShortCircuitAnalysisPagedResults({
     const urlSearchParams = new URLSearchParams();
 
     urlSearchParams.append('paged', 'true');
-    urlSearchParams.append('mode', 'FULL');
 
     if (analysisType) {
         urlSearchParams.append('type', analysisType);
@@ -159,4 +158,21 @@ export function setShortCircuitParameters(studyUuid, newParams) {
         },
         body: JSON.stringify(newParams),
     });
+}
+
+export function fetchShortCircuitFaultTypes() {
+    console.info('Fetch short-circuit fault types');
+    const getShortCircuitParams =
+        process.env.REACT_APP_API_GATEWAY + '/shortcircuit/v1/fault-types';
+    console.debug(getShortCircuitParams);
+    return backendFetchJson(getShortCircuitParams);
+}
+
+export function fetchShortCircuitLimitViolationTypes() {
+    console.info('Fetch short-circuit limit violation types');
+    const getShortCircuitParams =
+        process.env.REACT_APP_API_GATEWAY +
+        '/shortcircuit/v1/limit-violation-types';
+    console.debug(getShortCircuitParams);
+    return backendFetchJson(getShortCircuitParams);
 }

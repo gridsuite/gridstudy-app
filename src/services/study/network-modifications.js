@@ -38,34 +38,41 @@ export function changeNetworkModificationOrder(
 }
 
 export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('stashed', true);
+    urlSearchParams.append('uuids', modificationUuids);
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications/stash?uuids=' +
-        encodeURIComponent(modificationUuids);
-
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
-        method: 'POST',
+        method: 'PUT',
     });
 }
 
 export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('stashed', false);
+    urlSearchParams.append('uuids', modificationUuids);
     const RestoreModificationsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications/restore?uuids=' +
-        encodeURIComponent(modificationUuids);
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
 
     console.debug(RestoreModificationsUrl);
     return backendFetch(RestoreModificationsUrl, {
-        method: 'POST',
+        method: 'PUT',
     });
 }
 
@@ -248,6 +255,7 @@ export function createBattery(
     connectionName,
     connectionDirection,
     connectionPosition,
+    connected,
     minActivePower,
     maxActivePower,
     isReactiveCapabilityCurveOn,
@@ -287,6 +295,7 @@ export function createBattery(
             connectionName,
             connectionDirection,
             connectionPosition,
+            connected,
             minActivePower,
             maxActivePower,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
@@ -374,7 +383,8 @@ export function createLoad(
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -405,6 +415,7 @@ export function createLoad(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -581,7 +592,8 @@ export function createGenerator(
     reactiveCapabilityCurve,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -633,6 +645,7 @@ export function createGenerator(
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -652,7 +665,8 @@ export function createShuntCompensator(
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -685,6 +699,7 @@ export function createShuntCompensator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -1500,20 +1515,22 @@ export function deleteEquipment(
     });
 }
 
-export function fetchNetworkModifications(
-    studyUuid,
-    nodeUuid,
-    stashedModifications
-) {
-    console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
+export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
+    console.info(
+        'Fetching network modifications (matadata) for nodeUuid : ',
+        nodeUuid
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('onlyStashed', onlyStashed);
+    urlSearchParams.append('onlyMetadata', true);
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications?stashed=' +
-        encodeURIComponent(stashedModifications);
+        '/network-modifications?' +
+        urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
