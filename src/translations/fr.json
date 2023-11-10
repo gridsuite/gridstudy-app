@@ -159,16 +159,20 @@
     "startVoltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageLimits": "Limites de tension",
     "VoltageLevelFilter": "Filtre poste",
+    "LowVoltageLimitDefault": "Valeur par défaut limite basse",
+    "HighVoltageLimitDefault": "Valeur par défaut limite haute",
     "LowVoltageLimitAdjustment": "Modification limite basse",
     "HighVoltageLimitAdjustment": "Modification limite haute",
     "VoltageLevelFilterTooltip": "Les saisies sont appliquées dans l'ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un poste est inclus dans plusieurs filtres)",
     "FilterInputMinError": "Vous devez sélectionner au moins un filtre",
-    "EquipmentSelection": "Sélection ouvrages",
+    "EquipmentSelection": "Sélection des ouvrages",
     "FixedGenerators": "Groupes fixes",
     "VariableTransformers": "Transformateurs variables",
     "VariableShuntCompensators": "MCS variables",
     "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageInitParametersError": "Erreur lors de la mise à jour des paramètres d'initialisation du plan de tension",
+    "AdjustExistingLimits": "Modifier les limites existantes",
+    "SetDefaultLimits" : "Valeurs par défaut pour compléter les limites manquantes",
 
     "SelectAll": "Tout selectionner",
     "UnselectAll": "Tout déselectionner",
@@ -285,10 +289,14 @@
 
     "DisconnectLine": "Déclencher la ligne",
     "Disconnect2WTransformer": "Déclencher le transformateur",
+    "DisconnectLoad": "Déclencher la consommation",
+    "DisconnectGenerator": "Déclencher le group",
     "NodeFaultBus": "Court-circuit sur le bus",
 
     "Disconnect/LINE": "Déclencher ligne {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Déclencher transformateur {computedLabel}",
+    "Disconnect/LOAD": "Déclencher consommation {computedLabel}",
+    "Disconnect/GENERATOR": "Déclencher group {computedLabel}",
     "NodeFault/BUS": "Court-circuit sur le bus {computedLabel}",
 
     "Branch.Side.ONE": "Côté origine",
@@ -366,9 +374,15 @@
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
     "LOW_VOLTAGE": "Tension basse",
-    "ACTIVE_POWER": "Puissance active",
-    "APPARENT_POWER": "Puissance apparente",
-    "OTHER": "Autre",
+    "ACTIVE_POWER" : "Puissance active",
+    "APPARENT_POWER" :"Puissance apparente",
+    "MAX_ITERATION_REACHED" : "Nombre maximum d'itérations atteint",
+    "OTHER" : "Autre",
+    "SOLVER_FAILED" :"Echec du solveur",
+    "CONVERGED" : "Convergence",
+    "FAILED" : "Echec",
+    "ONE" : "Côté 1",
+    "TWO" : "Côté 2",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
@@ -479,6 +493,7 @@
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
+    "genericConfirmQuestion": "Êtes-vous sûr(e) de vouloir annuler ?",
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
@@ -594,6 +609,7 @@
     "BusBarBus": "SJB / nœud",
     "Setpoints": "Consignes",
     "Connectivity": "Connectivité",
+    "Connected": "Connecté",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
@@ -752,7 +768,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
-    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Un seul gradin)",
+    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Linéaire)",
     "SectionCountBetweenZeroAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 0 et le nombre de gradins",
     "MaximumSectionCount": "Nombre de gradins",
     "ShuntSectionCount": "Gradin courant",
@@ -1040,7 +1056,7 @@
     "EquipmentsInVoltageRegulation": "Ouvrages en réglage tension",
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
-    "Actif": "Actif",
+    "Active": "Actif",
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
@@ -1072,9 +1088,9 @@
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",
+    "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud pour afficher les positions prises",
+    "NoVoltageLevelPositionMessage": "Veuillez choisir un poste pour afficher les positions prises",
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
-    "NodeNotBuildPositionMessage": "Veuillez choisir un poste ou attendre le chargement complet des données",
-
     "YupRequired": "Ce champ doit être renseigné",
     "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
     "YupNotTypeDefault": "La valeur du champ n'est pas au bon format",
@@ -1096,7 +1112,6 @@
     "grid.orCondition": "OU",
     "grid.inRangeStart": "Début",
     "grid.inRangeEnd": "Fin",
-    "grid.filterOoo": "Filtrer...",
     "grid.noRowsToShow": "Aucune Donnée",
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
@@ -1216,5 +1231,9 @@
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
 
-    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition"
+    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
+
+    "customAgGridFilter.startsWith": "Commence par",
+    "customAgGridFilter.contains": "Contient",
+    "customAgGridFilter.filterOoo": "Filtrer..."
 }

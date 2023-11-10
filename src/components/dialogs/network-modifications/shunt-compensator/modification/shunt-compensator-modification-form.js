@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CharacteristicsModificationForm } from '../characteristics-pane/characteristics-modification-form';
 import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
+import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 
 const ShuntCompensatorModificationForm = ({
     shuntCompensatorInfos,
@@ -41,7 +41,7 @@ const ShuntCompensatorModificationForm = ({
     );
 
     const characteristicsForm = (
-        <CharacteristicsModificationForm
+        <CharacteristicsForm
             previousValues={shuntCompensatorInfos}
             isModification={true}
         />
