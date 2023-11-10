@@ -60,7 +60,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         name: SHORT_CIRCUIT_PREDEFINED_PARAMS,
     });
 
-    // the tranlsation of values
+    // the translation of values
     const predefinedParamsOptions = useMemo(() => {
         return intlPredefinedParametersOptions();
     }, []);

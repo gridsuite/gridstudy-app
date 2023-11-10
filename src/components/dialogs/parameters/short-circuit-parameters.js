@@ -81,8 +81,12 @@ const formSchema = yup
 
 const prepareDataToSend = (shortCircuitParams, newParameters) => {
     const oldParameters = { ...shortCircuitParams.parameters };
-    let parameters = { ...oldParameters, ...newParameters };
-    // we need to add voltageRanges to the parameters only when INITIAL_VOLTAGE is configured
+    let parameters = {
+        ...oldParameters,
+        ...newParameters,
+        // we need to add voltageRanges to the parameters only when initialVoltageProfileMode equals to CONFIGURED
+        voltageRanges: undefined,
+    };
     if (
         newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
     ) {
@@ -91,7 +95,7 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
             voltageRanges: shortCircuitParams.voltageRangesInfo.CONFIGURED,
         };
     }
-    // we need to remove the predefinedParameters attribut from parameters because it's not handled on powsybl class
+    // we need to remove the predefinedParameters attribute from parameters because it's not handled on powsybl class
     delete parameters.predefinedParameters;
 
     return {
