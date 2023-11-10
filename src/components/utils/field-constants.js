@@ -21,9 +21,11 @@ export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
+export const CONNECTED = 'connected';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
+export const MODIFICATIONS_TABLE = 'modificationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
 export const SERIES_RESISTANCE = 'seriesResistance';
@@ -97,9 +99,7 @@ export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 
 //ShuntCompensator
-export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
-export const Q_AT_NOMINAL_V = 'qatNominalV';
 export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
 export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
@@ -109,6 +109,11 @@ export const SHUNT_COMPENSATOR_TYPES = {
     REACTOR: { id: 'REACTOR', label: 'Reactor' },
     CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
 };
+export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
+export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
+export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
+export const MAX_SUSCEPTANCE = 'maxSusceptance';
+export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 //line
 export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
 export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
@@ -221,7 +226,8 @@ export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
 export const SUBSTATION_IDS = 'substationIds';
 
 // voltage init
-export const VOLTAGE_LIMITS = 'voltageLimits';
+export const VOLTAGE_LIMITS_MODIFICATION = 'voltageLimitsModification';
+export const VOLTAGE_LIMITS_DEFAULT = 'voltageLimitsDefault';
 export const FIXED_GENERATORS = 'constantQGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';

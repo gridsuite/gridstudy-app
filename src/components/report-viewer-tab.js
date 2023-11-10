@@ -7,7 +7,8 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
-import { ReportViewer, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import ReportViewer from '../components/ReportViewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -15,8 +16,15 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { fetchReport } from '../services/study';
+import {
+    fetchNodeReport,
+    fetchParentNodesReport,
+    fetchSubReport,
+} from '../services/study';
 import { Box } from '@mui/system';
+import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
+import LogReportItem from './ReportViewer/log-report-item';
+import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 
 const styles = {
     div: {
@@ -48,19 +56,7 @@ export const ReportViewerTab = ({
         (state) => state.networkModificationTreeModel
     );
 
-    const loadflowNotif = useSelector((state) => state.loadflowNotif);
-    const saNotif = useSelector((state) => state.saNotif);
-    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
-    const sensiNotif = useSelector((state) => state.sensiNotif);
-    const allBusesShortCircuitNotif = useSelector(
-        (state) => state.allBusesShortCircuitNotif
-    );
-    const dynamicSimulationNotif = useSelector(
-        (state) => state.dynamicSimulationNotif
-    );
-    const oneBusShortCircuitNotif = useSelector(
-        (state) => state.oneBusShortCircuitNotif
-    );
+    const notificationsCount = useComputationNotificationCount();
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
@@ -77,43 +73,68 @@ export const ReportViewerTab = ({
         );
     }, [treeModel]);
 
+    const rootNodeId = useMemo(() => {
+        const rootNode = treeModel.treeNodes.find(
+            (node) => node?.data?.label === 'Root'
+        );
+        return rootNode?.id;
+    }, [treeModel]);
+
     const setNodeName = useCallback(
         (report) => {
-            report.defaultName =
-                report.taskKey === 'Root'
-                    ? report.taskKey
-                    : nodesNames.get(report.taskKey);
+            if (report.taskKey === 'Root') {
+                report.taskKey = rootNodeId;
+            } else {
+                report.defaultName = nodesNames.get(report.taskKey);
+            }
             return report;
         },
-        [nodesNames]
+        [nodesNames, rootNodeId]
+    );
+
+    const makeSingleReport = useCallback(
+        (reportData) => {
+            if (!Array.isArray(reportData)) {
+                return setNodeName(reportData);
+            } else {
+                if (reportData.length === 1) {
+                    return setNodeName(reportData[0]);
+                }
+                return {
+                    taskKey: GLOBAL_NODE_TASK_KEY,
+                    defaultName: GLOBAL_NODE_TASK_KEY,
+                    reports: [],
+                    subReporters: reportData.map((r) => setNodeName(r)),
+                };
+            }
+        },
+        [setNodeName]
     );
 
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
             setWaitingLoadReport(true);
-            fetchReport(studyId, currentNode.id, nodeOnlyReport)
+            fetchParentNodesReport(
+                studyId,
+                currentNode.id,
+                nodeOnlyReport,
+                LogReportItem.getDefaultSeverityList()
+            )
                 .then((fetchedReport) => {
-                    if (fetchedReport.length === 1) {
-                        setReport(setNodeName(fetchedReport[0]));
-                    } else {
-                        let globalReport = {
-                            taskKey: 'root',
-                            defaultName: 'Logs',
-                            taskValues: {},
-                            reports: [],
-                            subReporters: fetchedReport.map((r) =>
-                                setNodeName(r)
-                            ),
-                        };
-                        setReport(globalReport);
-                    }
+                    setReport(makeSingleReport(fetchedReport));
                 })
-                .catch((error) => snackError({ messageTxt: error.message }))
+                .catch((error) => {
+                    setReport();
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ReportFetchError',
+                    });
+                })
                 .finally(() => {
                     setWaitingLoadReport(false);
                 });
         },
-        [nodeOnlyReport, setNodeName, snackError]
+        [nodeOnlyReport, snackError, makeSingleReport]
     );
 
     // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
@@ -130,15 +151,31 @@ export const ReportViewerTab = ({
         studyId,
         currentNode,
         disabled,
-        saNotif,
-        loadflowNotif,
-        voltageInitNotif,
-        sensiNotif,
-        allBusesShortCircuitNotif,
-        dynamicSimulationNotif,
+        notificationsCount,
         fetchAndProcessReport,
-        oneBusShortCircuitNotif,
     ]);
+
+    const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
+        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList);
+    };
+
+    const globalReportPromise = (severityFilterList) => {
+        return fetchParentNodesReport(
+            studyId,
+            currentNode.id,
+            false,
+            severityFilterList
+        );
+    };
+
+    const subReportPromise = (reportId, severityFilterList) => {
+        return fetchSubReport(
+            studyId,
+            currentNode.id,
+            reportId,
+            severityFilterList
+        );
+    };
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
@@ -164,7 +201,14 @@ export const ReportViewerTab = ({
                         <AlertCustomMessageNode message={'InvalidNode'} />
                     )}
                 </Box>
-                {!!report && !disabled && <ReportViewer jsonReport={report} />}
+                {!!report && !disabled && (
+                    <ReportViewer
+                        jsonReportTree={report}
+                        subReportPromise={subReportPromise}
+                        nodeReportPromise={nodeReportPromise}
+                        globalReportPromise={globalReportPromise}
+                    />
+                )}
             </Paper>
         </WaitingLoader>
     );

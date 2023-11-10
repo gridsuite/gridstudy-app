@@ -650,6 +650,15 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
+    const handleClose = useCallback(
+        (event, reason) => {
+            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                hideParameters();
+            }
+        },
+        [hideParameters]
+    );
+
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
@@ -664,13 +673,23 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         });
     }, [enableDeveloperMode]);
 
+    const getDynamicWidth = useCallback(() => {
+        return tabValue === TAB_VALUES.sensitivityAnalysisParamsTabValue
+            ? 'lg'
+            : 'md';
+    }, [tabValue]);
     return (
         <Dialog
             open={isParametersOpen}
-            onClose={hideParameters}
+            onClose={handleClose}
             aria-labelledby="form-dialog-title"
-            maxWidth={'md'}
+            maxWidth={getDynamicWidth()}
             fullWidth={true}
+            sx={{
+                '& .MuiDialog-container': {
+                    alignItems: 'flex-start',
+                },
+            }}
         >
             <DialogTitle id="form-dialog-title">
                 <Typography component="span" variant="h5" sx={styles.title}>
@@ -678,7 +697,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden' }}>
-                <Container maxWidth="md">
+                <Container maxWidth={getDynamicWidth()}>
                     <Tabs
                         value={tabValue}
                         variant="scrollable"

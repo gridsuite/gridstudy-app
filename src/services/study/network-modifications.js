@@ -38,34 +38,41 @@ export function changeNetworkModificationOrder(
 }
 
 export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('stashed', true);
+    urlSearchParams.append('uuids', modificationUuids);
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications/stash?uuids=' +
-        encodeURIComponent(modificationUuids);
-
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
-        method: 'POST',
+        method: 'PUT',
     });
 }
 
 export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('stashed', false);
+    urlSearchParams.append('uuids', modificationUuids);
     const RestoreModificationsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications/restore?uuids=' +
-        encodeURIComponent(modificationUuids);
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
 
     console.debug(RestoreModificationsUrl);
     return backendFetch(RestoreModificationsUrl, {
-        method: 'POST',
+        method: 'PUT',
     });
 }
 
@@ -248,6 +255,7 @@ export function createBattery(
     connectionName,
     connectionDirection,
     connectionPosition,
+    connected,
     minActivePower,
     maxActivePower,
     isReactiveCapabilityCurveOn,
@@ -287,6 +295,7 @@ export function createBattery(
             connectionName,
             connectionDirection,
             connectionPosition,
+            connected,
             minActivePower,
             maxActivePower,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
@@ -374,7 +383,8 @@ export function createLoad(
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -405,6 +415,7 @@ export function createLoad(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -581,7 +592,8 @@ export function createGenerator(
     reactiveCapabilityCurve,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -633,6 +645,7 @@ export function createGenerator(
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -642,15 +655,18 @@ export function createShuntCompensator(
     currentNodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
-    susceptancePerSection,
-    qAtNominalV,
+    maxSusceptance,
+    maxQAtNominalV,
     shuntCompensatorType,
+    sectionCount,
+    maximumSectionCount,
     connectivity,
     isUpdate,
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -673,14 +689,17 @@ export function createShuntCompensator(
             type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: shuntCompensatorName,
-            susceptancePerSection: susceptancePerSection,
-            qAtNominalV: qAtNominalV,
+            maxSusceptance: maxSusceptance,
+            maxQAtNominalV: maxQAtNominalV,
             shuntCompensatorType: shuntCompensatorType,
+            sectionCount: sectionCount,
+            maximumSectionCount: maximumSectionCount,
             voltageLevelId: connectivity.voltageLevel.id,
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }
@@ -690,8 +709,10 @@ export function modifyShuntCompensator(
     currentNodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
-    susceptancePerSection,
-    qAtNominalV,
+    maximumSectionCount,
+    sectionCount,
+    maxSusceptance,
+    maxQAtNominalV,
     shuntCompensatorType,
     voltageLevelId,
     isUpdate,
@@ -718,10 +739,10 @@ export function modifyShuntCompensator(
             type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: toModificationOperation(shuntCompensatorName),
-            susceptancePerSection: toModificationOperation(
-                susceptancePerSection
-            ),
-            qAtNominalV: toModificationOperation(qAtNominalV),
+            maximumSectionCount: toModificationOperation(maximumSectionCount),
+            sectionCount: toModificationOperation(sectionCount),
+            maxSusceptance: toModificationOperation(maxSusceptance),
+            maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
             voltageLevelId: voltageLevelId,
         }),
@@ -982,6 +1003,40 @@ export function modifyTwoWindingsTransformer(
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+        }),
+    });
+}
+
+export function createTabulareModification(
+    studyUuid,
+    currentNodeUuid,
+    modificationType,
+    modifications,
+    isUpdate,
+    modificationUuid
+) {
+    let createTabulareModificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createTabulareModificationUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating tabular modification');
+    } else {
+        console.info('Creating tabular modification');
+    }
+
+    return backendFetchText(createTabulareModificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+            modificationType: modificationType,
+            modifications: modifications,
         }),
     });
 }
@@ -1513,20 +1568,22 @@ export function deleteEquipment(
     });
 }
 
-export function fetchNetworkModifications(
-    studyUuid,
-    nodeUuid,
-    stashedModifications
-) {
-    console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
+export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
+    console.info(
+        'Fetching network modifications (matadata) for nodeUuid : ',
+        nodeUuid
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('onlyStashed', onlyStashed);
+    urlSearchParams.append('onlyMetadata', true);
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications?stashed=' +
-        encodeURIComponent(stashedModifications);
+        '/network-modifications?' +
+        urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }

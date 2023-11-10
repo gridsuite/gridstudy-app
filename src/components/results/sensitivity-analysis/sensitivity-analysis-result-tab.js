@@ -11,19 +11,24 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
-import { useRowFilter } from '../../../hooks/use-row-filter';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     DATA_KEY_TO_FILTER_KEY,
     DATA_KEY_TO_SORT_KEY,
 } from './sensitivity-analysis-content';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 
+export const SensitivityResultTabs = [
+    { id: 'N', label: 'N' },
+    { id: 'N_K', label: 'N-K' },
+];
+
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
     const [page, setPage] = useState(0);
 
-    const { updateFilter, filterSelector, initFilters } = useRowFilter(
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         DATA_KEY_TO_FILTER_KEY
     );
 
@@ -65,8 +70,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 setSensiKindIndex={handleSensiKindIndexChange}
             />
             <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
-                <Tab label="N" />
-                <Tab label="N-K" />
+                {SensitivityResultTabs.map((tab) => (
+                    <Tab label={tab.label} />
+                ))}
             </Tabs>
             <PagedSensitivityAnalysisResult
                 nOrNkIndex={nOrNkIndex}

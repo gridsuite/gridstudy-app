@@ -10,16 +10,18 @@ import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     EQUIPMENT_NAME,
-    Q_AT_NOMINAL_V,
+    MAXIMUM_SECTION_COUNT,
+    MAX_Q_AT_NOMINAL_V,
+    MAX_SUSCEPTANCE,
+    SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
-    SUSCEPTANCE_PER_SECTION,
 } from '../../../../utils/field-constants';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -33,7 +35,6 @@ import {
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
@@ -67,7 +68,6 @@ const ShuntCompensatorModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
-    const [multiSections, setMultiSections] = useState(false);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -77,7 +77,6 @@ const ShuntCompensatorModificationDialog = ({
     const {
         reset,
         formState: { dirtyFields },
-        control,
     } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
@@ -85,37 +84,29 @@ const ShuntCompensatorModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: shuntCompensator?.equipmentName?.value ?? '',
                 ...getCharacteristicsFormData({
-                    susceptancePerSection:
-                        shuntCompensator.susceptancePerSection?.value,
-                    qAtNominalV: shuntCompensator?.qAtNominalV?.value,
+                    maxSusceptance:
+                        shuntCompensator.maxSusceptance?.value ?? null,
+                    maxQAtNominalV:
+                        shuntCompensator.maxQAtNominalV?.value ?? null,
                     shuntCompensatorType:
-                        shuntCompensator.shuntCompensatorType?.value,
+                        shuntCompensator.shuntCompensatorType?.value ?? null,
+                    sectionCount: shuntCompensator.sectionCount?.value ?? null,
+                    maximumSectionCount:
+                        shuntCompensator.maximumSectionCount?.value ?? null,
                 }),
             });
         },
         [reset]
     );
 
-    const watchCharacteristicsChoice = useWatch({
-        control,
-        name: CHARACTERISTICS_CHOICE,
-    });
-
     // If we only change the characteristics choice without changing the corresponding fields,
     // we keep the validate button disable: if we choose "susceptance", we have to add a value for
     // "susceptance per section", and if we choose "Q at nominal voltage", we have to add a value for
     // "shunt compensator type" or for "Q at nominal voltage" numeric field
     const disableSave =
-        ((watchCharacteristicsChoice ===
-            CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-            !(
-                dirtyFields[Q_AT_NOMINAL_V] ||
-                dirtyFields[SHUNT_COMPENSATOR_TYPE]
-            )) ||
-            (watchCharacteristicsChoice ===
-                CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
-                !dirtyFields[SUSCEPTANCE_PER_SECTION])) &&
-        !dirtyFields[EQUIPMENT_NAME];
+        (Object.keys(dirtyFields).length === 1 &&
+            dirtyFields[CHARACTERISTICS_CHOICE]) ||
+        Object.keys(dirtyFields).length === 0;
 
     useEffect(() => {
         if (editData) {
@@ -140,7 +131,6 @@ const ShuntCompensatorModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                setMultiSections(false);
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
@@ -151,21 +141,8 @@ const ShuntCompensatorModificationDialog = ({
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            if (
-                                shuntCompensator.maximumSectionCount > 1 &&
-                                isNodeBuilt(currentNode)
-                            ) {
-                                snackError({
-                                    headerId:
-                                        'ShuntCompensatorMultiSectionsError',
-                                });
-                                setShuntCompensatorInfos(null);
-                                setDataFetchStatus(FetchStatus.FAILED);
-                                setMultiSections(true);
-                            } else {
-                                setShuntCompensatorInfos(shuntCompensator);
-                                setDataFetchStatus(FetchStatus.SUCCEED);
-                            }
+                            setShuntCompensatorInfos(shuntCompensator);
+                            setDataFetchStatus(FetchStatus.SUCCEED);
                         }
                     })
                     .catch(() => {
@@ -176,7 +153,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNode, studyUuid, snackError]
+        [currentNode, studyUuid]
     );
 
     useEffect(() => {
@@ -196,13 +173,15 @@ const ShuntCompensatorModificationDialog = ({
                 currentNodeUuid,
                 selectedId,
                 sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
+                shuntCompensator[MAXIMUM_SECTION_COUNT],
+                shuntCompensator[SECTION_COUNT],
                 shuntCompensator[CHARACTERISTICS_CHOICE] ===
                     CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                    ? shuntCompensator[SUSCEPTANCE_PER_SECTION]
+                    ? shuntCompensator[MAX_SUSCEPTANCE]
                     : null,
                 shuntCompensator[CHARACTERISTICS_CHOICE] ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? shuntCompensator[Q_AT_NOMINAL_V]
+                    ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
                     : null,
                 shuntCompensator[CHARACTERISTICS_CHOICE] ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
@@ -251,7 +230,7 @@ const ShuntCompensatorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                {(selectedId == null || multiSections) && (
+                {selectedId == null && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -261,7 +240,7 @@ const ShuntCompensatorModificationDialog = ({
                         fillerHeight={5}
                     />
                 )}
-                {selectedId !== null && !multiSections && (
+                {selectedId !== null && (
                     <ShuntCompensatorModificationForm
                         shuntCompensatorInfos={shuntCompensatorInfos}
                         equipmentId={selectedId}

@@ -376,16 +376,20 @@ export const useDirectoryElements = ({
     return [values, field];
 };
 
-export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
+export const useCSVPicker = ({
+    label,
+    header,
+    resetTrigger,
+    maxTapNumber,
+    disabled = false,
+}) => {
     const intl = useIntl();
 
     const { CSVReader } = useCSVReader();
     const [_acceptedFile, setAcceptedFile] = useState();
     const [fileError, setFileError] = useState();
 
-    const equals = (a, b) =>
-        a.length === b.length && a.every((v, i) => v === b[i]);
-
+    const equals = (a, b) => b.every((item) => a.includes(item));
     useEffect(() => {
         setAcceptedFile();
     }, [resetTrigger]);
@@ -419,9 +423,13 @@ export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
                         }
                     }}
                 >
-                    {({ getRootProps, acceptedFile }) => (
+                    {({ getRootProps }) => (
                         <Grid item>
-                            <Button {...getRootProps()} variant={'contained'}>
+                            <Button
+                                {...getRootProps()}
+                                variant={'contained'}
+                                disabled={disabled}
+                            >
                                 <FormattedMessage id={label} />
                             </Button>
                             <span
@@ -430,8 +438,8 @@ export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
                                     fontWeight: 'bold',
                                 }}
                             >
-                                {acceptedFile
-                                    ? acceptedFile.name
+                                {_acceptedFile
+                                    ? _acceptedFile.name
                                     : intl.formatMessage({
                                           id: 'uploadMessage',
                                       })}
@@ -441,7 +449,7 @@ export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
                 </CSVReader>
             </>
         );
-    }, [header, intl, label, maxTapNumber]);
+    }, [_acceptedFile, disabled, header, intl, label, maxTapNumber]);
 
     return [_acceptedFile, field, fileError];
 };

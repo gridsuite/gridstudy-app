@@ -5,16 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ListItemIcon,
-    ListItemText,
-    Menu,
-    MenuItem,
-    Typography,
-} from '@mui/material';
+import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     isNodeBuilt,
     isNodeReadOnly,
@@ -24,10 +18,21 @@ import { ReduxState } from 'redux/reducer.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { useParameterState } from '../dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
+import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
+import { CustomMenuItem } from '../utils/custom-nested-menu';
 
 interface BusMenuProps {
     busId: string;
     handleRunShortcircuitAnalysis: (busId: string) => void;
+    handleOpenDynamicSimulationEventDialog: (
+        equipmentId: string,
+        equipmentType: string,
+        dialogTitle: string
+    ) => void;
     position: [number, number];
     closeBusMenu: () => void;
 }
@@ -49,11 +54,23 @@ const styles = {
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
     handleRunShortcircuitAnalysis,
+    handleOpenDynamicSimulationEventDialog,
     position,
     closeBusMenu,
 }) => {
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    // to check is node editable
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
+    );
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const isNodeEditable = useMemo(
+        () =>
+            isNodeBuilt(currentNode) &&
+            !isNodeReadOnly(currentNode) &&
+            !isAnyNodeBuilding,
+        [currentNode, isAnyNodeBuilding]
     );
 
     const oneBusShortcircuitAnalysisState = useSelector(
@@ -61,19 +78,9 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
-
     const handleClickRunShortcircuitAnalysis = useCallback(
         () => handleRunShortcircuitAnalysis(busId),
         [busId, handleRunShortcircuitAnalysis]
-    );
-
-    const isNodeEditable = useMemo(
-        () =>
-            isNodeBuilt(currentNode) &&
-            !isNodeReadOnly(currentNode) &&
-            !isAnyNodeBuilding,
-        [currentNode, isAnyNodeBuilding]
     );
 
     return (
@@ -87,7 +94,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             }}
             onClose={closeBusMenu}
         >
-            <MenuItem
+            <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
@@ -107,7 +114,17 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                         </Typography>
                     }
                 />
-            </MenuItem>
+            </CustomMenuItem>
+            {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
+                <DynamicSimulationEventMenuItem
+                    equipmentId={busId}
+                    equipmentType={EQUIPMENT_TYPES.BUS}
+                    handleOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
+                    disabled={!isNodeEditable}
+                />
+            )}
         </Menu>
     );
 };

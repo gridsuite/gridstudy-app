@@ -1101,7 +1101,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1127,7 +1127,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MinP',
+                id: 'minActivePower',
                 field: 'minP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1147,7 +1147,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxP',
+                id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1167,7 +1167,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetP',
+                id: 'activePowerSetpoint',
                 field: 'targetP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1220,7 +1220,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'VoltageRegulatorOn',
+                id: 'voltageRegulationOn',
                 field: 'voltageRegulatorOn',
                 cellRenderer: BooleanCellRenderer,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
@@ -1380,7 +1380,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1536,7 +1536,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1608,7 +1608,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1685,7 +1685,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MinP',
+                id: 'minActivePower',
                 field: 'minP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1704,7 +1704,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxP',
+                id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1723,7 +1723,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetP',
+                id: 'activePowerSetpoint',
                 field: 'targetP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1818,7 +1818,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxP',
+                id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1900,7 +1900,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hvdcLineId',
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1975,7 +1975,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hvdcLineId',
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2001,7 +2001,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'VoltageRegulatorOn',
+                id: 'voltageRegulationOn',
                 field: 'voltageRegulatorOn',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2065,7 +2065,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ActivePower',
+                id: 'activePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

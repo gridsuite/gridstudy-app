@@ -157,13 +157,9 @@ export const EquipmentTable = ({
             false,
             null,
             propertiesSiteFormated
-        )
-            .then((res) => {
-                console.log('sites', 'create modification', res);
-            })
-            .catch((err) => {
-                console.log('sites', 'error', err);
-            });
+        ).catch((err) => {
+            console.debug(err);
+        });
 
         //TODO: save data
         setPopupSelectEditSiteProperties(false);

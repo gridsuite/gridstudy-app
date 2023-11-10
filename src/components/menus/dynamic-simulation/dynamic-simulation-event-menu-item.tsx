@@ -1,0 +1,86 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { getEventType } from '../../dialogs/dynamicsimulation/event/model/event.model';
+import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../graph/util/model-constants';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import { useIntl } from 'react-intl';
+import { CustomMenuItem } from '../../utils/custom-nested-menu';
+
+const styles = {
+    menuItem: {
+        // NestedMenu item manages only label prop of string type
+        // It fix paddings itself then we must force this padding
+        // to justify menu items texts
+        paddingLeft: '12px',
+    },
+};
+
+interface DynamicSimulationEventMenuItemProps {
+    equipmentId: string;
+    equipmentType: string;
+    handleOpenDynamicSimulationEventDialog: (
+        equipmentId: string,
+        equipmentType: string,
+        dialogTitle: string
+    ) => void;
+    disabled: boolean;
+}
+
+const DynamicSimulationEventMenuItem = (
+    props: DynamicSimulationEventMenuItemProps
+) => {
+    const intl = useIntl();
+    const {
+        equipmentId,
+        equipmentType,
+        handleOpenDynamicSimulationEventDialog,
+        disabled,
+    } = props;
+    return (
+        <CustomMenuItem
+            sx={styles.menuItem}
+            onClick={() =>
+                handleOpenDynamicSimulationEventDialog(
+                    equipmentId,
+                    equipmentType,
+                    intl.formatMessage({
+                        id: `${getEventType(equipmentType)}${
+                            EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
+                        }`,
+                    })
+                )
+            }
+            disabled={disabled}
+        >
+            <ListItemIcon>
+                <OfflineBoltOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText
+                primary={
+                    <Typography noWrap>
+                        {intl.formatMessage({
+                            id: `${getEventType(equipmentType)}${
+                                EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
+                            }`,
+                        })}
+                        {' ('}
+                        {intl.formatMessage({
+                            id: 'DynamicSimulation',
+                        })}
+                        {')'}
+                    </Typography>
+                }
+            />
+        </CustomMenuItem>
+    );
+};
+
+export default DynamicSimulationEventMenuItem;

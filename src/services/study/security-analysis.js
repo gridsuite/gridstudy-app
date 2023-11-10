@@ -57,17 +57,40 @@ export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
+export function fetchSecurityAnalysisResult(
+    studyUuid,
+    currentNodeUuid,
+    queryParams
+) {
     console.info(
         `Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
     );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/security-analysis/result';
-    console.debug(url);
-    return backendFetchJson(url);
-}
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/security-analysis/result`;
 
+    const { resultType, page, size, sort, filters } = queryParams || {};
+
+    const params = new URLSearchParams({ resultType });
+
+    if (sort?.colKey && sort?.sortValue) {
+        params.append('sort', `${sort.colKey},${sort.sortValue}`);
+    }
+
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
+    }
+
+    if (typeof page === 'number') {
+        params.append('page', page);
+        params.append('size', size);
+    }
+
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendFetchJson(urlWithParams);
+}
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         `Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`

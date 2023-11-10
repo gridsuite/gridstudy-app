@@ -5,82 +5,203 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
-import { UUID } from 'crypto';
+import { ColDef } from 'ag-grid-community';
+import { AgGridReactProps } from 'ag-grid-react';
+import { ISortConfig } from '../../../hooks/use-aggrid-sort';
+import * as React from 'react';
 
 export interface LimitViolation {
-    subjectId: string;
-    limitType: string;
-    limit: number;
-    value: number;
-    loading: number | undefined;
-}
-export interface LimitViolationFromBack extends LimitViolation {
-    limitReduction: number;
-    limitName?: string;
-    acceptableDuration?: number;
-    side?: string;
-}
-export interface LimitViolationsResultFromBack {
-    limitViolations: LimitViolationFromBack[];
-}
-export interface PreContingencyResult {
-    status?: string;
-    limitViolationsResult?: LimitViolationsResultFromBack;
-    isWaiting: boolean;
-}
-export interface Contingency {
-    id: string;
-    elements: { id: string }[];
-}
-export interface PostContingencyResult {
-    contingency: Contingency;
-    status: string;
-    limitViolationsResult: LimitViolationsResultFromBack;
-}
-export interface SecurityAnalysisResultTableNmKProps {
-    postContingencyResults?: PostContingencyResult[];
-    onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
-    nmkTypeResult: string;
-    isWaiting: boolean;
-}
-export interface SecurityAnalysisResult {
-    preContingencyResult: PreContingencyResult;
-    postContingencyResults: PostContingencyResult[];
-}
-
-export interface SecurityAnalysisResultProps {
-    result: SecurityAnalysisResult;
-    onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
-    isWaiting: boolean;
-}
-export interface SecurityAnalysisTabProps {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    openVoltageLevelDiagram: (id: string) => void;
-}
-
-export interface NmKConstraintRow {
-    subjectId: string;
-    side: string;
-}
-
-export interface ResultContingencie {
-    contingencyId?: string;
-    contingencyEquipmentsIds?: string[];
-    computationStatus?: string;
     subjectId?: string;
-    limitType?: string;
+    acceptableDuration?: number;
     limit?: number;
+    limitName?: string;
+    limitReduction?: number;
+    limitType?: string;
+    loading?: number;
+    side?: string;
     value?: number;
-    loading?: number | undefined;
-    side?: string | undefined;
+}
+
+interface Element {
+    elementType?: string;
+    id?: string;
+}
+
+export interface ContingencyItem {
+    status?: string;
+    contingencyId?: string;
+    elements?: Element[];
+}
+
+export interface Contingency {
+    contingency?: ContingencyItem;
+    limitViolation?: LimitViolation;
+}
+
+export interface SecurityAnalysisNmkTableRow {
+    subjectId?: string;
+    acceptableDuration?: number;
+    status?: string;
+    contingencyEquipmentsIds?: (string | undefined)[];
+    contingencyId?: string;
+    limit?: number;
+    limitName?: string;
+    limitType?: string;
     linkedElementId?: string;
+    loading?: number;
+    side?: string;
+    value?: number;
     violationCount?: number;
 }
 
-export interface ResultConstraint extends ResultContingencie {
-    constraintId?: string;
-    acceptableDuration?: number;
-    limitName?: string | undefined;
+export interface Constraint {
+    limitViolation?: LimitViolation;
+    subjectId?: string;
+}
+
+export interface ContingenciesFromConstraintItem {
+    subjectId?: string;
+    contingencies?: Contingency[];
+}
+
+export interface ConstraintsFromContingencyItem {
+    subjectLimitViolations?: Constraint[];
+    contingency?: ContingencyItem;
+}
+
+export interface PreContingencyResult {
+    limitViolationsResult?: {
+        limitViolations?: LimitViolation[];
+    };
+}
+
+type FilterValueType = string[] | { text: string; type: string }[];
+
+export type FilterSelectorType = Record<string, FilterValueType> | null;
+
+export type SortTableStateType = {
+    colKey: string;
+    sortValue?: string;
+};
+
+export type FilterTableStateType = {
+    dataType?: string;
+    field?: string;
+    type?: string;
+    value?: FilterValueType;
+};
+
+export type QueryParamsType = Record<
+    string,
+    string | number | SortTableStateType | FilterTableStateType[]
+>;
+
+type Sort = {
+    empty?: boolean;
+    sorted?: boolean;
+    unsorted?: boolean;
+};
+
+type Pageable = {
+    offset?: number;
+    pageNumber?: number;
+    pageSize?: number;
+    paged?: boolean;
+    sort?: Sort;
+    unpaged?: boolean;
+};
+
+type PaginationProps = {
+    count?: number;
+    rowsPerPage?: number;
+    page?: number;
+    onPageChange?: (
+        event: React.MouseEvent<HTMLButtonElement> | null,
+        page: number
+    ) => void;
+    onRowsPerPageChange?: React.ChangeEventHandler<
+        HTMLTextAreaElement | HTMLInputElement
+    >;
+};
+
+type SortProps = {
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig?: ISortConfig;
+};
+
+type FilterProps = {
+    updateFilter: (field: string, value: string) => void;
+    filterSelector: FilterSelectorType | undefined;
+    filterEnums: FilterEnums;
+};
+
+type FilterParams = {
+    filterUIType?: string;
+    filterComparators?: string[];
+    debounceMs?: number;
+};
+
+export type FilterEnums = Record<string, string[] | null>;
+
+export interface CustomColDef extends ColDef {
+    isSortable?: boolean;
+    isHidden?: boolean;
+    isFilterable?: boolean;
+    filterParams?: FilterParams;
+}
+
+export interface SecurityAnalysisNmkResult {
+    content?:
+        | ContingenciesFromConstraintItem[]
+        | ConstraintsFromContingencyItem[]
+        | null;
+    empty?: boolean;
+    first?: boolean;
+    last?: boolean;
+    number?: number;
+    numberOfElements?: number;
+    pageable?: Pageable;
+    size?: number;
+    sort?: Sort;
+    totalElements?: number;
+    totalPages?: number;
+}
+
+// Components props interfaces
+export interface SecurityAnalysisTabProps {
+    studyUuid: string;
+    nodeUuid: string;
+    openVoltageLevelDiagram: (id: string) => void;
+}
+
+export interface SecurityAnalysisResultNProps {
+    result?: PreContingencyResult;
+    isLoadingResult: boolean;
+}
+
+export interface SecurityAnalysisResultNmkProps {
+    result?: SecurityAnalysisNmkResult;
+    isLoadingResult: boolean;
+    isFromContingency: boolean;
+    openVoltageLevelDiagram?: (voltageLevelId: string) => void;
+    studyUuid?: string;
+    nodeUuid?: string;
+    paginationProps: PaginationProps;
+    sortProps: SortProps;
+    filterProps: FilterProps;
+}
+
+export interface SecurityAnalysisNTableRow {
+    limit?: number;
+    limitType?: string;
+    loading?: number;
+    subjectId?: string;
+    value?: number;
+}
+
+export interface SecurityAnalysisResultProps {
+    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[];
+    columnDefs: ColDef[];
+    isLoadingResult: boolean;
+    agGridProps?: AgGridReactProps;
 }
