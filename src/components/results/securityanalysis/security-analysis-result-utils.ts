@@ -12,7 +12,6 @@ import {
     LimitViolation,
     SecurityAnalysisNmkTableRow,
     Constraint,
-    CustomColDef,
     FilterEnums,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
@@ -29,6 +28,7 @@ import {
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
 import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {

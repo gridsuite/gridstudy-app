@@ -10,7 +10,6 @@ import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    CustomColDef,
     SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
@@ -30,6 +29,7 @@ import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid';
 
 const styles = {
     container: {

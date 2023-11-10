@@ -135,20 +135,7 @@ type FilterProps = {
     filterEnums: FilterEnums;
 };
 
-type FilterParams = {
-    filterUIType?: string;
-    filterComparators?: string[];
-    debounceMs?: number;
-};
-
 export type FilterEnums = Record<string, string[] | null>;
-
-export interface CustomColDef extends ColDef {
-    isSortable?: boolean;
-    isHidden?: boolean;
-    isFilterable?: boolean;
-    filterParams?: FilterParams;
-}
 
 export interface SecurityAnalysisNmkResult {
     content?:

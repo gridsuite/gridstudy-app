@@ -115,17 +115,23 @@ export function fetchShortCircuitAnalysisPagedResults({
         urlSearchParams.append('type', analysisType);
     }
 
-    const { page = '0', sort, size, filter } = selector;
+    const { page = '0', sort, size, filter } = selector || {};
 
     urlSearchParams.append('page', page);
 
-    sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
+    if (sort) {
+        const { colKey, sortValue } = sort;
+        if (colKey && sortValue) {
+            urlSearchParams.append('sort', `${colKey},${sortValue}`);
+        }
+    }
+    // sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
 
     if (size) {
         urlSearchParams.append('size', size);
     }
 
-    if (filter.length) {
+    if (filter?.length) {
         urlSearchParams.append('filters', JSON.stringify(filter));
     }
 
