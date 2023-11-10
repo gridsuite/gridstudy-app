@@ -33,6 +33,7 @@ import {
 } from '../../../dialogUtils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({
@@ -40,12 +41,7 @@ export const CharacteristicsForm = ({
     isModification = false,
 }) => {
     const intl = useIntl();
-    const {
-        setValue,
-        trigger,
-        clearErrors,
-        formState: { isSubmitted },
-    } = useFormContext();
+    const { setValue } = useFormContext();
 
     const [
         sectionCount,
@@ -62,6 +58,35 @@ export const CharacteristicsForm = ({
             CHARACTERISTICS_CHOICE,
         ],
     });
+
+    const previousMaxQAtNominalV = useMemo(
+        () => previousValues?.qatNominalV * previousValues?.maximumSectionCount,
+        [previousValues]
+    );
+
+    const previousMaxSusceptance = useMemo(
+        () => previousValues?.bperSection * previousValues?.maximumSectionCount,
+        [previousValues]
+    );
+    const currentSectionCount = useMemo(
+        () => sectionCount ?? previousValues?.sectionCount,
+        [sectionCount, previousValues]
+    );
+
+    const currentMaximumSectionCount = useMemo(
+        () => maximumSectionCount ?? previousValues?.maximumSectionCount,
+        [maximumSectionCount, previousValues]
+    );
+
+    const currentMaxQAtNominalV = useMemo(
+        () => maxQAtNominalV ?? previousMaxQAtNominalV,
+        [maxQAtNominalV, previousMaxQAtNominalV]
+    );
+
+    const currentMaxSusceptance = useMemo(
+        () => maxSusceptance ?? previousMaxSusceptance,
+        [maxSusceptance, previousMaxSusceptance]
+    );
 
     const maximumSectionCountField = (
         <IntegerInput
@@ -86,7 +111,7 @@ export const CharacteristicsForm = ({
             name={MAX_Q_AT_NOMINAL_V}
             label={'maxQAtNominalV'}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.maxQAtNominalV}
+            previousValue={previousMaxQAtNominalV}
             clearable={isModification}
         />
     );
@@ -96,14 +121,16 @@ export const CharacteristicsForm = ({
             name={SWITCHED_ON_Q_AT_NOMINAL_V}
             label={'SwitchedOnMaxQAtNominalV'}
             adornment={ReactivePowerAdornment}
-            clearable={isModification}
+            previousValue={
+                previousValues?.qatNominalV * previousValues?.sectionCount
+            }
             formProps={{
                 disabled: true,
             }}
         />
     );
 
-    const previousHuntCompensatorType = useMemo(
+    const previousShuntCompensatorType = useMemo(
         () =>
             previousValues?.bperSection
                 ? intl.formatMessage({
@@ -122,7 +149,7 @@ export const CharacteristicsForm = ({
             name={SHUNT_COMPENSATOR_TYPE}
             label={'Type'}
             size={'small'}
-            previousValue={previousHuntCompensatorType}
+            previousValue={previousShuntCompensatorType}
         />
     );
 
@@ -131,7 +158,7 @@ export const CharacteristicsForm = ({
             name={MAX_SUSCEPTANCE}
             label={'MaxShuntSusceptance'}
             adornment={SusceptanceAdornment}
-            previousValue={previousValues?.bperSection}
+            previousValue={previousMaxSusceptance}
             clearable={isModification}
         />
     );
@@ -141,7 +168,9 @@ export const CharacteristicsForm = ({
             name={SWITCHED_ON_SUSCEPTANCE}
             label={'SwitchedOnMaxSusceptance'}
             adornment={SusceptanceAdornment}
-            clearable={isModification}
+            previousValue={
+                previousValues?.bperSection * previousValues?.sectionCount
+            }
             formProps={{
                 disabled: true,
             }}
@@ -156,40 +185,45 @@ export const CharacteristicsForm = ({
     );
 
     const handleSwitchedOnValue = useCallback(
-        (linkedSwitchedOnValue, SWITCHED_ON_FIELD) => {
+        (
+            linkedSwitchedOnValue,
+            currentLinkedSwitchedOnValue,
+            SWITCHED_ON_FIELD
+        ) => {
             if (
                 ![
-                    sectionCount,
-                    maximumSectionCount,
-                    linkedSwitchedOnValue,
+                    currentSectionCount,
+                    currentMaximumSectionCount,
+                    currentLinkedSwitchedOnValue,
                 ].includes(null)
             ) {
-                trigger(SECTION_COUNT).then((isValid) => {
-                    if (isValid) {
-                        setValue(
-                            SWITCHED_ON_FIELD,
-                            (linkedSwitchedOnValue / maximumSectionCount) *
-                                sectionCount
-                        );
-                    } else {
-                        setValue(SWITCHED_ON_FIELD, null);
-                    }
-
-                    if (!isSubmitted) {
-                        clearErrors(SECTION_COUNT);
-                    }
-                });
+                if (
+                    currentMaximumSectionCount >= currentSectionCount &&
+                    [
+                        sectionCount,
+                        maximumSectionCount,
+                        linkedSwitchedOnValue,
+                    ].some((value) => !isBlankOrEmpty(value))
+                ) {
+                    setValue(
+                        SWITCHED_ON_FIELD,
+                        (currentLinkedSwitchedOnValue /
+                            currentMaximumSectionCount) *
+                            currentSectionCount
+                    );
+                } else {
+                    setValue(SWITCHED_ON_FIELD, null);
+                }
             } else {
                 setValue(SWITCHED_ON_FIELD, null);
             }
         },
         [
+            currentSectionCount,
+            currentMaximumSectionCount,
             sectionCount,
             maximumSectionCount,
-            isSubmitted,
-            trigger,
             setValue,
-            clearErrors,
         ]
     );
 
@@ -197,42 +231,51 @@ export const CharacteristicsForm = ({
         if (
             characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
         ) {
-            handleSwitchedOnValue(maxQAtNominalV, SWITCHED_ON_Q_AT_NOMINAL_V);
+            handleSwitchedOnValue(
+                maxQAtNominalV,
+                currentMaxQAtNominalV,
+                SWITCHED_ON_Q_AT_NOMINAL_V
+            );
         } else if (
             characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
         ) {
-            handleSwitchedOnValue(maxSusceptance, SWITCHED_ON_SUSCEPTANCE);
+            handleSwitchedOnValue(
+                maxSusceptance,
+                currentMaxSusceptance,
+                SWITCHED_ON_SUSCEPTANCE
+            );
         }
     }, [
-        maxQAtNominalV,
-        maxSusceptance,
         characteristicsChoice,
         handleSwitchedOnValue,
+        previousValues,
+        currentMaxQAtNominalV,
+        currentMaxSusceptance,
+        maxQAtNominalV,
+        maxSusceptance,
     ]);
 
     return (
-        <>
-            <Grid container spacing={2}>
-                {gridItem(maximumSectionCountField, 4)}
-                {gridItem(sectionCountField, 4)}
-                {gridItem(characteristicsChoiceField, 12)}
-                {characteristicsChoice ===
-                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
-                    <Grid item container spacing={2}>
-                        {gridItem(maxSusceptanceField, 4)}
-                        {gridItem(switchedOnSusceptanceField, 4)}
-                    </Grid>
-                )}
-                {characteristicsChoice ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
-                    <Grid item container spacing={2}>
-                        {gridItem(shuntCompensatorTypeField, 4)}
-                        <Box sx={{ width: '100%' }} />
-                        {gridItem(maxQAtNominalVField, 4)}
-                        {gridItem(switchedOnMaxQAtNominalVField, 4)}
-                    </Grid>
-                )}
-            </Grid>
-        </>
+        <Grid container spacing={2}>
+            {gridItem(maximumSectionCountField, 4)}
+            {gridItem(sectionCountField, 4)}
+            {gridItem(characteristicsChoiceField, 12)}
+            {characteristicsChoice ===
+                CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
+                <Grid item container spacing={2}>
+                    {gridItem(maxSusceptanceField, 4)}
+                    {gridItem(switchedOnSusceptanceField, 4)}
+                </Grid>
+            )}
+            {characteristicsChoice ===
+                CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
+                <Grid item container spacing={2}>
+                    {gridItem(shuntCompensatorTypeField, 4)}
+                    <Box sx={{ width: '100%' }} />
+                    {gridItem(maxQAtNominalVField, 4)}
+                    {gridItem(switchedOnMaxQAtNominalVField, 4)}
+                </Grid>
+            )}
+        </Grid>
     );
 };

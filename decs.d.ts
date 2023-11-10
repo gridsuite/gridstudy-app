@@ -1,7 +1,7 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { RadioGroupProps, SxProps, TextFieldProps } from "@mui/material";
+    import { RadioGroupProps, SxProps, TextFieldProps } from '@mui/material';
     import { CaseImportParameters } from 'services/network-conversion';
 
     interface SnackInputs {
@@ -30,7 +30,7 @@ declare module '@gridsuite/commons-ui' {
     interface AutocompleteInputProps
         extends Omit<
             AutocompleteProps<
-                string | {id: string; label: string;},
+                string | { id: string; label: string },
                 boolean | undefined,
                 boolean | undefined,
                 boolean | undefined
@@ -39,7 +39,7 @@ declare module '@gridsuite/commons-ui' {
             'value' | 'onChange' | 'renderInput'
         > {
         name: string;
-        options: ({ id: string, label: string } | string)[];
+        options: ({ id: string; label: string } | string)[];
         label?: string;
         outputTransform?: (value: string) => string;
         inputTransform?: (value: string) => string;
@@ -123,7 +123,7 @@ declare module '@gridsuite/commons-ui' {
     interface SwitchInputProps {
         name: string;
         label?: string;
-        formProps?: Omit<SwitchInputProps, 'disabled'>,
+        formProps?: Omit<SwitchInputProps, 'disabled'>;
     }
 
     export const SwitchInput: FunctionComponent<SwitchInputProps>;
@@ -162,9 +162,11 @@ declare module '@gridsuite/commons-ui' {
     };
 
     interface OverflowableTextProps {
-        sx: SxProps,
+        sx: SxProps;
         text?: string;
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
+
+    export const DARK_THEME: string;
 }

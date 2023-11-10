@@ -16,10 +16,10 @@ import {
     Badge,
     Select,
     MenuItem,
+    debounce,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import { useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     iconSize: {
@@ -80,9 +80,8 @@ const CustomHeaderComponent = ({
 
     const [filterAnchorElement, setFilterAnchorElement] = useState(null);
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
-    const [selectedFilterComparator, setSelectedFilterComparator] = useState(
-        filterComparators[0]
-    );
+    const [selectedFilterComparator, setSelectedFilterComparator] =
+        useState('');
     const [selectedFilterData, setSelectedFilterData] = useState(undefined);
 
     const isColumnSorted = sortColKey === field;
@@ -109,7 +108,11 @@ const CustomHeaderComponent = ({
         setIsHoveringColumnHeader(false);
     };
 
-    const debouncedUpdateFilter = useDebounce(updateFilter, debounceMs);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedUpdateFilter = useCallback(
+        debounce((data) => updateFilter(field, data), debounceMs),
+        [field, debounceMs, updateFilter]
+    );
 
     const handleFilterTextChange = (event) => {
         const value = event.target.value.toUpperCase();
@@ -125,16 +128,13 @@ const CustomHeaderComponent = ({
 
     const handleFilterAutoCompleteChange = (_, data) => {
         setSelectedFilterData(data);
-        debouncedUpdateFilter(field, data);
+        debouncedUpdateFilter(data);
     };
 
     const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-
-        debouncedUpdateFilter(field, [
-            { text: selectedFilterData, type: newType },
-        ]);
+        debouncedUpdateFilter([{ text: selectedFilterData, type: newType }]);
     };
 
     const handleSortChange = useCallback(() => {
@@ -163,6 +163,12 @@ const CustomHeaderComponent = ({
             setSelectedFilterData(undefined);
         }
     }, [filterSelector]);
+
+    useEffect(() => {
+        if (!selectedFilterComparator) {
+            setSelectedFilterComparator(filterComparators[0]);
+        }
+    }, [selectedFilterComparator, filterComparators]);
 
     return (
         <Grid

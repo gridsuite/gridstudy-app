@@ -311,6 +311,9 @@ function SingleLineDiagramContent(props) {
                     handleRunShortcircuitAnalysis={
                         handleRunShortcircuitAnalysis
                     }
+                    handleOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
                     busId={busMenu.busId}
                     position={busMenu.position}
                     closeBusMenu={closeBusMenu}
@@ -419,6 +422,9 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     handleDeleteEquipment={handleDeleteEquipment}
+                    handleOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
                 />
             )
         );

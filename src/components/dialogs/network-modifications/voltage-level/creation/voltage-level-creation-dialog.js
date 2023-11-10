@@ -29,6 +29,7 @@ import {
     SWITCHES_BETWEEN_SECTIONS,
     SWITCH_KIND,
     SWITCH_KINDS,
+    TOPOLOGY_KIND,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
@@ -142,6 +143,7 @@ const VoltageLevelCreationDialog = ({
                     (fromCopy ? '(1)' : ''),
                 [EQUIPMENT_NAME]:
                     voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
+                [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
                 [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
                 [NOMINAL_VOLTAGE]: voltageLevel[NOMINAL_VOLTAGE],
                 [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
@@ -219,6 +221,7 @@ const VoltageLevelCreationDialog = ({
                 couplingDevices: voltageLevel[COUPLING_OMNIBUS],
                 isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
+                topologyKind: voltageLevel[TOPOLOGY_KIND],
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,

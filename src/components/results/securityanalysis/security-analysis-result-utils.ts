@@ -129,8 +129,6 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
         field: 'subjectId',
-        /*  valueGetter: contingencyGetterValues,
-        cellRenderer: ContingencyCellRenderer, */
         isSortable: true,
         isFilterable: true,
         filterParams: {
@@ -332,7 +330,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
-                debounceMs: 1200, // we don't want to fetch the back end too fast
             },
         }),
         makeColumn({
