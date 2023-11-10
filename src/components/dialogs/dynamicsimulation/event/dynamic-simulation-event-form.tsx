@@ -13,6 +13,7 @@ import { useIntl } from 'react-intl';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
+    equipmentType: string;
     eventDefinition?: EventDefinition;
     event?: Event;
 };
@@ -20,7 +21,7 @@ export type DynamicSimulationBasicEventFormProps = {
 export const DynamicSimulationEventForm = (
     props: DynamicSimulationBasicEventFormProps
 ) => {
-    const { equipmentId, eventDefinition, event } = props;
+    const { equipmentId, equipmentType, eventDefinition, event } = props;
 
     const propertyNames: EventPropertyName[] = (
         eventDefinition ? Object.keys(eventDefinition) : []
@@ -62,17 +63,25 @@ export const DynamicSimulationEventForm = (
                         (elem) => elem.name === propertyName
                     )?.value;
 
-                    return gridItem(
-                        makeComponentFor(
-                            propertyName,
-                            propertyDefinition,
-                            propertyValue && hasEnumValues
-                                ? intl.formatMessage({
-                                      id: propertyValue,
-                                  })
-                                : propertyValue
-                        ),
-                        12
+                    // compatibility check between event property and equipment type to show or not
+                    const visible =
+                        !propertyDefinition?.acceptOnly ||
+                        propertyDefinition.acceptOnly(equipmentType);
+
+                    return (
+                        visible &&
+                        gridItem(
+                            makeComponentFor(
+                                propertyName,
+                                propertyDefinition,
+                                propertyValue && hasEnumValues
+                                    ? intl.formatMessage({
+                                          id: propertyValue,
+                                      })
+                                    : propertyValue
+                            ),
+                            12
+                        )
                     );
                 })}
             </Grid>

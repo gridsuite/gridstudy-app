@@ -26,7 +26,7 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import { CheckboxInput, SelectInput } from '@gridsuite/commons-ui';
+import { CheckboxInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -35,7 +35,6 @@ import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
-import { filledTextField } from '../../dialogs/dialogUtils';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -112,16 +111,12 @@ function EditableTableCell({
                     {...props}
                 />
             )}
-            {!column.numeric &&
-                !column.directoryItems &&
-                !column.chipItems &&
-                !column.menuItems &&
-                !column.checkboxItems && (
-                    <TableTextInput
-                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                        {...props}
-                    />
-                )}
+            {!column.numeric && !column.directoryItems && !column.chipItems && (
+                <TableTextInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    {...props}
+                />
+            )}
             {column.directoryItems && (
                 <DirectoryItemsInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
@@ -135,26 +130,6 @@ function EditableTableCell({
                 <ChipItemsInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     hideErrorMessage={true}
-                />
-            )}
-            {column.menuItems && (
-                <SelectInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    options={column.equipmentTypes}
-                    fullWidth
-                    disableClearable={true}
-                    size="small"
-                    formProps={{
-                        filledTextField,
-                        multiline: true,
-                    }}
-                />
-            )}
-            {column.checkboxItems && (
-                <CheckboxInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    options={column.equipmentTypes}
-                    size="small"
                 />
             )}
         </TableCell>
@@ -173,7 +148,6 @@ const DndTable = ({
     handleResetButton,
     resetButtonMessageId,
     disabled = false,
-    dropDisabled = false,
     withResetButton = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
@@ -343,11 +317,9 @@ const DndTable = ({
         return (
             <TableHead>
                 <TableRow>
-                    {!dropDisabled && (
-                        <TableCell sx={{ width: '3%' }}>
-                            {/* empty cell for the drag and drop column */}
-                        </TableCell>
-                    )}
+                    <TableCell sx={{ width: '3%' }}>
+                        {/* empty cell for the drag and drop column */}
+                    </TableCell>
                     <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
@@ -390,25 +362,21 @@ const DndTable = ({
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                             >
-                                {!dropDisabled && (
-                                    <Tooltip
-                                        title={intl.formatMessage({
-                                            id: 'DragAndDrop',
-                                        })}
-                                        placement="right"
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DragAndDrop',
+                                    })}
+                                    placement="right"
+                                >
+                                    <TableCell
+                                        sx={{ textAlign: 'center' }}
+                                        {...(disabled
+                                            ? {}
+                                            : { ...provided.dragHandleProps })}
                                     >
-                                        <TableCell
-                                            sx={{ textAlign: 'center' }}
-                                            {...(disabled
-                                                ? {}
-                                                : {
-                                                      ...provided.dragHandleProps,
-                                                  })}
-                                        >
-                                            <DragIndicatorIcon />
-                                        </TableCell>
-                                    </Tooltip>
-                                )}
+                                        <DragIndicatorIcon />
+                                    </TableCell>
+                                </Tooltip>
                                 <TableCell sx={{ textAlign: 'center' }}>
                                     <CheckboxInput
                                         name={`${arrayFormName}[${index}].${SELECTED}`}
