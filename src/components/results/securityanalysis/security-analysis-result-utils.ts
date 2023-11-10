@@ -217,8 +217,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
-        },
-        {
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -298,8 +296,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
-        },
-        {
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
