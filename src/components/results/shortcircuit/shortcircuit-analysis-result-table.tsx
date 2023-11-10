@@ -271,89 +271,101 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [theme.selectedRow.background]
     );
 
-    const getCurrent = (x: SCAFaultResult | SCAFeederResult) => {
-        let current = NaN;
-        if (analysisType === ShortCircuitAnalysisType.ALL_BUSES) {
-            current = x.current;
-        } else if (analysisType === ShortCircuitAnalysisType.ONE_BUS) {
-            current = x.positiveMagnitude;
-        }
-        return current;
-    };
-
-    const flattenResult = (shortCircuitAnalysisResult: SCAFaultResult[]) => {
-        const rows: ShortCircuitAnalysisAGGridResult[] = [];
-
-        shortCircuitAnalysisResult?.forEach((faultResult: SCAFaultResult) => {
-            const fault = faultResult.fault;
-            const limitViolations = faultResult.limitViolations ?? [];
-            let firstLimitViolation;
-            if (limitViolations.length > 0) {
-                let lv = limitViolations[0];
-                firstLimitViolation = {
-                    limitType: intl.formatMessage({
-                        id: lv.limitType,
-                    }),
-                    limitName: lv.limitName,
-                };
+    const getCurrent = useCallback(
+        (x: SCAFaultResult | SCAFeederResult) => {
+            let current = NaN;
+            if (analysisType === ShortCircuitAnalysisType.ALL_BUSES) {
+                current = x.current;
+            } else if (analysisType === ShortCircuitAnalysisType.ONE_BUS) {
+                current = x.positiveMagnitude;
             }
+            return current;
+        },
+        [analysisType]
+    );
 
-            const current = getCurrent(faultResult);
+    const flattenResult = useCallback(
+        (shortCircuitAnalysisResult: SCAFaultResult[]) => {
+            const rows: ShortCircuitAnalysisAGGridResult[] = [];
 
-            const deltaCurrentIpMax =
-                faultResult.shortCircuitLimits.deltaCurrentIpMax;
-            const deltaCurrentIpMin =
-                faultResult.shortCircuitLimits.deltaCurrentIpMin;
+            shortCircuitAnalysisResult?.forEach(
+                (faultResult: SCAFaultResult) => {
+                    const fault = faultResult.fault;
+                    const limitViolations = faultResult.limitViolations ?? [];
+                    let firstLimitViolation;
+                    if (limitViolations.length > 0) {
+                        let lv = limitViolations[0];
+                        firstLimitViolation = {
+                            limitType: intl.formatMessage({
+                                id: lv.limitType,
+                            }),
+                            limitName: lv.limitName,
+                        };
+                    }
 
-            rows.push({
-                faultId: fault.id,
-                elementId: fault.elementId,
-                faultType: intl.formatMessage({ id: fault.faultType }),
-                shortCircuitPower: faultResult.shortCircuitPower,
-                limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
-                limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
-                deltaCurrentIpMax: deltaCurrentIpMax,
-                deltaCurrentIpMin: deltaCurrentIpMin,
-                current: current,
-                connectableId: '', // we have to add this otherwise it's automatically filtered
-                ...firstLimitViolation,
-            });
-            limitViolations.slice(1).forEach((lv) => {
-                rows.push({
-                    limitType: intl.formatMessage({
-                        id: lv.limitType,
-                    }),
-                    limitMin:
-                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
-                    limitMax:
-                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
-                    limitName: lv.limitName,
-                    current: lv.value,
-                    elementId: '', // we have to add this otherwise it's automatically filtered
-                    faultType: '', // we have to add this otherwise it's automatically filtered
-                    connectableId: '', // we have to add this otherwise it's automatically filtered
-                });
-            });
-            const feederResults = faultResult.feederResults ?? [];
-            feederResults.forEach((feederResult) => {
-                const current = getCurrent(feederResult);
+                    const current = getCurrent(faultResult);
 
-                rows.push({
-                    connectableId: feederResult.connectableId,
-                    linkedElementId: fault.id,
-                    current: current,
-                    elementId: '', // we have to add this otherwise it's automatically filtered
-                    faultType: '', // we have to add this otherwise it's automatically filtered
-                    limitType: '', // we have to add this otherwise it's automatically filtered
-                });
-            });
-        });
-        return rows;
-    };
+                    const deltaCurrentIpMax =
+                        faultResult.shortCircuitLimits.deltaCurrentIpMax;
+                    const deltaCurrentIpMin =
+                        faultResult.shortCircuitLimits.deltaCurrentIpMin;
+
+                    rows.push({
+                        faultId: fault.id,
+                        elementId: fault.elementId,
+                        faultType: intl.formatMessage({ id: fault.faultType }),
+                        shortCircuitPower: faultResult.shortCircuitPower,
+                        limitMin: unitToKiloUnit(
+                            faultResult.shortCircuitLimits.ipMin
+                        ),
+                        limitMax: unitToKiloUnit(
+                            faultResult.shortCircuitLimits.ipMax
+                        ),
+                        deltaCurrentIpMax: deltaCurrentIpMax,
+                        deltaCurrentIpMin: deltaCurrentIpMin,
+                        current: current,
+                        connectableId: '', // we have to add this otherwise it's automatically filtered
+                        ...firstLimitViolation,
+                    });
+                    limitViolations.slice(1).forEach((lv) => {
+                        rows.push({
+                            limitType: intl.formatMessage({
+                                id: lv.limitType,
+                            }),
+                            limitMin:
+                                lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
+                                    ? unitToKiloUnit(lv.limit)
+                                    : null,
+                            limitMax:
+                                lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
+                                    ? unitToKiloUnit(lv.limit)
+                                    : null,
+                            limitName: lv.limitName,
+                            current: lv.value,
+                            elementId: '', // we have to add this otherwise it's automatically filtered
+                            faultType: '', // we have to add this otherwise it's automatically filtered
+                            connectableId: '', // we have to add this otherwise it's automatically filtered
+                        });
+                    });
+                    const feederResults = faultResult.feederResults ?? [];
+                    feederResults.forEach((feederResult) => {
+                        const current = getCurrent(feederResult);
+
+                        rows.push({
+                            connectableId: feederResult.connectableId,
+                            linkedElementId: fault.id,
+                            current: current,
+                            elementId: '', // we have to add this otherwise it's automatically filtered
+                            faultType: '', // we have to add this otherwise it's automatically filtered
+                            limitType: '', // we have to add this otherwise it's automatically filtered
+                        });
+                    });
+                }
+            );
+            return rows;
+        },
+        [getCurrent, intl]
+    );
 
     const defaultColDef = useMemo(
         () => ({
@@ -372,7 +384,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         }
     }, []);
 
-    const rows = useMemo(() => flattenResult(result), [result]);
+    const rows = useMemo(() => flattenResult(result), [flattenResult, result]);
     const message = getNoRowsMessage(
         messages,
         rows,
