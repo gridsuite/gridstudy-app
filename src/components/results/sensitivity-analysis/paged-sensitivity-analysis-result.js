@@ -137,13 +137,18 @@ const PagedSensitivityAnalysisResult = ({
                   }
                 : {};
 
+        const formattedFilterSelector = {};
+        filterSelector?.forEach(({ column, value }) => {
+            formattedFilterSelector[column] = value;
+        });
+
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
             pageSize: rowsPerPage,
             pageNumber: page,
-            ...filterSelector,
+            ...formattedFilterSelector,
             ...sortSelector,
         };
         setIsLoading(true);

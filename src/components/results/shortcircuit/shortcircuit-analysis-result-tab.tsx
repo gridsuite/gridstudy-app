@@ -15,7 +15,7 @@ import {
 } from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
-import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
+import { ShortCircuitAnalysisAllBusesResult } from './shortcircuit-analysis-all-buses-result';
 
 interface ShortCircuitAnalysisResultTabProps {
     resultTabIndexRedirection: ResultTabIndexRedirection;

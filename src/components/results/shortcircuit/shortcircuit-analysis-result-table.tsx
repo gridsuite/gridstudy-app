@@ -15,10 +15,7 @@ import {
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
-import {
-    CustomAGGrid,
-    CustomColDef,
-} from 'components/custom-aggrid/custom-aggrid';
+import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     getNoRowsMessage,
     getRows,
@@ -29,21 +26,23 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Option } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
-import CustomHeaderComponent, {
+import {
+    CustomColDef,
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
-} from '../../custom-aggrid/custom-aggrid-header';
-import { ISortConfig } from '../../../hooks/use-aggrid-sort';
-import { FilterSelectorType } from '../securityanalysis/security-analysis.type';
+    FilterSelectorType,
+    SortConfigType,
+} from '../../custom-aggrid/custom-aggrid-types';
+import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
 type SortProps = {
     onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig?: ISortConfig;
+    sortConfig?: SortConfigType;
 };
 
 type FilterProps = {
     updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | undefined;
+    filterSelector: FilterSelectorType | null;
 };
 
 interface ShortCircuitAnalysisResultProps {
@@ -94,8 +93,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
 > = ({
     result,
     analysisType,
-    // updateFilter,
-    // updateSort,
     isFetching,
     faultTypeOptions,
     limitViolationTypeOptions,

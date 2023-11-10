@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import { FILTER_UI_TYPES } from './custom-aggrid-types';
 
 const styles = {
     iconSize: {
@@ -36,17 +37,6 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-};
-
-export const FILTER_UI_TYPES = {
-    TEXT: 'text',
-    AUTO_COMPLETE: 'autoComplete',
-};
-
-export const FILTER_TEXT_COMPARATORS = {
-    EQUALS: 'equals',
-    CONTAINS: 'contains',
-    STARTS_WITH: 'startsWith',
 };
 
 const CustomHeaderComponent = ({
@@ -366,8 +356,8 @@ CustomHeaderComponent.propTypes = {
     isFilterable: PropTypes.bool,
     filterParams: PropTypes.shape({
         filterUIType: PropTypes.oneOf([
-            FILTER_UI_TYPES.TEXT,
-            FILTER_UI_TYPES.AUTO_COMPLETE,
+            // FILTER_UI_TYPES.TEXT,
+            // FILTER_UI_TYPES.AUTO_COMPLETE,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,

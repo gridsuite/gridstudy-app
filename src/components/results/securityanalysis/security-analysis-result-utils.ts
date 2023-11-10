@@ -23,12 +23,12 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
 import {
+    CustomColDef,
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
-} from '../../custom-aggrid/custom-aggrid-header';
-import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
-import { CustomColDef } from '../../custom-aggrid/custom-aggrid';
+} from '../../custom-aggrid/custom-aggrid-types';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {

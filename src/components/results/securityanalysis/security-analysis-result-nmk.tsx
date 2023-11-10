@@ -29,7 +29,8 @@ import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
-import { CustomColDef } from '../../custom-aggrid/custom-aggrid';
+
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-types';
 
 const styles = {
     container: {

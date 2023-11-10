@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
+import { FILTER_TEXT_COMPARATORS } from '../components/custom-aggrid/custom-aggrid-types';
 
 const removeElementFromArrayWithFieldValue = (
     arrayToRemoveFieldValueFrom,
@@ -78,11 +79,29 @@ export const useAggridRowFilter = (
             return selector;
         }, {});
 
-        if (Object.keys(result).length === 0) {
+        const resultKeys = Object.keys(result);
+        if (!resultKeys.length) {
             return null;
         }
 
-        return result;
+        return (
+            result &&
+            resultKeys.map((field) => {
+                const selectedValue = result[field];
+
+                const { text, type } =
+                    typeof selectedValue === 'object' && selectedValue?.[0];
+
+                const isTextFilter = !!text;
+
+                return {
+                    dataType: 'text',
+                    column: field,
+                    type: isTextFilter ? type : FILTER_TEXT_COMPARATORS.EQUALS,
+                    value: isTextFilter ? text : selectedValue,
+                };
+            })
+        );
     }, [filterSelectorKeys, rowFilters]);
 
     const initFilters = useCallback(() => {

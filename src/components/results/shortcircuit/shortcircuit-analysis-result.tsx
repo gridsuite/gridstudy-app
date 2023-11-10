@@ -40,7 +40,6 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -132,25 +131,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         const selector = {
             page,
             size: rowsPerPage,
-            filter:
-                filterSelector &&
-                Object.keys(filterSelector).map((field: string) => {
-                    const selectedValue =
-                        filterSelector[field as keyof typeof filterSelector];
-
-                    const { text, type } = selectedValue?.[0];
-
-                    const isTextFilter = !!text;
-
-                    return {
-                        dataType: 'text',
-                        column: field,
-                        type: isTextFilter
-                            ? type
-                            : FILTER_TEXT_COMPARATORS.EQUALS,
-                        value: isTextFilter ? text : selectedValue,
-                    };
-                }),
+            filter: filterSelector,
             sort: {
                 colKey: fromFrontColumnToBack(colKey),
                 sortValue: getSortValue(sortWay),
@@ -247,6 +228,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 }}
                 filterProps={{
                     updateFilter,
+                    //@ts-ignore
                     filterSelector,
                 }}
             />

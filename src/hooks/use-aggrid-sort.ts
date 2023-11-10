@@ -6,11 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
-
-export interface ISortConfig {
-    colKey: string;
-    sortWay: number;
-}
+import { SortConfigType } from '../components/custom-aggrid/custom-aggrid-types';
 
 type DataKeyToSortKey = Record<string, string>;
 
@@ -40,7 +36,7 @@ const getSortConfig = (
     dataKeyToSortKey: DataKeyToSortKey | undefined,
     colKey: string,
     sortWay: number
-): ISortConfig => {
+): SortConfigType => {
     return {
         colKey: dataKeyToSortKey
             ? getKeyByValue(dataKeyToSortKey, colKey) || colKey
@@ -51,7 +47,7 @@ const getSortConfig = (
 
 interface IUseAgGridSortProps {
     dataKeyToSortKey?: DataKeyToSortKey;
-    initSortConfig?: ISortConfig;
+    initSortConfig?: SortConfigType;
 }
 
 export const useAgGridSort = ({
@@ -63,7 +59,7 @@ export const useAgGridSort = ({
         sortWay: SORT_WAYS.asc,
     };
 
-    const [sortConfig, setSortConfig] = useState<ISortConfig>(
+    const [sortConfig, setSortConfig] = useState<SortConfigType>(
         getSortConfig(dataKeyToSortKey, initColKey, initSortWay)
     );
 

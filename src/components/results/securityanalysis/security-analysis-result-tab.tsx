@@ -41,7 +41,7 @@ import {
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
+import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -125,6 +125,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                                 field as keyof typeof filterSelector
                             ];
 
+                        //@ts-ignore
                         const { text, type } = selectedValue?.[0];
 
                         const isTextFilter = !!text;
@@ -289,6 +290,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                         filterProps={{
                             updateFilter,
+                            //@ts-ignore
                             filterSelector,
                             filterEnums: filterEnums as FilterEnums,
                         }}

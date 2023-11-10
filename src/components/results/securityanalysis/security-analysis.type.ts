@@ -5,10 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React from 'react';
 import { ColDef } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { ISortConfig } from '../../../hooks/use-aggrid-sort';
-import * as React from 'react';
+import {
+    FilterSelectorType,
+    SortConfigType,
+} from '../../custom-aggrid/custom-aggrid-types';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -75,25 +78,14 @@ export interface PreContingencyResult {
     };
 }
 
-type FilterValueType = string[] | { text: string; type: string }[];
-
-export type FilterSelectorType = Record<string, FilterValueType> | null;
-
 export type SortTableStateType = {
     colKey: string;
     sortValue?: string;
 };
 
-export type FilterTableStateType = {
-    dataType?: string;
-    field?: string;
-    type?: string;
-    value?: FilterValueType;
-};
-
 export type QueryParamsType = Record<
     string,
-    string | number | SortTableStateType | FilterTableStateType[]
+    string | number | SortTableStateType | FilterSelectorType[]
 >;
 
 type Sort = {
@@ -126,12 +118,12 @@ type PaginationProps = {
 
 type SortProps = {
     onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig?: ISortConfig;
+    sortConfig?: SortConfigType;
 };
 
 type FilterProps = {
     updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | undefined;
+    filterSelector: FilterSelectorType | null;
     filterEnums: FilterEnums;
 };
 

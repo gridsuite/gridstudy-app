@@ -11,33 +11,13 @@ import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import {
-    ColDef,
-    ColumnResizedEvent,
-    GetLocaleTextParams,
-} from 'ag-grid-community';
+import { ColumnResizedEvent, GetLocaleTextParams } from 'ag-grid-community';
 import { Box } from '@mui/system';
 import { mergeSx } from '../utils/functions';
 
 interface CustomAGGGridStyleProps {
     shouldHidePinnedHeaderRightBorder?: boolean;
     showOverlay?: boolean;
-}
-
-type FilterParams = {
-    filterUIType?: string;
-    filterComparators?: string[];
-    debounceMs?: number;
-    filterMaxNumConditions?: number;
-};
-
-export interface CustomColDef extends ColDef {
-    isSortable?: boolean;
-    isHidden?: boolean;
-    isFilterable?: boolean;
-    filterParams?: FilterParams;
-    isNumeric?: boolean;
-    fractionDigits?: number;
 }
 
 interface CustomAGGridProps extends AgGridReactProps, CustomAGGGridStyleProps {}
