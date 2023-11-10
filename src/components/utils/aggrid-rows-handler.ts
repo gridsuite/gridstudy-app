@@ -8,6 +8,7 @@ export interface RunningStatusMessage {
     running: string;
     failed: string;
     noData?: string;
+    fetching?: string;
 }
 
 export function getNoRowsMessage(
@@ -25,7 +26,7 @@ export function getNoRowsMessage(
             return messages.failed;
         case RunningStatus.SUCCEED:
             if (!isDataReady) {
-                return messages.running;
+                return messages.fetching;
             } else if (!rows || rows?.length === 0) {
                 return messages.noData
                     ? messages.noData
@@ -46,7 +47,8 @@ export const useIntlResultStatusMessages = (
 ) => {
     const specificMessage = useCallback(():
         | { noData: string }
-        | { noLimitViolation: string } => {
+        | { noLimitViolation: string }
+        | { fetching: string } => {
         if (hasNoData) {
             return { noData: intl.formatMessage({ id: 'grid.noRowsToShow' }) };
         }
@@ -63,6 +65,7 @@ export const useIntlResultStatusMessages = (
             ...specificMessage(),
             running: intl.formatMessage({ id: 'grid.running' }),
             failed: intl.formatMessage({ id: 'grid.failed' }),
+            fetching: intl.formatMessage({ id: 'LoadingRemoteData' }),
         };
     }, [intl, specificMessage]);
 };
