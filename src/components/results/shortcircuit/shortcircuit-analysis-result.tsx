@@ -144,7 +144,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
                     return {
                         dataType: 'text',
-                        field,
+                        column: field,
                         type: isTextFilter
                             ? type
                             : FILTER_TEXT_COMPARATORS.EQUALS,
