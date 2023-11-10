@@ -21,6 +21,10 @@ import { BranchSide } from '../../utils/constants';
 const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 const PERMANENT_LIMIT_NAME = 'permanent';
 export const convertDuration = (duration: number): string => {
+    if (isNaN(duration)) {
+        return '';
+    }
+
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
 
