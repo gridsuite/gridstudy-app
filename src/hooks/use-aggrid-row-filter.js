@@ -19,8 +19,7 @@ const removeElementFromArrayWithFieldValue = (
 const changeValueFromArrayWithFieldValue = (
     arrayToModify,
     fieldValue,
-    newValue,
-    filterType
+    newValue
 ) => {
     const filterIndex = arrayToModify.findIndex((f) => f.field === fieldValue);
     if (filterIndex === -1) {
@@ -29,7 +28,7 @@ const changeValueFromArrayWithFieldValue = (
             {
                 field: fieldValue,
                 value: newValue,
-                filterType: filterType,
+                filterType: newValue?.dataType,
             },
         ];
     } else {
@@ -46,7 +45,7 @@ export const useAggridRowFilter = (
     const [rowFilters, setRowFilters] = useState([]);
 
     const updateFilter = useCallback(
-        (field, value, filterType) => {
+        (field, value) => {
             setRowFilters((oldRowFilters) => {
                 let updatedFilters;
 
@@ -62,8 +61,7 @@ export const useAggridRowFilter = (
                     updatedFilters = changeValueFromArrayWithFieldValue(
                         oldRowFilters,
                         field,
-                        value,
-                        filterType
+                        value
                     );
                 }
 

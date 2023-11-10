@@ -23,7 +23,11 @@ import {
     ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import {
+    ContingencyCellRenderer,
+    displayNAValue,
+    DisplayNAValue,
+} from 'components/spreadsheet/utils/cell-renderers';
 import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -34,6 +38,7 @@ import {
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from '../../../services/security-analysis';
+import { string } from 'yup';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -141,7 +146,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     }),
 
     makeColumn({
-        headerName: intl.formatMessage({ id: 'LimitType' }),
+        headerName: intl.formatMessage({ id: 'ViolationType' }),
         field: 'limitType',
         isSortable: true,
         isFilterable: true,
@@ -150,6 +155,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeColumn({
         headerName: intl.formatMessage({ id: 'LimitName' }),
         field: 'limitName',
+        cellRenderer: (value: string | undefined) =>
+            displayNAValue(value, intl),
         isSortable: true,
         isFilterable: true,
         filterParams: {
@@ -161,25 +168,6 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
-        headerName: intl.formatMessage({
-            id: 'LimitAcceptableDuration',
-        }),
-        field: 'acceptableDuration',
-        numeric: true,
-        isSortable: true,
-        isFilterable: true,
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.acceptableDuration?.toFixed(1),
-        filterParams: {
-            filterUIType: FILTER_UI_TYPES.NUMBER,
-            filterComparators: [
-                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-            ],
-        },
-    }),
     makeColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
         field: 'limit',
@@ -198,7 +186,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
     makeColumn({
-        headerName: intl.formatMessage({ id: 'Value' }),
+        headerName: intl.formatMessage({ id: 'CalculatedValue' }),
         field: 'value',
         isSortable: true,
         isFilterable: true,
@@ -213,6 +201,25 @@ export const securityAnalysisTableNColumnsDefinition = (
             ],
         },
     }),
+
+    makeColumn({
+        headerName: intl.formatMessage({
+            id: 'Overload',
+        }),
+        field: 'acceptableDuration',
+        numeric: true,
+        isSortable: true,
+        isFilterable: true,
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: [
+                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+            ],
+        },
+    }),
+
     makeColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
@@ -226,6 +233,19 @@ export const securityAnalysisTableNColumnsDefinition = (
                 FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
                 FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
                 FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+            ],
+        },
+    }),
+    makeColumn({
+        headerName: intl.formatMessage({ id: 'LimitSide' }),
+        field: 'side',
+        isSortable: true,
+        isFilterable: true,
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.TEXT,
+            filterComparators: [
+                FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
     }),
@@ -266,7 +286,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             cellRenderer: subjectIdRenderer,
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitType' }),
+            headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
         }),
         makeColumn({
@@ -279,7 +299,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeColumn({
             headerName: intl.formatMessage({
-                id: 'LimitAcceptableDuration',
+                id: 'Overload',
             }),
             field: 'acceptableDuration',
         }),
@@ -290,7 +310,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 params.data?.limit?.toFixed(1),
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'Value' }),
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
@@ -343,7 +363,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'status',
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitType' }),
+            headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
         }),
         makeColumn({
@@ -356,7 +376,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeColumn({
             headerName: intl.formatMessage({
-                id: 'LimitAcceptableDuration',
+                id: 'Overload',
             }),
             field: 'acceptableDuration',
         }),
@@ -367,7 +387,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 params.data?.limit?.toFixed(1),
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'Value' }),
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),

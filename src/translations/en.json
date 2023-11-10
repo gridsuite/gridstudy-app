@@ -86,7 +86,7 @@
     "Intensity": "Intensity",
     "I_(A)": "I (A)",
     "limit": "limit",
-    "Limit": "Limit",
+    "Limit": "Limit value (A or kV)",
     "LimitLabel": "Limit (A)",
     "CurrentViolationValue": "Value (A)",
     "CurrentViolationLimit": "Limit (A)",
@@ -356,16 +356,18 @@
     "LOW_SHORT_CIRCUIT_CURRENT": "Isc min",
     "HIGH_SHORT_CIRCUIT_CURRENT": "Isc max",
 
-    "LimitType": "Limit type",
+    "LimitType": "Violation type",
+    "ViolationType": "Limit type",
     "LimitSide": "Side",
-    "LimitName": "Name",
+    "LimitName": "Limit name",
     "LimitNameCurrentViolation": "Limit name",
     "Limit_name": "Limit name",
     "OverloadedEquipment": "Equipment",
     "PermanentLimitName": "IST",
     "LimitAcceptableDuration": "Duration",
+    "Overload": "Overload",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
-    "Value": "Value",
+    "CalculatedValue": "Calculated value (A or kV)",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
     "true": "true",
@@ -1215,5 +1217,6 @@
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
     "customAgGridFilter.startsWith": "Starts with",
     "customAgGridFilter.contains": "Contains",
-    "customAgGridFilter.filterOoo": "Filter..."
+    "customAgGridFilter.filterOoo": "Filter...",
+    "undefined" : "undefined"
 }
