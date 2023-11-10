@@ -7,10 +7,10 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableRow } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { TensionTableProps } from './short-circuit-parameters.type';
+import { VoltageTableProps } from './short-circuit-parameters.type';
 import { getValues } from './short-circuit-parameters-utils';
 
-const TensionTable: FunctionComponent<TensionTableProps> = ({
+const VoltageTable: FunctionComponent<VoltageTableProps> = ({
     voltageProfileMode,
     values,
 }) => {
@@ -27,7 +27,7 @@ const TensionTable: FunctionComponent<TensionTableProps> = ({
                 values: valuesToDisplay.nominalTension,
             },
             {
-                name: intl.formatMessage({ id: 'shortCircuitInitialTension' }),
+                name: intl.formatMessage({ id: 'shortCircuitInitialVoltage' }),
                 values: valuesToDisplay.initialTension,
             },
         ],
@@ -49,4 +49,4 @@ const TensionTable: FunctionComponent<TensionTableProps> = ({
     );
 };
 
-export default TensionTable;
+export default VoltageTable;

@@ -36,7 +36,7 @@ import {
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
-import { INITIAL_TENSION, PREDEFINED_PARAMETERS } from '../../utils/constants';
+import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -82,9 +82,9 @@ const formSchema = yup
 const prepareDataToSend = (shortCircuitParams, newParameters) => {
     const oldParameters = { ...shortCircuitParams.parameters };
     let parameters = { ...oldParameters, ...newParameters };
-    // we need to add voltageRanges to the parameters only iwhen INITIAL_TENSION is configured
+    // we need to add voltageRanges to the parameters only when INITIAL_VOLTAGE is configured
     if (
-        newParameters.initialVoltageProfileMode === INITIAL_TENSION.CONFIGURED
+        newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
     ) {
         parameters = {
             ...parameters,
@@ -200,8 +200,8 @@ export const ShortCircuitParameters = ({
             const initalVoltageProfileMode =
                 predefinedParameter ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP
-                    ? INITIAL_TENSION.NOMINAL
-                    : INITIAL_TENSION.CONFIGURED;
+                    ? INITIAL_VOLTAGE.NOMINAL
+                    : INITIAL_VOLTAGE.CONFIGURED;
 
             setValue(
                 SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,

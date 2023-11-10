@@ -13,7 +13,7 @@ export enum STATUS {
     SUCCESS = 'SUCCESS',
     ERROR = 'ERROR',
 }
-export enum INITIAL_TENSION {
+export enum INITIAL_VOLTAGE {
     NOMINAL = 'NOMINAL',
     CONFIGURED = 'CONFIGURED',
 }

@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { INITIAL_TENSION } from '../../../utils/constants';
+import { INITIAL_VOLTAGE } from '../../../utils/constants';
 
 export interface ShortCircuitFieldsProps {
-    resetAll: (predefinedParams: INITIAL_TENSION) => void;
+    resetAll: (predefinedParams: INITIAL_VOLTAGE) => void;
     voltageRanges: VoltageRanges;
 }
 
-export interface TensionTableProps {
-    voltageProfileMode: INITIAL_TENSION;
+export interface VoltageTableProps {
+    voltageProfileMode: INITIAL_VOLTAGE;
     values: VoltageRanges;
 }
 export interface VoltageRange {

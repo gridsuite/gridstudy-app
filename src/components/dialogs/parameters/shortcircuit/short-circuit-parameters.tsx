@@ -31,14 +31,14 @@ import {
 } from '@gridsuite/commons-ui';
 
 import {
-    INITIAL_TENSION,
+    INITIAL_VOLTAGE,
     PREDEFINED_PARAMETERS,
     STATUS,
 } from '../../../utils/constants';
 import { gridItem, GridSection } from '../../dialogUtils';
 import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
-import TensionTable from './short-circuit-tension-table';
+import VoltageTable from './short-circuit-voltage-table';
 import {
     getStatus,
     intlInitialVoltageProfileMode,
@@ -141,12 +141,12 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         const isNominal =
             watchPredefinedParams ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP &&
-            watchInitialVoltageProfileMode === INITIAL_TENSION.NOMINAL;
+            watchInitialVoltageProfileMode === INITIAL_VOLTAGE.NOMINAL;
 
         const isConfigured =
             watchPredefinedParams ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909 &&
-            watchInitialVoltageProfileMode === INITIAL_TENSION.CONFIGURED;
+            watchInitialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED;
 
         if (isNominal || isConfigured) {
             setStatus(STATUS.SUCCESS);
@@ -188,7 +188,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
             <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
             <Grid>{gridItem(initialVoltageProfileModeField, 12)}</Grid>
-            <TensionTable
+            <VoltageTable
                 voltageProfileMode={watchInitialVoltageProfileMode}
                 values={voltageRanges}
             />

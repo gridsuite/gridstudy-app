@@ -1225,7 +1225,7 @@
     "shortCircuitShuntCompensators": "MCS",
     "shortCircuitNeutralPosition": "Neutral position",
     "shortCircuitNominalVoltage": "Nominal voltage(kV)",
-    "shortCircuitInitialTension": "Initial tension(kV)",
+    "shortCircuitInitialVoltage": "Initial tension(kV)",
     "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
     "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with standardized tension plan",
     "iccMaxWithCEIPredefinedParams": "ISC max with IEC 909 standard",

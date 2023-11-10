@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { INITIAL_TENSION, STATUS } from '../../../utils/constants';
+import { INITIAL_VOLTAGE, STATUS } from '../../../utils/constants';
 import { Lens } from '@mui/icons-material';
 import { VoltageRange, VoltageRanges } from './short-circuit-parameters.type';
 
@@ -49,10 +49,10 @@ const getSortedValues = (values: VoltageRange[], isNominal: boolean) => {
 };
 export const getValues = (
     values: VoltageRanges,
-    voltageProfileMode: INITIAL_TENSION
+    voltageProfileMode: INITIAL_VOLTAGE
 ): { initialTension: number[]; nominalTension: number[] } => {
     const voltageRanges =
-        voltageProfileMode === INITIAL_TENSION.NOMINAL
+        voltageProfileMode === INITIAL_VOLTAGE.NOMINAL
             ? values.NOMINAL
             : values.CONFIGURED;
     const initialTension = getSortedValues(voltageRanges, false);
