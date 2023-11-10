@@ -801,7 +801,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
-    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Un seul gradin)",
+    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Linéaire)",
     "SectionCountBetweenZeroAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 0 et le nombre de gradins",
     "MaximumSectionCount": "Nombre de gradins",
     "ShuntSectionCount": "Gradin courant",
