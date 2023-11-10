@@ -53,11 +53,11 @@ import { useAllComputingStatus } from './computing-status/use-all-computing-stat
 import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { fetchNetworkExistence } from '../services/study/network';
 import {
-    fetchNetworkExistence,
-    fetchStudyIndexationStatus,
-} from '../services/study/network';
-import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+    recreateStudyNetwork,
+    reindexStudyIfNeeded,
+} from 'services/study/study';
 import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
@@ -577,51 +577,18 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const checkStudyIndexation = useCallback(() => {
         setIsStudyIndexationPending(true);
-        fetchStudyIndexationStatus(studyUuid)
-            .then((status) => {
-                switch (status) {
-                    case STUDY_INDEXATION_STATUS.INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        setIsStudyIndexationPending(false);
-                        break;
-                    }
-                    case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
-                        dispatch(setStudyIndexationStatus(status));
-                        break;
-                    }
-                    case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        reindexAllStudy(studyUuid)
-                            .catch((error) => {
-                                // unknown error when trying to reindex study
-                                snackError({
-                                    headerId: 'studyIndexationError',
-                                    messageTxt: error,
-                                });
-                            })
-                            .finally(() => {
-                                setIsStudyIndexationPending(false);
-                            });
-                        break;
-                    }
-                    default: {
-                        setIsStudyIndexationPending(false);
-                        snackError({
-                            headerId: 'studyIndexationStatusUnknown',
-                            headerValues: { status: status },
-                        });
-                        break;
-                    }
-                }
-            })
-            .catch(() => {
-                // unknown error when checking study indexation status
-                setIsStudyIndexationPending(false);
+        reindexStudyIfNeeded(studyUuid)
+            .catch((error) => {
+                // unknown error when trying to reindex study
                 snackError({
-                    headerId: 'checkstudyIndexationError',
+                    headerId: 'studyIndexationError',
+                    messageTxt: error,
                 });
+            })
+            .finally(() => {
+                setIsStudyIndexationPending(false);
             });
-    }, [studyUuid, dispatch, snackError]);
+    }, [studyUuid, snackError]);
 
     useEffect(() => {
         if (studyUuid && !isStudyNetworkFound) {
