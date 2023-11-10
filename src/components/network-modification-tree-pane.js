@@ -213,7 +213,7 @@ export const NetworkModificationTreePane = ({
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'nodeCreated'
+                UpdateType.NODE_CREATED
             ) {
                 fetchNetworkModificationTreeNode(
                     studyUuid,
@@ -238,6 +238,9 @@ export const NetworkModificationTreePane = ({
                 ) {
                     resetNodeClipboard();
                 }
+                fetchStashedNodes(studyUuid).then((res) => {
+                    setNodesToRestore(res);
+                });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'subtreeCreated'
@@ -286,7 +289,7 @@ export const NetworkModificationTreePane = ({
                 });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'nodeDeleted'
+                UpdateType.NODE_DELETED
             ) {
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
@@ -304,6 +307,9 @@ export const NetworkModificationTreePane = ({
                         studyUpdatedForce.eventData.headers['nodes']
                     )
                 );
+                fetchStashedNodes(studyUuid).then((res) => {
+                    setNodesToRestore(res);
+                });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeUpdated'
@@ -363,15 +369,6 @@ export const NetworkModificationTreePane = ({
                 ) {
                     resetNodeClipboard();
                 }
-            }
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    UpdateType.NODE_DELETED ||
-                UpdateType.NODE_CREATED
-            ) {
-                fetchStashedNodes(studyUuid).then((res) => {
-                    setNodesToRestore(res);
-                });
             }
         }
     }, [

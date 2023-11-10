@@ -374,9 +374,15 @@
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
     "LOW_VOLTAGE": "Tension basse",
-    "ACTIVE_POWER": "Puissance active",
-    "APPARENT_POWER": "Puissance apparente",
-    "OTHER": "Autre",
+    "ACTIVE_POWER" : "Puissance active",
+    "APPARENT_POWER" :"Puissance apparente",
+    "MAX_ITERATION_REACHED" : "Nombre maximum d'itérations atteint",
+    "OTHER" : "Autre",
+    "SOLVER_FAILED" :"Echec du solveur",
+    "CONVERGED" : "Convergence",
+    "FAILED" : "Echec",
+    "ONE" : "Côté 1",
+    "TWO" : "Côté 2",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
@@ -763,7 +769,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
-    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Un seul gradin)",
+    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Linéaire)",
     "SectionCountBetweenZeroAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 0 et le nombre de gradins",
     "MaximumSectionCount": "Nombre de gradins",
     "ShuntSectionCount": "Gradin courant",
@@ -1107,7 +1113,6 @@
     "grid.orCondition": "OU",
     "grid.inRangeStart": "Début",
     "grid.inRangeEnd": "Fin",
-    "grid.filterOoo": "Filtrer...",
     "grid.noRowsToShow": "Aucune Donnée",
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
@@ -1227,5 +1232,9 @@
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
 
-    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition"
+    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
+
+    "customAgGridFilter.startsWith": "Commence par",
+    "customAgGridFilter.contains": "Contient",
+    "customAgGridFilter.filterOoo": "Filtrer..."
 }

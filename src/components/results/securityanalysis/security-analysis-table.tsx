@@ -44,13 +44,13 @@ export const SecurityAnalysisTable: FunctionComponent<
 
     const defaultColDef = useMemo(
         () => ({
-            sortable: true,
             resizable: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
             suppressMovable: true,
             flex: 1,
             cellRenderer: DefaultCellRenderer,
+            comparator: (): number => 0, // we disable the AGGrid sort because we do it in the server
         }),
         []
     );
