@@ -46,6 +46,10 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onDataChanged }) => {
     }, [intl]);
 
     const [rowData, setRowData] = useState<IData[]>(() => {
+        console.log(data.data);
+        if (!data.data.properties) {
+            return [];
+        }
         const keys = Object.keys(data.data.properties);
         const rowData = keys.map((key, index) => {
             return { id: index, key: key, value: data.data.properties[key] };
