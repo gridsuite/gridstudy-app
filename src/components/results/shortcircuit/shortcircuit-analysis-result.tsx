@@ -9,8 +9,6 @@ import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-tabl
 import { useSelector } from 'react-redux';
 import {
     Option,
-    ColumnFilter,
-    ColumnSort,
     SCAFaultResult,
     SCAFeederResult,
     SCAPagedResults,
@@ -95,26 +93,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         [analysisType]
     );
 
-    const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
+    const { onSortChanged, sortConfig } = useAgGridSort();
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+    const { updateFilter, filterSelector } = useAggridRowFilter(
         FROM_COLUMN_TO_FIELD,
         () => {
             setPage(0);
         }
     );
-
-    // const updateFilter = useCallback((newFilter: ColumnFilter[]) => {
-    //     setFilter((oldFilter) => {
-    //         // to avoid useless rerender and fetch
-    //         if (newFilter.length || oldFilter.length) {
-    //             setPage(0); // we need to reset the page after updating the filter
-    //             return newFilter;
-    //         } else {
-    //             return oldFilter;
-    //         }
-    //     });
-    // }, []);
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -141,11 +127,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        console.log({ filterSelector, sortConfig });
-
         const { sortWay, colKey } = sortConfig;
 
-        console.log({ colKey, c: fromFrontColumnToBack(colKey) });
         const selector = {
             page,
             size: rowsPerPage,
@@ -215,6 +198,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         currentNode?.id,
         intl,
         shortCircuitNotif,
+        fromFrontColumnToBack,
     ]);
 
     useEffect(() => {
@@ -254,8 +238,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             <ShortCircuitAnalysisResultTable
                 result={result}
                 analysisType={analysisType}
-                // updateFilter={updateFilter}
-                // updateSort={setSort}
                 isFetching={isFetching}
                 faultTypeOptions={faultTypeOptions}
                 limitViolationTypeOptions={limitViolationTypeOptions}

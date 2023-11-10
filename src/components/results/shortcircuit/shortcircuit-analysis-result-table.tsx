@@ -10,18 +10,11 @@ import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
-    ColumnFilter,
-    ColumnSort,
     SCAFaultResult,
     SCAFeederResult,
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
-import {
-    FilterChangedEvent,
-    GridReadyEvent,
-    RowClassParams,
-    SortChangedEvent,
-} from 'ag-grid-community';
+import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import {
     CustomAGGrid,
     CustomColDef,
@@ -35,19 +28,13 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { FROM_COLUMN_TO_FIELD } from 'components/results/shortcircuit/shortcircuit-analysis-result-content';
-import { CustomSetFilter } from 'components/utils/aggrid/custom-set-filter';
 import { Option } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { securityAnalysisTableNmKFilterDefinition } from '../securityanalysis/security-analysis-result-utils';
 import CustomHeaderComponent, {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
 import { ISortConfig } from '../../../hooks/use-aggrid-sort';
-import {
-    FilterEnums,
-    FilterSelectorType,
-} from '../securityanalysis/security-analysis.type';
+import { FilterSelectorType } from '../securityanalysis/security-analysis.type';
 
 type SortProps = {
     onSortChanged: (colKey: string, sortWay: number) => void;
@@ -62,8 +49,6 @@ type FilterProps = {
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
     analysisType: ShortCircuitAnalysisType;
-    // updateFilter: (filter: ColumnFilter[]) => void;
-    // updateSort: (sort: ColumnSort[]) => void;
     isFetching: boolean;
     faultTypeOptions: Option[];
     limitViolationTypeOptions: Option[];

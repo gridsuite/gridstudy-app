@@ -20,12 +20,12 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     const urlSearchParams = new URLSearchParams();
     busId && urlSearchParams.append('busId', busId);
 
-    const startShortCircuitAnanysisUrl =
+    const startShortCircuitAnalysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/run?' +
         urlSearchParams.toString();
-    console.debug(startShortCircuitAnanysisUrl);
-    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' });
+    console.debug(startShortCircuitAnalysisUrl);
+    return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
 
 export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
@@ -124,8 +124,8 @@ export function fetchShortCircuitAnalysisPagedResults({
         if (colKey && sortValue) {
             urlSearchParams.append('sort', `${colKey},${sortValue}`);
         }
+        // sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
     }
-    // sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
 
     if (size) {
         urlSearchParams.append('size', size);

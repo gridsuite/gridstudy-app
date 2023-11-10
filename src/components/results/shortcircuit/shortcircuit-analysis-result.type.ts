@@ -81,18 +81,6 @@ interface Page<ResultType> {
     empty: boolean;
 }
 
-export type ColumnFilter = {
-    dataType: string;
-    type: string;
-    value: any;
-    field: string;
-};
-
-export type ColumnSort = {
-    colId: string;
-    sort: 'desc' | 'asc' | null | undefined;
-};
-
 export enum ShortCircuitAnalysisResultTabs {
     ALL_BUSES = 0,
     ONE_BUS = 1,
