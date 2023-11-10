@@ -190,7 +190,7 @@ const CurveParameters = ({ path }) => {
                         <CustomAGGrid
                             name={`${path}.${CURVES}`}
                             ref={gridRef}
-                            rowData={gridApi && rowData}
+                            rowData={rowData}
                             columnDefs={columnDefs}
                             defaultColDef={defaultColDef}
                             rowSelection={'multiple'}
