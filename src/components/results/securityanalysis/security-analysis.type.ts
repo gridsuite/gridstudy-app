@@ -11,7 +11,7 @@ import { AgGridReactProps } from 'ag-grid-react';
 import {
     FilterSelectorType,
     SortConfigType,
-} from '../../custom-aggrid/custom-aggrid-types';
+} from '../../custom-aggrid/custom-aggrid-header.type';
 
 export interface LimitViolation {
     subjectId?: string;

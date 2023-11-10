@@ -30,7 +30,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
-import { CustomColDef } from '../../custom-aggrid/custom-aggrid-types';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
 const styles = {
     container: {

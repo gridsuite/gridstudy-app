@@ -41,7 +41,6 @@ import {
 import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -118,28 +117,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             }
 
             if (filterSelector) {
-                queryParams['filters'] = Object.keys(filterSelector).map(
-                    (field: string) => {
-                        const selectedValue =
-                            filterSelector[
-                                field as keyof typeof filterSelector
-                            ];
-
-                        //@ts-ignore
-                        const { text, type } = selectedValue?.[0];
-
-                        const isTextFilter = !!text;
-
-                        return {
-                            dataType: 'text',
-                            column: field,
-                            type: isTextFilter
-                                ? type
-                                : FILTER_TEXT_COMPARATORS.EQUALS,
-                            value: isTextFilter ? text : selectedValue,
-                        };
-                    }
-                );
+                queryParams['filters'] = filterSelector;
             }
 
             return fetchSecurityAnalysisResult(

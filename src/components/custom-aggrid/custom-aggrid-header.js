@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import { FILTER_UI_TYPES } from './custom-aggrid-types';
+import { FILTER_UI_TYPES } from './custom-aggrid-header.type';
 
 const styles = {
     iconSize: {

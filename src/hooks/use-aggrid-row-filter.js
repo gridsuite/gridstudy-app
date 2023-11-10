@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
-import { FILTER_TEXT_COMPARATORS } from '../components/custom-aggrid/custom-aggrid-types';
+import { FILTER_TEXT_COMPARATORS } from '../components/custom-aggrid/custom-aggrid-header.type';
 
 const removeElementFromArrayWithFieldValue = (
     arrayToRemoveFieldValueFrom,

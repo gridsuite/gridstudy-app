@@ -32,7 +32,7 @@ import {
     FILTER_UI_TYPES,
     FilterSelectorType,
     SortConfigType,
-} from '../../custom-aggrid/custom-aggrid-types';
+} from '../../custom-aggrid/custom-aggrid-header.type';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
 type SortProps = {
@@ -105,17 +105,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const { onSortChanged, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
 
-    const textFilterParams = useMemo(() => {
-        return {
-            filterUIType: FILTER_UI_TYPES.TEXT,
-            filterComparators: [
-                FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                FILTER_TEXT_COMPARATORS.CONTAINS,
-            ],
-            filterMaxNumConditions: 1,
-        };
-    }, []);
-
     const filtersDef = useMemo(() => {
         return [
             {
@@ -172,6 +161,17 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
     );
 
+    const textFilterParams = useMemo(
+        () => ({
+            filterUIType: FILTER_UI_TYPES.TEXT,
+            filterComparators: [
+                FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                FILTER_TEXT_COMPARATORS.CONTAINS,
+            ],
+        }),
+        []
+    );
+
     const columns = useMemo(
         () => [
             makeColumn({
@@ -193,8 +193,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
                 isSortable: analysisType === ShortCircuitAnalysisType.ONE_BUS,
-                isFilterable:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                isFilterable: analysisType === ShortCircuitAnalysisType.ONE_BUS,
                 filterParams: textFilterParams,
             }),
             makeColumn({

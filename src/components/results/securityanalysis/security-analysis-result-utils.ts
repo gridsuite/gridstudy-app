@@ -28,7 +28,7 @@ import {
     CustomColDef,
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
-} from '../../custom-aggrid/custom-aggrid-types';
+} from '../../custom-aggrid/custom-aggrid-header.type';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {

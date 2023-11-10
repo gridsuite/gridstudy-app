@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { SortConfigType } from '../components/custom-aggrid/custom-aggrid-types';
+import { SortConfigType } from '../components/custom-aggrid/custom-aggrid-header.type';
 
 type DataKeyToSortKey = Record<string, string>;
 
