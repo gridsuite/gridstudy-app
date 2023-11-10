@@ -772,7 +772,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
-    "ModifyShuntCompensator": "Modify shunt compensator (A single section)",
+    "ModifyShuntCompensator": "Modify shunt compensator (Linear)",
     "SectionCountBetweenZeroAndMaximumSectionCount": "Section count must be greater or equal to 0 and lesser or equal to Maximum section count",
     "MaximumSectionCount": "Maximum number of sections",
     "ShuntSectionCount": "Current number of sections",

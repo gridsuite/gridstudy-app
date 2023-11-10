@@ -99,9 +99,7 @@ export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 
 //ShuntCompensator
-export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
-export const Q_AT_NOMINAL_V = 'qatNominalV';
 export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
 export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
