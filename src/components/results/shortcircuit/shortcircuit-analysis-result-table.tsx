@@ -145,7 +145,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 options: limitViolationTypeOptions,
             },
         ];
-    }, [faultTypeOptions, limitViolationTypeOptions, intl]);
+    }, [faultTypeOptions, limitViolationTypeOptions]);
 
     const makeColumn = useCallback(
         ({

@@ -149,7 +149,25 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         const selector = {
             page,
             size: rowsPerPage,
-            filter: '',
+            filter:
+                filterSelector &&
+                Object.keys(filterSelector).map((field: string) => {
+                    const selectedValue =
+                        filterSelector[field as keyof typeof filterSelector];
+
+                    const { text, type } = selectedValue?.[0];
+
+                    const isTextFilter = !!text;
+
+                    return {
+                        dataType: 'text',
+                        field,
+                        type: isTextFilter
+                            ? type
+                            : FILTER_TEXT_COMPARATORS.EQUALS,
+                        value: isTextFilter ? text : selectedValue,
+                    };
+                }),
             sort: {
                 colKey: fromFrontColumnToBack(colKey),
                 sortValue: getSortValue(sortWay),
@@ -202,14 +220,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     useEffect(() => {
         fetchShortCircuitFaultTypes()
             .then((values) => {
-                setFaultTypeOptions(
-                    values?.map((v: string) => {
-                        return {
-                            value: v,
-                            label: intl.formatMessage({ id: v }),
-                        };
-                    })
-                );
+                setFaultTypeOptions(values);
             })
             .catch((error) =>
                 snackError({
@@ -222,14 +233,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     useEffect(() => {
         fetchShortCircuitLimitViolationTypes()
             .then((values) => {
-                setLimitViolationTypeOptions(
-                    values?.map((v: string) => {
-                        return {
-                            value: v,
-                            label: intl.formatMessage({ id: v }),
-                        };
-                    })
-                );
+                setLimitViolationTypeOptions(values);
             })
             .catch((error) =>
                 snackError({
