@@ -134,14 +134,14 @@ export const EquipmentTable = ({
 
         const initialProperties = clickedCellData.data.properties;
         //extract keys and values from initial properties to an array of objects with key and value
-        const initialPropertiesMapped = Object.keys(initialProperties).map(
-            (key) => {
-                return {
-                    name: key,
-                    value: initialProperties[key],
-                };
-            }
-        );
+        const initialPropertiesMapped = initialProperties
+            ? Object.keys(initialProperties).map((key) => {
+                  return {
+                      name: key,
+                      value: initialProperties[key],
+                  };
+              })
+            : [];
 
         const propertiesSiteFormated = formatPropertiesForBackend(
             initialPropertiesMapped,
