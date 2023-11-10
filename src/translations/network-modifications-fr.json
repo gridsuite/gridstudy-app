@@ -31,6 +31,7 @@
     "network_modifications/creatingModification": "Création de la modification en cours ...",
     "network_modifications/deletingModification": "Suppression de la modification en cours ...",
     "network_modifications/updatingModification": "Mise à jour de la modification en cours ...",
+    "network_modifications/restoringModification": "Restauration de la modification en cours ...",
     "network_modifications/modifications": "Mise à jour de la liste des modifications en cours ...",
     "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}",
     "network_modifications/VOLTAGE_INIT_MODIFICATION": "Initialisation du plan de tension {computedLabel}",

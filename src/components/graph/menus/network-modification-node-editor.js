@@ -439,6 +439,10 @@ const NetworkModificationNodeEditor = () => {
                 study.eventData.headers['updateType'] === 'deletingInProgress'
             ) {
                 messageId = 'network_modifications/deletingModification';
+            } else if (
+                study.eventData.headers['updateType'] === 'restoringInProgress'
+            ) {
+                messageId = 'network_modifications/restoringModification';
             }
             fillNotification(study, messageId);
         },
