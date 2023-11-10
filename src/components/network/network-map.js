@@ -253,7 +253,9 @@ const NetworkMap = (props) => {
     function renderTooltip() {
         return (
             tooltip &&
-            tooltip.visible && (
+            tooltip.visible &&
+            // Should not display the tooltip for HVDC lines
+            !props.mapEquipments.getHvdcLine(tooltip.equipmentId) && (
                 <div
                     ref={divRef}
                     style={{
