@@ -168,7 +168,7 @@ yup.addMethod(
                 if (minActivePower === null || maxActivePower === null) {
                     return false;
                 }
-                if (value <= minActivePower || value >= maxActivePower) {
+                if (value < minActivePower || value > maxActivePower) {
                     return false;
                 }
                 return true;
@@ -177,7 +177,7 @@ yup.addMethod(
     }
 );
 
-const getActivePowerSetPointSchema = (isEquipmentModification) => ({
+export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
         .activePowerSetPoint(isEquipmentModification),
