@@ -86,7 +86,7 @@
     "Intensity": "Intensité",
     "I_(A)": "I (A)",
     "limit": "limite",
-    "Limit": "Seuil",
+    "Limit": "Valeur du seuil (A ou kV)",
     "LimitLabel": "Limite (A)",
     "CurrentViolationValue": "Valeur (A)",
     "CurrentViolationLimit": "Seuil (A)",
@@ -390,15 +390,17 @@
     "HIGH_SHORT_CIRCUIT_CURRENT": "Icc max",
 
     "LimitType": "Type de limite",
+    "ViolationType": "Type de contrainte",
     "LimitSide": "Côté",
-    "LimitName": "Nom",
+    "LimitName": "Nom du seuil",
     "Limit_name": "Seuil",
     "LimitNameCurrentViolation": "Nom du seuil",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
     "LimitAcceptableDuration": "Durée",
+    "Overload": "Surcharge",
+    "CalculatedValue": "Valeur calculée (A ou kV)",
     "ErrFetchViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes",
-    "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
     "true": "oui",
@@ -1282,5 +1284,6 @@
 
     "customAgGridFilter.startsWith": "Commence par",
     "customAgGridFilter.contains": "Contient",
-    "customAgGridFilter.filterOoo": "Filtrer..."
+    "customAgGridFilter.filterOoo": "Filtrer...",
+    "undefined" : "non défini"
 }

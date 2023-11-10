@@ -110,7 +110,7 @@ const CustomHeaderComponent = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
-        debounce((data) => updateFilter(field, data), debounceMs),
+        debounce((field, data) => updateFilter(field, data), debounceMs),
         [field, debounceMs, updateFilter]
     );
 
@@ -129,7 +129,7 @@ const CustomHeaderComponent = ({
 
     const handleFilterAutoCompleteChange = (_, data) => {
         setSelectedFilterData(data);
-        debouncedUpdateFilter(data);
+        debouncedUpdateFilter(field, data);
     };
 
     const handleFilterComparatorChange = (event) => {

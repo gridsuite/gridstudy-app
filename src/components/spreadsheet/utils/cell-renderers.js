@@ -173,6 +173,12 @@ export const ContingencyCellRenderer = ({ value }) => {
     );
 };
 
+export const displayNAValue = (value, intl) => {
+    if (value === 'N/A') {
+        return intl.formatMessage({ id: 'undefined' });
+    }
+};
+
 export const EditableCellRenderer = (props) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const isRootNode = useMemo(
