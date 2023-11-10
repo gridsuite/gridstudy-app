@@ -9,12 +9,12 @@ import { makeComponents } from '../../util/make-component-utils';
 import { FloatInput, IntegerInput } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 
-export const IDA_ORDER = 'order';
-export const IDA_INIT_STEP = 'initStep';
-export const IDA_MIN_STEP = 'minStep';
-export const IDA_MAX_STEP = 'maxStep';
-export const IDA_ABS_ACCURACY = 'absAccuracy';
-export const IDA_REL_ACCURACY = 'relAccuracy';
+const IDA_ORDER = 'order';
+const IDA_INIT_STEP = 'initStep';
+const IDA_MIN_STEP = 'minStep';
+const IDA_MAX_STEP = 'maxStep';
+const IDA_ABS_ACCURACY = 'absAccuracy';
+const IDA_REL_ACCURACY = 'relAccuracy';
 
 export const getFormSchema = () =>
     yup.object().shape({

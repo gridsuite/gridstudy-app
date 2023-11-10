@@ -46,7 +46,6 @@ export const emptyFormData = {
 
 const CurveParameters = ({ path }) => {
     const intl = useIntl();
-    const [gridApi, setGridApi] = useState();
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
 
     const { control } = useFormContext();
@@ -147,10 +146,6 @@ const CurveParameters = ({ path }) => {
         };
     }, []);
 
-    const onGridReady = useCallback((params) => {
-        setGridApi(params);
-    }, []);
-
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
         setSelectedRowsLength(selectedRows.length);
@@ -166,7 +161,6 @@ const CurveParameters = ({ path }) => {
                             key={'curve-quick-filter'}
                             ref={quickFilterRef}
                             gridRef={gridRef}
-                            disabled={false}
                         />
                     </Grid>
                     <Grid
@@ -182,7 +176,7 @@ const CurveParameters = ({ path }) => {
                         <Typography variant="subtitle1">
                             {`${intl.formatMessage({
                                 id: 'DynamicSimulationCurveSelectedNumber',
-                            })} (${selectedRowsLength} / ${rowData?.length})`}
+                            })} (${selectedRowsLength} / ${rowData.length})`}
                         </Typography>
                     </Grid>
                     <GridButtons
@@ -200,9 +194,8 @@ const CurveParameters = ({ path }) => {
                             columnDefs={columnDefs}
                             defaultColDef={defaultColDef}
                             rowSelection={'multiple'}
-                            onGridReady={onGridReady}
                             onSelectionChanged={onSelectionChanged}
-                        ></CustomAGGrid>
+                        />
                     </Box>
                 </Grid>
             </Grid>

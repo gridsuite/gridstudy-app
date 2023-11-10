@@ -15,14 +15,14 @@ import {
 } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 
-export const SIM_H_MIN = 'hMin';
-export const SIM_H_MAX = 'hMax';
-export const SIM_K_REDUCE_STEP = 'kReduceStep';
-export const SIM_N_EFF = 'nEff';
-export const SIM_N_DEADBAND = 'nDeadband';
-export const SIM_MAX_NEWTON_TRY = 'maxNewtonTry';
-export const SIM_LINEAR_SOLVER_NAME = 'linearSolverName';
-export const SIM_RECALCULATE_STEP = 'recalculateStep';
+const SIM_H_MIN = 'hMin';
+const SIM_H_MAX = 'hMax';
+const SIM_K_REDUCE_STEP = 'kReduceStep';
+const SIM_N_EFF = 'nEff';
+const SIM_N_DEADBAND = 'nDeadband';
+const SIM_MAX_NEWTON_TRY = 'maxNewtonTry';
+const SIM_LINEAR_SOLVER_NAME = 'linearSolverName';
+const SIM_RECALCULATE_STEP = 'recalculateStep';
 
 export const getFormSchema = () => {
     return yup.object().shape({

@@ -19,7 +19,7 @@ import SimplifiedSolverParameters, {
 } from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
 
-export const SOLVER_TYPES = {
+const SOLVER_TYPES = {
     IDA: 'IDA',
     SIM: 'SIM',
 };
