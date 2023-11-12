@@ -104,6 +104,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         initialValue: INJECTION_DISTRIBUTION_TYPES[0].id,
         menuItems: true,
         editable: true,
+        width: '13rem',
     },
     {
         label: 'ContingencyLists',
@@ -180,6 +181,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
+        width: '9rem',
     },
     {
         label: 'HvdcLines',
@@ -227,6 +229,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
+        width: '9rem',
     },
     {
         label: 'PSTS',
