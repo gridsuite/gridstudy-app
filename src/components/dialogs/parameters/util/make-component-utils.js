@@ -34,7 +34,7 @@ const defaultParamRender = (defParam, path, key) => {
                 <SelectInput
                     name={`${path}.${key}`}
                     label={''}
-                    options={defParam.options}
+                    options={defParam?.options ?? []}
                     fullWidth
                     size={'small'}
                     disableClearable
