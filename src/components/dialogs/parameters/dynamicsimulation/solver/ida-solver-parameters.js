@@ -5,9 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { makeComponents } from '../../util/make-component-utils';
-import { FloatInput, IntegerInput } from '@gridsuite/commons-ui';
+import { makeComponents, TYPES } from '../../util/make-component-utils';
 import yup from '../../../../utils/yup-config';
+import {
+    commonDefParams,
+    getFormSchema as getCommonSolverFormSchema,
+} from './common-solver-parameters';
 
 const IDA_ORDER = 'order';
 const IDA_INIT_STEP = 'initStep';
@@ -28,49 +31,39 @@ export const getFormSchema = () =>
         [IDA_MAX_STEP]: yup.number().required(),
         [IDA_ABS_ACCURACY]: yup.number().required(),
         [IDA_REL_ACCURACY]: yup.number().required(),
+        ...getCommonSolverFormSchema(),
     });
 
-const IdaSolverParameters = ({ path }) => {
-    const defParams = {
-        [IDA_ORDER]: {
-            label: 'DynamicSimulationIDASolverOrder',
-            render: (defParam, key) => {
-                return <IntegerInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [IDA_INIT_STEP]: {
-            label: 'DynamicSimulationIDASolverInitStep',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [IDA_MIN_STEP]: {
-            label: 'DynamicSimulationIDASolverMinStep',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [IDA_MAX_STEP]: {
-            label: 'DynamicSimulationIDASolverMaxStep',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [IDA_ABS_ACCURACY]: {
-            label: 'DynamicSimulationIDASolverAbsAccuracy',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [IDA_REL_ACCURACY]: {
-            label: 'DynamicSimulationIDASolverRelAccuracy',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-    };
+const defParams = {
+    [IDA_ORDER]: {
+        type: TYPES.INTEGER,
+        label: 'DynamicSimulationIDASolverOrder',
+    },
+    [IDA_INIT_STEP]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationIDASolverInitStep',
+    },
+    [IDA_MIN_STEP]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationIDASolverMinStep',
+    },
+    [IDA_MAX_STEP]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationIDASolverMaxStep',
+    },
+    [IDA_ABS_ACCURACY]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationIDASolverAbsAccuracy',
+    },
+    [IDA_REL_ACCURACY]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationIDASolverRelAccuracy',
+    },
+    ...commonDefParams,
+};
 
-    return <>{makeComponents(defParams)}</>;
+const IdaSolverParameters = ({ path }) => {
+    return <>{makeComponents(defParams, path)}</>;
 };
 
 export default IdaSolverParameters;

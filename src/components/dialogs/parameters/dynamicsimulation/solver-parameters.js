@@ -9,8 +9,7 @@ import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { useEffect, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
-import { SelectInput } from '@gridsuite/commons-ui';
-import { makeComponents } from '../util/make-component-utils';
+import { makeComponents, TYPES } from '../util/make-component-utils';
 import IdaSolverParameters, {
     getFormSchema as getIdaFormSchema,
 } from './solver/ida-solver-parameters';
@@ -65,40 +64,33 @@ const SolverParameters = ({ solver, path, clearErrors }) => {
         return solvers?.find((elem) => elem.id === solverId);
     }, [solvers, solverId]);
 
+    const solverOptions = useMemo(() => {
+        return solvers?.reduce((arr, curr) => {
+            return [
+                ...arr,
+                {
+                    id: curr.id,
+                    label: `DynamicSimulationSolver${curr.type}`,
+                },
+            ];
+        }, []);
+    }, [solvers]);
+
     useEffect(() => {
         clearErrors(path);
     }, [solverId, clearErrors, path]);
 
     const defParams = {
         [SOLVER_ID]: {
+            type: TYPES.ENUM,
             label: 'DynamicSimulationSolverType',
-            values: solvers?.reduce((arr, curr) => {
-                return [
-                    ...arr,
-                    {
-                        id: curr.id,
-                        label: `DynamicSimulationSolver${curr.type}`,
-                    },
-                ];
-            }, []),
-            render: (defParam, key) => {
-                return (
-                    <SelectInput
-                        name={`${path}.${key}`}
-                        label={''}
-                        options={defParam.values}
-                        fullWidth
-                        size={'small'}
-                        disableClearable
-                    />
-                );
-            },
+            options: solverOptions,
         },
     };
 
     return (
         <Grid container>
-            {makeComponents(defParams)}
+            {makeComponents(defParams, path)}
             <TabPanel value={selectedSolver?.type} index={SOLVER_TYPES.IDA}>
                 <IdaSolverParameters path={`${path}.${SOLVERS}[0]`} />
             </TabPanel>

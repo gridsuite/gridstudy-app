@@ -10,36 +10,69 @@ import { styles } from '../parameters';
 import { LineSeparator } from '../../dialogUtils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import {
+    FloatInput,
+    IntegerInput,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 
-export const makeComponents = (defParams) => {
+// --- define data types --- //
+export const TYPES = {
+    ENUM: 'Enum',
+    BOOL: 'Bool',
+    INTEGER: 'Integer',
+    FLOAT: 'Float',
+    TEXT: 'Text',
+};
+
+const renderParam = (defParam, path, key) => {
+    switch (defParam.type) {
+        case TYPES.ENUM:
+            return (
+                <SelectInput
+                    name={`${path}.${key}`}
+                    label={''}
+                    options={defParam.options}
+                    fullWidth
+                    size={'small'}
+                    disableClearable
+                />
+            );
+        case TYPES.BOOL:
+            return <SwitchInput name={`${path}.${key}`} label={''} />;
+        case TYPES.INTEGER:
+            return <IntegerInput name={`${path}.${key}`} label={''} />;
+        case TYPES.FLOAT:
+            return <FloatInput name={`${path}.${key}`} label={''} />;
+        case TYPES.TEXT:
+            return <TextInput name={`${path}.${key}`} label={''} />;
+        default:
+            return <></>;
+    }
+};
+
+export const makeComponents = (defParams, path) => {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponent(defParams[key], key)}
+            {makeComponent(defParams[key], key, path)}
             <LineSeparator />
         </Grid>
     ));
 };
 
-export const makeComponent = (defParam, key) => {
-    const render = defParam.render;
-
+export const makeComponent = (defParam, key, path) => {
     return (
         <>
             <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={defParam.label} />
             </Grid>
             <Grid item container xs={4} sx={styles.controlItem}>
-                {render(defParam, key)}
+                {renderParam(defParam, path, key)}
             </Grid>
         </>
     );
-};
-
-export const getValue = (param, key) => {
-    if (!param || param[key] === undefined) {
-        return null;
-    }
-    return param[key];
 };
 
 export const inputAdornment = (content) => ({

@@ -7,8 +7,7 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponents } from '../util/make-component-utils';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { makeComponents, TYPES } from '../util/make-component-utils';
 
 export const START_TIME = 'startTime';
 export const STOP_TIME = 'stopTime';
@@ -33,24 +32,19 @@ export const emptyFormData = {
     [STOP_TIME]: 0,
 };
 
-const TimeDelayParameters = ({ path }) => {
-    // define param structure for rendering inputs
-    const defParams = {
-        [START_TIME]: {
-            label: 'DynamicSimulationStartTime',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [STOP_TIME]: {
-            label: 'DynamicSimulationStopTime',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-    };
+const defParams = {
+    [START_TIME]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationStartTime',
+    },
+    [STOP_TIME]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationStopTime',
+    },
+};
 
-    return <Grid container>{makeComponents(defParams)}</Grid>;
+const TimeDelayParameters = ({ path }) => {
+    return <Grid container>{makeComponents(defParams, path)}</Grid>;
 };
 
 export default TimeDelayParameters;

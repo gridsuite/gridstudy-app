@@ -7,9 +7,8 @@
 
 import React from 'react';
 import { Grid } from '@mui/material';
-import { makeComponents } from '../util/make-component-utils';
+import { makeComponents, TYPES } from '../util/make-component-utils';
 import yup from '../../../utils/yup-config';
-import { FloatInput, SwitchInput } from '@gridsuite/commons-ui';
 
 export const NETWORK = 'network';
 
@@ -83,131 +82,91 @@ export const emptyFormData = {
     [TRANSFORMER_TO_LV]: 0,
 };
 
-const NetworkParameters = ({ path }) => {
-    const defParams = {
-        [CAPACITOR_NO_RECLOSING_DELAY]: {
-            label: 'DynamicSimulationNetworkCapacitorNoReclosingDelay',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
-            label: 'DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
-            label: 'DynamicSimulationNetworkLineCurrentLimitMaxTimeOperation',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_TP]: {
-            label: 'DynamicSimulationNetworkLoadTp',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_TQ]: {
-            label: 'DynamicSimulationNetworkLoadTq',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_ALPHA]: {
-            label: 'DynamicSimulationNetworkLoadAlpha',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_ALPHA_LONG]: {
-            label: 'DynamicSimulationNetworkLoadAlphaLong',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_BETA]: {
-            label: 'DynamicSimulationNetworkLoadBeta',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_BETA_LONG]: {
-            label: 'DynamicSimulationNetworkLoadBetaLong',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_IS_CONTROLLABLE]: {
-            label: 'DynamicSimulationNetworkLoadIsControllable',
-            render: (defParam, key) => {
-                return <SwitchInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_IS_RESTORATIVE]: {
-            label: 'DynamicSimulationNetworkLoadIsRestorative',
-            render: (defParam, key) => {
-                return <SwitchInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_Z_PMAX]: {
-            label: 'DynamicSimulationNetworkLoadZPMax',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [LOAD_Z_QMAX]: {
-            label: 'DynamicSimulationNetworkLoadZQMax',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [REACTANCE_NO_RECLOSING_DELAY]: {
-            label: 'DynamicSimulationNetworkReactanceNoReclosingDelay',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
-            label: 'DynamicSimulationNetworkTransformerCurrentLimitMaxTimeOperation',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [TRANSFORMER_T1_ST_HT]: {
-            label: 'DynamicSimulationNetworkTransformerT1StHT',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [TRANSFORMER_T1_ST_THT]: {
-            label: 'DynamicSimulationNetworkTransformerT1StTHT',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [TRANSFORMER_T_NEXT_HT]: {
-            label: 'DynamicSimulationNetworkTransformerTNextHT',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [TRANSFORMER_T_NEXT_THT]: {
-            label: 'DynamicSimulationNetworkTransformerTNextTHT',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-        [TRANSFORMER_TO_LV]: {
-            label: 'DynamicSimulationNetworkTransformerTolV',
-            render: (defParam, key) => {
-                return <FloatInput name={`${path}.${key}`} label={''} />;
-            },
-        },
-    };
+const defParams = {
+    [CAPACITOR_NO_RECLOSING_DELAY]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkCapacitorNoReclosingDelay',
+    },
+    [DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation',
+    },
+    [LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLineCurrentLimitMaxTimeOperation',
+    },
+    [LOAD_TP]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadTp',
+    },
+    [LOAD_TQ]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadTq',
+    },
+    [LOAD_ALPHA]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadAlpha',
+    },
+    [LOAD_ALPHA_LONG]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadAlphaLong',
+    },
+    [LOAD_BETA]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadBeta',
+    },
+    [LOAD_BETA_LONG]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadBetaLong',
+    },
+    [LOAD_IS_CONTROLLABLE]: {
+        type: TYPES.BOOL,
+        label: 'DynamicSimulationNetworkLoadIsControllable',
+    },
+    [LOAD_IS_RESTORATIVE]: {
+        type: TYPES.BOOL,
+        label: 'DynamicSimulationNetworkLoadIsRestorative',
+    },
+    [LOAD_Z_PMAX]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadZPMax',
+    },
+    [LOAD_Z_QMAX]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkLoadZQMax',
+    },
+    [REACTANCE_NO_RECLOSING_DELAY]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkReactanceNoReclosingDelay',
+    },
+    [TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkTransformerCurrentLimitMaxTimeOperation',
+    },
+    [TRANSFORMER_T1_ST_HT]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkTransformerT1StHT',
+    },
+    [TRANSFORMER_T1_ST_THT]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkTransformerT1StTHT',
+    },
+    [TRANSFORMER_T_NEXT_HT]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkTransformerTNextHT',
+    },
+    [TRANSFORMER_T_NEXT_THT]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkTransformerTNextTHT',
+    },
+    [TRANSFORMER_TO_LV]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationNetworkTransformerTolV',
+    },
+};
 
-    return <Grid container>{makeComponents(defParams)}</Grid>;
+const NetworkParameters = ({ path }) => {
+    return <Grid container>{makeComponents(defParams, path)}</Grid>;
 };
 
 export default NetworkParameters;
