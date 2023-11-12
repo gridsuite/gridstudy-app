@@ -9,6 +9,8 @@ import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import { useMemo } from 'react';
+import { getIdOrSelf } from '../../dialogUtils';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 
 export const MAPPING = 'mapping';
 
@@ -32,6 +34,18 @@ const MappingParameters = ({ mapping, path }) => {
             type: TYPES.ENUM,
             label: 'DynamicSimulationMapping',
             options: mappingOptions,
+            render: (defParam, path, key) => {
+                return (
+                    <AutocompleteInput
+                        name={`${path}.${key}`}
+                        label={''}
+                        options={defParam.options}
+                        fullWidth
+                        size={'small'}
+                        getOptionLabel={getIdOrSelf}
+                    />
+                );
+            },
         },
     };
 

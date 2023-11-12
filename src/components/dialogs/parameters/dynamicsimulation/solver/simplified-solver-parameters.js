@@ -88,7 +88,7 @@ const defParams = {
         label: 'DynamicSimulationSimplifiedSolverMaxNewtonTry',
     },
     [SIM_LINEAR_SOLVER_NAME]: {
-        type: TYPES.TEXT,
+        type: TYPES.STRING,
         label: 'DynamicSimulationSimplifiedSolverLinearSolverName',
     },
     [SIM_F_NORM_TOL]: {
@@ -136,11 +136,11 @@ const defParams = {
         label: 'DynamicSimulationSimplifiedSolverOptimizeReInitAlgebraicResidualsEvaluations',
     },
     [SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION]: {
-        type: TYPES.TEXT,
+        type: TYPES.STRING,
         label: 'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestoration',
     },
     [SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION_INIT]: {
-        type: TYPES.TEXT,
+        type: TYPES.STRING,
         label: 'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestorationInit',
     },
     ...commonDefParams,

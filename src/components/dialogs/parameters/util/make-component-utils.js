@@ -20,14 +20,14 @@ import {
 
 // --- define data types --- //
 export const TYPES = {
-    ENUM: 'Enum',
-    BOOL: 'Bool',
-    INTEGER: 'Integer',
-    FLOAT: 'Float',
-    TEXT: 'Text',
+    ENUM: 'ENUM',
+    BOOL: 'BOOL',
+    INTEGER: 'INTEGER',
+    FLOAT: 'FLOAT',
+    STRING: 'STRING',
 };
 
-const renderParam = (defParam, path, key) => {
+const defaultParamRender = (defParam, path, key) => {
     switch (defParam.type) {
         case TYPES.ENUM:
             return (
@@ -46,7 +46,7 @@ const renderParam = (defParam, path, key) => {
             return <IntegerInput name={`${path}.${key}`} label={''} />;
         case TYPES.FLOAT:
             return <FloatInput name={`${path}.${key}`} label={''} />;
-        case TYPES.TEXT:
+        case TYPES.STRING:
             return <TextInput name={`${path}.${key}`} label={''} />;
         default:
             return <></>;
@@ -63,13 +63,14 @@ export const makeComponents = (defParams, path) => {
 };
 
 export const makeComponent = (defParam, key, path) => {
+    const render = defParam?.render ?? defaultParamRender;
     return (
         <>
             <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={defParam.label} />
             </Grid>
             <Grid item container xs={4} sx={styles.controlItem}>
-                {renderParam(defParam, path, key)}
+                {render(defParam, path, key)}
             </Grid>
         </>
     );

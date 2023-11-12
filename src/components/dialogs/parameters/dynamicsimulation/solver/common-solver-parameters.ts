@@ -33,7 +33,7 @@ const COMMON_MAXIMUM_NUMBER_SLOW_STEP_INCREASE =
 const COMMON_MINIMAL_ACCEPTABLE_STEP = 'minimalAcceptableStep';
 
 export const getFormSchema = () => {
-    return yup.object().shape({
+    return {
         [COMMON_F_NORM_TOL_ALG]: yup.number().required(),
         [COMMON_INITIAL_ADD_TOL_ALG]: yup.number().required(),
         [COMMON_SC_STEP_TOL_ALG]: yup.number().required(),
@@ -60,7 +60,7 @@ export const getFormSchema = () => {
             .integer()
             .required(),
         [COMMON_MINIMAL_ACCEPTABLE_STEP]: yup.number().required(),
-    });
+    };
 };
 
 export const commonDefParams = {
