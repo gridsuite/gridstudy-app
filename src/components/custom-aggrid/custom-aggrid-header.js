@@ -356,8 +356,8 @@ CustomHeaderComponent.propTypes = {
     isFilterable: PropTypes.bool,
     filterParams: PropTypes.shape({
         filterUIType: PropTypes.oneOf([
-            // FILTER_UI_TYPES.TEXT,
-            // FILTER_UI_TYPES.AUTO_COMPLETE,
+            FILTER_UI_TYPES.TEXT,
+            FILTER_UI_TYPES.AUTO_COMPLETE,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
