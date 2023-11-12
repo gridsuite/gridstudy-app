@@ -85,7 +85,7 @@ export type SortTableStateType = {
 
 export type QueryParamsType = Record<
     string,
-    string | number | SortTableStateType | FilterSelectorType[]
+    string | number | SortTableStateType | FilterSelectorType
 >;
 
 type Sort = {
@@ -123,7 +123,7 @@ type SortProps = {
 
 type FilterProps = {
     updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | null;
+    filterSelector: FilterSelectorType;
     filterEnums: FilterEnums;
 };
 

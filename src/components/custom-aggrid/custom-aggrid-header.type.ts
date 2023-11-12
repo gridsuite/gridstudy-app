@@ -11,17 +11,20 @@ export enum FILTER_TEXT_COMPARATORS {
     STARTS_WITH = 'startsWith',
 }
 
-export type FilterSelectorType = {
-    dataType?: string;
-    field?: string;
-    type?: string;
-    value?: string[] | { text: string; type: string }[];
-};
+export type FilterSelectorType =
+    | {
+          dataType?: string;
+          field?: string;
+          type?: string;
+          value?: string[] | { text: string; type: string }[];
+      }[]
+    | null;
 
 export type SortConfigType = {
     colKey: string;
     sortWay: number;
 };
+
 type FilterParams = {
     filterUIType?: string;
     filterComparators?: string[];

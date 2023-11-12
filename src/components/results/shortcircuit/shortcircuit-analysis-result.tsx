@@ -228,7 +228,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 }}
                 filterProps={{
                     updateFilter,
-                    //@ts-ignore
                     filterSelector,
                 }}
             />

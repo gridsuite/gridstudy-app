@@ -42,7 +42,7 @@ type SortProps = {
 
 type FilterProps = {
     updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | null;
+    filterSelector: FilterSelectorType;
 };
 
 interface ShortCircuitAnalysisResultProps {

@@ -268,7 +268,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                         filterProps={{
                             updateFilter,
-                            //@ts-ignore
                             filterSelector,
                             filterEnums: filterEnums as FilterEnums,
                         }}
