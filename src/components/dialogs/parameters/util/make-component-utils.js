@@ -56,13 +56,13 @@ const defaultParamRender = (defParam, path, key) => {
 export const makeComponents = (defParams, path) => {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponent(defParams[key], key, path)}
+            {makeComponent(defParams[key], path, key)}
             <LineSeparator />
         </Grid>
     ));
 };
 
-export const makeComponent = (defParam, key, path) => {
+export const makeComponent = (defParam, path, key) => {
     const render = defParam?.render ?? defaultParamRender;
     return (
         <>
