@@ -168,10 +168,8 @@ yup.addMethod(
                 if (minActivePower === null || maxActivePower === null) {
                     return false;
                 }
-                if (value < minActivePower || value > maxActivePower) {
-                    return false;
-                }
-                return true;
+                return !(value < minActivePower || value > maxActivePower);
+
             },
         });
     }
