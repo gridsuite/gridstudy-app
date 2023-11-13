@@ -36,8 +36,9 @@ import {
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
 type SortProps = {
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig?: SortConfigType;
+    onSortChanged: (sortConfig: SortConfigType[]) => void;
+    sortConfig?: SortConfigType[];
+    isMultiSortableTable?: boolean;
 };
 
 type FilterProps = {
@@ -102,7 +103,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const intl = useIntl();
     const theme = useTheme();
 
-    const { onSortChanged, sortConfig } = sortProps || {};
+    const { onSortChanged, sortConfig, isMultiSortableTable } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
 
     const filtersDef = useMemo(() => {
@@ -144,10 +145,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     field,
                     displayName: headerName,
                     isSortable,
+                    isMultiSortableTable,
                     sortConfig,
-                    onSortChanged: (newSortValue: number = 0) => {
-                        onSortChanged(field, newSortValue);
-                    },
+                    onSortChanged,
                     isFilterable,
                     filterParams: {
                         ...filterParams,
@@ -158,7 +158,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 },
             };
         },
-        [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
+        [
+            filtersDef,
+            isMultiSortableTable,
+            sortConfig,
+            filterSelector,
+            updateFilter,
+            onSortChanged,
+        ]
     );
 
     const textFilterParams = useMemo(

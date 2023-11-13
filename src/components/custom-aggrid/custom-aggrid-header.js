@@ -42,11 +42,12 @@ const styles = {
 const CustomHeaderComponent = ({
     field,
     displayName,
-    sortConfig = {},
+    sortConfig = [],
     onSortChanged = () => {},
     isSortable = true,
     isFilterable = true,
     filterParams = {},
+    isMultiSortableTable = false,
 }) => {
     const {
         filterUIType = FILTER_UI_TYPES.AUTO_COMPLETE,
@@ -56,7 +57,6 @@ const CustomHeaderComponent = ({
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
     } = filterParams;
-    const { colKey: sortColKey, sortWay } = sortConfig;
     const isAutoCompleteFilter = filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE;
 
     const intl = useIntl();
@@ -67,7 +67,7 @@ const CustomHeaderComponent = ({
         useState('');
     const [selectedFilterData, setSelectedFilterData] = useState(undefined);
 
-    const isColumnSorted = sortColKey === field;
+    const { sortWay } = sortConfig.find(({ colKey }) => colKey === field) || {};
 
     const shouldActivateFilter =
         // Filter should be activated for current column
@@ -118,18 +118,51 @@ const CustomHeaderComponent = ({
         debouncedUpdateFilter([{ text: selectedFilterData, type: newType }]);
     };
 
-    const handleSortChange = useCallback(() => {
-        let newSort = null;
-        if (!isColumnSorted || !sortWay) {
-            newSort = 1;
-        } else if (sortWay > 0) {
-            newSort = -1;
-        }
+    const handleSortChange = useCallback(
+        (event) => {
+            if (typeof onSortChanged === 'function') {
+                const updateSortConfig = (config, field, sortWay) => {
+                    return config.map((conf) =>
+                        conf.colKey === field
+                            ? { colKey: field, sortWay }
+                            : conf
+                    );
+                };
 
-        if (typeof onSortChanged === 'function') {
-            onSortChanged(newSort);
-        }
-    }, [isColumnSorted, onSortChanged, sortWay]);
+                const removeSortConfig = (config, field) => {
+                    return config.filter((conf) => conf.colKey !== field);
+                };
+
+                const isCtrlPressed = event.ctrlKey || event.metaKey;
+
+                if (isCtrlPressed && isMultiSortableTable) {
+                    if (sortWay) {
+                        onSortChanged(
+                            !sortWay
+                                ? updateSortConfig(sortConfig, field, 1)
+                                : sortWay > 0
+                                ? updateSortConfig(sortConfig, field, -1)
+                                : removeSortConfig(sortConfig, field)
+                        );
+                    } else {
+                        onSortChanged([
+                            ...sortConfig,
+                            { colKey: field, sortWay: 1 },
+                        ]);
+                    }
+                } else {
+                    onSortChanged(
+                        !sortWay
+                            ? [{ colKey: field, sortWay: 1 }]
+                            : sortWay > 0
+                            ? [{ colKey: field, sortWay: -1 }]
+                            : []
+                    );
+                }
+            }
+        },
+        [field, isMultiSortableTable, onSortChanged, sortConfig, sortWay]
+    );
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
@@ -199,7 +232,7 @@ const CustomHeaderComponent = ({
                         </Grid>
                         {isSortable && (
                             <Grid item>
-                                {isColumnSorted && sortWay && (
+                                {sortWay && (
                                     <Grid item>
                                         <IconButton>
                                             {sortWay === 1 ? (

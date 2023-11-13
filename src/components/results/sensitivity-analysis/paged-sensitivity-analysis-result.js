@@ -126,7 +126,7 @@ const PagedSensitivityAnalysisResult = ({
     }, [fetchFilterOptions]);
 
     const fetchResult = useCallback(() => {
-        const { colKey, sortWay } = sortConfig || {};
+        const { colKey, sortWay } = sortConfig?.[0] || {};
 
         const sortSelector =
             colKey && sortWay

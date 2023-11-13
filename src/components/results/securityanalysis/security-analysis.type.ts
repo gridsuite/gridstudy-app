@@ -80,12 +80,12 @@ export interface PreContingencyResult {
 
 export type SortTableStateType = {
     colKey: string;
-    sortValue?: string;
+    sortWay?: string;
 };
 
 export type QueryParamsType = Record<
     string,
-    string | number | SortTableStateType | FilterSelectorType
+    string | number | SortTableStateType[] | FilterSelectorType
 >;
 
 type Sort = {
@@ -117,8 +117,8 @@ type PaginationProps = {
 };
 
 type SortProps = {
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig?: SortConfigType;
+    onSortChanged: (sortConfig: SortConfigType[]) => void;
+    sortConfig?: SortConfigType[];
 };
 
 type FilterProps = {

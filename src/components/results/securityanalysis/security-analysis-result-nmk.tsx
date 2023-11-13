@@ -150,9 +150,11 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
 
-            const { sortWay } = sortConfig || {};
+            const { sortWay: currentColumnSortWay } =
+                sortConfig?.find((config) => config.colKey === field) || {};
 
-            const minWidth = isSortable && sortWay ? 140 : isFilterable && 95;
+            const minWidth =
+                isSortable && currentColumnSortWay ? 140 : isFilterable && 95;
 
             return {
                 headerName,
@@ -168,9 +170,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     displayName: headerName,
                     isSortable,
                     sortConfig,
-                    onSortChanged: (newSortValue: number = 0) => {
-                        onSortChanged(field, newSortValue);
-                    },
+                    onSortChanged,
                     isFilterable,
                     filterParams: {
                         ...filterParams,

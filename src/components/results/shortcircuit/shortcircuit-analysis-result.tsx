@@ -126,16 +126,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        const { sortWay, colKey } = sortConfig;
-
         const selector = {
             page,
             size: rowsPerPage,
             filter: filterSelector,
-            sort: {
+            sort: sortConfig?.map(({ colKey, sortWay }) => ({
                 colKey: fromFrontColumnToBack(colKey),
-                sortValue: getSortValue(sortWay),
-            },
+                sortWay: getSortValue(sortWay),
+            })),
         };
 
         fetchShortCircuitAnalysisPagedResults({
@@ -225,6 +223,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 sortProps={{
                     onSortChanged,
                     sortConfig,
+                    isMultiSortableTable: true,
                 }}
                 filterProps={{
                     updateFilter,

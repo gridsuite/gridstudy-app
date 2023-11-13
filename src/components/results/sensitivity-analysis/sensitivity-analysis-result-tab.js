@@ -12,10 +12,7 @@ import Tab from '@mui/material/Tab';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import {
-    DATA_KEY_TO_FILTER_KEY,
-    DATA_KEY_TO_SORT_KEY,
-} from './sensitivity-analysis-content';
+import { DATA_KEY_TO_FILTER_KEY } from './sensitivity-analysis-content';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 
 export const SensitivityResultTabs = [
@@ -33,19 +30,16 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     );
 
     // Add default sort on sensitivity col
-    const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';
+    const defaultSortColumn = 'value';
     const defaultSortOrder = SORT_WAYS.desc;
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        dataKeyToSortKey: DATA_KEY_TO_SORT_KEY,
-        initSortConfig: {
-            colKey: defaultSortColumn,
-            sortWay: defaultSortOrder,
-        },
-    });
+    const defaultSortConfig = [
+        { colKey: defaultSortColumn, sortWay: defaultSortOrder },
+    ];
+    const { onSortChanged, sortConfig } = useAgGridSort(defaultSortConfig);
 
-    const initTable = (nOrNkIndex) => {
+    const initTable = () => {
         initFilters();
-        initSort(nOrNkIndex ? 'valueAfter' : 'value');
+        onSortChanged(defaultSortConfig);
 
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
            for the page prop of MUI TablePagination if was not on the first page
@@ -54,12 +48,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     };
 
     const handleSensiKindIndexChange = (newSensiKindIndex) => {
-        initTable(nOrNkIndex);
+        initTable();
         setSensiKindIndex(newSensiKindIndex);
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
-        initTable(newNOrNKIndex);
+        initTable();
         setNOrNkIndex(newNOrNKIndex);
     };
 

@@ -109,11 +109,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             }
 
             if (sortConfig) {
-                const { sortWay, colKey } = sortConfig;
-                queryParams['sort'] = {
-                    colKey: FROM_COLUMN_TO_FIELD[colKey],
-                    sortValue: getSortValue(sortWay),
-                };
+                queryParams['sort'] = sortConfig.map((conf) => ({
+                    colKey: FROM_COLUMN_TO_FIELD[conf.colKey],
+                    sortWay: getSortValue(conf.sortWay),
+                }));
             }
 
             if (filterSelector) {
