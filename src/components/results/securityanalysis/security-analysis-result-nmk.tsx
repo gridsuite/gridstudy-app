@@ -144,7 +144,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isHidden = false,
             isFilterable = false,
             filterParams,
-            valueFormatter
+            valueFormatter,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
