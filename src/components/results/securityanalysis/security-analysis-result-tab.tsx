@@ -128,7 +128,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                                 field as keyof typeof filterSelector
                             ];
 
-                        const { text, type, dataType,  } = selectedValue?.[0];
+                        const { text, type, dataType } = selectedValue?.[0];
 
                         const isTextFilter = !!text;
 

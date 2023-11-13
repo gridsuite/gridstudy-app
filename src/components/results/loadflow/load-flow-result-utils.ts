@@ -34,7 +34,27 @@ export const convertDuration = (duration: number): string => {
     return minutes + "' " + seconds + '"';
 };
 
-export const convertSide = (side: string, intl: IntlShape) => {
+export const convertMillisecondsToMinutesSeconds = (
+    durationInMilliseconds: number
+): string => {
+    // Convertir les millisecondes en secondes
+    const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
+
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = durationInSeconds % 60;
+
+    if (seconds === 0) {
+        return minutes + "'";
+    }
+
+    if (minutes === 0) {
+        return seconds + '"';
+    }
+
+    return minutes + "' " + seconds + '"';
+};
+
+export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
         : side === BranchSide.TWO
