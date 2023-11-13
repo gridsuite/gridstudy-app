@@ -412,11 +412,14 @@ const NetworkMap = (props) => {
                 labelSize: LABEL_SIZE,
                 pickable: true,
                 onHover: ({ object, x, y }) => {
+                    let equipmentId = undefined;
                     if (object) {
+                        equipmentId = getNameOrId(object?.line ?? object);
+                    }
+                    if (!!equipmentId) {
                         setCursorType('pointer');
-                        const lineObject = object?.line ?? object;
                         setTooltip({
-                            equipmentId: getNameOrId(lineObject),
+                            equipmentId: equipmentId,
                             pointerX: x,
                             pointerY: y,
                             visible: showTooltip,
