@@ -780,6 +780,7 @@
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
     "AdditionalInformations": "Additional informations",
+    "Information": "Information",
     "AddProperty": "Add property",
     "PropertyName": "Property name",
     "PropertyValue": "Property value",

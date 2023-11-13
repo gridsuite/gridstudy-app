@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 309 54">
+  <defs
+     id="defs2">
+    <marker
+       style="overflow:visible"
+       id="Arrow1Send"
+       refX="0"
+       refY="0"
+       orient="auto">
+      <path
+         transform="matrix(-0.2,0,0,-0.2,-1.2,0)"
+         style="fill:#ffcc80;fill-opacity:1;fill-rule:evenodd;stroke:#ffcc80;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         id="path7105" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="TriangleOutS"
+       refX="0"
+       refY="0"
+       orient="auto">
+      <path
+         transform="scale(0.2)"
+         style="fill:#ffcc80;fill-opacity:1;fill-rule:evenodd;stroke:#ffcc80;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path7238" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow1Mend"
+       refX="0"
+       refY="0"
+       orient="auto">
+      <path
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         style="fill:#ffcc80;fill-opacity:1;fill-rule:evenodd;stroke:#ffcc80;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         id="path7099" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="marker7430"
+       refX="0"
+       refY="0"
+       orient="auto">
+      <path
+         transform="scale(0.8)"
+         style="fill:#ffcc80;fill-opacity:1;fill-rule:evenodd;stroke:#ffcc80;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path7428" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="TriangleOutL"
+       refX="0"
+       refY="0"
+       orient="auto">
+      <path
+         transform="scale(0.8)"
+         style="fill:#ffcc80;fill-opacity:1;fill-rule:evenodd;stroke:#ffcc80;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path7232" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow1Lend"
+       refX="0"
+       refY="0"
+       orient="auto">
+      <path
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         style="fill:#ffcc80;fill-opacity:1;fill-rule:evenodd;stroke:#ffcc80;stroke-width:1.00000003pt;stroke-opacity:1"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         id="path7093" />
+    </marker>
+    <filter
+       id="filter6805"
+       style="color-interpolation-filters:sRGB">
+      <feFlood
+         id="feFlood6795"
+         result="flood"
+         flood-color="rgb(0,0,0)"
+         flood-opacity="1" />
+      <feComposite
+         id="feComposite6797"
+         result="composite1"
+         operator="in"
+         in2="SourceGraphic"
+         in="flood" />
+      <feGaussianBlur
+         id="feGaussianBlur6799"
+         result="blur"
+         stdDeviation="2"
+         in="composite1" />
+      <feOffset
+         id="feOffset6801"
+         result="offset"
+         dy="1"
+         dx="1" />
+      <feComposite
+         id="feComposite6803"
+         result="composite2"
+         operator="over"
+         in2="offset"
+         in="SourceGraphic" />
+    </filter>
+  </defs>
+  <rect
+     ry="1.1039883"
+     rx="1.3207152"
+     style="display:inline;fill:#272727;fill-opacity:1;stroke:none;stroke-width:0.48604044;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     y="0.10637654"
+     x="0.039465982"
+     height="53.975506"
+     width="308.98303"
+     id="background" />
+  <g
+     style="display:inline"
+     transform="translate(0,-243)"
+     id="layer1">
+    <rect
+       ry="1.7686245e-11"
+       rx="2.2899969"
+       y="275.5419"
+       x="34.244652"
+       height="2.4554543"
+       width="54.901043"
+       id="lineBefore"
+       style="fill:#ffa4c2;fill-opacity:1;stroke-width:0.35170913" />
+    <circle
+       r="2.444567"
+       style="display:inline;fill:#a5d6a7;fill-opacity:0.94117647;stroke-width:0.03226664"
+       cy="276.71814"
+       cx="29.922781"
+       id="path3740" />
+    <circle
+       r="2.5390613"
+       style="display:inline;fill:#a5d6a7;fill-opacity:1;stroke-width:0.0335139"
+       cy="276.76132"
+       cx="94.238708"
+       id="path3740-0" />
+    <circle
+       r="2.5390615"
+       style="display:inline;fill:#a5d6a7;fill-opacity:1;stroke-width:0.0335139"
+       cy="276.76129"
+       cx="156.51234"
+       id="path3740-0-8" />
+    <circle
+       r="2.5390615"
+       style="display:inline;fill:#a5d6a7;fill-opacity:1;stroke-width:0.0335139"
+       cy="276.75592"
+       cx="270.37485"
+       id="path3740-0-5" />
+    <circle
+       r="2.5390615"
+       style="display:inline;fill:#90caf9;fill-opacity:1;stroke-width:0.0335139"
+       cy="276.90097"
+       cx="212.7195"
+       id="path3740-0-0" />
+    <rect
+       ry="1.7686245e-11"
+       rx="1.9628541"
+       y="275.55048"
+       x="160.67755"
+       height="2.4554543"
+       width="47.058025"
+       id="lineBefore-6"
+       style="display:inline;fill:#90caf9;fill-opacity:1;stroke-width:0.32561934" />
+    <path
+       id="path7047-6"
+       d="M 212.75339,273.1762 V 256.3884"
+       style="display:inline;fill:#9dcc9f;fill-opacity:1;stroke:#90caf9;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041433, 1.02041433;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       id="path7047-8"
+       d="M 270.37476,273.44079 V 256.65298"
+       style="display:inline;fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041433, 1.02041433;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       id="path7047-5"
+       d="M 156.51793,273.40299 V 256.61518"
+       style="display:inline;fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041433, 1.02041433;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       ry="1.7686245e-11"
+       rx="1.9983281"
+       y="275.46475"
+       x="217.27948"
+       height="2.4554543"
+       width="47.908489"
+       id="lineBefore-6-4"
+       style="display:inline;fill:#90caf9;fill-opacity:1;stroke-width:0.32854855" />
+  </g>
+  <g
+     transform="translate(0,-56)"
+     style="display:inline"
+     id="layer3">
+    <text
+       id="text4625-9"
+       y="66.705627"
+       x="156.48593"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="voltageLevelOrigAfterTxt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
+         y="66.705627"
+         x="156.48593">Poste origine</tspan></text>
+    <text
+       id="text4625-3"
+       y="66.793755"
+       x="94.285995"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="voltageLevelExtrBeforeTxt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
+         y="66.793755"
+         x="94.285995">Poste extrémité</tspan></text>
+    <text
+       id="text4625-9-6"
+       y="66.673882"
+       x="212.79596"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="voltageLevelToSplitAtAfterTxt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335"
+         y="66.673882"
+         x="212.79596">Poste en coupure</tspan></text>
+    <text
+       id="text4625"
+       y="66.809113"
+       x="29.513699"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         dy="0"
+         id="voltageLevelOrigBeforeTxt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
+         y="66.809113"
+         x="29.513699">Poste origine</tspan></text>
+    <text
+       id="text4625-3-2"
+       y="66.772987"
+       x="270.18381"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="voltageLevelExtrAfterTxt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
+         y="66.772987"
+         x="270.18381">Poste extrémité</tspan></text>
+    <text
+       id="text4625-2"
+       y="98.099495"
+       x="61.302929"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#ffa4c2;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="lineToSplitBeforeTxt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffa4c2;fill-opacity:1;stroke-width:0.26458335"
+         y="98.099495"
+         x="61.302929">Liaison coupée</tspan></text>
+    <text
+       id="text1382"
+       y="98.099838"
+       x="184.59889"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="line1AfterTxt"
+         style="font-size:4.93888903px;line-height:1;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335;-inkscape-font-specification:'sans-serif Bold';font-family:sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
+         y="98.099838"
+         x="184.59889">Liaison origine</tspan></text>
+    <text
+       id="text4625-2-3-9"
+       y="98.099854"
+       x="242.05132"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="line2AfterTxt"
+         style="font-size:4.93888903px;line-height:1;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335;-inkscape-font-specification:'sans-serif Bold';font-family:sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
+         y="98.099854"
+         x="242.05132">Liaison extrémité</tspan></text>
+    <path
+       id="path7047"
+       d="M 29.84427,86.671007 V 69.883295"
+       style="fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041432, 1.02041432;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       id="path7047-2"
+       d="M 94.244076,86.41707 V 69.629358"
+       style="display:inline;fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041433, 1.02041433;stroke-dashoffset:0;stroke-opacity:1" />
+    <circle
+       r="7.4835467"
+       cy="88.345795"
+       cx="124.42936"
+       id="path7084"
+       style="fill:#9dcc9f;fill-opacity:0;stroke:#ffcc80;stroke-width:1.37583327;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       id="path9570"
+       d="m 121.47465,87.62628 -0.0668,1.5368 3.37428,9e-6 -1.16931,1.236115 1.1359,1.069085 3.00678,-3.040199 -2.87315,-3.173821 -1.26953,1.102491 1.1359,1.20271 z"
+       style="fill:#ffcc80;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+  </g>
+  <g
+     transform="matrix(1.0000088,0,0,0.9979224,-0.0026587,-55.904414)"
+     style="display:none"
+     id="buttonLayer">
+    <rect
+       ry="1.2951674"
+       rx="1.2309678"
+       style="fill:#272727;fill-opacity:1;stroke:#30393f;stroke-width:0.05100448;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       y="46.541725"
+       x="296.64203"
+       height="62.843277"
+       width="11.660336"
+       id="hideButton" />
+    <path
+       id="hideArrow"
+       d="m 300.08009,81.595044 0.89771,1.06306 1.74813,-1.889877 1.74815,1.866257 0.94494,-1.06306 -2.66946,-2.622207 z"
+       style="fill:#ecdddd;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       id="path9598"
+       d="M 296.26766,48.789906 V 104.64924"
+       style="fill:none;stroke:#4c4c4c;stroke-width:0.39687499;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>
