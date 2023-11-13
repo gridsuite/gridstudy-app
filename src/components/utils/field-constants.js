@@ -299,3 +299,12 @@ export const SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS = 'withShuntCompensators';
 export const SHORT_CIRCUIT_WITH_NEUTRAL_POSITION = 'withNeutralPosition';
 export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE =
     'initialVoltageProfileMode';
+
+// By formula
+export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
+export const FORMULAS = 'formulas';
+export const EDITED_FIELD = 'editedField';
+export const OPERATOR = 'operator';
+export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
+export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
+export const EQUIPMENT_FIELD = 'equipmentField';

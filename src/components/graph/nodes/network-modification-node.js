@@ -228,7 +228,7 @@ const NetworkModificationNode = (props) => {
                     >
                         <OverflowableText
                             text={props.data.label}
-                            style={{ width: '100%' }}
+                            sx={{ width: '100%' }}
                             tooltipSx={styles.tooltip}
                         />
                     </span>
