@@ -495,6 +495,7 @@
 
     "Equipment": "Ouvrage",
     "Constraint": "Contrainte",
+    "EquipmentType": "Type d'ouvrage",
 
     "Loads": "Consommations",
     "Batteries": "Batteries",
@@ -671,6 +672,7 @@
     "LCC_CONVERTER_STATION": "Station de conversion LCC",
     "VSC_CONVERTER_STATION": "Station de conversion VSC",
     "VSC": "Vsc",
+    "BY_FORMULA": "Par formule",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "BY_TABLE": "Par table",
@@ -1258,14 +1260,25 @@
     "RatedNominalPower": "Puissance nominale (MVA)",
 
     "ShortcircuitInProgress": "Calcul de court-circuit en cours...",
-    
+
     "tableChangingError": "Une erreur est survenue lors de la modification des données",
     "studyIndexationDone": "L'indexation de l'étude est terminée. La fonctionnalité de recherche est disponible",
     "studyIndexationNotIndexed": "Alerte côté serveur :Un incident s'est produit, les équipements de l'étude ne sont plus indexés. Merci de rafraîchir la page (F5)",
     "studyIndexationError": "L'indexation de l'étude a échoué.",
     "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échoué.",
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
-    "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
+
+    "EditedField": "Champ modifié",
+    "ReferenceFieldOrValue": "Champ de référence ou valeur",
+    "Operator": "Opérateur",
+
+    "ModifyByFormula": "Modification par formule",
+    "Use#ToSelectField": "Utiliser # pour sélectionner un champ",
+    "WrongRefOrValueError": "Veuillez saisir une valeur numérique valide ou une référence de champ valide. Utiliser # pour sélectionner un champ",
+    "ValueMustBeNumericWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une valeur numérique positive valide",
+    "ValueMustBeRefWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
+    "addNewFormula": "Ajouter une nouvelle formule",
+    "byFormulaChangeTypeConfirmation": "Voulez-vous changer le type? Toutes les valeurs des champs seront effacées",
 
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
 

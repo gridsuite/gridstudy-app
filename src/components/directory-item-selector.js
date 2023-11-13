@@ -238,6 +238,7 @@ DirectoryItemSelector.propTypes = {
     multiselect: PropTypes.bool,
     validationButtonText: PropTypes.string,
     titleId: PropTypes.string,
+    itemFilter: PropTypes.func,
 };
 
 export default DirectoryItemSelector;
