@@ -73,14 +73,17 @@ export const getFormSchema = () => {
 const defParams = {
     [SIM_H_MIN]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationSimplifiedSolverHMin',
     },
     [SIM_H_MAX]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationSimplifiedSolverHMax',
     },
     [SIM_K_REDUCE_STEP]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationSimplifiedSolverKReduceStep',
     },
     [SIM_MAX_NEWTON_TRY]: {
@@ -93,18 +96,22 @@ const defParams = {
     },
     [SIM_F_NORM_TOL]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationSimplifiedSolverFNormTol',
     },
     [SIM_INITIAL_ADD_TOL]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationSimplifiedSolverInitialAddTol',
     },
     [SIM_SC_STEP_TOL]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationSimplifiedSolverScStepTol',
     },
     [SIM_MX_NEW_T_STEP]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationSimplifiedSolverMxNewTStep',
     },
     [SIM_MSBSET]: {

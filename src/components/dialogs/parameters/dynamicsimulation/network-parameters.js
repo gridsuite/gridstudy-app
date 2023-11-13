@@ -85,38 +85,47 @@ export const emptyFormData = {
 const defParams = {
     [CAPACITOR_NO_RECLOSING_DELAY]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkCapacitorNoReclosingDelay',
     },
     [DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation',
     },
     [LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLineCurrentLimitMaxTimeOperation',
     },
     [LOAD_TP]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadTp',
     },
     [LOAD_TQ]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadTq',
     },
     [LOAD_ALPHA]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadAlpha',
     },
     [LOAD_ALPHA_LONG]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadAlphaLong',
     },
     [LOAD_BETA]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadBeta',
     },
     [LOAD_BETA_LONG]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadBetaLong',
     },
     [LOAD_IS_CONTROLLABLE]: {
@@ -129,38 +138,47 @@ const defParams = {
     },
     [LOAD_Z_PMAX]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadZPMax',
     },
     [LOAD_Z_QMAX]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkLoadZQMax',
     },
     [REACTANCE_NO_RECLOSING_DELAY]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkReactanceNoReclosingDelay',
     },
     [TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkTransformerCurrentLimitMaxTimeOperation',
     },
     [TRANSFORMER_T1_ST_HT]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkTransformerT1StHT',
     },
     [TRANSFORMER_T1_ST_THT]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkTransformerT1StTHT',
     },
     [TRANSFORMER_T_NEXT_HT]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkTransformerTNextHT',
     },
     [TRANSFORMER_T_NEXT_THT]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkTransformerTNextTHT',
     },
     [TRANSFORMER_TO_LV]: {
         type: TYPES.FLOAT,
+        exponentialFormatEditable: true,
         label: 'DynamicSimulationNetworkTransformerTolV',
     },
 };

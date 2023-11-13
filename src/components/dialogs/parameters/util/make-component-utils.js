@@ -46,7 +46,7 @@ const defaultParamRender = (defParam, path, key) => {
         case TYPES.INTEGER:
             return <IntegerInput name={`${path}.${key}`} label={''} />;
         case TYPES.FLOAT:
-            if (defParam.isWithExponentialFormat) {
+            if (defParam.exponentialFormatEditable) {
                 return (
                     <ExponentialFloatInput name={`${path}.${key}`} label={''} />
                 );
