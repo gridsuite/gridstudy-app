@@ -100,14 +100,14 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+                params.value.toFixed(2),
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
             field: 'value',
             numeric: true,
             valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+                params.value.toFixed(2),
         },
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
@@ -115,7 +115,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             numeric: true,
             fractionDigits: 0,
             valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+                params.value.toFixed(2),
         },
     ];
 };

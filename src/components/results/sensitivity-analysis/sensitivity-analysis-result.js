@@ -23,6 +23,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
+import { ValueFormatterParams } from 'ag-grid-community';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -56,6 +57,8 @@ const SensitivityAnalysisResult = ({
             const { colKey, sortWay } = sortConfig || {};
             const isSortActive = colKey === field;
 
+            const valueFormatter = (params: ValueFormatterParams) =>
+                isNum ? params.data?.[field]?.toFixed(2) : params.data?.[field];
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
@@ -65,6 +68,7 @@ const SensitivityAnalysisResult = ({
                 numeric: isNum,
                 fractionDigits: isNum ? 4 : undefined,
                 headerComponent: CustomHeaderComponent,
+                valueFormatter,
                 headerComponentParams: {
                     field,
                     displayName: intl.formatMessage({ id: labelId }),

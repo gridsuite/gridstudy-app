@@ -20,8 +20,8 @@ import {
     FilterChangedEvent,
     GridReadyEvent,
     RowClassParams,
-    SortChangedEvent,
-} from 'ag-grid-community';
+    SortChangedEvent, ValueFormatterParams
+} from "ag-grid-community";
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     getNoRowsMessage,
@@ -142,6 +142,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: true,
+                valueFormatter: (params: ValueFormatterParams) =>
+                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -161,6 +163,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                valueFormatter: (params: ValueFormatterParams) =>
+                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -168,6 +172,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                valueFormatter: (params: ValueFormatterParams) =>
+                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
@@ -175,6 +181,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                valueFormatter: (params: ValueFormatterParams) =>
+                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
@@ -182,6 +190,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                valueFormatter: (params: ValueFormatterParams) =>
+                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
@@ -189,6 +199,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
+                valueFormatter: (params: ValueFormatterParams) =>
+                  params.data?.limit?.toFixed(2),
             },
             {
                 field: 'linkedElementId',

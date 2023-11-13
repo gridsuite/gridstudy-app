@@ -301,19 +301,19 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.limit?.toFixed(1),
+                params.data?.limit?.toFixed(2),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.value?.toFixed(1),
+                params.data?.value?.toFixed(2),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.loading?.toFixed(1),
+                params.data?.loading?.toFixed(2),
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
