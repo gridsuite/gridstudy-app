@@ -7,6 +7,7 @@
 
 import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
 import { useCallback } from 'react';
+import { commonDefParams } from './solver-constants';
 
 const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
     const defParams = {
@@ -34,6 +35,7 @@ const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
             type: TYPES.float,
             description: 'DynamicSimulationIDASolverRelAccuracy',
         },
+        ...commonDefParams,
     };
 
     const handleUpdateIdaSolver = useCallback(
