@@ -29,6 +29,9 @@ type IData = {
     value: any;
 };
 
+/**
+ * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
+ */
 const SitePropertiesDialog: React.FC<Props> = ({ data, onDataChanged }) => {
     const theme = useTheme();
     const gridRef = useRef<AgGridReact>(null);
