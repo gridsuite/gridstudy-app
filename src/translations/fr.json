@@ -1277,7 +1277,7 @@
     "iccMawWithNominalVoltageMapPredefinedParams": "ICC max avec plan de tension normalisé",
     "iccMaxWithCEIPredefinedParams": "ICC max avec norme CEI 909",
     "nominalInitialVoltageProfileMode": "Normalisé",
-    "configuredInitialVoltageProfileMode": "CEI 909",
+    "cei909InitialVoltageProfileMode": "CEI 909",
 
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
 

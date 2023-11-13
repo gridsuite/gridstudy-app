@@ -15,6 +15,7 @@ export enum STATUS {
 }
 export enum INITIAL_VOLTAGE {
     NOMINAL = 'NOMINAL',
+    CEI909 = 'CEI909',
     CONFIGURED = 'CONFIGURED',
 }
 export enum PREDEFINED_PARAMETERS {

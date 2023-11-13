@@ -1263,5 +1263,5 @@
     "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with standardized tension plan",
     "iccMaxWithCEIPredefinedParams": "ISC max with IEC 909 standard",
     "nominalInitialVoltageProfileMode": "Nominal",
-    "configuredInitialVoltageProfileMode": "CEI 909"
+    "cei909InitialVoltageProfileMode": "CEI 909"
 }

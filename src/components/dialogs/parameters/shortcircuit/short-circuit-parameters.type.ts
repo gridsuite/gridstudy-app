@@ -15,11 +15,11 @@ export interface VoltageTableProps {
     voltageProfileMode: INITIAL_VOLTAGE;
     values: VoltageRanges;
 }
-export interface VoltageRange {
-    minimumNominalVoltage: number;
-    maximumNominalVoltage: number;
+export interface Pair {
+    first: number;
+    second: number;
 }
 export interface VoltageRanges {
-    CONFIGURED: VoltageRange[];
-    NOMINAL: VoltageRange[];
+    CEI909: Pair[];
+    NOMINAL: Pair[];
 }

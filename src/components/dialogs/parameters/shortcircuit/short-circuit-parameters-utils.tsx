@@ -7,7 +7,7 @@
 import React from 'react';
 import { INITIAL_VOLTAGE, STATUS } from '../../../utils/constants';
 import { Lens } from '@mui/icons-material';
-import { VoltageRange, VoltageRanges } from './short-circuit-parameters.type';
+import { Pair, VoltageRanges } from './short-circuit-parameters.type';
 
 export const intlPredefinedParametersOptions = () => [
     {
@@ -26,9 +26,9 @@ export const intlInitialVoltageProfileMode = () => {
             id: 'NOMINAL',
             label: 'nominalInitialVoltageProfileMode',
         },
-        CONFIGURED: {
-            id: 'CONFIGURED',
-            label: 'configuredInitialVoltageProfileMode',
+        CEI909: {
+            id: 'CEI909',
+            label: 'cei909InitialVoltageProfileMode',
         },
     };
 };
@@ -38,24 +38,20 @@ export const getStatus = (status: STATUS, styles: any) => {
     return <Lens fontSize={'medium'} sx={color} />;
 };
 
-const getSortedValues = (values: VoltageRange[], isNominal: boolean) => {
+const getSortedValues = (values: Pair[], isNominal: boolean) => {
     return values
-        .map((value) =>
-            isNominal
-                ? value.minimumNominalVoltage
-                : value.maximumNominalVoltage
-        )
+        .map((value) => (isNominal ? value.first : value.second))
         .sort((prev: number, next: number) => next - prev);
 };
 export const getValues = (
     values: VoltageRanges,
     voltageProfileMode: INITIAL_VOLTAGE
-): { initialTension: number[]; nominalTension: number[] } => {
+): { initialVoltage: number[]; nominalVoltage: number[] } => {
     const voltageRanges =
         voltageProfileMode === INITIAL_VOLTAGE.NOMINAL
             ? values.NOMINAL
-            : values.CONFIGURED;
-    const initialTension = getSortedValues(voltageRanges, false);
-    const nominalTension = getSortedValues(voltageRanges, true);
-    return { initialTension, nominalTension };
+            : values.CEI909;
+    const initialVoltage = getSortedValues(voltageRanges, false);
+    const nominalVoltage = getSortedValues(voltageRanges, true);
+    return { initialVoltage, nominalVoltage };
 };

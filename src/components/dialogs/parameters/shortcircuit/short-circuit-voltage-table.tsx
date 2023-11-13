@@ -24,11 +24,11 @@ const VoltageTable: FunctionComponent<VoltageTableProps> = ({
         () => [
             {
                 name: intl.formatMessage({ id: 'shortCircuitNominalVoltage' }),
-                values: valuesToDisplay.nominalTension,
+                values: valuesToDisplay.nominalVoltage,
             },
             {
                 name: intl.formatMessage({ id: 'shortCircuitInitialVoltage' }),
-                values: valuesToDisplay.initialTension,
+                values: valuesToDisplay.initialVoltage,
             },
         ],
         [valuesToDisplay, intl]

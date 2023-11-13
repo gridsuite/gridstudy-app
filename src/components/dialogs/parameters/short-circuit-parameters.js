@@ -80,19 +80,19 @@ const formSchema = yup
     .required();
 
 const prepareDataToSend = (shortCircuitParams, newParameters) => {
+    //TODO: changed base on voltageranges structures
     const oldParameters = { ...shortCircuitParams.parameters };
     let parameters = {
         ...oldParameters,
         ...newParameters,
-        // we need to add voltageRanges to the parameters only when initialVoltageProfileMode equals to CONFIGURED
+        // we need to add voltageRanges to the parameters only when initialVoltageProfileMode equals to CEI909
         voltageRanges: undefined,
     };
-    if (
-        newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
-    ) {
+    if (newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CEI909) {
         parameters = {
             ...parameters,
-            voltageRanges: shortCircuitParams.voltageRangesInfo.CONFIGURED,
+            voltageRanges: shortCircuitParams.voltageRangesInfo.CEI909,
+            initialVoltageProfileMode: INITIAL_VOLTAGE.CONFIGURED,
         };
     }
     // we need to remove the predefinedParameters attribute from parameters because it's not handled on powsybl class
@@ -126,7 +126,7 @@ export const ShortCircuitParameters = ({
             [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]:
                 parameters.withShuntCompensators,
             [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]:
-                parameters.withNeutralPosition,
+                !parameters.withNeutralPosition,
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
                 parameters.initialVoltageProfileMode,
         };
@@ -205,7 +205,7 @@ export const ShortCircuitParameters = ({
                 predefinedParameter ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP
                     ? INITIAL_VOLTAGE.NOMINAL
-                    : INITIAL_VOLTAGE.CONFIGURED;
+                    : INITIAL_VOLTAGE.CEI909;
 
             setValue(
                 SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
