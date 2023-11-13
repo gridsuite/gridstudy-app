@@ -41,13 +41,17 @@ declare module '@gridsuite/commons-ui' {
         name: string;
         options: ({ id: string; label: string } | string)[];
         label?: string;
-        outputTransform?: (value: string) => string;
-        inputTransform?: (value: string) => string;
+        outputTransform?: (
+            value: { id: string; label: string } | string
+        ) => { id: string; label: string } | string;
+        inputTransform?: (
+            value: { id: string; label: string } | string
+        ) => { id: string; label: string } | string;
         readOnly?: boolean;
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
-        getOptionLabel?: (rt: string) => string;
+        getOptionLabel?: (rt: string | { id: string; label: string }) => string;
         formProps?: Omit<
             TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
@@ -70,7 +74,9 @@ declare module '@gridsuite/commons-ui' {
         >
     >;
 
-    export const FieldErrorAlert: FunctionComponent<>;
+    export const MidFormError: FunctionComponent;
+
+    export const FieldErrorAlert: FunctionComponent;
 
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps
@@ -169,8 +175,8 @@ declare module '@gridsuite/commons-ui' {
     };
 
     interface OverflowableTextProps {
-        sx: SxProps;
-        text?: string;
+        sx?: SxProps;
+        text?: string | ReactElement;
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
