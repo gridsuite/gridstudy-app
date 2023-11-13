@@ -154,6 +154,7 @@ export const commonDefParams = {
     },
     [COMMON_MINIMAL_ACCEPTABLE_STEP]: {
         type: TYPES.FLOAT,
+        isWithExponentialFormat: true,
         label: 'DynamicSimulationSolverMinimalAcceptableStep',
     },
 };

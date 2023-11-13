@@ -17,6 +17,7 @@ import {
     SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
+import ExponentialFloatInput from '../../../utils/rhf-inputs/exponential-float-input';
 
 // --- define data types --- //
 export const TYPES = {
@@ -45,6 +46,11 @@ const defaultParamRender = (defParam, path, key) => {
         case TYPES.INTEGER:
             return <IntegerInput name={`${path}.${key}`} label={''} />;
         case TYPES.FLOAT:
+            if (defParam.isWithExponentialFormat) {
+                return (
+                    <ExponentialFloatInput name={`${path}.${key}`} label={''} />
+                );
+            }
             return <FloatInput name={`${path}.${key}`} label={''} />;
         case TYPES.STRING:
             return <TextInput name={`${path}.${key}`} label={''} />;

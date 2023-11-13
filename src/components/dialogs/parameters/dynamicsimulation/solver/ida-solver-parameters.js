@@ -41,10 +41,12 @@ const defParams = {
     },
     [IDA_INIT_STEP]: {
         type: TYPES.FLOAT,
+        isWithExponentialFormat: true,
         label: 'DynamicSimulationIDASolverInitStep',
     },
     [IDA_MIN_STEP]: {
         type: TYPES.FLOAT,
+        isWithExponentialFormat: true,
         label: 'DynamicSimulationIDASolverMinStep',
     },
     [IDA_MAX_STEP]: {
