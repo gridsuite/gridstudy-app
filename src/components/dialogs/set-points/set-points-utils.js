@@ -148,25 +148,25 @@ const getReactivePowerSetPointSchema = (isEquipmentModification) => ({
 
 export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
     [ACTIVE_POWER_SET_POINT]: yup
-        .number().test('activePowerSetPoint','ACtivePowerZeroOrBteweenMinAndMaxActivePower', (value, context) => {
-          const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
-          const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
-          if (isEquipmentModification) {
-              return true;
-          }
-          if (value === null) {
-              return false;
-          }
-          if (value === 0) {
-              return true;
-          }
-          if (minActivePower === null || maxActivePower === null) {
-              return false;
-          }
-          return !(value < minActivePower || value > maxActivePower);
-
-      })
-
+        .number()
+        .nonNullable()
+        .when([], {
+          is: () => !isEquipmentModification,
+          then: (schema) =>
+            schema
+              .required()
+              .test('activePowerSetPoint', 'ACtivePowerZeroOrBteweenMinAndMaxActivePower', (value, context) => {
+                const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
+                const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
+                if (value === 0) {
+                  return true;
+                }
+                if (minActivePower === null || maxActivePower === null) {
+                  return false;
+                }
+                return !(value < minActivePower || value > maxActivePower);
+              })
+        })
 });
 
 export const getPreviousBooleanValue = (value) => {
