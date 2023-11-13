@@ -46,7 +46,6 @@ const SitePropertiesDialog: React.FC<Props> = ({ data, onDataChanged }) => {
     }, [intl]);
 
     const [rowData, setRowData] = useState<IData[]>(() => {
-        console.log(data.data);
         if (!data.data.properties) {
             return [];
         }

@@ -305,7 +305,7 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const onCellClicked = useMemo(() => {
+    const handleOnCellClicked = useMemo(() => {
         const onCellClickedFunction =
             TABLES_DEFINITION_INDEXES.get(tabIndex)?.onCellClicked || null;
         if (isCellEditingAllowed) {
@@ -879,7 +879,7 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
-                        onCellClicked={onCellClicked}
+                        onCellClicked={handleOnCellClicked}
                     />
                 </Box>
             )}
