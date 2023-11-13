@@ -101,7 +101,6 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal, allowZero) => {
-                console.log('isValid', val, minVal, maxVal, allowZero);
                 if (val === undefined || val === null) {
                     if (optional) {
                         return true;
