@@ -1237,6 +1237,9 @@
 
     "customAgGridFilter.startsWith": "Commence par",
     "customAgGridFilter.contains": "Contient",
+    "customAgGridFilter.notEqual": "N'est pas égal à",
+    "customAgGridFilter.lessThanOrEqual": "Inférieur ou égal",
+    "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
     "customAgGridFilter.filterOoo": "Filtrer...",
     "undefined" : "non défini"
 }

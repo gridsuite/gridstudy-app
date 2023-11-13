@@ -23,11 +23,7 @@ import {
     ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import {
-    ContingencyCellRenderer,
-    displayNAValue,
-    DisplayNAValue,
-} from 'components/spreadsheet/utils/cell-renderers';
+import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -38,7 +34,7 @@ import {
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from '../../../services/security-analysis';
-import { string } from 'yup';
+import { convertMillisecondsToMinutesSeconds } from '../loadflow/load-flow-result-utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -155,8 +151,6 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeColumn({
         headerName: intl.formatMessage({ id: 'LimitName' }),
         field: 'limitName',
-        cellRenderer: (value: string | undefined) =>
-            displayNAValue(value, intl),
         isSortable: true,
         isFilterable: true,
         filterParams: {
@@ -203,24 +197,6 @@ export const securityAnalysisTableNColumnsDefinition = (
     }),
 
     makeColumn({
-        headerName: intl.formatMessage({
-            id: 'Overload',
-        }),
-        field: 'acceptableDuration',
-        numeric: true,
-        isSortable: true,
-        isFilterable: true,
-        filterParams: {
-            filterUIType: FILTER_UI_TYPES.NUMBER,
-            filterComparators: [
-                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-            ],
-        },
-    }),
-
-    makeColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
         isSortable: true,
@@ -236,18 +212,39 @@ export const securityAnalysisTableNColumnsDefinition = (
             ],
         },
     }),
+
+    makeColumn({
+        headerName: intl.formatMessage({
+            id: 'Overload',
+        }),
+        field: 'acceptableDuration',
+        cellRenderer: (value: ValueFormatterParams) =>
+            convertMillisecondsToMinutesSeconds(value.data.acceptableDuration),
+        numeric: true,
+        isSortable: true,
+        isFilterable: true,
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: [
+                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+            ],
+        },
+    }),
+
     makeColumn({
         headerName: intl.formatMessage({ id: 'LimitSide' }),
         field: 'side',
         isSortable: true,
         isFilterable: true,
-        filterParams: {
+        /* filterParams: {
             filterUIType: FILTER_UI_TYPES.TEXT,
             filterComparators: [
                 FILTER_TEXT_COMPARATORS.STARTS_WITH,
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
-        },
+        }, */
     }),
 ];
 
@@ -425,24 +422,13 @@ export const securityAnalysisTableNFilterDefinition = (
 ) => {
     return [
         {
-            field: 'subjectId',
-            options: filterEnums?.subjectId,
-        },
-        {
             field: 'limitType',
             options: filterEnums?.limitTypes,
         },
+
         {
-            field: 'limit',
-            options: filterEnums?.limit,
-        },
-        {
-            field: 'value',
-            options: filterEnums?.value,
-        },
-        {
-            field: 'loading',
-            options: filterEnums?.loading,
+            field: 'side',
+            options: filterEnums?.branchSides,
         },
     ];
 };

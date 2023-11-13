@@ -20,6 +20,7 @@ import {
     securityAnalysisTableNFilterDefinition,
 } from './security-analysis-result-utils';
 import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header';
+import { convertSide } from '../loadflow/load-flow-result-utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
@@ -47,6 +48,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
                 limit: limitViolation?.limit,
                 value: limitViolation?.value,
                 loading: limitViolation?.loading,
+                side: convertSide(limitViolation?.side, intl),
             } as SecurityAnalysisNTableRow;
         }) ?? [];
 

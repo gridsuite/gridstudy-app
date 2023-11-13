@@ -356,8 +356,8 @@
     "LOW_SHORT_CIRCUIT_CURRENT": "Isc min",
     "HIGH_SHORT_CIRCUIT_CURRENT": "Isc max",
 
-    "LimitType": "Violation type",
-    "ViolationType": "Limit type",
+    "LimitType": "Limit type",
+    "ViolationType": "Violation type",
     "LimitSide": "Side",
     "LimitName": "Limit name",
     "LimitNameCurrentViolation": "Limit name",
@@ -1217,6 +1217,9 @@
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
     "customAgGridFilter.startsWith": "Starts with",
     "customAgGridFilter.contains": "Contains",
+    "customAgGridFilter.notEqual": "Not equal",
+    "customAgGridFilter.lessThanOrEqual": "Less than or equal",
+    "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",
     "customAgGridFilter.filterOoo": "Filter...",
     "undefined" : "undefined"
 }
