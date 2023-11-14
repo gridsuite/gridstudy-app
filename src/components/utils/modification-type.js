@@ -102,4 +102,7 @@ export const MODIFICATION_TYPES = {
     TABULAR_MODIFICATION: {
         type: 'TABULAR_MODIFICATION',
     },
+    BY_FORMULA_MODIFICATION: {
+        type: 'BY_FORMULA_MODIFICATION',
+    },
 };

@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ListItemIcon,
-    ListItemText,
-    Menu,
-    MenuItem,
-    Typography,
-} from '@mui/material';
+import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
@@ -29,6 +23,7 @@ import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
+import { CustomMenuItem } from '../utils/custom-nested-menu';
 
 interface BusMenuProps {
     busId: string;
@@ -99,7 +94,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             }}
             onClose={closeBusMenu}
         >
-            <MenuItem
+            <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
@@ -119,7 +114,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                         </Typography>
                     }
                 />
-            </MenuItem>
+            </CustomMenuItem>
             {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}

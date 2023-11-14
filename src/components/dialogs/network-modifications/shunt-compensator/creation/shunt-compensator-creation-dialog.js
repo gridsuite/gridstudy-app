@@ -43,9 +43,9 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import {
-    getCharacteristicsCreateFormData,
+    getCharacteristicsFormData,
     getCharacteristicsCreateFormDataFromSearchCopy,
-    getCharacteristicsEmptyCreateFormData,
+    getCharacteristicsEmptyFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
@@ -56,7 +56,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getConnectivityWithPositionEmptyFormData(),
-    ...getCharacteristicsEmptyCreateFormData(),
+    ...getCharacteristicsEmptyFormData(),
 };
 
 const formSchema = yup
@@ -137,7 +137,7 @@ const ShuntCompensatorCreationDialog = ({
                     voltageLevelId: shuntCompensator.voltageLevelId,
                     connected: shuntCompensator.connected,
                 }),
-                ...getCharacteristicsCreateFormData({
+                ...getCharacteristicsFormData({
                     maxSusceptance: shuntCompensator.maxSusceptance ?? null,
                     maxQAtNominalV: shuntCompensator.maxQAtNominalV ?? null,
                     shuntCompensatorType: shuntCompensator.shuntCompensatorType,
