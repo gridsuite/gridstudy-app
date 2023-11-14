@@ -119,7 +119,7 @@ export const formatCell = (props) => {
 };
 
 export const convertDuration = (duration) => {
-    if (isNaN(duration)) {
+    if (!duration || isNaN(duration)) {
         return '';
     }
 
