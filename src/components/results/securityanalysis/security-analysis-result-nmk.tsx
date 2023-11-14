@@ -155,7 +155,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
 
             const minWidth = isSortable && sortWay ? 140 : isFilterable && 95;
 
-            console.log('test : ', field, numeric);
             return {
                 headerName,
                 field,
