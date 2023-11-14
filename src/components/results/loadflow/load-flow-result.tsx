@@ -354,8 +354,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}></Box>
                 {loadFlowStatus === RunningStatus.SUCCEED && (
                     <ComputationReportViewer
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
                         reportType={ComputingType.LOADFLOW}
                     />
                 )}

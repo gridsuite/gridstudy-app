@@ -17,21 +17,18 @@ import ReportViewer from '../../ReportViewer/report-viewer';
 import LogReportItem from '../../ReportViewer/log-report-item';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
-import { UUID } from 'crypto';
 import { ComputingType } from '../../computing-status/computing-type';
 
 interface ComputationReportViewerProps {
-    // different types for uuid to support LF, SA , etc
-    studyUuid: UUID | string;
-    nodeUuid: UUID | string | undefined;
     reportType: ComputingType;
 }
 
 export const ComputationReportViewer: FunctionComponent<
     ComputationReportViewerProps
-> = ({ studyUuid, nodeUuid, reportType }) => {
+> = ({ reportType }) => {
     const [report, setReport] = useState(undefined);
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
@@ -53,24 +50,26 @@ export const ComputationReportViewer: FunctionComponent<
     );
 
     useEffect(() => {
-        fetchParentNodesReport(
-            studyUuid.toString(),
-            nodeUuid?.toString(),
-            true,
-            LogReportItem.getDefaultSeverityList(),
-            reportType.toString()
-        )
-            .then((fetchedReport) => {
-                setReport(makeReport(fetchedReport));
-            })
-            .catch((error) => {
-                setReport(undefined);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ReportFetchError',
+        if (studyUuid && currentNode?.id) {
+            fetchParentNodesReport(
+                studyUuid.toString(),
+                currentNode.id.toString(),
+                true,
+                LogReportItem.getDefaultSeverityList(),
+                reportType.toString()
+            )
+                .then((fetchedReport) => {
+                    setReport(makeReport(fetchedReport));
+                })
+                .catch((error) => {
+                    setReport(undefined);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ReportFetchError',
+                    });
                 });
-            });
-    }, [studyUuid, nodeUuid, reportType, snackError, makeReport]);
+        }
+    }, [studyUuid, currentNode?.id, reportType, snackError, makeReport]);
 
     const subReportPromise = (
         reportId: string,
@@ -78,7 +77,7 @@ export const ComputationReportViewer: FunctionComponent<
     ) => {
         return fetchSubReport(
             studyUuid.toString(),
-            nodeUuid?.toString(),
+            currentNode.id.toString(),
             reportId,
             severityFilterList
         );

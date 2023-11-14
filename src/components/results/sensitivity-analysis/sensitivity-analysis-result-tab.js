@@ -106,8 +106,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     <>
                         <Box sx={{ height: '4px' }}></Box>
                         <ComputationReportViewer
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
                             reportType={ComputingType.SENSITIVITY_ANALYSIS}
                         />
                     </>

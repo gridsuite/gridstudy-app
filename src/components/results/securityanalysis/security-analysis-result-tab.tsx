@@ -308,8 +308,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         <>
                             <Box sx={{ height: '4px' }}></Box>
                             <ComputationReportViewer
-                                studyUuid={studyUuid}
-                                nodeUuid={nodeUuid}
                                 reportType={ComputingType.SECURITY_ANALYSIS}
                             />
                         </>

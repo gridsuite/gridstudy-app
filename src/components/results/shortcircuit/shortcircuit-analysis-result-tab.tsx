@@ -35,10 +35,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     );
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
     const AllBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
@@ -107,8 +103,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                     <>
                         <Box sx={{ height: '4px' }}></Box>
                         <ComputationReportViewer
-                            studyUuid={studyUuid}
-                            nodeUuid={currentNode?.id}
                             reportType={
                                 tabIndex ===
                                 ShortCircuitAnalysisResultTabs.ALL_BUSES
