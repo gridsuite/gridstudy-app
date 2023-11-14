@@ -17,26 +17,10 @@ import {
     ColDef,
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
+import { convertDuration } from '../../spreadsheet/utils/cell-renderers';
 
 const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 const PERMANENT_LIMIT_NAME = 'permanent';
-export const convertDuration = (duration: number): string => {
-    if (isNaN(duration)) {
-        return '';
-    }
-
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
-
-    if (seconds === 0) {
-        return minutes + "'";
-    }
-
-    if (minutes === 0) {
-        return seconds + '"';
-    }
-    return minutes + "' " + seconds + '"';
-};
 
 export const convertSide = (side: string, intl: IntlShape) => {
     return side === BranchSide.ONE

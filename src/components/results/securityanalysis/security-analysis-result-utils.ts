@@ -23,8 +23,10 @@ import {
     ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import { convertDuration } from '../loadflow/load-flow-result-utils';
+import {
+    ContingencyCellRenderer,
+    convertDuration,
+} from 'components/spreadsheet/utils/cell-renderers';
 import {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
