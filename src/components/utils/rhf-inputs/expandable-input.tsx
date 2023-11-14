@@ -13,18 +13,31 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { styles } from '../../dialogs/dialogUtils';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { MidFormError } from '@gridsuite/commons-ui';
 import { mergeSx } from '../functions';
+
+interface ExpandableInputProps {
+    name: string;
+    Field: React.ComponentType<any>;
+    fieldProps?: any;
+    addButtonLabel?: string;
+    initialValue?: any;
+    getDeletionMark?: (idx: number) => boolean | null;
+    deleteCallback?: (idx: number) => boolean | null;
+    alignItems?: string;
+    watchProps?: boolean;
+    disabled?: boolean;
+}
 
 // This component is used to display Array of objects.
 // We can manage 2 states for deletion:
 // - only 1 state and 1 delete icon that removes the current line
 // - a second state "mark for deletion" with a second icon: the line is not removed
 // and we can cancel this mark to go back to normal state.
-const ExpandableInput = ({
+const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
     name,
     Field, // Used to display each object of an array
     fieldProps, // Props to pass to Field
@@ -89,7 +102,7 @@ const ExpandableInput = ({
                     startIcon={<AddIcon />}
                     onClick={() => append(initialValue)}
                 >
-                    <FormattedMessage id={addButtonLabel} />
+                    {addButtonLabel && <FormattedMessage id={addButtonLabel} />}
                 </Button>
             </span>
         </Grid>
