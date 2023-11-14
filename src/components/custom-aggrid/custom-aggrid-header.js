@@ -44,8 +44,8 @@ const CustomHeaderComponent = ({
     displayName,
     sortConfig = [],
     onSortChanged = () => {},
-    isSortable = true,
-    isFilterable = true,
+    isSortable = false,
+    isFilterable = false,
     filterParams = {},
     isMultiSortableTable = false,
 }) => {

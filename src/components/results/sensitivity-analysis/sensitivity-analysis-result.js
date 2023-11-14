@@ -52,7 +52,15 @@ const SensitivityAnalysisResult = ({
     );
     const messages = useIntlResultStatusMessages(intl, true);
     const makeColumn = useCallback(
-        ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
+        ({
+            field,
+            labelId,
+            isNum = false,
+            pinned = false,
+            maxWidth,
+            isSortable,
+            isFilterable,
+        }) => {
             const { colKey, sortWay } =
                 sortConfig.find((conf) => conf.colKey === field) || {};
 
@@ -75,6 +83,8 @@ const SensitivityAnalysisResult = ({
                         filterOptions,
                         updateFilter,
                     },
+                    isSortable,
+                    isFilterable,
                 },
                 minWidth: colKey && sortWay ? 95 : 65,
                 maxWidth: maxWidth,
@@ -103,6 +113,8 @@ const SensitivityAnalysisResult = ({
                 labelId: sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
                 pinned: true,
                 maxWidth: 350,
+                isSortable: true,
+                isFilterable: true,
             })
         );
         returnedTable.push(
@@ -110,6 +122,8 @@ const SensitivityAnalysisResult = ({
                 field: 'varId',
                 labelId: 'VariablesToSimulate',
                 pinned: true,
+                isSortable: true,
+                isFilterable: true,
             })
         );
 
@@ -119,6 +133,8 @@ const SensitivityAnalysisResult = ({
                     field: 'contingencyId',
                     labelId: 'ContingencyId',
                     pinned: true,
+                    isSortable: true,
+                    isFilterable: true,
                 })
             );
         }
@@ -131,6 +147,7 @@ const SensitivityAnalysisResult = ({
                 field: 'functionReference',
                 labelId: 'ValRef' + suffix,
                 isNum: true,
+                isSortable: true,
             })
         );
         returnedTable.push(
@@ -138,6 +155,7 @@ const SensitivityAnalysisResult = ({
                 field: 'value',
                 labelId: 'Delta' + suffix,
                 isNum: true,
+                isSortable: true,
             })
         );
 
@@ -147,6 +165,7 @@ const SensitivityAnalysisResult = ({
                     field: 'functionReferenceAfter',
                     labelId: 'ValRef' + suffix1,
                     isNum: true,
+                    isSortable: true,
                 })
             );
             returnedTable.push(
@@ -154,6 +173,7 @@ const SensitivityAnalysisResult = ({
                     field: 'valueAfter',
                     labelId: 'Delta' + suffix1,
                     isNum: true,
+                    isSortable: true,
                 })
             );
         }

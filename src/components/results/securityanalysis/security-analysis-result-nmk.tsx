@@ -141,9 +141,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             field = '',
             valueGetter,
             cellRenderer,
-            isSortable = false,
+            isSortable,
             isHidden = false,
-            isFilterable = false,
+            isFilterable,
             filterParams,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
@@ -154,7 +154,11 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 sortConfig?.find((config) => config.colKey === field) || {};
 
             const minWidth =
-                isSortable && currentColumnSortWay ? 140 : isFilterable && 95;
+                isSortable && currentColumnSortWay
+                    ? 140
+                    : isFilterable
+                    ? 95
+                    : 75;
 
             return {
                 headerName,

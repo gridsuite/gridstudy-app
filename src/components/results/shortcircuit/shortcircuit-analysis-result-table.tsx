@@ -123,8 +123,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         ({
             headerName,
             field = '',
-            isSortable = false,
-            isFilterable = false,
+            isSortable,
+            isFilterable,
             filterParams,
             isHidden = false,
             isNumeric = false,
@@ -133,7 +133,18 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
 
+            const { sortWay: currentColumnSortWay } =
+                sortConfig?.find((config) => config.colKey === field) || {};
+
+            const minWidth =
+                isSortable && currentColumnSortWay
+                    ? 140
+                    : isFilterable
+                    ? 95
+                    : 75;
+
             return {
+                minWidth,
                 headerName,
                 field,
                 hide: isHidden,
