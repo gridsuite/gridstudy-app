@@ -252,10 +252,9 @@ const NetworkMap = (props) => {
 
     function renderTooltip() {
         return (
-            tooltip &&
-            tooltip.visible &&
+            tooltip?.visible &&
             // Should not display the tooltip for HVDC lines
-            !props.mapEquipments.getHvdcLine(tooltip.equipmentId) && (
+            !props.mapEquipments?.getHvdcLine(tooltip.equipmentId) && (
                 <div
                     ref={divRef}
                     style={{
@@ -412,14 +411,12 @@ const NetworkMap = (props) => {
                 labelSize: LABEL_SIZE,
                 pickable: true,
                 onHover: ({ object, x, y }) => {
-                    let equipmentId = undefined;
-                    if (object) {
-                        equipmentId = getNameOrId(object?.line ?? object);
-                    }
+                    const equipmentId =
+                        object && getNameOrId(object?.line ?? object);
                     if (!!equipmentId) {
                         setCursorType('pointer');
                         setTooltip({
-                            equipmentId: equipmentId,
+                            equipmentId,
                             pointerX: x,
                             pointerY: y,
                             visible: showTooltip,
@@ -551,6 +548,7 @@ NetworkMap.propTypes = {
     updatedLines: PropTypes.array,
     displayOverlayLoader: PropTypes.bool,
     disabled: PropTypes.bool,
+    mapEquipments: PropTypes.object,
 };
 
 export default React.memo(NetworkMap);
