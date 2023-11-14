@@ -327,7 +327,7 @@ export const useDirectoryElements = ({
                                         label={
                                             <OverflowableText
                                                 text={item.name}
-                                                style={{ width: '100%' }}
+                                                sx={{ width: '100%' }}
                                             />
                                         }
                                     />
