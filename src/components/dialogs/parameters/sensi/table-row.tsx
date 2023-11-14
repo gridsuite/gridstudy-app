@@ -12,11 +12,12 @@ import React, { FunctionComponent, useState } from 'react';
 import { useIntl } from 'react-intl';
 import EditableTableCell from './table-cell';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { IColumnsDef } from './columns-definitions';
 
 interface TableRowComponentProps {
     arrayFormName: string;
-    columnsDefinition: any;
-    row: any;
+    columnsDefinition: IColumnsDef[];
+    row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
 }
@@ -28,34 +29,32 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     index,
     handleDeleteButton,
 }) => {
-    const [hover, setHover] = useState(false);
+    const [isHover, setIsHover] = useState(false);
     const intl = useIntl();
-
+    function handleHover(enter: boolean) {
+        return setIsHover(enter);
+    }
     return (
         <TableRow
             key={row.id}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
+            onMouseEnter={() => handleHover(true)}
+            onMouseLeave={() => handleHover(false)}
         >
-            {columnsDefinition.map((column: any) =>
+            {columnsDefinition.map((column: IColumnsDef) =>
                 EditableTableCell(arrayFormName, index, column)
             )}
             <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'DeleteRows',
-                    })}
-                    placement="top"
-                >
-                    <span hidden={!hover}>
-                        <IconButton
-                            sx={{ border: 'solid 0px rgba(0,0,0,0.26)' }}
-                            onClick={() => handleDeleteButton(index)}
-                        >
+                {isHover && (
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'DeleteRows',
+                        })}
+                    >
+                        <IconButton onClick={() => handleDeleteButton(index)}>
                             <DeleteIcon />
                         </IconButton>
-                    </span>
-                </Tooltip>
+                    </Tooltip>
+                )}
             </TableCell>
         </TableRow>
     );

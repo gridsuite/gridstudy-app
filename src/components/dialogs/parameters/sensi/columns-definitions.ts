@@ -64,7 +64,7 @@ export interface ISensiParameters {
     name: string;
 }
 
-interface IColumnsDef {
+export interface IColumnsDef {
     label: string;
     dataKey: string;
     initialValue: boolean | string | string[];
@@ -75,6 +75,7 @@ interface IColumnsDef {
     elementType?: string;
     titleId?: string;
     checkboxItems?: boolean;
+    width?: string;
 }
 export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
     {
@@ -104,7 +105,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         initialValue: INJECTION_DISTRIBUTION_TYPES[0].id,
         menuItems: true,
         editable: true,
-        width: '13rem',
+        width: '16rem',
     },
     {
         label: 'ContingencyLists',
@@ -121,7 +122,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5rem',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_INJECTIONS = [
@@ -160,7 +161,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5rem',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_HVDCS = [
@@ -208,7 +209,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5rem',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_PSTS = [
@@ -256,7 +257,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5rem',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_NODES = [
@@ -295,7 +296,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5rem',
+        width: '4rem',
     },
 ];
 

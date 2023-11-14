@@ -20,7 +20,6 @@ function EditableTableCell(
             key={column.dataKey}
             sx={{
                 width: column.width,
-                fontSize: '0.5rem',
             }}
         >
             {column.directoryItems && (
@@ -37,17 +36,10 @@ function EditableTableCell(
             {column.menuItems && (
                 <SelectInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    options={column.equipmentTypes}
+                    options={Object.values(column.equipmentTypes)}
                     disableClearable={true}
-                    allowNewValue
                     size="small"
                     fullWidth
-                    sx={{
-                        flexDirection: 'row',
-                        '.MuiInputBase-root': {
-                            boxSizing: 'content-box',
-                        },
-                    }}
                 />
             )}
 

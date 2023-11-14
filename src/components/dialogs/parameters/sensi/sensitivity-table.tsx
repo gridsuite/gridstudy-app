@@ -17,15 +17,16 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import React, { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
-import { useFormContext } from 'react-hook-form';
+import { UseFieldArrayReturn, useFormContext } from 'react-hook-form';
 import TableRowComponent from './table-row';
+import { IColumnsDef } from './columns-definitions';
 
 export const MAX_ROWS_NUMBER = 100;
 
 interface SensitivityTableProps {
     arrayFormName: string;
-    useFieldArrayOutput: any;
-    columnsDefinition: any;
+    useFieldArrayOutput: UseFieldArrayReturn;
+    columnsDefinition: IColumnsDef[];
     tableHeight: number;
     createRows: (a: number) => void;
 }
@@ -66,21 +67,12 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
         >
             <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
                 <TableHead>
-                    {columnsDefinition.map((column: any) => (
+                    {columnsDefinition.map((column: IColumnsDef) => (
                         <TableCell
                             key={column.dataKey}
                             sx={{ width: column.width, textAlign: 'center' }}
                         >
-                            <Box
-                                sx={{
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    fontWeight: 'normal',
-                                    margin: 1,
-                                }}
-                            >
-                                {column.label}
-                            </Box>
+                            <Box>{column.label}</Box>
                         </TableCell>
                     ))}
                     <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
@@ -96,15 +88,17 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                     </TableCell>
                 </TableHead>
                 <TableBody>
-                    {currentRows.map((row: any, index: number) => (
-                        <TableRowComponent
-                            arrayFormName={arrayFormName}
-                            columnsDefinition={columnsDefinition}
-                            row={row}
-                            index={index}
-                            handleDeleteButton={handleDeleteButton}
-                        />
-                    ))}
+                    {currentRows.map(
+                        (row: Record<'id', string>, index: number) => (
+                            <TableRowComponent
+                                arrayFormName={arrayFormName}
+                                columnsDefinition={columnsDefinition}
+                                row={row}
+                                index={index}
+                                handleDeleteButton={handleDeleteButton}
+                            />
+                        )
+                    )}
                 </TableBody>
             </Table>
         </TableContainer>
