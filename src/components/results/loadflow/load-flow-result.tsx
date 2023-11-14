@@ -94,6 +94,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         useState(false);
     const [isVoltageViolationReady, setIsVoltageViolationReady] =
         useState(false);
+    const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] =
+        useState(false);
 
     //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
     const openLoaderCurrentTab = useOpenLoaderShortWait({
@@ -102,7 +104,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             loadFlowStatus === RunningStatus.RUNNING ||
             // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
             // and "the data is post processed and can be displayed"
-            (isFetchComplete && !isCurrentViolationReady) ||
+            (!isOverloadedEquipmentsReady &&
+                loadFlowStatus === RunningStatus.SUCCEED) ||
             isWaiting,
         delay: RESULTS_LOADING_DELAY,
     });
@@ -113,7 +116,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             loadFlowStatus === RunningStatus.RUNNING ||
             // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
             // and "the data is post processed and can be displayed"
-            (isFetchComplete && !isVoltageViolationReady) ||
+            (!isOverloadedEquipmentsReady &&
+                loadFlowStatus === RunningStatus.SUCCEED) ||
             isWaiting,
         delay: RESULTS_LOADING_DELAY,
     });
@@ -190,6 +194,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         if (result) {
             fetchLimitViolations(studyUuid, nodeUuid)
                 .then((overloadedEquipments: OverloadedEquipmentFromBack[]) => {
+                    setIsOverloadedEquipmentsReady(true);
                     const sortedLines = overloadedEquipments
                         .map((overloadedEquipment) =>
                             makeData(overloadedEquipment, intl)
@@ -203,7 +208,10 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         headerId: 'ErrFetchViolationsMsg',
                     });
                 })
-                .finally(() => setIsFetchComplete(true));
+                .finally(() => {
+                    setIsOverloadedEquipmentsReady(true);
+                    setIsFetchComplete(true);
+                });
         }
     }, [studyUuid, nodeUuid, intl, result, snackError]);
 
@@ -228,6 +236,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     );
 
     useEffect(() => {
+        //To avoid the rapid flashing of "no rows" before we actually show the rows
         if (currentViolations && isFetchComplete) {
             setIsCurrentViolationReady(true);
         }
@@ -266,10 +275,24 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     );
 
     useEffect(() => {
+        //To avoid the rapid flashing of "no rows" before we actually show the rows
         if (voltageViolations && isFetchComplete) {
             setIsVoltageViolationReady(true);
         }
     }, [voltageViolations, isFetchComplete]);
+
+    useEffect(() => {
+        //reset everything at initial state
+        if (
+            loadFlowStatus === RunningStatus.FAILED ||
+            loadFlowStatus === RunningStatus.IDLE
+        ) {
+            setIsOverloadedEquipmentsReady(false);
+            setIsVoltageViolationReady(false);
+            setIsFetchComplete(false);
+            setIsCurrentViolationReady(false);
+        }
+    }, [loadFlowStatus]);
 
     const renderLoadFlowVoltageViolations = () => {
         const message = getNoRowsMessage(
