@@ -12,11 +12,10 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { Grid, useTheme, IconButton } from '@mui/material';
+import { Grid, IconButton, useTheme } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
-import { GetRowIdParams } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
 
 type SitePropertiesDialogProps = {
@@ -63,10 +62,9 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             return [];
         }
         const keys = Object.keys(data.properties);
-        const rowData = keys.map((key, index) => {
+        return keys.map((key, index) => {
             return { id: index, key: key, value: data.properties[key] };
         });
-        return rowData;
     });
 
     useEffect(() => {

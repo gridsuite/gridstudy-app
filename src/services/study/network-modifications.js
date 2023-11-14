@@ -1096,36 +1096,40 @@ export function formatPropertiesForBackend(
 ) {
     const propertiesModifications = [];
 
-    previousPropertiesArray.forEach((oldObj) => {
-        const newObj = newPropertiesArray.find(
-            (newObj) => newObj.name === oldObj.name
+    previousPropertiesArray.forEach((previousPropertiePair) => {
+        const updatedProperty = newPropertiesArray.find(
+            (updatedObj) => updatedObj.name === previousPropertiePair.name
         );
 
-        if (!newObj) {
+        if (!updatedProperty) {
+            // The property has been deleted (does not exist in the new properties array)
             propertiesModifications.push({
-                ...oldObj,
-                previousValue: oldObj.value,
+                ...previousPropertiePair,
+                previousValue: previousPropertiePair.value,
                 value: null,
                 deletionMark: true,
             });
-        } else if (newObj.value !== oldObj.value) {
+        } else if (updatedProperty.value !== previousPropertiePair.value) {
+            // The property has been modified
             propertiesModifications.push({
-                ...newObj,
+                ...updatedProperty,
                 added: false,
                 deletionMark: false,
-                previousValue: oldObj.value,
+                previousValue: previousPropertiePair.value,
             });
         }
     });
 
-    newPropertiesArray.forEach((newObj) => {
-        const oldObj = previousPropertiesArray.find(
-            (oldObj) => oldObj.name === newObj.name
+    newPropertiesArray.forEach((newPropertie) => {
+        // The property has been added
+        const previousPropertie = previousPropertiesArray.find(
+            (oldObj) => oldObj.name === newPropertie.name
         );
 
-        if (!oldObj) {
+        if (!previousPropertie) {
+            //the propertie is new
             propertiesModifications.push({
-                ...newObj,
+                ...newPropertie,
                 added: true,
                 deletionMark: false,
             });

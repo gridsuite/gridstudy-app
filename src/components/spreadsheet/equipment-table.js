@@ -61,7 +61,9 @@ export const EquipmentTable = ({
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
-    const [currentEditableProperties, setCurrentEditableProperties] = useState({});
+    const [currentEditableProperties, setCurrentEditableProperties] = useState(
+        {}
+    );
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
@@ -87,7 +89,8 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
-            handleCellClick: {//functions for handling cell click
+            handleCellClick: {
+                //functions for handling cell click
                 openPropertiesDialog: (rowData) => {
                     openPropertiesEditionPopup(rowData);
                 },
@@ -170,9 +173,7 @@ export const EquipmentTable = ({
     };
 
     const openPropertiesEditionPopup = (params) => {
-        setPopupSelectEditSiteProperties(
-          true
-        );
+        setPopupSelectEditSiteProperties(true);
         setCurrentEditableProperties(params);
         setSiteId(params.id);
     };
