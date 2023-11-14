@@ -152,8 +152,8 @@ export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
         .nonNullable()
         .when([], {
             is: () => !isEquipmentModification,
-            then: (schema) =>
-                schema
+            then: (schema) => {
+                return schema
                     .required()
                     .test(
                         'activePowerSetPoint',
@@ -172,11 +172,13 @@ export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
                             ) {
                                 return false;
                             }
-                            return !(
-                                value < minActivePower || value > maxActivePower
+                            return (
+                                value >= minActivePower &&
+                                value <= maxActivePower
                             );
                         }
-                    ),
+                    );
+            },
         }),
 });
 
