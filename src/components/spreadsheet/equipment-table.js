@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
@@ -44,10 +44,10 @@ export const EquipmentTable = ({
     const theme = useTheme();
     const intl = useIntl();
     const [popupSelectEditSiteProperties, setPopupSelectEditSiteProperties] =
-        React.useState(false);
+        useState(false);
 
-    const [propertiesSite, setPropertiesSite] = React.useState({}); //todo to be renamed with a better name
-    const [siteId, setSiteId] = React.useState(''); //todo to be renamed with a better name
+    const [propertiesSite, setPropertiesSite] = useState({});
+    const [siteId, setSiteId] = useState('');
 
     const getRowStyle = useCallback(
         (params) => {
@@ -62,7 +62,7 @@ export const EquipmentTable = ({
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
-    const [clickedCellData, setClickedCellData] = React.useState({});
+    const [clickedCellData, setClickedCellData] = useState({});
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
@@ -161,7 +161,6 @@ export const EquipmentTable = ({
             console.debug(err);
         });
 
-        //TODO: save data
         setPopupSelectEditSiteProperties(false);
         setSiteId('');
     };

@@ -1106,7 +1106,6 @@ export function formatPropertiesForBackend(
                 ...oldObj,
                 previousValue: oldObj.value,
                 value: null,
-                // added: false,
                 deletionMark: true,
             });
         } else if (newObj.value !== oldObj.value) {

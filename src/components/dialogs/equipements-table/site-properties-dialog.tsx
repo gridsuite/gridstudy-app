@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, {
+    FunctionComponent,
     useCallback,
     useEffect,
     useMemo,
@@ -18,7 +19,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { GetRowIdParams } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
 
-type Props = {
+type SitePropertiesDialogProps = {
     data: any;
     onDataChanged: (data: IData[]) => void;
 };
@@ -32,7 +33,10 @@ type IData = {
 /**
  * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
  */
-const SitePropertiesDialog: React.FC<Props> = ({ data, onDataChanged }) => {
+const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
+    data,
+    onDataChanged,
+}) => {
     const theme = useTheme();
     const gridRef = useRef<AgGridReact>(null);
     const [gridApi, setGridApi] = useState<any>(null);
