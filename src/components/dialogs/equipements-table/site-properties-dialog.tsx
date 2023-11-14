@@ -74,9 +74,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             gridApi.api.sizeColumnsToFit();
         }
     }, [columnDefs, gridApi]);
-    const getRowId = (params: any) => {
-        return params.id;
-    };
+
     const onGridReady = (params: any) => {
         setGridApi(params);
     };
@@ -144,7 +142,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                 onDataChanged(updatedRowData);
                             }
                         }}
-                        getRowId={getRowId}
+                        //getRowId={getRowId}
                     ></AgGridReact>
                 </Grid>
             </Grid>

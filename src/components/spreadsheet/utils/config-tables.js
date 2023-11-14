@@ -94,16 +94,6 @@ const generateEditableNumericColumnDefinition = (
         ...extraDef,
     };
 };
-//const onCellClicked = event: CellClickedEvent<TData>
-const onCellSiteCellClicked = (event, callBack) => {
-    switch (event.colDef.id) {
-        case 'Properties':
-            callBack(event.data);
-            break;
-        default:
-            break;
-    }
-};
 
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
@@ -135,11 +125,12 @@ export const TABLES_DEFINITIONS = {
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
                 onCellClicked: (event) => {
-                    if(event.context.isEditing)
-                      {
-                        event.context?.functions?.openPropertiesDialog(event.data);
-                      }
-                }
+                    if (event.context.isEditing) {
+                        event.context?.handleCellClick?.openPropertiesDialog(
+                            event.data
+                        );
+                    }
+                },
             },
         ],
     },

@@ -61,7 +61,7 @@ export const EquipmentTable = ({
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
-    const [clickedCellData, setClickedCellData] = useState({});
+    const [currentEditableProperties, setCurrentEditableProperties] = useState({});
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
@@ -87,12 +87,11 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
-            functions: {
-                openPropertiesDialog: (params) => {
-                    console.log(params);
-                    openPropertiesEditionPopup(params);
-                }
-            }
+            handleCellClick: {//functions for handling cell click
+                openPropertiesDialog: (rowData) => {
+                    openPropertiesEditionPopup(rowData);
+                },
+            },
         };
     }, [network, topPinnedData]);
     const getRowHeight = useCallback(
@@ -137,7 +136,7 @@ export const EquipmentTable = ({
             };
         });
 
-        const initialProperties = clickedCellData.properties;
+        const initialProperties = currentEditableProperties.properties;
         //extract keys and values from initial properties to an array of objects with key and value
         const initialPropertiesMapped = initialProperties
             ? Object.keys(initialProperties).map((key) => {
@@ -174,7 +173,7 @@ export const EquipmentTable = ({
         setPopupSelectEditSiteProperties(
           true
         );
-        setClickedCellData(params);
+        setCurrentEditableProperties(params);
         setSiteId(params.id);
     };
 
@@ -221,7 +220,7 @@ export const EquipmentTable = ({
                 })}
                 child={
                     <SitePropertiesDialog
-                        data={clickedCellData}
+                        data={currentEditableProperties}
                         onDataChanged={(data) => {
                             setPropertiesSite(data);
                         }}
