@@ -80,23 +80,22 @@ const formSchema = yup
     .required();
 
 const prepareDataToSend = (shortCircuitParams, newParameters) => {
-    //TODO: changed base on voltageranges structures
     const oldParameters = { ...shortCircuitParams.parameters };
     let parameters = {
         ...oldParameters,
         ...newParameters,
-        // we need to add voltageRanges to the parameters only when initialVoltageProfileMode equals to CEI909
+        // we need to add voltageRanges to the parameters only when initialVoltageProfileMode is equals to CEI909
         voltageRanges: undefined,
+        predefinedParameters: undefined, // because this field is not part of the powsybl parameters
+        withNeutralPosition: !newParameters.withNeutralPosition,
     };
     if (newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CEI909) {
         parameters = {
             ...parameters,
-            voltageRanges: shortCircuitParams.voltageRangesInfo.CEI909,
+            voltageRanges: shortCircuitParams.voltageRangesInfo,
             initialVoltageProfileMode: INITIAL_VOLTAGE.CONFIGURED,
         };
     }
-    // we need to remove the predefinedParameters attribute from parameters because it's not handled on powsybl class
-    delete parameters.predefinedParameters;
 
     return {
         predefinedParameters: newParameters.predefinedParameters,
@@ -128,7 +127,10 @@ export const ShortCircuitParameters = ({
             [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]:
                 !parameters.withNeutralPosition,
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
-                parameters.initialVoltageProfileMode,
+                parameters.initialVoltageProfileMode ===
+                INITIAL_VOLTAGE.CONFIGURED
+                    ? INITIAL_VOLTAGE.CEI909
+                    : parameters.initialVoltageProfileMode,
         };
     }, [shortCircuitParams]);
 

@@ -1267,16 +1267,16 @@
 
     "ShortCircuitPredefinedParameters": "Preset parameters",
     "ShortCircuitCharacteristics": "Features considered",
-    "ShortCircuitVoltageProfileMode": "Initial tension plan",
+    "ShortCircuitVoltageProfileMode": "Initial voltage profile",
     "shortCircuitLoads": "Loads",
     "shortCircuitHvdc": "HVDC(VSC)",
-    "shortCircuitShuntCompensators": "MCS",
-    "shortCircuitNeutralPosition": "Neutral position",
+    "shortCircuitShuntCompensators": "Shunt compensators",
+    "shortCircuitNeutralPosition": "Tap position of ratio tap changers",
     "shortCircuitNominalVoltage": "Nominal voltage(kV)",
-    "shortCircuitInitialVoltage": "Initial tension(kV)",
+    "shortCircuitInitialVoltage": "Initial voltage(kV)",
     "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
-    "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with standardized tension plan",
-    "iccMaxWithCEIPredefinedParams": "ISC max with IEC 909 standard",
+    "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with nominal voltage profile",
+    "iccMaxWithCEIPredefinedParams": "ISC max with standard IEC 909",
     "nominalInitialVoltageProfileMode": "Nominal",
-    "cei909InitialVoltageProfileMode": "CEI 909"
+    "cei909InitialVoltageProfileMode": "IEC 909"
 }

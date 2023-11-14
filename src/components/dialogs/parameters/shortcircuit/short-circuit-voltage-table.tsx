@@ -8,30 +8,28 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableRow } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { VoltageTableProps } from './short-circuit-parameters.type';
-import { getValues } from './short-circuit-parameters-utils';
+import { INITIAL_VOLTAGE } from '../../../utils/constants';
 
 const VoltageTable: FunctionComponent<VoltageTableProps> = ({
     voltageProfileMode,
-    values,
 }) => {
     const intl = useIntl();
-
-    const valuesToDisplay = useMemo(() => {
-        return getValues(values, voltageProfileMode);
-    }, [values, voltageProfileMode]);
 
     const rows = useMemo(
         () => [
             {
                 name: intl.formatMessage({ id: 'shortCircuitNominalVoltage' }),
-                values: valuesToDisplay.nominalVoltage,
+                values: [380, 225, 150, 90, 63, 45, 20],
             },
             {
                 name: intl.formatMessage({ id: 'shortCircuitInitialVoltage' }),
-                values: valuesToDisplay.initialVoltage,
+                values:
+                    voltageProfileMode === INITIAL_VOLTAGE.NOMINAL
+                        ? [400, 225, 150, 90, 63, 45, 20]
+                        : [420, 245, 165, 99, 69.3, 49.5, 22],
             },
         ],
-        [valuesToDisplay, intl]
+        [voltageProfileMode, intl]
     );
     return (
         <Table>
