@@ -145,6 +145,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isFilterable = false,
             filterParams,
             valueFormatter,
+            numeric,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
@@ -154,6 +155,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
 
             const minWidth = isSortable && sortWay ? 140 : isFilterable && 95;
 
+            console.log('test : ', field, numeric);
             return {
                 headerName,
                 field,
@@ -163,6 +165,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 valueFormatter,
                 headerTooltip: headerName,
                 minWidth,
+                numeric,
+                fractionDigits: numeric ? 2 : undefined,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     field,

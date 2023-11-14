@@ -20,8 +20,8 @@ import {
     FilterChangedEvent,
     GridReadyEvent,
     RowClassParams,
-    SortChangedEvent, ValueFormatterParams
-} from "ag-grid-community";
+    SortChangedEvent,
+} from 'ag-grid-community';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     getNoRowsMessage,
@@ -139,11 +139,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
-                fractionDigits: 1,
+                fractionDigits: 2,
                 numeric: true,
                 sortable: true,
-                valueFormatter: (params: ValueFormatterParams) =>
-                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -160,47 +158,37 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
-                fractionDigits: 1,
+                fractionDigits: 2,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
-                valueFormatter: (params: ValueFormatterParams) =>
-                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
-                fractionDigits: 1,
+                fractionDigits: 2,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
-                valueFormatter: (params: ValueFormatterParams) =>
-                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
-                fractionDigits: 1,
+                fractionDigits: 2,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
-                valueFormatter: (params: ValueFormatterParams) =>
-                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
                 field: 'deltaCurrentIpMin',
-                fractionDigits: 1,
+                fractionDigits: 2,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
-                valueFormatter: (params: ValueFormatterParams) =>
-                  params.data?.limit?.toFixed(2),
             },
             {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
-                fractionDigits: 1,
+                fractionDigits: 2,
                 numeric: true,
                 sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
-                valueFormatter: (params: ValueFormatterParams) =>
-                  params.data?.limit?.toFixed(2),
             },
             {
                 field: 'linkedElementId',
