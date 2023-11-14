@@ -118,7 +118,7 @@ const CustomHeaderComponent = ({
         const value = event.target.value.toUpperCase();
         setSelectedFilterData(value);
 
-        debouncedUpdateFilter([
+        debouncedUpdateFilter(field, [
             {
                 text: value,
                 type: selectedFilterComparator,
