@@ -376,13 +376,12 @@ CustomHeaderComponent.propTypes = {
     field: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
     filterOptions: PropTypes.arrayOf(PropTypes.string),
-    sortConfig: PropTypes.shape({
-        colKey: PropTypes.string,
-        selector: PropTypes.shape({
-            sortKeysWithWeightAndDirection: PropTypes.object,
-        }),
-        sortWay: PropTypes.number,
-    }),
+    sortConfig: PropTypes.arrayOf(
+        PropTypes.shape({
+            colKey: PropTypes.string,
+            sortWay: PropTypes.number,
+        })
+    ),
     onSortChanged: PropTypes.func,
     updateFilter: PropTypes.func,
     isSortable: PropTypes.bool,

@@ -225,7 +225,7 @@ PagedSensitivityAnalysisResult.propTypes = {
     updateFilter: PropTypes.func,
     onSortChanged: PropTypes.func,
     filterSelector: PropTypes.object,
-    sortConfig: PropTypes.object,
+    sortConfig: PropTypes.arrayOf(PropTypes.object),
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
 };

@@ -65,7 +65,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             />
             <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
                 {SensitivityResultTabs.map((tab) => (
-                    <Tab label={tab.label} />
+                    <Tab key={tab.label} label={tab.label} />
                 ))}
             </Tabs>
             <PagedSensitivityAnalysisResult
