@@ -6,6 +6,7 @@
  */
 
 import {
+    LimitNames,
     LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
@@ -21,6 +22,10 @@ import { BranchSide } from '../../utils/constants';
 const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 const PERMANENT_LIMIT_NAME = 'permanent';
 export const convertDuration = (duration: number): string => {
+    if (isNaN(duration)) {
+        return '';
+    }
+
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
 
@@ -59,6 +64,16 @@ export const makeData = (
             UNDEFINED_ACCEPTABLE_DURATION
                 ? null
                 : overloadedEquipment.acceptableDuration,
+
+        actualOverload:
+            overloadedEquipment.actualOverload === UNDEFINED_ACCEPTABLE_DURATION
+                ? null
+                : overloadedEquipment.actualOverload,
+        upComingOverload:
+            overloadedEquipment.upComingOverload ===
+            UNDEFINED_ACCEPTABLE_DURATION
+                ? null
+                : overloadedEquipment.upComingOverload,
         limit: overloadedEquipment.limit,
         limitName: convertLimitName(overloadedEquipment.limitName, intl),
         side: convertSide(overloadedEquipment.side, intl),
@@ -76,21 +91,19 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         },
         {
             headerName: intl.formatMessage({
-                id: 'LimitNameCurrentViolation',
-            }),
-            field: 'limitName',
-        },
-        {
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-        },
-        {
-            headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
+        },
+        {
+            headerName: intl.formatMessage({
+                id: 'LimitNameCurrentViolation',
+            }),
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatLimitName(params.value, intl),
+            field: 'limitName',
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
@@ -113,7 +126,39 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             valueFormatter: (params: ValueFormatterParams) =>
                 params.value.toFixed(1),
         },
+        {
+            headerName: intl.formatMessage({
+                id: 'ActualOverload',
+            }),
+            field: 'actualOverload',
+            // valueFormatter: (value: ValueFormatterParams) => {
+            //     return value.data.actualOverload !== null
+            //         ? convertDuration(value.data.actualOverload)
+            //         : intl.formatMessage({ id: 'None' });
+            // },
+        },
+        {
+            headerName: intl.formatMessage({
+                id: 'upComingOverlaod',
+            }),
+            field: 'upComingOverload',
+            valueFormatter: (value: ValueFormatterParams) => {
+                return value.data.upComingOverload !== null
+                    ? convertDuration(value.data.upComingOverload)
+                    : intl.formatMessage({ id: 'NoneUpcomingOverload' });
+            },
+        },
+        {
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+        },
     ];
+};
+
+export const formatLimitName = (limiName: string, intl: IntlShape) => {
+    return limiName === LimitNames.NA
+        ? intl.formatMessage({ id: 'Undefined' })
+        : limiName;
 };
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
@@ -129,7 +174,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             field: 'name',
         },
         {
-            headerName: intl.formatMessage({ id: 'Violation' }),
+            headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
             valueFormatter: (params: ValueFormatterParams) =>
                 formatLimitType(params.value, intl),
