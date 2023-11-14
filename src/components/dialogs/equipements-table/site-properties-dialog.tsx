@@ -59,12 +59,12 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     }, [intl]);
 
     const [rowData, setRowData] = useState<IData[]>(() => {
-        if (!data.data.properties) {
+        if (!data?.properties) {
             return [];
         }
-        const keys = Object.keys(data.data.properties);
+        const keys = Object.keys(data.properties);
         const rowData = keys.map((key, index) => {
-            return { id: index, key: key, value: data.data.properties[key] };
+            return { id: index, key: key, value: data.properties[key] };
         });
         return rowData;
     });
@@ -74,8 +74,8 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             gridApi.api.sizeColumnsToFit();
         }
     }, [columnDefs, gridApi]);
-    const getRowId = (params: GetRowIdParams) => {
-        return params.data.id;
+    const getRowId = (params: any) => {
+        return params.id;
     };
     const onGridReady = (params: any) => {
         setGridApi(params);

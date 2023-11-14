@@ -39,7 +39,6 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
-    onCellClicked,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -88,6 +87,12 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
+            functions: {
+                openPropertiesDialog: (params) => {
+                    console.log(params);
+                    openPropertiesEditionPopup(params);
+                }
+            }
         };
     }, [network, topPinnedData]);
     const getRowHeight = useCallback(
@@ -132,7 +137,7 @@ export const EquipmentTable = ({
             };
         });
 
-        const initialProperties = clickedCellData.data.properties;
+        const initialProperties = clickedCellData.properties;
         //extract keys and values from initial properties to an array of objects with key and value
         const initialPropertiesMapped = initialProperties
             ? Object.keys(initialProperties).map((key) => {
@@ -165,16 +170,12 @@ export const EquipmentTable = ({
         setSiteId('');
     };
 
-    const handleOnClickOnCell = (params) => {
-        if (onCellClicked != null) {
-            onCellClicked(params, () => {
-                setSiteId(params.data.id);
-                setPopupSelectEditSiteProperties(
-                    !popupSelectEditSiteProperties
-                );
-                setClickedCellData(params);
-            });
-        }
+    const openPropertiesEditionPopup = (params) => {
+        setPopupSelectEditSiteProperties(
+          true
+        );
+        setClickedCellData(params);
+        setSiteId(params.id);
     };
 
     return (
@@ -210,7 +211,6 @@ export const EquipmentTable = ({
                 loadingOverlayComponent={loadingOverlayComponent}
                 loadingOverlayComponentParams={loadingOverlayComponentParams}
                 showOverlay={true}
-                onCellClicked={handleOnClickOnCell}
             />
             <SelectOptionsDialog
                 open={popupSelectEditSiteProperties}

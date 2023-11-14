@@ -148,8 +148,6 @@ const TableWrapper = (props) => {
 
     const [columnData, setColumnData] = useState([]);
 
-    const [isCellEditingAllowed, setIsCellEditingAllowed] = useState(false);
-
     const startEditing = useCallback(() => {
         const topRow = gridRef.current?.api?.getPinnedTopRow(0);
         if (topRow) {
@@ -304,15 +302,6 @@ const TableWrapper = (props) => {
             selectedColumnsNames,
         ]
     );
-
-    const handleOnCellClicked = useMemo(() => {
-        const onCellClickedFunction =
-            TABLES_DEFINITION_INDEXES.get(tabIndex)?.onCellClicked || null;
-        if (isCellEditingAllowed) {
-            return onCellClickedFunction;
-        }
-        return null;
-    }, [tabIndex, isCellEditingAllowed]);
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -774,7 +763,6 @@ const TableWrapper = (props) => {
     const handleEditingStarted = useCallback((params) => {
         // we initialize the dynamicValidation with the initial data
         params.context.dynamicValidation = { ...params.data };
-        setIsCellEditingAllowed(true);
     }, []);
 
     const handleEditingStopped = useCallback(
@@ -786,7 +774,6 @@ const TableWrapper = (props) => {
                 rollbackEdit();
             }
             params.context.dynamicValidation = {};
-            setIsCellEditingAllowed(false);
         },
         [priorValuesBuffer, rollbackEdit]
     );
@@ -879,7 +866,6 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
-                        onCellClicked={handleOnCellClicked}
                     />
                 </Box>
             )}

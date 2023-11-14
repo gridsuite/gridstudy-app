@@ -111,7 +111,6 @@ export const TABLES_DEFINITIONS = {
         name: 'Substations',
         type: EQUIPMENT_TYPES.SUBSTATION,
         fetchers: EQUIPMENT_FETCHERS.SUBSTATION,
-        onCellClicked: onCellSiteCellClicked,
         columns: [
             {
                 id: 'ID',
@@ -135,6 +134,12 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
+                onCellClicked: (event) => {
+                    if(event.context.isEditing)
+                      {
+                        event.context?.functions?.openPropertiesDialog(event.data);
+                      }
+                }
             },
         ],
     },
