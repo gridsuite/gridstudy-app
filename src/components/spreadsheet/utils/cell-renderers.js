@@ -118,6 +118,24 @@ export const formatCell = (props) => {
     return { value: value, tooltip: tooltipValue };
 };
 
+export const convertDuration = (duration) => {
+    if (isNaN(duration)) {
+        return '';
+    }
+
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+
+    if (seconds === 0) {
+        return minutes + "'";
+    }
+
+    if (minutes === 0) {
+        return seconds + '"';
+    }
+    return minutes + "' " + seconds + '"';
+};
+
 export const DefaultCellRenderer = (props) => {
     const cellValue = formatCell(props);
     return (
