@@ -88,8 +88,8 @@ export const EquipmentTable = ({
             isEditing: topPinnedData ? true : false,
             handleCellClick: {
                 //functions for handling cell click
-                openPropertiesDialog: (rowData) => {
-                    openPropertiesEditionPopup(rowData);
+                openPropertiesDialog: () => {
+                    openPropertiesEditionPopup();
                 },
             },
         };
@@ -167,7 +167,7 @@ export const EquipmentTable = ({
         setOpenPopupEditSiteProperties(false);
     };
 
-    const openPropertiesEditionPopup = (params) => {
+    const openPropertiesEditionPopup = () => {
         setOpenPopupEditSiteProperties(true);
     };
 

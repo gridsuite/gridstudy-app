@@ -126,9 +126,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
                 onCellClicked: (event) => {
                     if (event.context.isEditing) {
-                        event.context?.handleCellClick?.openPropertiesDialog(
-                            event.data
-                        );
+                        event.context?.handleCellClick?.openPropertiesDialog();
                     }
                 },
             },
