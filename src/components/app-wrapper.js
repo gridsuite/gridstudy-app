@@ -36,6 +36,8 @@ import {
     flat_parameters_fr,
     multiple_selection_dialog_en,
     multiple_selection_dialog_fr,
+    common_button_en,
+    common_button_fr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -155,6 +157,7 @@ const messages = {
         ...card_error_boundary_en,
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
+        ...common_button_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -172,6 +175,7 @@ const messages = {
         ...card_error_boundary_fr,
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
+        ...common_button_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
