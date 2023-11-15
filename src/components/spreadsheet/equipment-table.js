@@ -42,10 +42,10 @@ export const EquipmentTable = ({
 }) => {
     const theme = useTheme();
     const intl = useIntl();
-    const [popupSelectEditSiteProperties, setPopupSelectEditSiteProperties] =
+    const [openPopupEditSiteProperties, setOpenPopupEditSiteProperties] =
         useState(false);
 
-    const [propertiesSite, setPropertiesSite] = useState({});
+    const [editedSubstationPropertiesData, setEditedSubstationPropertiesData] = useState({});
 
     const getRowStyle = useCallback(
         (params) => {
@@ -60,9 +60,7 @@ export const EquipmentTable = ({
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
-    const [currentEditableProperties, setCurrentEditableProperties] = useState(
-        {}
-    );
+
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
@@ -126,15 +124,14 @@ export const EquipmentTable = ({
     }, [intl]);
 
     const handleCancelPopupSelectEditSiteProperties = () => {
-        setPopupSelectEditSiteProperties(false);
+        setOpenPopupEditSiteProperties(false);
     };
 
     const handleSavePopupSelectEditSiteProperties = () => {
-        console.log('grid', gridContext);
-        const properties = Object.keys(propertiesSite).map((key) => {
+        const properties = Object.keys(editedSubstationPropertiesData).map((key) => {
             return {
-                name: propertiesSite[key].key,
-                value: propertiesSite[key].value,
+                name: editedSubstationPropertiesData[key].key,
+                value: editedSubstationPropertiesData[key].value,
             };
         });
 
@@ -167,12 +164,11 @@ export const EquipmentTable = ({
             console.debug(err);
         });
 
-        setPopupSelectEditSiteProperties(false);
+        setOpenPopupEditSiteProperties(false);
     };
 
     const openPropertiesEditionPopup = (params) => {
-        setPopupSelectEditSiteProperties(true);
-        setCurrentEditableProperties(params);
+        setOpenPopupEditSiteProperties(true);
     };
 
     return (
@@ -210,7 +206,7 @@ export const EquipmentTable = ({
                 showOverlay={true}
             />
             <SelectOptionsDialog
-                open={popupSelectEditSiteProperties}
+                open={openPopupEditSiteProperties}
                 onClose={handleCancelPopupSelectEditSiteProperties}
                 onClick={handleSavePopupSelectEditSiteProperties}
                 title={intl.formatMessage({
@@ -218,9 +214,9 @@ export const EquipmentTable = ({
                 })}
                 child={
                     <SitePropertiesDialog
-                        data={currentEditableProperties}
+                        spredsheetContext={gridContext}
                         onDataChanged={(data) => {
-                            setPropertiesSite(data);
+                            setEditedSubstationPropertiesData(data);
                         }}
                     ></SitePropertiesDialog>
                 }

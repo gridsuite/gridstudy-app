@@ -19,7 +19,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 
 type SitePropertiesDialogProps = {
-    data: any;
+    spredsheetContext: any;
     onDataChanged: (data: IData[]) => void;
 };
 
@@ -33,7 +33,7 @@ type IData = {
  * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
  */
 const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
-    data,
+    spredsheetContext,
     onDataChanged,
 }) => {
     const theme = useTheme();
@@ -58,6 +58,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     }, [intl]);
 
     const [rowData, setRowData] = useState<IData[]>(() => {
+        const data = spredsheetContext.dynamicValidation;
         if (!data?.properties) {
             return [];
         }
@@ -140,7 +141,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                 onDataChanged(updatedRowData);
                             }
                         }}
-                        //getRowId={getRowId}
                     ></AgGridReact>
                 </Grid>
             </Grid>
