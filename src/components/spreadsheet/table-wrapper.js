@@ -763,7 +763,6 @@ const TableWrapper = (props) => {
     const handleEditingStarted = useCallback((params) => {
         // we initialize the dynamicValidation with the initial data
         params.context.dynamicValidation = { ...params.data };
-        console.log('context', params.context)
     }, []);
 
     const handleEditingStopped = useCallback(
@@ -775,7 +774,6 @@ const TableWrapper = (props) => {
                 rollbackEdit();
             }
             params.context.dynamicValidation = {};
-            console.log('context', params.context)
         },
         [priorValuesBuffer, rollbackEdit]
     );

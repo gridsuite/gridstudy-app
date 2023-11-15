@@ -45,7 +45,8 @@ export const EquipmentTable = ({
     const [openPopupEditSiteProperties, setOpenPopupEditSiteProperties] =
         useState(false);
 
-    const [editedSubstationPropertiesData, setEditedSubstationPropertiesData] = useState({});
+    const [editedSubstationPropertiesData, setEditedSubstationPropertiesData] =
+        useState({});
 
     const getRowStyle = useCallback(
         (params) => {
@@ -60,7 +61,6 @@ export const EquipmentTable = ({
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
-
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
@@ -128,12 +128,14 @@ export const EquipmentTable = ({
     };
 
     const handleSavePopupSelectEditSiteProperties = () => {
-        const properties = Object.keys(editedSubstationPropertiesData).map((key) => {
-            return {
-                name: editedSubstationPropertiesData[key].key,
-                value: editedSubstationPropertiesData[key].value,
-            };
-        });
+        const properties = Object.keys(editedSubstationPropertiesData).map(
+            (key) => {
+                return {
+                    name: editedSubstationPropertiesData[key].key,
+                    value: editedSubstationPropertiesData[key].value,
+                };
+            }
+        );
 
         const initialProperties = gridContext.dynamicValidation.properties;
         //extract keys and values from initial properties to an array of objects with key and value
