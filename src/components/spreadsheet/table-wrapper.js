@@ -615,12 +615,12 @@ const TableWrapper = (props) => {
                         getFieldValue(
                             editingData.identifiableShortCircuit.ipMin,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMin
+                                ?.ipMin
                         ),
                         getFieldValue(
                             editingData.identifiableShortCircuit.ipMax,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMax
+                                ?.ipMax
                         ),
                         false,
                         undefined
