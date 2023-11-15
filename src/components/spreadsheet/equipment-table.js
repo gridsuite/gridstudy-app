@@ -46,7 +46,6 @@ export const EquipmentTable = ({
         useState(false);
 
     const [propertiesSite, setPropertiesSite] = useState({});
-    const [siteId, setSiteId] = useState('');
 
     const getRowStyle = useCallback(
         (params) => {
@@ -128,10 +127,10 @@ export const EquipmentTable = ({
 
     const handleCancelPopupSelectEditSiteProperties = () => {
         setPopupSelectEditSiteProperties(false);
-        setSiteId('');
     };
 
     const handleSavePopupSelectEditSiteProperties = () => {
+        console.log('grid', gridContext);
         const properties = Object.keys(propertiesSite).map((key) => {
             return {
                 name: propertiesSite[key].key,
@@ -139,7 +138,7 @@ export const EquipmentTable = ({
             };
         });
 
-        const initialProperties = currentEditableProperties.properties;
+        const initialProperties = gridContext.dynamicValidation.properties;
         //extract keys and values from initial properties to an array of objects with key and value
         const initialPropertiesMapped = initialProperties
             ? Object.keys(initialProperties).map((key) => {
@@ -158,7 +157,7 @@ export const EquipmentTable = ({
         modifySubstation(
             studyUuid,
             currentNode.id,
-            siteId,
+            gridContext.dynamicValidation.id,
             equipmentId,
             null,
             false,
@@ -169,13 +168,11 @@ export const EquipmentTable = ({
         });
 
         setPopupSelectEditSiteProperties(false);
-        setSiteId('');
     };
 
     const openPropertiesEditionPopup = (params) => {
         setPopupSelectEditSiteProperties(true);
         setCurrentEditableProperties(params);
-        setSiteId(params.id);
     };
 
     return (
