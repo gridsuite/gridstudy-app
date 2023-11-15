@@ -180,7 +180,7 @@ export interface SecurityAnalysisResultNProps {
     onSortChanged: (colKey: string, sortWay: number) => void;
     sortConfig?: ISortConfig;
     updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | undefined;
+    filterSelector: FilterSelectorType;
     filterEnums: FilterEnums;
 }
 

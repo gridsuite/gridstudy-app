@@ -23,7 +23,10 @@ import {
     ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import {
+    ContingencyCellRenderer,
+    convertDuration,
+} from 'components/spreadsheet/utils/cell-renderers';
 import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -130,8 +133,6 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
         field: 'subjectId',
-        /*  valueGetter: contingencyGetterValues,
-        cellRenderer: ContingencyCellRenderer, */
         isSortable: true,
         isFilterable: true,
         filterParams: {
@@ -240,13 +241,6 @@ export const securityAnalysisTableNColumnsDefinition = (
         field: 'side',
         isSortable: true,
         isFilterable: true,
-        /* filterParams: {
-            filterUIType: FILTER_UI_TYPES.TEXT,
-            filterComparators: [
-                FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                FILTER_TEXT_COMPARATORS.CONTAINS,
-            ],
-        }, */
     }),
 ];
 
@@ -301,6 +295,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 id: 'Overload',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -378,6 +374,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 id: 'Overload',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
