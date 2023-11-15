@@ -17,6 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
+import { CustomAGGrid } from "../../custom-aggrid/custom-aggrid";
 
 type SitePropertiesDialogProps = {
     spredsheetContext: any;
@@ -121,18 +122,27 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             </Grid>
             <Grid item xs={12}>
                 <Grid item xs={12} className={theme.aggrid}>
-                    <AgGridReact
+                    <CustomAGGrid
                         ref={gridRef}
                         rowData={rowData}
                         onGridReady={onGridReady}
-                        cacheOverflowSize={10}
                         domLayout={'autoHeight'}
                         rowDragEntireRow
-                        suppressBrowserResizeObserver
-                        columnDefs={columnDefs}
-                        detailRowAutoHeight={true}
+                        columnDefs={[
+                            {
+                                headerName: '',
+                                field: 'checkbox',
+                                checkboxSelection: true,
+                                width: 50,
+                                headerCheckboxSelection: true,
+                                headerCheckboxSelectionFilteredOnly: true,
+                            },
+                            ...columnDefs,
+                        ]}
+                        stopEditingWhenCellsLoseFocus
+                        alwaysShowVerticalScroll
+                        suppressRowClickSelection
                         rowSelection={'multiple'}
-                        animateRows={true}
                         onCellEditingStopped={(event) => {
                             if (event.rowIndex !== null) {
                                 const updatedRowData = [...rowData];
@@ -141,7 +151,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                 onDataChanged(updatedRowData);
                             }
                         }}
-                    ></AgGridReact>
+                    ></CustomAGGrid>
                 </Grid>
             </Grid>
         </Grid>
