@@ -1110,7 +1110,7 @@ export function formatPropertiesForBackend(
                 deletionMark: true,
             });
         } else if (updatedProperty.value !== previousPropertiePair.value) {
-            // The property has been modified
+            // the property exist in both the previous and the new properties array but has been modified
             propertiesModifications.push({
                 ...updatedProperty,
                 added: false,
@@ -1126,8 +1126,8 @@ export function formatPropertiesForBackend(
             (oldObj) => oldObj.name === newPropertie.name
         );
 
+        //the propertie is new ( does not exist in the previous properties array)
         if (!previousPropertie) {
-            //the propertie is new
             propertiesModifications.push({
                 ...newPropertie,
                 added: true,
