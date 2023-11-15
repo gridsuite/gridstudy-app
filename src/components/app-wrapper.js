@@ -115,11 +115,27 @@ const darkTheme = createTheme({
     },
 });
 
+const customDarkTheme = createTheme(darkTheme, {
+    palette: {
+        customButton: {
+            main: darkTheme.palette.text.primary,
+        },
+    },
+});
+
+const customLightTheme = createTheme(lightTheme, {
+    palette: {
+        customButton: {
+            main: lightTheme.palette.text.primary,
+        },
+    },
+});
+
 const getMuiTheme = (theme) => {
     if (theme === LIGHT_THEME) {
-        return lightTheme;
+        return customLightTheme;
     } else {
-        return darkTheme;
+        return customDarkTheme;
     }
 };
 
