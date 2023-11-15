@@ -175,11 +175,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             params.data?.limit?.toFixed(1),
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
-            filterComparators: [
-                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-            ],
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
     makeColumn({
@@ -191,11 +187,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             params.data?.value?.toFixed(1),
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
-            filterComparators: [
-                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-            ],
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
 
@@ -208,11 +200,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             params.data?.loading?.toFixed(1),
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
-            filterComparators: [
-                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-            ],
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
 
@@ -228,11 +216,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         isFilterable: true,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
-            filterComparators: [
-                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-            ],
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
 
@@ -482,7 +466,7 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState({
+    const [result, setResult] = useState<FilterEnums>({
         computationsStatus: null,
         limitTypes: null,
         branchSides: null,
@@ -524,7 +508,7 @@ export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
         }
     }, [isEmptyResult]);
 
-    return [loading, result, error];
+    return { loading, result, error };
 };
 
 export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [

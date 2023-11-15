@@ -210,7 +210,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [securityAnalysisResult]
     );
 
-    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(!result);
+    const { loading: filterEnumsLoading, result: filterEnums } =
+        useFetchFiltersEnums(!result);
 
     useEffect(() => {
         if (result) {
@@ -270,7 +271,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         sortConfig={sortConfig}
                         filterSelector={filterSelector}
                         updateFilter={updateFilter}
-                        filterEnums={filterEnums as FilterEnums}
+                        filterEnums={filterEnums}
                     />
                 ) : (
                     <SecurityAnalysisResultNmk

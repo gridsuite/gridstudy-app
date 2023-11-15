@@ -35,22 +35,25 @@ export const SecurityAnalysisResultN: FunctionComponent<
 }) => {
     const intl: IntlShape = useIntl();
 
-    const rows =
-        result?.map((preContingencyResult: PreContingencyResult) => {
-            const { limitViolation } = preContingencyResult;
-            return {
-                subjectId: preContingencyResult.subjectId,
-                limitType: intl.formatMessage({
-                    id: limitViolation?.limitType,
-                }),
-                acceptableDuration: limitViolation?.acceptableDuration,
-                limitName: limitViolation?.limitName,
-                limit: limitViolation?.limit,
-                value: limitViolation?.value,
-                loading: limitViolation?.loading,
-                side: convertSide(limitViolation?.side, intl),
-            } as SecurityAnalysisNTableRow;
-        }) ?? [];
+    const rows = useMemo(
+        () =>
+            result?.map((preContingencyResult: PreContingencyResult) => {
+                const { limitViolation, subjectId } = preContingencyResult;
+                return {
+                    subjectId: subjectId,
+                    limitType: intl.formatMessage({
+                        id: limitViolation?.limitType,
+                    }),
+                    acceptableDuration: limitViolation?.acceptableDuration,
+                    limitName: limitViolation?.limitName,
+                    limit: limitViolation?.limit,
+                    value: limitViolation?.value,
+                    loading: limitViolation?.loading,
+                    side: convertSide(limitViolation?.side, intl),
+                } as SecurityAnalysisNTableRow;
+            }) ?? [],
+        [intl, result]
+    );
 
     const filtersDef = useMemo(
         () => securityAnalysisTableNFilterDefinition(intl, filterEnums),
