@@ -1095,8 +1095,11 @@ export function formatPropertiesForBackend(
     newPropertiesArray
 ) {
     const propertiesModifications = [];
-
-    previousPropertiesArray.forEach((previousPropertiePair) => {
+    //delete elements that have empty name
+    let filtredPreviousPropertiesArray = previousPropertiesArray.filter(
+        (prop) => prop.name !== ''
+    );
+    filtredPreviousPropertiesArray.forEach((previousPropertiePair) => {
         const updatedProperty = newPropertiesArray.find(
             (updatedObj) => updatedObj.name === previousPropertiePair.name
         );
@@ -1122,7 +1125,7 @@ export function formatPropertiesForBackend(
 
     newPropertiesArray.forEach((newPropertie) => {
         // The property has been added
-        const previousPropertie = previousPropertiesArray.find(
+        const previousPropertie = filtredPreviousPropertiesArray.find(
             (oldObj) => oldObj.name === newPropertie.name
         );
 

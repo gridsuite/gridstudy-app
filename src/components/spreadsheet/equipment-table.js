@@ -128,6 +128,9 @@ export const EquipmentTable = ({
     };
 
     const handleSavePopupSelectEditSiteProperties = () => {
+        setOpenPopupEditSiteProperties(false);
+        gridRef.current.api.stopEditing();
+
         const properties = Object.keys(editedSubstationPropertiesData).map(
             (key) => {
                 return {
@@ -165,8 +168,6 @@ export const EquipmentTable = ({
         ).catch((err) => {
             console.debug(err);
         });
-
-        setOpenPopupEditSiteProperties(false);
     };
 
     const openPropertiesEditionPopup = () => {
