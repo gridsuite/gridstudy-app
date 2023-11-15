@@ -92,7 +92,7 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
     if (newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CEI909) {
         parameters = {
             ...parameters,
-            voltageRanges: shortCircuitParams.voltageRangesInfo,
+            voltageRanges: shortCircuitParams.cei909VoltageRanges,
             initialVoltageProfileMode: INITIAL_VOLTAGE.CONFIGURED,
         };
     }
@@ -230,10 +230,7 @@ export const ShortCircuitParameters = ({
             </Grid>
 
             <Grid>
-                <ShortCircuitFields
-                    resetAll={resetAll}
-                    voltageRanges={shortCircuitParams?.voltageRangesInfo}
-                />
+                <ShortCircuitFields resetAll={resetAll} />
             </Grid>
             <Grid
                 container

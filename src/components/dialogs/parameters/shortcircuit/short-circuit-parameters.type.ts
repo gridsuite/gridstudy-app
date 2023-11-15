@@ -8,12 +8,10 @@ import { INITIAL_VOLTAGE } from '../../../utils/constants';
 
 export interface ShortCircuitFieldsProps {
     resetAll: (predefinedParams: INITIAL_VOLTAGE) => void;
-    voltageRanges: VoltageRange[];
 }
 
 export interface VoltageTableProps {
     voltageProfileMode: INITIAL_VOLTAGE;
-    values: VoltageRange[];
 }
 export interface VoltageRange {
     minimumNominalVoltage: number;

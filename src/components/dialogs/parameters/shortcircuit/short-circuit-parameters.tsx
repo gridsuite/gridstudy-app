@@ -48,7 +48,6 @@ import { ShortCircuitFieldsProps } from './short-circuit-parameters.type';
 
 const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     resetAll,
-    voltageRanges,
 }) => {
     const [status, setStatus] = useState(STATUS.SUCCESS);
     const [isChanged, setIsChanged] = useState(false);
@@ -188,10 +187,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
             <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
             <Grid>{gridItem(initialVoltageProfileModeField, 12)}</Grid>
-            <VoltageTable
-                voltageProfileMode={watchInitialVoltageProfileMode}
-                values={voltageRanges}
-            />
+            <VoltageTable voltageProfileMode={watchInitialVoltageProfileMode} />
         </Grid>
     );
 };
