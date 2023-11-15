@@ -321,12 +321,14 @@
     "DynamicSimulationEventDeleting": "Suppression d'un évènement en cours ...",
 
     "DisconnectLine": "Déclencher la ligne",
+    "DisconnectHvdcLine": "Déclencher la Hvdc ligne",
     "Disconnect2WTransformer": "Déclencher le transformateur",
     "DisconnectLoad": "Déclencher la consommation",
     "DisconnectGenerator": "Déclencher le group",
     "NodeFaultBus": "Court-circuit sur le bus",
 
     "Disconnect/LINE": "Déclencher ligne {computedLabel}",
+    "Disconnect/HVDC_LINE": "Déclencher Hvdc ligne {computedLabel}",
     "Disconnect/TWO_WINDINGS_TRANSFORMER": "Déclencher transformateur {computedLabel}",
     "Disconnect/LOAD": "Déclencher consommation {computedLabel}",
     "Disconnect/GENERATOR": "Déclencher group {computedLabel}",
@@ -538,6 +540,8 @@
     "SwitchOnLine": "Mettre en service la ligne",
     "Trip2WTransformer": "Déclencher le transformateur",
     "Lockout2WTransformer": "Consigner le transformateur",
+    "LockoutHvdcLine": "Consigner la ligne hvdc",
+    "TripHvdcLine": "Déclencher la ligne hvdc",
 
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",
@@ -545,6 +549,7 @@
     "UnableToSwitchOnLine": "Impossible de mettre la ligne en service",
     "UnableToTrip2WTransformer": "Impossible de déclencher le transformateur",
     "UnableToLockout2WTransformer": "Impossible de consigner le transformateur",
+    "UnableToLockoutHvdcLine": "Impossible de consigner la ligne hvdc",
 
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",

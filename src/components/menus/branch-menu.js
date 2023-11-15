@@ -177,9 +177,12 @@ const withBranchMenu =
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 />
-                {(equipmentType === EQUIPMENT_TYPES.LINE ||
-                    equipmentType ===
-                        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
+                {[
+                    EQUIPMENT_TYPES.LINE,
+                    EQUIPMENT_TYPES.HVDC_LINE,
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+                    EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+                ].includes(equipmentType) && (
                     <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleLockout()}

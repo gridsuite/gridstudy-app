@@ -62,7 +62,6 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
         const equipmentTypesToExclude = new Set([
             EQUIPMENT_TYPES.SWITCH,
             EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
             EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
