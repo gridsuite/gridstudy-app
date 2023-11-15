@@ -22,6 +22,7 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
+    MINIMUM_ACTIVE_POWER,
     MAXIMUM_ACTIVE_POWER,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
@@ -145,19 +146,39 @@ const getReactivePowerSetPointSchema = (isEquipmentModification) => ({
         }),
 });
 
-const getActivePowerSetPointSchema = (isEquipmentModification) => ({
+export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
-        .nullable()
+        .nonNullable()
         .when([], {
             is: () => !isEquipmentModification,
-            then: (schema) =>
-                schema
+            then: (schema) => {
+                return schema
                     .required()
-                    .max(
-                        yup.ref(MAXIMUM_ACTIVE_POWER),
-                        'ActivePowerLessThanMaxActivePower'
-                    ),
+                    .test(
+                        'activePowerSetPoint',
+                        'ActivePowerZeroOrBetweenMinAndMaxActivePower',
+                        (value, context) => {
+                            const minActivePower =
+                                context.parent[MINIMUM_ACTIVE_POWER];
+                            const maxActivePower =
+                                context.parent[MAXIMUM_ACTIVE_POWER];
+                            if (value === 0) {
+                                return true;
+                            }
+                            if (
+                                minActivePower === null ||
+                                maxActivePower === null
+                            ) {
+                                return false;
+                            }
+                            return (
+                                value >= minActivePower &&
+                                value <= maxActivePower
+                            );
+                        }
+                    );
+            },
         }),
 });
 
