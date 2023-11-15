@@ -675,6 +675,7 @@
     "TabularModification": "Tabular modification",
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
+    "TabularModificationGeneratorSkeletonComment" : ",,,,#The possible values are : true | false",
     "equipmentId": "ID",
     "activePower": "p (MW)",
     "maxActivePower": "Max P (MW)",
