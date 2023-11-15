@@ -53,18 +53,15 @@ const TabularModificationForm = () => {
         });
     }, [intl, watchType]);
 
-    const explanationComment = useMemo(() => {
-        switch (watchType) {
-            case EQUIPMENT_TYPES.GENERATOR:
-                return intl.formatMessage({
-                    id: 'TabularModificationGeneratorSkeletonComment',
-                });
-            case EQUIPMENT_TYPES.LOAD:
-                return '';
-            default:
-                return '';
-        }
-    }, [intl, watchType]);
+    const explanationComment = useMemo(
+        () =>
+            watchType === EQUIPMENT_TYPES.GENERATOR
+                ? intl.formatMessage({
+                      id: 'TabularModificationGeneratorSkeletonComment',
+                  })
+                : '',
+        [intl, watchType]
+    );
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
