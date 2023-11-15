@@ -1617,3 +1617,38 @@ export function createVsc(
         body,
     });
 }
+
+export function modifyByFormula(
+    studyUuid,
+    currentNodeUuid,
+    equipmentType,
+    formulas,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating by formula modification');
+    } else {
+        console.info('Creating by formula modification');
+    }
+
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
+        identifiableType: equipmentType,
+        formulaInfosList: formulas,
+    });
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: body,
+    });
+}
