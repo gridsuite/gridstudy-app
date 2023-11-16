@@ -1268,5 +1268,20 @@
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
     "customAgGridFilter.startsWith": "Starts with",
     "customAgGridFilter.contains": "Contains",
-    "customAgGridFilter.filterOoo": "Filter..."
+    "customAgGridFilter.filterOoo": "Filter...",
+
+    "ShortCircuitPredefinedParameters": "Preset parameters",
+    "ShortCircuitCharacteristics": "Features considered",
+    "ShortCircuitVoltageProfileMode": "Initial voltage profile",
+    "shortCircuitLoads": "Loads",
+    "shortCircuitHvdc": "HVDC(VSC)",
+    "shortCircuitShuntCompensators": "Shunt compensators",
+    "shortCircuitNeutralPosition": "Tap position of ratio tap changers",
+    "shortCircuitNominalVoltage": "Nominal voltage(kV)",
+    "shortCircuitInitialVoltage": "Initial voltage(kV)",
+    "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
+    "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with nominal voltage profile",
+    "iccMaxWithCEIPredefinedParams": "ISC max with standard IEC 909",
+    "nominalInitialVoltageProfileMode": "Nominal",
+    "cei909InitialVoltageProfileMode": "IEC 909"
 }
