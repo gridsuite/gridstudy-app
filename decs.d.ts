@@ -173,4 +173,12 @@ declare module '@gridsuite/commons-ui' {
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
+
+    interface CheckboxInputProps {
+        name: string;
+        label?: string;
+        formProps?: Omit<CheckboxInputProps, 'disabled'>;
+    }
+  
+    export const CheckboxInput: FunctionComponent<CheckboxInputProps>;
 }
