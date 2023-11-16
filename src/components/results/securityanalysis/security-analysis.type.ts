@@ -139,6 +139,7 @@ type FilterParams = {
     filterUIType?: string;
     filterComparators?: string[];
     debounceMs?: number;
+    parser?: (value: string) => void;
 };
 
 export type FilterEnums = Record<string, string[] | null>;
@@ -182,6 +183,7 @@ export interface SecurityAnalysisResultNProps {
     updateFilter: (field: string, value: string) => void;
     filterSelector: FilterSelectorType;
     filterEnums: FilterEnums;
+    parser?: (value: string) => void;
 }
 
 export interface SecurityAnalysisResultNmkProps {

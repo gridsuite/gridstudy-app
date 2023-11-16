@@ -32,6 +32,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
     updateFilter,
     filterSelector,
     filterEnums,
+    parser,
 }) => {
     const intl: IntlShape = useIntl();
 
@@ -70,6 +71,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
             isHidden = false,
             isFilterable = false,
             filterParams,
+            valueFormatter,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
@@ -84,6 +86,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
                 field,
                 valueGetter,
                 cellRenderer,
+                valueFormatter,
                 hide: isHidden,
                 headerTooltip: headerName,
                 headerComponent: CustomHeaderComponent,

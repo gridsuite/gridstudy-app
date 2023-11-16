@@ -26,6 +26,7 @@ import {
 import {
     ContingencyCellRenderer,
     convertDuration,
+    parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
 import {
     FILTER_NUMBER_COMPARATORS,
@@ -37,7 +38,6 @@ import {
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from '../../../services/security-analysis';
-import { convertMillisecondsToMinutesSeconds } from '../loadflow/load-flow-result-utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -209,14 +209,15 @@ export const securityAnalysisTableNColumnsDefinition = (
             id: 'Overload',
         }),
         field: 'acceptableDuration',
-        cellRenderer: (value: ValueFormatterParams) =>
-            convertMillisecondsToMinutesSeconds(value.data.acceptableDuration),
-        numeric: true,
+        valueFormatter: (value: any) =>
+            convertDuration(value.data.acceptableDuration),
+        //numeric: true,
         isSortable: true,
         isFilterable: true,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            parser: parseDuration,
         },
     }),
 

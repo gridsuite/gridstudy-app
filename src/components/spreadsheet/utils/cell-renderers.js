@@ -136,6 +136,30 @@ export const convertDuration = (duration) => {
     return minutes + "' " + seconds + '"';
 };
 
+export const parseDuration = (formattedDuration) => {
+    if (!formattedDuration || typeof formattedDuration !== 'string') {
+        return NaN;
+    }
+
+    const parts = formattedDuration.split(/[ '"]/).filter(Boolean);
+    let totalSeconds = 0;
+
+    if (parts.length === 2) {
+        // Assume the format is "X' Y"", where X is minutes and Y is seconds
+        totalSeconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    } else if (parts.length === 1) {
+        // Only one part, could be either minutes or seconds
+        if (formattedDuration.includes("'")) {
+            // It's minutes
+            totalSeconds = parseInt(parts[0]) * 60;
+        } else if (formattedDuration.includes('"')) {
+            // It's seconds
+            totalSeconds = parseInt(parts[0]);
+        }
+    }
+    return isNaN(totalSeconds) ? '' : totalSeconds.toString;
+};
+
 export const DefaultCellRenderer = (props) => {
     const cellValue = formatCell(props);
     return (
