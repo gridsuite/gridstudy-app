@@ -250,6 +250,13 @@ const TableWrapper = (props) => {
                             },
                         };
                     } else if (editingData?.id === params.data.id) {
+                        setEditingData({
+                            ...params.data,
+                            metadata: {
+                                ...editingData.metadata,
+                            },
+                        });
+
                         return {
                             component: ReferenceLineCellRenderer,
                         };
@@ -525,12 +532,13 @@ const TableWrapper = (props) => {
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
+                    console.log('debug','buildEditPromise',editingData, props)
                     return modifySubstation(
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
                         editingData.name,
-                        editingData.countryCode || editingData.countryName,
+                        editingData.countryName,
                         false,
                         undefined,
                         undefined
