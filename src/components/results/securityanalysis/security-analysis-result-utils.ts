@@ -22,8 +22,11 @@ import {
     ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
+import {
+    ContingencyCellRenderer,
+    convertDuration,
+} from 'components/spreadsheet/utils/cell-renderers';
 import {
     CustomColDef,
     FILTER_TEXT_COMPARATORS,
@@ -214,6 +217,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -291,6 +296,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),

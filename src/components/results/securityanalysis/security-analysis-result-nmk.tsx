@@ -145,6 +145,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isHidden = false,
             isFilterable,
             filterParams,
+            valueFormatter,
         }: CustomColDef) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
@@ -166,6 +167,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 valueGetter,
                 cellRenderer,
                 hide: isHidden,
+                valueFormatter,
                 headerTooltip: headerName,
                 minWidth,
                 headerComponent: CustomHeaderComponent,

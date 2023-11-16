@@ -7,6 +7,7 @@
 
 import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
 import { useCallback } from 'react';
+import { commonDefParams } from './solver-constants';
 
 const SimplifiedSolverParameters = ({
     simplifiedSolver,
@@ -25,14 +26,6 @@ const SimplifiedSolverParameters = ({
             type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverKReduceStep',
         },
-        nEff: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSimplifiedSolverNEff',
-        },
-        nDeadband: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationSimplifiedSolverNDeadband',
-        },
         maxNewtonTry: {
             type: TYPES.integer,
             description: 'DynamicSimulationSimplifiedSolverMaxNewtonTry',
@@ -41,10 +34,65 @@ const SimplifiedSolverParameters = ({
             type: TYPES.text,
             description: 'DynamicSimulationSimplifiedSolverLinearSolverName',
         },
-        recalculateStep: {
-            type: TYPES.bool,
-            description: 'DynamicSimulationSimplifiedSolverRecalculateStep',
+        fNormTol: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverFNormTol',
         },
+        initialAddTol: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverInitialAddTol',
+        },
+        scStepTol: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverScStepTol',
+        },
+        mxNewTStep: {
+            type: TYPES.float,
+            description: 'DynamicSimulationSimplifiedSolverMxNewTStep',
+        },
+        msbset: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSimplifiedSolverMsbset',
+        },
+        mxIter: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSimplifiedSolverMxIter',
+        },
+        printFl: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationSimplifiedSolverPrintFl',
+        },
+        optimizeAlgebraicResidualsEvaluations: {
+            type: TYPES.bool,
+            description:
+                'DynamicSimulationSimplifiedSolverOptimizeAlgebraicResidualsEvaluations',
+        },
+        skipNRIfInitialGuessOK: {
+            type: TYPES.bool,
+            description:
+                'DynamicSimulationSimplifiedSolverSkipNRIfInitialGuessOK',
+        },
+        enableSilentZ: {
+            type: TYPES.bool,
+            description: 'DynamicSimulationSimplifiedSolverEnableSilentZ',
+        },
+        optimizeReInitAlgebraicResidualsEvaluations: {
+            type: TYPES.bool,
+            description:
+                'DynamicSimulationSimplifiedSolverOptimizeReInitAlgebraicResidualsEvaluations',
+        },
+        minimumModeChangeTypeForAlgebraicRestoration: {
+            type: TYPES.text,
+
+            description:
+                'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestoration',
+        },
+        minimumModeChangeTypeForAlgebraicRestorationInit: {
+            type: TYPES.text,
+            description:
+                'DynamicSimulationSimplifiedSolverMinimumModeChangeTypeForAlgebraicRestorationInit',
+        },
+        ...commonDefParams,
     };
 
     const handleUpdateSimplifiedSolver = useCallback(

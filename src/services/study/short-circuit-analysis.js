@@ -151,16 +151,25 @@ export function getShortCircuitParameters(studyUuid) {
 
 export function setShortCircuitParameters(studyUuid, newParams) {
     console.info('set short-circuit parameters');
-    const setShortCircuitParametersUrl =
-        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
-    console.debug(setShortCircuitParametersUrl);
-    return backendFetch(setShortCircuitParametersUrl, {
+    const url = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(url);
+
+    return backendFetch(url, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newParams),
+    });
+}
+export function invalidateShortCircuitStatus(studyUuid) {
+    console.info('invalidate short circuit status');
+    const invalidateShortCircuitStatusUrl =
+        getStudyUrl(studyUuid) + '/short-circuit/invalidate-status';
+    console.debug(invalidateShortCircuitStatusUrl);
+    return backendFetch(invalidateShortCircuitStatusUrl, {
+        method: 'PUT',
     });
 }
 

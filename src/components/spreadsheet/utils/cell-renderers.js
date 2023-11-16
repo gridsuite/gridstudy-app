@@ -99,7 +99,7 @@ export const BooleanNullableCellRenderer = (props) => {
 };
 
 export const formatCell = (props) => {
-    let value = props.value;
+    let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
     if (props.colDef.valueGetter) {
         value = props.colDef.valueGetter(props, props.context.network);
@@ -116,6 +116,24 @@ export const formatCell = (props) => {
         value = null;
     }
     return { value: value, tooltip: tooltipValue };
+};
+
+export const convertDuration = (duration) => {
+    if (!duration || isNaN(duration)) {
+        return '';
+    }
+
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+
+    if (seconds === 0) {
+        return minutes + "'";
+    }
+
+    if (minutes === 0) {
+        return seconds + '"';
+    }
+    return minutes + "' " + seconds + '"';
 };
 
 export const DefaultCellRenderer = (props) => {
