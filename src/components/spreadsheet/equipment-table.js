@@ -217,7 +217,7 @@ export const EquipmentTable = ({
                 })}
                 child={
                     <SitePropertiesDialog
-                        spredsheetContext={gridContext}
+                        spreadsheetContext={gridContext}
                         onDataChanged={(data) => {
                             setEditedSubstationPropertiesData(data);
                         }}
