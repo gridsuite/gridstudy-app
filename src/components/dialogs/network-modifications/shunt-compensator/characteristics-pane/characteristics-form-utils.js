@@ -81,10 +81,16 @@ const getCharacteristicsCreateFormValidationSchema = () => {
 
 const getCharacteristicsModificationFormValidationSchema = () => {
     return {
-        [MAX_Q_AT_NOMINAL_V]: yup.number().nullable(),
+        [MAX_Q_AT_NOMINAL_V]: yup
+            .number()
+            .nullable()
+            .min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero'),
         [MAX_SUSCEPTANCE]: yup.number().nullable(),
         [MAXIMUM_SECTION_COUNT]: yup.number().nullable(),
-        [SECTION_COUNT]: yup.number().nullable(),
+        [SECTION_COUNT]: yup
+            .number()
+            .nullable()
+            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount'),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };
