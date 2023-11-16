@@ -48,7 +48,6 @@ export const makeData = (
             UNDEFINED_ACCEPTABLE_DURATION
                 ? null
                 : overloadedEquipment.acceptableDuration,
-
         actualOverload:
             overloadedEquipment.actualOverload === UNDEFINED_ACCEPTABLE_DURATION
                 ? null
@@ -72,14 +71,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
             field: 'name',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'LimitAcceptableDuration',
-            }),
-            field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
         },
         {
             headerName: intl.formatMessage({
@@ -115,16 +106,11 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 id: 'ActualOverload',
             }),
             field: 'actualOverload',
-            // valueFormatter: (value: ValueFormatterParams) => {
-            //     return value.data.actualOverload !== null
-            //         ? convertDuration(value.data.actualOverload)
-            //         : intl.formatMessage({ id: 'None' });
-            // },
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.actualOverload),
         },
         {
-            headerName: intl.formatMessage({
-                id: 'upComingOverlaod',
-            }),
+            headerName: intl.formatMessage({ id: 'upComingOverlaod' }),
             field: 'upComingOverload',
             valueFormatter: (value: ValueFormatterParams) => {
                 return value.data.upComingOverload !== null
