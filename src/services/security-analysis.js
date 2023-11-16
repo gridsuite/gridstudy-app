@@ -19,3 +19,10 @@ export function fetchSecurityAnalysisProviders() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function fetchSecurityAnalysisAvailableComputationStatus() {
+    console.info('fetch available computation status');
+    const url = getSecurityAnalysisUrl() + 'computation-status';
+    console.debug(url);
+    return backendFetchJson(url);
+}

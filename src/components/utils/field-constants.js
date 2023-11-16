@@ -99,9 +99,7 @@ export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 
 //ShuntCompensator
-export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
-export const Q_AT_NOMINAL_V = 'qatNominalV';
 export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
 export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
@@ -291,3 +289,22 @@ export const VOLTAGE = 'voltage';
 export const HVDC_LINE_TAB = 'hvdcLineTab';
 export const CONVERTER_STATION_1 = 'converterStation1';
 export const CONVERTER_STATION_2 = 'converterStation2';
+
+export const SHORT_CIRCUIT_WITH_FEEDER_RESULT = 'withFeederResult';
+export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParameters';
+export const SHORT_CIRCUIT_WITH_LOADS = 'withLoads';
+export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS =
+    'withVSCConverterStations';
+export const SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS = 'withShuntCompensators';
+export const SHORT_CIRCUIT_WITH_NEUTRAL_POSITION = 'withNeutralPosition';
+export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE =
+    'initialVoltageProfileMode';
+
+// By formula
+export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
+export const FORMULAS = 'formulas';
+export const EDITED_FIELD = 'editedField';
+export const OPERATOR = 'operator';
+export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
+export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
+export const EQUIPMENT_FIELD = 'equipmentField';
