@@ -15,7 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 
 interface SelectWithConfirmationInputProps {
     name: string;
-    options: { id: string; label: string }[];
+    options: string[];
     onValidate: () => void;
     label: string;
 }
