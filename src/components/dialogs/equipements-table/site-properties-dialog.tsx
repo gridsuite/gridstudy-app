@@ -20,7 +20,7 @@ import { useIntl } from 'react-intl';
 import { CustomAGGrid } from "../../custom-aggrid/custom-aggrid";
 
 type SitePropertiesDialogProps = {
-    spredsheetContext: any;
+    spreadsheetContext: any;
     onDataChanged: (data: IData[]) => void;
 };
 
@@ -34,7 +34,7 @@ type IData = {
  * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
  */
 const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
-    spredsheetContext,
+    spreadsheetContext,
     onDataChanged,
 }) => {
     const theme = useTheme();
@@ -59,7 +59,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     }, [intl]);
 
     const [rowData, setRowData] = useState<IData[]>(() => {
-        const data = spredsheetContext.dynamicValidation;
+        const data = spreadsheetContext.dynamicValidation;
         if (!data?.properties) {
             return [];
         }
