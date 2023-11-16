@@ -56,6 +56,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
+            withConnectivity={false}
         />
     );
 
@@ -66,6 +67,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
+            withConnectivity={false}
         />
     );
 
