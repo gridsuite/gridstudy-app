@@ -203,7 +203,7 @@ export const CharacteristicsForm = ({
                         sectionCount,
                         maximumSectionCount,
                         linkedSwitchedOnValue,
-                    ].some((value) => !isBlankOrEmpty(value))
+                    ].every((value) => !isBlankOrEmpty(value))
                 ) {
                     setValue(
                         SWITCHED_ON_FIELD,
