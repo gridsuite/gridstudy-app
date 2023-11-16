@@ -530,7 +530,7 @@ const TableWrapper = (props) => {
                         props.currentNode?.id,
                         editingData.id,
                         editingData.name,
-                        editingData.countryName,
+                        editingData.countryCode || editingData.countryName,
                         false,
                         undefined,
                         undefined
