@@ -43,7 +43,6 @@ export const styles = {
             transform: 'rotate(0deg)',
         },
         '& .MuiAccordionSummary-content': {
-            marginLeft: theme.spacing(0),
             flexGrow: 0,
         },
     }),
