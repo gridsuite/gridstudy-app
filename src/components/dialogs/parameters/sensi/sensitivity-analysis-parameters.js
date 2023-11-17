@@ -10,7 +10,7 @@ import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { CloseButton, DropDown } from '../parameters';
+import { DropDown, LabelledButton, styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -43,7 +43,7 @@ import {
     setSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
-import SensiParametersSelector from './sensi-parameters-selector';
+import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import { LineSeparator } from '../../dialogUtils';
 import {
     getSensiHvdcformatNewParams,
@@ -57,6 +57,8 @@ import {
     getSensiPstformatNewParams,
     getSensiPSTsFormSchema,
 } from './utils';
+import { SelectOptionsDialog } from '../../../../utils/dialogs';
+import DialogContentText from '@mui/material/DialogContentText';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -101,8 +103,19 @@ export const SensitivityAnalysisParameters = ({
 }) => {
     const { snackError } = useSnackMessage();
 
+    const [popupConfirm, setPopupConfirm] = useState(false);
+
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
+
+    const handlePopupConfirm = useCallback(() => {
+        hideParameters();
+        setPopupConfirm(false);
+    }, [hideParameters]);
+
+    const handleClosePopupConfirm = useCallback(() => {
+        setPopupConfirm(false);
+    }, []);
 
     const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
     const updateProviderCallback = useCallback(handleUpdateProvider, [
@@ -118,7 +131,6 @@ export const SensitivityAnalysisParameters = ({
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,
-            [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [PARAMETER_SENSI_INJECTIONS_SET]: [],
             [PARAMETER_SENSI_INJECTION]: [],
             [PARAMETER_SENSI_HVDC]: [],
@@ -131,7 +143,7 @@ export const SensitivityAnalysisParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit } = formMethods;
+    const { reset, handleSubmit, formState } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
@@ -368,6 +380,17 @@ export const SensitivityAnalysisParameters = ({
         [reset]
     );
 
+    const handleClose = useCallback(() => {
+        if (
+            formState.dirtyFields &&
+            Object.keys(formState.dirtyFields).length === 0
+        ) {
+            hideParameters();
+        } else {
+            setPopupConfirm(true);
+        }
+    }, [hideParameters, formState.dirtyFields]);
+
     useEffect(() => {
         if (sensitivityAnalysisParams) {
             fromSensitivityAnalysisParamsDataToFormValues(
@@ -391,14 +414,9 @@ export const SensitivityAnalysisParameters = ({
     ]);
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid item>
-                <Grid
-                    container
-                    spacing={1}
-                    paddingTop={1}
-                    sx={{ paddingLeft: 0, paddingRight: 0 }}
-                >
+        <>
+            <FormProvider validationSchema={formSchema} {...formMethods}>
+                <Grid container spacing={1} paddingTop={1}>
                     <DropDown
                         value={provider}
                         label="Provider"
@@ -406,7 +424,11 @@ export const SensitivityAnalysisParameters = ({
                         callback={updateProviderCallback}
                     />
                 </Grid>
-                <Grid container key="sensitivityAnalysisParameters">
+                <Grid
+                    container
+                    sx={styles.scrollableGrid}
+                    key="sensitivityAnalysisParameters"
+                >
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
@@ -416,10 +438,10 @@ export const SensitivityAnalysisParameters = ({
                             useSensitivityAnalysisParameters
                         }
                     />
-                    <Grid container paddingTop={1}>
+                    <Grid container paddingTop={1} paddingBottom={2}>
                         <LineSeparator />
                     </Grid>
-                    <SensiParametersSelector
+                    <SensitivityParametersSelector
                         reset={reset}
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
@@ -430,12 +452,26 @@ export const SensitivityAnalysisParameters = ({
                     <Button onClick={clear}>
                         <FormattedMessage id="resetToDefault" />
                     </Button>
-                    <SubmitButton onClick={handleSubmit(onSubmit)}>
+                    <SubmitButton
+                        onClick={handleSubmit(onSubmit)}
+                        variant="outlined"
+                    >
                         <FormattedMessage id="validate" />
                     </SubmitButton>
-                    <CloseButton hideParameters={hideParameters} />
+                    <LabelledButton callback={handleClose} label="cancel" />
                 </DialogActions>
-            </Grid>
-        </FormProvider>
+            </FormProvider>
+
+            <SelectOptionsDialog
+                open={popupConfirm}
+                onClose={handleClosePopupConfirm}
+                onClick={handlePopupConfirm}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="genericConfirmQuestion" />
+                    </DialogContentText>
+                }
+            />
+        </>
     );
 };

@@ -61,6 +61,8 @@ const LineSplitWithVoltageLevelForm = ({
             const formattedVoltageLevel = {
                 id: voltageLevelToEdit.equipmentId,
                 name: voltageLevelToEdit.equipmentName ?? '',
+                substationId: voltageLevelToEdit.substationId,
+                topologyKind: voltageLevelToEdit.topologyKind,
             };
             return [
                 formattedVoltageLevel,

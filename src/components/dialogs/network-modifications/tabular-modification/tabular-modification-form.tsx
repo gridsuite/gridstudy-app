@@ -33,14 +33,15 @@ import {
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community/dist/lib/main';
 import { richTypeEquals } from 'components/utils/utils';
+import { getIdOrValue } from '../../commons/utils';
 
 const TabularModificationForm = () => {
     const intl = useIntl();
 
     const { setValue, clearErrors, getValues } = useFormContext();
 
-    const richTypeLabel = (rt: string) => {
-        return intl.formatMessage({ id: rt });
+    const richTypeLabel = (rt: { id: string; label: string } | string) => {
+        return intl.formatMessage({ id: getIdOrValue(rt) });
     };
 
     const watchType = useWatch({

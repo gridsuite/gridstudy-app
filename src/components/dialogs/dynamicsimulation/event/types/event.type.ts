@@ -11,7 +11,14 @@ export enum EventType {
     NODE_FAULT = 'NodeFault',
 }
 
-export type EventPropertyName = 'staticId' | 'startTime' | 'disconnectOnly';
+type CommonEventPropertyName = 'staticId' | 'startTime';
+type DisconnectEventPropertyName = 'disconnectOnly';
+type NodeFaultEventPropertyName = 'faultTime' | 'rPu' | 'xPu';
+
+export type EventPropertyName =
+    | CommonEventPropertyName
+    | DisconnectEventPropertyName
+    | NodeFaultEventPropertyName;
 
 export enum PrimitiveTypes {
     ENUM = 'ENUM',
@@ -31,6 +38,7 @@ export type EventPropertyDefinition = {
         label: string;
     }[];
     unit?: string;
+    acceptOnly?: (equipmentType: string) => boolean;
 };
 
 export type EventDefinition = {

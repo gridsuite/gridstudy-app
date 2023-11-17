@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { CustomMenuItem } from '../../utils/custom-nested-menu';
 
 const styles = {
     menuItem: {
@@ -23,7 +23,7 @@ const styles = {
 
 const ChildMenuItem = ({ item }) => {
     return (
-        <MenuItem
+        <CustomMenuItem
             sx={styles.menuItem}
             onClick={item.action}
             disabled={item.disabled}
@@ -35,7 +35,7 @@ const ChildMenuItem = ({ item }) => {
                     </Typography>
                 }
             />
-        </MenuItem>
+        </CustomMenuItem>
     );
 };
 

@@ -64,7 +64,7 @@ export interface ISensiParameters {
     name: string;
 }
 
-interface IColumnsDef {
+export interface IColumnsDef {
     label: string;
     dataKey: string;
     initialValue: boolean | string | string[];
@@ -75,6 +75,7 @@ interface IColumnsDef {
     elementType?: string;
     titleId?: string;
     checkboxItems?: boolean;
+    width?: string;
 }
 export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
     {
@@ -104,6 +105,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         initialValue: INJECTION_DISTRIBUTION_TYPES[0].id,
         menuItems: true,
         editable: true,
+        width: '16rem',
     },
     {
         label: 'ContingencyLists',
@@ -115,11 +117,12 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         titleId: 'ContingencyListsSelection',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
         editable: true,
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_INJECTIONS = [
@@ -153,11 +156,12 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         titleId: 'ContingencyListsSelection',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
         editable: true,
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_HVDCS = [
@@ -178,6 +182,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
+        width: '9rem',
     },
     {
         label: 'HvdcLines',
@@ -199,11 +204,12 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         titleId: 'ContingencyListsSelection',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
         editable: true,
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_PSTS = [
@@ -224,6 +230,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
+        width: '9rem',
     },
     {
         label: 'PSTS',
@@ -245,11 +252,12 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         titleId: 'ContingencyListsSelection',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
         editable: true,
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_NODES = [
@@ -283,11 +291,12 @@ export const COLUMNS_DEFINITIONS_NODES = [
         titleId: 'ContingencyListsSelection',
     },
     {
-        label: 'Actif',
+        label: 'Active',
         dataKey: ACTIVATED,
         initialValue: true,
         checkboxItems: true,
         editable: true,
+        width: '4rem',
     },
 ];
 
