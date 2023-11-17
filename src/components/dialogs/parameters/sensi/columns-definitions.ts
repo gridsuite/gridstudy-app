@@ -64,7 +64,7 @@ export interface ISensiParameters {
     name: string;
 }
 
-interface IColumnsDef {
+export interface IColumnsDef {
     label: string;
     dataKey: string;
     initialValue: boolean | string | string[];
@@ -75,6 +75,7 @@ interface IColumnsDef {
     elementType?: string;
     titleId?: string;
     checkboxItems?: boolean;
+    width?: string;
 }
 export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
     {
@@ -86,7 +87,6 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '25%',
     },
     {
         label: 'Injections',
@@ -97,7 +97,6 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '25%',
     },
     {
         label: 'DistributionType',
@@ -106,7 +105,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         initialValue: INJECTION_DISTRIBUTION_TYPES[0].id,
         menuItems: true,
         editable: true,
-        width: '20%',
+        width: '16rem',
     },
     {
         label: 'ContingencyLists',
@@ -116,7 +115,6 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        width: '25%',
     },
     {
         label: 'Active',
@@ -124,7 +122,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5%',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_INJECTIONS = [
@@ -137,7 +135,6 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '35%',
     },
     {
         label: 'Injections',
@@ -148,7 +145,6 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
     },
     {
         label: 'ContingencyLists',
@@ -158,7 +154,6 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        width: '30%',
     },
     {
         label: 'Active',
@@ -166,7 +161,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5%',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_HVDCS = [
@@ -179,7 +174,6 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '25%',
     },
     {
         label: 'SensitivityType',
@@ -188,7 +182,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
-        width: '10%',
+        width: '9rem',
     },
     {
         label: 'HvdcLines',
@@ -199,7 +193,6 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         equipmentTypes: HVDC_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
     },
     {
         label: 'ContingencyLists',
@@ -209,7 +202,6 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        width: '30%',
     },
     {
         label: 'Active',
@@ -217,7 +209,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5%',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_PSTS = [
@@ -230,7 +222,6 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
     },
     {
         label: 'SensitivityType',
@@ -239,7 +230,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: SENSITIVITY_TYPES[0].id,
         menuItems: true,
         editable: true,
-        width: '5%',
+        width: '9rem',
     },
     {
         label: 'PSTS',
@@ -250,7 +241,6 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         equipmentTypes: PSTS_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
     },
     {
         label: 'ContingencyLists',
@@ -260,7 +250,6 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        width: '30%',
     },
     {
         label: 'Active',
@@ -268,7 +257,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5%',
+        width: '4rem',
     },
 ];
 export const COLUMNS_DEFINITIONS_NODES = [
@@ -281,7 +270,6 @@ export const COLUMNS_DEFINITIONS_NODES = [
         equipmentTypes: MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '30%',
     },
     {
         label: 'EquipmentsInVoltageRegulation',
@@ -292,7 +280,6 @@ export const COLUMNS_DEFINITIONS_NODES = [
         equipmentTypes: EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        width: '35%',
     },
     {
         label: 'ContingencyLists',
@@ -302,7 +289,6 @@ export const COLUMNS_DEFINITIONS_NODES = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        width: '30%',
     },
     {
         label: 'Active',
@@ -310,7 +296,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         initialValue: true,
         checkboxItems: true,
         editable: true,
-        width: '5%',
+        width: '4rem',
     },
 ];
 
