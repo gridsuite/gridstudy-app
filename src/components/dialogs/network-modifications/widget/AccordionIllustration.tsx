@@ -22,7 +22,7 @@ type AccordionIllustrationProps = {
     onClick: (show: boolean) => void;
 };
 
-export const ILLUSTRATION_DARK_BG = '#272727ff';
+const ILLUSTRATION_DARK_BG = '#272727ff';
 
 export const styles = {
     accordion: {
