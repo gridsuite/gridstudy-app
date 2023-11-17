@@ -8,18 +8,18 @@
 import { TableCell, TableRow } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import { DeleteForeverOutlined } from '@mui/icons-material';
 import React, { FunctionComponent, useState } from 'react';
 import { useIntl } from 'react-intl';
 import EditableTableCell from './table-cell';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { IColumnsDef } from './columns-definitions';
 
 interface TableRowComponentProps {
     arrayFormName: string;
-    columnsDefinition: any;
-    row: any;
+    columnsDefinition: IColumnsDef[];
+    row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
-    theme: boolean;
 }
 
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
@@ -28,40 +28,33 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     row,
     index,
     handleDeleteButton,
-    theme,
 }) => {
-    const [hover, setHover] = useState(false);
+    const [isHover, setIsHover] = useState(false);
     const intl = useIntl();
-
+    function handleHover(enter: boolean) {
+        return setIsHover(enter);
+    }
     return (
         <TableRow
             key={row.id}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
+            onMouseEnter={() => handleHover(true)}
+            onMouseLeave={() => handleHover(false)}
         >
-            {columnsDefinition.map((column: any) =>
+            {columnsDefinition.map((column: IColumnsDef) =>
                 EditableTableCell(arrayFormName, index, column)
             )}
-            <TableCell>
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'DeleteRows',
-                    })}
-                    placement="top"
-                >
-                    <span hidden={!hover}>
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleDeleteButton(index)}
-                        >
-                            <DeleteForeverOutlined
-                                sx={{
-                                    color: theme ? 'white' : 'black',
-                                }}
-                            />
+            <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
+                {isHover && (
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'DeleteRows',
+                        })}
+                    >
+                        <IconButton onClick={() => handleDeleteButton(index)}>
+                            <DeleteIcon />
                         </IconButton>
-                    </span>
-                </Tooltip>
+                    </Tooltip>
+                )}
             </TableCell>
         </TableRow>
     );
