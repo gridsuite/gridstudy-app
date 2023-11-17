@@ -17,7 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid } from "../../custom-aggrid/custom-aggrid";
+import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 
 type SitePropertiesDialogProps = {
     spreadsheetContext: any;

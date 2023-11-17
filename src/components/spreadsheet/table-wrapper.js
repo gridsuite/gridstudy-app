@@ -274,7 +274,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData?.id, startEditing, tabIndex]
+        [editingData?.id, editingData?.metadata, startEditing, tabIndex]
     );
 
     const generateTableColumns = useCallback(
@@ -532,7 +532,6 @@ const TableWrapper = (props) => {
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
-                    console.log('debug','buildEditPromise',editingData, props)
                     return modifySubstation(
                         props.studyUuid,
                         props.currentNode?.id,
