@@ -157,7 +157,7 @@ export const parseDuration = (formattedDuration) => {
             totalSeconds = parseInt(parts[0]);
         }
     }
-    return isNaN(totalSeconds) ? '' : totalSeconds.toString;
+    return isNaN(totalSeconds) ? '' : totalSeconds.toString();
 };
 
 export const DefaultCellRenderer = (props) => {

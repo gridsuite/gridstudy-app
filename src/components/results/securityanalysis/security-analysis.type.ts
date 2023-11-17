@@ -144,11 +144,21 @@ type FilterParams = {
 
 export type FilterEnums = Record<string, string[] | null>;
 
+export type FilterDef = {
+    field: string;
+    options: string[] | null;
+};
+
 export interface CustomColDef extends ColDef {
     isSortable?: boolean;
     isHidden?: boolean;
     isFilterable?: boolean;
     filterParams?: FilterParams;
+    filtersDef: FilterDef[];
+    filterSelector: FilterSelectorType | undefined;
+    sortConfig?: ISortConfig;
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    updateFilter: (field: string, value: string) => void;
 }
 
 export interface SecurityAnalysisNmkResult {
@@ -183,7 +193,6 @@ export interface SecurityAnalysisResultNProps {
     updateFilter: (field: string, value: string) => void;
     filterSelector: FilterSelectorType;
     filterEnums: FilterEnums;
-    parser?: (value: string) => void;
 }
 
 export interface SecurityAnalysisResultNmkProps {

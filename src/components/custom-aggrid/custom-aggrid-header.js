@@ -72,7 +72,7 @@ const CustomHeaderComponent = ({
         debounceMs = 1000, // used to debounce the api call to not fetch the back end too fast
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
-        parser = () => {}, // Used to convert the value displayed in the table into its actual value
+        parser, // Used to convert the value displayed in the table into its actual value
     } = filterParams;
     const { colKey: sortColKey, sortWay } = sortConfig;
     const isAutoCompleteFilter = filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE;

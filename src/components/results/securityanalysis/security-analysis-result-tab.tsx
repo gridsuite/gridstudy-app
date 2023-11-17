@@ -80,6 +80,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
+    const [hasFilter, setHasFilter] = useState(false);
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
@@ -205,21 +206,28 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const result = useMemo(
         () =>
             securityAnalysisResult === RunningStatus.FAILED
-                ? null
+                ? []
                 : securityAnalysisResult,
         [securityAnalysisResult]
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
-        useFetchFiltersEnums(!result);
+        useFetchFiltersEnums(hasFilter, setHasFilter);
 
     useEffect(() => {
         if (result) {
-            setCount(result.totalElements);
+            switch (tabIndex) {
+                case 0:
+                    setCount(result.length);
+                    break;
+                case 1:
+                    setCount(result.totalElements);
+                    break;
+            }
         } else {
             setCount(0);
         }
-    }, [result]);
+    }, [result, tabIndex]);
 
     const shouldOpenLoader = useOpenLoaderShortWait({
         isLoading:

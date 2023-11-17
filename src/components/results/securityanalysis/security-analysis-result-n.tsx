@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import {
-    CustomColDef,
     PreContingencyResult,
     SecurityAnalysisNTableRow,
     SecurityAnalysisResultNProps,
@@ -15,11 +14,9 @@ import {
 import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import {
-    FROM_COLUMN_TO_FIELD,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNFilterDefinition,
 } from './security-analysis-result-utils';
-import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
@@ -32,7 +29,6 @@ export const SecurityAnalysisResultN: FunctionComponent<
     updateFilter,
     filterSelector,
     filterEnums,
-    parser,
 }) => {
     const intl: IntlShape = useIntl();
 
@@ -61,60 +57,24 @@ export const SecurityAnalysisResultN: FunctionComponent<
         [filterEnums, intl]
     );
 
-    const makeColumn = useCallback(
-        ({
-            headerName,
-            field = '',
-            valueGetter,
-            cellRenderer,
-            isSortable = false,
-            isHidden = false,
-            isFilterable = false,
-            filterParams,
-            valueFormatter,
-        }: CustomColDef) => {
-            const { options: filterOptions = [] } =
-                filtersDef.find((filterDef) => filterDef?.field === field) ||
-                {};
-
-            const filterSelectedOptions =
-                FROM_COLUMN_TO_FIELD[field] &&
-                filterSelector?.[FROM_COLUMN_TO_FIELD[field]];
-
-            return {
-                headerName,
-                field,
-                valueGetter,
-                cellRenderer,
-                valueFormatter,
-                hide: isHidden,
-                headerTooltip: headerName,
-                headerComponent: CustomHeaderComponent,
-                headerComponentParams: {
-                    field,
-                    displayName: headerName,
-                    sortConfig,
-                    onSortChanged: (newSortValue: number = 0) => {
-                        onSortChanged(field, newSortValue);
-                    },
-                    isSortable,
-                    isFilterable,
-                    filterSelectedOptions,
-                    filterParams: {
-                        ...filterParams,
-                        filterSelector,
-                        filterOptions,
-                        updateFilter,
-                    },
-                },
-            };
-        },
-        [filtersDef, filterSelector, sortConfig, updateFilter, onSortChanged]
-    );
-
     const columnDefs = useMemo(
-        () => securityAnalysisTableNColumnsDefinition(intl, makeColumn),
-        [intl, makeColumn]
+        () =>
+            securityAnalysisTableNColumnsDefinition(
+                intl,
+                filtersDef,
+                filterSelector,
+                onSortChanged,
+                updateFilter,
+                sortConfig
+            ),
+        [
+            filterSelector,
+            filtersDef,
+            intl,
+            onSortChanged,
+            sortConfig,
+            updateFilter,
+        ]
     );
 
     return (
