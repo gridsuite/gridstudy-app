@@ -11,6 +11,7 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
+    Box,
     Theme,
     Typography,
 } from '@mui/material';
@@ -21,16 +22,20 @@ type AccordionIllustrationProps = {
     onClick: (show: boolean) => void;
 };
 
+export const ILLUSTRATION_DARK_BG = '#272727ff';
+
 export const styles = {
     accordion: {
         background: 'none',
     },
     accordionIllustrationSummary: (theme: Theme) => ({
-        alignContent: 'flex-start',
         flexDirection: 'row',
         flexGrow: 0,
         justifyContent: 'left',
         transition: '0.2s',
+        padding: '0px 16px',
+        backgroundColor:
+            theme.palette.mode === 'light' ? 'none' : ILLUSTRATION_DARK_BG,
         '& .MuiAccordionSummary-expandIconWrapper': {
             transform: 'rotate(180deg)',
         },
@@ -40,17 +45,7 @@ export const styles = {
         '& .MuiAccordionSummary-content': {
             marginLeft: theme.spacing(0),
             flexGrow: 0,
-            msFlexPositive: 0,
-            justifyContent: 'left',
         },
-    }),
-    accordionIllustrationSummaryHidden: (theme: Theme) => ({
-        padding: theme.spacing(0),
-        backgroundColor: 'none',
-    }),
-    accordionIllustrationSummaryShown: (theme: Theme) => ({
-        padding: '0px 4px',
-        backgroundColor: theme.palette.mode === 'light' ? 'none' : '#272727ff',
     }),
     accordionIllustrationDetails: (theme: Theme) => ({
         padding: theme.spacing(0),
@@ -63,36 +58,29 @@ export const AccordionIllustration: FunctionComponent<
     const [mouseHover, setMouseHover] = useState(false);
 
     return (
-        <>
-            <Accordion
-                sx={styles.accordion}
-                expanded={props.state}
-                onChange={(event, showed) => props.onClick(showed)}
-                disableGutters
-                elevation={0}
-                square
+        <Accordion
+            sx={styles.accordion}
+            expanded={props.state}
+            onChange={(event, showed) => props.onClick(showed)}
+            disableGutters
+            elevation={0}
+            square
+        >
+            <AccordionSummary
+                sx={styles.accordionIllustrationSummary}
+                expandIcon={mouseHover ? <ExpandCircleDown /> : <ExpandMore />}
+                onMouseEnter={() => setMouseHover(true)}
+                onMouseLeave={() => setMouseHover(false)}
             >
-                <AccordionSummary
-                    sx={[
-                        styles.accordionIllustrationSummary,
-                        props.state
-                            ? styles.accordionIllustrationSummaryShown
-                            : styles.accordionIllustrationSummaryHidden,
-                    ]}
-                    expandIcon={
-                        mouseHover ? <ExpandCircleDown /> : <ExpandMore />
-                    }
-                    onMouseEnter={() => setMouseHover(true)}
-                    onMouseLeave={() => setMouseHover(false)}
-                >
-                    <Typography variant="h6">
+                <Typography variant="subtitle1">
+                    <Box component="span" fontWeight="fontWeightMedium">
                         <FormattedMessage id="Information" />
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={styles.accordionIllustrationDetails}>
-                    {props.children}
-                </AccordionDetails>
-            </Accordion>
-        </>
+                    </Box>
+                </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={styles.accordionIllustrationDetails}>
+                {props.children}
+            </AccordionDetails>
+        </Accordion>
     );
 };

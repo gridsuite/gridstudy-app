@@ -117,7 +117,7 @@
      x="0.039465982"
      height="53.975506"
      width="308.98303"
-     id="background" />
+     id="line-split-illu-background" />
   <g
      style="display:inline"
      transform="translate(0,-243)"
@@ -143,6 +143,24 @@
        cy="276.76132"
        cx="94.238708"
        id="path3740-0" />
+    <path
+       id="path7047"
+       d="M 29.84427,273.46696 V 256.67924"
+       style="fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041432, 1.02041432;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       id="path7047-2"
+       d="M 94.244076,273.21302 V 256.4253"
+       style="display:inline;fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041433, 1.02041433;stroke-dashoffset:0;stroke-opacity:1" />
+    <circle
+       r="7.4835467"
+       cy="275.14172"
+       cx="124.42936"
+       id="path7084"
+       style="fill:#9dcc9f;fill-opacity:0;stroke:#ffcc80;stroke-width:1.37583327;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       id="path9570"
+       d="m 121.47465,274.42223 -0.0668,1.5368 3.37428,1e-5 -1.16931,1.23612 1.1359,1.06908 3.00678,-3.0402 -2.87315,-3.17382 -1.26953,1.10249 1.1359,1.20271 z"
+       style="fill:#ffcc80;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <circle
        r="2.5390615"
        style="display:inline;fill:#a5d6a7;fill-opacity:1;stroke-width:0.0335139"
@@ -197,35 +215,75 @@
      style="display:inline"
      id="layer3">
     <text
-       id="text4625-9"
-       y="66.705627"
-       x="156.48593"
+       id="text4625-3-2"
+       y="66.772987"
+       x="270.18381"
        style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
        xml:space="preserve"><tspan
-         id="voltageLevelOrigAfterTxt"
+         id="line-split-illu-voltage-level2-right-txt"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
-         y="66.705627"
-         x="156.48593">Poste origine</tspan></text>
+         y="66.772987"
+         x="270.18381">Poste extrémité</tspan></text>
     <text
-       id="text4625-3"
-       y="66.793755"
-       x="94.285995"
-       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       id="text4625-2-3-9"
+       y="98.099854"
+       x="242.05132"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
        xml:space="preserve"><tspan
-         id="voltageLevelExtrBeforeTxt"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
-         y="66.793755"
-         x="94.285995">Poste extrémité</tspan></text>
+         id="line-split-illu-line2-right-txt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335"
+         y="98.099854"
+         x="242.05132">Liaison extrémité</tspan></text>
     <text
        id="text4625-9-6"
        y="66.673882"
        x="212.79596"
        style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
        xml:space="preserve"><tspan
-         id="voltageLevelToSplitAtAfterTxt"
+         id="line-split-illu-voltage-level-to-split-at-right-txt"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335"
          y="66.673882"
          x="212.79596">Poste en coupure</tspan></text>
+    <text
+       id="text1382"
+       y="98.099838"
+       x="184.59889"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="line-split-illu-line1-right-txt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335"
+         y="98.099838"
+         x="184.59889">Liaison origine</tspan></text>
+    <text
+       id="text4625-9"
+       y="66.705627"
+       x="156.48593"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="line-split-illu-voltage-level1-right-txt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
+         y="66.705627"
+         x="156.48593">Poste origine</tspan></text>
+    <text
+       id="text177"
+       y="66.793755"
+       x="94.285995"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="line-split-illu-voltage-level2-left-txt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
+         y="66.793755"
+         x="94.285995">Poste extrémité</tspan></text>
+    <text
+       id="text4625-2"
+       y="98.099495"
+       x="61.302929"
+       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#ffa4c2;fill-opacity:1;stroke:none;stroke-width:0.26458335"
+       xml:space="preserve"><tspan
+         id="line-split-illu-line-to-split-left-txt"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffa4c2;fill-opacity:1;stroke-width:0.26458335"
+         y="98.099495"
+         x="61.302929">Liaison coupée</tspan></text>
     <text
        id="text4625"
        y="66.809113"
@@ -233,68 +291,10 @@
        style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
        xml:space="preserve"><tspan
          dy="0"
-         id="voltageLevelOrigBeforeTxt"
+         id="line-split-illu-voltage-level1-left-txt"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
          y="66.809113"
          x="29.513699">Poste origine</tspan></text>
-    <text
-       id="text4625-3-2"
-       y="66.772987"
-       x="270.18381"
-       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#9dcc9f;fill-opacity:1;stroke:none;stroke-width:0.26458335"
-       xml:space="preserve"><tspan
-         id="voltageLevelExtrAfterTxt"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#9dcc9f;fill-opacity:1;stroke-width:0.26458335"
-         y="66.772987"
-         x="270.18381">Poste extrémité</tspan></text>
-    <text
-       id="text4625-2"
-       y="98.099495"
-       x="61.302929"
-       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#ffa4c2;fill-opacity:1;stroke:none;stroke-width:0.26458335"
-       xml:space="preserve"><tspan
-         id="lineToSplitBeforeTxt"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;line-height:1;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffa4c2;fill-opacity:1;stroke-width:0.26458335"
-         y="98.099495"
-         x="61.302929">Liaison coupée</tspan></text>
-    <text
-       id="text1382"
-       y="98.099838"
-       x="184.59889"
-       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
-       xml:space="preserve"><tspan
-         id="line1AfterTxt"
-         style="font-size:4.93888903px;line-height:1;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335;-inkscape-font-specification:'sans-serif Bold';font-family:sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
-         y="98.099838"
-         x="184.59889">Liaison origine</tspan></text>
-    <text
-       id="text4625-2-3-9"
-       y="98.099854"
-       x="242.05132"
-       style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:0.30000001;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#90caf9;fill-opacity:1;stroke:none;stroke-width:0.26458335"
-       xml:space="preserve"><tspan
-         id="line2AfterTxt"
-         style="font-size:4.93888903px;line-height:1;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#90caf9;fill-opacity:1;stroke-width:0.26458335;-inkscape-font-specification:'sans-serif Bold';font-family:sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal"
-         y="98.099854"
-         x="242.05132">Liaison extrémité</tspan></text>
-    <path
-       id="path7047"
-       d="M 29.84427,86.671007 V 69.883295"
-       style="fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041432, 1.02041432;stroke-dashoffset:0;stroke-opacity:1" />
-    <path
-       id="path7047-2"
-       d="M 94.244076,86.41707 V 69.629358"
-       style="display:inline;fill:#9dcc9f;fill-opacity:1;stroke:#9dcc9f;stroke-width:1.02041435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.02041433, 1.02041433;stroke-dashoffset:0;stroke-opacity:1" />
-    <circle
-       r="7.4835467"
-       cy="88.345795"
-       cx="124.42936"
-       id="path7084"
-       style="fill:#9dcc9f;fill-opacity:0;stroke:#ffcc80;stroke-width:1.37583327;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-    <path
-       id="path9570"
-       d="m 121.47465,87.62628 -0.0668,1.5368 3.37428,9e-6 -1.16931,1.236115 1.1359,1.069085 3.00678,-3.040199 -2.87315,-3.173821 -1.26953,1.102491 1.1359,1.20271 z"
-       style="fill:#ffcc80;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
   <g
      transform="matrix(1.0000088,0,0,0.9979224,-0.0026587,-55.904414)"

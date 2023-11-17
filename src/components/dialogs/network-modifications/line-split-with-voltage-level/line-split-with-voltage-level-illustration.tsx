@@ -13,15 +13,48 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../../redux/reducer.type';
 import { PARAM_THEME } from '../../../../utils/config-params';
 import Paper from '@mui/material/Paper';
+import { LIGHT_THEME } from '@gridsuite/commons-ui';
 
 export const styles = {
     illustration: {
         backgroundColor: 'transparent',
-        backgroundImage: 'none',
-        boxShadow: '0',
-        padding: '0px 0px',
     },
 };
+
+const replacedTexts = [
+    {
+        eltId: 'line-split-illu-voltage-level1-left-txt',
+        tradId: 'VoltageLevel1',
+    },
+    {
+        eltId: 'line-split-illu-voltage-level2-left-txt',
+        tradId: 'VoltageLevel2',
+    },
+    {
+        eltId: 'line-split-illu-voltage-level1-right-txt',
+        tradId: 'VoltageLevel1',
+    },
+    {
+        eltId: 'line-split-illu-voltage-level-to-split-at-right-txt',
+        tradId: 'VoltageLevelToSplitAt',
+    },
+    {
+        eltId: 'line-split-illu-voltage-level2-right-txt',
+        tradId: 'VoltageLevel2',
+    },
+    {
+        eltId: 'line-split-illu-line-to-split-left-txt',
+        tradId: 'LineToSplit',
+    },
+    {
+        eltId: 'line-split-illu-line1-right-txt',
+        tradId: 'Line1',
+    },
+    {
+        eltId: 'line-split-illu-line2-right-txt',
+        tradId: 'Line2',
+    },
+];
 
 /**
  * This component displays a hide able explanation illustration
@@ -33,50 +66,16 @@ const LineSplitWithVoltageLevelIllustration = () => {
 
     useEffect(() => {
         // dynamically modify the text inside the svg :
-        const replacedTexts = [
-            {
-                eltId: 'voltageLevelOrigBeforeTxt',
-                tradId: 'VoltageLevel1',
-            },
-            {
-                eltId: 'voltageLevelExtrBeforeTxt',
-                tradId: 'VoltageLevel2',
-            },
-            {
-                eltId: 'voltageLevelOrigAfterTxt',
-                tradId: 'VoltageLevel1',
-            },
-            {
-                eltId: 'voltageLevelToSplitAtAfterTxt',
-                tradId: 'VoltageLevelToSplitAt',
-            },
-            {
-                eltId: 'voltageLevelExtrAfterTxt',
-                tradId: 'VoltageLevel2',
-            },
-            {
-                eltId: 'lineToSplitBeforeTxt',
-                tradId: 'LineToSplit',
-            },
-            {
-                eltId: 'line1AfterTxt',
-                tradId: 'Line1',
-            },
-            {
-                eltId: 'line2AfterTxt',
-                tradId: 'Line2',
-            },
-        ];
 
         replacedTexts.forEach((replacedText) => {
             const elt = document.getElementById(replacedText.eltId);
-            if (elt != null) {
+            if (!!elt) {
                 elt.textContent = intl.formatMessage({
                     id: replacedText.tradId,
                 });
             }
         });
-    });
+    }, [intl]);
 
     useEffect(() => {
         /**
@@ -85,22 +84,21 @@ const LineSplitWithVoltageLevelIllustration = () => {
          * @param svgElt : element fetched from the svg that should be updated
          */
         function updateOpacity(propStr: string, svgElt: HTMLElement | null) {
-            if (svgElt != null) {
-                const indexOpacity = svgElt.style.cssText.indexOf(propStr);
+            if (!!svgElt) {
+                const eltCssText = svgElt.style.cssText;
+                const indexOpacity = eltCssText.indexOf(propStr);
                 if (indexOpacity !== -1) {
                     svgElt.style.cssText =
-                        svgElt.style.cssText.substring(
-                            0,
-                            indexOpacity + propStr.length
-                        ) +
-                        (theme === 'Light' ? '0' : '1') +
-                        svgElt.style.cssText.substring(
-                            indexOpacity + propStr.length + 1
-                        );
+                        eltCssText.substring(0, indexOpacity + propStr.length) +
+                        (theme === LIGHT_THEME ? '0' : '1') +
+                        eltCssText.substring(indexOpacity + propStr.length + 1);
                 }
             }
         }
-        updateOpacity('fill-opacity: ', document.getElementById('background'));
+        updateOpacity(
+            'fill-opacity: ',
+            document.getElementById('line-split-illu-background')
+        );
     }, [theme]);
 
     return (
@@ -108,7 +106,7 @@ const LineSplitWithVoltageLevelIllustration = () => {
             state={showDiagram}
             onClick={() => setShowDiagram((showDiagram) => !showDiagram)}
         >
-            <Paper sx={styles.illustration}>
+            <Paper elevation={0} sx={styles.illustration}>
                 <LineSplitDiagram />
             </Paper>
         </AccordionIllustration>
