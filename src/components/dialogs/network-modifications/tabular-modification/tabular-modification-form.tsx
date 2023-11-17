@@ -101,15 +101,6 @@ const TabularModificationForm = () => {
                     );
                     return transformedHeader ?? header;
                 },
-                transform: (value: string) => {
-                    // transform oui/non to boolean
-                    if (value === 'oui') {
-                        return true;
-                    } else if (value === 'non') {
-                        return false;
-                    }
-                    return value;
-                },
             });
         }
     }, [
