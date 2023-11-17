@@ -81,12 +81,6 @@ export const ConnectivityForm = ({
     });
 
     useEffect(() => {
-        if (newBusOrBusbarSectionOptions?.length > 0) {
-            setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
-        }
-    }, [newBusOrBusbarSectionOptions]);
-
-    useEffect(() => {
         if (watchVoltageLevelId) {
             const voltageLevelTopologyKind = voltageLevelOptions.find(
                 (vl) => vl.id === watchVoltageLevelId
@@ -126,6 +120,12 @@ export const ConnectivityForm = ({
         setValue,
         id,
     ]);
+
+    useEffect(() => {
+        if (newBusOrBusbarSectionOptions?.length > 0) {
+            setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
+        }
+    }, [newBusOrBusbarSectionOptions]);
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
