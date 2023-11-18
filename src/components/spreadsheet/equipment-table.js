@@ -221,6 +221,9 @@ export const EquipmentTable = ({
                         onDataChanged={(data) => {
                             setEditedSubstationPropertiesData(data);
                         }}
+                        arrayFormName={'properties modifications'}
+
+                        tableHeight={300}
                     ></SitePropertiesDialog>
                 }
             ></SelectOptionsDialog>

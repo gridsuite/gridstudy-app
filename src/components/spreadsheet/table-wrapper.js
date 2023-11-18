@@ -274,7 +274,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData?.id, editingData?.metadata, startEditing, tabIndex]
+        [editingData?.id, startEditing, tabIndex]
     );
 
     const generateTableColumns = useCallback(
