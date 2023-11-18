@@ -151,9 +151,9 @@ export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
         .number()
         .when([], {
             is: () => isEquipmentModification,
-            then: schema => {
-                return schema.nullable()
-            }
+            then: (schema) => {
+                return schema.nullable();
+            },
         })
         .when([], {
             is: () => !isEquipmentModification,
