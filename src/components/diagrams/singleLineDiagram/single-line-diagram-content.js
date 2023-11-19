@@ -29,7 +29,7 @@ import {
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
-import withBranchMenu from '../../menus/branch-menu';
+import withOperationalEquipmentMenu from '../../menus/operational-equipment-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
@@ -75,7 +75,8 @@ function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
-    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
+    const MenuOperationalEquipment =
+        withOperationalEquipmentMenu(BaseEquipmentMenu);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const { snackError } = useSnackMessage();
@@ -380,13 +381,13 @@ function SingleLineDiagramContent(props) {
         setEquipmentToConfigDynamicSimulationEvent(undefined);
     }, []);
 
-    const displayBranchMenu = () => {
+    const displayOperationalEquipmentMenu = () => {
         return (
             equipmentMenu.display &&
             (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE ||
                 equipmentMenu.equipmentType ===
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
-                <MenuBranch
+                <MenuOperationalEquipment
                     equipment={{ id: equipmentMenu.equipmentId }}
                     equipmentType={equipmentMenu.equipmentType}
                     position={equipmentMenu.position}
@@ -663,7 +664,7 @@ function SingleLineDiagramContent(props) {
                 style={{ height: '100%' }}
             />
             {shouldDisplayTooltip && displayTooltip()}
-            {displayBranchMenu()}
+            {displayOperationalEquipmentMenu()}
             {displayBusMenu()}
             {displayMenu(EQUIPMENT_TYPES.LOAD, 'load-menus')}
             {displayMenu(EQUIPMENT_TYPES.BATTERY, 'battery-menus')}

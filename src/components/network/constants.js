@@ -125,7 +125,7 @@ export const BRANCH_SIDE = {
     TWO: 'TWO',
 };
 
-export const BRANCH_STATUS_ACTION = {
+export const OPERATIONAL_STATUS_ACTION = {
     LOCKOUT: 'LOCKOUT',
     TRIP: 'TRIP',
     ENERGISE_END_ONE: 'ENERGISE_END_ONE',

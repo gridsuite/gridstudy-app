@@ -15,7 +15,7 @@ import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
     BRANCH_SIDE,
-    BRANCH_STATUS_ACTION,
+    OPERATIONAL_STATUS_ACTION,
 } from '../../components/network/constants';
 
 export function changeNetworkModificationOrder(
@@ -95,75 +95,102 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     });
 }
 
-function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
-    const changeBranchStatusUrl =
+function changeOperationalStatus(
+    studyUuid,
+    currentNodeUuid,
+    operationalEquipment,
+    action
+) {
+    const changeOperationalStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-    console.debug('%s with action: %s', changeBranchStatusUrl, action);
-    return backendFetch(changeBranchStatusUrl, {
+    console.debug('%s with action: %s', changeOperationalStatusUrl, action);
+    return backendFetch(changeOperationalStatusUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
-            equipmentId: branch.id,
+            type: MODIFICATION_TYPES.OPERATIONAL_STATUS_MODIFICATION.type,
+            equipmentId: operationalEquipment.id,
             energizedVoltageLevelId:
-                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-                    ? branch.voltageLevelId1
-                    : branch.voltageLevelId2,
+                action === OPERATIONAL_STATUS_ACTION.ENERGISE_END_ONE
+                    ? operationalEquipment.voltageLevelId1
+                    : operationalEquipment.voltageLevelId2,
             action: action,
         }),
     });
 }
 
-export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('locking out branch ' + branch.id + ' ...');
-    return changeBranchStatus(
-        studyUuid,
-        currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.LOCKOUT
-    );
-}
-
-export function tripBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('tripping branch ' + branch.id + ' ...');
-    return changeBranchStatus(
-        studyUuid,
-        currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.TRIP
-    );
-}
-
-export function energiseBranchEnd(
+export function lockoutOperationalEquipment(
     studyUuid,
     currentNodeUuid,
-    branch,
+    operationalEquipment
+) {
+    console.info(
+        'locking out operational Equipment ' + operationalEquipment.id + ' ...'
+    );
+    return changeOperationalStatus(
+        studyUuid,
+        currentNodeUuid,
+        operationalEquipment,
+        OPERATIONAL_STATUS_ACTION.LOCKOUT
+    );
+}
+
+export function tripOperationalEquipment(
+    studyUuid,
+    currentNodeUuid,
+    operationalEquipment
+) {
+    console.info(
+        'tripping operational Equipment ' + operationalEquipment.id + ' ...'
+    );
+    return changeOperationalStatus(
+        studyUuid,
+        currentNodeUuid,
+        operationalEquipment,
+        OPERATIONAL_STATUS_ACTION.TRIP
+    );
+}
+
+export function energiseOperationalEquipmentEnd(
+    studyUuid,
+    currentNodeUuid,
+    operationalEquipment,
     branchSide
 ) {
     console.info(
-        'energise branch ' + branch.id + ' on side ' + branchSide + ' ...'
+        'energise branch ' +
+            operationalEquipment.id +
+            ' on side ' +
+            branchSide +
+            ' ...'
     );
-    return changeBranchStatus(
+    return changeOperationalStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
+        operationalEquipment,
         branchSide === BRANCH_SIDE.ONE
-            ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-            : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
+            ? OPERATIONAL_STATUS_ACTION.ENERGISE_END_ONE
+            : OPERATIONAL_STATUS_ACTION.ENERGISE_END_TWO
     );
 }
 
-export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('switching on branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+export function switchOnOperationalEquipment(
+    studyUuid,
+    currentNodeUuid,
+    operationalEquipment
+) {
+    console.info(
+        'switching on operational Equipment ' + operationalEquipment.id + ' ...'
+    );
+    return changeOperationalStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.SWITCH_ON
+        operationalEquipment,
+        OPERATIONAL_STATUS_ACTION.SWITCH_ON
     );
 }
 

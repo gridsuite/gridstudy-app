@@ -9,7 +9,7 @@ import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import GeoData from './network/geo-data';
-import withBranchMenu from './menus/branch-menu';
+import withOperationalEquipmentMenu from './menus/operational-equipment-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
@@ -242,7 +242,8 @@ export const NetworkMapTab = ({
         );
     }
 
-    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
+    const MenuOperationalEquipment =
+        withOperationalEquipmentMenu(BaseEquipmentMenu);
 
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
@@ -872,7 +873,7 @@ export const NetworkMapTab = ({
         return (
             <>
                 {equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE &&
-                    withEquipment(MenuBranch, {
+                    withEquipment(MenuOperationalEquipment, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,

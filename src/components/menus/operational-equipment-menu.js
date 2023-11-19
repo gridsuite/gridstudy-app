@@ -31,10 +31,10 @@ import {
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import {
-    energiseBranchEnd,
-    lockoutBranch,
-    switchOnBranch,
-    tripBranch,
+    energiseOperationalEquipmentEnd,
+    lockoutOperationalEquipment,
+    switchOnOperationalEquipment,
+    tripOperationalEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from '../dialogs/parameters/parameters';
@@ -53,7 +53,7 @@ const styles = {
     },
 };
 
-const withBranchMenu =
+const withOperationalEquipmentMenu =
     (BaseMenu) =>
     ({
         equipment,
@@ -73,7 +73,7 @@ const withBranchMenu =
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
-        const [branch, setBranch] = useState(null);
+        const [operationalEquipment, setOperationalEquipment] = useState(null);
 
         const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -91,7 +91,7 @@ const withBranchMenu =
                 false
             ).then((value) => {
                 if (value) {
-                    setBranch(value);
+                    setOperationalEquipment(value);
                 }
             });
         }, [studyUuid, currentNode?.id, equipmentType, equipment.id]);
@@ -99,14 +99,19 @@ const withBranchMenu =
         const isNodeEditable = useMemo(
             function () {
                 return (
-                    branch &&
+                    operationalEquipment &&
                     isNodeBuilt(currentNode) &&
                     !isNodeReadOnly(currentNode) &&
                     !isAnyNodeBuilding &&
                     !modificationInProgress
                 );
             },
-            [branch, currentNode, isAnyNodeBuilding, modificationInProgress]
+            [
+                operationalEquipment,
+                currentNode,
+                isAnyNodeBuilding,
+                modificationInProgress,
+            ]
         );
 
         function handleError(error, translationKey) {
@@ -128,34 +133,47 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutBranch(studyUuid, currentNode?.id, branch).catch((error) => {
+            lockoutOperationalEquipment(
+                studyUuid,
+                currentNode?.id,
+                operationalEquipment
+            ).catch((error) => {
                 handleError(error, 'UnableToLockout');
             });
         }
 
         function handleTrip() {
             startModification();
-            tripBranch(studyUuid, currentNode?.id, branch).catch((error) => {
+            tripOperationalEquipment(
+                studyUuid,
+                currentNode?.id,
+                operationalEquipment
+            ).catch((error) => {
                 handleError(error, 'UnableToTrip');
             });
         }
 
         function handleEnergise(side) {
             startModification();
-            energiseBranchEnd(studyUuid, currentNode?.id, branch, side).catch(
-                (error) => {
-                    handleError(error, 'UnableToEnergiseOnOneEnd');
-                }
-            );
+            energiseOperationalEquipmentEnd(
+                studyUuid,
+                currentNode?.id,
+                operationalEquipment,
+                side
+            ).catch((error) => {
+                handleError(error, 'UnableToEnergiseOnOneEnd');
+            });
         }
 
         function handleSwitchOn() {
             startModification();
-            switchOnBranch(studyUuid, currentNode?.id, branch).catch(
-                (error) => {
-                    handleError(error, 'UnableToSwitchOn');
-                }
-            );
+            switchOnOperationalEquipment(
+                studyUuid,
+                currentNode?.id,
+                operationalEquipment
+            ).catch((error) => {
+                handleError(error, 'UnableToSwitchOn');
+            });
         }
 
         return (
@@ -166,7 +184,7 @@ const withBranchMenu =
                     top: position[1],
                     left: position[0],
                 }}
-                id="branch-menu"
+                id="operationalEquipment-menu"
                 open={true}
                 onClose={handleClose}
             >
@@ -185,7 +203,8 @@ const withBranchMenu =
                         onClick={() => handleLockout()}
                         disabled={
                             !isNodeEditable ||
-                            branch.branchStatus === 'PLANNED_OUTAGE'
+                            operationalEquipment.operationalStatus ===
+                                'PLANNED_OUTAGE'
                         }
                     >
                         <ListItemIcon>
@@ -208,7 +227,8 @@ const withBranchMenu =
                     onClick={() => handleTrip()}
                     disabled={
                         !isNodeEditable ||
-                        branch.branchStatus === 'FORCED_OUTAGE'
+                        operationalEquipment.operationalStatus ===
+                            'FORCED_OUTAGE'
                     }
                 >
                     <ListItemIcon>
@@ -234,7 +254,8 @@ const withBranchMenu =
                         }
                         disabled={
                             !isNodeEditable ||
-                            branch.branchStatus === 'FORCED_OUTAGE'
+                            operationalEquipment.operationalStatus ===
+                                'FORCED_OUTAGE'
                         }
                     />
                 )}
@@ -244,8 +265,8 @@ const withBranchMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal1Connected &&
-                                !branch.terminal2Connected)
+                            (operationalEquipment.terminal1Connected &&
+                                !operationalEquipment.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -263,8 +284,8 @@ const withBranchMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: branch?.voltageLevelName1,
-                                                id: branch?.voltageLevelId1,
+                                                name: operationalEquipment?.voltageLevelName1,
+                                                id: operationalEquipment?.voltageLevelId1,
                                             }),
                                         }
                                     )}
@@ -279,8 +300,8 @@ const withBranchMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal2Connected &&
-                                !branch.terminal1Connected)
+                            (operationalEquipment.terminal2Connected &&
+                                !operationalEquipment.terminal1Connected)
                         }
                     >
                         <ListItemIcon>
@@ -298,8 +319,8 @@ const withBranchMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: branch?.voltageLevelName2,
-                                                id: branch?.voltageLevelId2,
+                                                name: operationalEquipment?.voltageLevelName2,
+                                                id: operationalEquipment?.voltageLevelId2,
                                             }),
                                         }
                                     )}
@@ -314,8 +335,8 @@ const withBranchMenu =
                         onClick={() => handleSwitchOn()}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal1Connected &&
-                                branch.terminal2Connected)
+                            (operationalEquipment.terminal1Connected &&
+                                operationalEquipment.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -388,7 +409,7 @@ const withBranchMenu =
         );
     };
 
-withBranchMenu.propTypes = {
+withOperationalEquipmentMenu.propTypes = {
     id: PropTypes.string.isRequired,
     equipmentType: PropTypes.string.isRequired,
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
@@ -403,4 +424,4 @@ withBranchMenu.propTypes = {
     setModificationInProgress: PropTypes.func,
 };
 
-export default withBranchMenu;
+export default withOperationalEquipmentMenu;

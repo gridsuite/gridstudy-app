@@ -154,7 +154,7 @@ const BaseEquipmentMenu = ({
     const intl = useIntl();
     const { getNameOrId } = useNameOrId();
 
-    const equipmentsWithBranch = [
+    const equipmentsWithOperationalStatus = [
         EQUIPMENT_TYPES.LINE,
         EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
     ];
@@ -179,10 +179,12 @@ const BaseEquipmentMenu = ({
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {
-                            // Delete button is already in MenuBranch for equipmentsWithBranch
+                            // Delete button is already in MenuOperationalEquipment for equipmentsWithOperationalStatus
                             // equipmentsNotDeletable deletion is not implemented yet
                             !(
-                                equipmentsWithBranch.includes(equipmentType) ||
+                                equipmentsWithOperationalStatus.includes(
+                                    equipmentType
+                                ) ||
                                 equipmentsNotDeletable.includes(equipmentType)
                             ) && (
                                 <DeleteEquipmentItem
