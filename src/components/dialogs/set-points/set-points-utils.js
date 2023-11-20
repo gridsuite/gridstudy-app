@@ -149,12 +149,18 @@ const getReactivePowerSetPointSchema = (isEquipmentModification) => ({
 export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
-        .nonNullable()
+        .when([], {
+            is: () => isEquipmentModification,
+            then: (schema) => {
+                return schema.nullable();
+            },
+        })
         .when([], {
             is: () => !isEquipmentModification,
             then: (schema) => {
                 return schema
                     .required()
+                    .nonNullable()
                     .test(
                         'activePowerSetPoint',
                         'ActivePowerZeroOrBetweenMinAndMaxActivePower',
