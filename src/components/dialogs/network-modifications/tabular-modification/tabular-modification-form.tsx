@@ -21,7 +21,6 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button } from '@mui/material';
 import {
-    Modification,
     TABULAR_MODIFICATION_FIELDS,
     styles,
 } from './tabular-modification-utils';
@@ -54,6 +53,16 @@ const TabularModificationForm = () => {
         });
     }, [intl, watchType]);
 
+    const explanationComment = useMemo(
+        () =>
+            watchType === EQUIPMENT_TYPES.GENERATOR
+                ? intl.formatMessage({
+                      id: 'TabularModificationGeneratorSkeletonComment',
+                  })
+                : '',
+        [intl, watchType]
+    );
+
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
@@ -62,29 +71,6 @@ const TabularModificationForm = () => {
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
     });
-
-    const postProcessFile = useCallback(
-        (fileData: Array<Modification>) => {
-            // map the csv columns to the modification fields
-            fileData = fileData.map((row) => {
-                const modification: Modification = {};
-                Object.keys(row).forEach((key) => {
-                    const fieldKey = TABULAR_MODIFICATION_FIELDS[
-                        getValues(TYPE)
-                    ]?.find(
-                        (field) => intl.formatMessage({ id: field }) === key
-                    );
-                    if (fieldKey) {
-                        modification[fieldKey] = row[key];
-                    }
-                });
-                return modification;
-            });
-            clearErrors(MODIFICATIONS_TABLE);
-            setValue(MODIFICATIONS_TABLE, fileData, { shouldDirty: true });
-        },
-        [clearErrors, getValues, intl, setValue]
-    );
 
     const watchTable = useWatch({
         name: MODIFICATIONS_TABLE,
@@ -99,14 +85,28 @@ const TabularModificationForm = () => {
                 header: true,
                 skipEmptyLines: true,
                 dynamicTyping: true,
+                comments: '#',
                 complete: (results: Papa.ParseResult<object>) => {
-                    postProcessFile(results.data);
+                    clearErrors(MODIFICATIONS_TABLE);
+                    setValue(MODIFICATIONS_TABLE, results.data, {
+                        shouldDirty: true,
+                    });
+                },
+                transformHeader: (header: string) => {
+                    // transform header to modification field
+                    const transformedHeader = TABULAR_MODIFICATION_FIELDS[
+                        getValues(TYPE)
+                    ]?.find(
+                        (field) => intl.formatMessage({ id: field }) === header
+                    );
+                    return transformedHeader ?? header;
                 },
             });
         }
     }, [
         clearErrors,
-        postProcessFile,
+        getValues,
+        intl,
         selectedFile,
         selectedFileError,
         setValue,
@@ -170,46 +170,44 @@ const TabularModificationForm = () => {
     }, [intl, watchType]);
 
     return (
-        <>
-            <Grid container spacing={2} direction={'row'}>
-                <Grid container item spacing={2} alignItems={'center'}>
-                    {gridItem(equipmentTypeField, 4)}
-                    <Grid item>{FileField}</Grid>
+        <Grid container spacing={2} direction={'row'}>
+            <Grid container item spacing={2} alignItems={'center'}>
+                {gridItem(equipmentTypeField, 4)}
+                <Grid item>{FileField}</Grid>
+            </Grid>
+            <Grid container item spacing={2} alignItems={'center'}>
+                <Grid item>
+                    <CsvDownloader
+                        columns={csvColumns}
+                        datas={[[explanationComment]]}
+                        filename={watchType + '_skeleton'}
+                    >
+                        <Button variant="contained" disabled={!csvColumns}>
+                            <FormattedMessage id="GenerateSkeleton" />
+                        </Button>
+                    </CsvDownloader>
                 </Grid>
-                <Grid container item spacing={2} alignItems={'center'}>
-                    <Grid item>
-                        <CsvDownloader
-                            columns={csvColumns}
-                            datas={[]}
-                            filename={watchType + '_skeleton'}
-                        >
-                            <Button variant="contained" disabled={!csvColumns}>
-                                <FormattedMessage id="GenerateSkeleton" />
-                            </Button>
-                        </CsvDownloader>
-                    </Grid>
-                    <Grid item>
-                        <ErrorInput
-                            name={MODIFICATIONS_TABLE}
-                            InputField={FieldErrorAlert}
-                        />
-                        {selectedFileError && (
-                            <Alert severity="error">{selectedFileError}</Alert>
-                        )}
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} sx={styles.grid}>
-                    <CustomAGGrid
-                        rowData={watchTable}
-                        defaultColDef={defaultColDef}
-                        columnDefs={columnDefs}
-                        pagination
-                        paginationPageSize={100}
-                        suppressDragLeaveHidesColumns
+                <Grid item>
+                    <ErrorInput
+                        name={MODIFICATIONS_TABLE}
+                        InputField={FieldErrorAlert}
                     />
+                    {selectedFileError && (
+                        <Alert severity="error">{selectedFileError}</Alert>
+                    )}
                 </Grid>
             </Grid>
-        </>
+            <Grid item xs={12} sx={styles.grid}>
+                <CustomAGGrid
+                    rowData={watchTable}
+                    defaultColDef={defaultColDef}
+                    columnDefs={columnDefs}
+                    pagination
+                    paginationPageSize={100}
+                    suppressDragLeaveHidesColumns
+                />
+            </Grid>
+        </Grid>
     );
 };
 
