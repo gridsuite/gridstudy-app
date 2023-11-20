@@ -20,27 +20,22 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, TextField,
-    useTheme
-} from "@mui/material";
+    TableRow,
+    TextField,
+    useTheme,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { AgGridReact } from 'ag-grid-react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { Box } from '@mui/system';
 import Tooltip from '@mui/material/Tooltip';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { getLocalStorageTheme } from '../../../redux/local-storage';
 import { DARK_THEME, elementType } from '@gridsuite/commons-ui';
-import TableRowComponent from '../parameters/sensi/table-row';
 import { INJECTIONS, MONITORED_BRANCHES } from '../../utils/field-constants';
-import {
-    INJECTIONS_EQUIPMENT_TYPES,
-    MONITORED_BRANCHES_EQUIPMENT_TYPES,
-} from '../parameters/sensi/columns-definitions';
-import { TableTextInput } from "../../utils/rhf-inputs/table-inputs/table-text-input";
-import { filledTextField, standardTextField } from "../dialogUtils";
+import { standardTextField } from '../dialogUtils';
+import PropertiesEditor from './properties-editor';
 
 type SitePropertiesDialogProps = {
     spreadsheetContext: any;
@@ -56,7 +51,6 @@ type IData = {
     id: number;
     key: string;
     value: any;
-
 };
 
 /**
@@ -144,20 +138,14 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     }, [gridApi, rowData, onDataChanged]);
 
     const isDarkTheme = getLocalStorageTheme() === DARK_THEME;
-    const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
+    const COLUMNS_DEFINITIONS_SET = [
         {
             label: 'Key',
-            dataKey: MONITORED_BRANCHES,
-            initialValue: [],
             editable: true,
-            directoryItems: true,
         },
         {
             label: 'Value',
-            dataKey: INJECTIONS,
-            initialValue: [],
             editable: true,
-            directoryItems: true,
         },
     ];
     //create rows data
@@ -175,29 +163,26 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             <Grid item xs={12}>
                 <TableContainer
                     sx={{
-                        height: 100,
+                        height: 300,
                         border: 'solid 0px rgba(0,0,0,0.1)',
                     }}
                 >
                     <Table stickyHeader size="small">
                         <TableHead>
                             <TableRow>
-                                {COLUMNS_DEFINITIONS_INJECTIONS_SET.map(
-                                    (column: any) => (
-                                        <TableCell>
-                                            <Box
-                                                sx={{
-                                                    backgroundColor:
-                                                        column.color,
-                                                }}
-                                            >
-                                                <FormattedMessage
-                                                    id={column.label}
-                                                />
-                                            </Box>
-                                        </TableCell>
-                                    )
-                                )}
+                                {COLUMNS_DEFINITIONS_SET.map((column: any) => (
+                                    <TableCell>
+                                        <Box
+                                            sx={{
+                                                backgroundColor: column.color,
+                                            }}
+                                        >
+                                            <FormattedMessage
+                                                id={column.label}
+                                            />
+                                        </Box>
+                                    </TableCell>
+                                ))}
                                 <TableCell>
                                     <Tooltip
                                         title={intl.formatMessage({
@@ -226,84 +211,107 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                 </TableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody></TableBody>
-                        <TableRow>
-                            <TableCell>
-                                <TextField
-                                    size="small"
-                                    fullWidth
-                                    label={'ID'}
-                                    value={'equipementId'}
-                                    InputProps={{
-                                        readOnly: false,
-                                        ...standardTextField,
-                                    }}
-                                    disabled={false}
-                                />
-                            </TableCell>
-                        </TableRow>
-                        {/*<TableBody>*/}
-                        {/*    <TableRow  key={'id'}>*/}
-                        {/*        <TableCell>*/}
-                        {/*             /!*a cell that allow to edit a string property*!/*/}
-                        {/*            <Box*/}
-                        {/*                sx={{*/}
-                        {/*                    backgroundColor: 'red',*/}
-                        {/*                }}*/}
-                        {/*            >*/}
-                        {/*                <FormattedMessage*/}
-                        {/*                    id={'Key'}*/}
-                        {/*                />*/}
-                        {/*            </Box>*/}
-                        {/*        </TableCell>*/}
-                        {/*    </TableRow>*/}
-                        {/*        /!*{rowData.map((row: any, index: number) => (*!/*/}
-                        {/*        /!*    <TableRowComponent*!/*/}
-                        {/*        /!*        arrayFormName={arrayFormName}*!/*/}
-                        {/*        /!*        columnsDefinition={columnsDefinition}*!/*/}
-                        {/*        /!*        row={row}*!/*/}
-                        {/*        /!*        index={index}*!/*/}
-                        {/*        /!*        handleDeleteButton={()=>{*!/*/}
-                        {/*        /!*            console.log('delete row');*!/*/}
-                        {/*        /!*            }*!/*/}
-                        {/*        /!*        }*!/*/}
-                        {/*        /!*        theme={isDarkTheme}*!/*/}
-                        {/*        /!*    />*!/*/}
-                        {/*        /!*))}*!/*/}
-                        {/*</TableBody>*/}
+                        <TableBody>
+                            {rowData?.map((row, index) => {
+                                return (
+                                    <TableRow key={row.id}>
+                                        <TableCell>
+                                            <TextField
+                                                size="small"
+                                                fullWidth
+                                                // label={'ID'}
+                                                value={row.key}
+                                                InputProps={{
+                                                    readOnly: false,
+                                                    ...standardTextField,
+                                                }}
+                                                disabled={false}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <TextField
+                                                size="small"
+                                                fullWidth
+                                                // label={'ID'}
+                                                value={row.value}
+                                                InputProps={{
+                                                    readOnly: false,
+                                                    ...standardTextField,
+                                                }}
+                                                disabled={false}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box>
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={() => {
+                                                        console.log('add row');
+                                                    }}
+                                                >
+                                                    <DeleteIcon
+                                                        sx={{
+                                                            color:
+                                                                getLocalStorageTheme() ===
+                                                                DARK_THEME
+                                                                    ? 'white'
+                                                                    : 'black',
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Box>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
                     </Table>
-                    <CustomAGGrid
-                        ref={gridRef}
-                        rowData={rowData}
-                        onGridReady={onGridReady}
-                        domLayout={'autoHeight'}
-                        rowDragEntireRow
-                        // columnDefs={[
-                        //     {
-                        //         headerName: '',
-                        //         field: 'checkbox',
-                        //         checkboxSelection: true,
-                        //         width: 50,
-                        //         headerCheckboxSelection: true,
-                        //         headerCheckboxSelectionFilteredOnly: true,
-                        //     },
-                        //     ...columnDefs,
-                        // ]}
-                        stopEditingWhenCellsLoseFocus
-                        alwaysShowVerticalScroll
-                        suppressRowClickSelection
-                        rowSelection={'multiple'}
-                        onCellEditingStopped={(event) => {
-                            if (event.rowIndex !== null) {
-                                const updatedRowData = [...rowData];
-                                updatedRowData[event.rowIndex] = event.data;
-                                setRowData(updatedRowData);
-                                onDataChanged(updatedRowData);
-                            }
-                        }}
-                    ></CustomAGGrid>
+                    {/*<CustomAGGrid*/}
+                    {/*    ref={gridRef}*/}
+                    {/*    rowData={rowData}*/}
+                    {/*    onGridReady={onGridReady}*/}
+                    {/*    domLayout={'autoHeight'}*/}
+                    {/*    rowDragEntireRow*/}
+                    {/*    // columnDefs={[*/}
+                    {/*    //     {*/}
+                    {/*    //         headerName: '',*/}
+                    {/*    //         field: 'checkbox',*/}
+                    {/*    //         checkboxSelection: true,*/}
+                    {/*    //         width: 50,*/}
+                    {/*    //         headerCheckboxSelection: true,*/}
+                    {/*    //         headerCheckboxSelectionFilteredOnly: true,*/}
+                    {/*    //     },*/}
+                    {/*    //     ...columnDefs,*/}
+                    {/*    // ]}*/}
+                    {/*    stopEditingWhenCellsLoseFocus*/}
+                    {/*    alwaysShowVerticalScroll*/}
+                    {/*    suppressRowClickSelection*/}
+                    {/*    rowSelection={'multiple'}*/}
+                    {/*    onCellEditingStopped={(event) => {*/}
+                    {/*        if (event.rowIndex !== null) {*/}
+                    {/*            const updatedRowData = [...rowData];*/}
+                    {/*            updatedRowData[event.rowIndex] = event.data;*/}
+                    {/*            setRowData(updatedRowData);*/}
+                    {/*            onDataChanged(updatedRowData);*/}
+                    {/*        }*/}
+                    {/*    }}*/}
+                    {/*></CustomAGGrid>*/}
                 </TableContainer>
                 <Grid item xs={12} className={theme.aggrid}></Grid>
+            </Grid>
+            <Grid item xs={12}>
+                <PropertiesEditor
+                    data={[
+                        {
+                            name: 'key1',
+                            value: 'value1',
+                        },
+                        {
+                            name: 'key2',
+                            value: 'value2',
+                        },
+                    ]}
+                />
             </Grid>
         </Grid>
     );
