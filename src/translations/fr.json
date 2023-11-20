@@ -333,8 +333,8 @@
     "Disconnect/GENERATOR": "Déclencher group {computedLabel}",
     "NodeFault/BUS": "Court-circuit sur le bus {computedLabel}",
 
-    "Branch.Side.ONE": "Côté origine",
-    "Branch.Side.TWO": "Côté extrémité",
+    "Branch.Side.ONE": "Côté 1",
+    "Branch.Side.TWO": "Côté 2",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
@@ -1242,8 +1242,8 @@
 
     "converterStationId": "ID de la station",
     "converterStationName": "Nom de la station",
-    "converterStation1" : "Station origine",
-    "converterStation2" : "Station extrémité",
+    "converterStation1" : "Station 1",
+    "converterStation2" : "Station 2",
     "dcNominalVoltageLabel": "Tension nominale DC",
     "dcResistanceLabel": "Résistance DC",
     "operatorActivePowerLimitSide2Label": "Limite de fonctionnement (Ex->Or)",
