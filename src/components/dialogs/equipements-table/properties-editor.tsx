@@ -98,17 +98,6 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
         setData([...data, { id: newId, key: '', value: '' }]);
     };
 
-    const COLUMNS_DEFINITIONS_SET = [
-        {
-            label: 'Key',
-            editable: true,
-        },
-        {
-            label: 'Value',
-            editable: true,
-        },
-    ];
-
     return (
         <TableContainer
             sx={{
@@ -117,43 +106,11 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
             }}
         >
             <Table stickyHeader size="small">
-                <TableHead>
-                    <TableRow>
-                        {COLUMNS_DEFINITIONS_SET.map((column: any) => (
-                            <TableCell>
-                                <Box
-                                    sx={{
-                                        backgroundColor: column.color,
-                                    }}
-                                >
-                                    <FormattedMessage id={column.label} />
-                                </Box>
-                            </TableCell>
-                        ))}
-                        <TableCell>
-                            <Tooltip
-                                title={intl.formatMessage({
-                                    id: 'AddRows',
-                                })}
-                            >
-                                <Box>
-                                    <IconButton
-                                        color="primary"
-                                        onClick={handleAddRow}
-                                    >
-                                        <AddCircleIcon
-                                            sx={{
-                                                color: theme
-                                                    ? 'white'
-                                                    : 'black',
-                                            }}
-                                        />
-                                    </IconButton>
-                                </Box>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
+                <PropertiesEditorHeader
+                    theme={theme}
+                    handleAddRow={handleAddRow}
+                />
+
                 <TableBody>
                     {data.map((item, index) => (
                         <TableRow key={item.id}>
@@ -184,7 +141,6 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                                 >
                                     <span>
                                         <IconButton
-                                            color="primary"
                                             onClick={() =>
                                                 handleRemoveRow(index)
                                             }
@@ -211,3 +167,57 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
 };
 
 export default PropertiesEditor;
+
+const PropertiesEditorHeader = ({
+    theme,
+    handleAddRow,
+}: {
+    theme: boolean;
+    handleAddRow: () => void;
+}) => {
+    const intl = useIntl();
+    const COLUMNS_DEFINITIONS_SET = [
+        {
+            label: 'Key',
+            editable: true,
+        },
+        {
+            label: 'Value',
+            editable: true,
+        },
+    ];
+    return (
+        <TableHead>
+            <TableRow>
+                {COLUMNS_DEFINITIONS_SET.map((column: any) => (
+                    <TableCell>
+                        <Box
+                            sx={{
+                                backgroundColor: column.color,
+                            }}
+                        >
+                            <FormattedMessage id={column.label} />
+                        </Box>
+                    </TableCell>
+                ))}
+                <TableCell>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'AddRows',
+                        })}
+                    >
+                        <Box>
+                            <IconButton color="primary" onClick={handleAddRow}>
+                                <AddCircleIcon
+                                    sx={{
+                                        color: theme ? 'white' : 'black',
+                                    }}
+                                />
+                            </IconButton>
+                        </Box>
+                    </Tooltip>
+                </TableCell>
+            </TableRow>
+        </TableHead>
+    );
+};

@@ -45,9 +45,6 @@ export const EquipmentTable = ({
     const [openPopupEditSiteProperties, setOpenPopupEditSiteProperties] =
         useState(false);
 
-    const [editedSubstationPropertiesData, setEditedSubstationPropertiesData] =
-        useState({});
-
     const getRowStyle = useCallback(
         (params) => {
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
@@ -123,53 +120,6 @@ export const EquipmentTable = ({
         };
     }, [intl]);
 
-    const handleCancelPopupSelectEditSiteProperties = () => {
-        setOpenPopupEditSiteProperties(false);
-    };
-
-    const handleSavePopupSelectEditSiteProperties = () => {
-        setOpenPopupEditSiteProperties(false);
-        gridRef.current.api.stopEditing();
-
-        const properties = Object.keys(editedSubstationPropertiesData).map(
-            (key) => {
-                return {
-                    name: editedSubstationPropertiesData[key].key,
-                    value: editedSubstationPropertiesData[key].value,
-                };
-            }
-        );
-
-        const initialProperties = gridContext.dynamicValidation.properties;
-        //extract keys and values from initial properties to an array of objects with key and value
-        const initialPropertiesMapped = initialProperties
-            ? Object.keys(initialProperties).map((key) => {
-                  return {
-                      name: key,
-                      value: initialProperties[key],
-                  };
-              })
-            : [];
-
-        const propertiesSiteFormated = formatPropertiesForBackend(
-            initialPropertiesMapped,
-            properties
-        );
-
-        modifySubstation(
-            studyUuid,
-            currentNode.id,
-            gridContext.dynamicValidation.id,
-            equipmentId,
-            null,
-            false,
-            null,
-            propertiesSiteFormated
-        ).catch((err) => {
-            console.debug(err);
-        });
-    };
-
     const openPropertiesEditionPopup = () => {
         setOpenPopupEditSiteProperties(true);
     };
@@ -208,24 +158,12 @@ export const EquipmentTable = ({
                 loadingOverlayComponentParams={loadingOverlayComponentParams}
                 showOverlay={true}
             />
-            <SelectOptionsDialog
+
+            <SitePropertiesDialog
                 open={openPopupEditSiteProperties}
-                onClose={handleCancelPopupSelectEditSiteProperties}
-                onClick={handleSavePopupSelectEditSiteProperties}
-                title={intl.formatMessage({
-                    id: 'editSiteProperties',
-                })}
-                child={
-                    <SitePropertiesDialog
-                        spreadsheetContext={gridContext}
-                        onDataChanged={(data) => {
-                            setEditedSubstationPropertiesData(data);
-                        }}
-                        arrayFormName={'properties modifications'}
-                        tableHeight={500}
-                    ></SitePropertiesDialog>
-                }
-            ></SelectOptionsDialog>
+                spreadsheetContext={gridContext}
+                closeDialog={(state) => setOpenPopupEditSiteProperties(state)}
+            ></SitePropertiesDialog>
         </>
     );
 };
