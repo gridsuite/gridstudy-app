@@ -88,6 +88,7 @@ export const flattenNmKResultsContingencies = (
                     loading: limitViolation.loading,
                     side: limitViolation.side,
                     linkedElementId: contingencyId,
+                    acceptableDuration: limitViolation.acceptableDuration
                 });
             });
         }
