@@ -53,6 +53,12 @@ type IData = {
     value: any;
 };
 
+interface IPropertiesData {
+    id?: number;
+    name: string;
+    value: string;
+}
+
 /**
  * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
  */
@@ -68,6 +74,8 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     const theme = useTheme();
     const gridRef = useRef<AgGridReact>(null);
     const [gridApi, setGridApi] = useState<any>(null);
+    const [error, setError] = useState<string>('');
+    const [invalidCells, setInvalidCells] = useState<number[]>([]);
     const intl = useIntl();
     const columnDefs = useMemo(() => {
         return [
@@ -114,28 +122,35 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
         }
     }, [gridApi, rowData]);
 
-    const handleAddRow = useCallback(() => {
-        const newRow = { id: rowData.length, key: '', value: '' };
-        const updatedRowData = [...rowData, newRow];
-        setRowData(updatedRowData);
-    }, [rowData]);
+    // const handleDeleteRow = useCallback(() => {
+    //     const selectedNodes = gridApi.api.getSelectedNodes();
+    //     let updatedRowData = [...rowData];
+    //     selectedNodes.forEach((node: any) => {
+    //         const index = updatedRowData.indexOf(node.data);
+    //         if (index !== -1) {
+    //             updatedRowData.splice(index, 1);
+    //         }
+    //     });
+    //     // Update the IDs of the rows to match their index in the array
+    //     updatedRowData.forEach((row, index) => {
+    //         row.id = index;
+    //     });
+    //     setRowData(updatedRowData);
+    //     onDataChanged(updatedRowData);
+    // }, [gridApi, rowData, onDataChanged]);
 
-    const handleDeleteRow = useCallback(() => {
-        const selectedNodes = gridApi.api.getSelectedNodes();
-        let updatedRowData = [...rowData];
-        selectedNodes.forEach((node: any) => {
-            const index = updatedRowData.indexOf(node.data);
-            if (index !== -1) {
-                updatedRowData.splice(index, 1);
-            }
-        });
-        // Update the IDs of the rows to match their index in the array
-        updatedRowData.forEach((row, index) => {
-            row.id = index;
-        });
-        setRowData(updatedRowData);
-        onDataChanged(updatedRowData);
-    }, [gridApi, rowData, onDataChanged]);
+    const handleRemoveRow = useCallback(
+        (index: number) => {
+            const newData = [...rowData];
+            newData.splice(index, 1);
+            // Update the id of the remaining rows
+            newData.forEach((item, i) => {
+                item.id = i;
+            });
+            setRowData(newData);
+        },
+        [rowData]
+    );
 
     const isDarkTheme = getLocalStorageTheme() === DARK_THEME;
     const COLUMNS_DEFINITIONS_SET = [
@@ -148,18 +163,54 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             editable: true,
         },
     ];
-    //create rows data
+
+    const handleAddRow = () => {
+        const newId = rowData.length;
+        setRowData([...rowData, { id: newId, key: '', value: '' }]);
+    };
+
+    const performValidation = () => {
+        const names = new Set<string>();
+        let hasError = false;
+        const invalidCells: number[] = [];
+
+        rowData.forEach((item, index) => {
+            if (item.key.trim() === '' || item.value.trim() === '') {
+                setError('Please fill in all fields');
+                hasError = true;
+                invalidCells.push(index);
+            } else if (names.has(item.key)) {
+                setError('Duplicate names are not allowed');
+                hasError = true;
+                invalidCells.push(index);
+            } else {
+                names.add(item.key);
+            }
+        });
+
+        if (!hasError) {
+            setError('');
+            // Perform any additional actions with the validated data
+            console.log('gridref', rowData);
+        }
+
+        setInvalidCells(invalidCells);
+    };
+
+    const handleNameChange = (index: number, value: string) => {
+        const newData = [...rowData];
+        newData[index].key = value;
+        setRowData(newData);
+    };
+
+    const handleValueChange = (index: number, value: string) => {
+        const newData = [...rowData];
+        newData[index].value = value;
+        setRowData(newData);
+    };
 
     return (
         <Grid container spacing={2} style={{ width: '500px' }}>
-            <Grid item xs={12}>
-                <IconButton aria-label="delete" onClick={handleDeleteRow}>
-                    <DeleteIcon />
-                </IconButton>
-                <IconButton aria-label="add" onClick={handleAddRow}>
-                    <AddIcon />
-                </IconButton>
-            </Grid>
             <Grid item xs={12}>
                 <TableContainer
                     sx={{
@@ -192,9 +243,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                         <Box>
                                             <IconButton
                                                 color="primary"
-                                                onClick={() => {
-                                                    console.log('add row');
-                                                }}
+                                                onClick={handleAddRow}
                                             >
                                                 <AddCircleIcon
                                                     sx={{
@@ -219,43 +268,46 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                             <TextField
                                                 size="small"
                                                 fullWidth
-                                                // label={'ID'}
                                                 value={row.key}
-                                                InputProps={{
-                                                    readOnly: false,
-                                                    ...standardTextField,
-                                                }}
-                                                disabled={false}
+                                                onChange={(e) =>
+                                                    handleNameChange(
+                                                        index,
+                                                        e.target.value
+                                                    )
+                                                }
+                                                error={invalidCells.includes(
+                                                    index
+                                                )}
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <TextField
                                                 size="small"
                                                 fullWidth
-                                                // label={'ID'}
                                                 value={row.value}
-                                                InputProps={{
-                                                    readOnly: false,
-                                                    ...standardTextField,
-                                                }}
-                                                disabled={false}
+                                                onChange={(e) =>
+                                                    handleValueChange(
+                                                        index,
+                                                        e.target.value
+                                                    )
+                                                }
+                                                error={invalidCells.includes(
+                                                    index
+                                                )}
                                             />
                                         </TableCell>
                                         <TableCell>
                                             <Box>
                                                 <IconButton
-                                                    color="primary"
                                                     onClick={() => {
-                                                        console.log('add row');
+                                                        handleRemoveRow(index);
                                                     }}
                                                 >
                                                     <DeleteIcon
                                                         sx={{
-                                                            color:
-                                                                getLocalStorageTheme() ===
-                                                                DARK_THEME
-                                                                    ? 'white'
-                                                                    : 'black',
+                                                            color: theme
+                                                                ? 'white'
+                                                                : 'black',
                                                         }}
                                                     />
                                                 </IconButton>
@@ -266,52 +318,9 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                             })}
                         </TableBody>
                     </Table>
-                    {/*<CustomAGGrid*/}
-                    {/*    ref={gridRef}*/}
-                    {/*    rowData={rowData}*/}
-                    {/*    onGridReady={onGridReady}*/}
-                    {/*    domLayout={'autoHeight'}*/}
-                    {/*    rowDragEntireRow*/}
-                    {/*    // columnDefs={[*/}
-                    {/*    //     {*/}
-                    {/*    //         headerName: '',*/}
-                    {/*    //         field: 'checkbox',*/}
-                    {/*    //         checkboxSelection: true,*/}
-                    {/*    //         width: 50,*/}
-                    {/*    //         headerCheckboxSelection: true,*/}
-                    {/*    //         headerCheckboxSelectionFilteredOnly: true,*/}
-                    {/*    //     },*/}
-                    {/*    //     ...columnDefs,*/}
-                    {/*    // ]}*/}
-                    {/*    stopEditingWhenCellsLoseFocus*/}
-                    {/*    alwaysShowVerticalScroll*/}
-                    {/*    suppressRowClickSelection*/}
-                    {/*    rowSelection={'multiple'}*/}
-                    {/*    onCellEditingStopped={(event) => {*/}
-                    {/*        if (event.rowIndex !== null) {*/}
-                    {/*            const updatedRowData = [...rowData];*/}
-                    {/*            updatedRowData[event.rowIndex] = event.data;*/}
-                    {/*            setRowData(updatedRowData);*/}
-                    {/*            onDataChanged(updatedRowData);*/}
-                    {/*        }*/}
-                    {/*    }}*/}
-                    {/*></CustomAGGrid>*/}
+                    {error && <p>{error}</p>}
                 </TableContainer>
                 <Grid item xs={12} className={theme.aggrid}></Grid>
-            </Grid>
-            <Grid item xs={12}>
-                <PropertiesEditor
-                    data={[
-                        {
-                            name: 'key1',
-                            value: 'value1',
-                        },
-                        {
-                            name: 'key2',
-                            value: 'value2',
-                        },
-                    ]}
-                />
             </Grid>
         </Grid>
     );

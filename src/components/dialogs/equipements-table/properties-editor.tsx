@@ -14,26 +14,24 @@ import {
 } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { COLUMNS_DEFINITIONS_INJECTIONS_SET } from '../parameters/sensi/columns-definitions';
 import { DARK_THEME } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from 'redux/local-storage';
-import {
-    INJECTIONS,
-    MONITORED_BRANCHES,
-} from 'components/utils/field-constants';
+import { DeleteForeverOutlined } from '@mui/icons-material';
 
 interface IPropertiesData {
     id?: number;
-    name: string;
+    key: string;
     value: string;
 }
 
 interface PropertiesEditorProps {
     data: IPropertiesData[];
+    validateData: () => void;
 }
 
 const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
     data: initialData,
+    validateData,
 }) => {
     const [data, setData] = useState<IPropertiesData[]>(
         initialData.map((item, index) => ({ ...item, id: index }))
@@ -43,9 +41,10 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
 
     const [invalidCells, setInvalidCells] = useState<number[]>([]);
     const intl = useIntl();
+    const theme = getLocalStorageTheme() === DARK_THEME;
     const handleNameChange = (index: number, value: string) => {
         const newData = [...data];
-        newData[index].name = value;
+        newData[index].key = value;
         setData(newData);
     };
 
@@ -65,28 +64,29 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
         setData(newData);
     };
 
-    const validateData = () => {
+    const performValidation = () => {
         const names = new Set<string>();
         let hasError = false;
         const invalidCells: number[] = [];
 
         data.forEach((item, index) => {
-            if (item.name.trim() === '' || item.value.trim() === '') {
+            if (item.key.trim() === '' || item.value.trim() === '') {
                 setError('Please fill in all fields');
                 hasError = true;
                 invalidCells.push(index);
-            } else if (names.has(item.name)) {
+            } else if (names.has(item.key)) {
                 setError('Duplicate names are not allowed');
                 hasError = true;
                 invalidCells.push(index);
             } else {
-                names.add(item.name);
+                names.add(item.key);
             }
         });
 
         if (!hasError) {
             setError('');
             // Perform any additional actions with the validated data
+            validateData();
             console.log('gridref', data);
         }
 
@@ -95,10 +95,9 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
 
     const handleAddRow = () => {
         const newId = data.length;
-        setData([...data, { id: newId, name: '', value: '' }]);
+        setData([...data, { id: newId, key: '', value: '' }]);
     };
 
-    const isDarkTheme = getLocalStorageTheme() === DARK_THEME;
     const COLUMNS_DEFINITIONS_SET = [
         {
             label: 'Key',
@@ -140,17 +139,13 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                                 <Box>
                                     <IconButton
                                         color="primary"
-                                        onClick={() => {
-                                            console.log('add row');
-                                        }}
+                                        onClick={handleAddRow}
                                     >
                                         <AddCircleIcon
                                             sx={{
-                                                color:
-                                                    getLocalStorageTheme() ===
-                                                    DARK_THEME
-                                                        ? 'white'
-                                                        : 'black',
+                                                color: theme
+                                                    ? 'white'
+                                                    : 'black',
                                             }}
                                         />
                                     </IconButton>
@@ -164,7 +159,7 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                         <TableRow key={item.id}>
                             <TableCell>
                                 <TextField
-                                    value={item.name}
+                                    value={item.key}
                                     onChange={(e) =>
                                         handleNameChange(index, e.target.value)
                                     }
@@ -181,16 +176,35 @@ const PropertiesEditor: React.FC<PropertiesEditorProps> = ({
                                 />
                             </TableCell>
                             <TableCell>
-                                <Button onClick={() => handleRemoveRow(index)}>
-                                    Remove
-                                </Button>
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DeleteRows',
+                                    })}
+                                    placement="top"
+                                >
+                                    <span>
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() =>
+                                                handleRemoveRow(index)
+                                            }
+                                        >
+                                            <DeleteForeverOutlined
+                                                sx={{
+                                                    color: theme
+                                                        ? 'white'
+                                                        : 'black',
+                                                }}
+                                            />
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-            <Button onClick={handleAddRow}>Add Row</Button>
-            <Button onClick={validateData}>Validate</Button>
+            <Button onClick={performValidation}>Validate</Button>
             {error && <p>{error}</p>}
         </TableContainer>
     );
