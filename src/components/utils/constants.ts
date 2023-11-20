@@ -8,3 +8,17 @@ export enum BranchSide {
     ONE = 'ONE',
     TWO = 'TWO',
 }
+
+export enum STATUS {
+    SUCCESS = 'SUCCESS',
+    ERROR = 'ERROR',
+}
+export enum INITIAL_VOLTAGE {
+    NOMINAL = 'NOMINAL',
+    CEI909 = 'CEI909',
+    CONFIGURED = 'CONFIGURED',
+}
+export enum PREDEFINED_PARAMETERS {
+    ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP = 'ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP',
+    ICC_MAX_WITH_CEI909 = 'ICC_MAX_WITH_CEI909',
+}
