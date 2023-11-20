@@ -59,15 +59,17 @@ export const CharacteristicsForm = ({
         ],
     });
 
-    const previousMaxQAtNominalV = useMemo(
-        () => previousValues?.qatNominalV * previousValues?.maximumSectionCount,
-        [previousValues]
-    );
+    const previousMaxQAtNominalV = useMemo(() => {
+        const previousValue =
+            previousValues?.qatNominalV * previousValues?.maximumSectionCount;
+        return isNaN(previousValue) ? null : previousValue;
+    }, [previousValues]);
 
-    const previousMaxSusceptance = useMemo(
-        () => previousValues?.bperSection * previousValues?.maximumSectionCount,
-        [previousValues]
-    );
+    const previousMaxSusceptance = useMemo(() => {
+        const previousValue =
+            previousValues?.bperSection * previousValues?.maximumSectionCount;
+        return isNaN(previousValue) ? null : previousValue;
+    }, [previousValues]);
     const currentSectionCount = useMemo(
         () => sectionCount ?? previousValues?.sectionCount,
         [sectionCount, previousValues]
@@ -185,11 +187,7 @@ export const CharacteristicsForm = ({
     );
 
     const handleSwitchedOnValue = useCallback(
-        (
-            linkedSwitchedOnValue,
-            currentLinkedSwitchedOnValue,
-            SWITCHED_ON_FIELD
-        ) => {
+        (currentLinkedSwitchedOnValue, SWITCHED_ON_FIELD) => {
             if (
                 ![
                     currentSectionCount,
@@ -200,9 +198,9 @@ export const CharacteristicsForm = ({
                 if (
                     currentMaximumSectionCount >= currentSectionCount &&
                     [
-                        sectionCount,
-                        maximumSectionCount,
-                        linkedSwitchedOnValue,
+                        currentSectionCount,
+                        currentMaximumSectionCount,
+                        currentLinkedSwitchedOnValue,
                     ].every((value) => !isBlankOrEmpty(value))
                 ) {
                     setValue(
@@ -218,13 +216,7 @@ export const CharacteristicsForm = ({
                 setValue(SWITCHED_ON_FIELD, null);
             }
         },
-        [
-            currentSectionCount,
-            currentMaximumSectionCount,
-            sectionCount,
-            maximumSectionCount,
-            setValue,
-        ]
+        [currentSectionCount, currentMaximumSectionCount, setValue]
     );
 
     useEffect(() => {
@@ -232,7 +224,6 @@ export const CharacteristicsForm = ({
             characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
         ) {
             handleSwitchedOnValue(
-                maxQAtNominalV,
                 currentMaxQAtNominalV,
                 SWITCHED_ON_Q_AT_NOMINAL_V
             );
@@ -240,7 +231,6 @@ export const CharacteristicsForm = ({
             characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
         ) {
             handleSwitchedOnValue(
-                maxSusceptance,
                 currentMaxSusceptance,
                 SWITCHED_ON_SUSCEPTANCE
             );
@@ -251,8 +241,6 @@ export const CharacteristicsForm = ({
         previousValues,
         currentMaxQAtNominalV,
         currentMaxSusceptance,
-        maxQAtNominalV,
-        maxSusceptance,
     ]);
 
     return (
