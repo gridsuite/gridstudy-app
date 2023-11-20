@@ -1,7 +1,7 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { RadioGroupProps, SxProps, TextFieldProps } from "@mui/material";
+    import { RadioGroupProps, SxProps, TextFieldProps } from '@mui/material';
     import { CaseImportParameters } from 'services/network-conversion';
 
     interface SnackInputs {
@@ -30,7 +30,7 @@ declare module '@gridsuite/commons-ui' {
     interface AutocompleteInputProps
         extends Omit<
             AutocompleteProps<
-                string | {id: string; label: string;},
+                string | { id: string; label: string },
                 boolean | undefined,
                 boolean | undefined,
                 boolean | undefined
@@ -39,15 +39,19 @@ declare module '@gridsuite/commons-ui' {
             'value' | 'onChange' | 'renderInput'
         > {
         name: string;
-        options: ({ id: string, label: string } | string)[];
+        options: ({ id: string; label: string } | string)[];
         label?: string;
-        outputTransform?: (value: string) => string;
-        inputTransform?: (value: string) => string;
+        outputTransform?: (
+            value: { id: string; label: string } | string
+        ) => { id: string; label: string } | string;
+        inputTransform?: (
+            value: { id: string; label: string } | string
+        ) => { id: string; label: string } | string;
         readOnly?: boolean;
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
-        getOptionLabel?: (rt: string) => string;
+        getOptionLabel?: (rt: string | { id: string; label: string }) => string;
         formProps?: Omit<
             TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
@@ -70,7 +74,9 @@ declare module '@gridsuite/commons-ui' {
         >
     >;
 
-    export const FieldErrorAlert: FunctionComponent<>;
+    export const MidFormError: FunctionComponent;
+
+    export const FieldErrorAlert: FunctionComponent;
 
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps
@@ -123,7 +129,7 @@ declare module '@gridsuite/commons-ui' {
     interface SwitchInputProps {
         name: string;
         label?: string;
-        formProps?: Omit<SwitchInputProps, 'disabled'>,
+        formProps?: Omit<SwitchInputProps, 'disabled'>;
     }
 
     export const SwitchInput: FunctionComponent<SwitchInputProps>;
@@ -162,9 +168,17 @@ declare module '@gridsuite/commons-ui' {
     };
 
     interface OverflowableTextProps {
-        sx: SxProps,
-        text?: string;
+        sx?: SxProps;
+        text?: string | ReactElement;
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
+
+    interface CheckboxInputProps {
+        name: string;
+        label?: string;
+        formProps?: Omit<CheckboxInputProps, 'disabled'>;
+    }
+  
+    export const CheckboxInput: FunctionComponent<CheckboxInputProps>;
 }

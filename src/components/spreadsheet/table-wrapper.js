@@ -302,12 +302,6 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const onCellClicked = useMemo(() => {
-        const onCellClickedFunction =
-            TABLES_DEFINITION_INDEXES.get(tabIndex)?.onCellClicked || null;
-        return onCellClickedFunction;
-    }, [tabIndex]);
-
     const equipmentDefinition = useMemo(
         () => ({
             type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
@@ -634,13 +628,14 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControl.activePowerControlOn,
-                            editingDataRef.current.activePowerControl
-                                .activePowerControlOn
+                            editingData?.activePowerControl
+                                ?.activePowerControlOn,
+                            editingDataRef.current?.activePowerControl
+                                ?.activePowerControlOn
                         ),
                         getFieldValue(
-                            editingData.activePowerControl.droop,
-                            editingDataRef.current.activePowerControl.droop
+                            editingData?.activePowerControl?.droop,
+                            editingDataRef.current?.activePowerControl?.droop
                         )
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
@@ -665,14 +660,14 @@ const TableWrapper = (props) => {
                             editingDataRef.current.highVoltageLimit
                         ),
                         getFieldValue(
-                            editingData.identifiableShortCircuit.ipMin,
+                            editingData.identifiableShortCircuit?.ipMin,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMin
+                                ?.ipMin
                         ),
                         getFieldValue(
-                            editingData.identifiableShortCircuit.ipMax,
+                            editingData.identifiableShortCircuit?.ipMax,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMax
+                                ?.ipMax
                         ),
                         false,
                         undefined
@@ -706,12 +701,13 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControl.activePowerControlOn,
+                            editingData.activePowerControl
+                                ?.activePowerControlOn,
                             editingDataRef.current.activePowerControl
                                 .activePowerControlOn
                         ),
                         getFieldValue(
-                            editingData.activePowerControl.droop,
+                            editingData.activePowerControl?.droop,
                             editingDataRef.current.activePowerControl.droop
                         )
                     );
@@ -903,7 +899,6 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
-                        onCellClicked={onCellClicked}
                     />
                 </Box>
             )}

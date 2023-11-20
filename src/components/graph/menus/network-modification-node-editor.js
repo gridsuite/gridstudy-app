@@ -61,6 +61,7 @@ import BatteryModificationDialog from 'components/dialogs/network-modifications/
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
+import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
 
 import { fetchNetworkModification } from '../../../services/network-modification';
@@ -334,6 +335,11 @@ const NetworkModificationNodeEditor = () => {
                     label: 'BY_TABLE',
                     action: () => adapt(TabularModificationDialog),
                 },
+                {
+                    id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
+                    label: 'BY_FORMULA',
+                    action: () => adapt(ByFormulaDialog),
+                },
             ],
         },
         {
@@ -479,7 +485,18 @@ const NetworkModificationNodeEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    setModifications(res);
+                    setModifications(
+                        res.filter(
+                            (networkModification) =>
+                                networkModification.stashed === false
+                        )
+                    );
+                    setModificationsToRestore(
+                        res.filter(
+                            (networkModification) =>
+                                networkModification.stashed === true
+                        )
+                    );
                 }
             })
             .catch((error) => {
@@ -510,16 +527,10 @@ const NetworkModificationNodeEditor = () => {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
-            dofetchNetworkModifications();
-
             setModificationsToRestore([]);
-            dofetchNetworkModificationsToRestore();
+            dofetchNetworkModifications();
         }
-    }, [
-        currentNode,
-        dofetchNetworkModifications,
-        dofetchNetworkModificationsToRestore,
-    ]);
+    }, [currentNode, dofetchNetworkModifications]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -564,7 +575,6 @@ const NetworkModificationNodeEditor = () => {
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allow to append new modifications to the existing list.
                 dofetchNetworkModifications();
-                dofetchNetworkModificationsToRestore();
                 dispatch(
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
@@ -576,7 +586,6 @@ const NetworkModificationNodeEditor = () => {
     }, [
         dispatch,
         dofetchNetworkModifications,
-        dofetchNetworkModificationsToRestore,
         manageNotification,
         studyUpdatedForce,
         cleanClipboard,

@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { SelectInput } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { gridItem } from 'components/dialogs/dialogUtils';
@@ -18,24 +24,20 @@ import RegulatingTerminalForm from 'components/dialogs/regulating-terminal/regul
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { fetchVoltageLevelsListInfos } from 'services/study/network';
 
+const emptyFormData = {
+    [VOLTAGE_REGULATION_TYPE]: null,
+    [VOLTAGE_LEVEL]: null,
+    [EQUIPMENT]: null,
+};
+
 const RegulatingTerminalModificationDialog = ({
     data,
     currentNode,
     studyUuid,
-    isUpdate,
-    editDataFetchStatus,
-    onModifyRegulatingTeminalGenerator,
+    onModifyRegulatingTerminalGenerator,
     ...dialogProps
 }) => {
-    const emptyFormData = useMemo(
-        () => ({
-            [VOLTAGE_REGULATION_TYPE]: null,
-            [VOLTAGE_LEVEL]: null,
-            [EQUIPMENT]: null,
-        }),
-        []
-    );
-
+    const intl = useIntl();
     const formSchema = yup
         .object()
         .shape({
@@ -44,13 +46,15 @@ const RegulatingTerminalModificationDialog = ({
             [EQUIPMENT]: yup.object().nullable(),
         })
         .required();
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
     const { control, reset } = formMethods;
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
 
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
@@ -65,11 +69,39 @@ const RegulatingTerminalModificationDialog = ({
         }
     }, [data]);
 
-    const voltageRegulationType = useWatch({
+    const getPreviousRegulationTypeValues = useCallback(() => {
+        reset({
+            [VOLTAGE_REGULATION_TYPE]: previousRegulationType,
+        });
+    }, [previousRegulationType, reset]);
+
+    useEffect(() => {
+        getPreviousRegulationTypeValues();
+    }, [getPreviousRegulationTypeValues]);
+
+    const translatedPreviousRegulationLabel = useMemo(() => {
+        if (REGULATION_TYPES[previousRegulationType]) {
+            return intl.formatMessage({
+                id: REGULATION_TYPES[previousRegulationType].label,
+            });
+        }
+        return null;
+    }, [intl, previousRegulationType]);
+
+    const watchVoltageRegulationType = useWatch({
         control,
         name: VOLTAGE_REGULATION_TYPE,
-        defaultValue: previousRegulationType,
     });
+
+    const voltageRegulationTypeField = (
+        <SelectInput
+            options={Object.values(REGULATION_TYPES)}
+            name={VOLTAGE_REGULATION_TYPE}
+            label={'RegulationTypeText'}
+            size={'small'}
+            previousValue={translatedPreviousRegulationLabel}
+        />
+    );
 
     useEffect(() => {
         if (studyUuid && currentNode.id) {
@@ -81,23 +113,22 @@ const RegulatingTerminalModificationDialog = ({
                 }
             );
         }
-    }, [studyUuid, currentNode, formMethods]);
+    }, [studyUuid, currentNode]);
 
     const isDistantRegulation = useMemo(() => {
         return (
-            voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
-            (!voltageRegulationType &&
+            watchVoltageRegulationType === REGULATION_TYPES.DISTANT.id ||
+            (!watchVoltageRegulationType &&
                 previousRegulationType === REGULATION_TYPES.DISTANT.id)
         );
-    }, [previousRegulationType, voltageRegulationType]);
+    }, [previousRegulationType, watchVoltageRegulationType]);
 
     const onSubmit = useCallback(
         (voltageRegulationGenerator) => {
-            onModifyRegulatingTeminalGenerator(voltageRegulationGenerator);
+            onModifyRegulatingTerminalGenerator(voltageRegulationGenerator);
         },
-        [onModifyRegulatingTeminalGenerator]
+        [onModifyRegulatingTerminalGenerator]
     );
-    const intl = useIntl();
 
     const regulatingTerminalField = (
         <RegulatingTerminalForm
@@ -110,26 +141,6 @@ const RegulatingTerminalModificationDialog = ({
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
                 data
             )}
-        />
-    );
-
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [emptyFormData, reset]);
-
-    const getVoltageRegulationTypeLabel = () => {
-        return isDistantRegulation
-            ? intl.formatMessage({ id: REGULATION_TYPES.DISTANT.label })
-            : intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label });
-    };
-    const voltageRegulationTypeField = (
-        <SelectInput
-            name={VOLTAGE_REGULATION_TYPE}
-            label={'RegulationTypeText'}
-            options={Object.values(REGULATION_TYPES)}
-            fullWidth
-            size={'small'}
-            previousValue={getVoltageRegulationTypeLabel()}
         />
     );
 
@@ -164,9 +175,7 @@ RegulatingTerminalModificationDialog.propTypes = {
     data: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
-    isUpdate: PropTypes.bool,
-    onModifyRegulatingTeminalGenerator: PropTypes.func,
-    editDataFetchStatus: PropTypes.string,
+    onModifyRegulatingTerminalGenerator: PropTypes.func,
 };
 
 export default RegulatingTerminalModificationDialog;

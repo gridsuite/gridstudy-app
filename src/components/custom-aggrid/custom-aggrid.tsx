@@ -11,7 +11,7 @@ import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { GetLocaleTextParams } from 'ag-grid-community';
+import { ColumnResizedEvent, GetLocaleTextParams } from 'ag-grid-community';
 import { Box } from '@mui/system';
 import { mergeSx } from '../utils/functions';
 
@@ -78,6 +78,18 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             [intl]
         );
 
+        // We have to define a minWidth to column to activate this feature
+        const onColumnResized = (params: ColumnResizedEvent) => {
+            const { column, finished } = params;
+            const colDefinedMinWidth = column?.getColDef()?.minWidth;
+            if (column && colDefinedMinWidth && finished) {
+                const newWidth = column?.getActualWidth();
+                if (newWidth < colDefinedMinWidth) {
+                    column?.setActualWidth(colDefinedMinWidth);
+                }
+            }
+        };
+
         return (
             <Box
                 sx={mergeSx(
@@ -97,6 +109,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     }
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     onCellClicked={props.onCellClicked}
+                    onColumnResized={onColumnResized}
                     {...props}
                 />
             </Box>

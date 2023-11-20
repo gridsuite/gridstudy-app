@@ -35,23 +35,18 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
-    onCellClicked,
 }) => {
     const theme = useTheme();
     const { snackError } = useSnackMessage();
-    const [clickedCellData, setClickedCellData] = React.useState({});
-    const [generatorId, setGeneratorId] = React.useState('');
-    const [
-        popupGeneratorEditRegulatingTerminalFields,
-        setPopupGeneratorEditRegulatingTerminalFields,
-    ] = React.useState(false);
+    const [popupEditRegulatingTerminal, setPopupEditRegulatingTerminal] =
+        React.useState(false);
     const onRegulatingTerminalPopupClose = () => {
-        setPopupGeneratorEditRegulatingTerminalFields(false);
+        setPopupEditRegulatingTerminal(false);
     };
-    const handleSavePopupGeneratorEditRegulatingTerminalFields = (
-        voltageRegulationGenerator
-    ) => {
-        setGeneratorId(clickedCellData.data.id);
+
+    const handleSavePopupRegulatingTerminal = (voltageRegulationGenerator) => {
+        setPopupEditRegulatingTerminal(false);
+        gridRef.current.api.stopEditing();
 
         const isDistantRegulation =
             voltageRegulationGenerator.voltageRegulationType ===
@@ -60,7 +55,7 @@ export const EquipmentTable = ({
         modifyGenerator(
             studyUuid,
             currentNode.id,
-            generatorId,
+            initialGeneratorInfos.id,
             undefined,
             undefined,
             undefined,
@@ -136,14 +131,24 @@ export const EquipmentTable = ({
         []
     );
 
+    const openGeneratorPopup = () => {
+        setPopupEditRegulatingTerminal(true);
+    };
     const gridContext = useMemo(() => {
         return {
             network: network,
             editErrors: {},
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
+            handleCellClick: {
+                //functions for handling cell click
+                openGeneratorDialog: () => {
+                    openGeneratorPopup();
+                },
+            },
         };
     }, [network, topPinnedData]);
+    const initialGeneratorInfos = gridContext.dynamicValidation;
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -173,19 +178,6 @@ export const EquipmentTable = ({
         };
     }, [intl]);
 
-    const handleOnClickOnCell = (params) => {
-        if (onCellClicked != null) {
-            if (onCellClicked.name === 'onCellGeneratorCellClicked') {
-                onCellClicked(params, () => {
-                    setGeneratorId(params.data.id);
-                    setPopupGeneratorEditRegulatingTerminalFields(
-                        !popupGeneratorEditRegulatingTerminalFields
-                    );
-                    setClickedCellData(params);
-                });
-            }
-        }
-    };
     return (
         <>
             <CustomAGGrid
@@ -219,21 +211,18 @@ export const EquipmentTable = ({
                 loadingOverlayComponent={loadingOverlayComponent}
                 loadingOverlayComponentParams={loadingOverlayComponentParams}
                 showOverlay={true}
-                onCellClicked={handleOnClickOnCell}
             />
             <RegulatingTerminalModificationDialog
-                open={popupGeneratorEditRegulatingTerminalFields}
+                open={popupEditRegulatingTerminal}
                 onClose={onRegulatingTerminalPopupClose}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
-                onModifyRegulatingTeminalGenerator={(
+                onModifyRegulatingTerminalGenerator={(
                     updatedRegulatedTerminal
                 ) => {
-                    handleSavePopupGeneratorEditRegulatingTerminalFields(
-                        updatedRegulatedTerminal
-                    );
+                    handleSavePopupRegulatingTerminal(updatedRegulatedTerminal);
                 }}
-                data={clickedCellData.data}
+                data={initialGeneratorInfos}
             />
         </>
     );

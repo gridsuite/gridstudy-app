@@ -63,16 +63,13 @@ const propertiesGetter = (params) => {
 };
 
 const RegulatingTerminalCellRenderer = (params) => {
+    const regulatingTerminalConnectableId =
+        params.data?.regulatingTerminalConnectableId;
     if (
         params.data?.regulatingTerminalVlId ||
-        params.data?.regulatingTerminalConnectableId
+        regulatingTerminalConnectableId
     ) {
-        return (
-            params.data.regulatingTerminalConnectableType +
-            ' (' +
-            params.data.regulatingTerminalConnectableId +
-            ' )'
-        );
+        return `${params.data.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
     } else {
         return null;
     }
@@ -125,17 +122,6 @@ const generateEditableNumericColumnDefinition = (
         }),
         ...extraDef,
     };
-};
-
-const onCellGeneratorCellClicked = (event, callBack) => {
-    switch (event.colDef.id) {
-        case 'RegulationTypeText':
-        case 'RegulatingTerminalGenerator':
-            callBack(event.data);
-            break;
-        default:
-            break;
-    }
 };
 
 export const TABLES_DEFINITIONS = {
@@ -1092,7 +1078,6 @@ export const TABLES_DEFINITIONS = {
         name: 'Generators',
         type: EQUIPMENT_TYPES.GENERATOR,
         fetchers: EQUIPMENT_FETCHERS.GENERATOR,
-        onCellClicked: onCellGeneratorCellClicked,
         columns: [
             {
                 id: 'ID',
@@ -1583,10 +1568,20 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulationTypeText',
                 cellRenderer: RegulationTypeCellRenderer,
+                onCellClicked: (event) => {
+                    if (event.context.isEditing) {
+                        event.context?.handleCellClick?.openGeneratorDialog();
+                    }
+                },
             },
             {
                 id: 'RegulatingTerminalGenerator',
                 cellRenderer: RegulatingTerminalCellRenderer,
+                onCellClicked: (event) => {
+                    if (event.context.isEditing) {
+                        event.context?.handleCellClick?.openGeneratorDialog();
+                    }
+                },
             },
         ],
     },
