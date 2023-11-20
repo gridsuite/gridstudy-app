@@ -637,6 +637,7 @@
     "TypeOptional": "Type (optionnel)",
     "UndefinedDefaultValue": "Non défini (valeur par défaut)",
     "Undefined": "Non défini",
+    "UndefinedOverlaod":"Non définie",
     "Auxiliary": "Auxiliaire",
     "Fictitious": "Fictif",
     "ActivePowerText": "Puissance active",

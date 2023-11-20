@@ -637,6 +637,7 @@
     "TypeOptional": "Type (optional)",
     "UndefinedDefaultValue": "Undefined (default value)",
     "Undefined": "Undefined",
+    "UndefinedOverlaod":"Undefined",
     "Auxiliary": "Auxiliary",
     "Fictitious": "Fictitious",
     "ActivePowerText": "Active power",

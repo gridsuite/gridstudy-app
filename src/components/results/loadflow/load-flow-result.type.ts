@@ -46,7 +46,6 @@ export interface OverloadedEquipment {
     overload: number;
     name: string;
     value: number;
-    acceptableDuration: number | null;
     actualOverload: number | null;
     upComingOverload: number | null;
     limit: number;
@@ -58,7 +57,6 @@ export interface OverloadedEquipmentFromBack {
     subjectId: string;
     limit: number;
     limitName: string | null;
-    acceptableDuration: 300;
     actualOverload: 300;
     upComingOverload: 300;
     value: number;
