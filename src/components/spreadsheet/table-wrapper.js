@@ -665,14 +665,14 @@ const TableWrapper = (props) => {
                             editingDataRef.current.highVoltageLimit
                         ),
                         getFieldValue(
-                            editingData.identifiableShortCircuit.ipMin,
+                            editingData.identifiableShortCircuit?.ipMin,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMin
+                                ?.ipMin
                         ),
                         getFieldValue(
-                            editingData.identifiableShortCircuit.ipMax,
+                            editingData.identifiableShortCircuit?.ipMax,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMax
+                                ?.ipMax
                         ),
                         false,
                         undefined

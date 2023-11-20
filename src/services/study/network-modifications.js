@@ -709,8 +709,10 @@ export function modifyShuntCompensator(
     currentNodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
-    susceptancePerSection,
-    qAtNominalV,
+    maximumSectionCount,
+    sectionCount,
+    maxSusceptance,
+    maxQAtNominalV,
     shuntCompensatorType,
     voltageLevelId,
     isUpdate,
@@ -737,10 +739,10 @@ export function modifyShuntCompensator(
             type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: toModificationOperation(shuntCompensatorName),
-            susceptancePerSection: toModificationOperation(
-                susceptancePerSection
-            ),
-            qAtNominalV: toModificationOperation(qAtNominalV),
+            maximumSectionCount: toModificationOperation(maximumSectionCount),
+            sectionCount: toModificationOperation(sectionCount),
+            maxSusceptance: toModificationOperation(maxSusceptance),
+            maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
             voltageLevelId: voltageLevelId,
         }),
@@ -1613,5 +1615,40 @@ export function createVsc(
             'Content-Type': 'application/json',
         },
         body,
+    });
+}
+
+export function modifyByFormula(
+    studyUuid,
+    currentNodeUuid,
+    equipmentType,
+    formulas,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating by formula modification');
+    } else {
+        console.info('Creating by formula modification');
+    }
+
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
+        identifiableType: equipmentType,
+        formulaInfosList: formulas,
+    });
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: body,
     });
 }

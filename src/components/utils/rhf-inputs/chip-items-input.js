@@ -126,7 +126,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                                                 name={`${name}.${index}`}
                                             />
                                         }
-                                        style={{ width: '100%' }}
+                                        sx={{ width: '100%' }}
                                     />
                                 }
                             />

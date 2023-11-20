@@ -58,6 +58,7 @@ export const ConnectivityForm = ({
     voltageLevelSelectLabel = 'VoltageLevel',
     direction = 'row',
     withDirectionsInfos = true,
+    withConnectivity = true,
     withPosition = false,
     voltageLevelOptions = [],
     newBusOrBusbarSectionOptions = [],
@@ -79,12 +80,6 @@ export const ConnectivityForm = ({
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
-
-    useEffect(() => {
-        if (newBusOrBusbarSectionOptions?.length > 0) {
-            setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
-        }
-    }, [newBusOrBusbarSectionOptions]);
 
     useEffect(() => {
         if (watchVoltageLevelId) {
@@ -126,6 +121,12 @@ export const ConnectivityForm = ({
         setValue,
         id,
     ]);
+
+    useEffect(() => {
+        if (newBusOrBusbarSectionOptions?.length > 0) {
+            setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
+        }
+    }, [newBusOrBusbarSectionOptions]);
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
@@ -253,7 +254,7 @@ export const ConnectivityForm = ({
     const gridSize =
         direction && (direction === 'column' || direction === 'column-reverse')
             ? 24
-            : 6;
+            : 12;
     const conditionalSize = withPosition && withDirectionsInfos ? 8 : gridSize;
     return (
         <>
@@ -269,12 +270,12 @@ export const ConnectivityForm = ({
                 <Grid item xs={conditionalSize} align="start">
                     {newBusOrBusbarSectionField}
                 </Grid>
-                <Grid item xs={conditionalSize} align="start">
-                    {connectedField}
-                </Grid>
 
                 {withDirectionsInfos && (
                     <>
+                        <Grid item xs={conditionalSize} align="start">
+                            {withConnectivity && connectedField}
+                        </Grid>
                         <Grid item xs={conditionalSize} align="start">
                             {newConnectionNameField}
                         </Grid>

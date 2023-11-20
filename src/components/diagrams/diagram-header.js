@@ -110,7 +110,7 @@ const DiagramHeader = (props) => {
     return (
         <Box sx={mergeSx(styles.header, blinking && styles.blink)}>
             <OverflowableText
-                style={{ flexGrow: '1' }}
+                sx={{ flexGrow: '1' }}
                 text={props.diagramTitle}
             />
             <Box>
