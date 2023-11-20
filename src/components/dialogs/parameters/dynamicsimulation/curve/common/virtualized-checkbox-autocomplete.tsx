@@ -28,6 +28,10 @@ import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { useIntl } from 'react-intl';
 import Popper from '@mui/material/Popper';
 import ListItemText from '@mui/material/ListItemText';
+import {
+    AutocompleteRenderInputParams,
+    AutocompleteRenderOptionState,
+} from '@mui/material/Autocomplete';
 
 const CHECK_ALL = { label: 'SelectAll', value: 'check_all' };
 const UNCHECK_ALL = { label: 'UnselectAll', value: 'uncheck_all' };
@@ -189,8 +193,8 @@ const VirtualizedCheckboxAutocomplete = ({
         setCheckedOptions(initialSelectedOptions);
     }
 
-    const inputRenderer = useCallback(
-        (params: any) => <TextField {...params} />,
+    const renderInputCb = useCallback(
+        (params: AutocompleteRenderInputParams) => <TextField {...params} />,
         []
     );
 
@@ -213,27 +217,27 @@ const VirtualizedCheckboxAutocomplete = ({
     const handleChange = useCallback(
         (event: any, selectedOptions: any[], reason: any) => {
             console.log('handleChange', [event, selectedOptions, reason]);
-            // if (['selectOption', 'removeOption'].includes(reason)) {
-            //     // check whether Check All is selected
-            //     if (
-            //         selectedOptions?.find(
-            //             (elem: any) => elem === CHECK_ALL.value
-            //         )
-            //     ) {
-            //         // must check all items
-            //         handleCheckAll();
-            //     } else if (
-            //         selectedOptions?.find(
-            //             (elem: any) => elem === UNCHECK_ALL.value
-            //         )
-            //     ) {
-            //         handleClearOptions();
-            //     } else {
-            //         handleToggleOption(selectedOptions);
-            //     }
-            // } else if (['clear'].includes(reason)) {
-            //     handleClearOptions();
-            // }
+            if (['selectOption', 'removeOption'].includes(reason)) {
+                // check whether Check All is selected
+                if (
+                    selectedOptions?.find(
+                        (elem: any) => elem === CHECK_ALL.value
+                    )
+                ) {
+                    // must check all items
+                    handleCheckAll();
+                } else if (
+                    selectedOptions?.find(
+                        (elem: any) => elem === UNCHECK_ALL.value
+                    )
+                ) {
+                    handleClearOptions();
+                } else {
+                    handleToggleOption(selectedOptions);
+                }
+            } else if (['clear'].includes(reason)) {
+                handleClearOptions();
+            }
         },
         [handleCheckAll, handleToggleOption, handleClearOptions]
     );
@@ -246,7 +250,7 @@ const VirtualizedCheckboxAutocomplete = ({
         // return filteredOptions;
     }, []);
 
-    const tagRenderer = useCallback(
+    const renderTagsCb = useCallback(
         (selectedOptions: any[]) => {
             if (selectedOptions.length === 1) {
                 return getOptionLabel(selectedOptions[0]);
@@ -260,6 +264,15 @@ const VirtualizedCheckboxAutocomplete = ({
         [getOptionLabel]
     );
 
+    const renderOptionCb = useCallback(
+        (
+            props: React.HTMLAttributes<HTMLLIElement>,
+            option: any,
+            state: AutocompleteRenderOptionState
+        ) => [props, option, state.index, state.selected] as React.ReactNode,
+        []
+    );
+
     const ListBoxComponent = forwardRef(VirtualizedListComponent);
 
     return (
@@ -270,16 +283,14 @@ const VirtualizedCheckboxAutocomplete = ({
             disableClearable
             disableCloseOnSelect
             size={'small'}
-            renderInput={inputRenderer}
+            renderInput={renderInputCb}
             options={options}
-            renderOption={(props, option, state) =>
-                [props, option, state.index, state.selected] as React.ReactNode
-            }
+            renderOption={renderOptionCb}
             ListboxComponent={ListBoxComponent}
-            // value={checkedOptions}
+            value={checkedOptions}
             onChange={handleChange}
             filterOptions={filterOptions}
-            renderTags={tagRenderer}
+            renderTags={renderTagsCb}
         />
     );
 };

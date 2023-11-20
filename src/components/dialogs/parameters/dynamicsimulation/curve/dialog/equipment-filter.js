@@ -25,6 +25,7 @@ import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import VirtualizedCheckboxAutocomplete from '../common/virtualized-checkbox-autocomplete';
+import { fetchAllCountries } from '../../../../../../services/study/network-map';
 
 export const CURVE_EQUIPMENT_TYPES = {
     [EQUIPMENT_TYPES.GENERATOR]: {
@@ -79,8 +80,9 @@ const EquipmentFilter = forwardRef(
             () => voltageLevels.map((elem) => elem.id),
             [voltageLevels]
         );
-        const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] =
-            useState(voltageLevelIds);
+        const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
+            []
+        );
         const handleVoltageLevelChange = useCallback(
             (selectedVoltageLevelIds) => {
                 setSelectedVoltageLevelIds(selectedVoltageLevelIds);
@@ -89,47 +91,27 @@ const EquipmentFilter = forwardRef(
         );
 
         const nominalVoltages = mapEquipments.getNominalVoltages();
-        const [selectedNominalVoltages, setSelectedNominalVoltages] =
-            useState(nominalVoltages);
+        const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
+            []
+        );
 
         const handleNominalVoltageChange = useCallback((selectedTensionIds) => {
             setSelectedNominalVoltages(selectedTensionIds);
         }, []);
 
         // --- country (i.e. countryCode) => lookup actually in substation --- //
-        const [substationsById] = useState(new Map());
         const [countries, setCountries] = useState([]);
         const [selectedCountries, setSelectedCountries] = useState([]);
         const handleCountryChange = useCallback((selectedCountries) => {
             setSelectedCountries(selectedCountries);
         }, []);
 
-        // load countries via substations
+        // load countries
         useEffect(() => {
-            Promise.all(
-                EQUIPMENT_FETCHERS.SUBSTATION.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
-            )
-                .then((vals) => {
-                    // indexing substations infos and aggregate country codes
-                    const countriesSet = new Set();
-                    vals.flat().forEach((substation) => {
-                        substationsById.set(substation.id, {
-                            countryCode: substation.countryCode,
-                        });
-
-                        if (substation.countryCode) {
-                            countriesSet.add(substation.countryCode);
-                        }
-                    });
-
-                    // get countries codes
-                    let countries = [...countriesSet];
-
+            fetchAllCountries(studyUuid, currentNode.id)
+                .then((countryCodes) => {
                     // update countries states
-                    setCountries(countries);
-                    setSelectedCountries(countries); // by default select all countries
+                    setCountries(countryCodes);
 
                     // update loading state
                     setCountriesFilterReady(true);
@@ -140,7 +122,7 @@ const EquipmentFilter = forwardRef(
                         headerId: 'DynamicSimulationFetchSubstationError',
                     });
                 });
-        }, [currentNode.id, studyUuid, snackError, substationsById]);
+        }, [currentNode.id, studyUuid, snackError]);
 
         // fetching and filtering equipments by filters
         const loadThenFilterEquipmentsAsync = useCallback(() => {
@@ -158,31 +140,6 @@ const EquipmentFilter = forwardRef(
                         (equipment) => {
                             let matched = true; // by default whatever equipment is taken into account
 
-                            // by voltage level id
-                            if (selectedVoltageLevelIds.length) {
-                                matched &= selectedVoltageLevelIds.includes(
-                                    equipment.voltageLevelId
-                                );
-                            }
-
-                            // by nominal voltage
-                            if (selectedNominalVoltages.length) {
-                                matched &= selectedNominalVoltages.includes(
-                                    equipment.nominalVoltage
-                                );
-                            }
-
-                            // by country
-                            if (selectedCountries.length) {
-                                matched &= selectedCountries.includes(
-                                    substationsById.get(
-                                        mapEquipments.getVoltageLevel(
-                                            equipment.voltageLevelId
-                                        ).substationId
-                                    ).countryCode
-                                );
-                            }
-
                             return matched;
                         }
                     );
@@ -196,17 +153,7 @@ const EquipmentFilter = forwardRef(
                         headerId: 'DynamicSimulationFetchEquipmentError',
                     });
                 });
-        }, [
-            studyUuid,
-            currentNode.id,
-            mapEquipments,
-            substationsById,
-            selectedCountries,
-            selectedNominalVoltages,
-            selectedVoltageLevelIds,
-            equipmentType.fetchers,
-            snackError,
-        ]);
+        }, [studyUuid, currentNode.id, equipmentType.fetchers, snackError]);
 
         useEffect(() => {
             if (gridReady && countriesFilterReady) {
