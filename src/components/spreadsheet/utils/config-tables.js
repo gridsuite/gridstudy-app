@@ -1243,7 +1243,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd:
-                    'if (equipment.getMinP() <= {} && {} <= equipment.getMaxP() ) { \n' +
+                    'if ((equipment.getMinP() <= {} && {} <= equipment.getMaxP()) || {} == 0) { \n' +
                     '    equipment.setTargetP({})\n' +
                     '} else {\n' +
                     "    throw new Exception('incorrect value')\n" +
@@ -1255,6 +1255,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         minExpression: 'minP',
                         maxExpression: 'maxP',
+                        allowZero: true,
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1983,6 +1984,9 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
+                        minExpression: 'minP',
+                        maxExpression: 'maxP',
+                        allowZero: true,
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
