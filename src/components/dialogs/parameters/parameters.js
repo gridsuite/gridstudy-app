@@ -242,6 +242,12 @@ export const styles = {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(1),
     }),
+    adjustExistingLimitsInfo: (theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(1),
+    }),
 };
 
 export const TabPanel = (props) => {

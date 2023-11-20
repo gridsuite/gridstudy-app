@@ -47,6 +47,7 @@ import {
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import Alert from '@mui/material/Alert';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -335,6 +336,13 @@ export const VoltageInitParameters = ({
                                 value={tabValue}
                                 index={TAB_VALUES.voltageLimitsParamsTabValue}
                             >
+                                <Alert
+                                    sx={styles.adjustExistingLimitsInfo}
+                                    severity="info"
+                                    variant="outlined"
+                                >
+                                    <FormattedMessage id="AdjustExistingLimitsInfo" />
+                                </Alert>
                                 <VoltageLimitsParameters
                                     reset={reset}
                                     useVoltageInitParameters={
