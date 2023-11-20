@@ -43,8 +43,8 @@ export const makeData = (
         overload: (overloadedEquipment.value / overloadedEquipment.limit) * 100,
         name: overloadedEquipment.subjectId,
         value: overloadedEquipment.value,
-        actualOverload: overloadedEquipment.actualOverload,
-        upComingOverload: overloadedEquipment.upComingOverload,
+        actualOverloadDuration: overloadedEquipment.actualOverloadDuration,
+        upComingOverloadDuration: overloadedEquipment.upComingOverloadDuration,
         limit: overloadedEquipment.limit,
         limitName: convertLimitName(overloadedEquipment.limitName, intl),
         side: convertSide(overloadedEquipment.side, intl),
@@ -95,22 +95,22 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             }),
             field: 'actualOverload',
             valueFormatter: (value: ValueFormatterParams) => {
-                return value.data.actualOverload ===
+                return value.data.actualOverloadDuration ===
                     UNDEFINED_ACCEPTABLE_DURATION
-                    ? intl.formatMessage({ id: 'UndefinedOverlaod' })
-                    : convertDuration(value.data.actualOverload);
+                    ? intl.formatMessage({ id: 'UndefinedOverload' })
+                    : convertDuration(value.data.actualOverloadDuration);
             },
         },
         {
-            headerName: intl.formatMessage({ id: 'upComingOverlaod' }),
+            headerName: intl.formatMessage({ id: 'upComingOverload' }),
             field: 'upComingOverload',
             valueFormatter: (value: ValueFormatterParams) => {
-                return value.data.upComingOverload ===
+                return value.data.upComingOverloadDuration ===
                     UNDEFINED_ACCEPTABLE_DURATION
-                    ? intl.formatMessage({ id: 'UndefinedOverlaod' })
-                    : value.data.upComingOverload === null
+                    ? intl.formatMessage({ id: 'UndefinedOverload' })
+                    : value.data.upComingOverloadDuration === null
                     ? intl.formatMessage({ id: 'NoneUpcomingOverload' })
-                    : convertDuration(value.data.upComingOverload);
+                    : convertDuration(value.data.upComingOverloadDuration);
             },
         },
         {
@@ -120,10 +120,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     ];
 };
 
-export const formatLimitName = (limiName: string, intl: IntlShape) => {
-    return limiName === LimitNames.NA
+export const formatLimitName = (limitName: string, intl: IntlShape) => {
+    return limitName === LimitNames.NA
         ? intl.formatMessage({ id: 'Undefined' })
-        : limiName;
+        : limitName;
 };
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
