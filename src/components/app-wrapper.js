@@ -55,11 +55,13 @@ import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
+const defaultTheme = createTheme();
+
 const lightTheme = createTheme({
     palette: {
         mode: 'light',
         customButton: {
-            main: '#000000DE',
+            main: defaultTheme.palette.text.primary,
         },
     },
     link: {
@@ -90,7 +92,7 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
         customButton: {
-            main: '#FFFFFF',
+            main: defaultTheme.palette.text.primary,
         },
     },
     link: {
@@ -117,27 +119,11 @@ const darkTheme = createTheme({
     },
 });
 
-const customDarkTheme = createTheme(darkTheme, {
-    palette: {
-        customButton: {
-            main: darkTheme.palette.text.primary,
-        },
-    },
-});
-
-const customLightTheme = createTheme(lightTheme, {
-    palette: {
-        customButton: {
-            main: lightTheme.palette.text.primary,
-        },
-    },
-});
-
 const getMuiTheme = (theme) => {
     if (theme === LIGHT_THEME) {
-        return customLightTheme;
+        return lightTheme;
     } else {
-        return customDarkTheme;
+        return darkTheme;
     }
 };
 
