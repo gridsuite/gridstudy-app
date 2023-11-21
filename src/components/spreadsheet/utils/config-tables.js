@@ -1720,8 +1720,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue: params.data.targetP,
+                        minExpression: 'minP',
+                        maxExpression: 'maxP',
                         allowZero: true,
+                        defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,

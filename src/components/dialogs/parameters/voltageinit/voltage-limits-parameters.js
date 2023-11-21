@@ -22,6 +22,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { elementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
+import { styles } from '../parameters';
+import Alert from '@mui/material/Alert';
 
 const VoltageLimitsParameters = () => {
     const intl = useIntl();
@@ -148,6 +150,13 @@ const VoltageLimitsParameters = () => {
             <Typography component="span" variant="h6">
                 <FormattedMessage id="AdjustExistingLimits" />
             </Typography>
+            <Alert
+                sx={styles.adjustExistingLimitsInfo}
+                severity="info"
+                variant="outlined"
+            >
+                <FormattedMessage id="AdjustExistingLimitsInfo" />
+            </Alert>
             <DndTable
                 arrayFormName={`${VOLTAGE_LIMITS_MODIFICATION}`}
                 columnsDefinition={
