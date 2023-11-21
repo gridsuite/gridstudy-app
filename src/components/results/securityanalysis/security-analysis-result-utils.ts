@@ -23,7 +23,10 @@ import {
     ValueFormatterParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import {
+    ContingencyCellRenderer,
+    convertDuration,
+} from 'components/spreadsheet/utils/cell-renderers';
 import {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
@@ -85,6 +88,7 @@ export const flattenNmKResultsContingencies = (
                     loading: limitViolation.loading,
                     side: limitViolation.side,
                     linkedElementId: contingencyId,
+                    acceptableDuration: limitViolation.acceptableDuration,
                 });
             });
         }
@@ -214,6 +218,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -291,6 +297,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),

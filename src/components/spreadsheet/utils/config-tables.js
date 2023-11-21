@@ -1159,7 +1159,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd:
-                    'if (equipment.getMinP() <= {} && {} <= equipment.getMaxP() ) { \n' +
+                    'if ((equipment.getMinP() <= {} && {} <= equipment.getMaxP()) || {} == 0) { \n' +
                     '    equipment.setTargetP({})\n' +
                     '} else {\n' +
                     "    throw new Exception('incorrect value')\n" +
@@ -1171,6 +1171,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         minExpression: 'minP',
                         maxExpression: 'maxP',
+                        allowZero: true,
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1622,7 +1623,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: BooleanListField,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
-                        ...params.data.activePowerControl,
+                        ...(params.data.activePowerControl || {}),
                         activePowerControlOn: params.newValue,
                     };
 
@@ -1631,7 +1632,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data.activePowerControl.activePowerControlOn,
+                            params.data?.activePowerControl
+                                ?.activePowerControlOn | 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1649,6 +1651,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
+                        defaultValue: params.data.activePowerControl?.droop,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1657,7 +1660,7 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) => params.data?.activePowerControl?.droop,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
-                        ...params.data.activePowerControl,
+                        ...(params.data.activePowerControl || {}),
                         droop: params.newValue,
                     };
                     return params;
@@ -1719,6 +1722,9 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
+                        minExpression: 'minP',
+                        maxExpression: 'maxP',
+                        allowZero: true,
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,

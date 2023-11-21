@@ -613,14 +613,14 @@ const TableWrapper = (props) => {
                             editingDataRef.current.highVoltageLimit
                         ),
                         getFieldValue(
-                            editingData.identifiableShortCircuit.ipMin,
+                            editingData.identifiableShortCircuit?.ipMin,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMin
+                                ?.ipMin
                         ),
                         getFieldValue(
-                            editingData.identifiableShortCircuit.ipMax,
+                            editingData.identifiableShortCircuit?.ipMax,
                             editingDataRef.current.identifiableShortCircuit
-                                .ipMax
+                                ?.ipMax
                         ),
                         false,
                         undefined
@@ -654,13 +654,14 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControl.activePowerControlOn,
+                            editingData.activePowerControl
+                                ?.activePowerControlOn,
                             editingDataRef.current.activePowerControl
-                                .activePowerControlOn
+                                ?.activePowerControlOn
                         ),
                         getFieldValue(
-                            editingData.activePowerControl.droop,
-                            editingDataRef.current.activePowerControl.droop
+                            editingData.activePowerControl?.droop,
+                            editingDataRef.current.activePowerControl?.droop
                         )
                     );
                 default:
