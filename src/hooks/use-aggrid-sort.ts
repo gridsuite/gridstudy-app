@@ -60,7 +60,7 @@ export const useAgGridSort = ({
 }: IUseAgGridSortProps = {}) => {
     const { colKey: initColKey, sortWay: initSortWay } = initSortConfig || {
         colKey: '',
-        sortWay: SORT_WAYS.asc,
+        sortWay: SORT_WAYS.desc,
     };
 
     const [sortConfig, setSortConfig] = useState<ISortConfig>(
@@ -80,8 +80,8 @@ export const useAgGridSort = ({
     );
 
     const resetSortConfig = useCallback(() => {
-        setSortConfig({ colKey: '', sortWay: 0 });
-    }, []);
+        setSortConfig({ colKey: initColKey, sortWay: initSortWay });
+    }, [initColKey, initSortWay]);
 
     return { onSortChanged, sortConfig, initSort, resetSortConfig };
 };
