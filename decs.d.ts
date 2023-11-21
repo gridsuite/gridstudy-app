@@ -174,6 +174,9 @@ declare module '@gridsuite/commons-ui' {
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
 
+    export const DARK_THEME: string;
+    export const LIGHT_THEME: string;
+  
     interface CheckboxInputProps {
         name: string;
         label?: string;
