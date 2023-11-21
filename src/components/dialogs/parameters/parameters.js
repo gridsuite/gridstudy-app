@@ -245,7 +245,7 @@ export const styles = {
     adjustExistingLimitsInfo: (theme) => ({
         display: 'flex',
         alignItems: 'center',
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     }),
 };
