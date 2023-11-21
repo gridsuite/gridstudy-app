@@ -18,8 +18,8 @@ import {
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import { convertDuration } from '../../spreadsheet/utils/cell-renderers';
+import { UNDEFINED_ACCEPTABLE_DURATION } from "../../utils/utils";
 
-const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 const PERMANENT_LIMIT_NAME = 'permanent';
 
 export const convertSide = (side: string, intl: IntlShape) => {

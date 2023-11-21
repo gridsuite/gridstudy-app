@@ -32,6 +32,7 @@ import {
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
 import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
+import { UNDEFINED_ACCEPTABLE_DURATION } from "../../utils/utils";
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -88,7 +89,11 @@ export const flattenNmKResultsContingencies = (
                     loading: limitViolation.loading,
                     side: limitViolation.side,
                     linkedElementId: contingencyId,
-                    acceptableDuration: limitViolation.acceptableDuration,
+                    acceptableDuration:
+                        limitViolation.acceptableDuration ===
+                        UNDEFINED_ACCEPTABLE_DURATION
+                            ? null
+                            : limitViolation.acceptableDuration,
                 });
             });
         }
