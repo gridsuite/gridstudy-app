@@ -49,7 +49,7 @@ const formSchema = yup
     .required();
 
 const emptyFormData = {
-    [EQUIPMENT_TYPE_FIELD]: null,
+    [EQUIPMENT_TYPE_FIELD]: '',
     [FORMULAS]: [getFormulaInitialValue()],
 };
 
