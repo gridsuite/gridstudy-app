@@ -50,7 +50,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             sortWay: defaultSortOrder,
         },
     });
-
+    const SENSI_LOGS_TAB_INDEX = 3;
     const initTable = (nOrNkIndex) => {
         initFilters();
         initSort(nOrNkIndex ? 'valueAfter' : 'value');
@@ -77,7 +77,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 sensiKindIndex={sensiKindIndex}
                 setSensiKindIndex={handleSensiKindIndexChange}
             />
-            {sensiKindIndex < 3 && (
+            {sensiKindIndex < SENSI_LOGS_TAB_INDEX && (
                 <>
                     <Tabs
                         value={nOrNkIndex}
@@ -101,7 +101,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     />
                 </>
             )}
-            {sensiKindIndex === 3 &&
+            {sensiKindIndex === SENSI_LOGS_TAB_INDEX &&
                 sensitivityAnalysisStatus === RunningStatus.SUCCEED && (
                     <>
                         <Box sx={{ height: '4px' }}></Box>

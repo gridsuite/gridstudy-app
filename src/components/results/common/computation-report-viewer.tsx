@@ -107,7 +107,6 @@ export const ComputationReportViewer: FunctionComponent<
                     nodeReportPromise={nodeReportPromise}
                 />
             )}
-            ;
         </>
     );
 };
