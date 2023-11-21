@@ -79,10 +79,10 @@ const CustomHeaderComponent = ({
 
     const isColumnSorted = sortColKey === field;
 
+    /* Filter should be activated for current column and
+    Filter should be a text type, or we should have options for filter if it is an autocomplete */
     const shouldActivateFilter =
-        // Filter should be activated for current column
         isFilterable &&
-        // Filter should be a text type, or we should have options for filter if it is an autocomplete
         (filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length);
 
     const shouldDisplayFilterIcon =
@@ -129,17 +129,17 @@ const CustomHeaderComponent = ({
     };
 
     const handleSortChange = useCallback(() => {
-        let newSort = null;
-        if (!isColumnSorted || !sortWay) {
+        let newSort;
+        if (sortWay < 0) {
             newSort = 1;
-        } else if (sortWay > 0) {
+        } else {
             newSort = -1;
         }
 
         if (typeof onSortChanged === 'function') {
             onSortChanged(newSort);
         }
-    }, [isColumnSorted, onSortChanged, sortWay]);
+    }, [onSortChanged, sortWay]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
@@ -209,7 +209,7 @@ const CustomHeaderComponent = ({
                         </Grid>
                         {isSortable && (
                             <Grid item>
-                                {isColumnSorted && sortWay && (
+                                {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
                                             {sortWay === 1 ? (

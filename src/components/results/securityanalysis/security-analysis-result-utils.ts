@@ -297,7 +297,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            isSortable: true,
             isFilterable: true,
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,

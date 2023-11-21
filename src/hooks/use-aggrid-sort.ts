@@ -19,13 +19,11 @@ export const SORT_WAYS = {
     desc: -1,
 };
 
-export const getSortValue = (sortWay: number | null) => {
-    if (sortWay === 1) {
+export const getSortValue = (sortWay: number) => {
+    if (sortWay > 0) {
         return 'asc';
-    } else if (sortWay === -1) {
-        return 'desc';
     } else {
-        return undefined;
+        return 'desc';
     }
 };
 
@@ -51,13 +49,13 @@ const getSortConfig = (
 
 interface IUseAgGridSortProps {
     dataKeyToSortKey?: DataKeyToSortKey;
-    initSortConfig?: ISortConfig;
+    initSortConfig: ISortConfig;
 }
 
 export const useAgGridSort = ({
     dataKeyToSortKey,
     initSortConfig,
-}: IUseAgGridSortProps = {}) => {
+}: IUseAgGridSortProps) => {
     const { colKey: initColKey, sortWay: initSortWay } = initSortConfig || {
         colKey: '',
         sortWay: SORT_WAYS.desc,
