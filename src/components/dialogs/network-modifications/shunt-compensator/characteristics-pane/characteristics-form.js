@@ -33,7 +33,6 @@ import {
 } from '../../../dialogUtils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({
@@ -193,25 +192,15 @@ export const CharacteristicsForm = ({
                     currentSectionCount,
                     currentMaximumSectionCount,
                     currentLinkedSwitchedOnValue,
-                ].includes(null)
+                ].includes(null) &&
+                currentMaximumSectionCount >= currentSectionCount
             ) {
-                if (
-                    currentMaximumSectionCount >= currentSectionCount &&
-                    [
-                        currentSectionCount,
-                        currentMaximumSectionCount,
-                        currentLinkedSwitchedOnValue,
-                    ].every((value) => !isBlankOrEmpty(value))
-                ) {
-                    setValue(
-                        SWITCHED_ON_FIELD,
-                        (currentLinkedSwitchedOnValue /
-                            currentMaximumSectionCount) *
-                            currentSectionCount
-                    );
-                } else {
-                    setValue(SWITCHED_ON_FIELD, null);
-                }
+                setValue(
+                    SWITCHED_ON_FIELD,
+                    (currentLinkedSwitchedOnValue /
+                        currentMaximumSectionCount) *
+                        currentSectionCount
+                );
             } else {
                 setValue(SWITCHED_ON_FIELD, null);
             }
