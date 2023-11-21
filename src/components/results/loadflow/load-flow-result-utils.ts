@@ -13,13 +13,13 @@ import {
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
 import {
+    ColDef,
     ICellRendererParams,
     ValueFormatterParams,
-    ColDef,
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import { convertDuration } from '../../spreadsheet/utils/cell-renderers';
-import { UNDEFINED_ACCEPTABLE_DURATION } from "../../utils/utils";
+import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
 
