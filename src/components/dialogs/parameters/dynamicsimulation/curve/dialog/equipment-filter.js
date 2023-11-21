@@ -119,7 +119,7 @@ const EquipmentFilter = forwardRef(
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'DynamicSimulationFetchSubstationError',
+                        headerId: 'DynamicSimulationFetchCountryError',
                     });
                 });
         }, [currentNode.id, studyUuid, snackError]);
@@ -135,17 +135,8 @@ const EquipmentFilter = forwardRef(
                 .then((vals) => {
                     const equipments = vals.flat();
 
-                    // filter equipments by voltageLevel ids, nominalVoltage and country
-                    const filteredEquipments = equipments.filter(
-                        (equipment) => {
-                            let matched = true; // by default whatever equipment is taken into account
-
-                            return matched;
-                        }
-                    );
-
                     // take only ids when return
-                    return filteredEquipments.map((elem) => ({ id: elem.id }));
+                    return equipments.map((elem) => ({ id: elem.id }));
                 })
                 .catch((error) => {
                     snackError({
@@ -153,7 +144,15 @@ const EquipmentFilter = forwardRef(
                         headerId: 'DynamicSimulationFetchEquipmentError',
                     });
                 });
-        }, [studyUuid, currentNode.id, equipmentType.fetchers, snackError]);
+        }, [
+            studyUuid,
+            currentNode.id,
+            equipmentType.fetchers,
+            snackError,
+            selectedVoltageLevelIds,
+            selectedCountries,
+            selectedNominalVoltages,
+        ]);
 
         useEffect(() => {
             if (gridReady && countriesFilterReady) {

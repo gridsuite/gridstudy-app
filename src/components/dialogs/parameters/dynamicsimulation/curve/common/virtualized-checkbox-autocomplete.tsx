@@ -22,7 +22,6 @@ import React, {
     useContext,
     useEffect,
     useRef,
-    useState,
 } from 'react';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { useIntl } from 'react-intl';
@@ -63,9 +62,7 @@ const useResetCache = (data: any) => {
 const Row = (props: ListChildComponentProps) => {
     const intl = useIntl();
     const { data, index, style } = props;
-    console.log('row props', { props });
     const dataSet = data[index];
-    console.log('rowData', { data, index });
     const inlineStyle = {
         ...style,
         top: (style.top as number) + ITEM_PADDING_TOP,
@@ -171,7 +168,7 @@ const VirtualizedListComponent = (props: any, ref: ForwardedRef<any>) => {
 interface VirtualizedCheckboxAutocompleteProps {
     options: any[];
     getOptionLabel: (option: any) => string;
-    onChange: () => void;
+    onChange: (selectedOptions: any[]) => void;
     value: any;
 }
 
@@ -179,44 +176,28 @@ const VirtualizedCheckboxAutocomplete = ({
     options,
     getOptionLabel,
     onChange,
-    value: initialSelectedOptions,
+    value,
 }: VirtualizedCheckboxAutocompleteProps) => {
-    const [checkedOptions, setCheckedOptions] = useState(
-        initialSelectedOptions ?? []
-    );
-
-    // used to reset internal state when initial selected value changed
-    const [prevInitialSelectedOptions, setPrevInitialSelectedOptions] =
-        useState(initialSelectedOptions);
-    if (initialSelectedOptions !== prevInitialSelectedOptions) {
-        setPrevInitialSelectedOptions(initialSelectedOptions);
-        setCheckedOptions(initialSelectedOptions);
-    }
-
-    const renderInputCb = useCallback(
-        (params: AutocompleteRenderInputParams) => <TextField {...params} />,
-        []
-    );
-
-    const checkedAll = options.length === checkedOptions.length;
-
     const handleCheckAll = useCallback(() => {
-        if (!checkedAll) {
-            setCheckedOptions(options);
-        }
-    }, [checkedAll, options]);
+        // propagate by callback
+        onChange && onChange(options);
+    }, [options, onChange]);
 
-    const handleToggleOption = useCallback((selectedOptions: any[]) => {
-        setCheckedOptions(selectedOptions);
-    }, []);
+    const handleToggleOption = useCallback(
+        (selectedOptions: any[]) => {
+            // propagate by callback
+            onChange && onChange(selectedOptions);
+        },
+        [onChange]
+    );
 
     const handleClearOptions = useCallback(() => {
-        setCheckedOptions([]);
-    }, []);
+        // propagate by callback
+        onChange && onChange([]);
+    }, [onChange]);
 
     const handleChange = useCallback(
         (event: any, selectedOptions: any[], reason: any) => {
-            console.log('handleChange', [event, selectedOptions, reason]);
             if (['selectOption', 'removeOption'].includes(reason)) {
                 // check whether Check All is selected
                 if (
@@ -245,12 +226,14 @@ const VirtualizedCheckboxAutocomplete = ({
     const filterOptions = useCallback((options: any[], params: any) => {
         const defaultFilter = createFilterOptions();
         const filteredOptions = defaultFilter(options, params);
-        console.log('filteredOptions', filteredOptions);
         return [CHECK_ALL.value, UNCHECK_ALL.value, ...filteredOptions];
-        // return filteredOptions;
     }, []);
 
-    const renderTagsCb = useCallback(
+    const renderInput = (params: AutocompleteRenderInputParams) => (
+        <TextField {...params} />
+    );
+
+    const renderTags = useCallback(
         (selectedOptions: any[]) => {
             if (selectedOptions.length === 1) {
                 return getOptionLabel(selectedOptions[0]);
@@ -264,14 +247,11 @@ const VirtualizedCheckboxAutocomplete = ({
         [getOptionLabel]
     );
 
-    const renderOptionCb = useCallback(
-        (
-            props: React.HTMLAttributes<HTMLLIElement>,
-            option: any,
-            state: AutocompleteRenderOptionState
-        ) => [props, option, state.index, state.selected] as React.ReactNode,
-        []
-    );
+    const renderOption = (
+        props: React.HTMLAttributes<HTMLLIElement>,
+        option: any,
+        state: AutocompleteRenderOptionState
+    ) => [props, option, state.index, state.selected] as React.ReactNode;
 
     const ListBoxComponent = forwardRef(VirtualizedListComponent);
 
@@ -283,14 +263,14 @@ const VirtualizedCheckboxAutocomplete = ({
             disableClearable
             disableCloseOnSelect
             size={'small'}
-            renderInput={renderInputCb}
+            renderInput={renderInput}
             options={options}
-            renderOption={renderOptionCb}
+            renderOption={renderOption}
             ListboxComponent={ListBoxComponent}
-            value={checkedOptions}
+            value={value}
             onChange={handleChange}
             filterOptions={filterOptions}
-            renderTags={renderTagsCb}
+            renderTags={renderTags}
         />
     );
 };
