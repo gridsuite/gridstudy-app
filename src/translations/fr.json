@@ -822,6 +822,7 @@
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
     "AdditionalInformations": "Informations complémentaires",
+    "Information": "Information",
     "AddProperty": "Ajouter une propriété",
     "PropertyName": "Nom de la propriété",
     "PropertyValue": "Valeur de la propriété",
