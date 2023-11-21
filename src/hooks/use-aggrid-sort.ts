@@ -79,9 +79,5 @@ export const useAgGridSort = ({
         [dataKeyToSortKey, initSortWay]
     );
 
-    const resetSortConfig = useCallback(() => {
-        setSortConfig({ colKey: initColKey, sortWay: initSortWay });
-    }, [initColKey, initSortWay]);
-
-    return { onSortChanged, sortConfig, initSort, resetSortConfig };
+    return { onSortChanged, sortConfig, initSort };
 };
