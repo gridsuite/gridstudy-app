@@ -157,9 +157,8 @@ export const EquipmentTable = ({
                 <SitePropertiesDialog
                     open={openPopupEditSiteProperties}
                     spreadsheetContext={gridContext}
-                    closeDialog={(state) => {
-                        console.log('close dialog', state);
-                        setOpenPopupEditSiteProperties(!state);
+                    closeDialog={(shouldClose) => {
+                        setOpenPopupEditSiteProperties(!shouldClose);
                     }}
                     studyUuid={studyUuid}
                     currentNode={currentNode}

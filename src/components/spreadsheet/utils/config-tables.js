@@ -7,7 +7,7 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { BooleanListField, NumericalField } from './equipment-table-editors';
+import { BooleanListField, NumericalField, SelectField } from "./equipment-table-editors";
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -115,6 +115,16 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'countryName',
+                cellEditor: SelectField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: '',
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+
+                    };
+                },
                 editable: true,
             },
             {

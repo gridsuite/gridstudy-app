@@ -14,10 +14,10 @@ import React, {
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { TextField, Tooltip } from '@mui/material';
-import { useIntl } from 'react-intl';
+import { Autocomplete, Chip, TextField, Tooltip } from "@mui/material";
+import { FormattedMessage, useIntl } from "react-intl";
 import { EDIT_COLUMN } from './config-tables';
-
+import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 const refreshEditingCell = (gridApi) => {
     const rowNode = gridApi.getPinnedTopRow(0);
     if (rowNode) {
@@ -293,6 +293,48 @@ export const BooleanListField = forwardRef(
                     <em>{intl.formatMessage({ id: 'false' })}</em>
                 </MenuItem>
             </Select>
+        );
+    }
+);
+
+
+export const SelectField = forwardRef(
+    ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
+        const [value, setValue] = useState('');
+        const { translate, countryCodes } = LocalizedCountries();
+
+
+
+        useEffect(() => {
+            refreshEditingCell(gridApi);
+        }, [gridApi, value]);
+
+        return (
+          <Autocomplete
+            options={countryCodes}
+            getOptionLabel={(countryCode) => translate(countryCode)}
+            style={{ width: '100%' }}
+            onChange={(event, newValue) => {
+              setValue(newValue);
+              console.log('gridref', colDef.field, newValue)
+              gridContext.dynamicValidation[colDef.field] = newValue;
+            }}
+            renderInput={(params) => <TextField {...params}
+                                                label={
+              <FormattedMessage id={'descLfAllCountries'} />
+            }/>}
+            renderTags={(val, getTagsProps) =>
+              val.map((code, index) => (
+                <Chip
+                  id={'chip_' + code}
+                  size={'small'}
+                  label={translate(code)}
+                  {...getTagsProps({ index })}
+                />
+              ))
+            }
+          />
+
         );
     }
 );
