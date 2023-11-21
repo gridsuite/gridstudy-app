@@ -11,12 +11,6 @@ import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
 import SitePropertiesDialog from 'components/dialogs/equipements-table/site-properties-dialog';
-import { SelectOptionsDialog } from 'utils/dialogs';
-import {
-    modifySubstation,
-    formatPropertiesForBackend,
-} from 'services/study/network-modifications';
-
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
 
@@ -159,11 +153,19 @@ export const EquipmentTable = ({
                 showOverlay={true}
             />
 
-            <SitePropertiesDialog
-                open={openPopupEditSiteProperties}
-                spreadsheetContext={gridContext}
-                closeDialog={(state) => setOpenPopupEditSiteProperties(state)}
-            ></SitePropertiesDialog>
+            {openPopupEditSiteProperties && (
+                <SitePropertiesDialog
+                    open={openPopupEditSiteProperties}
+                    spreadsheetContext={gridContext}
+                    closeDialog={(state) => {
+                        console.log('close dialog', state);
+                        setOpenPopupEditSiteProperties(!state);
+                    }}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    equipmentId={equipmentId}
+                ></SitePropertiesDialog>
+            )}
         </>
     );
 };

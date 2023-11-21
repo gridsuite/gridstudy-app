@@ -1086,9 +1086,9 @@ export function createSubstation(
 
 /**
  * Formats the properties of an array of properties so it can be consumed by the backend.
- * @param {Array<{key: string, value: any}>} previousPropertiesArray - The previous propeties va.
- * @param {Array<{key: string, value: any}>} newPropertiesArray - The new properties values.
- * @returns {Array<{name: string, value: any, previousValue: any, added: boolean, deletionMark: boolean}>} - The modified properties.
+ * @param {Array<{name: string, value: string}>} previousPropertiesArray - The previous propeties va.
+ * @param {Array<{name: string, value: string}>} newPropertiesArray - The new properties values.
+ * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean}>} - The modified properties.
  */
 export function formatPropertiesForBackend(
     previousPropertiesArray,

@@ -7,9 +7,7 @@
 import React, {
     FunctionComponent,
     useCallback,
-    useEffect,
     useMemo,
-    useRef,
     useState,
 } from 'react';
 import {
@@ -25,20 +23,20 @@ import {
     useTheme,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { AgGridReact } from 'ag-grid-react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box } from '@mui/system';
 import Tooltip from '@mui/material/Tooltip';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { getLocalStorageTheme } from '../../../redux/local-storage';
-import { DARK_THEME, elementType } from '@gridsuite/commons-ui';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import { formatPropertiesForBackend, modifySubstation } from "services/study/network-modifications";
 
 type SitePropertiesDialogProps = {
     open: boolean;
     spreadsheetContext: any;
-    onDataChanged: (data: IData[]) => void;
     closeDialog: (status: boolean) => void;
+    studyUuid: string;
+    currentNode: any;
+    equipmentId: string;
 };
 
 type IData = {
@@ -53,30 +51,15 @@ type IData = {
 const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     open,
     spreadsheetContext,
-    onDataChanged,
     closeDialog,
+    studyUuid,
+    currentNode,
+    equipmentId,
 }) => {
     const theme = useTheme();
-    const gridRef = useRef<AgGridReact>(null);
     const [error, setError] = useState<string>('');
     const [invalidCells, setInvalidCells] = useState<number[]>([]);
     const intl = useIntl();
-    const columnDefs = useMemo(() => {
-        return [
-            {
-                headerName: intl.formatMessage({ id: 'Key' }),
-                field: 'key',
-                editable: true,
-                singleClickEdit: true,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'Value' }),
-                field: 'value',
-                editable: true,
-                singleClickEdit: true,
-            },
-        ];
-    }, [intl]);
     const [rowData, setRowData] = useState<IData[]>(() => {
         const data = spreadsheetContext.dynamicValidation;
         if (!data?.properties) {
@@ -87,26 +70,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             return { id: index, key: key, value: data.properties[key] };
         });
     });
-    const [editedSubstationPropertiesData, setEditedSubstationPropertiesData] =
-    useState({});
-
-
-    // const handleDeleteRow = useCallback(() => {
-    //     const selectedNodes = gridApi.api.getSelectedNodes();
-    //     let updatedRowData = [...rowData];
-    //     selectedNodes.forEach((node: any) => {
-    //         const index = updatedRowData.indexOf(node.data);
-    //         if (index !== -1) {
-    //             updatedRowData.splice(index, 1);
-    //         }
-    //     });
-    //     // Update the IDs of the rows to match their index in the array
-    //     updatedRowData.forEach((row, index) => {
-    //         row.id = index;
-    //     });
-    //     setRowData(updatedRowData);
-    //     onDataChanged(updatedRowData);
-    // }, [gridApi, rowData, onDataChanged]);
 
     const handleRemoveRow = useCallback(
         (index: number) => {
@@ -147,11 +110,54 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
 
         if (!hasError) {
             setError('');
+            closeDialog(true);
+            prepareData();
             // Perform any additional actions with the validated data
             console.log('gridref', rowData);
         }
 
         setInvalidCells(invalidCells);
+
+        return !hasError;
+    };
+
+    const prepareData = () => {
+        const initialProperties =
+            spreadsheetContext.dynamicValidation.properties;
+        //extract keys and values from initial properties to an array of objects with key and value
+        const initialPropertiesMapped = initialProperties
+            ? Object.keys(initialProperties).map((key) => {
+                  return {
+                      name: key,
+                      value: initialProperties[key],
+                  };
+              })
+            : [];
+
+        const properties = rowData.map((row) => {
+            return {
+                name: row.key,
+                value: row.value,
+            };
+        });
+
+        const propertiesSiteFormated = formatPropertiesForBackend(
+            initialPropertiesMapped,
+            properties
+        );
+
+        modifySubstation(
+            studyUuid,
+            currentNode.id,
+            spreadsheetContext.dynamicValidation.id,
+            equipmentId,
+            null,
+            false,
+            null,
+            propertiesSiteFormated
+        ).catch((err) => {
+            console.debug(err);
+        });
     };
 
     const handleNameChange = (index: number, value: string) => {
@@ -170,55 +176,15 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
         closeDialog(true);
     };
 
-    const handleSavePopupSelectEditSiteProperties = () => {
-        closeDialog(true);
-
-        // const properties = Object.keys(editedSubstationPropertiesData).map(
-        //     (key) => {
-        //         return {
-        //             name: editedSubstationPropertiesData[key].key,
-        //             value: editedSubstationPropertiesData[key].value,
-        //         };
-        //     }
-        // );
-
-        // const initialProperties = gridContext.dynamicValidation.properties;
-        // //extract keys and values from initial properties to an array of objects with key and value
-        // const initialPropertiesMapped = initialProperties
-        //     ? Object.keys(initialProperties).map((key) => {
-        //           return {
-        //               name: key,
-        //               value: initialProperties[key],
-        //           };
-        //       })
-        //     : [];
-
-        // const propertiesSiteFormated = formatPropertiesForBackend(
-        //     initialPropertiesMapped,
-        //     properties
-        // );
-
-        // modifySubstation(
-        //     studyUuid,
-        //     currentNode.id,
-        //     gridContext.dynamicValidation.id,
-        //     equipmentId,
-        //     null,
-        //     false,
-        //     null,
-        //     propertiesSiteFormated
-        // ).catch((err) => {
-        //     console.debug(err);
-        // });
-    };
     return (
         <SelectOptionsDialog
             open={open}
             onClose={handleCancelPopupSelectEditSiteProperties}
-            onClick={handleSavePopupSelectEditSiteProperties}
+            onClick={performValidation}
             title={intl.formatMessage({
                 id: 'editSiteProperties',
             })}
+            style={undefined}
             child={
                 <Grid container spacing={2} style={{ width: '500px' }}>
                     <Grid item xs={12}>
@@ -230,7 +196,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                         >
                             <Table stickyHeader size="small">
                                 <PropertiesEditorHeader
-                                    theme={theme.palette.mode === 'dark'}
+                                    darkTheme={theme.palette.mode === 'dark'}
                                     handleAddRow={handleAddRow}
                                 />
                                 <TableBody>
@@ -305,10 +271,10 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
 export default SitePropertiesDialog;
 
 const PropertiesEditorHeader = ({
-    theme,
+    darkTheme,
     handleAddRow,
 }: {
-    theme: boolean;
+    darkTheme: boolean;
     handleAddRow: () => void;
 }) => {
     const intl = useIntl();
@@ -350,8 +316,7 @@ const PropertiesEditorHeader = ({
                                 <AddCircleIcon
                                     sx={{
                                         color:
-                                            getLocalStorageTheme() ===
-                                            DARK_THEME
+                                            darkTheme
                                                 ? 'white'
                                                 : 'black',
                                     }}
