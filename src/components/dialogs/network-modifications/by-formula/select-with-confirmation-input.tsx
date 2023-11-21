@@ -15,7 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 
 interface SelectWithConfirmationInputProps {
     name: string;
-    options: { id: string; label: string }[];
+    options: string[];
     onValidate: () => void;
     label: string;
 }
@@ -59,8 +59,8 @@ const SelectWithConfirmationInput: FunctionComponent<
                     label={<FormattedMessage id={label} />}
                 >
                     {options.map((option, index) => (
-                        <MenuItem key={index} value={option.id ?? option}>
-                            <FormattedMessage id={option.label ?? option} />
+                        <MenuItem key={index} value={option}>
+                            <FormattedMessage id={option} />
                         </MenuItem>
                     ))}
                 </Select>
