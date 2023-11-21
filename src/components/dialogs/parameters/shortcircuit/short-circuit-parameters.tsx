@@ -58,6 +58,27 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     const watchPredefinedParams = useWatch({
         name: SHORT_CIRCUIT_PREDEFINED_PARAMS,
     });
+    const watchLoads = useWatch({
+        name: SHORT_CIRCUIT_WITH_LOADS,
+    });
+    const watchShuntCompensators = useWatch({
+        name: SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
+    });
+    const watchVSC = useWatch({
+        name: SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
+    });
+    const watchNeutralPosition = useWatch({
+        name: SHORT_CIRCUIT_WITH_NEUTRAL_POSITION,
+    });
+
+    const isFeaturesDefaultConfiguration = useMemo(() => {
+        return (
+            !watchLoads &&
+            !watchShuntCompensators &&
+            watchVSC &&
+            !watchNeutralPosition
+        );
+    }, [watchLoads, watchShuntCompensators, watchVSC, watchNeutralPosition]);
 
     // the translation of values
     const predefinedParamsOptions = useMemo(() => {
@@ -147,12 +168,16 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909 &&
             watchInitialVoltageProfileMode === INITIAL_VOLTAGE.CEI909;
 
-        if (isNominal || isCEI909) {
+        if ((isNominal || isCEI909) && isFeaturesDefaultConfiguration) {
             setStatus(STATUS.SUCCESS);
         } else {
             setStatus(STATUS.ERROR);
         }
-    }, [watchInitialVoltageProfileMode, watchPredefinedParams]);
+    }, [
+        watchInitialVoltageProfileMode,
+        watchPredefinedParams,
+        isFeaturesDefaultConfiguration,
+    ]);
 
     // reset all fields when predefined parameters changes
     useEffect(() => {
