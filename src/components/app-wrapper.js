@@ -55,14 +55,9 @@ import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
-const defaultTheme = createTheme();
-
-const lightTheme = createTheme({
+let lightTheme = createTheme({
     palette: {
         mode: 'light',
-        customButton: {
-            main: defaultTheme.palette.text.primary,
-        },
     },
     link: {
         color: 'blue',
@@ -88,12 +83,17 @@ const lightTheme = createTheme({
     },
 });
 
-const darkTheme = createTheme({
+lightTheme = createTheme(lightTheme, {
+    palette: {
+        customButton: {
+            main: lightTheme.palette.text.primary,
+        },
+    },
+});
+
+let darkTheme = createTheme({
     palette: {
         mode: 'dark',
-        customButton: {
-            main: defaultTheme.palette.text.primary,
-        },
     },
     link: {
         color: 'green',
@@ -116,6 +116,14 @@ const darkTheme = createTheme({
     aggrid: 'ag-theme-alpine-dark',
     overlay: {
         background: '#121212',
+    },
+});
+
+darkTheme = createTheme(darkTheme, {
+    palette: {
+        customButton: {
+            main: darkTheme.palette.text.primary,
+        },
     },
 });
 
