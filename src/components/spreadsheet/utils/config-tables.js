@@ -61,7 +61,12 @@ const propertiesGetter = (params) => {
         return null;
     }
 };
-
+const handleCellClickEvent = (event) => {
+    const { context: { isEditing, handleCellClick } = {} } = event || {};
+    if (isEditing) {
+        handleCellClick?.openGeneratorDialog();
+    }
+};
 const RegulatingTerminalCellRenderer = (params) => {
     const regulatingTerminalConnectableId =
         params.data?.regulatingTerminalConnectableId;
@@ -1569,20 +1574,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulationTypeText',
                 cellRenderer: RegulationTypeCellRenderer,
-                onCellClicked: (event) => {
-                    if (event.context.isEditing) {
-                        event.context?.handleCellClick?.openGeneratorDialog();
-                    }
-                },
+                onCellClicked: handleCellClickEvent,
             },
             {
                 id: 'RegulatingTerminalGenerator',
                 cellRenderer: RegulatingTerminalCellRenderer,
-                onCellClicked: (event) => {
-                    if (event.context.isEditing) {
-                        event.context?.handleCellClick?.openGeneratorDialog();
-                    }
-                },
+                onCellClicked: handleCellClickEvent,
             },
         ],
     },
