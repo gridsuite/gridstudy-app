@@ -131,10 +131,14 @@ const CustomHeaderComponent = ({
 
     const handleSortChange = useCallback(() => {
         let newSort;
-        if (sortWay < 0) {
+        if (!isColumnSorted) {
             newSort = SORT_WAY.asc;
         } else {
-            newSort = SORT_WAY.desc;
+            if (sortWay < 0) {
+                newSort = SORT_WAY.asc;
+            } else {
+                newSort = SORT_WAY.desc;
+            }
         }
 
         if (typeof onSortChanged === 'function') {
