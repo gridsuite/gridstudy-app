@@ -21,7 +21,6 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
-import { Box } from '@mui/system';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -103,12 +102,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             )}
             {sensiKindIndex === SENSI_LOGS_TAB_INDEX &&
                 sensitivityAnalysisStatus === RunningStatus.SUCCEED && (
-                    <>
-                        <Box sx={{ height: '4px' }}></Box>
-                        <ComputationReportViewer
-                            reportType={ComputingType.SENSITIVITY_ANALYSIS}
-                        />
-                    </>
+                    <ComputationReportViewer
+                        reportType={ComputingType.SENSITIVITY_ANALYSIS}
+                    />
                 )}
         </>
     );

@@ -15,7 +15,7 @@ import {
 } from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { Box } from '@mui/system';
+
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
@@ -87,30 +87,26 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             </Tabs>
 
             {resultOrLogIndex === 0 &&
-                tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
+                (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ? (
                     <ShortCircuitAnalysisAllBusesResult />
-                )}
-            {resultOrLogIndex === 0 &&
-                tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS && (
+                ) : (
                     <ShortCircuitAnalysisOneBusResult />
-                )}
+                ))}
+
             {resultOrLogIndex === 1 &&
                 ((tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES &&
                     AllBusesShortCircuitStatus === RunningStatus.SUCCEED) ||
                     (tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS &&
                         OneBusShortCircuitStatus ===
                             RunningStatus.SUCCEED)) && (
-                    <>
-                        <Box sx={{ height: '4px' }}></Box>
-                        <ComputationReportViewer
-                            reportType={
-                                tabIndex ===
-                                ShortCircuitAnalysisResultTabs.ALL_BUSES
-                                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
-                                    : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
-                            }
-                        />
-                    </>
+                    <ComputationReportViewer
+                        reportType={
+                            tabIndex ===
+                            ShortCircuitAnalysisResultTabs.ALL_BUSES
+                                ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+                                : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+                        }
+                    />
                 )}
         </>
     );

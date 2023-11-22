@@ -305,12 +305,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 )}
                 {tabIndex === 2 &&
                     securityAnalysisStatus === RunningStatus.SUCCEED && (
-                        <>
-                            <Box sx={{ height: '4px' }}></Box>
-                            <ComputationReportViewer
-                                reportType={ComputingType.SECURITY_ANALYSIS}
-                            />
-                        </>
+                        <ComputationReportViewer
+                            reportType={ComputingType.SECURITY_ANALYSIS}
+                        />
                     )}
             </Box>
         </>
