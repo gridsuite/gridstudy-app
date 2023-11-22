@@ -144,7 +144,7 @@ const CustomHeaderComponent = ({
         if (typeof onSortChanged === 'function') {
             onSortChanged(newSort);
         }
-    }, [onSortChanged, sortWay]);
+    }, [isColumnSorted, onSortChanged, sortWay]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
