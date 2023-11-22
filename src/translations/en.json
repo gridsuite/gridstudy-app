@@ -175,8 +175,8 @@
     "AdjustExistingLimitsInfo": "Please enter a positive number in order to increase an existing voltage limit and a negative number in order to decrease an existing voltage limit (new limit = existing limit + user input).",
     "SetDefaultLimits" : "Default values to fill missing limits",
 
-    "SelectAll": "Select all",
-    "UnselectAll": "Unselect all",
+    "SelectAll": "All",
+    "UnselectAll": "None",
 
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",

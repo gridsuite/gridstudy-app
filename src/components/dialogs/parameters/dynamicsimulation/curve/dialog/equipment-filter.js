@@ -26,6 +26,11 @@ import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import VirtualizedCheckboxAutocomplete from '../common/virtualized-checkbox-autocomplete';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
+import { evaluateFilter } from '../../../../../../services/study/filter';
+import {
+    CombinatorType,
+    DataType,
+} from '../../../../filter/expert/expert-filter.type';
 
 export const CURVE_EQUIPMENT_TYPES = {
     [EQUIPMENT_TYPES.GENERATOR]: {
@@ -106,6 +111,18 @@ const EquipmentFilter = forwardRef(
             setSelectedCountries(selectedCountries);
         }, []);
 
+        const getExpertRules = (
+            voltageLevelIds,
+            countries,
+            nominalVoltages
+        ) => {
+            return {
+                combinator: CombinatorType.AND,
+                dataType: DataType.COMBINATOR,
+                rules: [],
+            };
+        };
+
         // load countries
         useEffect(() => {
             fetchAllCountries(studyUuid, currentNode.id)
@@ -126,15 +143,18 @@ const EquipmentFilter = forwardRef(
 
         // fetching and filtering equipments by filters
         const loadThenFilterEquipmentsAsync = useCallback(() => {
-            // get all equipments by type
-            return Promise.all(
-                equipmentType.fetchers.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
-            )
-                .then((vals) => {
-                    const equipments = vals.flat();
-
+            const expertFilter = {
+                type: 'EXPERT',
+                equipmentType: equipmentType.type,
+                rules: getExpertRules(
+                    selectedVoltageLevelIds,
+                    selectedCountries,
+                    selectedNominalVoltages
+                ),
+            };
+            // evaluate by filter-server
+            return evaluateFilter(studyUuid, currentNode.id, expertFilter)
+                .then((equipments) => {
                     // take only ids when return
                     return equipments.map((elem) => ({ id: elem.id }));
                 })
@@ -147,7 +167,7 @@ const EquipmentFilter = forwardRef(
         }, [
             studyUuid,
             currentNode.id,
-            equipmentType.fetchers,
+            equipmentType.type,
             snackError,
             selectedVoltageLevelIds,
             selectedCountries,

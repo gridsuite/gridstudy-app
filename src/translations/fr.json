@@ -175,8 +175,8 @@
     "AdjustExistingLimitsInfo": "Merci de saisir une valeur positive pour augmenter une limite existante et une valeur négative pour abaisser une limite existante (nouvelle limite = limite existante + valeur saisie).",
     "SetDefaultLimits" : "Valeurs par défaut pour compléter les limites manquantes",
 
-    "SelectAll": "Tout selectionner",
-    "UnselectAll": "Tout déselectionner",
+    "SelectAll": "Tous",
+    "UnselectAll": "Aucun",
 
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
