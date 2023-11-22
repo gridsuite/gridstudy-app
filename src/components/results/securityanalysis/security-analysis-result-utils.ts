@@ -75,7 +75,11 @@ export const flattenNmKResultsContingencies = (
             rows.push({
                 contingencyId,
                 contingencyEquipmentsIds: elements.map((element) => element.id),
-                status,
+                status: status
+                    ? intl.formatMessage({
+                          id: status,
+                      })
+                    : '',
                 violationCount: subjectLimitViolations.length,
             });
             subjectLimitViolations?.forEach((constraint: Constraint) => {
