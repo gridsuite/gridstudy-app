@@ -14,7 +14,7 @@ import React, {
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { Autocomplete, Chip, TextField, Tooltip } from '@mui/material';
+import { Autocomplete, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { EDIT_COLUMN } from './config-tables';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';

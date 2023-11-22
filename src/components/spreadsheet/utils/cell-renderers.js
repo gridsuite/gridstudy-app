@@ -221,6 +221,16 @@ export const EditableCellRenderer = (props) => {
 };
 
 export const ReferenceLineCellRenderer = (props) => {
+    console.log('ReferenceLineCellRenderer', props);
+    // useEffect(() => {//FIXME to delete ?
+    //     props.setEditingData({
+    //         ...props.data,
+    //         metadata: {
+    //             ...props.editingData?.metadata,
+    //         },
+    //     });
+    // }, [props]);
+
     return (
         <Box
             sx={mergeSx(

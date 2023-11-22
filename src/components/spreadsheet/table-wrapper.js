@@ -245,13 +245,19 @@ const TableWrapper = (props) => {
                             component: EditingCellRenderer,
                             params: {
                                 setEditingData: setEditingData,
+                                editingData: editingData,
                                 startEditing: startEditing,
                                 isValidatingData: isValidatingData,
                             },
                         };
                     } else if (editingData?.id === params.data.id) {
                         return {
-                            component: ReferenceLineCellRenderer,
+                            component: ReferenceLineCellRenderer,//TODO FIXME is it necesary ?
+                            params: {
+                                setEditingData: setEditingData,
+                                startEditing: startEditing,
+                                isValidatingData: isValidatingData,
+                            },
                         };
                     } else {
                         return {

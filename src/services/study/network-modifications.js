@@ -1086,7 +1086,7 @@ export function createSubstation(
 
 /**
  * Formats the properties of an array of properties so it can be consumed by the backend.
- * @param {Array<{name: string, value: string}>} previousPropertiesArray - The previous propeties va.
+ * @param {Array<{name: string, value: string}>} previousPropertiesArray - The previous propeties values.
  * @param {Array<{name: string, value: string}>} newPropertiesArray - The new properties values.
  * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean}>} - The modified properties.
  */
@@ -1095,11 +1095,7 @@ export function formatPropertiesForBackend(
     newPropertiesArray
 ) {
     const propertiesModifications = [];
-    //delete elements that have empty name
-    let filtredPreviousPropertiesArray = previousPropertiesArray.filter(
-        (prop) => prop.name !== ''
-    );
-    filtredPreviousPropertiesArray.forEach((previousPropertiePair) => {
+    previousPropertiesArray.forEach((previousPropertiePair) => {
         const updatedProperty = newPropertiesArray.find(
             (updatedObj) => updatedObj.name === previousPropertiePair.name
         );
@@ -1125,10 +1121,9 @@ export function formatPropertiesForBackend(
 
     newPropertiesArray.forEach((newPropertie) => {
         // The property has been added
-        const previousPropertie = filtredPreviousPropertiesArray.find(
+        const previousPropertie = previousPropertiesArray.find(
             (oldObj) => oldObj.name === newPropertie.name
         );
-
         //the propertie is new ( does not exist in the previous properties array)
         if (!previousPropertie) {
             propertiesModifications.push({

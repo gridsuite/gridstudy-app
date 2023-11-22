@@ -32,6 +32,7 @@ import { formatPropertiesForBackend, modifySubstation } from "services/study/net
 
 type SitePropertiesDialogProps = {
     open: boolean;
+    spreadsheetApi: any;
     spreadsheetContext: any;
     closeDialog: (status: boolean) => void;
     studyUuid: string;
@@ -50,6 +51,7 @@ type IData = {
  */
 const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     open,
+    spreadsheetApi,
     spreadsheetContext,
     closeDialog,
     studyUuid,
@@ -111,9 +113,8 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
         if (!hasError) {
             setError('');
             closeDialog(true);
-            prepareData();
-            // Perform any additional actions with the validated data
-            console.log('gridref', rowData);
+            prepareDataAndSendRequest();
+
         }
 
         setInvalidCells(invalidCells);
@@ -121,10 +122,10 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
         return !hasError;
     };
 
-    const prepareData = () => {
+    const prepareDataAndSendRequest = () => {
         const initialProperties =
             spreadsheetContext.dynamicValidation.properties;
-        //extract keys and values from initial properties to an array of objects with key and value
+        //extract keys and values from initial properties to an array of objects with name and value
         const initialPropertiesMapped = initialProperties
             ? Object.keys(initialProperties).map((key) => {
                   return {
@@ -134,6 +135,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
               })
             : [];
 
+        //extract keys and values from current properties to an array of objects with name and value
         const properties = rowData.map((row) => {
             return {
                 name: row.key,
@@ -157,6 +159,10 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             propertiesSiteFormated
         ).catch((err) => {
             console.debug(err);
+            })
+            .finally(() => {
+                console.log('gridref',spreadsheetApi);
+                spreadsheetApi?.stopEditing();
         });
     };
 
