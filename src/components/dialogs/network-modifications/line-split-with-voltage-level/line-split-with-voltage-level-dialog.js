@@ -31,6 +31,7 @@ import {
     getConnectivityWithoutPositionValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 import LineSplitWithVoltageLevelForm from './line-split-with-voltage-level-form';
+import LineSplitWithVoltageLevelIllustration from './line-split-with-voltage-level-illustration';
 import {
     getLineToAttachOrSplitEmptyFormData,
     getLineToAttachOrSplitFormData,
@@ -242,6 +243,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
+                subtitle={<LineSplitWithVoltageLevelIllustration />}
                 open={open}
                 isDataFetching={
                     isUpdate && editDataFetchStatus === FetchStatus.RUNNING

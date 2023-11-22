@@ -1623,7 +1623,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: BooleanListField,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
-                        ...params.data.activePowerControl,
+                        ...(params.data.activePowerControl || {}),
                         activePowerControlOn: params.newValue,
                     };
 
@@ -1632,7 +1632,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data.activePowerControl.activePowerControlOn,
+                            params.data?.activePowerControl
+                                ?.activePowerControlOn | 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1650,6 +1651,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
+                        defaultValue: params.data.activePowerControl?.droop,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1658,7 +1660,7 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) => params.data?.activePowerControl?.droop,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
-                        ...params.data.activePowerControl,
+                        ...(params.data.activePowerControl || {}),
                         droop: params.newValue,
                     };
                     return params;
