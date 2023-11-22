@@ -7,7 +7,11 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { BooleanListField, NumericalField, SelectCountryField } from "./equipment-table-editors";
+import {
+    BooleanListField,
+    NumericalField,
+    SelectCountryField,
+} from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';

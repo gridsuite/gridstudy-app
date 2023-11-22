@@ -28,7 +28,10 @@ import { Box } from '@mui/system';
 import Tooltip from '@mui/material/Tooltip';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import { formatPropertiesForBackend, modifySubstation } from "services/study/network-modifications";
+import {
+    formatPropertiesForBackend,
+    modifySubstation,
+} from 'services/study/network-modifications';
 
 type SitePropertiesDialogProps = {
     open: boolean;
@@ -114,7 +117,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             setError('');
             closeDialog(true);
             prepareDataAndSendRequest();
-
         }
 
         setInvalidCells(invalidCells);
@@ -157,13 +159,14 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             false,
             null,
             propertiesSiteFormated
-        ).catch((err) => {
-            console.debug(err);
+        )
+            .catch((err) => {
+                console.debug(err);
             })
             .finally(() => {
-                console.log('gridref',spreadsheetApi);
+                console.log('gridref', spreadsheetApi);
                 spreadsheetApi?.stopEditing();
-        });
+            });
     };
 
     const handleNameChange = (index: number, value: string) => {
@@ -321,10 +324,7 @@ const PropertiesEditorHeader = ({
                             <IconButton color="primary" onClick={handleAddRow}>
                                 <AddCircleIcon
                                     sx={{
-                                        color:
-                                            darkTheme
-                                                ? 'white'
-                                                : 'black',
+                                        color: darkTheme ? 'white' : 'black',
                                     }}
                                 />
                             </IconButton>
