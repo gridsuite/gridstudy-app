@@ -7,8 +7,7 @@
 
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
@@ -22,6 +21,8 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { REPORT_TYPES } from '../../utils/report-type';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -71,6 +72,11 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         setNOrNkIndex(newNOrNKIndex);
     };
 
+    const openLoader = useOpenLoaderShortWait({
+        isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
     return (
         <>
             <SensitivityAnalysisTabs
@@ -101,12 +107,18 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     />
                 </>
             )}
-            {sensiKindIndex === SENSI_LOGS_TAB_INDEX &&
-                sensitivityAnalysisStatus === RunningStatus.SUCCEED && (
-                    <ComputationReportViewer
-                        reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS}
-                    />
-                )}
+            {sensiKindIndex === SENSI_LOGS_TAB_INDEX && (
+                <>
+                    <Box sx={{ height: '4px' }}>
+                        {openLoader && <LinearProgress />}
+                    </Box>
+                    {sensitivityAnalysisStatus === RunningStatus.SUCCEED && (
+                        <ComputationReportViewer
+                            reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS}
+                        />
+                    )}
+                </>
+            )}
         </>
     );
 };
