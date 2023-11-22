@@ -99,7 +99,6 @@ export const ComputationReportViewer: FunctionComponent<
 
     return (
         <>
-            <Box sx={{ height: '4px' }}></Box>
             {report && (
                 <ReportViewer
                     jsonReportTree={report}
