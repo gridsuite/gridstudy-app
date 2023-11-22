@@ -13,8 +13,8 @@ import {
 } from '../../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Box } from '@mui/system';
-import ReportViewer from '../../ReportViewer/report-viewer';
-import LogReportItem from '../../ReportViewer/log-report-item';
+import ReportViewer from '../../report-viewer/report-viewer';
+import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';

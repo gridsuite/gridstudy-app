@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
-import { REPORT_TYPES } from '../../utils/reportType';
+import { REPORT_TYPES } from '../../utils/report-type';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },

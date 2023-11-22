@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer from '../components/ReportViewer/report-viewer';
+import ReportViewer from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -22,10 +22,10 @@ import {
     fetchSubReport,
 } from '../services/study';
 import { Box } from '@mui/system';
-import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
-import LogReportItem from './ReportViewer/log-report-item';
+import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
+import LogReportItem from './report-viewer/log-report-item';
 import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
-import { REPORT_TYPES } from './utils/reportType';
+import { REPORT_TYPES } from './utils/report-type';
 
 const styles = {
     div: {
@@ -37,7 +37,7 @@ const styles = {
 };
 
 /**
- * control the ReportViewer (fetch and waiting)
+ * control the report-viewer (fetch and waiting)
  * @param studyId : string study id
  * @param visible : boolean window visible
  * @param currentNode : object visualized node

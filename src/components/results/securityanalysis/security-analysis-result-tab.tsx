@@ -43,7 +43,7 @@ import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
-import { REPORT_TYPES } from '../../utils/reportType';
+import { REPORT_TYPES } from '../../utils/report-type';
 
 const styles = {
     container: {

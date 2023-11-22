@@ -53,7 +53,7 @@ import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { REPORT_TYPES } from '../../utils/reportType';
+import { REPORT_TYPES } from '../../utils/report-type';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
