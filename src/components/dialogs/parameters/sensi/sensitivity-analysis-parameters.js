@@ -452,12 +452,12 @@ export const SensitivityAnalysisParameters = ({
                     <Button onClick={clear}>
                         <FormattedMessage id="resetToDefault" />
                     </Button>
-
-                    <Button variant="outlined">
-                        <SubmitButton onClick={handleSubmit(onSubmit)}>
-                            <FormattedMessage id="validate" />
-                        </SubmitButton>
-                    </Button>
+                    <SubmitButton
+                        onClick={handleSubmit(onSubmit)}
+                        variant="outlined"
+                    >
+                        <FormattedMessage id="validate" />
+                    </SubmitButton>
                     <LabelledButton callback={handleClose} label="cancel" />
                 </DialogActions>
             </FormProvider>

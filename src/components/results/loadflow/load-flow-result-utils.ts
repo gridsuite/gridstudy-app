@@ -6,6 +6,7 @@
  */
 
 import {
+    LimitNames,
     LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
@@ -42,11 +43,8 @@ export const makeData = (
         overload: (overloadedEquipment.value / overloadedEquipment.limit) * 100,
         name: overloadedEquipment.subjectId,
         value: overloadedEquipment.value,
-        acceptableDuration:
-            overloadedEquipment.acceptableDuration ===
-            UNDEFINED_ACCEPTABLE_DURATION
-                ? null
-                : overloadedEquipment.acceptableDuration,
+        actualOverloadDuration: overloadedEquipment.actualOverloadDuration,
+        upComingOverloadDuration: overloadedEquipment.upComingOverloadDuration,
         limit: overloadedEquipment.limit,
         limitName: convertLimitName(overloadedEquipment.limitName, intl),
         side: convertSide(overloadedEquipment.side, intl),
@@ -66,19 +64,9 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             headerName: intl.formatMessage({
                 id: 'LimitNameCurrentViolation',
             }),
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatLimitName(params.value, intl),
             field: 'limitName',
-        },
-        {
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'LimitAcceptableDuration',
-            }),
-            field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
@@ -101,7 +89,41 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             valueFormatter: (params: ValueFormatterParams) =>
                 params.value.toFixed(1),
         },
+        {
+            headerName: intl.formatMessage({
+                id: 'ActualOverload',
+            }),
+            field: 'actualOverload',
+            valueFormatter: (value: ValueFormatterParams) => {
+                return value.data.actualOverloadDuration ===
+                    UNDEFINED_ACCEPTABLE_DURATION
+                    ? intl.formatMessage({ id: 'UndefinedOverload' })
+                    : convertDuration(value.data.actualOverloadDuration);
+            },
+        },
+        {
+            headerName: intl.formatMessage({ id: 'upComingOverload' }),
+            field: 'upComingOverload',
+            valueFormatter: (value: ValueFormatterParams) => {
+                return value.data.upComingOverloadDuration ===
+                    UNDEFINED_ACCEPTABLE_DURATION
+                    ? intl.formatMessage({ id: 'UndefinedOverload' })
+                    : value.data.upComingOverloadDuration === null
+                    ? intl.formatMessage({ id: 'NoneUpcomingOverload' })
+                    : convertDuration(value.data.upComingOverloadDuration);
+            },
+        },
+        {
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+        },
     ];
+};
+
+export const formatLimitName = (limitName: string, intl: IntlShape) => {
+    return limitName === LimitNames.NA
+        ? intl.formatMessage({ id: 'Undefined' })
+        : limitName;
 };
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
@@ -117,7 +139,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             field: 'name',
         },
         {
-            headerName: intl.formatMessage({ id: 'Violation' }),
+            headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
             valueFormatter: (params: ValueFormatterParams) =>
                 formatLimitType(params.value, intl),

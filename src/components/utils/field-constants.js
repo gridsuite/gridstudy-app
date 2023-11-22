@@ -290,6 +290,16 @@ export const HVDC_LINE_TAB = 'hvdcLineTab';
 export const CONVERTER_STATION_1 = 'converterStation1';
 export const CONVERTER_STATION_2 = 'converterStation2';
 
+export const SHORT_CIRCUIT_WITH_FEEDER_RESULT = 'withFeederResult';
+export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParameters';
+export const SHORT_CIRCUIT_WITH_LOADS = 'withLoads';
+export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS =
+    'withVSCConverterStations';
+export const SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS = 'withShuntCompensators';
+export const SHORT_CIRCUIT_WITH_NEUTRAL_POSITION = 'withNeutralPosition';
+export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE =
+    'initialVoltageProfileMode';
+
 // By formula
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
 export const FORMULAS = 'formulas';
