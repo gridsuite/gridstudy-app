@@ -41,7 +41,7 @@ const RegulatingTerminalModificationDialog = ({
     const formSchema = yup
         .object()
         .shape({
-            [VOLTAGE_REGULATION_TYPE]: yup.string().nullable().required(),
+            [VOLTAGE_REGULATION_TYPE]: yup.string().required(),
             [VOLTAGE_LEVEL]: yup.object().nullable(),
             [EQUIPMENT]: yup.object().nullable(),
         })

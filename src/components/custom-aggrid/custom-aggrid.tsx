@@ -108,7 +108,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                         loadingOverlayComponentParams
                     }
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
-                    onCellClicked={props.onCellClicked}
                     onColumnResized={onColumnResized}
                     {...props}
                 />
