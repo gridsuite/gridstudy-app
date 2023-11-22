@@ -32,7 +32,7 @@ import {
     formatPropertiesForBackend,
     modifySubstation,
 } from 'services/study/network-modifications';
-import { useSnackMessage } from "@gridsuite/commons-ui";
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 type SitePropertiesDialogProps = {
     open: boolean;
@@ -178,7 +178,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             })
             .finally(() => {
                 spreadsheetApi?.stopEditing();
-
             });
     };
 
