@@ -221,7 +221,7 @@ export const EditableCellRenderer = (props) => {
 };
 
 export const ReferenceLineCellRenderer = (props) => {
-    useEffect(() => {//FIXME to delete ?
+    useEffect(() => {
         props.setEditingData({
             ...props.data,
             metadata: {
