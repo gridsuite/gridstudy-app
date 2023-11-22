@@ -32,6 +32,7 @@ import {
     formatPropertiesForBackend,
     modifySubstation,
 } from 'services/study/network-modifications';
+import { useSnackMessage } from "@gridsuite/commons-ui";
 
 type SitePropertiesDialogProps = {
     open: boolean;
@@ -65,6 +66,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     const [error, setError] = useState<string>('');
     const [invalidCells, setInvalidCells] = useState<number[]>([]);
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const [rowData, setRowData] = useState<IData[]>(() => {
         const data = spreadsheetContext.dynamicValidation;
         if (!data?.properties) {
@@ -101,11 +103,19 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
 
         rowData.forEach((item, index) => {
             if (item.key.trim() === '' || item.value.trim() === '') {
-                setError('Please fill in all fields');
+                setError(
+                    intl.formatMessage({
+                        id: 'FillAllFields',
+                    })
+                );
                 hasError = true;
                 invalidCells.push(index);
             } else if (names.has(item.key)) {
-                setError('Duplicate names are not allowed');
+                setError(
+                    intl.formatMessage({
+                        id: 'DuplicateProperty',
+                    })
+                );
                 hasError = true;
                 invalidCells.push(index);
             } else {
@@ -161,11 +171,14 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             propertiesSiteFormated
         )
             .catch((err) => {
-                console.debug(err);
+                snackError({
+                    messageTxt: err.message,
+                    headerId: 'SubstationModificationError',
+                });
             })
             .finally(() => {
-                console.log('gridref', spreadsheetApi);
                 spreadsheetApi?.stopEditing();
+
             });
     };
 

@@ -831,6 +831,8 @@
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
     "DuplicatedProps": "Duplicated properties: each property must be unique",
+    "DuplicateProperty": "Duplicate property",
+    "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
     "SubstationModificationError": "Error while modifying substation",
 

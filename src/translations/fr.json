@@ -830,6 +830,8 @@
     "PropertyName": "Nom de la propriété",
     "PropertyValue": "Valeur de la propriété",
     "DuplicatedProps": "Propriétés dupliquées : chaque propriété doit être unique",
+    "DuplicateProperty": "Propriété dupliquée",
+    "FillAllFields": "Veuillez remplir tous les champs",
     "ModifySubstation": "Modifier un site",
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
