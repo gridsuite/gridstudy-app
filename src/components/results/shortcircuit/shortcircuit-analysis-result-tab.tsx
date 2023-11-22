@@ -5,8 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Tab, Tabs } from '@mui/material';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     ResultTabIndexRedirection,
@@ -23,6 +28,8 @@ import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
 import { REPORT_TYPES } from '../../utils/report-type';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 interface ShortCircuitAnalysisResultTabProps {
     resultTabIndexRedirection: ResultTabIndexRedirection;
@@ -54,12 +61,35 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         [setTabIndex]
     );
 
+    const RESULTS_TAB_INDEX = 0;
+    const LOGS_TAB_INDEX = 1;
+
     const handleSubTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
             setResultOrLogIndex(newIndex);
         },
         [setResultOrLogIndex]
     );
+
+    const shortCircuitTabResultStatusSucceed = useMemo(() => {
+        return (
+            (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES &&
+                AllBusesShortCircuitStatus === RunningStatus.SUCCEED) ||
+            (tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS &&
+                OneBusShortCircuitStatus === RunningStatus.SUCCEED)
+        );
+    }, [AllBusesShortCircuitStatus, OneBusShortCircuitStatus, tabIndex]);
+
+    const shortCircuitTabisRunning = useMemo(() => {
+        return tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES
+            ? AllBusesShortCircuitStatus
+            : OneBusShortCircuitStatus;
+    }, [AllBusesShortCircuitStatus, OneBusShortCircuitStatus, tabIndex]);
+
+    const openLoader = useOpenLoaderShortWait({
+        isLoading: shortCircuitTabisRunning === RunningStatus.RUNNING,
+        delay: RESULTS_LOADING_DELAY,
+    });
 
     return (
         <>
@@ -87,28 +117,30 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                 />
             </Tabs>
 
-            {resultOrLogIndex === 0 &&
+            {resultOrLogIndex === RESULTS_TAB_INDEX &&
                 (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ? (
                     <ShortCircuitAnalysisAllBusesResult />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult />
                 ))}
 
-            {resultOrLogIndex === 1 &&
-                ((tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES &&
-                    AllBusesShortCircuitStatus === RunningStatus.SUCCEED) ||
-                    (tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS &&
-                        OneBusShortCircuitStatus ===
-                            RunningStatus.SUCCEED)) && (
-                    <ComputationReportViewer
-                        reportType={
-                            tabIndex ===
-                            ShortCircuitAnalysisResultTabs.ALL_BUSES
-                                ? REPORT_TYPES.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
-                                : REPORT_TYPES.ONE_BUS_SHORTCIRCUIT_ANALYSIS
-                        }
-                    />
-                )}
+            {resultOrLogIndex === LOGS_TAB_INDEX && (
+                <>
+                    <Box sx={{ height: '4px' }}>
+                        {openLoader && <LinearProgress />}
+                    </Box>
+                    {shortCircuitTabResultStatusSucceed && (
+                        <ComputationReportViewer
+                            reportType={
+                                tabIndex ===
+                                ShortCircuitAnalysisResultTabs.ALL_BUSES
+                                    ? REPORT_TYPES.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+                                    : REPORT_TYPES.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+                            }
+                        />
+                    )}
+                </>
+            )}
         </>
     );
 };
