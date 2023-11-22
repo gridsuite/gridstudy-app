@@ -53,6 +53,7 @@ import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
+import { REPORT_TYPES } from '../../utils/reportType';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -356,7 +357,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 </Box>
                 {loadFlowStatus === RunningStatus.SUCCEED && (
                     <ComputationReportViewer
-                        reportType={ComputingType.LOADFLOW}
+                        reportType={REPORT_TYPES.LOADFLOW}
                     />
                 )}
             </>

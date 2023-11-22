@@ -25,6 +25,7 @@ import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
 import LogReportItem from './ReportViewer/log-report-item';
 import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
+import { REPORT_TYPES } from './utils/reportType';
 
 const styles = {
     div: {
@@ -119,7 +120,7 @@ export const ReportViewerTab = ({
                 currentNode.id,
                 nodeOnlyReport,
                 LogReportItem.getDefaultSeverityList(),
-                'NETWORK_MODIFICATION'
+                REPORT_TYPES.NETWORK_MODIFICATION
             )
                 .then((fetchedReport) => {
                     setReport(makeSingleReport(fetchedReport));
@@ -162,7 +163,7 @@ export const ReportViewerTab = ({
             nodeId,
             reportId,
             severityFilterList,
-            'NETWORK_MODIFICATION'
+            REPORT_TYPES.NETWORK_MODIFICATION
         );
     };
 
@@ -172,7 +173,7 @@ export const ReportViewerTab = ({
             currentNode.id,
             false,
             severityFilterList,
-            'NETWORK_MODIFICATION'
+            REPORT_TYPES.NETWORK_MODIFICATION
         );
     };
 

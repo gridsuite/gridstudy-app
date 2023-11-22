@@ -22,6 +22,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
+import { REPORT_TYPES } from '../../utils/reportType';
 
 interface ShortCircuitAnalysisResultTabProps {
     resultTabIndexRedirection: ResultTabIndexRedirection;
@@ -103,8 +104,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                         reportType={
                             tabIndex ===
                             ShortCircuitAnalysisResultTabs.ALL_BUSES
-                                ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
-                                : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+                                ? REPORT_TYPES.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+                                : REPORT_TYPES.ONE_BUS_SHORTCIRCUIT_ANALYSIS
                         }
                     />
                 )}

@@ -43,6 +43,7 @@ import { useNodeData } from '../../study-container';
 import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
+import { REPORT_TYPES } from '../../utils/reportType';
 
 const styles = {
     container: {
@@ -306,7 +307,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 {tabIndex === 2 &&
                     securityAnalysisStatus === RunningStatus.SUCCEED && (
                         <ComputationReportViewer
-                            reportType={ComputingType.SECURITY_ANALYSIS}
+                            reportType={REPORT_TYPES.SECURITY_ANALYSIS}
                         />
                     )}
             </Box>

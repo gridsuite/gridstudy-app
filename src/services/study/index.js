@@ -81,7 +81,7 @@ export function fetchParentNodesReport(
         '/parent-nodes-report?nodeOnlyReport=' +
         (nodeOnlyReport ? 'true' : 'false') +
         '&reportType=' +
-        reportType;
+        reportType.toString();
     if (severityFilterList?.length) {
         url +=
             '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -111,7 +111,7 @@ export function fetchNodeReport(
         '/report?reportId=' +
         reportId +
         '&reportType=' +
-        reportType;
+        reportType.toString();
     if (severityFilterList?.length) {
         url +=
             '&' + getRequestParamFromList(severityFilterList, 'severityLevels');

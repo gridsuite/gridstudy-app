@@ -56,7 +56,7 @@ export const ComputationReportViewer: FunctionComponent<
                 currentNode.id.toString(),
                 true,
                 LogReportItem.getDefaultSeverityList(),
-                reportType.toString()
+                reportType
             )
                 .then((fetchedReport) => {
                     setReport(makeReport(fetchedReport));
@@ -93,7 +93,7 @@ export const ComputationReportViewer: FunctionComponent<
             nodeId,
             reportId,
             severityFilterList,
-            reportType.toString()
+            reportType
         );
     };
 
