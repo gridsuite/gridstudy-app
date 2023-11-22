@@ -84,13 +84,17 @@ export const flattenNmKResultsContingencies = (
 
                 rows.push({
                     subjectId,
-                    limitType: intl.formatMessage({
-                        id: limitViolation.limitType,
-                    }),
+                    limitType: limitViolation.limitType
+                        ? intl.formatMessage({
+                              id: limitViolation.limitType,
+                          })
+                        : '',
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    side: limitViolation.side,
+                    side: limitViolation.side
+                        ? intl.formatMessage({ id: limitViolation.side })
+                        : '',
                     linkedElementId: contingencyId,
                     acceptableDuration: limitViolation.acceptableDuration,
                 });
@@ -118,12 +122,20 @@ export const flattenNmKResultsConstraints = (
                         contingencyEquipmentsIds: contingency.elements?.map(
                             (element) => element.id
                         ),
-                        status: contingency.status,
-                        limitType: intl.formatMessage({
-                            id: limitViolation.limitType,
-                        }),
+                        status: contingency.status
+                            ? intl.formatMessage({
+                                  id: contingency.status,
+                              })
+                            : '',
+                        limitType: limitViolation.limitType
+                            ? intl.formatMessage({
+                                  id: limitViolation.limitType,
+                              })
+                            : '',
                         limitName: limitViolation.limitName,
-                        side: limitViolation.side,
+                        side: limitViolation.side
+                            ? intl.formatMessage({ id: limitViolation.side })
+                            : '',
                         acceptableDuration: limitViolation.acceptableDuration,
                         limit: limitViolation.limit,
                         value: limitViolation.value,
@@ -314,6 +326,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -330,6 +343,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -433,7 +447,10 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 };
 
 // We can use this custom hook for fetching enums for AutoComplete filter
-export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
+export const useFetchFiltersEnums = (
+    hasResult: boolean = false,
+    setFilter: (value: boolean) => void
+) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [result, setResult] = useState<FilterEnums>({
@@ -443,7 +460,7 @@ export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
     });
 
     useEffect(() => {
-        const fetchAllData = () => {
+        if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
                 fetchSecurityAnalysisAvailableComputationStatus(),
@@ -464,21 +481,19 @@ export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
                             limitTypes: limitTypesResult,
                             branchSides: branchSidesResult,
                         });
+                        setFilter(true);
                         setLoading(false);
                     }
                 )
                 .catch((err) => {
+                    setFilter(false);
                     setError(err);
                     setLoading(false);
                 });
-        };
-
-        if (!isEmptyResult) {
-            fetchAllData();
         }
-    }, [isEmptyResult]);
+    }, [hasResult, setFilter]);
 
-    return [loading, result, error];
+    return { loading, result, error };
 };
 
 export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [

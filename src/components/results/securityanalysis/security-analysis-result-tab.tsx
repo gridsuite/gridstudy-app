@@ -82,6 +82,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
+    const [hasFilter, setHasFilter] = useState<boolean>(false);
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
@@ -94,7 +95,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                     ? 'contingencyId'
                     : 'subjectId',
-            sortWay: SORT_WAYS.desc,
+            sortWay: SORT_WAYS.asc,
         },
     });
 
@@ -233,17 +234,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [securityAnalysisResult]
     );
 
-    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(
-        result?.empty
-    );
+    const { loading: filterEnumsLoading, result: filterEnums } =
+        useFetchFiltersEnums(hasFilter, setHasFilter);
 
     useEffect(() => {
         if (result) {
-            setCount(result.totalElements);
-        } else {
-            setCount(0);
+            setCount(tabIndex ? result.totalElements : result.length);
         }
-    }, [result]);
+    }, [result, tabIndex]);
 
     const shouldOpenLoader = useOpenLoaderShortWait({
         isLoading:

@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
 
 const styles = {
     iconSize: {
@@ -131,9 +132,9 @@ const CustomHeaderComponent = ({
     const handleSortChange = useCallback(() => {
         let newSort;
         if (sortWay < 0) {
-            newSort = 1;
+            newSort = SORT_WAY.asc;
         } else {
-            newSort = -1;
+            newSort = SORT_WAY.desc;
         }
 
         if (typeof onSortChanged === 'function') {
@@ -212,7 +213,7 @@ const CustomHeaderComponent = ({
                                 {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {sortWay === 1 ? (
+                                            {sortWay === SORT_WAY.asc ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
