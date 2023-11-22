@@ -1253,8 +1253,8 @@
     "angleDroopActivePowerControlLabel": "Emulation AC",
     "p0Label": "P0",
     "droopLabel": "Gain",
-    "side1RectifierSide2Inverter": "Flux (Or->Ex)",
-    "side1InverterSide2Rectifier": "Flux (Ex->Or)",
+    "side1RectifierSide2Inverter": "Flux (1->2)",
+    "side1InverterSide2Rectifier": "Flux (2->1)",
 
     "MagnetizingConductanceWithUnit": "Conductance magnétisante (μS)",
     "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
