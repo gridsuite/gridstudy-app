@@ -12,7 +12,6 @@ import {
     fetchSubReport,
 } from '../../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Box } from '@mui/system';
 import ReportViewer from '../../report-viewer/report-viewer';
 import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
