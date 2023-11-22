@@ -80,14 +80,14 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         );
     }, [AllBusesShortCircuitStatus, OneBusShortCircuitStatus, tabIndex]);
 
-    const shortCircuitTabisRunning = useMemo(() => {
+    const shortCircuitTabIsRunning = useMemo(() => {
         return tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES
             ? AllBusesShortCircuitStatus
             : OneBusShortCircuitStatus;
     }, [AllBusesShortCircuitStatus, OneBusShortCircuitStatus, tabIndex]);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading: shortCircuitTabisRunning === RunningStatus.RUNNING,
+        isLoading: shortCircuitTabIsRunning === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
     });
 
