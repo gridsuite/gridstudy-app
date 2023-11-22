@@ -133,7 +133,8 @@ export const convertDuration = (duration) => {
     if (minutes === 0) {
         return seconds + '"';
     }
-    return minutes + "' " + seconds + '"';
+
+    return `${minutes}' ${seconds}"`;
 };
 
 export const parseDuration = (formattedDuration) => {

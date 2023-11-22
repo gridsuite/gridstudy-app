@@ -74,13 +74,10 @@ export const useAggridRowFilter = (
     );
 
     const filterSelector = useMemo(() => {
-        const result = rowFilters.reduce(
-            (selector, { field, value, filterType }) => {
-                selector[filterSelectorKeys[field]] = value;
-                return selector;
-            },
-            {}
-        );
+        const result = rowFilters.reduce((selector, { field, value }) => {
+            selector[filterSelectorKeys[field]] = value;
+            return selector;
+        }, {});
 
         if (Object.keys(result).length === 0) {
             return null;
