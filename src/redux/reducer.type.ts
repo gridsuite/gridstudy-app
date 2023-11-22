@@ -27,6 +27,7 @@ export interface ReduxState {
     user: User;
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
     notificationIdList: UUID[];
+    theme: string;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
