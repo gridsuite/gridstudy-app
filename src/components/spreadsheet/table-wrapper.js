@@ -250,13 +250,6 @@ const TableWrapper = (props) => {
                             },
                         };
                     } else if (editingData?.id === params.data.id) {
-                        setEditingData({
-                            ...params.data,
-                            metadata: {
-                                ...editingData.metadata,
-                            },
-                        });
-
                         return {
                             component: ReferenceLineCellRenderer,
                         };

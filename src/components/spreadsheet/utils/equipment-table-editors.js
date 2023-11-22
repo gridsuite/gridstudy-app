@@ -14,8 +14,8 @@ import React, {
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { Autocomplete, Chip, TextField, Tooltip } from "@mui/material";
-import { FormattedMessage, useIntl } from "react-intl";
+import { Autocomplete, Chip, TextField, Tooltip } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { EDIT_COLUMN } from './config-tables';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 const refreshEditingCell = (gridApi) => {
@@ -297,44 +297,46 @@ export const BooleanListField = forwardRef(
     }
 );
 
-
-export const SelectField = forwardRef(
+export const SelectCountryField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
         const [value, setValue] = useState('');
         const { translate, countryCodes } = LocalizedCountries();
 
-
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        return value;
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field, value]
+        );
 
         useEffect(() => {
             refreshEditingCell(gridApi);
         }, [gridApi, value]);
 
         return (
-          <Autocomplete
-            options={countryCodes}
-            getOptionLabel={(countryCode) => translate(countryCode)}
-            style={{ width: '100%' }}
-            onChange={(event, newValue) => {
-              setValue(newValue);
-              console.log('gridref', colDef.field, newValue)
-              gridContext.dynamicValidation[colDef.field] = newValue;
-            }}
-            renderInput={(params) => <TextField {...params}
-                                                label={
-              <FormattedMessage id={'descLfAllCountries'} />
-            }/>}
-            renderTags={(val, getTagsProps) =>
-              val.map((code, index) => (
-                <Chip
-                  id={'chip_' + code}
-                  size={'small'}
-                  label={translate(code)}
-                  {...getTagsProps({ index })}
-                />
-              ))
-            }
-          />
-
+            <Autocomplete
+                options={countryCodes}
+                getOptionLabel={(countryCode) => translate(countryCode)}
+                style={{ width: '100%' }}
+                onChange={(event, newValue) => {
+                    setValue(newValue);
+                    gridContext.dynamicValidation[colDef.field] = newValue;
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={<FormattedMessage id={'descLfAllCountries'} />}
+                    />
+                )}
+            />
         );
     }
 );
