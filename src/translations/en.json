@@ -75,6 +75,7 @@
     "lineParallelPath": "Spread overlapping lines",
     "LineFlowMode": "Line flow mode",
     "None": "None",
+    "NoneUpcomingOverload": "None",    
     "StaticArrows": "Static arrows",
     "AnimatedArrows": "Animated arrows",
     "Feeders": "Feeder",

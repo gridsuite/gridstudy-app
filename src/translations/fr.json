@@ -74,6 +74,7 @@
     "lineParallelPath": "Écarter les lignes superposées",
     "LineFlowMode": "Mode de représentation des flux sur les lignes",
     "None": "Aucun",
+    "NoneUpcomingOverload": "Aucune",
     "StaticArrows": "Flèches statiques",
     "AnimatedArrows": "Flèches animées",
     "Feeders": "Départs",

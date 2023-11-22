@@ -48,11 +48,7 @@ export const makeData = (
             UNDEFINED_ACCEPTABLE_DURATION
                 ? null
                 : overloadedEquipment.actualOverloadDuration,
-        upComingOverloadDuration:
-            overloadedEquipment.upComingOverloadDuration ===
-            UNDEFINED_ACCEPTABLE_DURATION
-                ? null
-                : overloadedEquipment.upComingOverloadDuration,
+        upComingOverloadDuration: overloadedEquipment.upComingOverloadDuration,
         limit: overloadedEquipment.limit,
         limitName: convertLimitName(overloadedEquipment.limitName, intl),
         side: convertSide(overloadedEquipment.side, intl),
@@ -108,8 +104,18 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'upComingOverloadDuration' }),
             field: 'upComingOverloadDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.upComingOverloadDuration),
+            valueFormatter: (value: ValueFormatterParams) => {
+                if (value.data.upComingOverloadDuration === null) {
+                    return intl.formatMessage({ id: 'NoneUpcomingOverload' });
+                } else if (
+                    value.data.upComingOverloadDuration ===
+                    UNDEFINED_ACCEPTABLE_DURATION
+                ) {
+                    return ' ';
+                } else {
+                    return convertDuration(value.data.upComingOverloadDuration);
+                }
+            },
         },
         {
             headerName: intl.formatMessage({ id: 'LimitSide' }),
