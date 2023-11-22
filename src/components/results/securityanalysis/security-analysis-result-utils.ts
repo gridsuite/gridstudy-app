@@ -66,7 +66,11 @@ export const flattenNmKResultsContingencies = (
             rows.push({
                 contingencyId,
                 contingencyEquipmentsIds: elements.map((element) => element.id),
-                status,
+                status: status
+                    ? intl.formatMessage({
+                          id: status,
+                      })
+                    : '',
                 violationCount: subjectLimitViolations.length,
             });
             subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -75,15 +79,19 @@ export const flattenNmKResultsContingencies = (
 
                 rows.push({
                     subjectId,
-                    limitType: intl.formatMessage({
-                        id: limitViolation.limitType,
-                    }),
+                    limitType: limitViolation.limitType
+                        ? intl.formatMessage({
+                              id: limitViolation.limitType,
+                          })
+                        : '',
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    side: limitViolation.side,
+                    side: limitViolation.side
+                        ? intl.formatMessage({ id: limitViolation.side })
+                        : '',
                     linkedElementId: contingencyId,
-                    acceptableDuration: limitViolation?.acceptableDuration,
+                    acceptableDuration: limitViolation.acceptableDuration,
                 });
             });
         }
@@ -109,12 +117,20 @@ export const flattenNmKResultsConstraints = (
                         contingencyEquipmentsIds: contingency.elements?.map(
                             (element) => element.id
                         ),
-                        status: contingency.status,
-                        limitType: intl.formatMessage({
-                            id: limitViolation.limitType,
-                        }),
+                        status: contingency.status
+                            ? intl.formatMessage({
+                                  id: contingency.status,
+                              })
+                            : '',
+                        limitType: limitViolation.limitType
+                            ? intl.formatMessage({
+                                  id: limitViolation.limitType,
+                              })
+                            : '',
                         limitName: limitViolation.limitName,
-                        side: limitViolation.side,
+                        side: limitViolation.side
+                            ? intl.formatMessage({ id: limitViolation.side })
+                            : '',
                         acceptableDuration: limitViolation.acceptableDuration,
                         limit: limitViolation.limit,
                         value: limitViolation.value,
@@ -378,6 +394,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             updateFilter,
             sortConfig,
             cellRenderer: subjectIdRenderer,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
@@ -387,6 +411,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             onSortChanged,
             updateFilter,
             sortConfig,
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -396,6 +421,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             onSortChanged,
             updateFilter,
             sortConfig,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -405,6 +438,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             onSortChanged,
             updateFilter,
             sortConfig,
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -507,6 +541,14 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             sortConfig,
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -516,6 +558,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             onSortChanged,
             updateFilter,
             sortConfig,
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
@@ -525,6 +568,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             onSortChanged,
             updateFilter,
             sortConfig,
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -534,6 +578,14 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             onSortChanged,
             updateFilter,
             sortConfig,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -543,6 +595,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             onSortChanged,
             updateFilter,
             sortConfig,
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -612,6 +665,15 @@ export const securityAnalysisTableNmKFilterDefinition = (
         {
             field: 'status',
             options: filterEnums.computationsStatus,
+        },
+        {
+            field: 'limitType',
+            options: filterEnums?.limitTypes,
+        },
+
+        {
+            field: 'side',
+            options: filterEnums?.branchSides,
         },
     ];
 };

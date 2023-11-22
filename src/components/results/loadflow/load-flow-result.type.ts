@@ -23,6 +23,9 @@ export interface LoadFlowResult {
     writeTimeStamp: Date;
     componentResults: ComponentResult[];
 }
+export enum LimitNames {
+    NA = 'N/A',
+}
 
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',
@@ -43,7 +46,8 @@ export interface OverloadedEquipment {
     overload: number;
     name: string;
     value: number;
-    acceptableDuration: number | null;
+    actualOverloadDuration: number | null;
+    upComingOverloadDuration: number | null;
     limit: number;
     limitName: string | null;
     side: string | undefined;
@@ -53,7 +57,8 @@ export interface OverloadedEquipmentFromBack {
     subjectId: string;
     limit: number;
     limitName: string | null;
-    acceptableDuration: 300;
+    actualOverloadDuration: 300;
+    upComingOverloadDuration: 300;
     value: number;
     side: BranchSide | '';
     limitType: LimitTypes;

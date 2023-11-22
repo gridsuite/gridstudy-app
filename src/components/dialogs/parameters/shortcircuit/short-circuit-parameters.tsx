@@ -58,6 +58,27 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     const watchPredefinedParams = useWatch({
         name: SHORT_CIRCUIT_PREDEFINED_PARAMS,
     });
+    const watchLoads = useWatch({
+        name: SHORT_CIRCUIT_WITH_LOADS,
+    });
+    const watchShuntCompensators = useWatch({
+        name: SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
+    });
+    const watchVSC = useWatch({
+        name: SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
+    });
+    const watchNeutralPosition = useWatch({
+        name: SHORT_CIRCUIT_WITH_NEUTRAL_POSITION,
+    });
+
+    const isFeaturesDefaultConfiguration = useMemo(() => {
+        return (
+            !watchLoads &&
+            !watchShuntCompensators &&
+            watchVSC &&
+            !watchNeutralPosition
+        );
+    }, [watchLoads, watchShuntCompensators, watchVSC, watchNeutralPosition]);
 
     // the translation of values
     const predefinedParamsOptions = useMemo(() => {
@@ -137,22 +158,29 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     useEffect(() => {
         // in order to show the right status we need to check the predefinedParams and initial voltage profile mode values
         // show success only when ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL or ICC_MAX_WITH_CEI909 to CEI909
-        const isNominal =
+        const isNominalDefaultConfiguration =
             watchPredefinedParams ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP &&
             watchInitialVoltageProfileMode === INITIAL_VOLTAGE.NOMINAL;
 
-        const isCEI909 =
+        const isCEI909DefaultConfiguration =
             watchPredefinedParams ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909 &&
             watchInitialVoltageProfileMode === INITIAL_VOLTAGE.CEI909;
 
-        if (isNominal || isCEI909) {
+        if (
+            (isNominalDefaultConfiguration || isCEI909DefaultConfiguration) &&
+            isFeaturesDefaultConfiguration
+        ) {
             setStatus(STATUS.SUCCESS);
         } else {
             setStatus(STATUS.ERROR);
         }
-    }, [watchInitialVoltageProfileMode, watchPredefinedParams]);
+    }, [
+        watchInitialVoltageProfileMode,
+        watchPredefinedParams,
+        isFeaturesDefaultConfiguration,
+    ]);
 
     // reset all fields when predefined parameters changes
     useEffect(() => {
