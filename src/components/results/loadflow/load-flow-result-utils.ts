@@ -112,9 +112,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     UNDEFINED_ACCEPTABLE_DURATION
                 ) {
                     return ' ';
-                } else {
-                    return convertDuration(value.data.upComingOverloadDuration);
                 }
+                return convertDuration(value.data.upComingOverloadDuration);
             },
         },
         {
