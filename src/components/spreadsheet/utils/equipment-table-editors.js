@@ -299,7 +299,7 @@ export const BooleanListField = forwardRef(
 
 export const SelectCountryField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
-        const [value, setValue] = useState('');
+        const [value, setValue] = useState(null);
         const { translate, countryCodes } = LocalizedCountries();
 
         useImperativeHandle(

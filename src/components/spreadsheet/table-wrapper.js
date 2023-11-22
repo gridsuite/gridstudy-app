@@ -271,6 +271,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [editingData?.id, startEditing, tabIndex]
     );
 

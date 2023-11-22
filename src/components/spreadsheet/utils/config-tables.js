@@ -122,6 +122,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: SelectCountryField,
                 cellEditorParams: (params) => {
                     return {
+                        defaultValue: params.data.countryCode,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
