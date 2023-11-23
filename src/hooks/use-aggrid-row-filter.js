@@ -28,6 +28,7 @@ const changeValueFromArrayWithFieldValue = (
             {
                 field: fieldValue,
                 value: newValue,
+                filterType: newValue?.dataType,
             },
         ];
     } else {
