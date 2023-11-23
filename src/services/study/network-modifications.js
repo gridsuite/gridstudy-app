@@ -775,7 +775,9 @@ export function createLine(
     connectionName2,
     connectionDirection2,
     connectionPosition1,
-    connectionPosition2
+    connectionPosition2,
+    connected1,
+    connected2
 ) {
     let createLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -822,6 +824,8 @@ export function createLine(
             connectionDirection2: connectionDirection2,
             connectionPosition1: connectionPosition1,
             connectionPosition2: connectionPosition2,
+            connected1: connected1,
+            connected2: connected2,
         }),
     });
 }
@@ -902,7 +906,9 @@ export function createTwoWindingsTransformer(
     connectionName2,
     connectionDirection2,
     connectionPosition1,
-    connectionPosition2
+    connectionPosition2,
+    connected1,
+    connected2
 ) {
     let createTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -947,6 +953,8 @@ export function createTwoWindingsTransformer(
             connectionDirection2: connectionDirection2,
             connectionPosition1: connectionPosition1,
             connectionPosition2: connectionPosition2,
+            connected1: connected1,
+            connected2: connected2,
         }),
     });
 }

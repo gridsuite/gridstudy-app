@@ -125,7 +125,6 @@ const LineCharacteristicsPane = ({
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            withConnectivity={false}
         />
     );
 
@@ -136,7 +135,6 @@ const LineCharacteristicsPane = ({
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            withConnectivity={false}
         />
     );
 

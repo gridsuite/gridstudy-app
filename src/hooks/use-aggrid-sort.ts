@@ -19,13 +19,11 @@ export const SORT_WAYS = {
     desc: -1,
 };
 
-export const getSortValue = (sortWay: number | null) => {
-    if (sortWay === 1) {
+export const getSortValue = (sortWay: number) => {
+    if (sortWay > 0) {
         return 'asc';
-    } else if (sortWay === -1) {
-        return 'desc';
     } else {
-        return undefined;
+        return 'desc';
     }
 };
 
@@ -51,17 +49,14 @@ const getSortConfig = (
 
 interface IUseAgGridSortProps {
     dataKeyToSortKey?: DataKeyToSortKey;
-    initSortConfig?: ISortConfig;
+    initSortConfig: ISortConfig;
 }
 
 export const useAgGridSort = ({
     dataKeyToSortKey,
     initSortConfig,
-}: IUseAgGridSortProps = {}) => {
-    const { colKey: initColKey, sortWay: initSortWay } = initSortConfig || {
-        colKey: '',
-        sortWay: SORT_WAYS.asc,
-    };
+}: IUseAgGridSortProps) => {
+    const { colKey: initColKey, sortWay: initSortWay } = initSortConfig;
 
     const [sortConfig, setSortConfig] = useState<ISortConfig>(
         getSortConfig(dataKeyToSortKey, initColKey, initSortWay)
@@ -79,9 +74,5 @@ export const useAgGridSort = ({
         [dataKeyToSortKey, initSortWay]
     );
 
-    const resetSortConfig = useCallback(() => {
-        setSortConfig({ colKey: '', sortWay: 0 });
-    }, []);
-
-    return { onSortChanged, sortConfig, initSort, resetSortConfig };
+    return { onSortChanged, sortConfig, initSort };
 };

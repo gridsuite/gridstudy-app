@@ -12,6 +12,7 @@ import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
+    CONNECTED,
     CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
@@ -227,6 +228,7 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName1,
                             connectionPosition: line.connectionPosition1,
                             voltageLevelId: line.voltageLevelId1,
+                            connected: line.connected1,
                         },
                         CONNECTIVITY_1
                     ),
@@ -237,6 +239,7 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName2,
                             connectionPosition: line.connectionPosition2,
                             voltageLevelId: line.voltageLevelId2,
+                            connected: line.connected2,
                         },
                         CONNECTIVITY_2
                     ),
@@ -344,7 +347,9 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null
+                characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
+                characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
+                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
