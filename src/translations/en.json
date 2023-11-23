@@ -87,7 +87,7 @@
     "Intensity": "Intensity",
     "I_(A)": "I (A)",
     "limit": "limit",
-    "Limit": "Limit",
+    "Limit": "Limit value (A or kV)",
     "LimitLabel": "Limit (A)",
     "upComingOverloadDuration": "Upcoming overload",
     "actualOverloadDuration": "Actual overload",
@@ -394,15 +394,18 @@
     "HIGH_SHORT_CIRCUIT_CURRENT": "Isc max",
 
     "LimitType": "Limit type",
+    "ViolationType": "Violation type",
     "LimitSide": "Side",
-    "LimitName": "Name",
+    "LimitName": "Limit name",
     "LimitNameCurrentViolation": "Limit name",
     "Limit_name": "Limit name",
+    "CalculatedValue": "Calculated value (A or kV)",
     "OverloadedEquipment": "Equipment",
     "PermanentLimitName": "IST",
     "LimitAcceptableDuration": "Duration",
+    "Overload": "Overload",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
-    "Value": "Value",
+    
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
     "true": "true",
@@ -644,7 +647,6 @@
     "ActivePowerText": "Active power",
     "ReactivePowerText": "Reactive power",
     "VoltageLevel": "Voltage level",
-    "ViolationType": "Violation type",
     "BusBarBus": "Bus bar section / bus",
     "Setpoints": "Setpoints",
     "Connectivity": "Connectivity",
@@ -1279,9 +1281,6 @@
     "waitingStudyIndexation": "Waiting for study indexation...",
 
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
-    "customAgGridFilter.startsWith": "Starts with",
-    "customAgGridFilter.contains": "Contains",
-    "customAgGridFilter.filterOoo": "Filter...",
 
     "ShortCircuitPredefinedParameters": "Preset parameters",
     "ShortCircuitCharacteristics": "Features considered",
@@ -1296,5 +1295,13 @@
     "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with nominal voltage profile",
     "iccMaxWithCEIPredefinedParams": "ISC max with standard IEC 909",
     "nominalInitialVoltageProfileMode": "Nominal",
-    "cei909InitialVoltageProfileMode": "IEC 909"
+    "cei909InitialVoltageProfileMode": "IEC 909",
+
+    "customAgGridFilter.startsWith": "Starts with",
+    "customAgGridFilter.contains": "Contains",
+    "customAgGridFilter.notEqual": "Not equal",
+    "customAgGridFilter.lessThanOrEqual": "Less than or equal",
+    "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",    
+    "customAgGridFilter.filterOoo": "Filter...",
+    "undefined" : "undefined"
 }
