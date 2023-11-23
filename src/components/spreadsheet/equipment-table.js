@@ -160,9 +160,6 @@ export const EquipmentTable = ({
                     spreadsheetContext={gridContext}
                     closeDialog={(shouldClose) => {
                         setOpenPopupEditSiteProperties(!shouldClose);
-                        if (shouldClose) {
-                            // gridRef.current.api.stopEditing();
-                        }
                     }}
                     studyUuid={studyUuid}
                     currentNode={currentNode}
