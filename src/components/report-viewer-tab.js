@@ -8,7 +8,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer from '../components/ReportViewer/report-viewer';
+import ReportViewer, {
+    PAGE_OPTIONS,
+} from '../components/ReportViewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -118,7 +120,8 @@ export const ReportViewerTab = ({
                 studyId,
                 currentNode.id,
                 nodeOnlyReport,
-                LogReportItem.getDefaultSeverityList()
+                LogReportItem.getDefaultSeverityList(),
+                { page: 0, size: PAGE_OPTIONS[0] }
             )
                 .then((fetchedReport) => {
                     setReport(makeSingleReport(fetchedReport));
@@ -155,25 +158,38 @@ export const ReportViewerTab = ({
         fetchAndProcessReport,
     ]);
 
-    const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
-        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList);
+    const nodeReportPromise = (
+        nodeId,
+        reportId,
+        severityFilterList,
+        pageParams
+    ) => {
+        return fetchNodeReport(
+            studyId,
+            nodeId,
+            reportId,
+            severityFilterList,
+            pageParams
+        );
     };
 
-    const globalReportPromise = (severityFilterList) => {
+    const globalReportPromise = (severityFilterList, pageParams) => {
         return fetchParentNodesReport(
             studyId,
             currentNode.id,
             false,
-            severityFilterList
+            severityFilterList,
+            pageParams
         );
     };
 
-    const subReportPromise = (reportId, severityFilterList) => {
+    const subReportPromise = (reportId, severityFilterList, pageParams) => {
         return fetchSubReport(
             studyId,
             currentNode.id,
             reportId,
-            severityFilterList
+            severityFilterList,
+            pageParams
         );
     };
 

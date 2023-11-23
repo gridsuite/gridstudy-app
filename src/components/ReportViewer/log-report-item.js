@@ -103,10 +103,6 @@ export default class LogReportItem {
         return this.reportId;
     }
 
-    getSeverity() {
-        return this.severity;
-    }
-
     getSeverityName() {
         return this.severity.name;
     }

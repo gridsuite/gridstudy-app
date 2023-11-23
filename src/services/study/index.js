@@ -58,11 +58,30 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
+const addReportPageParams = (
+    urlSearchParam,
+    severityFilterList,
+    pageParams
+) => {
+    for (let [key, val] of getRequestParamFromList(
+        severityFilterList,
+        'severityLevels'
+    ).entries()) {
+        urlSearchParam.append(key, val);
+    }
+
+    urlSearchParam.append('page', pageParams.page);
+    urlSearchParam.append('size', pageParams.size);
+
+    return urlSearchParam;
+};
+
 export function fetchParentNodesReport(
     studyUuid,
     nodeUuid,
     nodeOnlyReport,
-    severityFilterList
+    severityFilterList,
+    pageParams
 ) {
     console.info(
         'get node report with its parent for : ' +
@@ -73,14 +92,14 @@ export function fetchParentNodesReport(
             studyUuid
     );
 
+    let urlSearchParam = new URLSearchParams();
+    urlSearchParam.append('nodeOnlyReport', nodeOnlyReport ? 'true' : 'false');
+    addReportPageParams(urlSearchParam, severityFilterList, pageParams);
+
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/parent-nodes-report?nodeOnlyReport=' +
-        (nodeOnlyReport ? 'true' : 'false');
-    if (severityFilterList?.length) {
-        url +=
-            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
-    }
+        '/parent-nodes-report?' +
+        urlSearchParam.toString();
 
     return backendFetchJson(url);
 }
@@ -89,20 +108,21 @@ export function fetchNodeReport(
     studyUuid,
     nodeUuid,
     reportId,
-    severityFilterList
+    severityFilterList,
+    pageParams
 ) {
     console.info(
         'get report for node : ' + nodeUuid + ' in study ' + studyUuid
     );
 
+    let urlSearchParam = new URLSearchParams();
+    urlSearchParam.append('reportId', reportId);
+    addReportPageParams(urlSearchParam, severityFilterList, pageParams);
+
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/report?reportId=' +
-        reportId;
-    if (severityFilterList?.length) {
-        url +=
-            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
-    }
+        '/report?' +
+        urlSearchParam.toString();
 
     return backendFetchJson(url);
 }
@@ -111,7 +131,8 @@ export function fetchSubReport(
     studyUuid,
     nodeUuid,
     reportId,
-    severityFilterList
+    severityFilterList,
+    pageParams
 ) {
     console.info(
         'get subReport with Id : ' +
@@ -120,14 +141,14 @@ export function fetchSubReport(
             severityFilterList
     );
 
+    let urlSearchParam = new URLSearchParams();
+    urlSearchParam.append('reportId', reportId);
+    addReportPageParams(urlSearchParam, severityFilterList, pageParams);
+
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/subreport?reportId=' +
-        reportId;
-    if (severityFilterList?.length) {
-        url +=
-            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
-    }
+        '/subreport?' +
+        urlSearchParam.toString();
     return backendFetchJson(url);
 }
 
