@@ -43,7 +43,11 @@ export const makeData = (
         overload: (overloadedEquipment.value / overloadedEquipment.limit) * 100,
         name: overloadedEquipment.subjectId,
         value: overloadedEquipment.value,
-        actualOverloadDuration: overloadedEquipment.actualOverloadDuration,
+        actualOverloadDuration:
+            overloadedEquipment.actualOverloadDuration ===
+            UNDEFINED_ACCEPTABLE_DURATION
+                ? null
+                : overloadedEquipment.actualOverloadDuration,
         upComingOverloadDuration: overloadedEquipment.upComingOverloadDuration,
         limit: overloadedEquipment.limit,
         limitName: convertLimitName(overloadedEquipment.limitName, intl),
@@ -91,26 +95,25 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         },
         {
             headerName: intl.formatMessage({
-                id: 'ActualOverload',
+                id: 'actualOverloadDuration',
             }),
-            field: 'actualOverload',
-            valueFormatter: (value: ValueFormatterParams) => {
-                return value.data.actualOverloadDuration ===
-                    UNDEFINED_ACCEPTABLE_DURATION
-                    ? intl.formatMessage({ id: 'UndefinedOverload' })
-                    : convertDuration(value.data.actualOverloadDuration);
-            },
+            field: 'actualOverloadDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.actualOverloadDuration),
         },
         {
-            headerName: intl.formatMessage({ id: 'upComingOverload' }),
-            field: 'upComingOverload',
+            headerName: intl.formatMessage({ id: 'upComingOverloadDuration' }),
+            field: 'upComingOverloadDuration',
             valueFormatter: (value: ValueFormatterParams) => {
-                return value.data.upComingOverloadDuration ===
+                if (value.data.upComingOverloadDuration === null) {
+                    return intl.formatMessage({ id: 'NoneUpcomingOverload' });
+                } else if (
+                    value.data.upComingOverloadDuration ===
                     UNDEFINED_ACCEPTABLE_DURATION
-                    ? intl.formatMessage({ id: 'UndefinedOverload' })
-                    : value.data.upComingOverloadDuration === null
-                    ? intl.formatMessage({ id: 'NoneUpcomingOverload' })
-                    : convertDuration(value.data.upComingOverloadDuration);
+                ) {
+                    return ' ';
+                }
+                return convertDuration(value.data.upComingOverloadDuration);
             },
         },
         {
