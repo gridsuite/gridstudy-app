@@ -25,6 +25,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
     FilterEnums,
     QueryParamsType,
@@ -51,6 +52,7 @@ import {
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { REPORT_TYPES } from '../../utils/report-type';
 
 const styles = {
     container: {
@@ -253,6 +255,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label="N" />
                         <Tab label="N-K" />
+                        <Tab
+                            label={
+                                <FormattedMessage
+                                    id={'ComputationResultsLogs'}
+                                />
+                            }
+                        />
                     </Tabs>
                 </Box>
                 {tabIndex === 1 && (
@@ -282,7 +291,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 {shouldOpenLoader && <LinearProgress />}
             </Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === 0 ? (
+                {tabIndex === 0 && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
@@ -292,7 +301,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         updateFilter={updateFilter}
                         filterEnums={filterEnums}
                     />
-                ) : (
+                )}
+                {tabIndex === 1 && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
@@ -320,6 +330,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                     />
                 )}
+                {tabIndex === 2 &&
+                    securityAnalysisStatus === RunningStatus.SUCCEED && (
+                        <ComputationReportViewer
+                            reportType={REPORT_TYPES.SECURITY_ANALYSIS}
+                        />
+                    )}
             </Box>
         </>
     );

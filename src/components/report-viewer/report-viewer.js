@@ -42,24 +42,21 @@ export default function ReportViewer({
     jsonReportTree,
     subReportPromise,
     nodeReportPromise,
-    globalReportPromise,
+    globalReportPromise = undefined,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
     const [selectedNode, setSelectedNode] = useState(null);
     const [expandedNodes, setExpandedNodes] = useState([]);
     const [logs, setLogs] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
-    const { snackError } = useSnackMessage();
-
     const [highlightedReportId, setHighlightedReportId] = useState();
+    const [selectedSeverity, setSelectedSeverity] = useState();
+
+    const { snackError } = useSnackMessage();
 
     const rootReport = useRef(null);
     const reportTreeData = useRef({});
     const treeView = useRef(null);
-
-    const [selectedSeverity, setSelectedSeverity] = useState(
-        LogReportItem.getDefaultSeverityFilter()
-    );
 
     /**
      * Build the tree view (left pane) creating all ReportItem from json data
@@ -201,6 +198,7 @@ export default function ReportViewer({
         setSelectedNode(rootId);
         setExpandedNodes([rootId]);
         setLogs(rootReport.current.getAllLogs());
+        setSelectedSeverity(LogReportItem.getDefaultSeverityFilter());
     }, [jsonReportTree, createReporterItem]);
 
     const handleToggleNode = (event, nodeIds) => {
