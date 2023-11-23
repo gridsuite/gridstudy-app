@@ -86,7 +86,7 @@
     "Intensity": "Intensité",
     "I_(A)": "I (A)",
     "limit": "limite",
-    "Limit": "Seuil",
+    "Limit": "Valeur du seuil (A ou kV)",
     "LimitLabel": "Limite (A)",
     "upComingOverloadDuration": "Surcharge imminente",
     "actualOverloadDuration": "Surcharge effective",
@@ -397,15 +397,18 @@
     "HIGH_SHORT_CIRCUIT_CURRENT": "Icc max",
 
     "LimitType": "Type de limite",
+    "ViolationType": "Type de contrainte",
     "LimitSide": "Côté",
-    "LimitName": "Nom",
+    "LimitName": "Nom du seuil",
     "Limit_name": "Seuil",
     "LimitNameCurrentViolation": "Nom du seuil",
+    "CalculatedValue": "Valeur calculée (A ou kV)",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
     "LimitAcceptableDuration": "Durée",
+    "Overload": "Surcharge",
+   
     "ErrFetchViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes",
-    "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
     "true": "oui",
@@ -648,11 +651,9 @@
     "ActivePowerText": "Puissance active",
     "ReactivePowerText": "Puissance réactive",
     "VoltageLevel": "Poste",
-    "ViolationType": "Type de contrainte",
     "BusBarBus": "SJB / nœud",
     "Setpoints": "Consignes",
     "Connectivity": "Connectivité",
-    "Connected": "Connecté",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
@@ -1318,5 +1319,9 @@
 
     "customAgGridFilter.startsWith": "Commence par",
     "customAgGridFilter.contains": "Contient",
-    "customAgGridFilter.filterOoo": "Filtrer..."
+    "customAgGridFilter.notEqual": "N'est pas égal à",
+    "customAgGridFilter.lessThanOrEqual": "Inférieur ou égal",
+    "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
+    "customAgGridFilter.filterOoo": "Filtrer...",
+    "undefined" : "non défini"
 }
