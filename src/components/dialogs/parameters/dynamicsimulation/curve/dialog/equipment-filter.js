@@ -30,6 +30,8 @@ import { evaluateFilter } from '../../../../../../services/study/filter';
 import {
     CombinatorType,
     DataType,
+    FieldType,
+    OperatorType,
 } from '../../../../filter/expert/expert-filter.type';
 
 export const CURVE_EQUIPMENT_TYPES = {
@@ -111,15 +113,74 @@ const EquipmentFilter = forwardRef(
             setSelectedCountries(selectedCountries);
         }, []);
 
-        const getExpertRules = (
+        const buildExpertRules = (
             voltageLevelIds,
             countries,
             nominalVoltages
         ) => {
+            // Note that OR group of the same field can be replaced by a rule IN
+            // BUT at the moment IN operator is not supported
+            // create group OR for voltageLevelIds
+            const voltageLevelIdsRuleGroup = voltageLevelIds.reduce(
+                (group, voltageLevelId) => {
+                    group.rules.push({
+                        field: FieldType.VOLTAGE_LEVEL_ID,
+                        operator: OperatorType.IS,
+                        value: voltageLevelId,
+                        dataType: DataType.STRING,
+                    });
+                    return group;
+                },
+                {
+                    combinator: CombinatorType.OR,
+                    dataType: DataType.COMBINATOR,
+                    rules: [],
+                }
+            );
+
+            // create group OR for countries
+            const countriesRuleGroup = countries.reduce(
+                (group, country) => {
+                    group.rules.push({
+                        field: FieldType.COUNTRY,
+                        operator: OperatorType.IS,
+                        value: country,
+                        dataType: DataType.ENUM,
+                    });
+                    return group;
+                },
+                {
+                    combinator: CombinatorType.OR,
+                    dataType: DataType.COMBINATOR,
+                    rules: [],
+                }
+            );
+            // create group OR for nominalVoltages
+            const nominalVoltagesRuleGroup = nominalVoltages.reduce(
+                (group, nominalVoltage) => {
+                    group.rules.push({
+                        field: FieldType.NOMINAL_VOLTAGE,
+                        operator: OperatorType.EQUALS,
+                        value: nominalVoltage,
+                        dataType: DataType.NUMBER,
+                    });
+                    return group;
+                },
+                {
+                    combinator: CombinatorType.OR,
+                    dataType: DataType.COMBINATOR,
+                    rules: [],
+                }
+            );
+
             return {
                 combinator: CombinatorType.AND,
                 dataType: DataType.COMBINATOR,
-                rules: [],
+                rules: [
+                    voltageLevelIdsRuleGroup,
+                    countriesRuleGroup,
+                    nominalVoltagesRuleGroup,
+                ],
             };
         };
 
@@ -146,7 +207,7 @@ const EquipmentFilter = forwardRef(
             const expertFilter = {
                 type: 'EXPERT',
                 equipmentType: equipmentType.type,
-                rules: getExpertRules(
+                rules: buildExpertRules(
                     selectedVoltageLevelIds,
                     selectedCountries,
                     selectedNominalVoltages
