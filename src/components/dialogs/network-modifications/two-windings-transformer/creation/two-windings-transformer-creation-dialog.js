@@ -444,9 +444,15 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]
                     ),
                     currentLimiterRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.CURRENT_LIMITER.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : undefined,
                     flowSetpointRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : undefined,
                     targetDeadband: isNaN(
                         twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND]
                     )
