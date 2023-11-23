@@ -143,7 +143,7 @@ const EquipmentFilter = forwardRef(
                 (group, country) => {
                     group.rules.push({
                         field: FieldType.COUNTRY,
-                        operator: OperatorType.IS,
+                        operator: OperatorType.EQUALS,
                         value: country,
                         dataType: DataType.ENUM,
                     });
