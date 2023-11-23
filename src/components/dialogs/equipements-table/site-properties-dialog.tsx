@@ -280,8 +280,16 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                     })}
                                 </TableBody>
                             </Table>
-                            {error && <p>{error}</p>}
                         </TableContainer>
+                    </Grid>
+                    <Grid item>
+                        <Box
+                            sx={{
+                                color: 'red',
+                            }}
+                        >
+                            {error && <p>{error}</p>}
+                        </Box>
                     </Grid>
                 </Grid>
             }
