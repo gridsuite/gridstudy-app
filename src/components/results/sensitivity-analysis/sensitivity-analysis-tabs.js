@@ -19,6 +19,7 @@ const SensitivityAnalysisTabs = ({ sensiKindIndex, setSensiKindIndex }) => {
             <Tab label={<FormattedMessage id={'SensitivityInDeltaMW'} />} />
             <Tab label={<FormattedMessage id={'SensitivityInDeltaA'} />} />
             <Tab label={<FormattedMessage id={'SensitivityAtNode'} />} />
+            <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
         </Tabs>
     );
 };
