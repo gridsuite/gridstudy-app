@@ -242,6 +242,12 @@ export const styles = {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(1),
     }),
+    adjustExistingLimitsInfo: (theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    }),
 };
 
 export const TabPanel = (props) => {
@@ -763,16 +769,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         {voltageInitAvailability ===
-                            OptionalServicesStatus.Up &&
-                            enableDeveloperMode && (
-                                <Tab
-                                    disabled={!studyUuid}
-                                    label={
-                                        <FormattedMessage id="VoltageInit" />
-                                    }
-                                    value={TAB_VALUES.voltageInitParamsTabValue}
-                                />
-                            )}
+                            OptionalServicesStatus.Up && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={<FormattedMessage id="VoltageInit" />}
+                                value={TAB_VALUES.voltageInitParamsTabValue}
+                            />
+                        )}
                         <Tab
                             label={<FormattedMessage id="Advanced" />}
                             value={TAB_VALUES.advancedParamsTabValue}
@@ -887,25 +890,23 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 </TabPanel>
                             )}
                         {voltageInitAvailability ===
-                            OptionalServicesStatus.Up &&
-                            //To be removed when DynamicSimulation is not in developer mode only.
-                            enableDeveloperMode && (
-                                <TabPanel
-                                    value={tabValue}
-                                    index={TAB_VALUES.voltageInitParamsTabValue}
-                                    keepState
-                                >
-                                    {studyUuid && (
-                                        <VoltageInitParameters
-                                            user={user}
-                                            hideParameters={hideParameters}
-                                            useVoltageInitParameters={
-                                                useVoltageInitParameters
-                                            }
-                                        />
-                                    )}
-                                </TabPanel>
-                            )}
+                            OptionalServicesStatus.Up && (
+                            <TabPanel
+                                value={tabValue}
+                                index={TAB_VALUES.voltageInitParamsTabValue}
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <VoltageInitParameters
+                                        user={user}
+                                        hideParameters={hideParameters}
+                                        useVoltageInitParameters={
+                                            useVoltageInitParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.advancedParamsTabValue}

@@ -44,6 +44,12 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText' },
         { id: 'DROOP', label: 'Droop' },
     ],
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
+        { id: 'MAXIMUM_SECTION_COUNT', label: 'MaximumSectionCount' },
+        { id: 'SECTION_COUNT', label: 'ShuntSectionCount' },
+        { id: 'MAXIMUM_SUSCEPTANCE', label: 'MaxShuntSusceptance' },
+        { id: 'MAXIMUM_Q_AT_NOMINAL_VOLTAGE', label: 'maxQAtNominalV' },
+    ],
 };
 
 function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {
