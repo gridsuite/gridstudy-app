@@ -6,108 +6,74 @@
  */
 
 import { Grid, InputAdornment } from '@mui/material';
-import IntegerInput from '../common/integer-input';
-import FloatInput from '../common/float-input';
-import TextInput from '../common/text-input';
-import { DropDown, SwitchWithLabel } from '../parameters';
+import { styles } from '../parameters';
 import { LineSeparator } from '../../dialogUtils';
 import React from 'react';
-
-// --- define render makers --- //
-export const makeRenderSwitchWithLabel =
-    () => (defParam, key, params, setter, value) => {
-        return (
-            <SwitchWithLabel
-                value={value}
-                label={defParam.description}
-                callback={(ev) =>
-                    setter({ ...params, [key]: ev.target.checked })
-                }
-            />
-        );
-    };
-export const makeRenderDropDown =
-    () => (defParam, key, params, setter, value) => {
-        return (
-            <DropDown
-                value={value}
-                label={defParam.description}
-                values={defParam.values}
-                callback={(ev) => setter({ ...params, [key]: ev.target.value })}
-            />
-        );
-    };
-
-export const makeRenderIntegerField =
-    () => (defParam, key, params, setter, value) => {
-        return (
-            <IntegerInput
-                value={value}
-                label={defParam.description}
-                callback={({ value }) => setter({ ...params, [key]: value })}
-            />
-        );
-    };
-export const makeRenderFloatField =
-    () => (defParam, key, params, setter, value) => {
-        return (
-            <FloatInput
-                value={value}
-                label={defParam.description}
-                callback={({ value }) => setter({ ...params, [key]: value })}
-            />
-        );
-    };
-
-export const makeRenderTextField =
-    () => (defParam, key, params, setter, value) => {
-        return (
-            <TextInput
-                value={value}
-                label={defParam.description}
-                callback={({ value }) => setter({ ...params, [key]: value })}
-            />
-        );
-    };
+import { FormattedMessage } from 'react-intl';
+import {
+    FloatInput,
+    IntegerInput,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 
 // --- define data types --- //
 export const TYPES = {
-    enum: 'Enum',
-    bool: 'Bool',
-    integer: 'Integer',
-    float: 'Float',
-    text: 'Text',
+    ENUM: 'ENUM',
+    BOOL: 'BOOL',
+    INTEGER: 'INTEGER',
+    FLOAT: 'FLOAT',
+    STRING: 'STRING',
 };
 
-// --- define default render for each data types
-const DEFAULT_RENDER = {
-    [TYPES.bool]: makeRenderSwitchWithLabel(),
-    [TYPES.enum]: makeRenderDropDown(),
-    [TYPES.integer]: makeRenderIntegerField(),
-    [TYPES.float]: makeRenderFloatField(),
-    [TYPES.text]: makeRenderTextField(),
+const defaultParamRender = (defParam, path, key) => {
+    switch (defParam.type) {
+        case TYPES.ENUM:
+            return (
+                <SelectInput
+                    name={`${path}.${key}`}
+                    label={''}
+                    options={defParam?.options ?? []}
+                    fullWidth
+                    size={'small'}
+                    disableClearable
+                />
+            );
+        case TYPES.BOOL:
+            return <SwitchInput name={`${path}.${key}`} label={''} />;
+        case TYPES.INTEGER:
+            return <IntegerInput name={`${path}.${key}`} label={''} />;
+        case TYPES.FLOAT:
+            return <FloatInput name={`${path}.${key}`} label={''} />;
+        case TYPES.STRING:
+            return <TextInput name={`${path}.${key}`} label={''} />;
+        default:
+            return <></>;
+    }
 };
 
-export const makeComponentsFor = (defParams, params, setter) => {
+export const makeComponents = (defParams, path) => {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponentFor(defParams[key], key, params, setter)}
+            {makeComponent(defParams[key], path, key)}
             <LineSeparator />
         </Grid>
     ));
 };
 
-export const getValue = (param, key) => {
-    if (!param || param[key] === undefined) {
-        return null;
-    }
-    return param[key];
-};
-
-export const makeComponentFor = (defParam, key, params, setter) => {
-    const value = getValue(params, key);
-    const render = defParam.render ?? DEFAULT_RENDER[defParam.type];
-    return render(defParam, key, params, setter, value);
+export const makeComponent = (defParam, path, key) => {
+    const render = defParam?.render ?? defaultParamRender;
+    return (
+        <>
+            <Grid item xs={8} sx={styles.parameterName}>
+                <FormattedMessage id={defParam.label} />
+            </Grid>
+            <Grid item container xs={4} sx={styles.controlItem}>
+                {render(defParam, path, key)}
+            </Grid>
+        </>
+    );
 };
 
 export const inputAdornment = (content) => ({
