@@ -55,7 +55,7 @@ export const EquipmentTable = ({
         modifyGenerator(
             studyUuid,
             currentNode.id,
-            initialGeneratorInfos.id,
+            cellClickedInitialData.id,
             undefined,
             undefined,
             undefined,
@@ -148,7 +148,7 @@ export const EquipmentTable = ({
             },
         };
     }, [network, topPinnedData]);
-    const initialGeneratorInfos = gridContext.dynamicValidation;
+    const cellClickedInitialData = gridContext.dynamicValidation;
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -222,7 +222,7 @@ export const EquipmentTable = ({
                 ) => {
                     handleSavePopupRegulatingTerminal(updatedRegulatedTerminal);
                 }}
-                data={initialGeneratorInfos}
+                data={cellClickedInitialData}
             />
         </>
     );

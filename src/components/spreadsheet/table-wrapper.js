@@ -251,6 +251,10 @@ const TableWrapper = (props) => {
                     } else if (editingData?.id === params.data.id) {
                         return {
                             component: ReferenceLineCellRenderer,
+                            params: {
+                                setEditingData: setEditingData,
+                                editingData: editingData,
+                            },
                         };
                     } else {
                         return {
@@ -266,6 +270,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [editingData?.id, startEditing, tabIndex]
     );
 

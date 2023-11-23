@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
 
 const styles = {
     iconSize: {
@@ -79,10 +80,10 @@ const CustomHeaderComponent = ({
 
     const isColumnSorted = sortColKey === field;
 
+    /* Filter should be activated for current column and
+    Filter should be a text type, or we should have options for filter if it is an autocomplete */
     const shouldActivateFilter =
-        // Filter should be activated for current column
         isFilterable &&
-        // Filter should be a text type, or we should have options for filter if it is an autocomplete
         (filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length);
 
     const shouldDisplayFilterIcon =
@@ -129,11 +130,15 @@ const CustomHeaderComponent = ({
     };
 
     const handleSortChange = useCallback(() => {
-        let newSort = null;
-        if (!isColumnSorted || !sortWay) {
-            newSort = 1;
-        } else if (sortWay > 0) {
-            newSort = -1;
+        let newSort;
+        if (!isColumnSorted) {
+            newSort = SORT_WAY.asc;
+        } else {
+            if (sortWay < 0) {
+                newSort = SORT_WAY.asc;
+            } else {
+                newSort = SORT_WAY.desc;
+            }
         }
 
         if (typeof onSortChanged === 'function') {
@@ -209,10 +214,10 @@ const CustomHeaderComponent = ({
                         </Grid>
                         {isSortable && (
                             <Grid item>
-                                {isColumnSorted && sortWay && (
+                                {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {sortWay === 1 ? (
+                                            {sortWay === SORT_WAY.asc ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
