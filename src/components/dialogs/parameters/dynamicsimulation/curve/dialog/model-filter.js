@@ -17,13 +17,13 @@ import React, {
 } from 'react';
 import { Grid, Typography, useTheme } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
-import { CURVE_EQUIPMENT_TYPES } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { Box } from '@mui/system';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
 const modelsToVariablesTree = (models) => {
     return models.reduce(
@@ -103,7 +103,7 @@ const styles = {
 };
 
 const ModelFilter = forwardRef(
-    ({ equipmentType = CURVE_EQUIPMENT_TYPES.LOAD }, ref) => {
+    ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -117,7 +117,7 @@ const ModelFilter = forwardRef(
         // --- models CheckboxSelect --- //
         const associatedModels = useMemo(() => {
             const associatedModels = allModels?.filter(
-                (model) => model.equipmentType === equipmentType.type
+                (model) => model.equipmentType === equipmentType
             );
             // convert array to object
             return associatedModels
@@ -129,7 +129,7 @@ const ModelFilter = forwardRef(
                       {}
                   )
                 : {};
-        }, [equipmentType.type, allModels]);
+        }, [equipmentType, allModels]);
         const initialSelectedModels = useMemo(
             () => Object.keys(associatedModels) ?? [],
             [associatedModels]

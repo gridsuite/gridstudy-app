@@ -21,7 +21,6 @@ import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
@@ -33,16 +32,10 @@ import {
     OperatorType,
 } from '../../../../filter/expert/expert-filter.type';
 
-export const CURVE_EQUIPMENT_TYPES = {
-    [EQUIPMENT_TYPES.GENERATOR]: {
-        type: EQUIPMENT_TYPES.GENERATOR,
-        fetchers: EQUIPMENT_FETCHERS.GENERATOR,
-    },
-    [EQUIPMENT_TYPES.LOAD]: {
-        type: EQUIPMENT_TYPES.LOAD,
-        fetchers: EQUIPMENT_FETCHERS.LOAD,
-    },
-};
+export const CURVE_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.GENERATOR,
+    EQUIPMENT_TYPES.LOAD,
+];
 
 const NOMINAL_VOLTAGE_UNIT = 'kV';
 
@@ -213,7 +206,7 @@ const EquipmentFilter = forwardRef(
 
             const expertFilter = {
                 type: 'EXPERT',
-                equipmentType: equipmentType.type,
+                equipmentType: equipmentType,
                 rules: buildExpertRules(
                     selectedVoltageLevelIds,
                     selectedCountries,
@@ -236,7 +229,7 @@ const EquipmentFilter = forwardRef(
         }, [
             studyUuid,
             currentNode.id,
-            equipmentType.type,
+            equipmentType,
             snackError,
             selectedVoltageLevelIds,
             selectedCountries,
@@ -334,13 +327,11 @@ const EquipmentFilter = forwardRef(
                             size="small"
                             sx={{ width: '100%' }}
                         >
-                            {Object.entries(CURVE_EQUIPMENT_TYPES).map(
-                                ([key, value]) => (
-                                    <MenuItem key={key} value={value}>
-                                        {intl.formatMessage({ id: value.type })}
-                                    </MenuItem>
-                                )
-                            )}
+                            {CURVE_EQUIPMENT_TYPES.map((type) => (
+                                <MenuItem key={type} value={type}>
+                                    {intl.formatMessage({ id: type })}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </Grid>
                 </Grid>
