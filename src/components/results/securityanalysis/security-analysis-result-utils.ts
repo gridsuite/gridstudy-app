@@ -7,13 +7,13 @@
 
 import React, { useEffect, useState } from 'react';
 import {
+    Constraint,
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    LimitViolation,
-    SecurityAnalysisNmkTableRow,
-    Constraint,
     CustomColDef,
     FilterEnums,
+    LimitViolation,
+    SecurityAnalysisNmkTableRow,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -36,6 +36,7 @@ import {
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from '../../../services/security-analysis';
+import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -100,7 +101,11 @@ export const flattenNmKResultsContingencies = (
                         ? intl.formatMessage({ id: limitViolation.side })
                         : '',
                     linkedElementId: contingencyId,
-                    acceptableDuration: limitViolation.acceptableDuration,
+                    acceptableDuration:
+                        limitViolation.acceptableDuration ===
+                        UNDEFINED_ACCEPTABLE_DURATION
+                            ? undefined
+                            : limitViolation.acceptableDuration,
                 });
             });
         }
