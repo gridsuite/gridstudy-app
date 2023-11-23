@@ -473,6 +473,7 @@
     "LoadFlowResultsCurrentViolations": "Current violations",
     "LoadFlowResultsVoltageViolations": "Voltage violations",
     "LoadFlowResultsStatus": "Status",
+    "ComputationResultsLogs": "Logs",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
