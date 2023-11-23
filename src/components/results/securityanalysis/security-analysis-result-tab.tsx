@@ -38,6 +38,7 @@ import {
     RESULT_TYPE,
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
+    getIdType,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import {
@@ -46,7 +47,10 @@ import {
     useAgGridSort,
 } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
+import {
+    FILTER_TEXT_COMPARATORS,
+    FILTER_UI_TYPES,
+} from '../../custom-aggrid/custom-aggrid-header';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
 
@@ -93,10 +97,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         initSortConfig: {
-            colKey:
-                nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                    ? 'contingencyId'
-                    : 'subjectId',
+            colKey: getIdType(tabIndex, nmkType),
             sortWay: SORT_WAYS.asc,
         },
     });
@@ -142,12 +143,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                                 field as keyof typeof filterSelector
                             ];
 
-                        const { text, type } = selectedValue?.[0];
+                        const { text, type, dataType } = selectedValue?.[0];
 
                         const isTextFilter = !!text;
 
                         return {
-                            dataType: 'text',
+                            dataType: dataType ?? FILTER_UI_TYPES.TEXT,
                             column: field,
                             type: isTextFilter
                                 ? type
@@ -201,11 +202,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
-        resetResultStates(
-            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? 'contingencyId'
-                : 'subjectId'
-        );
+        resetResultStates(getIdType(newTabIndex, nmkType));
         setTabIndex(newTabIndex);
     };
 
@@ -231,7 +228,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const result = useMemo(
         () =>
             securityAnalysisResult === RunningStatus.FAILED
-                ? null
+                ? []
                 : securityAnalysisResult,
         [securityAnalysisResult]
     );
@@ -298,6 +295,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
+                        onSortChanged={onSortChanged}
+                        sortConfig={sortConfig}
+                        filterSelector={filterSelector}
+                        updateFilter={updateFilter}
+                        filterEnums={filterEnums}
                     />
                 )}
                 {tabIndex === 1 && (

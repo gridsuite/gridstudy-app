@@ -41,6 +41,7 @@ const styles = {
 
 export const FILTER_UI_TYPES = {
     TEXT: 'text',
+    NUMBER: 'number',
     AUTO_COMPLETE: 'autoComplete',
 };
 
@@ -48,6 +49,12 @@ export const FILTER_TEXT_COMPARATORS = {
     EQUALS: 'equals',
     CONTAINS: 'contains',
     STARTS_WITH: 'startsWith',
+};
+
+export const FILTER_NUMBER_COMPARATORS = {
+    NOT_EQUAL: 'notEqual',
+    LESS_THAN_OR_EQUAL: 'lessThanOrEqual',
+    GREATER_THAN_OR_EQUAL: 'greaterThanOrEqual',
 };
 
 const CustomHeaderComponent = ({
@@ -66,6 +73,7 @@ const CustomHeaderComponent = ({
         debounceMs = 1000, // used to debounce the api call to not fetch the back end too fast
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
+        parser, // Used to convert the value displayed in the table into its actual value
     } = filterParams;
     const { colKey: sortColKey, sortWay } = sortConfig;
     const isAutoCompleteFilter = filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE;
@@ -84,7 +92,10 @@ const CustomHeaderComponent = ({
     Filter should be a text type, or we should have options for filter if it is an autocomplete */
     const shouldActivateFilter =
         isFilterable &&
-        (filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length);
+        // Filter should be a text or number type, or we should have options for filter if it is an autocomplete
+        (filterUIType === FILTER_UI_TYPES.TEXT ||
+            filterUIType === FILTER_UI_TYPES.NUMBER ||
+            !!filterOptions?.length);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -102,7 +113,7 @@ const CustomHeaderComponent = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
-        debounce((data) => updateFilter(field, data), debounceMs),
+        debounce((field, data) => updateFilter(field, data), debounceMs),
         [field, debounceMs, updateFilter]
     );
 
@@ -110,23 +121,30 @@ const CustomHeaderComponent = ({
         const value = event.target.value.toUpperCase();
         setSelectedFilterData(value);
 
-        debouncedUpdateFilter([
+        debouncedUpdateFilter(field, [
             {
-                text: value,
+                text: parser ? parser(value) : value,
                 type: selectedFilterComparator,
+                dataType: filterParams.filterUIType,
             },
         ]);
     };
 
     const handleFilterAutoCompleteChange = (_, data) => {
         setSelectedFilterData(data);
-        debouncedUpdateFilter(data);
+        debouncedUpdateFilter(field, data);
     };
 
     const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-        debouncedUpdateFilter([{ text: selectedFilterData, type: newType }]);
+        debouncedUpdateFilter(field, [
+            {
+                text: selectedFilterData,
+                type: newType,
+                dataType: filterParams.filterUIType,
+            },
+        ]);
     };
 
     const handleSortChange = useCallback(() => {
@@ -373,6 +391,7 @@ CustomHeaderComponent.propTypes = {
         filterUIType: PropTypes.oneOf([
             FILTER_UI_TYPES.TEXT,
             FILTER_UI_TYPES.AUTO_COMPLETE,
+            FILTER_UI_TYPES.NUMBER,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
