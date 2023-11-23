@@ -31,7 +31,11 @@ import {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
-import { fetchSecurityAnalysisAvailableComputationStatus } from '../../../services/security-analysis';
+import {
+    fetchSecurityAnalysisAvailableBranchSides,
+    fetchSecurityAnalysisAvailableComputationStatus,
+    fetchSecurityAnalysisAvailableLimitTypes,
+} from '../../../services/security-analysis';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -71,7 +75,11 @@ export const flattenNmKResultsContingencies = (
             rows.push({
                 contingencyId,
                 contingencyEquipmentsIds: elements.map((element) => element.id),
-                status,
+                status: status
+                    ? intl.formatMessage({
+                          id: status,
+                      })
+                    : '',
                 violationCount: subjectLimitViolations.length,
             });
             subjectLimitViolations?.forEach((constraint: Constraint) => {
@@ -80,13 +88,17 @@ export const flattenNmKResultsContingencies = (
 
                 rows.push({
                     subjectId,
-                    limitType: intl.formatMessage({
-                        id: limitViolation.limitType,
-                    }),
+                    limitType: limitViolation.limitType
+                        ? intl.formatMessage({
+                              id: limitViolation.limitType,
+                          })
+                        : '',
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    side: limitViolation.side,
+                    side: limitViolation.side
+                        ? intl.formatMessage({ id: limitViolation.side })
+                        : '',
                     linkedElementId: contingencyId,
                     acceptableDuration: limitViolation.acceptableDuration,
                 });
@@ -114,12 +126,20 @@ export const flattenNmKResultsConstraints = (
                         contingencyEquipmentsIds: contingency.elements?.map(
                             (element) => element.id
                         ),
-                        status: contingency.status,
-                        limitType: intl.formatMessage({
-                            id: limitViolation.limitType,
-                        }),
+                        status: contingency.status
+                            ? intl.formatMessage({
+                                  id: contingency.status,
+                              })
+                            : '',
+                        limitType: limitViolation.limitType
+                            ? intl.formatMessage({
+                                  id: limitViolation.limitType,
+                              })
+                            : '',
                         limitName: limitViolation.limitName,
-                        side: limitViolation.side,
+                        side: limitViolation.side
+                            ? intl.formatMessage({ id: limitViolation.side })
+                            : '',
                         acceptableDuration: limitViolation.acceptableDuration,
                         limit: limitViolation.limit,
                         value: limitViolation.value,
@@ -200,18 +220,36 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -275,22 +313,41 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            isFilterable: true,
+            filterParams: {
+                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -335,6 +392,15 @@ export const securityAnalysisTableNmKFilterDefinition = (
         {
             field: 'status',
             options: filterEnums.computationsStatus,
+        },
+        {
+            field: 'limitType',
+            options: filterEnums?.limitTypes,
+        },
+
+        {
+            field: 'side',
+            options: filterEnums?.branchSides,
         },
     ];
 };
@@ -385,40 +451,53 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 };
 
 // We can use this custom hook for fetching enums for AutoComplete filter
-export const useFetchFiltersEnums = (isEmptyResult: boolean = true) => {
+export const useFetchFiltersEnums = (
+    hasResult: boolean = false,
+    setFilter: (value: boolean) => void
+) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState({
+    const [result, setResult] = useState<FilterEnums>({
         computationsStatus: null,
+        limitTypes: null,
+        branchSides: null,
     });
 
     useEffect(() => {
-        const fetchAllData = () => {
+        if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
                 fetchSecurityAnalysisAvailableComputationStatus(),
+                fetchSecurityAnalysisAvailableLimitTypes(),
+                fetchSecurityAnalysisAvailableBranchSides(),
             ];
 
             setLoading(true);
             Promise.all(promises)
-                .then(([computationsStatusResult]) => {
-                    setResult({
-                        computationsStatus: computationsStatusResult,
-                    });
-                    setLoading(false);
-                })
+                .then(
+                    ([
+                        computationsStatusResult,
+                        limitTypesResult,
+                        branchSidesResult,
+                    ]) => {
+                        setResult({
+                            computationsStatus: computationsStatusResult,
+                            limitTypes: limitTypesResult,
+                            branchSides: branchSidesResult,
+                        });
+                        setFilter(true);
+                        setLoading(false);
+                    }
+                )
                 .catch((err) => {
+                    setFilter(false);
                     setError(err);
                     setLoading(false);
                 });
-        };
-
-        if (!isEmptyResult) {
-            fetchAllData();
         }
-    }, [isEmptyResult]);
+    }, [hasResult, setFilter]);
 
-    return [loading, result, error];
+    return { loading, result, error };
 };
 
 export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
