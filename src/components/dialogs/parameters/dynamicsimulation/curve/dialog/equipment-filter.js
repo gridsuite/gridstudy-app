@@ -24,7 +24,6 @@ import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
-import VirtualizedCheckboxAutocomplete from '../common/virtualized-checkbox-autocomplete';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
 import { evaluateFilter } from '../../../../../../services/study/filter';
 import {
@@ -355,7 +354,7 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
-                        <VirtualizedCheckboxAutocomplete
+                        <CheckboxSelect
                             value={selectedVoltageLevelIds}
                             options={voltageLevelIds}
                             getOptionLabel={(value) =>
