@@ -132,7 +132,7 @@ const EquipmentFilter = forwardRef(
         }, [currentNode.id, studyUuid, snackError]);
 
         // fetching and filtering equipments by filters
-        const loadThenFilterEquipmentsAsync = useCallback(() => {
+        const filteringEquipmentsAsync = useCallback(() => {
             const buildExpertRules = (
                 voltageLevelIds,
                 countries,
@@ -226,7 +226,7 @@ const EquipmentFilter = forwardRef(
             return evaluateFilter(studyUuid, currentNode.id, expertFilter)
                 .then((equipments) => {
                     // take only ids when return
-                    return equipments.map((elem) => ({ id: elem.id }));
+                    return equipments.map(({ id }) => ({ id }));
                 })
                 .catch((error) => {
                     snackError({
@@ -247,12 +247,12 @@ const EquipmentFilter = forwardRef(
         useEffect(() => {
             if (gridReady && countriesFilterReady) {
                 equipmentsRef.current.api.showLoadingOverlay();
-                loadThenFilterEquipmentsAsync().then((equipments) => {
+                filteringEquipmentsAsync().then((equipments) => {
                     setEquipmentRowData(equipments);
                     equipmentsRef.current.api.hideOverlay();
                 });
             }
-        }, [loadThenFilterEquipmentsAsync, gridReady, countriesFilterReady]);
+        }, [filteringEquipmentsAsync, gridReady, countriesFilterReady]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
