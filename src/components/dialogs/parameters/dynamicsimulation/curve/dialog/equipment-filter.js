@@ -106,83 +106,12 @@ const EquipmentFilter = forwardRef(
             setSelectedNominalVoltages(selectedTensionIds);
         }, []);
 
-        // --- country (i.e. countryCode) => lookup actually in substation --- //
+        // --- country (i.e. countryCode) => fetch from network-map-server --- //
         const [countries, setCountries] = useState([]);
         const [selectedCountries, setSelectedCountries] = useState([]);
         const handleCountryChange = useCallback((selectedCountries) => {
             setSelectedCountries(selectedCountries);
         }, []);
-
-        const buildExpertRules = (
-            voltageLevelIds,
-            countries,
-            nominalVoltages
-        ) => {
-            // Note that OR group of the same field can be replaced by a rule IN
-            // BUT at the moment IN operator is not supported
-            // create group OR for voltageLevelIds
-            const voltageLevelIdsRuleGroup = voltageLevelIds.reduce(
-                (group, voltageLevelId) => {
-                    group.rules.push({
-                        field: FieldType.VOLTAGE_LEVEL_ID,
-                        operator: OperatorType.IS,
-                        value: voltageLevelId,
-                        dataType: DataType.STRING,
-                    });
-                    return group;
-                },
-                {
-                    combinator: CombinatorType.OR,
-                    dataType: DataType.COMBINATOR,
-                    rules: [],
-                }
-            );
-
-            // create group OR for countries
-            const countriesRuleGroup = countries.reduce(
-                (group, country) => {
-                    group.rules.push({
-                        field: FieldType.COUNTRY,
-                        operator: OperatorType.EQUALS,
-                        value: country,
-                        dataType: DataType.ENUM,
-                    });
-                    return group;
-                },
-                {
-                    combinator: CombinatorType.OR,
-                    dataType: DataType.COMBINATOR,
-                    rules: [],
-                }
-            );
-            // create group OR for nominalVoltages
-            const nominalVoltagesRuleGroup = nominalVoltages.reduce(
-                (group, nominalVoltage) => {
-                    group.rules.push({
-                        field: FieldType.NOMINAL_VOLTAGE,
-                        operator: OperatorType.EQUALS,
-                        value: nominalVoltage,
-                        dataType: DataType.NUMBER,
-                    });
-                    return group;
-                },
-                {
-                    combinator: CombinatorType.OR,
-                    dataType: DataType.COMBINATOR,
-                    rules: [],
-                }
-            );
-
-            return {
-                combinator: CombinatorType.AND,
-                dataType: DataType.COMBINATOR,
-                rules: [
-                    voltageLevelIdsRuleGroup,
-                    countriesRuleGroup,
-                    nominalVoltagesRuleGroup,
-                ],
-            };
-        };
 
         // load countries
         useEffect(() => {
@@ -204,6 +133,85 @@ const EquipmentFilter = forwardRef(
 
         // fetching and filtering equipments by filters
         const loadThenFilterEquipmentsAsync = useCallback(() => {
+            const buildExpertRules = (
+                voltageLevelIds,
+                countries,
+                nominalVoltages
+            ) => {
+                const rules = [];
+
+                // Note that OR group of the same field can be replaced by a rule IN
+                // BUT at the moment IN operator is not supported
+                // create group OR for voltageLevelIds
+                if (voltageLevelIds && voltageLevelIds.length > 0) {
+                    const voltageLevelIdsRuleGroup = voltageLevelIds.reduce(
+                        (group, voltageLevelId) => {
+                            group.rules.push({
+                                field: FieldType.VOLTAGE_LEVEL_ID,
+                                operator: OperatorType.IS,
+                                value: voltageLevelId,
+                                dataType: DataType.STRING,
+                            });
+                            return group;
+                        },
+                        {
+                            combinator: CombinatorType.OR,
+                            dataType: DataType.COMBINATOR,
+                            rules: [],
+                        }
+                    );
+                    rules.push(voltageLevelIdsRuleGroup);
+                }
+
+                // create group OR for countries
+                if (countries && countries.length > 0) {
+                    const countriesRuleGroup = countries.reduce(
+                        (group, country) => {
+                            group.rules.push({
+                                field: FieldType.COUNTRY,
+                                operator: OperatorType.EQUALS,
+                                value: country,
+                                dataType: DataType.ENUM,
+                            });
+                            return group;
+                        },
+                        {
+                            combinator: CombinatorType.OR,
+                            dataType: DataType.COMBINATOR,
+                            rules: [],
+                        }
+                    );
+                    rules.push(countriesRuleGroup);
+                }
+
+                // create group OR for nominalVoltages
+                if (nominalVoltages && nominalVoltages.length > 0) {
+                    const nominalVoltagesRuleGroup = nominalVoltages.reduce(
+                        (group, nominalVoltage) => {
+                            group.rules.push({
+                                field: FieldType.NOMINAL_VOLTAGE,
+                                operator: OperatorType.EQUALS,
+                                value: nominalVoltage,
+                                dataType: DataType.NUMBER,
+                            });
+                            return group;
+                        },
+                        {
+                            combinator: CombinatorType.OR,
+                            dataType: DataType.COMBINATOR,
+                            rules: [],
+                        }
+                    );
+                    rules.push(nominalVoltagesRuleGroup);
+                }
+
+                return {
+                    combinator: CombinatorType.AND,
+                    dataType: DataType.COMBINATOR,
+                    rules,
+                };
+            };
+
             const expertFilter = {
                 type: 'EXPERT',
                 equipmentType: equipmentType.type,
@@ -213,6 +221,7 @@ const EquipmentFilter = forwardRef(
                     selectedNominalVoltages
                 ),
             };
+
             // evaluate by filter-server
             return evaluateFilter(studyUuid, currentNode.id, expertFilter)
                 .then((equipments) => {
@@ -237,8 +246,10 @@ const EquipmentFilter = forwardRef(
 
         useEffect(() => {
             if (gridReady && countriesFilterReady) {
+                equipmentsRef.current.api.showLoadingOverlay();
                 loadThenFilterEquipmentsAsync().then((equipments) => {
                     setEquipmentRowData(equipments);
+                    equipmentsRef.current.api.hideOverlay();
                 });
             }
         }, [loadThenFilterEquipmentsAsync, gridReady, countriesFilterReady]);
@@ -294,6 +305,16 @@ const EquipmentFilter = forwardRef(
             }),
             []
         );
+
+        // config overlay when fetching from back
+        const loadingOverlayComponent = (props) => {
+            return <>{props.loadingMessage}</>;
+        };
+        const loadingOverlayComponentParams = useMemo(() => {
+            return {
+                loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
+            };
+        }, [intl]);
 
         return (
             <>
@@ -415,7 +436,13 @@ const EquipmentFilter = forwardRef(
                                 onSelectionChanged={
                                     handleEquipmentSelectionChanged
                                 }
-                            ></CustomAGGrid>
+                                loadingOverlayComponent={
+                                    loadingOverlayComponent
+                                }
+                                loadingOverlayComponentParams={
+                                    loadingOverlayComponentParams
+                                }
+                            />
                         </Box>
                     </Grid>
                 </Grid>
