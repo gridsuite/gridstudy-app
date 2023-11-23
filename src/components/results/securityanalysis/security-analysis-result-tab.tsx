@@ -40,9 +40,14 @@ import {
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import {
+    getSortValue,
+    SORT_WAYS,
+    useAgGridSort,
+} from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
 
 const styles = {
@@ -79,13 +84,23 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
+    const [hasFilter, setHasFilter] = useState<boolean>(false);
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
+    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
+        initSortConfig: {
+            colKey:
+                nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                    ? 'contingencyId'
+                    : 'subjectId',
+            sortWay: SORT_WAYS.asc,
+        },
+    });
+
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         FROM_COLUMN_TO_FIELD,
         () => {
@@ -160,16 +175,24 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         null
     );
 
-    const resetResultStates = useCallback(() => {
-        setResult(null);
-        setCount(0);
-        setPage(0);
-        resetSortConfig();
-        initFilters();
-    }, [initFilters, resetSortConfig, setResult]);
+    const resetResultStates = useCallback(
+        (defaultSortColKey: string) => {
+            setResult(null);
+            setCount(0);
+            setPage(0);
+            initFilters();
+            initSort(defaultSortColKey);
+        },
+        [initSort, initFilters, setResult]
+    );
 
-    const handleChangeNmkType = () => {
-        resetResultStates();
+    const handleChangeNmkType = (event: SelectChangeEvent) => {
+        const newNmkType = event.target.value;
+        resetResultStates(
+            newNmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                ? 'contingencyId'
+                : 'subjectId'
+        );
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                 ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
@@ -178,7 +201,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
-        resetResultStates();
+        resetResultStates(
+            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                ? 'contingencyId'
+                : 'subjectId'
+        );
         setTabIndex(newTabIndex);
     };
 
@@ -209,17 +236,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [securityAnalysisResult]
     );
 
-    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(
-        result?.empty
-    );
+    const { loading: filterEnumsLoading, result: filterEnums } =
+        useFetchFiltersEnums(hasFilter, setHasFilter);
 
     useEffect(() => {
         if (result) {
-            setCount(result.totalElements);
-        } else {
-            setCount(0);
+            setCount(tabIndex ? result.totalElements : result.length);
         }
-    }, [result]);
+    }, [result, tabIndex]);
 
     const shouldOpenLoader = useOpenLoaderShortWait({
         isLoading:
