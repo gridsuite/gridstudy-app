@@ -8,6 +8,8 @@
 import { getIn } from 'yup';
 import { toNumber } from './validation-functions';
 
+export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
+
 // When using Typescript, you can't get the validation schema from useFormContext (because it is a custom prop)
 // this method can be used instead in Typescript files
 export const isFieldFromContextRequired = (fieldName, formContext, values) => {

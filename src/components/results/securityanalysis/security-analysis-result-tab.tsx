@@ -188,9 +188,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const handleChangeNmkType = (event: SelectChangeEvent) => {
         const newNmkType = event.target.value;
         resetResultStates(
-            newNmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
-                ? 'subjectId'
-                : 'contingencyId'
+            newNmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                ? 'contingencyId'
+                : 'subjectId'
         );
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES

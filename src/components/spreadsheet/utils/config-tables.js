@@ -9,6 +9,7 @@ import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import {
@@ -1448,7 +1449,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
-                columnWidth: MEDIUM_COLUMN_WIDTH,
+                editable: true,
+                columnWidth: MIN_COLUMN_WIDTH,
             },
             {
                 id: 'VoltageLevelId',
@@ -1472,19 +1474,66 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetV',
-                field: 'targetV',
+                id: 'MaximumSectionCount',
+                field: 'maximumSectionCount',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntSectionCount',
+                field: 'sectionCount',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Type',
+                field: 'type',
+                valueGetter: (params) =>
+                    params?.data?.maxSusceptance > 0
+                        ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
+                        : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'maxQAtNominalV',
+                field: 'maxQAtNominalV',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetDeadband',
-                field: 'targetDeadband',
+                id: 'SwitchedOnMaxQAtNominalV',
+                field: 'switchedOnQAtNominalV',
                 numeric: true,
+                valueGetter: (params) =>
+                    (params?.data?.maxQAtNominalV /
+                        params?.data?.maximumSectionCount) *
+                    params?.data?.sectionCount,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MaxShuntSusceptance',
+                field: 'maxSusceptance',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 5,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'SwitchedOnMaxSusceptance',
+                field: 'switchedOnSusceptance',
+                numeric: true,
+                valueGetter: (params) =>
+                    (params?.data?.maxSusceptance /
+                        params?.data?.maximumSectionCount) *
+                    params?.data?.sectionCount,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {

@@ -7,15 +7,15 @@
 
 import React, { useEffect, useState } from 'react';
 import {
+    Constraint,
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    LimitViolation,
-    SecurityAnalysisNmkTableRow,
-    Constraint,
     CustomColDef,
     FilterEnums,
     FilterDef,
     FilterSelectorType,
+    LimitViolation,
+    SecurityAnalysisNmkTableRow,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -93,7 +93,7 @@ export const flattenNmKResultsContingencies = (
                     linkedElementId: contingencyId,
                     // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                     acceptableDuration:
-                        limitViolation?.acceptableDuration === MAX_JAVA_INTEGER
+                        limitViolation?.acceptableDuration === MAX_INT32
                             ? null
                             : limitViolation?.acceptableDuration,
                 });
@@ -137,8 +137,7 @@ export const flattenNmKResultsConstraints = (
                             : '',
                         // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                         acceptableDuration:
-                            limitViolation?.acceptableDuration ===
-                            MAX_JAVA_INTEGER
+                            limitViolation?.acceptableDuration === MAX_INT32
                                 ? null
                                 : limitViolation?.acceptableDuration,
                         limit: limitViolation.limit,
@@ -838,4 +837,4 @@ export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
         : 'contingencyId';
 };
 
-export const MAX_JAVA_INTEGER: number = 2147483647;
+export const MAX_INT32: number = 2147483647;
