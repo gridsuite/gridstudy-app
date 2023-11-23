@@ -41,27 +41,22 @@ const defParams = {
     },
     [IDA_INIT_STEP]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationIDASolverInitStep',
     },
     [IDA_MIN_STEP]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationIDASolverMinStep',
     },
     [IDA_MAX_STEP]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationIDASolverMaxStep',
     },
     [IDA_ABS_ACCURACY]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationIDASolverAbsAccuracy',
     },
     [IDA_REL_ACCURACY]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationIDASolverRelAccuracy',
     },
     ...commonDefParams,

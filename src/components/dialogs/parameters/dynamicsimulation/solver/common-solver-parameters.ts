@@ -66,22 +66,18 @@ export const getFormSchema = () => {
 export const commonDefParams = {
     [COMMON_F_NORM_TOL_ALG]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverFNormTolAlg',
     },
     [COMMON_INITIAL_ADD_TOL_ALG]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverInitialAddTolAlg',
     },
     [COMMON_SC_STEP_TOL_ALG]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverScStepTolAlg',
     },
     [COMMON_MX_NEW_T_STEP_ALG]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverMxNewTStepAlg',
     },
     [COMMON_MSBSET_ALG]: {
@@ -98,22 +94,18 @@ export const commonDefParams = {
     },
     [COMMON_F_NORM_TOL_ALG_J]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverFNormTolAlgJ',
     },
     [COMMON_INITIAL_ADD_TOL_ALG_J]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverInitialAddTolAlgJ',
     },
     [COMMON_SC_STEP_TOL_ALG_J]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverScStepTolAlgJ',
     },
     [COMMON_MX_NEW_T_STEP_ALG_J]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverMxNewTStepAlgJ',
     },
     [COMMON_MSBSET_ALG_J]: {
@@ -130,22 +122,18 @@ export const commonDefParams = {
     },
     [COMMON_F_NORM_TOL_ALG_INIT]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverFNormTolAlgInit',
     },
     [COMMON_INITIAL_ADD_TOL_ALG_INIT]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverInitialAddTolAlgInit',
     },
     [COMMON_SC_STEP_TOL_ALG_INIT]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverScStepTolAlgInit',
     },
     [COMMON_MX_NEW_T_STEP_ALG_INIT]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverMxNewTStepAlgInit',
     },
     [COMMON_MSBSET_ALG_INIT]: {
@@ -166,7 +154,6 @@ export const commonDefParams = {
     },
     [COMMON_MINIMAL_ACCEPTABLE_STEP]: {
         type: TYPES.FLOAT,
-        exponentialFormatEditable: true,
         label: 'DynamicSimulationSolverMinimalAcceptableStep',
     },
 };
