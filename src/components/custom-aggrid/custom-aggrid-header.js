@@ -138,7 +138,13 @@ const CustomHeaderComponent = ({
     const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-        debouncedUpdateFilter([{ text: selectedFilterData, type: newType }]);
+        debouncedUpdateFilter(field, [
+            {
+                text: selectedFilterData,
+                type: newType,
+                dataType: filterParams.filterUIType,
+            },
+        ]);
     };
 
     const handleSortChange = useCallback(() => {
@@ -385,6 +391,7 @@ CustomHeaderComponent.propTypes = {
         filterUIType: PropTypes.oneOf([
             FILTER_UI_TYPES.TEXT,
             FILTER_UI_TYPES.AUTO_COMPLETE,
+            FILTER_UI_TYPES.NUMBER,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,

@@ -14,6 +14,7 @@ import {
 import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import {
+    MAX_JAVA_INTEGER,
     securityAnalysisTableNColumnsDefinition,
     securityAnalysisTableNFilterDefinition,
 } from './security-analysis-result-utils';
@@ -31,7 +32,6 @@ export const SecurityAnalysisResultN: FunctionComponent<
     filterEnums,
 }) => {
     const intl: IntlShape = useIntl();
-
     const rows = useMemo(
         () =>
             result?.map((preContingencyResult: PreContingencyResult) => {
@@ -43,7 +43,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
                     }),
                     // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                     acceptableDuration:
-                        limitViolation?.acceptableDuration === 2147483647
+                        limitViolation?.acceptableDuration === MAX_JAVA_INTEGER
                             ? null
                             : limitViolation?.acceptableDuration,
                     limitName: limitViolation?.limitName,

@@ -1272,13 +1272,6 @@
     "waitingStudyIndexation": "Waiting for study indexation...",
 
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
-    "customAgGridFilter.startsWith": "Starts with",
-    "customAgGridFilter.contains": "Contains",
-    "customAgGridFilter.notEqual": "Not equal",
-    "customAgGridFilter.lessThanOrEqual": "Less than or equal",
-    "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",
-    "undefined" : "undefined",
-    "customAgGridFilter.filterOoo": "Filter...",
 
     "ShortCircuitPredefinedParameters": "Preset parameters",
     "ShortCircuitCharacteristics": "Features considered",
@@ -1293,5 +1286,13 @@
     "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with nominal voltage profile",
     "iccMaxWithCEIPredefinedParams": "ISC max with standard IEC 909",
     "nominalInitialVoltageProfileMode": "Nominal",
-    "cei909InitialVoltageProfileMode": "IEC 909"
+    "cei909InitialVoltageProfileMode": "IEC 909",
+
+    "customAgGridFilter.startsWith": "Starts with",
+    "customAgGridFilter.contains": "Contains",
+    "customAgGridFilter.notEqual": "Not equal",
+    "customAgGridFilter.lessThanOrEqual": "Less than or equal",
+    "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",    
+    "customAgGridFilter.filterOoo": "Filter...",
+    "undefined" : "undefined"
 }

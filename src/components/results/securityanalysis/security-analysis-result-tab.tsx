@@ -37,6 +37,7 @@ import {
     RESULT_TYPE,
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
+    getIdType,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import {
@@ -94,10 +95,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         initSortConfig: {
-            colKey:
-                nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                    ? 'contingencyId'
-                    : 'subjectId',
+            colKey: getIdType(tabIndex, nmkType),
             sortWay: SORT_WAYS.asc,
         },
     });
@@ -130,10 +128,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             if (sortConfig) {
                 const { sortWay, colKey } = sortConfig;
                 queryParams['sort'] = {
-                    colKey:
-                        tabIndex === 0
-                            ? FROM_COLUMN_TO_FIELD.subjectId
-                            : FROM_COLUMN_TO_FIELD[colKey],
+                    colKey: FROM_COLUMN_TO_FIELD[colKey],
                     sortValue: getSortValue(sortWay),
                 };
             }
@@ -193,9 +188,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const handleChangeNmkType = (event: SelectChangeEvent) => {
         const newNmkType = event.target.value;
         resetResultStates(
-            newNmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? 'contingencyId'
-                : 'subjectId'
+            newNmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
+                ? 'subjectId'
+                : 'contingencyId'
         );
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
@@ -205,11 +200,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
-        resetResultStates(
-            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? 'contingencyId'
-                : 'subjectId'
-        );
+        resetResultStates(getIdType(newTabIndex, nmkType));
         setTabIndex(newTabIndex);
     };
 

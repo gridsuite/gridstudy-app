@@ -91,7 +91,11 @@ export const flattenNmKResultsContingencies = (
                         ? intl.formatMessage({ id: limitViolation.side })
                         : '',
                     linkedElementId: contingencyId,
-                    acceptableDuration: limitViolation.acceptableDuration,
+                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
+                    acceptableDuration:
+                        limitViolation?.acceptableDuration === MAX_JAVA_INTEGER
+                            ? null
+                            : limitViolation?.acceptableDuration,
                 });
             });
         }
@@ -131,7 +135,12 @@ export const flattenNmKResultsConstraints = (
                         side: limitViolation.side
                             ? intl.formatMessage({ id: limitViolation.side })
                             : '',
-                        acceptableDuration: limitViolation.acceptableDuration,
+                        // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
+                        acceptableDuration:
+                            limitViolation?.acceptableDuration ===
+                            MAX_JAVA_INTEGER
+                                ? null
+                                : limitViolation?.acceptableDuration,
                         limit: limitViolation.limit,
                         value: limitViolation.value,
                         loading: limitViolation.loading,
@@ -146,20 +155,20 @@ export const flattenNmKResultsConstraints = (
 };
 
 const makeColumn = ({
-    headerName,
-    field = '',
-    valueGetter,
-    cellRenderer,
-    isSortable = false,
-    isHidden = false,
-    isFilterable = false,
-    filterParams,
-    filtersDef,
-    filterSelector,
-    sortConfig,
-    valueFormatter,
-    onSortChanged,
-    updateFilter,
+    headerName, // headerName: The name to display in the column header
+    field = '', // field: The data object field corresponding to this column (default is empty)
+    valueGetter, // valueGetter: A function to get the cell value if it's not directly in the field
+    cellRenderer, // cellRenderer: A component or function to customize the rendering of cells in the column
+    isSortable = false, // isSortable: A boolean to determine if the column can be sorted
+    isHidden = false, // isHidden: A boolean to determine if the column should be hidden
+    isFilterable = false, // isFilterable: A boolean to determine if the column can be filtered
+    filterParams, // filterParams: Parameters for the column's filtering functionality
+    filtersDef, // filtersDef: Definitions for the filters applicable to this column
+    filterSelector, // filterSelector: Selector for the filter applied to this column
+    sortConfig, // sortConfig: Configuration for sorting this column
+    valueFormatter, // valueFormatter: A function to format the value displayed in the cell
+    onSortChanged, // onSortChanged: A function to handle the event when sorting is changed
+    updateFilter, // updateFilter: A function to update the filter applied to this column
 }: CustomColDef) => {
     const { options: filterOptions = [] } =
         filtersDef.find((filterDef) => filterDef?.field === field) || {};
@@ -821,3 +830,12 @@ export enum RESULT_TYPE {
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
+
+export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
+    return index === 0 ||
+        (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
+        ? 'subjectId'
+        : 'contingencyId';
+};
+
+export const MAX_JAVA_INTEGER: number = 2147483647;
