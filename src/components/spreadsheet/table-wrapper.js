@@ -251,7 +251,7 @@ const TableWrapper = (props) => {
                         };
                     } else if (editingData?.id === params.data.id) {
                         return {
-                            component: ReferenceLineCellRenderer, //TODO FIXME is it necesary ?
+                            component: ReferenceLineCellRenderer,
                             params: {
                                 setEditingData: setEditingData,
                                 editingData: editingData,

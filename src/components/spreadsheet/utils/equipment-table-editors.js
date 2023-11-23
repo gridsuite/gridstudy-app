@@ -299,7 +299,7 @@ export const BooleanListField = forwardRef(
 
 export const SelectCountryField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
-        const [value, setValue] = useState(null);
+        const [value, setValue] = useState(defaultValue);
         const { translate, countryCodes } = LocalizedCountries();
 
         useImperativeHandle(
@@ -324,6 +324,7 @@ export const SelectCountryField = forwardRef(
         return (
             <Autocomplete
                 options={countryCodes}
+                value={value}
                 getOptionLabel={(countryCode) => translate(countryCode)}
                 style={{ width: '100%' }}
                 onChange={(event, newValue) => {
