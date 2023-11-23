@@ -83,6 +83,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
             field: 'limit',
+            numeric: true,
             fractionDigits: 2,
         },
         {
