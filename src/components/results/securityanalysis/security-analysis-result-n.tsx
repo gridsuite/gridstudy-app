@@ -8,40 +8,77 @@
 import { FunctionComponent, useMemo } from 'react';
 import {
     PreContingencyResult,
+    SecurityAnalysisNTableRow,
     SecurityAnalysisResultNProps,
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
-import { LimitViolation } from './security-analysis.type';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import {
-    computeLoading,
+    MAX_INT32,
     securityAnalysisTableNColumnsDefinition,
+    securityAnalysisTableNFilterDefinition,
 } from './security-analysis-result-utils';
+import { convertSide } from '../loadflow/load-flow-result-utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
-> = ({ result, isLoadingResult }) => {
+> = ({
+    result,
+    isLoadingResult,
+    onSortChanged,
+    sortConfig,
+    updateFilter,
+    filterSelector,
+    filterEnums,
+}) => {
     const intl: IntlShape = useIntl();
+    const rows = useMemo(() => {
+        return result?.length // check if it's not Page object
+            ? result?.map((preContingencyResult: PreContingencyResult) => {
+                  const { limitViolation, subjectId } = preContingencyResult;
+                  return {
+                      subjectId: subjectId,
+                      limitType: intl.formatMessage({
+                          id: limitViolation?.limitType,
+                      }),
+                      // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
+                      acceptableDuration:
+                          limitViolation?.acceptableDuration === MAX_INT32
+                              ? null
+                              : limitViolation?.acceptableDuration,
+                      limitName: limitViolation?.limitName,
+                      limit: limitViolation?.limit,
+                      value: limitViolation?.value,
+                      loading: limitViolation?.loading,
+                      side: convertSide(limitViolation?.side, intl),
+                  } as SecurityAnalysisNTableRow;
+              }) ?? []
+            : [];
+    }, [intl, result]);
 
-    const limitViolations =
-        (result as PreContingencyResult)?.limitViolationsResult
-            ?.limitViolations || [];
-
-    const rows = limitViolations.map((limitViolation: LimitViolation) => {
-        return {
-            subjectId: limitViolation.subjectId,
-            limitType: intl.formatMessage({
-                id: limitViolation.limitType,
-            }),
-            limit: limitViolation.limit,
-            value: limitViolation.value,
-            loading: computeLoading(limitViolation),
-        };
-    });
+    const filtersDef = useMemo(
+        () => securityAnalysisTableNFilterDefinition(intl, filterEnums),
+        [filterEnums, intl]
+    );
 
     const columnDefs = useMemo(
-        () => securityAnalysisTableNColumnsDefinition(intl),
-        [intl]
+        () =>
+            securityAnalysisTableNColumnsDefinition(
+                intl,
+                filtersDef,
+                filterSelector,
+                onSortChanged,
+                updateFilter,
+                sortConfig
+            ),
+        [
+            filterSelector,
+            filtersDef,
+            intl,
+            onSortChanged,
+            sortConfig,
+            updateFilter,
+        ]
     );
 
     return (

@@ -50,6 +50,23 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'MAXIMUM_SUSCEPTANCE', label: 'MaxShuntSusceptance' },
         { id: 'MAXIMUM_Q_AT_NOMINAL_VOLTAGE', label: 'maxQAtNominalV' },
     ],
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [
+        { id: 'NOMINAL_VOLTAGE', label: 'NominalVoltage' },
+        { id: 'LOW_VOLTAGE_LIMIT', label: 'LowVoltageLimit' },
+        { id: 'HIGH_VOLTAGE_LIMIT', label: 'HighVoltageLimit' },
+        {
+            id: 'LOW_SHORT_CIRCUIT_CURRENT_LIMIT',
+            label: 'LowShortCircuitCurrentLimit',
+        },
+        {
+            id: 'HIGH_SHORT_CIRCUIT_CURRENT_LIMIT',
+            label: 'HighShortCircuitCurrentLimit',
+        },
+    ],
+    [EQUIPMENT_TYPES.LOAD]: [
+        { id: 'ACTIVE_POWER', label: 'ActivePowerText' },
+        { id: 'REACTIVE_POWER', label: 'ReactivePowerText' },
+    ],
 };
 
 function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {

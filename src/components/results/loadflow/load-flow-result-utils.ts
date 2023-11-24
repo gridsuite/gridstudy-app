@@ -6,7 +6,6 @@
  */
 
 import {
-    LimitNames,
     LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
@@ -18,12 +17,34 @@ import {
     ValueFormatterParams,
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
-import { convertDuration } from '../../spreadsheet/utils/cell-renderers';
+import {
+    convertDuration,
+    formatNAValue,
+} from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
 
-export const convertSide = (side: string, intl: IntlShape) => {
+export const convertMillisecondsToMinutesSeconds = (
+    durationInMilliseconds: number
+): string => {
+    const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
+
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = durationInSeconds % 60;
+
+    if (seconds === 0) {
+        return minutes + "'";
+    }
+
+    if (minutes === 0) {
+        return seconds + '"';
+    }
+
+    return minutes + "' " + seconds + '"';
+};
+
+export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
         : side === BranchSide.TWO
@@ -69,7 +90,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 id: 'LimitNameCurrentViolation',
             }),
             valueFormatter: (params: ValueFormatterParams) =>
-                formatLimitName(params.value, intl),
+                formatNAValue(params.value, intl),
             field: 'limitName',
         },
         {
@@ -123,11 +144,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     ];
 };
 
-export const formatLimitName = (limitName: string, intl: IntlShape) => {
-    return limitName === LimitNames.NA
-        ? intl.formatMessage({ id: 'Undefined' })
-        : limitName;
-};
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
         ? intl.formatMessage({ id: limitType })
