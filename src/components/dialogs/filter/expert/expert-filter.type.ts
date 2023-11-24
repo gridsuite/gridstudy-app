@@ -17,6 +17,8 @@ export enum OperatorType {
     CONTAINS = 'CONTAINS',
     BEGINS_WITH = 'BEGINS_WITH',
     ENDS_WITH = 'ENDS_WITH',
+    IN = 'IN',
+    NOT_IN = 'NOT_IN',
 }
 
 export enum CombinatorType {

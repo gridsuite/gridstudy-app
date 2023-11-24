@@ -132,69 +132,37 @@ const EquipmentFilter = forwardRef(
             ) => {
                 const rules = [];
 
-                // Note that OR group of the same field can be replaced by a rule IN
-                // BUT at the moment IN operator is not supported
-                // create group OR for voltageLevelIds
+                // create rule IN for voltageLevelIds
                 if (voltageLevelIds && voltageLevelIds.length > 0) {
-                    const voltageLevelIdsRuleGroup = voltageLevelIds.reduce(
-                        (group, voltageLevelId) => {
-                            group.rules.push({
-                                field: FieldType.VOLTAGE_LEVEL_ID,
-                                operator: OperatorType.IS,
-                                value: voltageLevelId,
-                                dataType: DataType.STRING,
-                            });
-                            return group;
-                        },
-                        {
-                            combinator: CombinatorType.OR,
-                            dataType: DataType.COMBINATOR,
-                            rules: [],
-                        }
-                    );
-                    rules.push(voltageLevelIdsRuleGroup);
+                    const voltageLevelIdsRule = {
+                        field: FieldType.VOLTAGE_LEVEL_ID,
+                        operator: OperatorType.IN,
+                        values: voltageLevelIds,
+                        dataType: DataType.STRING,
+                    };
+                    rules.push(voltageLevelIdsRule);
                 }
 
-                // create group OR for countries
+                // create rule IN for countries
                 if (countries && countries.length > 0) {
-                    const countriesRuleGroup = countries.reduce(
-                        (group, country) => {
-                            group.rules.push({
-                                field: FieldType.COUNTRY,
-                                operator: OperatorType.EQUALS,
-                                value: country,
-                                dataType: DataType.ENUM,
-                            });
-                            return group;
-                        },
-                        {
-                            combinator: CombinatorType.OR,
-                            dataType: DataType.COMBINATOR,
-                            rules: [],
-                        }
-                    );
-                    rules.push(countriesRuleGroup);
+                    const countriesRule = {
+                        field: FieldType.COUNTRY,
+                        operator: OperatorType.IN,
+                        values: countries,
+                        dataType: DataType.ENUM,
+                    };
+                    rules.push(countriesRule);
                 }
 
-                // create group OR for nominalVoltages
+                // create rule IN for nominalVoltages
                 if (nominalVoltages && nominalVoltages.length > 0) {
-                    const nominalVoltagesRuleGroup = nominalVoltages.reduce(
-                        (group, nominalVoltage) => {
-                            group.rules.push({
-                                field: FieldType.NOMINAL_VOLTAGE,
-                                operator: OperatorType.EQUALS,
-                                value: nominalVoltage,
-                                dataType: DataType.NUMBER,
-                            });
-                            return group;
-                        },
-                        {
-                            combinator: CombinatorType.OR,
-                            dataType: DataType.COMBINATOR,
-                            rules: [],
-                        }
-                    );
-                    rules.push(nominalVoltagesRuleGroup);
+                    const nominalVoltagesRule = {
+                        field: FieldType.NOMINAL_VOLTAGE,
+                        operator: OperatorType.IN,
+                        values: nominalVoltages,
+                        dataType: DataType.NUMBER,
+                    };
+                    rules.push(nominalVoltagesRule);
                 }
 
                 return {
