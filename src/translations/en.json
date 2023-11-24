@@ -1286,6 +1286,10 @@
     "PhaseLowTapPosition": "Phase low tap position",
     "PhaseTapPosition": "Phase tap position",
     "PhaseDeadBand": "Phase deadband",
+    "RatedVoltage1": "Rated voltage 1",
+    "RatedVoltage2": "Rated voltage 2",
+    "PhaseRegulatingValue": "Phase regulating value",
+    "RatioTargetV": "Ratio voltage set point",
 
     "waitingStudyIndexation": "Waiting for study indexation...",
 
