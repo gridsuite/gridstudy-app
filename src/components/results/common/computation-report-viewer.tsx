@@ -65,7 +65,6 @@ export const ComputationReportViewer: FunctionComponent<
                 reportType
             )
                 .then((fetchedReport) => {
-                    clearTimeout(timer);
                     setReport(makeReport(fetchedReport));
                 })
                 .catch((error) => {

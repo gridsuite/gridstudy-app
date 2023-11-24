@@ -127,7 +127,6 @@ export const ReportViewerTab = ({
                 REPORT_TYPES.NETWORK_MODIFICATION
             )
                 .then((fetchedReport) => {
-                    clearTimeout(timer);
                     setReport(makeSingleReport(fetchedReport));
                 })
                 .catch((error) => {
