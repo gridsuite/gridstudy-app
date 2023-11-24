@@ -10,7 +10,6 @@ import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    CustomColDef,
     SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
@@ -29,7 +28,6 @@ import { Box, Button, useTheme } from '@mui/material';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
     container: {
@@ -134,6 +132,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [filterEnums, intl]
     );
 
+<<<<<<< HEAD
     const makeColumn = useCallback(
         ({
             headerName,
@@ -188,20 +187,39 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
     );
 
+=======
+>>>>>>> main
     const columnDefs = useMemo(
         () =>
             isFromContingency
                 ? securityAnalysisTableNmKContingenciesColumnsDefinition(
                       intl,
+                      filtersDef,
+                      filterSelector,
+                      onSortChanged,
+                      updateFilter,
                       SubjectIdRenderer,
-                      makeColumn
+                      sortConfig
                   )
                 : securityAnalysisTableNmKConstraintsColumnsDefinition(
                       intl,
+                      filtersDef,
+                      filterSelector,
+                      onSortChanged,
+                      updateFilter,
                       SubjectIdRenderer,
-                      makeColumn
+                      sortConfig
                   ),
-        [intl, SubjectIdRenderer, isFromContingency, makeColumn]
+        [
+            isFromContingency,
+            intl,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            SubjectIdRenderer,
+            sortConfig,
+        ]
     );
 
     const rows = useMemo(

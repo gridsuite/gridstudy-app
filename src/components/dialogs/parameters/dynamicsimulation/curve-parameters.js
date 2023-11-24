@@ -5,17 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
-
-import { Grid, Typography, useTheme } from '@mui/material';
+import yup from '../../../utils/yup-config';
+import { Grid, Typography, Box, useTheme } from '@mui/material';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from '../../../spreadsheet/global-filter';
 import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
-import { Box } from '@mui/system';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 
 const styles = {
     grid: {
@@ -24,34 +22,89 @@ const styles = {
     },
 };
 
-const CurveParameters = ({ curves, onUpdateCurve }) => {
+export const CURVES = 'curves';
+
+// curve's fields
+const EQUIPMENT_ID = 'equipmentId';
+const VARIABLE_ID = 'variableId';
+
+export const formSchema = yup.object().shape({
+    [CURVES]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [EQUIPMENT_ID]: yup.string().required(),
+                [VARIABLE_ID]: yup.string().required(),
+            })
+        )
+        .nullable(),
+});
+
+export const emptyFormData = {
+    [CURVES]: [],
+};
+
+const CurveParameters = ({ path }) => {
     const intl = useIntl();
-    const [rowData, setRowData] = useState([]);
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
 
-    // handle open/close/save curve selector dialog
+    const { control } = useFormContext();
+    const {
+        fields: rowData,
+        append,
+        remove,
+    } = useFieldArray({
+        control,
+        name: `${path}.${CURVES}`,
+    });
+
+    // handle open/close/append curve selector dialog
     const [open, setOpen] = useState(false);
     const handleClose = useCallback(() => {
         setOpen((prevState) => !prevState);
     }, []);
-    const handleSave = useCallback(
+    const handleAppend = useCallback(
         (newCurves) => {
             // do save here
             const notYetAddedCurves = newCurves.filter(
+                // use functional keys to lookup
                 (curve) =>
-                    !curves?.find(
+                    !rowData.find(
                         (elem) =>
-                            elem.equipmentId === curve.equipmentId &&
-                            elem.variableId === curve.variableId
+                            elem[EQUIPMENT_ID] === curve[EQUIPMENT_ID] &&
+                            elem[VARIABLE_ID] === curve[VARIABLE_ID]
                     )
             );
-            const newParameterCurves = [...curves, ...notYetAddedCurves];
-            setRowData(newParameterCurves);
-            onUpdateCurve(newParameterCurves);
+
+            // add new curves via provided method by hook
+            append(notYetAddedCurves);
+
             setOpen((prevState) => !prevState);
         },
-        [curves, onUpdateCurve]
+        [append, rowData]
     );
+
+    const handleAdd = useCallback(() => {
+        setOpen((prevState) => !prevState);
+    }, []);
+
+    const handleDelete = useCallback(() => {
+        const selectedRows = gridRef.current.api.getSelectedRows();
+
+        const indexesToRemove = selectedRows.map((elem) =>
+            // use functional keys to lookup
+            rowData.findIndex(
+                (row) =>
+                    elem[EQUIPMENT_ID] === row[EQUIPMENT_ID] &&
+                    elem[VARIABLE_ID] === row[VARIABLE_ID]
+            )
+        );
+
+        // remove curves via provided method by hook
+        remove(indexesToRemove);
+        // reset selected rows length
+        setSelectedRowsLength(0);
+    }, [remove, rowData]);
 
     const quickFilterRef = useRef();
 
@@ -62,14 +115,17 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
     const columnDefs = useMemo(() => {
         return [
             {
-                field: 'equipmentId',
+                field: EQUIPMENT_ID,
+                checkboxSelection: true,
+                headerCheckboxSelection: true,
+                headerCheckboxSelectionFilteredOnly: true,
                 minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveDynamicModelHeader',
                 }),
             },
             {
-                field: 'variableId',
+                field: VARIABLE_ID,
                 minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
@@ -90,105 +146,67 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
         };
     }, []);
 
-    const onGridReady = useCallback(
-        (params) => {
-            setRowData(curves);
-        },
-        [curves]
-    );
-
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
         setSelectedRowsLength(selectedRows.length);
     }, []);
 
-    const handleAdd = useCallback(() => {
-        setOpen((prevState) => !prevState);
-    }, []);
-
-    const handleDelete = useCallback(() => {
-        const selectedRows = gridRef.current.api.getSelectedRows();
-        setRowData((prev) => {
-            const remainingRows = prev.filter(
-                (elem) =>
-                    !selectedRows.find(
-                        (selectedElem) =>
-                            elem.equipmentId === selectedElem.equipmentId &&
-                            elem.variableId === selectedElem.variableId
-                    )
-            );
-
-            // update parameter curves
-            onUpdateCurve(remainingRows);
-
-            // reset selected rows length
-            setSelectedRowsLength(0);
-
-            return remainingRows;
-        });
-    }, [onUpdateCurve]);
-
     return (
-        curves && (
-            <>
-                <Grid container direction={'column'} sx={{ height: 460 }}>
-                    {/* header toolbar of the aggrid */}
+        <>
+            <Grid container direction={'column'} sx={{ height: 460 }}>
+                {/* header toolbar of the aggrid */}
+                <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
+                    <Grid container item xs={'auto'}>
+                        <GlobalFilter
+                            key={'curve-quick-filter'}
+                            ref={quickFilterRef}
+                            gridRef={gridRef}
+                        />
+                    </Grid>
                     <Grid
                         container
                         item
-                        sx={{ marginBottom: theme.spacing(1) }}
+                        xs={'auto'}
+                        sx={{
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-end',
+                            paddingLeft: theme.spacing(1),
+                        }}
                     >
-                        <Grid container item xs={'auto'}>
-                            <GlobalFilter
-                                key={'curve-quick-filter'}
-                                ref={quickFilterRef}
-                                gridRef={gridRef}
-                                disabled={false}
-                            />
-                        </Grid>
-                        <Grid
-                            container
-                            item
-                            xs={'auto'}
-                            sx={{
-                                justifyContent: 'flex-end',
-                                alignItems: 'flex-end',
-                                paddingLeft: theme.spacing(1),
-                            }}
-                        >
-                            <Typography variant="subtitle1">
-                                {`(${selectedRowsLength} / ${rowData.length})`}
-                            </Typography>
-                        </Grid>
-                        <GridButtons
-                            onAddButton={handleAdd}
-                            onDeleteButton={handleDelete}
-                        />
+                        <Typography variant="subtitle1">
+                            {`${intl.formatMessage({
+                                id: 'DynamicSimulationCurveSelectedNumber',
+                            })} (${selectedRowsLength} / ${rowData.length})`}
+                        </Typography>
                     </Grid>
-                    {/* aggrid for configured curves */}
-                    <Grid item xs>
-                        <Box sx={styles.grid}>
-                            <CustomAGGrid
-                                ref={gridRef}
-                                rowData={rowData}
-                                columnDefs={columnDefs}
-                                defaultColDef={defaultColDef}
-                                rowSelection={'multiple'}
-                                onGridReady={onGridReady}
-                                onSelectionChanged={onSelectionChanged}
-                            ></CustomAGGrid>
-                        </Box>
-                    </Grid>
-                </Grid>
-                {open && (
-                    <CurveSelectorDialog
-                        open={open}
-                        onClose={handleClose}
-                        onSave={handleSave}
+                    <GridButtons
+                        onAddButton={handleAdd}
+                        onDeleteButton={handleDelete}
                     />
-                )}
-            </>
-        )
+                </Grid>
+                {/* aggrid for configured curves */}
+                <Grid item xs>
+                    <Box sx={styles.grid}>
+                        <CustomAGGrid
+                            name={`${path}.${CURVES}`}
+                            ref={gridRef}
+                            rowData={rowData}
+                            columnDefs={columnDefs}
+                            defaultColDef={defaultColDef}
+                            rowSelection={'multiple'}
+                            onSelectionChanged={onSelectionChanged}
+                        />
+                    </Box>
+                </Grid>
+            </Grid>
+            {open && (
+                <CurveSelectorDialog
+                    open={open}
+                    onClose={handleClose}
+                    onSave={handleAppend}
+                />
+            )}
+        </>
     );
 };
 
