@@ -23,9 +23,6 @@ export interface LoadFlowResult {
     writeTimeStamp: Date;
     componentResults: ComponentResult[];
 }
-export enum LimitNames {
-    NA = 'N/A',
-}
 
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',
