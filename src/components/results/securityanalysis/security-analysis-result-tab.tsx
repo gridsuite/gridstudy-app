@@ -47,12 +47,12 @@ import {
     useAgGridSort,
 } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { REPORT_TYPES } from '../../utils/report-type';
 import {
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
-} from '../../custom-aggrid/custom-aggrid-header';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { REPORT_TYPES } from '../../utils/report-type';
+} from '../../custom-aggrid/custom-aggrid-header.type';
 
 const styles = {
     container: {

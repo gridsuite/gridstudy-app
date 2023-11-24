@@ -30,17 +30,18 @@ import {
     convertDuration,
     parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
-import CustomHeaderComponent, {
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-    FILTER_UI_TYPES,
-} from '../../custom-aggrid/custom-aggrid-header';
+import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import {
     fetchSecurityAnalysisAvailableBranchSides,
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from '../../../services/security-analysis';
 import { ISortConfig } from 'hooks/use-aggrid-sort';
+import {
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+    FILTER_UI_TYPES,
+} from '../../custom-aggrid/custom-aggrid-header.type';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {

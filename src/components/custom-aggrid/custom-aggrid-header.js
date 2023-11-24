@@ -8,19 +8,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
 import {
-    Popover,
-    IconButton,
-    Grid,
     Autocomplete,
-    TextField,
     Badge,
-    Select,
-    MenuItem,
     debounce,
+    Grid,
+    IconButton,
+    MenuItem,
+    Popover,
+    Select,
+    TextField,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
+import { FILTER_UI_TYPES } from './custom-aggrid-header.type';
 
 const styles = {
     iconSize: {
@@ -37,24 +38,6 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-};
-
-export const FILTER_UI_TYPES = {
-    TEXT: 'text',
-    NUMBER: 'number',
-    AUTO_COMPLETE: 'autoComplete',
-};
-
-export const FILTER_TEXT_COMPARATORS = {
-    EQUALS: 'equals',
-    CONTAINS: 'contains',
-    STARTS_WITH: 'startsWith',
-};
-
-export const FILTER_NUMBER_COMPARATORS = {
-    NOT_EQUAL: 'notEqual',
-    LESS_THAN_OR_EQUAL: 'lessThanOrEqual',
-    GREATER_THAN_OR_EQUAL: 'greaterThanOrEqual',
 };
 
 const CustomHeaderComponent = ({
