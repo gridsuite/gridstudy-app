@@ -276,9 +276,15 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]
                     ),
                     currentLimiterRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.CURRENT_LIMITER.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : null,
                     flowSetpointRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : null,
                     targetDeadband: twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
                     lowTapPosition:
                         twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
@@ -447,12 +453,12 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
                         PHASE_REGULATION_MODES.CURRENT_LIMITER.id
                             ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
-                            : undefined,
+                            : null,
                     flowSetpointRegulatingValue:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
                         PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
                             ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
-                            : undefined,
+                            : null,
                     targetDeadband: isNaN(
                         twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND]
                     )
