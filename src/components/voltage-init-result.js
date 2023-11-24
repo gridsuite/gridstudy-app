@@ -54,7 +54,7 @@ const styles = {
         position: 'relative',
     },
 
-    container1: {
+    gridContainer: {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -186,7 +186,7 @@ const VoltageInitResult = ({ result, status }) => {
         skipColumnHeaders
     ) => {
         return (
-            <Box sx={styles.container1}>
+            <Box sx={styles.gridContainer}>
                 <Box sx={styles.csvExport}>
                     <Box style={{ flexGrow: 1 }}></Box>
                     <CsvExport
