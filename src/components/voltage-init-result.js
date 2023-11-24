@@ -4,11 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState, useEffect } from 'react';
+import React, {
+    useCallback,
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+} from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import VirtualizedTable from './utils/virtualized-table';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Stack, Typography } from '@mui/material';
@@ -25,6 +30,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
+import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
+import { CsvExport } from './spreadsheet/export-csv';
 
 const styles = {
     container: {
@@ -45,6 +52,19 @@ const styles = {
     buttonApplyModifications: {
         display: 'flex',
         position: 'relative',
+    },
+
+    gridContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+    },
+    grid: {
+        flexGrow: '1',
     },
 };
 
@@ -73,6 +93,21 @@ const VoltageInitResult = ({ result, status }) => {
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
     };
+    const gridRef = useRef();
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: true,
+            resizable: false,
+            lockPinned: true,
+            wrapHeaderText: true,
+        }),
+        []
+    );
+    const onRowDataUpdated = useCallback((params) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
 
     const applyModifications = () => {
         setApplyingModifications(true);
@@ -131,7 +166,50 @@ const VoltageInitResult = ({ result, status }) => {
             />
         );
     };
+    const indicatorsColumnDefs = useMemo(() => {
+        return [
+            {
+                field: 'key',
+            },
+            {
+                field: 'value',
+            },
+        ];
+    }, []);
 
+    const renderTableAndExportCSV = (
+        gridRef,
+        columns,
+        tableName,
+        rows,
+        headerHeight,
+        skipColumnHeaders
+    ) => {
+        return (
+            <Box sx={styles.gridContainer}>
+                <Box sx={styles.csvExport}>
+                    <Box style={{ flexGrow: 1 }}></Box>
+                    <CsvExport
+                        gridRef={gridRef}
+                        columns={columns}
+                        tableName={tableName}
+                        disabled={rows.length === 0}
+                        skipColumnHeaders={skipColumnHeaders}
+                    />
+                </Box>
+                <Box sx={styles.grid}>
+                    <CustomAGGrid
+                        ref={gridRef}
+                        rowData={rows}
+                        headerHeight={headerHeight}
+                        defaultColDef={defaultColDef}
+                        columnDefs={columns}
+                        onRowDataUpdated={onRowDataUpdated}
+                    />
+                </Box>
+            </Box>
+        );
+    };
     function renderIndicatorsTable(indicators) {
         const rows = indicators
             ? Object.entries(indicators).map((i) => {
@@ -139,6 +217,7 @@ const VoltageInitResult = ({ result, status }) => {
               })
             : null;
         const color = status === 'SUCCEED' ? styles.succeed : styles.fail;
+        const statusToShow = status === 'SUCCEED' ? 'OK' : 'KO';
         return (
             <>
                 <Stack
@@ -150,51 +229,44 @@ const VoltageInitResult = ({ result, status }) => {
                 >
                     <Typography style={{ fontWeight: 'bold' }}>
                         <FormattedMessage id="VoltageInitStatus" />
+                        <span style={{ marginLeft: '4px' }}>
+                            {statusToShow}
+                        </span>
                     </Typography>
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
-
-                <VirtualizedTable
-                    rows={rows}
-                    columns={[
-                        {
-                            dataKey: 'key',
-                            label: '',
-                        },
-                        {
-                            dataKey: 'value',
-                            label: '',
-                        },
-                    ]}
-                    enableExportCSV={true}
-                    exportCSVDataKeys={['key', 'value']}
-                    name={intl.formatMessage({ id: 'Indicators' })}
-                />
+                {renderTableAndExportCSV(
+                    gridRef,
+                    indicatorsColumnDefs,
+                    intl.formatMessage({ id: 'Indicators' }),
+                    rows,
+                    0,
+                    true
+                )}
             </>
         );
     }
 
+    const reactiveSlacksColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'BusId' }),
+                field: 'busId',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Slack' }),
+                field: 'slack',
+                numeric: true,
+            },
+        ];
+    }, [intl]);
+
     function renderReactiveSlacksTable(reactiveSlacks) {
-        const rows = reactiveSlacks;
-        return (
-            <VirtualizedTable
-                rows={rows}
-                columns={[
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'BusId' }),
-                        dataKey: 'busId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Slack' }),
-                        dataKey: 'slack',
-                    },
-                ]}
-                enableExportCSV={true}
-                exportCSVDataKeys={['busId', 'slack']}
-                name={intl.formatMessage({ id: 'ReactiveSlacks' })}
-            />
+        return renderTableAndExportCSV(
+            gridRef,
+            reactiveSlacksColumnDefs,
+            intl.formatMessage({ id: 'ReactiveSlacks' }),
+            reactiveSlacks
         );
     }
 
