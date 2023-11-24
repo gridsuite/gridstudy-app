@@ -50,6 +50,23 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'MAXIMUM_SUSCEPTANCE', label: 'MaxShuntSusceptance' },
         { id: 'MAXIMUM_Q_AT_NOMINAL_VOLTAGE', label: 'maxQAtNominalV' },
     ],
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
+        { id: 'SERIES_RESISTANCE', label: 'SeriesResistanceText' },
+        { id: 'SERIES_REACTANCE', label: 'SeriesReactanceText' },
+        { id: 'MAGNETIZING_CONDUCTANCE', label: 'MagnetizingConductance' },
+        { id: 'MAGNETIZING_SUSCEPTANCE', label: 'MagnetizingSusceptance' },
+        { id: 'RATED_VOLTAGE_1', label: 'RatedVoltage1' },
+        { id: 'RATED_VOLTAGE_2', label: 'RatedVoltage2' },
+        { id: 'RATED_S', label: 'RatedNominalPowerText' },
+        { id: 'TARGET_V', label: 'TargetVoltage' },
+        { id: 'RATIO_LOW_TAP_POSITION', label: 'RatioLowTapPosition' },
+        { id: 'RATIO_TAP_POSITION', label: 'RationTapPosition' },
+        { id: 'RATIO_TARGET_DEADBAND', label: 'RatioDeadband' },
+        { id: 'REGULATION_VALUE', label: 'regulatingValue' },
+        { id: 'PHASE_LOW_TAP_POSITION', label: 'PhaseLowTapPosition' },
+        { id: 'PHASE_TAP_POSITION', label: 'PhaseTapPosition' },
+        { id: 'PHASE_TARGET_DEADBAND', label: 'PhaseDeadband' },
+    ],
 };
 
 function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {

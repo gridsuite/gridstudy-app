@@ -1299,6 +1299,13 @@
     "ValueMustBeRefWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
     "addNewFormula": "Ajouter une nouvelle formule",
     "byFormulaChangeTypeConfirmation": "Voulez-vous changer le type? Toutes les valeurs des champs seront effacées",
+    "RatioLowTapPosition": "Prise min du régleur",
+    "RatioTapPosition": "Prise courante du régleur",
+    "RatioDeadBand": "Bande morte du régleur",
+    "PhaseLowTapPosition": "Prise min du déphaseur",
+    "PhaseTapPosition": "Prise courante du déphaseur",
+    "PhaseDeadBand": "Bande morte du déphaseur",
+
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
     "ShortCircuitPredefinedParameters": "Paramètres prédéfinis",
     "ShortCircuitCharacteristics": "Caractéristiques prises en compte",
