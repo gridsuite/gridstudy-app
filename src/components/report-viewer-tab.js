@@ -114,7 +114,11 @@ export const ReportViewerTab = ({
 
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
-            setWaitingLoadReport(true);
+            // use a timout to avoid having a loader in case of fast promise return (avoid blink)
+            const timer = setTimeout(() => {
+                setWaitingLoadReport(true);
+            }, 700);
+
             fetchParentNodesReport(
                 studyId,
                 currentNode.id,
@@ -123,6 +127,7 @@ export const ReportViewerTab = ({
                 REPORT_TYPES.NETWORK_MODIFICATION
             )
                 .then((fetchedReport) => {
+                    clearTimeout(timer);
                     setReport(makeSingleReport(fetchedReport));
                 })
                 .catch((error) => {
@@ -133,6 +138,7 @@ export const ReportViewerTab = ({
                     });
                 })
                 .finally(() => {
+                    clearTimeout(timer);
                     setWaitingLoadReport(false);
                 });
         },
