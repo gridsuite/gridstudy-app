@@ -1682,7 +1682,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl
-                                ?.activePowerControlOn ?? '',
+                                ?.activePowerControlOn != null
+                                ? +params.data?.activePowerControl
+                                      ?.activePowerControlOn
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
