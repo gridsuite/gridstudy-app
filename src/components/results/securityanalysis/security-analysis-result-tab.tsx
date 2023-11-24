@@ -331,7 +331,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     />
                 )}
                 {tabIndex === 2 &&
-                    securityAnalysisStatus === RunningStatus.SUCCEED && (
+                    (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                        securityAnalysisStatus === RunningStatus.FAILED) && (
                         <ComputationReportViewer
                             reportType={REPORT_TYPES.SECURITY_ANALYSIS}
                         />
