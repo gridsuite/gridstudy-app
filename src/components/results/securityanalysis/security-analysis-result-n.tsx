@@ -33,7 +33,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
 }) => {
     const intl: IntlShape = useIntl();
     const rows = useMemo(() => {
-        return result?.length
+        return result?.length // check if it's not Page object
             ? result?.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
