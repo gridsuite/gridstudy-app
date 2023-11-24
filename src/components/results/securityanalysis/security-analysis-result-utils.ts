@@ -290,8 +290,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         updateFilter,
         sortConfig,
         numeric: true,
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.value?.toFixed(1),
+        fractionDigits: 2,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
@@ -308,8 +307,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         onSortChanged,
         updateFilter,
         sortConfig,
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.loading?.toFixed(1),
+        fractionDigits: 2,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
