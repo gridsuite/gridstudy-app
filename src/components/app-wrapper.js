@@ -36,6 +36,8 @@ import {
     flat_parameters_fr,
     multiple_selection_dialog_en,
     multiple_selection_dialog_fr,
+    common_button_en,
+    common_button_fr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -53,7 +55,7 @@ import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
-const lightTheme = createTheme({
+let lightTheme = createTheme({
     palette: {
         mode: 'light',
     },
@@ -81,7 +83,15 @@ const lightTheme = createTheme({
     },
 });
 
-const darkTheme = createTheme({
+lightTheme = createTheme(lightTheme, {
+    palette: {
+        customButton: {
+            main: lightTheme.palette.text.primary,
+        },
+    },
+});
+
+let darkTheme = createTheme({
     palette: {
         mode: 'dark',
     },
@@ -109,6 +119,14 @@ const darkTheme = createTheme({
     },
 });
 
+darkTheme = createTheme(darkTheme, {
+    palette: {
+        customButton: {
+            main: darkTheme.palette.text.primary,
+        },
+    },
+});
+
 const getMuiTheme = (theme) => {
     if (theme === LIGHT_THEME) {
         return lightTheme;
@@ -133,6 +151,7 @@ const messages = {
         ...card_error_boundary_en,
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
+        ...common_button_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -150,6 +169,7 @@ const messages = {
         ...card_error_boundary_fr,
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
+        ...common_button_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

@@ -5,35 +5,46 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponentsFor, TYPES } from '../util/make-component-utils';
-import { useCallback } from 'react';
+import { makeComponents, TYPES } from '../util/make-component-utils';
 
-const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
-    const handleUpdateTimeDelay = useCallback(
-        (newTimeDelay) => {
-            onUpdateTimeDelay(newTimeDelay);
-        },
-        [onUpdateTimeDelay]
-    );
+export const START_TIME = 'startTime';
+export const STOP_TIME = 'stopTime';
 
-    const defParams = {
-        startTime: {
-            type: TYPES.float,
-            description: 'DynamicSimulationStartTime',
-        },
-        stopTime: {
-            type: TYPES.float,
-            description: 'DynamicSimulationStopTime',
-        },
-    };
-    return (
-        timeDelay && (
-            <Grid container>
-                {makeComponentsFor(defParams, timeDelay, handleUpdateTimeDelay)}
-            </Grid>
-        )
-    );
+export const formSchema = yup.object().shape({
+    [START_TIME]: yup.number().required(),
+    [STOP_TIME]: yup
+        .number()
+        .required()
+        .when([START_TIME], ([startTime], schema) => {
+            if (startTime) {
+                return schema.min(
+                    startTime,
+                    'DynamicSimulationStartTimeGreaterThanOrEqualToStopTime'
+                );
+            }
+        }),
+});
+
+export const emptyFormData = {
+    [START_TIME]: 0,
+    [STOP_TIME]: 0,
+};
+
+const defParams = {
+    [START_TIME]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationStartTime',
+    },
+    [STOP_TIME]: {
+        type: TYPES.FLOAT,
+        label: 'DynamicSimulationStopTime',
+    },
+};
+
+const TimeDelayParameters = ({ path }) => {
+    return <Grid container>{makeComponents(defParams, path)}</Grid>;
 };
 
 export default TimeDelayParameters;
