@@ -5,38 +5,51 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponentsFor, TYPES } from '../util/make-component-utils';
-import { useCallback } from 'react';
+import { makeComponents, TYPES } from '../util/make-component-utils';
+import { useMemo } from 'react';
+import { getIdOrSelf } from '../../dialogUtils';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 
-const MappingParameters = ({ mapping, onUpdateMapping }) => {
+export const MAPPING = 'mapping';
+
+export const formSchema = yup.object().shape({
+    [MAPPING]: yup.string().required(),
+});
+
+export const emptyFormData = {
+    [MAPPING]: '',
+};
+
+const MappingParameters = ({ mapping, path }) => {
     const { mappings } = mapping ?? {};
 
-    const handleUpdateMapping = useCallback(
-        (newMapping) => {
-            onUpdateMapping(newMapping);
-        },
-        [onUpdateMapping]
-    );
+    const mappingOptions = useMemo(() => {
+        return mappings?.map((elem) => elem.name) ?? [];
+    }, [mappings]);
 
     const defParams = {
-        mapping: {
-            type: TYPES.enum,
-            description: 'DynamicSimulationMapping',
-            values: mappings?.reduce((obj, curr) => {
-                obj[curr.name] = curr.name;
-                return obj;
-            }, {}),
+        [MAPPING]: {
+            type: TYPES.ENUM,
+            label: 'DynamicSimulationMapping',
+            options: mappingOptions,
+            render: (defParam, path, key) => {
+                return (
+                    <AutocompleteInput
+                        name={`${path}.${key}`}
+                        label={''}
+                        options={defParam.options}
+                        fullWidth
+                        size={'small'}
+                        getOptionLabel={getIdOrSelf}
+                    />
+                );
+            },
         },
     };
 
-    return (
-        mapping && (
-            <Grid container>
-                {makeComponentsFor(defParams, mapping, handleUpdateMapping)}
-            </Grid>
-        )
-    );
+    return <Grid container>{makeComponents(defParams, path)}</Grid>;
 };
 
 export default MappingParameters;

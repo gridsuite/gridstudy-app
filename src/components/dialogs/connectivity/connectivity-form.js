@@ -58,7 +58,6 @@ export const ConnectivityForm = ({
     voltageLevelSelectLabel = 'VoltageLevel',
     direction = 'row',
     withDirectionsInfos = true,
-    withConnectivity = true,
     withPosition = false,
     voltageLevelOptions = [],
     newBusOrBusbarSectionOptions = [],
@@ -274,7 +273,7 @@ export const ConnectivityForm = ({
                 {withDirectionsInfos && (
                     <>
                         <Grid item xs={conditionalSize} align="start">
-                            {withConnectivity && connectedField}
+                            {connectedField}
                         </Grid>
                         <Grid item xs={conditionalSize} align="start">
                             {newConnectionNameField}

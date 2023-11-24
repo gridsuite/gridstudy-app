@@ -19,8 +19,11 @@ import SelectWithConfirmationInput from './select-with-confirmation-input';
 interface ByFormulaFormProps {}
 
 const EQUIPMENT_TYPE_OPTIONS = [
-    { id: EQUIPMENT_TYPES.GENERATOR, label: EQUIPMENT_TYPES.GENERATOR },
-    { id: EQUIPMENT_TYPES.BATTERY, label: EQUIPMENT_TYPES.BATTERY },
+    EQUIPMENT_TYPES.GENERATOR,
+    EQUIPMENT_TYPES.BATTERY,
+    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
+    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+    EQUIPMENT_TYPES.LOAD,
 ];
 
 const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {

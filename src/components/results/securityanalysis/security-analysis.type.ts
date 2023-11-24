@@ -40,7 +40,7 @@ export interface Contingency {
 
 export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
-    acceptableDuration?: number;
+    acceptableDuration?: number | null;
     status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
@@ -60,7 +60,7 @@ export interface Constraint {
 }
 
 export interface ContingenciesFromConstraintItem {
-    subjectId?: string;
+    subjectId: string;
     contingencies?: Contingency[];
 }
 
@@ -70,9 +70,9 @@ export interface ConstraintsFromContingencyItem {
 }
 
 export interface PreContingencyResult {
-    limitViolationsResult?: {
-        limitViolations?: LimitViolation[];
-    };
+    subjectId?: string;
+    status: string;
+    limitViolation?: LimitViolation;
 }
 
 type FilterValueType = string[] | { text: string; type: string }[];
@@ -139,15 +139,26 @@ type FilterParams = {
     filterUIType?: string;
     filterComparators?: string[];
     debounceMs?: number;
+    parser?: (value: string) => void;
 };
 
 export type FilterEnums = Record<string, string[] | null>;
+
+export type FilterDef = {
+    field: string;
+    options: string[] | null;
+};
 
 export interface CustomColDef extends ColDef {
     isSortable?: boolean;
     isHidden?: boolean;
     isFilterable?: boolean;
     filterParams?: FilterParams;
+    filtersDef: FilterDef[];
+    filterSelector: FilterSelectorType | undefined;
+    sortConfig?: ISortConfig;
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    updateFilter: (field: string, value: string) => void;
 }
 
 export interface SecurityAnalysisNmkResult {
@@ -175,8 +186,13 @@ export interface SecurityAnalysisTabProps {
 }
 
 export interface SecurityAnalysisResultNProps {
-    result?: PreContingencyResult;
+    result?: PreContingencyResult[];
     isLoadingResult: boolean;
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig?: ISortConfig;
+    updateFilter: (field: string, value: string) => void;
+    filterSelector: FilterSelectorType;
+    filterEnums: FilterEnums;
 }
 
 export interface SecurityAnalysisResultNmkProps {
