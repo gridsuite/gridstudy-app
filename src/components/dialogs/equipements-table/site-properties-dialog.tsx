@@ -211,7 +211,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                     <Grid item xs={12}>
                         <TableContainer
                             sx={{
-                                height: 300,
                                 border: 'solid 0px rgba(0,0,0,0.1)',
                             }}
                         >
