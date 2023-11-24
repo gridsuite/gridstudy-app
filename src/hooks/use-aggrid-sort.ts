@@ -7,10 +7,21 @@
 
 import { useCallback, useState } from 'react';
 
-export interface ISortConfig {
+export type SortConfigType = {
     colKey: string;
-    sortWay: number;
+    sortWay: string | number;
+};
+
+interface IUseAgGridSortProps {
+    dataKeyToSortKey?: DataKeyToSortKey;
+    initSortConfig: SortConfigType;
 }
+
+export type SortPropsType = {
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig: SortConfigType;
+    initSort?: (colKey: string) => void;
+};
 
 type DataKeyToSortKey = Record<string, string>;
 
@@ -37,8 +48,8 @@ const getKeyByValue = (
 const getSortConfig = (
     dataKeyToSortKey: DataKeyToSortKey | undefined,
     colKey: string,
-    sortWay: number
-): ISortConfig => {
+    sortWay: number | string
+): SortConfigType => {
     return {
         colKey: dataKeyToSortKey
             ? getKeyByValue(dataKeyToSortKey, colKey) || colKey
@@ -47,18 +58,13 @@ const getSortConfig = (
     };
 };
 
-interface IUseAgGridSortProps {
-    dataKeyToSortKey?: DataKeyToSortKey;
-    initSortConfig: ISortConfig;
-}
-
 export const useAgGridSort = ({
     dataKeyToSortKey,
     initSortConfig,
-}: IUseAgGridSortProps) => {
+}: IUseAgGridSortProps): SortPropsType => {
     const { colKey: initColKey, sortWay: initSortWay } = initSortConfig;
 
-    const [sortConfig, setSortConfig] = useState<ISortConfig>(
+    const [sortConfig, setSortConfig] = useState<SortConfigType>(
         getSortConfig(dataKeyToSortKey, initColKey, initSortWay)
     );
 

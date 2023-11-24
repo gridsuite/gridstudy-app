@@ -21,7 +21,10 @@ import {
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
-import { FILTER_UI_TYPES } from './custom-aggrid-header.type';
+import {
+    FILTER_TEXT_COMPARATORS,
+    FILTER_DATA_TYPES,
+} from './custom-aggrid-header.type';
 
 const styles = {
     iconSize: {
@@ -43,14 +46,13 @@ const styles = {
 const CustomHeaderComponent = ({
     field,
     displayName,
-    sortConfig = {},
-    onSortChanged = () => {},
     isSortable = true,
+    sortParams = {},
     isFilterable = true,
     filterParams = {},
 }) => {
     const {
-        filterUIType = FILTER_UI_TYPES.AUTO_COMPLETE,
+        filterDataType = FILTER_DATA_TYPES.TEXT,
         filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
         filterOptions = [], // used for autoComplete filter as a UI type (list of possible filters)
         debounceMs = 1000, // used to debounce the api call to not fetch the back end too fast
@@ -58,8 +60,20 @@ const CustomHeaderComponent = ({
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
         parser, // Used to convert the value displayed in the table into its actual value
     } = filterParams;
-    const { colKey: sortColKey, sortWay } = sortConfig;
-    const isAutoCompleteFilter = filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE;
+
+    const {
+        sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
+        onSortChanged = () => {}, // used to handle sort change
+    } = sortParams;
+
+    const isAutoCompleteFilter =
+        filterDataType === FILTER_DATA_TYPES.TEXT && filterOptions?.length;
+    const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
+    const isColumnSorted = sortColKey === field;
+
+    /* Filter should be activated for current column and
+    Filter dataType should be defined */
+    const shouldActivateFilter = isFilterable && filterDataType;
 
     const intl = useIntl();
 
@@ -68,17 +82,6 @@ const CustomHeaderComponent = ({
     const [selectedFilterComparator, setSelectedFilterComparator] =
         useState('');
     const [selectedFilterData, setSelectedFilterData] = useState(undefined);
-
-    const isColumnSorted = sortColKey === field;
-
-    /* Filter should be activated for current column and
-    Filter should be a text type, or we should have options for filter if it is an autocomplete */
-    const shouldActivateFilter =
-        isFilterable &&
-        // Filter should be a text or number type, or we should have options for filter if it is an autocomplete
-        (filterUIType === FILTER_UI_TYPES.TEXT ||
-            filterUIType === FILTER_UI_TYPES.NUMBER ||
-            !!filterOptions?.length);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -104,30 +107,30 @@ const CustomHeaderComponent = ({
         const value = event.target.value.toUpperCase();
         setSelectedFilterData(value);
 
-        debouncedUpdateFilter(field, [
-            {
-                text: parser ? parser(value) : value,
-                type: selectedFilterComparator,
-                dataType: filterParams.filterUIType,
-            },
-        ]);
+        debouncedUpdateFilter(field, {
+            value: parser ? parser(value) : value,
+            type: selectedFilterComparator,
+            dataType: filterDataType,
+        });
     };
 
     const handleFilterAutoCompleteChange = (_, data) => {
         setSelectedFilterData(data);
-        debouncedUpdateFilter(field, data);
+        debouncedUpdateFilter(field, {
+            value: data,
+            type: FILTER_TEXT_COMPARATORS.EQUALS,
+            dataType: filterDataType,
+        });
     };
 
     const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-        debouncedUpdateFilter(field, [
-            {
-                text: selectedFilterData,
-                type: newType,
-                dataType: filterParams.filterUIType,
-            },
-        ]);
+        debouncedUpdateFilter(field, {
+            value: selectedFilterData,
+            type: newType,
+            dataType: filterDataType,
+        });
     };
 
     const handleSortChange = useCallback(() => {
@@ -345,6 +348,11 @@ const CustomHeaderComponent = ({
                                 placeholder={intl.formatMessage({
                                     id: 'customAgGridFilter.filterOoo',
                                 })}
+                                inputProps={{
+                                    type: isNumberFilter
+                                        ? FILTER_DATA_TYPES.NUMBER
+                                        : FILTER_DATA_TYPES.TEXT,
+                                }}
                                 sx={styles.input}
                             />
                         </Grid>
@@ -358,26 +366,29 @@ const CustomHeaderComponent = ({
 CustomHeaderComponent.propTypes = {
     field: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
-    filterOptions: PropTypes.arrayOf(PropTypes.string),
-    sortConfig: PropTypes.shape({
-        colKey: PropTypes.string,
-        selector: PropTypes.shape({
-            sortKeysWithWeightAndDirection: PropTypes.object,
-        }),
-        sortWay: PropTypes.number,
-    }),
-    onSortChanged: PropTypes.func,
-    updateFilter: PropTypes.func,
     isSortable: PropTypes.bool,
+    sortParams: PropTypes.shape({
+        sortConfig: PropTypes.shape({
+            colKey: PropTypes.string,
+            sortWay: PropTypes.number,
+            selector: PropTypes.shape({
+                sortKeysWithWeightAndDirection: PropTypes.object,
+            }),
+        }),
+        onSortChanged: PropTypes.func,
+    }),
     isFilterable: PropTypes.bool,
     filterParams: PropTypes.shape({
-        filterUIType: PropTypes.oneOf([
-            FILTER_UI_TYPES.TEXT,
-            FILTER_UI_TYPES.AUTO_COMPLETE,
-            FILTER_UI_TYPES.NUMBER,
+        filterDataType: PropTypes.oneOf([
+            FILTER_DATA_TYPES.TEXT,
+            FILTER_DATA_TYPES.NUMBER,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
+        updateFilter: PropTypes.func,
+        filterOptions: PropTypes.arrayOf(PropTypes.string),
+        filterSelector: PropTypes.array,
+        parser: PropTypes.func,
     }),
 };
 

@@ -16,21 +16,12 @@ import { SecurityAnalysisTable } from './security-analysis-table';
 import {
     MAX_INT32,
     securityAnalysisTableNColumnsDefinition,
-    securityAnalysisTableNFilterDefinition,
 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
-> = ({
-    result,
-    isLoadingResult,
-    onSortChanged,
-    sortConfig,
-    updateFilter,
-    filterSelector,
-    filterEnums,
-}) => {
+> = ({ result, isLoadingResult, sortProps, filterProps, filterEnums }) => {
     const intl: IntlShape = useIntl();
     const rows = useMemo(
         () =>
@@ -50,35 +41,21 @@ export const SecurityAnalysisResultN: FunctionComponent<
                     limit: limitViolation?.limit,
                     value: limitViolation?.value,
                     loading: limitViolation?.loading,
-                    side: convertSide(limitViolation?.side, intl),
+                    side: convertSide(limitViolation?.side || '', intl),
                 } as SecurityAnalysisNTableRow;
             }) ?? [],
         [intl, result]
-    );
-
-    const filtersDef = useMemo(
-        () => securityAnalysisTableNFilterDefinition(intl, filterEnums),
-        [filterEnums, intl]
     );
 
     const columnDefs = useMemo(
         () =>
             securityAnalysisTableNColumnsDefinition(
                 intl,
-                filtersDef,
-                filterSelector,
-                onSortChanged,
-                updateFilter,
-                sortConfig
+                sortProps,
+                filterProps,
+                filterEnums
             ),
-        [
-            filterSelector,
-            filtersDef,
-            intl,
-            onSortChanged,
-            sortConfig,
-            updateFilter,
-        ]
+        [intl, sortProps, filterProps, filterEnums]
     );
 
     return (

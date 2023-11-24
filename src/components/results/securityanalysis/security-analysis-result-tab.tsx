@@ -27,7 +27,6 @@ import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
-    FilterEnums,
     QueryParamsType,
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
@@ -49,10 +48,6 @@ import {
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
-import {
-    FILTER_TEXT_COMPARATORS,
-    FILTER_UI_TYPES,
-} from '../../custom-aggrid/custom-aggrid-header.type';
 
 const styles = {
     container: {
@@ -131,32 +126,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 const { sortWay, colKey } = sortConfig;
                 queryParams['sort'] = {
                     colKey: FROM_COLUMN_TO_FIELD[colKey],
-                    sortValue: getSortValue(sortWay),
+                    sortWay: getSortValue(sortWay as number),
                 };
             }
 
             if (filterSelector) {
-                queryParams['filters'] = Object.keys(filterSelector).map(
-                    (field: string) => {
-                        const selectedValue =
-                            filterSelector[
-                                field as keyof typeof filterSelector
-                            ];
-
-                        const { text, type, dataType } = selectedValue?.[0];
-
-                        const isTextFilter = !!text;
-
-                        return {
-                            dataType: dataType ?? FILTER_UI_TYPES.TEXT,
-                            column: field,
-                            type: isTextFilter
-                                ? type
-                                : FILTER_TEXT_COMPARATORS.EQUALS,
-                            value: isTextFilter ? text : selectedValue,
-                        };
-                    }
-                );
+                queryParams['filters'] = filterSelector;
             }
 
             return fetchSecurityAnalysisResult(
@@ -182,7 +157,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             setCount(0);
             setPage(0);
             initFilters();
-            initSort(defaultSortColKey);
+            if (initSort) {
+                initSort(defaultSortColKey);
+            }
         },
         [initSort, initFilters, setResult]
     );
@@ -295,10 +272,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
-                        onSortChanged={onSortChanged}
-                        sortConfig={sortConfig}
-                        filterSelector={filterSelector}
-                        updateFilter={updateFilter}
+                        sortProps={{
+                            onSortChanged,
+                            sortConfig,
+                        }}
+                        filterProps={{
+                            updateFilter,
+                            filterSelector,
+                        }}
                         filterEnums={filterEnums}
                     />
                 )}
@@ -326,8 +307,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         filterProps={{
                             updateFilter,
                             filterSelector,
-                            filterEnums: filterEnums as FilterEnums,
                         }}
+                        filterEnums={filterEnums}
                     />
                 )}
                 {tabIndex === 2 &&
