@@ -6,7 +6,6 @@
  */
 
 import {
-    LimitNames,
     LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
@@ -18,7 +17,10 @@ import {
     ValueFormatterParams,
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
-import { convertDuration } from '../../spreadsheet/utils/cell-renderers';
+import {
+    convertDuration,
+    formatNAValue,
+} from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
@@ -88,7 +90,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 id: 'LimitNameCurrentViolation',
             }),
             valueFormatter: (params: ValueFormatterParams) =>
-                formatLimitName(params.value, intl),
+                formatNAValue(params.value, intl),
             field: 'limitName',
         },
         {
@@ -139,11 +141,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     ];
 };
 
-export const formatLimitName = (limitName: string, intl: IntlShape) => {
-    return limitName === LimitNames.NA
-        ? intl.formatMessage({ id: 'Undefined' })
-        : limitName;
-};
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
         ? intl.formatMessage({ id: limitType })

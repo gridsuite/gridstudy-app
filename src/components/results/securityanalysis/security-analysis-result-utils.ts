@@ -28,6 +28,7 @@ import {
 import {
     ContingencyCellRenderer,
     convertDuration,
+    formatNAValue,
     parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
 import CustomHeaderComponent, {
@@ -252,6 +253,8 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterSelector,
         onSortChanged,
         updateFilter,
+        valueFormatter: (params: ValueFormatterParams) =>
+            formatNAValue(params.value, intl),
         sortConfig,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.TEXT,
@@ -426,6 +429,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterSelector,
             onSortChanged,
             updateFilter,
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatNAValue(params.value, intl),
             sortConfig,
             isFilterable: true,
             filterParams: {
@@ -583,6 +588,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterSelector,
             onSortChanged,
             updateFilter,
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatNAValue(params.value, intl),
             sortConfig,
             isFilterable: true,
             filterParams: {
