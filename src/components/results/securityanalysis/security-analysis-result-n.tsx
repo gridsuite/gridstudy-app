@@ -32,29 +32,29 @@ export const SecurityAnalysisResultN: FunctionComponent<
     filterEnums,
 }) => {
     const intl: IntlShape = useIntl();
-    const rows = useMemo(
-        () =>
-            result?.map((preContingencyResult: PreContingencyResult) => {
-                const { limitViolation, subjectId } = preContingencyResult;
-                return {
-                    subjectId: subjectId,
-                    limitType: intl.formatMessage({
-                        id: limitViolation?.limitType,
-                    }),
-                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                    acceptableDuration:
-                        limitViolation?.acceptableDuration === MAX_INT32
-                            ? null
-                            : limitViolation?.acceptableDuration,
-                    limitName: limitViolation?.limitName,
-                    limit: limitViolation?.limit,
-                    value: limitViolation?.value,
-                    loading: limitViolation?.loading,
-                    side: convertSide(limitViolation?.side, intl),
-                } as SecurityAnalysisNTableRow;
-            }) ?? [],
-        [intl, result]
-    );
+    const rows = useMemo(() => {
+        return result?.length // check if it's not Page object
+            ? result?.map((preContingencyResult: PreContingencyResult) => {
+                  const { limitViolation, subjectId } = preContingencyResult;
+                  return {
+                      subjectId: subjectId,
+                      limitType: intl.formatMessage({
+                          id: limitViolation?.limitType,
+                      }),
+                      // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
+                      acceptableDuration:
+                          limitViolation?.acceptableDuration === MAX_INT32
+                              ? null
+                              : limitViolation?.acceptableDuration,
+                      limitName: limitViolation?.limitName,
+                      limit: limitViolation?.limit,
+                      value: limitViolation?.value,
+                      loading: limitViolation?.loading,
+                      side: convertSide(limitViolation?.side, intl),
+                  } as SecurityAnalysisNTableRow;
+              }) ?? []
+            : [];
+    }, [intl, result]);
 
     const filtersDef = useMemo(
         () => securityAnalysisTableNFilterDefinition(intl, filterEnums),
