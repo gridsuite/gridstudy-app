@@ -132,63 +132,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [filterEnums, intl]
     );
 
-<<<<<<< HEAD
-    const makeColumn = useCallback(
-        ({
-            headerName,
-            field = '',
-            valueGetter,
-            cellRenderer,
-            isSortable = false,
-            isHidden = false,
-            isFilterable = false,
-            filterParams,
-            valueFormatter,
-            numeric,
-        }: CustomColDef) => {
-            const { options: filterOptions = [] } =
-                filtersDef.find((filterDef) => filterDef?.field === field) ||
-                {};
-
-            const { sortWay } = sortConfig || {};
-
-            const minWidth = isSortable && sortWay ? 140 : isFilterable && 95;
-
-            return {
-                headerName,
-                field,
-                valueGetter,
-                cellRenderer,
-                hide: isHidden,
-                valueFormatter,
-                headerTooltip: headerName,
-                minWidth,
-                numeric,
-                fractionDigits: numeric ? 2 : undefined,
-                headerComponent: CustomHeaderComponent,
-                headerComponentParams: {
-                    field,
-                    displayName: headerName,
-                    isSortable,
-                    sortConfig,
-                    onSortChanged: (newSortValue: number = 0) => {
-                        onSortChanged(field, newSortValue);
-                    },
-                    isFilterable,
-                    filterParams: {
-                        ...filterParams,
-                        filterSelector,
-                        filterOptions,
-                        updateFilter,
-                    },
-                },
-            };
-        },
-        [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
-    );
-
-=======
->>>>>>> main
     const columnDefs = useMemo(
         () =>
             isFromContingency
