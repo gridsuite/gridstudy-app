@@ -71,12 +71,14 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         [setResultOrLogIndex]
     );
 
-    const shortCircuitTabResultStatusSucceed = useMemo(() => {
+    const shortCircuitTabResultStatusSucceedOrFailed = useMemo(() => {
         return (
             (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES &&
-                AllBusesShortCircuitStatus === RunningStatus.SUCCEED) ||
+                (AllBusesShortCircuitStatus === RunningStatus.SUCCEED ||
+                    AllBusesShortCircuitStatus === RunningStatus.FAILED)) ||
             (tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS &&
-                OneBusShortCircuitStatus === RunningStatus.SUCCEED)
+                (OneBusShortCircuitStatus === RunningStatus.SUCCEED ||
+                    OneBusShortCircuitStatus === RunningStatus.FAILED))
         );
     }, [AllBusesShortCircuitStatus, OneBusShortCircuitStatus, tabIndex]);
 
@@ -129,7 +131,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                     <Box sx={{ height: '4px' }}>
                         {openLoader && <LinearProgress />}
                     </Box>
-                    {shortCircuitTabResultStatusSucceed && (
+                    {shortCircuitTabResultStatusSucceedOrFailed && (
                         <ComputationReportViewer
                             reportType={
                                 tabIndex ===
