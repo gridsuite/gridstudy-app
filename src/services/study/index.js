@@ -81,6 +81,7 @@ export function fetchParentNodesReport(
     nodeUuid,
     nodeOnlyReport,
     severityFilterList,
+    reportType,
     pageParams
 ) {
     console.info(
@@ -89,11 +90,14 @@ export function fetchParentNodesReport(
             ' with nodeOnlyReport = ' +
             nodeOnlyReport +
             ' in study ' +
-            studyUuid
+            studyUuid +
+            ' for ' +
+            reportType
     );
 
     let urlSearchParam = new URLSearchParams();
     urlSearchParam.append('nodeOnlyReport', nodeOnlyReport ? 'true' : 'false');
+    urlSearchParam.append('reportType', reportType.toString());
     addReportPageParams(urlSearchParam, severityFilterList, pageParams);
 
     let url =
@@ -109,14 +113,21 @@ export function fetchNodeReport(
     nodeUuid,
     reportId,
     severityFilterList,
+    reportType,
     pageParams
 ) {
     console.info(
-        'get report for node : ' + nodeUuid + ' in study ' + studyUuid
+        'get report for node : ' +
+            nodeUuid +
+            ' in study ' +
+            studyUuid +
+            ' for ' +
+            reportType
     );
 
     let urlSearchParam = new URLSearchParams();
     urlSearchParam.append('reportId', reportId);
+    urlSearchParam.append('reportType', reportType.toString());
     addReportPageParams(urlSearchParam, severityFilterList, pageParams);
 
     let url =

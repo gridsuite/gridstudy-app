@@ -25,6 +25,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
     FilterEnums,
     QueryParamsType,
@@ -37,11 +38,21 @@ import {
     RESULT_TYPE,
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
+    getIdType,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { getSortValue, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import {
+    getSortValue,
+    SORT_WAYS,
+    useAgGridSort,
+} from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header';
+import {
+    FILTER_TEXT_COMPARATORS,
+    FILTER_UI_TYPES,
+} from '../../custom-aggrid/custom-aggrid-header';
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { REPORT_TYPES } from '../../utils/report-type';
 
 const styles = {
     container: {
@@ -77,13 +88,24 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
+    const [hasFilter, setHasFilter] = useState<boolean>(false);
+
+    const N_RESULTS_TAB_INDEX = 0;
+    const NMK_RESULTS_TAB_INDEX = 1;
+    const LOGS_TAB_INDEX = 2;
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const { onSortChanged, sortConfig, resetSortConfig } = useAgGridSort();
+    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
+        initSortConfig: {
+            colKey: getIdType(tabIndex, nmkType),
+            sortWay: SORT_WAYS.asc,
+        },
+    });
+
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         FROM_COLUMN_TO_FIELD,
         () => {
@@ -93,8 +115,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
+            if (tabIndex === LOGS_TAB_INDEX) {
+                return Promise.resolve();
+            }
+
             const resultType =
-                tabIndex === 0
+                tabIndex === N_RESULTS_TAB_INDEX
                     ? RESULT_TYPE.N
                     : nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                     ? RESULT_TYPE.NMK_CONTINGENCIES
@@ -125,12 +151,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                                 field as keyof typeof filterSelector
                             ];
 
-                        const { text, type } = selectedValue?.[0];
+                        const { text, type, dataType } = selectedValue?.[0];
 
                         const isTextFilter = !!text;
 
                         return {
-                            dataType: 'text',
+                            dataType: dataType ?? FILTER_UI_TYPES.TEXT,
                             column: field,
                             type: isTextFilter
                                 ? type
@@ -158,16 +184,24 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         null
     );
 
-    const resetResultStates = useCallback(() => {
-        setResult(null);
-        setCount(0);
-        setPage(0);
-        resetSortConfig();
-        initFilters();
-    }, [initFilters, resetSortConfig, setResult]);
+    const resetResultStates = useCallback(
+        (defaultSortColKey: string) => {
+            setResult(null);
+            setCount(0);
+            setPage(0);
+            initFilters();
+            initSort(defaultSortColKey);
+        },
+        [initSort, initFilters, setResult]
+    );
 
-    const handleChangeNmkType = () => {
-        resetResultStates();
+    const handleChangeNmkType = (event: SelectChangeEvent) => {
+        const newNmkType = event.target.value;
+        resetResultStates(
+            newNmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                ? 'contingencyId'
+                : 'subjectId'
+        );
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                 ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
@@ -176,7 +210,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
-        resetResultStates();
+        resetResultStates(getIdType(newTabIndex, nmkType));
         setTabIndex(newTabIndex);
     };
 
@@ -202,22 +236,19 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const result = useMemo(
         () =>
             securityAnalysisResult === RunningStatus.FAILED
-                ? null
+                ? []
                 : securityAnalysisResult,
         [securityAnalysisResult]
     );
 
-    const [filterEnumsLoading, filterEnums] = useFetchFiltersEnums(
-        result?.empty
-    );
+    const { loading: filterEnumsLoading, result: filterEnums } =
+        useFetchFiltersEnums(hasFilter, setHasFilter);
 
     useEffect(() => {
         if (result) {
-            setCount(result.totalElements);
-        } else {
-            setCount(0);
+            setCount(tabIndex ? result.totalElements : result.length);
         }
-    }, [result]);
+    }, [result, tabIndex]);
 
     const shouldOpenLoader = useOpenLoaderShortWait({
         isLoading:
@@ -232,9 +263,16 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label="N" />
                         <Tab label="N-K" />
+                        <Tab
+                            label={
+                                <FormattedMessage
+                                    id={'ComputationResultsLogs'}
+                                />
+                            }
+                        />
                     </Tabs>
                 </Box>
-                {tabIndex === 1 && (
+                {tabIndex === NMK_RESULTS_TAB_INDEX && (
                     <Box sx={styles.nmkResultSelect}>
                         <Select
                             labelId="nmk-type-label"
@@ -261,12 +299,18 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 {shouldOpenLoader && <LinearProgress />}
             </Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === 0 ? (
+                {tabIndex === N_RESULTS_TAB_INDEX && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
+                        onSortChanged={onSortChanged}
+                        sortConfig={sortConfig}
+                        filterSelector={filterSelector}
+                        updateFilter={updateFilter}
+                        filterEnums={filterEnums}
                     />
-                ) : (
+                )}
+                {tabIndex === NMK_RESULTS_TAB_INDEX && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
@@ -294,6 +338,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                     />
                 )}
+                {tabIndex === LOGS_TAB_INDEX &&
+                    (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                        securityAnalysisStatus === RunningStatus.FAILED) && (
+                        <ComputationReportViewer
+                            reportType={REPORT_TYPES.SECURITY_ANALYSIS}
+                        />
+                    )}
             </Box>
         </>
     );

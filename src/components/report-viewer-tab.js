@@ -8,9 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer, {
-    PAGE_OPTIONS,
-} from '../components/ReportViewer/report-viewer';
+import ReportViewer, { PAGE_OPTIONS } from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -24,9 +22,10 @@ import {
     fetchSubReport,
 } from '../services/study';
 import { Box } from '@mui/system';
-import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
-import LogReportItem from './ReportViewer/log-report-item';
+import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
+import LogReportItem from './report-viewer/log-report-item';
 import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
+import { REPORT_TYPES } from './utils/report-type';
 
 const styles = {
     div: {
@@ -38,7 +37,7 @@ const styles = {
 };
 
 /**
- * control the ReportViewer (fetch and waiting)
+ * control the report-viewer (fetch and waiting)
  * @param studyId : string study id
  * @param visible : boolean window visible
  * @param currentNode : object visualized node
@@ -65,7 +64,7 @@ export const ReportViewerTab = ({
     const { snackError } = useSnackMessage();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
 
-    const handleChangeValue = useCallback((event) => {
+    const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
     }, []);
 
@@ -115,12 +114,17 @@ export const ReportViewerTab = ({
 
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
-            setWaitingLoadReport(true);
+            // use a timout to avoid having a loader in case of fast promise return (avoid blink)
+            const timer = setTimeout(() => {
+                setWaitingLoadReport(true);
+            }, 700);
+
             fetchParentNodesReport(
                 studyId,
                 currentNode.id,
                 nodeOnlyReport,
                 LogReportItem.getDefaultSeverityList(),
+                REPORT_TYPES.NETWORK_MODIFICATION,
                 { page: 0, size: PAGE_OPTIONS[0] }
             )
                 .then((fetchedReport) => {
@@ -134,6 +138,7 @@ export const ReportViewerTab = ({
                     });
                 })
                 .finally(() => {
+                    clearTimeout(timer);
                     setWaitingLoadReport(false);
                 });
         },
@@ -169,6 +174,7 @@ export const ReportViewerTab = ({
             nodeId,
             reportId,
             severityFilterList,
+            REPORT_TYPES.NETWORK_MODIFICATION,
             pageParams
         );
     };
@@ -179,6 +185,7 @@ export const ReportViewerTab = ({
             currentNode.id,
             false,
             severityFilterList,
+            REPORT_TYPES.NETWORK_MODIFICATION,
             pageParams
         );
     };
@@ -205,8 +212,10 @@ export const ReportViewerTab = ({
                                 inputProps={{
                                     'aria-label': 'primary checkbox',
                                 }}
-                                onChange={(e) => handleChangeValue(e)}
-                                disabled={disabled}
+                                onChange={(e) => handleChangeNodeOnlySwitch(e)}
+                                disabled={
+                                    disabled || rootNodeId === currentNode?.id
+                                }
                             />
                         }
                         label={intl.formatMessage({
