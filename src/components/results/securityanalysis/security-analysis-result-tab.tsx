@@ -91,7 +91,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [hasFilter, setHasFilter] = useState<boolean>(false);
 
     const N_RESULTS_TAB_INDEX = 0;
-    const NmK_RESULTS_TAB_INDEX = 1;
+    const NMK_RESULTS_TAB_INDEX = 1;
     const LOGS_TAB_INDEX = 2;
 
     const securityAnalysisStatus = useSelector(
@@ -272,7 +272,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         />
                     </Tabs>
                 </Box>
-                {tabIndex === NmK_RESULTS_TAB_INDEX && (
+                {tabIndex === NMK_RESULTS_TAB_INDEX && (
                     <Box sx={styles.nmkResultSelect}>
                         <Select
                             labelId="nmk-type-label"
@@ -310,7 +310,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         filterEnums={filterEnums}
                     />
                 )}
-                {tabIndex === NmK_RESULTS_TAB_INDEX && (
+                {tabIndex === NMK_RESULTS_TAB_INDEX && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
