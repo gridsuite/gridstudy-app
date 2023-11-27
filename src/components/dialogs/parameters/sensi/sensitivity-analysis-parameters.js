@@ -5,12 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    SelectInput,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { DropDown, LabelledButton, styles } from '../parameters';
+import { LabelledButton, styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -36,6 +40,7 @@ import {
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
     ACTIVATED,
+    PROVIDER,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
@@ -85,6 +90,7 @@ export const useGetSensitivityAnalysisParameters = () => {
 const formSchema = yup
     .object()
     .shape({
+        [PROVIDER]: yup.string().required(),
         [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
         [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
         [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
@@ -107,7 +113,10 @@ export const SensitivityAnalysisParameters = ({
 
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
-
+    const formattedProviders = [
+        { id: providers.OpenLoadFlow, label: providers.OpenLoadFlow },
+        { id: providers.Hades2, label: providers.Hades2 },
+    ];
     const handlePopupConfirm = useCallback(() => {
         hideParameters();
         setPopupConfirm(false);
@@ -117,17 +126,13 @@ export const SensitivityAnalysisParameters = ({
         setPopupConfirm(false);
     }, []);
 
-    const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
-    const updateProviderCallback = useCallback(handleUpdateProvider, [
-        updateProvider,
-    ]);
-
     const resetSensitivityParametersAndProvider = useCallback(() => {
         resetProvider();
     }, [resetProvider]);
 
     const emptyFormData = useMemo(() => {
         return {
+            [PROVIDER]: provider,
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,
@@ -137,7 +142,7 @@ export const SensitivityAnalysisParameters = ({
             [PARAMETER_SENSI_PST]: [],
             [PARAMETER_SENSI_NODES]: [],
         };
-    }, []);
+    }, [provider]);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -169,8 +174,8 @@ export const SensitivityAnalysisParameters = ({
             });
     }, [studyUuid, emptyFormData, setSensitivityAnalysisParams, snackError]);
 
-    const formatNewParams = useCallback((newParams) => {
-        return {
+    const formatNewParams = useCallback((newParams, isBackedPost = true) => {
+        let params = {
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                 newParams[FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD],
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
@@ -183,6 +188,12 @@ export const SensitivityAnalysisParameters = ({
             ...getSensiPstformatNewParams(newParams),
             ...getSensiNodesformatNewParams(newParams),
         };
+        return isBackedPost
+            ? params
+            : {
+                  [PROVIDER]: newParams[PROVIDER],
+                  ...params,
+              };
     }, []);
 
     const onSubmit = useCallback(
@@ -192,7 +203,9 @@ export const SensitivityAnalysisParameters = ({
                 formatNewParams(newParams)
             )
                 .then(() => {
-                    setSensitivityAnalysisParams(formatNewParams(newParams));
+                    setSensitivityAnalysisParams(
+                        formatNewParams(newParams, false)
+                    );
                 })
                 .catch((error) => {
                     snackError({
@@ -200,13 +213,21 @@ export const SensitivityAnalysisParameters = ({
                         headerId: 'SensitivityAnalysisParametersError',
                     });
                 });
+            updateProvider(newParams[PROVIDER]);
         },
-        [setSensitivityAnalysisParams, snackError, studyUuid, formatNewParams]
+        [
+            setSensitivityAnalysisParams,
+            snackError,
+            studyUuid,
+            formatNewParams,
+            updateProvider,
+        ]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
             reset({
+                [PROVIDER]: parameters[PROVIDER],
                 [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                     parameters.flowFlowSensitivityValueThreshold,
                 [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
@@ -400,6 +421,7 @@ export const SensitivityAnalysisParameters = ({
     }, [
         fromSensitivityAnalysisParamsDataToFormValues,
         sensitivityAnalysisParams,
+        parametersBackend,
     ]);
 
     const clear = useCallback(() => {
@@ -417,12 +439,17 @@ export const SensitivityAnalysisParameters = ({
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container spacing={1} paddingTop={1}>
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={providers}
-                        callback={updateProviderCallback}
-                    />
+                    <Grid item xs={8} sx={styles.parameterName}>
+                        <FormattedMessage id="Provider" />
+                    </Grid>
+                    <Grid item xs={4} sx={styles.controlItem}>
+                        <SelectInput
+                            name={PROVIDER}
+                            disableClearable
+                            size="small"
+                            options={Object.values(formattedProviders)}
+                        ></SelectInput>
+                    </Grid>
                 </Grid>
                 <Grid
                     container

@@ -24,14 +24,12 @@ import {
     PSTS,
     INJECTIONS,
     PARAMETER_SENSI_INJECTION,
-    SELECTED,
     ACTIVATED,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 
 interface INewParamsPst {
     sensitivityPST: Array<{
-        [SELECTED]: boolean;
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
             [NAME]: string;
@@ -51,7 +49,6 @@ interface INewParamsPst {
 
 interface INewParamsNodes {
     sensitivityNodes: Array<{
-        [SELECTED]: boolean;
         [SUPERVISED_VOLTAGE_LEVELS]: Array<{
             [ID]: string;
             [NAME]: string;
@@ -70,7 +67,6 @@ interface INewParamsNodes {
 
 interface INewParamsHvdc {
     sensitivityHVDC: Array<{
-        [SELECTED]: boolean;
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
             [NAME]: string;
@@ -90,7 +86,6 @@ interface INewParamsHvdc {
 
 interface INewParamsInjections {
     sensitivityInjection: Array<{
-        [SELECTED]: boolean;
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
             [NAME]: string;
@@ -264,7 +259,6 @@ export const getSensiInjectionsSetFormSchema = () => ({
 
 interface INewParamsInjectionsSet {
     sensitivityInjectionsSet: Array<{
-        [SELECTED]: boolean;
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
             [NAME]: string;
