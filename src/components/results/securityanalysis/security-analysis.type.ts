@@ -10,6 +10,7 @@ import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
 import { SortConfigType, SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
+    FilterEnumsType,
     FilterPropsType,
     FilterSelectorType,
 } from '../../../hooks/use-aggrid-row-filter';
@@ -112,26 +113,9 @@ type PaginationProps = {
     >;
 };
 
-export type FilterEnums = Record<string, string[] | null>;
-
 export type SubjectIdRendererType = (
     cellData: ICellRendererParams
 ) => React.JSX.Element | undefined;
-
-type FilterParams = {
-    filterDataType?: string;
-    filterComparators?: string[];
-    debounceMs?: number;
-    parser?: (value: string) => void;
-    filterEnums?: FilterEnums;
-};
-
-export interface CustomColDef extends ColDef {
-    isHidden?: boolean;
-    filterParams?: FilterParams;
-    filterProps?: FilterPropsType;
-    sortProps?: SortPropsType;
-}
 
 export interface SecurityAnalysisNmkResult {
     content?:
@@ -162,7 +146,7 @@ export interface SecurityAnalysisResultNProps {
     isLoadingResult: boolean;
     sortProps: SortPropsType;
     filterProps: FilterPropsType;
-    filterEnums: FilterEnums;
+    filterEnums: FilterEnumsType;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -175,7 +159,7 @@ export interface SecurityAnalysisResultNmkProps {
     paginationProps: PaginationProps;
     sortProps: SortPropsType;
     filterProps: FilterPropsType;
-    filterEnums: FilterEnums;
+    filterEnums: FilterEnumsType;
 }
 
 export interface SecurityAnalysisNTableRow {

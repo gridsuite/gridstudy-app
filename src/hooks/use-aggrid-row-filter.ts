@@ -14,6 +14,8 @@ type FilterType = {
     data: FilterDataType;
 };
 
+export type FilterEnumsType = Record<string, string[] | null>;
+
 export type FilterSelectorType = {
     column: string;
     dataType: string;

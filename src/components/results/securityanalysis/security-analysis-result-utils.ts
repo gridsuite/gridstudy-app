@@ -10,8 +10,6 @@ import {
     Constraint,
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    CustomColDef,
-    FilterEnums,
     LimitViolation,
     SecurityAnalysisNmkTableRow,
     SubjectIdRendererType,
@@ -39,9 +37,13 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
+    CustomColDef,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
-import { FilterPropsType } from '../../../hooks/use-aggrid-row-filter';
+import {
+    FilterEnumsType,
+    FilterPropsType,
+} from '../../../hooks/use-aggrid-row-filter';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -155,16 +157,12 @@ export const flattenNmKResultsConstraints = (
 };
 
 const makeColumn = ({
-    headerName, // headerName: The name to display in the column header
-    field = '', // field: The data object field corresponding to this column (default is empty)
-    valueGetter, // valueGetter: A function to get the cell value if it's not directly in the field
-    cellRenderer, // cellRenderer: A component or function to customize the rendering of cells in the column
-    isHidden = false, // isHidden: A boolean to determine if the column should be hidden
-    valueFormatter, // valueFormatter: A function to format the value displayed in the cell
     sortProps, // sortProps: contains useAgGridSort params
-    filterProps, // filterProps: contains useAggridRowFilter params
+    filterProps, // filterProps: contains useAgGridRowFilter params
     filterParams, // filterParams: Parameters for the column's filtering functionality
+    ...props // agGrid column props
 }: CustomColDef) => {
+    const { headerName, field = '' } = props;
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
@@ -175,12 +173,6 @@ const makeColumn = ({
             : [];
 
     return {
-        headerName,
-        field,
-        valueGetter,
-        cellRenderer,
-        valueFormatter,
-        hide: isHidden,
         headerTooltip: headerName,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
@@ -201,13 +193,14 @@ const makeColumn = ({
                 updateFilter,
             },
         },
+        ...props,
     };
 };
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnums
+    filterEnums: FilterEnumsType
 ): ColDef[] => [
     makeColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -323,7 +316,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnums
+    filterEnums: FilterEnumsType
 ): ColDef[] => {
     return [
         makeColumn({
@@ -426,7 +419,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         //it is used for sorting actions
         makeColumn({
             field: 'linkedElementId',
-            isHidden: true,
+            hide: true,
         }),
     ];
 };
@@ -436,7 +429,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnums
+    filterEnums: FilterEnumsType
 ): ColDef[] => {
     return [
         makeColumn({
@@ -538,7 +531,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         //it is used for sorting actions
         makeColumn({
             field: 'linkedElementId',
-            isHidden: true,
+            hide: true,
         }),
     ];
 };
@@ -592,10 +585,10 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 export const useFetchFiltersEnums = (
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
-): { error: boolean; loading: boolean; result: FilterEnums } => {
+): { error: boolean; loading: boolean; result: FilterEnumsType } => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState<FilterEnums>({
+    const [result, setResult] = useState<FilterEnumsType>({
         computationsStatus: null,
         limitTypes: null,
         branchSides: null,
