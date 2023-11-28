@@ -38,7 +38,11 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import {
+    getSortValue,
+    SORT_WAYS,
+    useAgGridSort,
+} from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     useAggridRowFilter,
@@ -79,6 +83,11 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         (state: ReduxState) => state.currentTreeNode
     );
 
+    const fromFrontColumnToBackKeys =
+        analysisType === ShortCircuitAnalysisType.ONE_BUS
+            ? FROM_COLUMN_TO_FIELD_ONE_BUS
+            : FROM_COLUMN_TO_FIELD;
+
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         initSortConfig: {
             colKey: '',
@@ -86,12 +95,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         },
     });
 
-    const fromFrontColumnToBackKeys =
-        analysisType === ShortCircuitAnalysisType.ONE_BUS
-            ? FROM_COLUMN_TO_FIELD_ONE_BUS
-            : FROM_COLUMN_TO_FIELD;
-
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+    const { updateFilter, filterSelector } = useAggridRowFilter(
         fromFrontColumnToBackKeys,
         () => {
             setPage(0);
@@ -123,11 +127,16 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
+        const { colKey, sortWay } = sortConfig || {};
+
         const selector = {
             page,
             size: rowsPerPage,
             filter: filterSelector,
-            // sort: sort,
+            sort: {
+                colKey: fromFrontColumnToBackKeys[colKey],
+                sortWay: getSortValue(sortWay as number),
+            },
         };
 
         fetchShortCircuitAnalysisPagedResults({
@@ -170,6 +179,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         intl,
         shortCircuitNotif,
         filterSelector,
+        sortConfig,
     ]);
 
     useEffect(() => {

@@ -119,8 +119,10 @@ export function fetchShortCircuitAnalysisPagedResults({
 
     urlSearchParams.append('page', page);
 
-    if (sort?.length) {
-        sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
+    if (sort) {
+        const { colKey, sortWay } = sort;
+        urlSearchParams.append('sort', `${colKey},${sortWay}`);
+        // sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
     }
 
     if (size) {
