@@ -5,13 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import yup from '../../../utils/yup-config';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import React, { useCallback, useState } from 'react';
-import TimeDelayParameters from './time-delay-parameters';
-import SolverParameters from './solver-parameters';
-import MappingParameters from './mapping-parameters';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import TimeDelayParameters, {
+    formSchema as timeDelayFormSchema,
+    emptyFormData as timeDelayEmptyFormData,
+    START_TIME,
+    STOP_TIME,
+} from './time-delay-parameters';
+import SolverParameters, {
+    formSchema as solverFormSchema,
+    emptyFormData as solverEmptyFormData,
+    SOLVER_ID,
+    SOLVERS,
+} from './solver-parameters';
+import MappingParameters, {
+    formSchema as mappingFormSchema,
+    emptyFormData as mappingEmptyFormData,
+    MAPPING,
+} from './mapping-parameters';
 import { LineSeparator } from '../../dialogUtils';
 import {
     CloseButton,
@@ -21,8 +36,16 @@ import {
     useParametersBackend,
     styles,
 } from '../parameters';
-import NetworkParameters from './network-parameters';
-import CurveParameters from './curve-parameters';
+import NetworkParameters, {
+    formSchema as networkFormSchema,
+    emptyFormData as networkEmptyFormData,
+    NETWORK,
+} from './network-parameters';
+import CurveParameters, {
+    formSchema as curveFormSchema,
+    emptyFormData as curveEmptyFormData,
+    CURVES,
+} from './curve-parameters';
 import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 import {
     fetchDefaultDynamicSimulationProvider,
@@ -34,13 +57,17 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../../utils/functions';
+import { SubmitButton } from '@gridsuite/commons-ui';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FormProvider, useForm } from 'react-hook-form';
+import { getTabStyle } from '../../../utils/tab-utils';
 
 const TAB_VALUES = {
-    timeDelayParamsTabValue: 'TimeDelay',
-    solverParamsTabValue: 'Solver',
-    mappingParamsTabValue: 'Mapping',
-    networkParamsTabValue: 'Network',
-    curveParamsTabValue: 'Curve',
+    TIME_DELAY: 'timeDelay',
+    SOLVER: 'solver',
+    MAPPING: 'mapping',
+    NETWORK: 'network',
+    CURVE: 'curve',
 };
 
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
@@ -68,12 +95,9 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         updateDynamicSimulationParameters
     );
 
-    const [tabValue, setTabValue] = useState(
-        TAB_VALUES.timeDelayParamsTabValue
-    );
+    const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
 
-    // to force remount a component having internal states
-    const [resetRevision, setResetRevision] = useState(0);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
     const handleUpdateProvider = useCallback(
         (evt) => {
@@ -84,55 +108,136 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
 
     const handleResetParametersAndProvider = useCallback(() => {
         resetProvider();
-        resetParameters(
-            () =>
-                setResetRevision(
-                    (prevState) => prevState + 1
-                ) /* to force remount a component having internal states */
-        );
+        resetParameters();
     }, [resetParameters, resetProvider]);
 
-    const handleUpdateTimeDelay = useCallback(
-        (newTimeDelay) => {
-            updateParameters({ ...parameters, ...newTimeDelay });
+    const emptyFormData = useMemo(() => {
+        return {
+            [TAB_VALUES.TIME_DELAY]: { ...timeDelayEmptyFormData },
+            [TAB_VALUES.SOLVER]: { ...solverEmptyFormData },
+            [TAB_VALUES.MAPPING]: { ...mappingEmptyFormData },
+            [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
+            [TAB_VALUES.CURVE]: { ...curveEmptyFormData },
+        };
+    }, []);
+
+    const formSchema = yup.object().shape({
+        [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
+        [TAB_VALUES.SOLVER]: solverFormSchema,
+        [TAB_VALUES.MAPPING]: mappingFormSchema,
+        [TAB_VALUES.NETWORK]: networkFormSchema,
+        [TAB_VALUES.CURVE]: curveFormSchema,
+    });
+
+    const formMethods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(formSchema),
+    });
+
+    const {
+        reset,
+        handleSubmit,
+        formState: { errors },
+        clearErrors,
+    } = formMethods;
+
+    const onError = useCallback(
+        (errors) => {
+            const tabsInError = [];
+            // do not show error when being in the current tab
+            if (
+                errors?.[TAB_VALUES.TIME_DELAY] &&
+                TAB_VALUES.TIME_DELAY !== tabValue
+            ) {
+                tabsInError.push(TAB_VALUES.TIME_DELAY);
+            }
+            if (errors?.[TAB_VALUES.SOLVER] && TAB_VALUES.SOLVER !== tabValue) {
+                tabsInError.push(TAB_VALUES.SOLVER);
+            }
+            if (
+                errors?.[TAB_VALUES.MAPPING] &&
+                TAB_VALUES.MAPPING !== tabValue
+            ) {
+                tabsInError.push(TAB_VALUES.MAPPING);
+            }
+            if (
+                errors?.[TAB_VALUES.NETWORK] &&
+                TAB_VALUES.NETWORK !== tabValue
+            ) {
+                tabsInError.push(TAB_VALUES.NETWORK);
+            }
+            if (errors?.[TAB_VALUES.CURVE] && TAB_VALUES.CURVE !== tabValue) {
+                tabsInError.push(TAB_VALUES.CURVE);
+            }
+            setTabIndexesWithError(tabsInError);
         },
-        [updateParameters, parameters]
+        [tabValue]
     );
 
-    const handleUpdateSolver = useCallback(
-        (newSolver) => {
-            updateParameters({ ...parameters, ...newSolver });
+    // errors is a mutable object => convert to json to activate useEffect
+    const errorsJSON = JSON.stringify(errors);
+
+    useEffect(() => {
+        onError(JSON.parse(errorsJSON));
+    }, [errorsJSON, onError]);
+
+    const onSubmit = useCallback(
+        (newParams) => {
+            // use updater to set with new parameters
+            updateParameters({
+                ...parameters,
+                ...newParams[TAB_VALUES.TIME_DELAY],
+                [SOLVER_ID]: newParams[TAB_VALUES.SOLVER][SOLVER_ID],
+                // merge only the current selected solver, others are ignored
+                [SOLVERS]: parameters[SOLVERS].reduce(
+                    (arr, curr, index) => [
+                        ...arr,
+                        newParams[TAB_VALUES.SOLVER][SOLVERS][index].id ===
+                        newParams[TAB_VALUES.SOLVER][SOLVER_ID]
+                            ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]
+                            : curr,
+                    ],
+                    []
+                ),
+                ...newParams[TAB_VALUES.MAPPING],
+                ...newParams[TAB_VALUES.MAPPING],
+                [NETWORK]: newParams[TAB_VALUES.NETWORK],
+                ...newParams[TAB_VALUES.CURVE],
+            });
         },
-        [updateParameters, parameters]
+        [parameters, updateParameters]
     );
 
-    const handleUpdateCurve = useCallback(
-        (newCurves) => {
-            updateParameters({ ...parameters, curves: newCurves });
-        },
-        [updateParameters, parameters]
-    );
-
-    const handleUpdateMapping = useCallback(
-        (newMapping) => {
-            updateParameters({ ...parameters, ...newMapping });
-        },
-        [updateParameters, parameters]
-    );
-
-    const handleUpdateNetwork = useCallback(
-        (newNetwork) => {
-            updateParameters({ ...parameters, network: newNetwork });
-        },
-        [updateParameters, parameters]
-    );
+    useEffect(() => {
+        if (parameters) {
+            reset({
+                [TAB_VALUES.TIME_DELAY]: {
+                    [START_TIME]: parameters[START_TIME],
+                    [STOP_TIME]: parameters[STOP_TIME],
+                },
+                [TAB_VALUES.SOLVER]: {
+                    [SOLVER_ID]: parameters[SOLVER_ID],
+                    [SOLVERS]: parameters[SOLVERS],
+                },
+                [TAB_VALUES.MAPPING]: {
+                    [MAPPING]: parameters[MAPPING],
+                },
+                [TAB_VALUES.NETWORK]: {
+                    ...parameters[NETWORK],
+                },
+                [TAB_VALUES.CURVE]: {
+                    [CURVES]: parameters[CURVES],
+                },
+            });
+        }
+    }, [reset, parameters]);
 
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
     }, []);
 
     return (
-        <>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <Grid container key="dsParameters" sx={styles.scrollableGrid}>
                 {providers && provider && (
                     <DropDown
@@ -164,57 +269,55 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             label={
                                 <FormattedMessage id="DynamicSimulationTimeDelay" />
                             }
-                            value={TAB_VALUES.timeDelayParamsTabValue}
+                            value={TAB_VALUES.TIME_DELAY}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.TIME_DELAY
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationSolver" />
                             }
-                            value={TAB_VALUES.solverParamsTabValue}
+                            value={TAB_VALUES.SOLVER}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.SOLVER
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationMapping" />
                             }
-                            value={TAB_VALUES.mappingParamsTabValue}
+                            value={TAB_VALUES.MAPPING}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.MAPPING
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationNetwork" />
                             }
-                            value={TAB_VALUES.networkParamsTabValue}
+                            value={TAB_VALUES.NETWORK}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.NETWORK
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationCurve" />
                             }
-                            value={TAB_VALUES.curveParamsTabValue}
+                            value={TAB_VALUES.CURVE}
                         />
                     </Tabs>
 
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.timeDelayParamsTabValue}
-                    >
-                        <TimeDelayParameters
-                            key={`time-delay-${resetRevision}`} // to force remount a component having internal states
-                            timeDelay={
-                                parameters
-                                    ? {
-                                          startTime: parameters.startTime,
-                                          stopTime: parameters.stopTime,
-                                      }
-                                    : undefined
-                            }
-                            onUpdateTimeDelay={handleUpdateTimeDelay}
-                        />
+                    <TabPanel value={tabValue} index={TAB_VALUES.TIME_DELAY}>
+                        <TimeDelayParameters path={TAB_VALUES.TIME_DELAY} />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.solverParamsTabValue}
-                    >
+                    <TabPanel value={tabValue} index={TAB_VALUES.SOLVER}>
                         <SolverParameters
-                            key={`solver-${resetRevision}`} // to force remount a component having internal states
                             solver={
                                 parameters
                                     ? {
@@ -223,13 +326,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                       }
                                     : undefined
                             }
-                            onUpdateSolver={handleUpdateSolver}
+                            path={TAB_VALUES.SOLVER}
+                            errors={errors[TAB_VALUES.SOLVER]}
+                            clearErrors={clearErrors}
                         />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.mappingParamsTabValue}
-                    >
+                    <TabPanel value={tabValue} index={TAB_VALUES.MAPPING}>
                         <MappingParameters
                             mapping={
                                 parameters
@@ -239,38 +341,14 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                       }
                                     : undefined
                             }
-                            onUpdateMapping={handleUpdateMapping}
+                            path={TAB_VALUES.MAPPING}
                         />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.networkParamsTabValue}
-                    >
-                        <NetworkParameters
-                            key={`network-${resetRevision}`} // to force remount a component having internal states
-                            network={
-                                parameters
-                                    ? { ...parameters.network }
-                                    : undefined
-                            }
-                            onUpdateNetwork={handleUpdateNetwork}
-                        />
+                    <TabPanel value={tabValue} index={TAB_VALUES.NETWORK}>
+                        <NetworkParameters path={TAB_VALUES.NETWORK} />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.curveParamsTabValue}
-                    >
-                        <CurveParameters
-                            key={`curve-${resetRevision}`} // to force remount a component having internal states
-                            curves={
-                                parameters
-                                    ? parameters.curves
-                                        ? [...parameters.curves]
-                                        : []
-                                    : undefined
-                            }
-                            onUpdateCurve={handleUpdateCurve}
-                        />
+                    <TabPanel value={tabValue} index={TAB_VALUES.CURVE}>
+                        <CurveParameters path={TAB_VALUES.CURVE} />
                     </TabPanel>
                 </Grid>
             </Grid>
@@ -283,9 +361,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     callback={handleResetParametersAndProvider}
                     label="resetToDefault"
                 />
+                <SubmitButton onClick={handleSubmit(onSubmit)}>
+                    <FormattedMessage id={'validate'} />
+                </SubmitButton>
                 <CloseButton hideParameters={hideParameters} />
             </Grid>
-        </>
+        </FormProvider>
     );
 };
 
