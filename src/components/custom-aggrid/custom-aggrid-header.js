@@ -46,9 +46,9 @@ const styles = {
 const CustomHeaderComponent = ({
     field,
     displayName,
-    isSortable = true,
+    isSortable = false,
     sortParams = {},
-    isFilterable = true,
+    isFilterable = false,
     filterParams = {},
 }) => {
     const {
