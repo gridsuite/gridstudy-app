@@ -22,20 +22,33 @@ export const makeAgGridCustomHeaderColumn = ({
     const filterOptions =
         filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
 
+    const isSortable = !!sortProps;
+    const isFilterable = !!filterProps;
+    const isCurrentColumnSorted = sortConfig?.colKey === field;
+
+    let minWidth = 75;
+    if (isSortable && isCurrentColumnSorted) {
+        minWidth += 30;
+    }
+    if (isFilterable) {
+        minWidth += 30;
+    }
+
     return {
         headerTooltip: headerName,
+        minWidth,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             field,
             displayName: headerName,
-            isSortable: !!sortProps,
+            isSortable,
             sortParams: {
                 sortConfig,
                 onSortChanged: (newSortValue: number = 0) => {
                     onSortChanged(field, newSortValue);
                 },
             },
-            isFilterable: !!filterProps,
+            isFilterable,
             filterParams: {
                 ...filterParams,
                 filterSelector,
