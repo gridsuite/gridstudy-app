@@ -67,13 +67,17 @@ const CustomHeaderComponent = ({
     } = sortParams;
 
     const isAutoCompleteFilter =
-        filterDataType === FILTER_DATA_TYPES.TEXT && filterOptions?.length;
+        filterDataType === FILTER_DATA_TYPES.TEXT && !!filterOptions?.length;
     const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
     const isColumnSorted = sortColKey === field;
 
     /* Filter should be activated for current column and
-    Filter dataType should be defined */
-    const shouldActivateFilter = isFilterable && filterDataType;
+    Filter dataType should be defined and
+     filter is an autocomplete (have options) or filter have comparators */
+    const shouldActivateFilter =
+        isFilterable &&
+        filterDataType &&
+        (isAutoCompleteFilter || !!filterComparators.length);
 
     const intl = useIntl();
 
@@ -291,7 +295,7 @@ const CustomHeaderComponent = ({
                         <Autocomplete
                             multiple
                             value={selectedFilterData || []}
-                            options={filterOptions || []}
+                            options={filterOptions}
                             getOptionLabel={(option) =>
                                 intl.formatMessage({
                                     id: option,
