@@ -31,12 +31,10 @@ const PagedSensitivityAnalysisResult = ({
     sensiKindIndex,
     studyUuid,
     nodeUuid,
-    updateFilter,
-    filterSelector,
     page,
     setPage,
-    onSortChanged,
-    sortConfig,
+    sortProps,
+    filterProps,
 }) => {
     const intl = useIntl();
 
@@ -48,6 +46,9 @@ const PagedSensitivityAnalysisResult = ({
     const sensiStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+
+    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
+    const { updateFilter, filterSelector } = filterProps || {};
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -143,7 +144,10 @@ const PagedSensitivityAnalysisResult = ({
             offset: page * rowsPerPage,
             pageSize: rowsPerPage,
             pageNumber: page,
-            ...filterSelector,
+            ...filterSelector?.reduce((acc, curr) => {
+                acc[curr.column] = curr.value;
+                return acc;
+            }, {}),
             ...sortSelector,
         };
         setIsLoading(true);
@@ -193,10 +197,14 @@ const PagedSensitivityAnalysisResult = ({
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiToIndex={sensiKindIndex}
-                onSortChanged={onSortChanged}
-                sortConfig={sortConfig}
-                updateFilter={handleUpdateFilter}
-                filterSelector={filterSelector}
+                sortProps={{
+                    onSortChanged,
+                    sortConfig,
+                }}
+                filterProps={{
+                    updateFilter: handleUpdateFilter,
+                    filterSelector,
+                }}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
             />
@@ -217,10 +225,8 @@ PagedSensitivityAnalysisResult.propTypes = {
     sensiKindIndex: PropTypes.number.isRequired,
     studyUuid: PropTypes.string.isRequired,
     nodeUuid: PropTypes.string.isRequired,
-    updateFilter: PropTypes.func,
-    onSortChanged: PropTypes.func,
-    filterSelector: PropTypes.object,
-    sortConfig: PropTypes.object,
+    filterProps: PropTypes.object,
+    sortProps: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
 };
