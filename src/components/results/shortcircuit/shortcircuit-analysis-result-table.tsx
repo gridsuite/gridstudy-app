@@ -31,11 +31,10 @@ import {
 } from '../../../hooks/use-aggrid-row-filter';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
-    CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -92,48 +91,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const intl = useIntl();
     const theme = useTheme();
 
-    const makeColumn = ({
-        sortProps, // sortProps: contains useAgGridSort params
-        filterProps, // filterProps: contains useAgGridRowFilter params
-        filterParams = {}, // filterParams: Parameters for the column's filtering functionality
-        ...props // agGrid column props
-    }: CustomColDef) => {
-        const { headerName, field = '' } = props;
-        const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-        const { updateFilter, filterSelector } = filterProps || {};
-        const { filterDataType, filterEnums = {} } = filterParams;
-
-        const filterOptions =
-            filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
-
-        return {
-            headerTooltip: headerName,
-            headerComponent: CustomHeaderComponent,
-            headerComponentParams: {
-                field,
-                displayName: headerName,
-                isSortable: !!sortProps,
-                sortParams: {
-                    sortConfig,
-                    onSortChanged: (newSortValue: number = 0) => {
-                        onSortChanged(field, newSortValue);
-                    },
-                },
-                isFilterable: !!filterProps,
-                filterParams: {
-                    ...filterParams,
-                    filterSelector,
-                    filterOptions,
-                    updateFilter,
-                },
-            },
-            ...props,
-        };
-    };
-
     const columns = useMemo(
         () => [
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
                 sortProps:
@@ -152,7 +112,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     ],
                 },
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
                 sortProps:
@@ -168,7 +128,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     filterEnums,
                 },
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
                 sortProps:
@@ -187,14 +147,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     ],
                 },
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
                 numeric: true,
                 fractionDigits: 1,
                 sortProps,
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
                 sortProps:
@@ -210,7 +170,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     filterEnums,
                 },
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
                 numeric: true,
@@ -220,7 +180,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                         ? sortProps
                         : undefined,
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
                 numeric: true,
@@ -230,7 +190,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                         ? sortProps
                         : undefined,
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
                 numeric: true,
@@ -240,7 +200,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                         ? sortProps
                         : undefined,
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
                 field: 'deltaCurrentIpMin',
                 numeric: true,
@@ -250,7 +210,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                         ? sortProps
                         : undefined,
             }),
-            makeColumn({
+            makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
                 numeric: true,

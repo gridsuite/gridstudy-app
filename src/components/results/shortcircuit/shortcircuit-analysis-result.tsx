@@ -83,15 +83,19 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         (state: ReduxState) => state.currentTreeNode
     );
 
-    const fromFrontColumnToBackKeys =
-        analysisType === ShortCircuitAnalysisType.ONE_BUS
-            ? FROM_COLUMN_TO_FIELD_ONE_BUS
-            : FROM_COLUMN_TO_FIELD;
+    const isOneBusShortCircuitAnalysisType =
+        analysisType === ShortCircuitAnalysisType.ONE_BUS;
+
+    const fromFrontColumnToBackKeys = isOneBusShortCircuitAnalysisType
+        ? FROM_COLUMN_TO_FIELD_ONE_BUS
+        : FROM_COLUMN_TO_FIELD;
 
     const { onSortChanged, sortConfig } = useAgGridSort({
         initSortConfig: {
-            colKey: '',
-            sortWay: SORT_WAYS.asc,
+            colKey: isOneBusShortCircuitAnalysisType ? 'current' : 'elementId',
+            sortWay: isOneBusShortCircuitAnalysisType
+                ? SORT_WAYS.desc
+                : SORT_WAYS.asc,
         },
     });
 

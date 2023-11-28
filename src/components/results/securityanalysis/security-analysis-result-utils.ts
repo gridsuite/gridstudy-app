@@ -27,7 +27,6 @@ import {
     formatNAValue,
     parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import {
     fetchSecurityAnalysisAvailableBranchSides,
     fetchSecurityAnalysisAvailableComputationStatus,
@@ -37,13 +36,13 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
-    CustomColDef,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -156,53 +155,13 @@ export const flattenNmKResultsConstraints = (
     return rows;
 };
 
-const makeColumn = ({
-    sortProps, // sortProps: contains useAgGridSort params
-    filterProps, // filterProps: contains useAgGridRowFilter params
-    filterParams, // filterParams: Parameters for the column's filtering functionality
-    ...props // agGrid column props
-}: CustomColDef) => {
-    const { headerName, field = '' } = props;
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-    const { updateFilter, filterSelector } = filterProps || {};
-    const { filterDataType, filterEnums = {} } = filterParams || {};
-
-    const filterOptions =
-        filterDataType === FILTER_DATA_TYPES.TEXT
-            ? filterEnums[fieldToEnumName[field]]
-            : [];
-
-    return {
-        headerTooltip: headerName,
-        headerComponent: CustomHeaderComponent,
-        headerComponentParams: {
-            field,
-            displayName: headerName,
-            isSortable: !!sortProps,
-            sortParams: {
-                sortConfig,
-                onSortChanged: (newSortValue: number = 0) => {
-                    onSortChanged(field, newSortValue);
-                },
-            },
-            isFilterable: !!filterProps,
-            filterParams: {
-                ...filterParams,
-                filterSelector,
-                filterOptions,
-                updateFilter,
-            },
-        },
-        ...props,
-    };
-};
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
     filterEnums: FilterEnumsType
 ): ColDef[] => [
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
         field: 'subjectId',
         sortProps,
@@ -216,7 +175,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'ViolationType' }),
         field: 'limitType',
         sortProps,
@@ -227,7 +186,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitName' }),
         field: 'limitName',
         valueFormatter: (params: ValueFormatterParams) =>
@@ -243,7 +202,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
         field: 'limit',
         numeric: true,
@@ -257,7 +216,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'CalculatedValue' }),
         field: 'value',
         valueFormatter: (params: ValueFormatterParams) =>
@@ -270,7 +229,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
         valueFormatter: (params: ValueFormatterParams) =>
@@ -283,7 +242,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({
             id: 'Overload',
         }),
@@ -299,7 +258,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitSide' }),
         field: 'side',
         sortProps,
@@ -319,7 +278,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     filterEnums: FilterEnumsType
 ): ColDef[] => {
     return [
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
@@ -334,7 +293,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
             sortProps,
@@ -344,7 +303,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterEnums,
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
@@ -357,7 +316,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
             filterProps,
@@ -366,7 +325,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterEnums,
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) =>
@@ -380,7 +339,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
@@ -391,19 +350,19 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterEnums,
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
@@ -411,13 +370,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             field: 'linkedElementId',
             hide: true,
         }),
@@ -432,7 +391,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     filterEnums: FilterEnumsType
 ): ColDef[] => {
     return [
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
@@ -446,7 +405,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
@@ -460,7 +419,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
             filterProps,
@@ -469,7 +428,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterEnums,
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
             filterProps,
@@ -478,7 +437,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterEnums,
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) =>
@@ -492,7 +451,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
@@ -503,19 +462,19 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterEnums,
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
@@ -523,13 +482,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             field: 'linkedElementId',
             hide: true,
         }),
@@ -589,9 +548,9 @@ export const useFetchFiltersEnums = (
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [result, setResult] = useState<FilterEnumsType>({
-        computationsStatus: null,
-        limitTypes: null,
-        branchSides: null,
+        status: null,
+        limitType: null,
+        side: null,
     });
 
     useEffect(() => {
@@ -612,9 +571,9 @@ export const useFetchFiltersEnums = (
                         branchSidesResult,
                     ]) => {
                         setResult({
-                            computationsStatus: computationsStatusResult,
-                            limitTypes: limitTypesResult,
-                            branchSides: branchSidesResult,
+                            status: computationsStatusResult,
+                            limitType: limitTypesResult,
+                            side: branchSidesResult,
                         });
                         setFilter(true);
                         setLoading(false);
@@ -629,12 +588,6 @@ export const useFetchFiltersEnums = (
     }, [hasResult, setFilter]);
 
     return { loading, result, error };
-};
-
-const fieldToEnumName: Record<string, string> = {
-    status: 'computationsStatus',
-    limitType: 'limitTypes',
-    side: 'branchSides',
 };
 
 export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
