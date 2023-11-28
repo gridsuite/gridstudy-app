@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
 
 const styles = {
     iconSize: {
@@ -40,6 +41,7 @@ const styles = {
 
 export const FILTER_UI_TYPES = {
     TEXT: 'text',
+    NUMBER: 'number',
     AUTO_COMPLETE: 'autoComplete',
 };
 
@@ -47,6 +49,12 @@ export const FILTER_TEXT_COMPARATORS = {
     EQUALS: 'equals',
     CONTAINS: 'contains',
     STARTS_WITH: 'startsWith',
+};
+
+export const FILTER_NUMBER_COMPARATORS = {
+    NOT_EQUAL: 'notEqual',
+    LESS_THAN_OR_EQUAL: 'lessThanOrEqual',
+    GREATER_THAN_OR_EQUAL: 'greaterThanOrEqual',
 };
 
 const CustomHeaderComponent = ({
@@ -65,6 +73,7 @@ const CustomHeaderComponent = ({
         debounceMs = 1000, // used to debounce the api call to not fetch the back end too fast
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
+        parser, // Used to convert the value displayed in the table into its actual value
     } = filterParams;
     const { colKey: sortColKey, sortWay } = sortConfig;
     const isAutoCompleteFilter = filterUIType === FILTER_UI_TYPES.AUTO_COMPLETE;
@@ -79,11 +88,14 @@ const CustomHeaderComponent = ({
 
     const isColumnSorted = sortColKey === field;
 
+    /* Filter should be activated for current column and
+    Filter should be a text type, or we should have options for filter if it is an autocomplete */
     const shouldActivateFilter =
-        // Filter should be activated for current column
         isFilterable &&
-        // Filter should be a text type, or we should have options for filter if it is an autocomplete
-        (filterUIType === FILTER_UI_TYPES.TEXT || !!filterOptions?.length);
+        // Filter should be a text or number type, or we should have options for filter if it is an autocomplete
+        (filterUIType === FILTER_UI_TYPES.TEXT ||
+            filterUIType === FILTER_UI_TYPES.NUMBER ||
+            !!filterOptions?.length);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -101,7 +113,7 @@ const CustomHeaderComponent = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
-        debounce((data) => updateFilter(field, data), debounceMs),
+        debounce((field, data) => updateFilter(field, data), debounceMs),
         [field, debounceMs, updateFilter]
     );
 
@@ -109,31 +121,42 @@ const CustomHeaderComponent = ({
         const value = event.target.value.toUpperCase();
         setSelectedFilterData(value);
 
-        debouncedUpdateFilter([
+        debouncedUpdateFilter(field, [
             {
-                text: value,
+                text: parser ? parser(value) : value,
                 type: selectedFilterComparator,
+                dataType: filterParams.filterUIType,
             },
         ]);
     };
 
     const handleFilterAutoCompleteChange = (_, data) => {
         setSelectedFilterData(data);
-        debouncedUpdateFilter(data);
+        debouncedUpdateFilter(field, data);
     };
 
     const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
-        debouncedUpdateFilter([{ text: selectedFilterData, type: newType }]);
+        debouncedUpdateFilter(field, [
+            {
+                text: selectedFilterData,
+                type: newType,
+                dataType: filterParams.filterUIType,
+            },
+        ]);
     };
 
     const handleSortChange = useCallback(() => {
-        let newSort = null;
-        if (!isColumnSorted || !sortWay) {
-            newSort = 1;
-        } else if (sortWay > 0) {
-            newSort = -1;
+        let newSort;
+        if (!isColumnSorted) {
+            newSort = SORT_WAY.asc;
+        } else {
+            if (sortWay < 0) {
+                newSort = SORT_WAY.asc;
+            } else {
+                newSort = SORT_WAY.desc;
+            }
         }
 
         if (typeof onSortChanged === 'function') {
@@ -209,10 +232,10 @@ const CustomHeaderComponent = ({
                         </Grid>
                         {isSortable && (
                             <Grid item>
-                                {isColumnSorted && sortWay && (
+                                {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {sortWay === 1 ? (
+                                            {sortWay === SORT_WAY.asc ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
@@ -368,6 +391,7 @@ CustomHeaderComponent.propTypes = {
         filterUIType: PropTypes.oneOf([
             FILTER_UI_TYPES.TEXT,
             FILTER_UI_TYPES.AUTO_COMPLETE,
+            FILTER_UI_TYPES.NUMBER,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,

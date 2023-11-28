@@ -17,13 +17,20 @@ const styles = {
     }),
 };
 
-export const getTabIndicatorStyle = (
-    tabIndexesWithError: number[],
-    index: number
-) =>
-    tabIndexesWithError.includes(index)
+export function getTabIndicatorStyle<T extends number | string>(
+    tabIndexesWithError: T[],
+    index: T
+) {
+    return tabIndexesWithError.includes(index)
         ? styles.tabWithErrorIndicator
         : undefined;
+}
 
-export const getTabStyle = (tabIndexesWithError: number[], index: number) =>
-    tabIndexesWithError.includes(index) ? styles.tabWithError : undefined;
+export function getTabStyle<T extends number | string>(
+    tabIndexesWithError: T[],
+    index: T
+) {
+    return tabIndexesWithError.includes(index)
+        ? styles.tabWithError
+        : undefined;
+}
