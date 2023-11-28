@@ -20,10 +20,7 @@ export const EquipmentTable = ({
     columnData,
     gridRef,
     handleColumnDrag,
-    handleRowEditing,
     handleCellEditing,
-    handleEditingStarted,
-    handleEditingStopped,
     handleGridReady,
     handleRowDataUpdated,
     fetched,
@@ -101,6 +98,27 @@ export const EquipmentTable = ({
         };
     }, [intl]);
 
+    const editableCellStyle = useCallback(
+        (params) => {
+            if (params.context.isEditing && params.node.rowPinned === 'top') {
+                return theme.editableCell;
+            }
+            return null;
+        },
+        [theme.editableCell]
+    );
+
+    const isEditable = useCallback((params) => {
+        return params.context.isEditing && params.node.rowPinned === 'top';
+    }, []);
+
+    const columnTypes = {
+        editableCell: {
+            editable: isEditable,
+            cellStyle: editableCellStyle,
+        },
+    };
+
     return (
         <CustomAGGrid
             ref={gridRef}
@@ -113,16 +131,13 @@ export const EquipmentTable = ({
             defaultColDef={defaultColDef}
             enableCellTextSelection={true}
             undoRedoCellEditing={true}
-            editType={'fullRow'}
-            onCellValueChanged={handleCellEditing}
-            onRowValueChanged={handleRowEditing}
+            onCellEditingStopped={handleCellEditing}
             onRowDataUpdated={handleRowDataUpdated}
-            onRowEditingStarted={handleEditingStarted}
-            onRowEditingStopped={handleEditingStopped}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
             suppressColumnVirtualisation={true}
-            suppressClickEdit={true}
+            suppressClickEdit={!topPinnedData}
+            singleClickEdit={true}
             context={gridContext}
             onGridReady={handleGridReady}
             shouldHidePinnedHeaderRightBorder={
@@ -133,6 +148,7 @@ export const EquipmentTable = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
+            columnTypes={columnTypes}
         />
     );
 };

@@ -68,6 +68,14 @@ const lightTheme = createTheme({
     selectedRow: {
         background: '#8E9C9B',
     },
+    editableCell: {
+        outline: 'solid 1px #1976D2',
+        background: '#FFF',
+        backgroundColor: '#F8F8F8',
+        border: 'solid 1px #BABFC7',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #BABFC766',
+    },
     tooltipTable: {
         background: '#e6e6e6',
     },
@@ -95,6 +103,14 @@ const darkTheme = createTheme({
     },
     selectedRow: {
         background: '#545C5B',
+    },
+    editableCell: {
+        outline: 'solid 1px #90CAF9',
+        background: '#181D1F',
+        backgroundColor: '#222628',
+        border: 'solid 1px #68686E',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #000',
     },
     tooltipTable: {
         background: '#121212',

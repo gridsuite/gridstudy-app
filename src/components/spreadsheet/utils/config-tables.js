@@ -9,6 +9,7 @@ import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import {
@@ -75,7 +76,7 @@ const generateEditableNumericColumnDefinition = (
         filter: 'agNumberColumnFilter',
         fractionDigits: fractionDigits,
         changeCmd: changeCmd,
-        editable: true,
+        type: 'editableCell',
         cellEditor: NumericalField,
         cellEditorParams: (params) => {
             return {
@@ -140,7 +141,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
-                editable: true,
+                type: 'editableCell',
             },
             {
                 id: 'SubstationId',
@@ -152,7 +153,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -189,7 +190,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                editable: true,
+                type: 'editableCell',
                 valueGetter: (params) =>
                     unitToKiloUnit(
                         params.data?.identifiableShortCircuit?.ipMin
@@ -211,7 +212,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                editable: true,
+                type: 'editableCell',
                 valueGetter: (params) =>
                     unitToKiloUnit(
                         params.data?.identifiableShortCircuit?.ipMax
@@ -506,7 +507,7 @@ export const TABLES_DEFINITIONS = {
                         ),
                     };
                 },
-                editable: true,
+                type: 'editableCell',
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -550,7 +551,7 @@ export const TABLES_DEFINITIONS = {
                         ),
                     };
                 },
-                editable: true,
+                type: 'editableCell',
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -764,7 +765,7 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
@@ -813,7 +814,7 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
@@ -862,7 +863,7 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
@@ -902,7 +903,7 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
@@ -951,7 +952,7 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
@@ -1000,7 +1001,7 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
@@ -1060,7 +1061,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'Name',
                 field: 'name',
                 changeCmd: "equipment.setName('{}')\n",
-                editable: true,
+                type: 'editableCell',
             },
             {
                 id: 'VoltageLevelId',
@@ -1077,7 +1078,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'Type',
                 field: 'energySource',
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
                     return {
@@ -1120,7 +1121,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 changeCmd: 'equipment.setMinP({})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1140,7 +1141,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 changeCmd: 'equipment.setMaxP({})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1165,7 +1166,7 @@ export const TABLES_DEFINITIONS = {
                     "    throw new Exception('incorrect value')\n" +
                     ' }\n',
 
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1188,7 +1189,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetQ({})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1212,7 +1213,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'voltageRegulatorOn',
                 cellRenderer: BooleanCellRenderer,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: BooleanListField,
                 cellEditorParams: (params) => {
                     return {
@@ -1241,7 +1242,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetV({})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1339,13 +1340,13 @@ export const TABLES_DEFINITIONS = {
                 field: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 changeCmd: "equipment.setName('{}')\n",
-                editable: true,
+                type: 'editableCell',
             },
             {
                 id: 'LoadType',
                 field: 'type',
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
                     return {
@@ -1392,7 +1393,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 changeCmd: 'equipment.setP0({})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1411,7 +1412,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 changeCmd: 'equipment.setQ0({})\n',
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1448,7 +1449,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
-                columnWidth: MEDIUM_COLUMN_WIDTH,
+                type: 'editableCell',
+                columnWidth: MIN_COLUMN_WIDTH,
             },
             {
                 id: 'VoltageLevelId',
@@ -1472,20 +1474,124 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetV',
-                field: 'targetV',
+                id: 'MaximumSectionCount',
+                field: 'maximumSectionCount',
+                type: 'editableCell',
                 numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        minExpression: 0,
+                        defaultValue: params.data.maximumSectionCount,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
                 filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetDeadband',
-                field: 'targetDeadband',
+                id: 'ShuntSectionCount',
+                field: 'sectionCount',
+                type: 'editableCell',
                 numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        minExpression: 0,
+                        maxExpression: 'maximumSectionCount',
+                        defaultValue: params.data.sectionCount,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                filter: 'agNumberColumnFilter',
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Type',
+                field: 'type',
+                type: 'editableCell',
+                valueGetter: (params) =>
+                    params?.data?.maxSusceptance > 0
+                        ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
+                        : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(SHUNT_COMPENSATOR_TYPES).map(
+                                (shuntType) => shuntType.id
+                            ),
+                        ],
+                    };
+                },
+                enableCellChangeFlash: true,
+            },
+            {
+                id: 'maxQAtNominalV',
+                field: 'maxQAtNominalV',
+                type: 'editableCell',
+                numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        minExpression: 0,
+                        defaultValue: params.data.maxQAtNominalV,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                enableCellChangeFlash: true,
+            },
+            {
+                id: 'SwitchedOnMaxQAtNominalV',
+                field: 'switchedOnQAtNominalV',
+                numeric: true,
+                valueGetter: (params) =>
+                    (params?.data?.maxQAtNominalV /
+                        params?.data?.maximumSectionCount) *
+                    params?.data?.sectionCount,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+                enableCellChangeFlash: true,
+            },
+            {
+                id: 'MaxShuntSusceptance',
+                type: 'editableCell',
+                field: 'maxSusceptance',
+                numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.maxSusceptance,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                filter: 'agNumberColumnFilter',
+                getQuickFilterText: excludeFromGlobalFilter,
+                enableCellChangeFlash: true,
+            },
+            {
+                id: 'SwitchedOnMaxSusceptance',
+                field: 'switchedOnSusceptance',
+                numeric: true,
+                valueGetter: (params) =>
+                    (params?.data?.maxSusceptance /
+                        params?.data?.maximumSectionCount) *
+                    params?.data?.sectionCount,
+                filter: 'agNumberColumnFilter',
+                getQuickFilterText: excludeFromGlobalFilter,
+                enableCellChangeFlash: true,
             },
             {
                 id: 'Connected',
@@ -1582,7 +1688,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
-                editable: true,
+                type: 'editableCell',
             },
             {
                 id: 'VoltageLevelId',
@@ -1619,7 +1725,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerControl',
                 field: 'activePowerControl.activePowerControlOn',
                 cellRenderer: BooleanCellRenderer,
-                editable: true,
+                type: 'editableCell',
                 cellEditor: BooleanListField,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
@@ -1647,7 +1753,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1680,7 +1786,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1699,7 +1805,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1718,7 +1824,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
@@ -1739,7 +1845,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                editable: true,
+                type: 'editableCell',
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
