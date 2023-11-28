@@ -45,11 +45,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';
     const defaultSortOrder = SORT_WAYS.asc;
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        dataKeyToSortKey: DATA_KEY_TO_SORT_KEY,
-        initSortConfig: {
-            colKey: defaultSortColumn,
-            sortWay: defaultSortOrder,
-        },
+        colKey: defaultSortColumn,
+        sortWay: defaultSortOrder,
     });
 
     const SENSI_LOGS_TAB_INDEX = 3;
@@ -91,7 +88,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         onChange={handleSensiNOrNkIndexChange}
                     >
                         {SensitivityResultTabs.map((tab) => (
-                            <Tab label={tab.label} />
+                            <Tab key={tab.label} label={tab.label} />
                         ))}
                     </Tabs>
                     <PagedSensitivityAnalysisResult

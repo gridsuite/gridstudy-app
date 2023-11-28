@@ -90,13 +90,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
         : FROM_COLUMN_TO_FIELD;
 
+    const defaultSortKey = isOneBusShortCircuitAnalysisType
+        ? 'current'
+        : 'elementId';
+    const defaultSortWay = isOneBusShortCircuitAnalysisType
+        ? SORT_WAYS.desc
+        : SORT_WAYS.asc;
     const { onSortChanged, sortConfig } = useAgGridSort({
-        initSortConfig: {
-            colKey: isOneBusShortCircuitAnalysisType ? 'current' : 'elementId',
-            sortWay: isOneBusShortCircuitAnalysisType
-                ? SORT_WAYS.desc
-                : SORT_WAYS.asc,
-        },
+        colKey: defaultSortKey,
+        sortWay: defaultSortWay,
     });
 
     const { updateFilter, filterSelector } = useAggridRowFilter(

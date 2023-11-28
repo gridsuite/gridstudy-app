@@ -95,10 +95,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        initSortConfig: {
-            colKey: getIdType(tabIndex, nmkType),
-            sortWay: SORT_WAYS.asc,
-        },
+        colKey: getIdType(tabIndex, nmkType),
+        sortWay: SORT_WAYS.asc,
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
