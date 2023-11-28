@@ -27,6 +27,12 @@ export type FilterPropsType = {
     initFilters?: () => void;
 };
 
+type UseAggridRowFilterOutputType = {
+    updateFilter: (field: string, data: FilterDataType) => void;
+    filterSelector: FilterSelectorType[] | null;
+    initFilters: () => void;
+};
+
 const removeElementFromArrayWithFieldValue = (
     filtersArrayToRemoveFieldValueFrom: FilterType[],
     field: string
@@ -62,7 +68,7 @@ const changeValueFromArrayWithFieldValue = (
 export const useAggridRowFilter = (
     filterSelectorKeys: Record<string, string>,
     updateFilterCallback = () => {}
-) => {
+): UseAggridRowFilterOutputType => {
     const [filters, setFilters] = useState<FilterType[]>([]);
 
     const updateFilter = useCallback(
