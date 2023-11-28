@@ -11,10 +11,7 @@ import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import {
-    DATA_KEY_TO_FILTER_KEY,
-    DATA_KEY_TO_SORT_KEY,
-} from './sensitivity-analysis-content';
+import { DATA_KEY_TO_FILTER_KEY } from './sensitivity-analysis-content';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
