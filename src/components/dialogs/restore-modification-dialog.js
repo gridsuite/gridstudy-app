@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,11 +12,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DialogContentText } from '@mui/material';
+import { Box, Checkbox, DialogContentText } from '@mui/material';
 import CheckboxList from 'components/utils/checkbox-list';
 import { ModificationListItem } from 'components/graph/menus/modification-list-item';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { restoreModifications } from 'services/study/network-modifications';
+import {
+    deleteModifications,
+    restoreModifications,
+} from 'services/study/network-modifications';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const styles = {
     text: (theme) => ({
@@ -28,6 +32,11 @@ const styles = {
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
+    }),
+    selectAll: (theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        paddingLeft: theme.spacing(3),
     }),
     list: (theme) => ({
         paddingTop: theme.spacing(0),
@@ -52,14 +61,21 @@ const RestoreModificationDialog = ({
     studyUuid,
 }) => {
     const intl = useIntl();
-    const [modificationsToRestore, setModificationsToRestore] = useState([]);
 
-    useEffect(() => {
-        setModificationsToRestore(modifToRestore);
-    }, [modifToRestore]);
+    const [modificationsToRestore, setModificationsToRestore] = useState([]);
+    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [toggleSelectAll, setToggleSelectAll] = useState(false);
 
     const handleClose = () => {
         onClose();
+    };
+
+    const handleDelete = () => {
+        deleteModifications(
+            studyUuid,
+            currentNode.id,
+            [...selectedItems].map((item) => item.uuid)
+        );
     };
 
     const handleRestore = () => {
@@ -74,7 +90,13 @@ const RestoreModificationDialog = ({
         handleClose();
     };
 
-    const [selectedItems, setSelectedItems] = useState(new Set());
+    const handleSelectAll = useCallback(() => {
+        setToggleSelectAll((prev) => !prev);
+    }, []);
+
+    useEffect(() => {
+        setModificationsToRestore(modifToRestore);
+    }, [modifToRestore]);
 
     return (
         <Dialog
@@ -106,6 +128,23 @@ const RestoreModificationDialog = ({
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                             >
+                                <Box sx={styles.selectAll}>
+                                    <Checkbox
+                                        color={'primary'}
+                                        edge="start"
+                                        checked={
+                                            selectedItems.size ===
+                                            modificationsToRestore.length
+                                        }
+                                        onClick={handleSelectAll}
+                                        disableRipple
+                                    />
+                                    <OverflowableText
+                                        text={intl.formatMessage({
+                                            id: 'SelectAll',
+                                        })}
+                                    />
+                                </Box>
                                 <CheckboxList
                                     sx={styles.list}
                                     onChecked={setSelectedItems}
@@ -126,6 +165,7 @@ const RestoreModificationDialog = ({
                                             />
                                         </>
                                     )}
+                                    toggleSelectAll={toggleSelectAll}
                                 />
                                 {provided.placeholder}
                             </div>
@@ -138,9 +178,12 @@ const RestoreModificationDialog = ({
                 <Button onClick={handleClose}>
                     <FormattedMessage id="close" />
                 </Button>
+                <Button onClick={handleDelete} disabled={!selectedItems.size}>
+                    <FormattedMessage id="DeleteRows" />
+                </Button>
                 <Button
                     onClick={handleRestore}
-                    disabled={modificationsToRestore.length === 0}
+                    disabled={!modificationsToRestore.length}
                 >
                     <FormattedMessage id="restore" />
                 </Button>
