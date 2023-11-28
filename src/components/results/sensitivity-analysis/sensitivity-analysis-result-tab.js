@@ -117,7 +117,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     <Box sx={{ height: '4px' }}>
                         {openLoader && <LinearProgress />}
                     </Box>
-                    {sensitivityAnalysisStatus === RunningStatus.SUCCEED && (
+                    {(sensitivityAnalysisStatus === RunningStatus.SUCCEED ||
+                        sensitivityAnalysisStatus === RunningStatus.FAILED) && (
                         <ComputationReportViewer
                             reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS}
                         />

@@ -17,6 +17,7 @@ export const CsvExport = ({
     tableNamePrefix = '',
     tableName,
     disabled,
+    skipColumnHeaders = false,
 }) => {
     const intl = useIntl();
 
@@ -36,9 +37,10 @@ export const CsvExport = ({
         gridRef?.current?.api?.exportDataAsCsv({
             suppressQuotes: true,
             columnKeys: filteredColumnsKeys,
+            skipColumnHeaders: skipColumnHeaders,
             fileName: tableNamePrefix.concat(getCSVFilename()),
         });
-    }, [columns, getCSVFilename, gridRef, tableNamePrefix]);
+    }, [columns, getCSVFilename, gridRef, tableNamePrefix, skipColumnHeaders]);
 
     return (
         <>

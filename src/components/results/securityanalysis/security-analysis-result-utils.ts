@@ -26,6 +26,7 @@ import {
 import {
     ContingencyCellRenderer,
     convertDuration,
+    formatNAValue,
     parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
@@ -236,6 +237,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeColumn({
         headerName: intl.formatMessage({ id: 'LimitName' }),
         field: 'limitName',
+        valueFormatter: (params: ValueFormatterParams) =>
+          formatNAValue(params.value, intl),
         sortProps,
         filterProps,
         filterParams: {
@@ -373,6 +376,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            valueFormatter: (params: ValueFormatterParams) =>
+              formatNAValue(params.value, intl),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -383,8 +388,10 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
+            headerName: intl.formatMessage({ id: 'Limit' }),
+            field: 'limit',
+            valueFormatter: (params: ValueFormatterParams) =>
+              params.data?.limit?.toFixed(1),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -392,30 +399,28 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({
-                id: 'Overload',
-            }),
-            field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({ id: 'Limit' }),
-            field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.limit?.toFixed(1),
-        }),
-        makeColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.value?.toFixed(1),
+              params.data?.value?.toFixed(1),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({
+                id: 'Overload',
+            }),
+            field: 'acceptableDuration',
+            valueFormatter: (value: ValueFormatterParams) =>
+              convertDuration(value.data.acceptableDuration),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
@@ -483,6 +488,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            valueFormatter: (params: ValueFormatterParams) =>
+              formatNAValue(params.value, intl),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -493,8 +500,10 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
+            headerName: intl.formatMessage({ id: 'Limit' }),
+            field: 'limit',
+            valueFormatter: (params: ValueFormatterParams) =>
+              params.data?.limit?.toFixed(1),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -502,30 +511,28 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeColumn({
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            field: 'value',
+            valueFormatter: (params: ValueFormatterParams) =>
+              params.data?.value?.toFixed(1),
+               }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'Loading' }),
+            field: 'loading',
+            valueFormatter: (params: ValueFormatterParams) =>
+              params.data?.loading?.toFixed(1),
+        }),
+        makeColumn({
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
+              convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'Limit' }),
-            field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.limit?.toFixed(1),
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            field: 'value',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.value?.toFixed(1),
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({ id: 'Loading' }),
-            field: 'loading',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.loading?.toFixed(1),
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions

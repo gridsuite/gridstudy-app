@@ -355,7 +355,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderCurrentTab && <LinearProgress />}
                 </Box>
-                {loadFlowStatus === RunningStatus.SUCCEED && (
+                {(loadFlowStatus === RunningStatus.SUCCEED ||
+                    loadFlowStatus === RunningStatus.FAILED) && (
                     <ComputationReportViewer
                         reportType={REPORT_TYPES.LOADFLOW}
                     />
