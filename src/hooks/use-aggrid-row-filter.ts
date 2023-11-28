@@ -106,8 +106,6 @@ export const useAggridRowFilter = (
             {}
         );
 
-        console.log({ result });
-
         const resultKeys = Object.keys(result);
 
         if (!resultKeys.length) {
