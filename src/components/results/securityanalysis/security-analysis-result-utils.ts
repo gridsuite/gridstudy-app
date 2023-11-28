@@ -238,7 +238,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         headerName: intl.formatMessage({ id: 'LimitName' }),
         field: 'limitName',
         valueFormatter: (params: ValueFormatterParams) =>
-          formatNAValue(params.value, intl),
+            formatNAValue(params.value, intl),
         sortProps,
         filterProps,
         filterParams: {
@@ -377,7 +377,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) =>
-              formatNAValue(params.value, intl),
+                formatNAValue(params.value, intl),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -391,7 +391,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
-              params.data?.limit?.toFixed(1),
+                params.data?.limit?.toFixed(1),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -402,7 +402,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
-              params.data?.value?.toFixed(1),
+                params.data?.value?.toFixed(1),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
@@ -416,7 +416,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             }),
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
-              convertDuration(value.data.acceptableDuration),
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -489,7 +489,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) =>
-              formatNAValue(params.value, intl),
+                formatNAValue(params.value, intl),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -503,7 +503,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
-              params.data?.limit?.toFixed(1),
+                params.data?.limit?.toFixed(1),
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -514,13 +514,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
-              params.data?.value?.toFixed(1),
-               }),
+                params.data?.value?.toFixed(1),
+        }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
-              params.data?.loading?.toFixed(1),
+                params.data?.loading?.toFixed(1),
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -528,7 +528,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             }),
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
-              convertDuration(value.data.acceptableDuration),
+                convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
