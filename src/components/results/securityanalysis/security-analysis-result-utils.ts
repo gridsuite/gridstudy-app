@@ -444,29 +444,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            isFilterable: true,
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({
-                id: 'Overload',
-            }),
-            field: 'acceptableDuration',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
-        }),
-        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             filtersDef,
@@ -498,6 +475,29 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({
+                id: 'Overload',
+            }),
+            field: 'acceptableDuration',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
@@ -603,29 +603,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            isFilterable: true,
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({
-                id: 'Overload',
-            }),
-            field: 'acceptableDuration',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
-        }),
-        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             filtersDef,
@@ -657,6 +634,29 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({
+                id: 'Overload',
+            }),
+            field: 'acceptableDuration',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
