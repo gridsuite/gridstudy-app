@@ -88,7 +88,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             ? FROM_COLUMN_TO_FIELD_ONE_BUS
             : FROM_COLUMN_TO_FIELD;
 
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
+    const { onSortChanged, sortConfig } = useAgGridSort({
         initSortConfig: {
             colKey: '',
             sortWay: SORT_WAYS.asc,
@@ -180,6 +180,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         shortCircuitNotif,
         filterSelector,
         sortConfig,
+        fromFrontColumnToBackKeys,
     ]);
 
     useEffect(() => {
