@@ -595,7 +595,11 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         undefined,
-                        undefined,
+                        getFieldValue(
+                            editingData?.coordinatedReactiveControl?.qPercent,
+                            editingDataRef.current?.coordinatedReactiveControl
+                                ?.qPercent
+                        ),
                         getFieldValue(
                             editingData?.generatorStartup
                                 ?.plannedActivePowerSetPoint,
@@ -629,6 +633,8 @@ const TableWrapper = (props) => {
                             editingDataRef.current?.generatorShortCircuit
                                 ?.stepUpTransformerReactance
                         ),
+                        undefined,
+                        undefined,
                         undefined,
                         undefined,
                         undefined,

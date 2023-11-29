@@ -1150,7 +1150,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: BooleanListField,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
-                        ...params.data?.activePowerControl,
+                        ...(params.data.activePowerControl || {}),
                         activePowerControlOn: params.newValue,
                     };
 
@@ -1160,7 +1160,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl
-                                ?.activePowerControlOn,
+                                ?.activePowerControlOn != null
+                                ? +params.data?.activePowerControl
+                                      ?.activePowerControlOn
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1169,7 +1172,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ActivePowerRegulationDroop',
+                id: 'DroopColumnName',
                 field: 'activePowerControl.droop',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1178,18 +1181,16 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.activePowerControl?.droop | 0,
+                        defaultValue: params.data.activePowerControl?.droop,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                     };
                 },
-                valueGetter: (params) =>
-                    params.data?.activePowerControl?.droop | 0,
+                valueGetter: (params) => params.data?.activePowerControl?.droop,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
-                        ...params.data.activePowerControl,
+                        ...(params.data.activePowerControl || {}),
                         droop: params.newValue,
                     };
                     return params;
@@ -1488,14 +1489,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.generatorStartup?.marginalCost,
+                            params.data?.generatorStartup?.marginalCost | 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                     };
                 },
                 valueGetter: (params) =>
-                    params.data?.generatorStartup?.marginalCost,
+                    params.data?.generatorStartup?.marginalCost | 0,
                 valueSetter: (params) => {
                     params.data.generatorStartup = {
                         ...params.data?.generatorStartup,
