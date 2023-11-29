@@ -113,14 +113,18 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
     return fetch('env.json')
         .then((res) => res.json())
         .then((res) => {
-            console.log(
-                `Authorization code flow is ${
-                    res.authorizationCodeFlowFeatureFlag
-                        ? 'enabled'
-                        : 'disabled'
-                }`
-            );
-            return res.authorizationCodeFlowFeatureFlag;
+            return fetch(res.appsMetadataServerUrl + '/authentication.json')
+                .then((res) => res.json())
+                .then((res) => {
+                    console.log(
+                        `Authorization code flow is ${
+                            res.authorizationCodeFlowFeatureFlag
+                                ? 'enabled'
+                                : 'disabled'
+                        }`
+                    );
+                    return res.authorizationCodeFlowFeatureFlag;
+                });
         });
 }
 
