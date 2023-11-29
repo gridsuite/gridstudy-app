@@ -55,7 +55,7 @@ export const EquipmentTable = ({
         modifyGenerator(
             studyUuid,
             currentNode.id,
-            cellClickedInitialData.id,
+            gridContext.dynamicValidation.id,
             undefined,
             undefined,
             undefined,
@@ -148,7 +148,7 @@ export const EquipmentTable = ({
             },
         };
     }, [network, topPinnedData]);
-    const cellClickedInitialData = gridContext.dynamicValidation;
+
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -212,18 +212,22 @@ export const EquipmentTable = ({
                 loadingOverlayComponentParams={loadingOverlayComponentParams}
                 showOverlay={true}
             />
-            <RegulatingTerminalModificationDialog
-                open={popupEditRegulatingTerminal}
-                onClose={onRegulatingTerminalPopupClose}
-                currentNode={currentNode}
-                studyUuid={studyUuid}
-                onModifyRegulatingTerminalGenerator={(
-                    updatedRegulatedTerminal
-                ) => {
-                    handleSavePopupRegulatingTerminal(updatedRegulatedTerminal);
-                }}
-                data={cellClickedInitialData}
-            />
+            {popupEditRegulatingTerminal && (
+                <RegulatingTerminalModificationDialog
+                    open={popupEditRegulatingTerminal}
+                    onClose={onRegulatingTerminalPopupClose}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    onModifyRegulatingTerminalGenerator={(
+                        updatedRegulatedTerminal
+                    ) => {
+                        handleSavePopupRegulatingTerminal(
+                            updatedRegulatedTerminal
+                        );
+                    }}
+                    data={gridContext.dynamicValidation}
+                />
+            )}
         </>
     );
 };

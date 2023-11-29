@@ -62,7 +62,7 @@ const propertiesGetter = (params) => {
         return null;
     }
 };
-const handleCellClickEvent = (event) => {
+const handleGeneratorsCellClick = (event) => {
     const { context: { isEditing, handleCellClick } = {} } = event || {};
     if (isEditing) {
         handleCellClick?.openGeneratorDialog();
@@ -1160,7 +1160,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl
-                                ?.activePowerControlOn,
+                                ?.activePowerControlOn != null
+                                ? +params.data?.activePowerControl
+                                      ?.activePowerControlOn
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1178,18 +1181,16 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.activePowerControl?.droop | 0,
+                        defaultValue: params.data.activePowerControl?.droop,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                     };
                 },
-                valueGetter: (params) =>
-                    params.data?.activePowerControl?.droop | 0,
+                valueGetter: (params) => params.data?.activePowerControl?.droop,
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
-                        ...params.data.activePowerControl,
+                        ...(params.data.activePowerControl || {}),
                         droop: params.newValue,
                     };
                     return params;
@@ -1575,12 +1576,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulationTypeText',
                 cellRenderer: RegulationTypeCellRenderer,
-                onCellClicked: handleCellClickEvent,
+                onCellClicked: handleGeneratorsCellClick,
             },
             {
                 id: 'RegulatingTerminalGenerator',
                 cellRenderer: RegulatingTerminalCellRenderer,
-                onCellClicked: handleCellClickEvent,
+                onCellClicked: handleGeneratorsCellClick,
             },
         ],
     },
