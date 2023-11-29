@@ -88,6 +88,7 @@ export const flattenNmKResultsContingencies = (
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
+                    limitName: limitViolation.limitName,
                     side: limitViolation.side
                         ? intl.formatMessage({ id: limitViolation.side })
                         : '',
