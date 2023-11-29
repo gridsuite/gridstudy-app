@@ -12,7 +12,7 @@ import {
     fetchSubReport,
 } from '../../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer from '../../report-viewer/report-viewer';
+import ReportViewer, { PAGE_OPTIONS } from '../../report-viewer/report-viewer';
 import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
@@ -62,7 +62,8 @@ export const ComputationReportViewer: FunctionComponent<
                 currentNode.id.toString(),
                 true,
                 LogReportItem.getDefaultSeverityList(),
-                reportType
+                reportType,
+                { page: 0, size: PAGE_OPTIONS[0] }
             )
                 .then((fetchedReport) => {
                     setReport(makeReport(fetchedReport));
@@ -83,27 +84,31 @@ export const ComputationReportViewer: FunctionComponent<
 
     const subReportPromise = (
         reportId: string,
-        severityFilterList: string[]
+        severityFilterList: string[],
+        pageParams: { page: number; size: number }
     ) => {
         return fetchSubReport(
             studyUuid.toString(),
             currentNode.id.toString(),
             reportId,
-            severityFilterList
+            severityFilterList,
+            pageParams
         );
     };
 
     const nodeReportPromise = (
         nodeId: string,
         reportId: string,
-        severityFilterList: string[]
+        severityFilterList: string[],
+        pageParams: { page: number; size: number }
     ) => {
         return fetchNodeReport(
             studyUuid.toString(),
             nodeId,
             reportId,
             severityFilterList,
-            reportType
+            reportType,
+            pageParams
         );
     };
 
