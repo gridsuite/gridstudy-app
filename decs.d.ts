@@ -116,6 +116,13 @@ declare module '@gridsuite/commons-ui' {
         >
     >;
 
+    export const IntegerInput: FunctionComponent<
+        Omit<
+            TextInputProps,
+            'outputTransform' | 'inputTransform' | 'acceptValue' // already defined in IntegerInput
+        >
+    >;
+
     interface RadioInputProps {
         name: string;
         label?: string;

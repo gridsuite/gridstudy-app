@@ -14,6 +14,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    CONNECTED,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
@@ -235,6 +236,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             connectionName: twt.connectionName1,
                             connectionPosition: twt.connectionPosition1,
                             voltageLevelId: twt.voltageLevelId1,
+                            connected: twt.connected1,
                         },
                         CONNECTIVITY_1
                     ),
@@ -245,6 +247,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             connectionName: twt.connectionName2,
                             connectionPosition: twt.connectionPosition2,
                             voltageLevelId: twt.voltageLevelId2,
+                            connected: twt.connected2,
                         },
                         CONNECTIVITY_2
                     ),
@@ -276,9 +279,15 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]
                     ),
                     currentLimiterRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.CURRENT_LIMITER.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : null,
                     flowSetpointRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : null,
                     targetDeadband: twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
                     lowTapPosition:
                         twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
@@ -444,9 +453,15 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]
                     ),
                     currentLimiterRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.CURRENT_LIMITER.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : null,
                     flowSetpointRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                            : null,
                     targetDeadband: isNaN(
                         twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND]
                     )
@@ -704,7 +719,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null
+                characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
+                characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
+                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

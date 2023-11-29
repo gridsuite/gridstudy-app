@@ -52,6 +52,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
+import { REPORT_TYPES } from '../../utils/report-type';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -346,11 +348,29 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             </>
         );
     };
+
+    const renderLoadFlowReport = () => {
+        return (
+            <>
+                <Box sx={{ height: '4px' }}>
+                    {openLoaderCurrentTab && <LinearProgress />}
+                </Box>
+                {(loadFlowStatus === RunningStatus.SUCCEED ||
+                    loadFlowStatus === RunningStatus.FAILED) && (
+                    <ComputationReportViewer
+                        reportType={REPORT_TYPES.LOADFLOW}
+                    />
+                )}
+            </>
+        );
+    };
+
     return (
         <>
             {tabIndex === 0 && renderLoadFlowCurrentViolations()}
             {tabIndex === 1 && renderLoadFlowVoltageViolations()}
             {tabIndex === 2 && renderLoadFlowResult()}
+            {tabIndex === 3 && renderLoadFlowReport()}
         </>
     );
 };

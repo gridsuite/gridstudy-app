@@ -12,6 +12,8 @@ import {
     ContingenciesFromConstraintItem,
     CustomColDef,
     FilterEnums,
+    FilterDef,
+    FilterSelectorType,
     LimitViolation,
     SecurityAnalysisNmkTableRow,
 } from './security-analysis.type';
@@ -26,8 +28,11 @@ import {
 import {
     ContingencyCellRenderer,
     convertDuration,
+    formatNAValue,
+    parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
-import {
+import CustomHeaderComponent, {
+    FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
     FILTER_UI_TYPES,
 } from '../../custom-aggrid/custom-aggrid-header';
@@ -36,7 +41,7 @@ import {
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from '../../../services/security-analysis';
-import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
+import { ISortConfig } from 'hooks/use-aggrid-sort';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -45,20 +50,6 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
             tooltipValue: params.data?.contingencyEquipmentsIds.join('\n'),
         };
     }
-};
-
-export const computeLoading = (
-    limitViolation: LimitViolation
-): number | undefined => {
-    const {
-        value = 0,
-        limit = 0,
-        limitReduction = 0,
-        limitType,
-    } = limitViolation || {};
-    return limitType === 'CURRENT'
-        ? (100 * value) / (limit * limitReduction)
-        : undefined;
 };
 
 export const flattenNmKResultsContingencies = (
@@ -101,11 +92,11 @@ export const flattenNmKResultsContingencies = (
                         ? intl.formatMessage({ id: limitViolation.side })
                         : '',
                     linkedElementId: contingencyId,
+                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                     acceptableDuration:
-                        limitViolation.acceptableDuration ===
-                        UNDEFINED_ACCEPTABLE_DURATION
-                            ? undefined
-                            : limitViolation.acceptableDuration,
+                        limitViolation?.acceptableDuration === MAX_INT32
+                            ? null
+                            : limitViolation?.acceptableDuration,
                 });
             });
         }
@@ -145,7 +136,11 @@ export const flattenNmKResultsConstraints = (
                         side: limitViolation.side
                             ? intl.formatMessage({ id: limitViolation.side })
                             : '',
-                        acceptableDuration: limitViolation.acceptableDuration,
+                        // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
+                        acceptableDuration:
+                            limitViolation?.acceptableDuration === MAX_INT32
+                                ? null
+                                : limitViolation?.acceptableDuration,
                         limit: limitViolation.limit,
                         value: limitViolation.value,
                         loading: limitViolation.loading,
@@ -159,45 +154,215 @@ export const flattenNmKResultsConstraints = (
     return rows;
 };
 
+const makeColumn = ({
+    headerName, // headerName: The name to display in the column header
+    field = '', // field: The data object field corresponding to this column (default is empty)
+    valueGetter, // valueGetter: A function to get the cell value if it's not directly in the field
+    cellRenderer, // cellRenderer: A component or function to customize the rendering of cells in the column
+    isSortable = false, // isSortable: A boolean to determine if the column can be sorted
+    isHidden = false, // isHidden: A boolean to determine if the column should be hidden
+    isFilterable = false, // isFilterable: A boolean to determine if the column can be filtered
+    filterParams, // filterParams: Parameters for the column's filtering functionality
+    filtersDef, // filtersDef: Definitions for the filters applicable to this column
+    filterSelector, // filterSelector: Selector for the filter applied to this column
+    sortConfig, // sortConfig: Configuration for sorting this column
+    valueFormatter, // valueFormatter: A function to format the value displayed in the cell
+    onSortChanged, // onSortChanged: A function to handle the event when sorting is changed
+    updateFilter, // updateFilter: A function to update the filter applied to this column
+}: CustomColDef) => {
+    const { options: filterOptions = [] } =
+        filtersDef.find((filterDef) => filterDef?.field === field) || {};
+
+    const filterSelectedOptions =
+        FROM_COLUMN_TO_FIELD[field] &&
+        filterSelector?.[FROM_COLUMN_TO_FIELD[field]];
+
+    return {
+        headerName,
+        field,
+        valueGetter,
+        cellRenderer,
+        valueFormatter,
+        hide: isHidden,
+        headerTooltip: headerName,
+        headerComponent: CustomHeaderComponent,
+        headerComponentParams: {
+            field,
+            displayName: headerName,
+            sortConfig,
+            onSortChanged: (newSortValue: number = 0) => {
+                onSortChanged(field, newSortValue);
+            },
+            isSortable,
+            isFilterable,
+            filterSelectedOptions,
+            filterParams: {
+                ...filterParams,
+                filterSelector,
+                filterOptions,
+                updateFilter,
+            },
+        },
+    };
+};
 export const securityAnalysisTableNColumnsDefinition = (
-    intl: IntlShape
+    intl: IntlShape,
+    filtersDef: FilterDef[],
+    filterSelector: FilterSelectorType,
+    onSortChanged: (colKey: string, sortWay: number) => void,
+    updateFilter: (field: string, value: string) => void,
+    sortConfig?: ISortConfig
 ): ColDef[] => [
-    {
+    makeColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
         field: 'subjectId',
-        filter: 'agTextColumnFilter',
-    },
-    {
-        headerName: intl.formatMessage({ id: 'LimitType' }),
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        sortConfig,
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.TEXT,
+            filterComparators: [
+                FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                FILTER_TEXT_COMPARATORS.CONTAINS,
+            ],
+        },
+    }),
+
+    makeColumn({
+        headerName: intl.formatMessage({ id: 'ViolationType' }),
         field: 'limitType',
-        filter: 'agTextColumnFilter',
-    },
-    {
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        sortConfig,
+    }),
+
+    makeColumn({
+        headerName: intl.formatMessage({ id: 'LimitName' }),
+        field: 'limitName',
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        valueFormatter: (params: ValueFormatterParams) =>
+            formatNAValue(params.value, intl),
+        sortConfig,
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.TEXT,
+            filterComparators: [
+                FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                FILTER_TEXT_COMPARATORS.CONTAINS,
+            ],
+        },
+    }),
+
+    makeColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
         field: 'limit',
+        numeric: true,
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        sortConfig,
         valueFormatter: (params: ValueFormatterParams) =>
             params.data?.limit?.toFixed(1),
-    },
-    {
-        headerName: intl.formatMessage({ id: 'Value' }),
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        },
+    }),
+    makeColumn({
+        headerName: intl.formatMessage({ id: 'CalculatedValue' }),
         field: 'value',
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        sortConfig,
         valueFormatter: (params: ValueFormatterParams) =>
             params.data?.value?.toFixed(1),
-    },
-    {
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        },
+    }),
+
+    makeColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        sortConfig,
         valueFormatter: (params: ValueFormatterParams) =>
-            params.data.loading?.toFixed(1),
-    },
+            params.data?.loading?.toFixed(1),
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        },
+    }),
+
+    makeColumn({
+        headerName: intl.formatMessage({
+            id: 'Overload',
+        }),
+        field: 'acceptableDuration',
+        valueFormatter: (value: any) =>
+            convertDuration(value.data.acceptableDuration),
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        sortConfig,
+        filterParams: {
+            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            parser: parseDuration,
+        },
+    }),
+
+    makeColumn({
+        headerName: intl.formatMessage({ id: 'LimitSide' }),
+        field: 'side',
+        isSortable: true,
+        isFilterable: true,
+        filtersDef,
+        filterSelector,
+        onSortChanged,
+        updateFilter,
+        sortConfig,
+    }),
 ];
 
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
+    filtersDef: FilterDef[],
+    filterSelector: FilterSelectorType | undefined,
+    onSortChanged: (colKey: string, sortWay: number) => void,
+    updateFilter: (field: string, value: string) => void,
     subjectIdRenderer: (
         cellData: ICellRendererParams
     ) => React.JSX.Element | undefined,
-    makeColumn: (customColDef: CustomColDef) => any
+    sortConfig?: ISortConfig
 ): ColDef[] => {
     return [
         makeColumn({
@@ -207,6 +372,11 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             cellRenderer: ContingencyCellRenderer,
             isSortable: true,
             isFilterable: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
@@ -220,10 +390,20 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'status',
             isFilterable: true,
             isSortable: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             cellRenderer: subjectIdRenderer,
             isFilterable: true,
             filterParams: {
@@ -235,13 +415,25 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitType' }),
+            headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatNAValue(params.value, intl),
+            sortConfig,
             isFilterable: true,
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
@@ -252,51 +444,85 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-            isFilterable: true,
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({
-                id: 'LimitAcceptableDuration',
-            }),
-            field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
-        }),
-        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'Value' }),
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({
+                id: 'Overload',
+            }),
+            field: 'acceptableDuration',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeColumn({
             field: 'linkedElementId',
             isHidden: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
         }),
     ];
 };
 
 export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
+    filtersDef: FilterDef[],
+    filterSelector: FilterSelectorType | undefined,
+    onSortChanged: (colKey: string, sortWay: number) => void,
+    updateFilter: (field: string, value: string) => void,
     subjectIdRenderer: (
         cellData: ICellRendererParams
     ) => React.JSX.Element | undefined,
-    makeColumn: (customColDef: CustomColDef) => any
+    sortConfig?: ISortConfig
 ): ColDef[] => {
     return [
         makeColumn({
@@ -305,6 +531,11 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             cellRenderer: subjectIdRenderer,
             isSortable: true,
             isFilterable: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
                 filterComparators: [
@@ -316,6 +547,11 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
             isFilterable: true,
@@ -330,16 +566,33 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             isFilterable: true,
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitType' }),
+            headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             isFilterable: true,
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatNAValue(params.value, intl),
+            sortConfig,
             isFilterable: true,
             filterParams: {
                 filterUIType: FILTER_UI_TYPES.TEXT,
@@ -350,41 +603,71 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-            isFilterable: true,
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({
-                id: 'LimitAcceptableDuration',
-            }),
-            field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
-        }),
-        makeColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'Value' }),
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
         }),
         makeColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({
+                id: 'Overload',
+            }),
+            field: 'acceptableDuration',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            valueFormatter: (value: ValueFormatterParams) =>
+                convertDuration(value.data.acceptableDuration),
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeColumn({
             field: 'linkedElementId',
             isHidden: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
         }),
     ];
 };
@@ -398,6 +681,23 @@ export const securityAnalysisTableNmKFilterDefinition = (
             field: 'status',
             options: filterEnums.computationsStatus,
         },
+        {
+            field: 'limitType',
+            options: filterEnums?.limitTypes,
+        },
+
+        {
+            field: 'side',
+            options: filterEnums?.branchSides,
+        },
+    ];
+};
+
+export const securityAnalysisTableNFilterDefinition = (
+    intl: IntlShape,
+    filterEnums: FilterEnums = {}
+) => {
+    return [
         {
             field: 'limitType',
             options: filterEnums?.limitTypes,
@@ -536,3 +836,12 @@ export enum RESULT_TYPE {
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
+
+export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
+    return index === 0 ||
+        (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
+        ? 'subjectId'
+        : 'contingencyId';
+};
+
+export const MAX_INT32: number = 2147483647;

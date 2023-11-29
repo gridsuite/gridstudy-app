@@ -10,7 +10,6 @@ import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    CustomColDef,
     SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
@@ -29,7 +28,6 @@ import { Box, Button, useTheme } from '@mui/material';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
 const styles = {
     container: {
@@ -134,71 +132,37 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [filterEnums, intl]
     );
 
-    const makeColumn = useCallback(
-        ({
-            headerName,
-            field = '',
-            valueGetter,
-            cellRenderer,
-            isSortable = false,
-            isHidden = false,
-            isFilterable = false,
-            filterParams,
-            valueFormatter,
-        }: CustomColDef) => {
-            const { options: filterOptions = [] } =
-                filtersDef.find((filterDef) => filterDef?.field === field) ||
-                {};
-
-            const { sortWay } = sortConfig || {};
-
-            const minWidth = isSortable && sortWay ? 140 : isFilterable && 95;
-
-            return {
-                headerName,
-                field,
-                valueGetter,
-                cellRenderer,
-                hide: isHidden,
-                valueFormatter,
-                headerTooltip: headerName,
-                minWidth,
-                headerComponent: CustomHeaderComponent,
-                headerComponentParams: {
-                    field,
-                    displayName: headerName,
-                    isSortable,
-                    sortConfig,
-                    onSortChanged: (newSortValue: number = 0) => {
-                        onSortChanged(field, newSortValue);
-                    },
-                    isFilterable,
-                    filterParams: {
-                        ...filterParams,
-                        filterSelector,
-                        filterOptions,
-                        updateFilter,
-                    },
-                },
-            };
-        },
-        [filtersDef, sortConfig, updateFilter, filterSelector, onSortChanged]
-    );
-
     const columnDefs = useMemo(
         () =>
             isFromContingency
                 ? securityAnalysisTableNmKContingenciesColumnsDefinition(
                       intl,
+                      filtersDef,
+                      filterSelector,
+                      onSortChanged,
+                      updateFilter,
                       SubjectIdRenderer,
-                      makeColumn
+                      sortConfig
                   )
                 : securityAnalysisTableNmKConstraintsColumnsDefinition(
                       intl,
+                      filtersDef,
+                      filterSelector,
+                      onSortChanged,
+                      updateFilter,
                       SubjectIdRenderer,
-                      makeColumn
+                      sortConfig
                   ),
-        [intl, SubjectIdRenderer, isFromContingency, makeColumn]
+        [
+            isFromContingency,
+            intl,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            SubjectIdRenderer,
+            sortConfig,
+        ]
     );
 
     const rows = useMemo(
