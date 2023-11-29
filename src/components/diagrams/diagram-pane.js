@@ -267,7 +267,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                         }
                         dispatch(
                             setNetworkAreaDiagramNbVoltageLevels(
-                                svg.metadata?.nbVoltageLevels
+                                svg.additionalMetadata?.nbVoltageLevels
                             )
                         );
                         return {
