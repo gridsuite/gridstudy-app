@@ -53,6 +53,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             elementType={elementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
+            disable={!equipmentTypeWatch}
         />
     );
 
