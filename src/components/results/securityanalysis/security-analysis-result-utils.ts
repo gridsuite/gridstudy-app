@@ -170,6 +170,8 @@ const makeColumn = ({
     valueFormatter, // valueFormatter: A function to format the value displayed in the cell
     onSortChanged, // onSortChanged: A function to handle the event when sorting is changed
     updateFilter, // updateFilter: A function to update the filter applied to this column
+    numeric = false, // numeric: boolean to determine if the field is numeric
+    fractionDigits, // fractionDigits: indicate the number of digits a numeric value have
 }: CustomColDef) => {
     const { options: filterOptions = [] } =
         filtersDef.find((filterDef) => filterDef?.field === field) || {};
@@ -184,6 +186,8 @@ const makeColumn = ({
         valueGetter,
         cellRenderer,
         valueFormatter,
+        numeric,
+        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         hide: isHidden,
         headerTooltip: headerName,
         headerComponent: CustomHeaderComponent,
@@ -311,6 +315,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         onSortChanged,
         updateFilter,
         sortConfig,
+        numeric: true,
         fractionDigits: 2,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
