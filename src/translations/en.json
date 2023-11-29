@@ -1290,6 +1290,7 @@
     "RatedVoltage2": "Rated voltage 2",
     "PhaseRegulatingValue": "Phase regulating value",
     "RatioTargetV": "Ratio voltage set point",
+    "GeneratorTargetV": "Target V",
 
     "waitingStudyIndexation": "Waiting for study indexation...",
 
