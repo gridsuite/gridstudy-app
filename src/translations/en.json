@@ -665,7 +665,6 @@
     "BusBarBus": "Bus bar section / bus",
     "Setpoints": "Setpoints",
     "Connectivity": "Connectivity",
-    "Connected": "Connected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",
@@ -1043,6 +1042,7 @@
     "removeNetworkModificationSubtree": "Remove subtree",
     "restoreNodes": "Restore nodes",
     "restoreNodesText": "Please select nodes to restore",
+    "deleteNodesText": "Are you sure you want to permanently delete {numberToDelete} nodes or sub-trees ?",
 
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",

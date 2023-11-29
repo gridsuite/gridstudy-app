@@ -14,10 +14,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
+    Checkbox,
     DialogContentText,
     FormControlLabel,
-    Radio,
-    RadioGroup,
+    FormGroup,
 } from '@mui/material';
 import {
     fetchStashedNodes,
@@ -25,6 +25,14 @@ import {
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
+import { OverflowableText } from '@gridsuite/commons-ui';
+
+const styles = {
+    selectAll: (theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+    }),
+};
 
 /**
  * Dialog to select network modification to create
@@ -34,10 +42,44 @@ import FormControl from '@mui/material/FormControl';
  * @param studyUuid the study id
  */
 const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
+    const intl = useIntl();
+
     const [nodes, setNodes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedNode, setSelectedNode] = useState(null);
-    const intl = useIntl();
+    const [selectedNodes, setSelectedNodes] = useState([]);
+    const [openAlert, setOpenAlert] = useState(false);
+
+    const handleSelectAll = () => {
+        if (selectedNodes.length === nodes.length) {
+            setSelectedNodes([]);
+        } else {
+            setSelectedNodes(nodes.map((node) => node.first));
+        }
+    };
+
+    const handleClick = (element) => {
+        if (selectedNodes.includes(element)) {
+            setSelectedNodes((prev) => prev.filter((e) => e !== element));
+        } else {
+            setSelectedNodes((prev) => [...new Set([...prev, element])]);
+        }
+    };
+
+    const handleClose = () => {
+        onClose();
+        setSelectedNodes([]);
+        setIsLoading(false);
+        setNodes([]);
+    };
+
+    const handleDelete = () => {
+        handleClose();
+    };
+
+    const handleRestore = () => {
+        restoreStashedNodes(studyUuid, selectedNodes[0].id, anchorNodeId); // TODO A changer quand le back sera fait
+        handleClose();
+    };
 
     useEffect(() => {
         if (open) {
@@ -51,18 +93,6 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
             setIsLoading(false);
         }
     }, [studyUuid, open]);
-
-    const handleClose = () => {
-        onClose();
-        setSelectedNode(null);
-        setIsLoading(false);
-        setNodes([]);
-    };
-
-    const handleRestore = () => {
-        restoreStashedNodes(studyUuid, selectedNode.id, anchorNodeId);
-        handleClose();
-    };
 
     return (
         <Dialog
@@ -98,26 +128,47 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                         sx={{ paddingLeft: '20px' }}
                         component="fieldset"
                     >
-                        <RadioGroup name="nodes-to-restore-selection">
+                        <FormGroup name="nodes-to-restore-selection">
+                            <Box sx={styles.selectAll}>
+                                <Checkbox
+                                    color={'primary'}
+                                    edge="start"
+                                    checked={
+                                        selectedNodes.length === nodes.length
+                                    }
+                                    onClick={handleSelectAll}
+                                    disableRipple
+                                />
+                                <OverflowableText
+                                    text={intl.formatMessage({
+                                        id: 'SelectAll',
+                                    })}
+                                />
+                            </Box>
                             {nodes.map((node) => {
                                 return (
                                     <FormControlLabel
                                         key={node.first.id}
-                                        value={node.first.id}
-                                        control={<Radio />}
+                                        control={
+                                            <Checkbox
+                                                checked={selectedNodes.includes(
+                                                    node.first
+                                                )}
+                                                onChange={(event) =>
+                                                    handleClick(node.first)
+                                                }
+                                            />
+                                        }
                                         label={
                                             node.first.name +
                                             (node.second !== 0
                                                 ? ' ( + ' + node.second + ' )'
                                                 : '')
                                         }
-                                        onChange={(event) =>
-                                            setSelectedNode(node.first)
-                                        }
                                     />
                                 );
                             })}
-                        </RadioGroup>
+                        </FormGroup>
                     </FormControl>
                 )}
             </DialogContent>
@@ -126,12 +177,45 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     <FormattedMessage id="close" />
                 </Button>
                 <Button
+                    onClick={() => setOpenAlert(true)}
+                    disabled={!selectedNodes.length || nodes.length === 0}
+                >
+                    <FormattedMessage id="DeleteRows" />
+                </Button>
+                <Button
                     onClick={handleRestore}
-                    disabled={!selectedNode || nodes.length === 0}
+                    disabled={!selectedNodes.length || nodes.length === 0}
                 >
                     <FormattedMessage id="restore" />
                 </Button>
             </DialogActions>
+            <Dialog
+                fullWidth
+                maxWidth="xs"
+                open={openAlert}
+                onClose={handleClose}
+                aria-labelledby="dialog-confirm-delete-modifications"
+            >
+                <DialogTitle>
+                    <FormattedMessage
+                        id="deleteNodesText"
+                        values={{
+                            numberToDelete: selectedNodes.length,
+                        }}
+                    />
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={() => setOpenAlert(false)}>
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button
+                        onClick={handleDelete}
+                        disabled={!selectedNodes.length}
+                    >
+                        <FormattedMessage id="DeleteRows" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Dialog>
     );
 };
