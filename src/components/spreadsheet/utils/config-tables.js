@@ -62,7 +62,7 @@ const propertiesGetter = (params) => {
         return null;
     }
 };
-const handleCellClickEvent = (event) => {
+const handleGeneratorsCellClick = (event) => {
     const { context: { isEditing, handleCellClick } = {} } = event || {};
     if (isEditing) {
         handleCellClick?.openGeneratorDialog();
@@ -1576,12 +1576,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulationTypeText',
                 cellRenderer: RegulationTypeCellRenderer,
-                onCellClicked: handleCellClickEvent,
+                onCellClicked: handleGeneratorsCellClick,
             },
             {
                 id: 'RegulatingTerminalGenerator',
                 cellRenderer: RegulatingTerminalCellRenderer,
-                onCellClicked: handleCellClickEvent,
+                onCellClicked: handleGeneratorsCellClick,
             },
         ],
     },
