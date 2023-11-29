@@ -90,6 +90,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [page, setPage] = useState<number>(0);
     const [hasFilter, setHasFilter] = useState<boolean>(false);
 
+    const N_RESULTS_TAB_INDEX = 0;
+    const NMK_RESULTS_TAB_INDEX = 1;
+    const LOGS_TAB_INDEX = 2;
+
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
@@ -111,8 +115,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
+            if (tabIndex === LOGS_TAB_INDEX) {
+                return Promise.resolve();
+            }
+
             const resultType =
-                tabIndex === 0
+                tabIndex === N_RESULTS_TAB_INDEX
                     ? RESULT_TYPE.N
                     : nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                     ? RESULT_TYPE.NMK_CONTINGENCIES
@@ -264,7 +272,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         />
                     </Tabs>
                 </Box>
-                {tabIndex === 1 && (
+                {tabIndex === NMK_RESULTS_TAB_INDEX && (
                     <Box sx={styles.nmkResultSelect}>
                         <Select
                             labelId="nmk-type-label"
@@ -291,7 +299,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 {shouldOpenLoader && <LinearProgress />}
             </Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === 0 && (
+                {tabIndex === N_RESULTS_TAB_INDEX && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
@@ -302,7 +310,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         filterEnums={filterEnums}
                     />
                 )}
-                {tabIndex === 1 && (
+                {tabIndex === NMK_RESULTS_TAB_INDEX && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
@@ -330,8 +338,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         }}
                     />
                 )}
-                {tabIndex === 2 &&
-                    securityAnalysisStatus === RunningStatus.SUCCEED && (
+                {tabIndex === LOGS_TAB_INDEX &&
+                    (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                        securityAnalysisStatus === RunningStatus.FAILED) && (
                         <ComputationReportViewer
                             reportType={REPORT_TYPES.SECURITY_ANALYSIS}
                         />

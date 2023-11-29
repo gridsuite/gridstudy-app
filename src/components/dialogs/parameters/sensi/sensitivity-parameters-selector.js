@@ -11,7 +11,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
-import { TabPanel } from '../parameters';
+import { TabPanel, useParameterState } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as sensiParam from './columns-definitions';
 import {
@@ -23,9 +23,12 @@ import {
     TAB_VALUES,
 } from './columns-definitions';
 import SensitivityTable from './sensitivity-table';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const SensitivityParametersSelector = () => {
     const intl = useIntl();
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(
@@ -48,7 +51,7 @@ const SensitivityParametersSelector = () => {
                 { label: 'SensiPST' },
             ],
         },
-        { label: 'SensitivityNodes' },
+        ...((enableDeveloperMode && [{ label: 'SensitivityNodes' }]) || []),
     ];
 
     const [rowDataInjectionsSet, useFieldArrayOutputInjectionsSet] =

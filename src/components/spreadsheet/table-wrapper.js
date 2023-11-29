@@ -657,7 +657,11 @@ const TableWrapper = (props) => {
                             editingData.activePowerControl
                                 ?.activePowerControlOn,
                             editingDataRef.current.activePowerControl
-                                ?.activePowerControlOn
+                                ?.activePowerControlOn != null
+                                ? +editingDataRef.current.activePowerControl
+                                      .activePowerControlOn
+                                : editingDataRef.current.activePowerControl
+                                      ?.activePowerControlOn
                         ),
                         getFieldValue(
                             editingData.activePowerControl?.droop,

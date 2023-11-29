@@ -17,6 +17,7 @@ import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
+import WaitingLoader from '../../utils/waiting-loader';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;
@@ -31,6 +32,7 @@ export const ComputationReportViewer: FunctionComponent<
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
+    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
     const makeReport = useCallback(
         (reportData: any) => {
@@ -50,6 +52,11 @@ export const ComputationReportViewer: FunctionComponent<
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
+            // use a timout to avoid having a loader in case of fast promise return (avoid blink)
+            const timer = setTimeout(() => {
+                setWaitingLoadReport(true);
+            }, 700);
+
             fetchParentNodesReport(
                 studyUuid.toString(),
                 currentNode.id.toString(),
@@ -66,6 +73,10 @@ export const ComputationReportViewer: FunctionComponent<
                         messageTxt: error.message,
                         headerId: 'ReportFetchError',
                     });
+                })
+                .finally(() => {
+                    clearTimeout(timer);
+                    setWaitingLoadReport(false);
                 });
         }
     }, [studyUuid, currentNode?.id, reportType, snackError, makeReport]);
@@ -97,7 +108,7 @@ export const ComputationReportViewer: FunctionComponent<
     };
 
     return (
-        <>
+        <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
             {report && (
                 <ReportViewer
                     jsonReportTree={report}
@@ -105,6 +116,6 @@ export const ComputationReportViewer: FunctionComponent<
                     nodeReportPromise={nodeReportPromise}
                 />
             )}
-        </>
+        </WaitingLoader>
     );
 };
