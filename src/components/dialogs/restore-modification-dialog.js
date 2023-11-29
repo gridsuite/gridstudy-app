@@ -65,17 +65,20 @@ const RestoreModificationDialog = ({
     const [modificationsToRestore, setModificationsToRestore] = useState([]);
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
 
     const handleClose = () => {
         onClose();
     };
 
     const handleDelete = () => {
+        setOpenAlert(false);
         deleteModifications(
             studyUuid,
             currentNode.id,
             [...selectedItems].map((item) => item.uuid)
         );
+        handleClose();
     };
 
     const handleRestore = () => {
@@ -178,16 +181,43 @@ const RestoreModificationDialog = ({
                 <Button onClick={handleClose}>
                     <FormattedMessage id="close" />
                 </Button>
-                <Button onClick={handleDelete} disabled={!selectedItems.size}>
+                <Button
+                    onClick={() => setOpenAlert(true)}
+                    disabled={!selectedItems.size}
+                >
                     <FormattedMessage id="DeleteRows" />
                 </Button>
-                <Button
-                    onClick={handleRestore}
-                    disabled={!modificationsToRestore.length}
-                >
+                <Button onClick={handleRestore} disabled={!selectedItems.size}>
                     <FormattedMessage id="restore" />
                 </Button>
             </DialogActions>
+            <Dialog
+                fullWidth
+                maxWidth="xs"
+                open={openAlert}
+                onClose={handleClose}
+                aria-labelledby="dialog-confirm-delete-modifications"
+            >
+                <DialogTitle>
+                    <FormattedMessage
+                        id="DeleteModificationText"
+                        values={{
+                            numberToDelete: selectedItems.size,
+                        }}
+                    />
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={() => setOpenAlert(false)}>
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button
+                        onClick={handleDelete}
+                        disabled={!selectedItems.size}
+                    >
+                        <FormattedMessage id="DeleteRows" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Dialog>
     );
 };
