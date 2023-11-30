@@ -654,13 +654,18 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControl.activePowerControlOn,
+                            editingData.activePowerControl
+                                ?.activePowerControlOn,
                             editingDataRef.current.activePowerControl
-                                .activePowerControlOn
+                                ?.activePowerControlOn != null
+                                ? +editingDataRef.current.activePowerControl
+                                      .activePowerControlOn
+                                : editingDataRef.current.activePowerControl
+                                      ?.activePowerControlOn
                         ),
                         getFieldValue(
-                            editingData.activePowerControl.droop,
-                            editingDataRef.current.activePowerControl.droop
+                            editingData.activePowerControl?.droop,
+                            editingDataRef.current.activePowerControl?.droop
                         )
                     );
                 default:

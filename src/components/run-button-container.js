@@ -564,8 +564,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             enableDeveloperMode
                 ? [runnable[ComputingType.DYNAMIC_SIMULATION]]
                 : []),
-            ...(voltageInitAvailability === OptionalServicesStatus.Up &&
-            enableDeveloperMode
+            ...(voltageInitAvailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.VOLTAGE_INIT]]
                 : []),
         ];

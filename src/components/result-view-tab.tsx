@@ -233,7 +233,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'VoltageInit',
                 displayed:
-                    enableDeveloperMode &&
                     voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,
             },

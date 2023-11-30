@@ -47,7 +47,7 @@ const checkCrossValidationRequiredOn = (gridApi, colDef) => {
     if (!dependencyEditor.length) {
         return false;
     }
-    if (colDef.crossValidation.requiredOn.columnValue) {
+    if ('columnValue' in colDef.crossValidation.requiredOn) {
         // if the prop columnValue exist, then we compare its value with the current value
         return (
             dependencyEditor[0].getValue() !==
@@ -101,7 +101,7 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal, allowZero) => {
-                if (val === undefined || val === null) {
+                if (val === undefined || val === null || isNaN(val)) {
                     if (optional) {
                         return true;
                     }

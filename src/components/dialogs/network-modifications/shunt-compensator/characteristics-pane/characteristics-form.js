@@ -33,7 +33,6 @@ import {
 } from '../../../dialogUtils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({
@@ -59,15 +58,17 @@ export const CharacteristicsForm = ({
         ],
     });
 
-    const previousMaxQAtNominalV = useMemo(
-        () => previousValues?.qatNominalV * previousValues?.maximumSectionCount,
-        [previousValues]
-    );
+    const previousMaxQAtNominalV = useMemo(() => {
+        const previousValue =
+            previousValues?.qatNominalV * previousValues?.maximumSectionCount;
+        return isNaN(previousValue) ? null : previousValue;
+    }, [previousValues]);
 
-    const previousMaxSusceptance = useMemo(
-        () => previousValues?.bperSection * previousValues?.maximumSectionCount,
-        [previousValues]
-    );
+    const previousMaxSusceptance = useMemo(() => {
+        const previousValue =
+            previousValues?.bperSection * previousValues?.maximumSectionCount;
+        return isNaN(previousValue) ? null : previousValue;
+    }, [previousValues]);
     const currentSectionCount = useMemo(
         () => sectionCount ?? previousValues?.sectionCount,
         [sectionCount, previousValues]
@@ -185,46 +186,26 @@ export const CharacteristicsForm = ({
     );
 
     const handleSwitchedOnValue = useCallback(
-        (
-            linkedSwitchedOnValue,
-            currentLinkedSwitchedOnValue,
-            SWITCHED_ON_FIELD
-        ) => {
+        (currentLinkedSwitchedOnValue, SWITCHED_ON_FIELD) => {
             if (
                 ![
                     currentSectionCount,
                     currentMaximumSectionCount,
                     currentLinkedSwitchedOnValue,
-                ].includes(null)
+                ].includes(null) &&
+                currentMaximumSectionCount >= currentSectionCount
             ) {
-                if (
-                    currentMaximumSectionCount >= currentSectionCount &&
-                    [
-                        sectionCount,
-                        maximumSectionCount,
-                        linkedSwitchedOnValue,
-                    ].some((value) => !isBlankOrEmpty(value))
-                ) {
-                    setValue(
-                        SWITCHED_ON_FIELD,
-                        (currentLinkedSwitchedOnValue /
-                            currentMaximumSectionCount) *
-                            currentSectionCount
-                    );
-                } else {
-                    setValue(SWITCHED_ON_FIELD, null);
-                }
+                setValue(
+                    SWITCHED_ON_FIELD,
+                    (currentLinkedSwitchedOnValue /
+                        currentMaximumSectionCount) *
+                        currentSectionCount
+                );
             } else {
                 setValue(SWITCHED_ON_FIELD, null);
             }
         },
-        [
-            currentSectionCount,
-            currentMaximumSectionCount,
-            sectionCount,
-            maximumSectionCount,
-            setValue,
-        ]
+        [currentSectionCount, currentMaximumSectionCount, setValue]
     );
 
     useEffect(() => {
@@ -232,7 +213,6 @@ export const CharacteristicsForm = ({
             characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
         ) {
             handleSwitchedOnValue(
-                maxQAtNominalV,
                 currentMaxQAtNominalV,
                 SWITCHED_ON_Q_AT_NOMINAL_V
             );
@@ -240,7 +220,6 @@ export const CharacteristicsForm = ({
             characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
         ) {
             handleSwitchedOnValue(
-                maxSusceptance,
                 currentMaxSusceptance,
                 SWITCHED_ON_SUSCEPTANCE
             );
@@ -251,8 +230,6 @@ export const CharacteristicsForm = ({
         previousValues,
         currentMaxQAtNominalV,
         currentMaxSusceptance,
-        maxQAtNominalV,
-        maxSusceptance,
     ]);
 
     return (
