@@ -1042,7 +1042,7 @@
     "cutNetworkModificationSubtree": "Couper le sous arbre",
     "cancelCutNetworkModificationSubtree": "Annuler couper le sous arbre",
     "removeNetworkModificationSubtree": "Supprimer le sous arbre",
-    "restoreNodes": "Restaurer des nœuds",
+    "restoreNodes": "Restaurer / Supprimer des nœuds",
     "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer",
     "deleteNodesText": "Êtes-vous sûr(e) de vouloir supprimer définitivement {numberToDelete} nœuds ou sous-arbres ?",
 

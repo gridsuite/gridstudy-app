@@ -20,12 +20,14 @@ import {
     FormGroup,
 } from '@mui/material';
 import {
+    deleteStashedNodes,
     fetchStashedNodes,
     restoreStashedNodes,
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
     selectAll: (theme) => ({
@@ -47,7 +49,8 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     const [nodes, setNodes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedNodes, setSelectedNodes] = useState([]);
-    const [openAlert, setOpenAlert] = useState(false);
+    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
+        useState(false);
 
     const handleSelectAll = () => {
         if (selectedNodes.length === nodes.length) {
@@ -73,11 +76,14 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     };
 
     const handleDelete = () => {
+        const nodeIds = [...selectedNodes].map((node) => node.id);
+        deleteStashedNodes(studyUuid, nodeIds);
         handleClose();
     };
 
     const handleRestore = () => {
-        restoreStashedNodes(studyUuid, selectedNodes[0].id, anchorNodeId); // TODO A changer quand le back sera fait
+        const nodeIds = [...selectedNodes].map((node) => node.id);
+        restoreStashedNodes(studyUuid, nodeIds, anchorNodeId);
         handleClose();
     };
 
@@ -177,7 +183,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     <FormattedMessage id="close" />
                 </Button>
                 <Button
-                    onClick={() => setOpenAlert(true)}
+                    onClick={() => setOpenDeleteConfirmationPopup(true)}
                     disabled={!selectedNodes.length || nodes.length === 0}
                 >
                     <FormattedMessage id="DeleteRows" />
@@ -189,33 +195,20 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     <FormattedMessage id="restore" />
                 </Button>
             </DialogActions>
-            <Dialog
-                fullWidth
-                maxWidth="xs"
-                open={openAlert}
-                onClose={handleClose}
-                aria-labelledby="dialog-confirm-delete-modifications"
-            >
-                <DialogTitle>
-                    <FormattedMessage
-                        id="deleteNodesText"
-                        values={{
-                            numberToDelete: selectedNodes.length,
-                        }}
-                    />
-                </DialogTitle>
-                <DialogActions>
-                    <Button onClick={() => setOpenAlert(false)}>
-                        <FormattedMessage id="close" />
-                    </Button>
-                    <Button
-                        onClick={handleDelete}
-                        disabled={!selectedNodes.length}
-                    >
-                        <FormattedMessage id="DeleteRows" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {openDeleteConfirmationPopup && (
+                <CustomDialog
+                    content={
+                        <FormattedMessage
+                            id="deleteNodesText"
+                            values={{
+                                numberToDelete: selectedNodes.length,
+                            }}
+                        />
+                    }
+                    onValidate={handleDelete}
+                    onClose={() => setOpenDeleteConfirmationPopup(false)}
+                />
+            )}
         </Dialog>
     );
 };
