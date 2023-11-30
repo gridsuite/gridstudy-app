@@ -64,7 +64,7 @@ const RunButton = (props) => {
         props.disabled ||
         (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
         (selectedIndex === 1 && isRunning()) ||
-        (selectedIndex === 4 /* Dynamic simulation button is selected */ &&
+        (selectedIndex === 5 /* Dynamic simulation button is selected */ &&
             props.getStatus(props.runnables[0]) !==
                 RunningStatus.SUCCEED); /* Load flow button's status must SUCCEED */
 

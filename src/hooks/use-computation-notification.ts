@@ -11,19 +11,21 @@ import { useEffect } from 'react';
 import { isNodeBuilt } from '../components/graph/util/model-functions';
 import { RunningStatus } from '../components/utils/running-status';
 import {
+    addAllBusesShortCircuitNotif,
     addDynamicSimulationNotif,
     addLoadflowNotif,
+    addNonEvacuatedEnergyNotif,
     addOneBusShortCircuitNotif,
     addSANotif,
     addSensiNotif,
-    addAllBusesShortCircuitNotif,
     addVoltageInitNotif,
+    resetAllBusesShortCircuitNotif,
     resetDynamicSimulationNotif,
     resetLoadflowNotif,
+    resetNonEvacuatedEnergyNotif,
     resetOneBusShortCircuitNotif,
     resetSANotif,
     resetSensiNotif,
-    resetAllBusesShortCircuitNotif,
     resetVoltageInitNotif,
 } from '../redux/actions';
 
@@ -47,6 +49,11 @@ export const useComputationNotification = () => {
     const sensitivityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
+
+    const nonEvacuatedEnergyAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
     const oneBusallBusesShortCircuitStatus = useSelector(
@@ -87,6 +94,12 @@ export const useComputationNotification = () => {
             : dispatch(resetSensiNotif());
 
         isNodeBuilt(currentNode) &&
+        (nonEvacuatedEnergyAnalysisStatus === RunningStatus.SUCCEED ||
+            nonEvacuatedEnergyAnalysisStatus === RunningStatus.FAILED)
+            ? dispatch(addNonEvacuatedEnergyNotif())
+            : dispatch(resetNonEvacuatedEnergyNotif());
+
+        isNodeBuilt(currentNode) &&
         allBusesShortCircuitStatus === RunningStatus.SUCCEED
             ? dispatch(addAllBusesShortCircuitNotif())
             : dispatch(resetAllBusesShortCircuitNotif());
@@ -114,6 +127,7 @@ export const useComputationNotification = () => {
         user,
         securityAnalysisStatus,
         sensitivityAnalysisStatus,
+        nonEvacuatedEnergyAnalysisStatus,
         allBusesShortCircuitStatus,
         oneBusallBusesShortCircuitStatus,
         dynamicSimulationStatus,

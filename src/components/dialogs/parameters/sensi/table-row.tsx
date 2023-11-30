@@ -20,6 +20,7 @@ interface TableRowComponentProps {
     row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
+    disableDelete?: boolean;
 }
 
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
@@ -28,6 +29,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     row,
     index,
     handleDeleteButton,
+    disableDelete,
 }) => {
     const [isHover, setIsHover] = useState(false);
     const intl = useIntl();
@@ -43,19 +45,23 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
             {columnsDefinition.map((column: IColumnsDef) =>
                 EditableTableCell(arrayFormName, index, column)
             )}
-            <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
-                {isHover && (
-                    <Tooltip
-                        title={intl.formatMessage({
-                            id: 'DeleteRows',
-                        })}
-                    >
-                        <IconButton onClick={() => handleDeleteButton(index)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                )}
-            </TableCell>
+            {!disableDelete && (
+                <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
+                    {isHover && (
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'DeleteRows',
+                            })}
+                        >
+                            <IconButton
+                                onClick={() => handleDeleteButton(index)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </TableCell>
+            )}
         </TableRow>
     );
 };

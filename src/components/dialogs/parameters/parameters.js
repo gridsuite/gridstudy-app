@@ -70,6 +70,10 @@ import {
     useGetSensitivityAnalysisParameters,
 } from './sensi/sensitivity-analysis-parameters';
 import {
+    NonEvacuatedEnergyParameters,
+    useGetNonEvacuatedEnergyParameters,
+} from './non-evacuated-energy/non-evacuated-energy-parameters';
+import {
     fetchDefaultSensitivityAnalysisProvider,
     fetchSensitivityAnalysisProvider,
     updateSensitivityAnalysisProvider,
@@ -583,6 +587,7 @@ const TAB_VALUES = {
     lfParamsTabValue: 'LoadFlow',
     securityAnalysisParamsTabValue: 'SecurityAnalysis',
     sensitivityAnalysisParamsTabValue: 'SensitivityAnalysis',
+    nonEvacuatedEnergyParamsTabValue: 'NonEvacuatedEnergyAnalysis',
     shortCircuitParamsTabValue: 'ShortCircuit',
     dynamicSimulationParamsTabValue: 'DynamicSimulation',
     advancedParamsTabValue: 'Advanced',
@@ -647,8 +652,21 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         updateSensitivityAnalysisProvider
     );
 
+    const nonEvacuatedEnergyBackend = useParametersBackend(
+        user,
+        'NonEvacuatedEnergy',
+        sensitivityAnalysisAvailability,
+        fetchSensitivityAnalysisProviders,
+        fetchSensitivityAnalysisProvider,
+        fetchDefaultSensitivityAnalysisProvider,
+        updateSensitivityAnalysisProvider
+    );
+
     const useSensitivityAnalysisParameters =
         useGetSensitivityAnalysisParameters();
+
+    const useNonEvacuatedEnergyParameters =
+        useGetNonEvacuatedEnergyParameters();
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
@@ -670,6 +688,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             if (
                 !enableDeveloperMode &&
                 (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
+                    oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
                     oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
                     oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)
             ) {
@@ -680,7 +699,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     }, [enableDeveloperMode]);
 
     const getDynamicWidth = useCallback(() => {
-        return tabValue === TAB_VALUES.sensitivityAnalysisParamsTabValue
+        return tabValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
+            tabValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue
             ? 'lg'
             : 'md';
     }, [tabValue]);
@@ -744,6 +764,18 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                                 value={
                                     TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
+                            />
+                        )}
+                        {sensitivityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={
+                                    <FormattedMessage id="NonEvacuatedEnergyAnalysis" />
+                                }
+                                value={
+                                    TAB_VALUES.nonEvacuatedEnergyParamsTabValue
                                 }
                             />
                         )}
@@ -852,6 +884,29 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         hideParameters={hideParameters}
                                         useSensitivityAnalysisParameters={
                                             useSensitivityAnalysisParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
+                        {sensitivityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.nonEvacuatedEnergyParamsTabValue
+                                }
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <NonEvacuatedEnergyParameters
+                                        user={user}
+                                        parametersBackend={
+                                            nonEvacuatedEnergyBackend
+                                        }
+                                        hideParameters={hideParameters}
+                                        useNonEvacuatedEnergyParameters={
+                                            useNonEvacuatedEnergyParameters
                                         }
                                     />
                                 )}

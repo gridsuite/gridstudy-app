@@ -15,6 +15,7 @@ import {
     addLoadflowNotif,
     addSANotif,
     addSensiNotif,
+    addNonEvacuatedEnergyNotif,
     addAllBusesShortCircuitNotif,
     addDynamicSimulationNotif,
     addVoltageInitNotif,
@@ -37,6 +38,10 @@ import {
     startSensitivityAnalysis,
     stopSensitivityAnalysis,
 } from '../services/study/sensitivity-analysis';
+import {
+    startNonEvacuatedEnergy,
+    stopNonEvacuatedEnergy,
+} from '../services/study/non-evacuated-energy';
 import {
     startDynamicSimulation,
     stopDynamicSimulation,
@@ -73,6 +78,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+    const nonEvacuatedEnergyStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+    );
+
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state) =>
             state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
@@ -107,6 +117,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
 
     const [ranSensi, setRanSensi] = useState(false);
 
+    const [ranNonEvacuatedEnergy, setRanNonEvacuatedEnergy] = useState(false);
+
     const [ranShortCircuit, setRanShortCircuit] = useState(false);
 
     const [ranDynamicSimulation, setRanDynamicSimulation] = useState(false);
@@ -135,6 +147,10 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
+    const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+
     const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
@@ -153,6 +169,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             }),
             [ComputingType.SENSITIVITY_ANALYSIS]: intl.formatMessage({
                 id: 'SensitivityAnalysis',
+            }),
+            [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: intl.formatMessage({
+                id: 'NonEvacuatedEnergyAnalysis',
             }),
             [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: intl.formatMessage(
                 {
@@ -191,6 +210,12 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         ) {
             dispatch(addSensiNotif());
         } else if (
+            ranNonEvacuatedEnergy &&
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'nonEvacuatedEnergyResult'
+        ) {
+            dispatch(addNonEvacuatedEnergyNotif());
+        } else if (
             ranShortCircuit &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
@@ -215,6 +240,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         ranSA,
         ranLoadflow,
         ranSensi,
+        ranNonEvacuatedEnergy,
         ranShortCircuit,
         ranDynamicSimulation,
         ranVoltageInit,
@@ -233,6 +259,10 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 case runnable[ComputingType.SENSITIVITY_ANALYSIS]:
                     type = ComputingType.SENSITIVITY_ANALYSIS;
                     stopSensitivityAnalysis(studyUuid, currentNode?.id);
+                    break;
+                case runnable[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]:
+                    type = ComputingType.NON_EVACUATED_ENERGY_ANALYSIS;
+                    stopNonEvacuatedEnergy(studyUuid, currentNode?.id);
                     break;
                 case runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]:
                     type = ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS;
@@ -368,6 +398,29 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     });
                 });
         } else if (
+            action === runnable[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+        ) {
+            dispatch(
+                setComputingStatus(
+                    ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
+                    RunningStatus.RUNNING
+                )
+            );
+            startNonEvacuatedEnergy(studyUuid, currentNode?.id)
+                .then(setRanNonEvacuatedEnergy(true))
+                .catch((error) => {
+                    dispatch(
+                        setComputingStatus(
+                            ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
+                            RunningStatus.FAILED
+                        )
+                    );
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startNonEvacuatedEnergyAnalysisError',
+                    });
+                });
+        } else if (
             action === runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
         ) {
             dispatch(
@@ -454,6 +507,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 return sensitivityAnalysisStatus;
             } else if (
                 runnableType ===
+                runnable[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+            ) {
+                return nonEvacuatedEnergyStatus;
+            } else if (
+                runnableType ===
                 runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
             ) {
                 return allBusesShortCircuitAnalysisStatus;
@@ -475,6 +533,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             loadFlowStatus,
             securityAnalysisStatus,
             sensitivityAnalysisStatus,
+            nonEvacuatedEnergyStatus,
             allBusesShortCircuitAnalysisStatus,
             oneBusShortCircuitAnalysisStatus,
             dynamicSimulationStatus,
@@ -495,6 +554,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
+            ...(nonEvacuatedEnergyUnavailability === OptionalServicesStatus.Up
+                ? [runnable[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]]
+                : []),
             ...(shortCircuitAvailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]]
                 : []),
@@ -511,6 +573,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         dynamicSimulationAvailability,
         securityAnalysisAvailability,
         sensitivityAnalysisUnavailability,
+        nonEvacuatedEnergyUnavailability,
         shortCircuitAvailability,
         voltageInitAvailability,
         runnable,

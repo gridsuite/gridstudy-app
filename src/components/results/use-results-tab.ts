@@ -17,9 +17,10 @@ export enum ResultsTabsRootLevel {
     LOADFLOW = 0,
     SECURITY_ANALYSIS = 1,
     SENSITIVITY_ANALYSIS = 2,
-    SHORTCIRCUIT_ANALYSIS = 3,
-    DYNAMIC_SIMULATION = 4,
-    VOLTAGE_INIT = 5,
+    NON_EVACUATED_ENERGY,
+    SHORTCIRCUIT_ANALYSIS = 4,
+    DYNAMIC_SIMULATION = 5,
+    VOLTAGE_INIT = 6,
 }
 
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)

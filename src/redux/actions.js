@@ -390,6 +390,19 @@ export function resetSensiNotif() {
     return { type: RESET_SENSI_NOTIF };
 }
 
+export const ADD_NON_EVACUATED_ENERGY_NOTIF = 'ADD_NON_EVACUATED_ENERGY_NOTIF';
+
+export function addNonEvacuatedEnergyNotif() {
+    return { type: ADD_NON_EVACUATED_ENERGY_NOTIF };
+}
+
+export const RESET_NON_EVACUATED_ENERGY_NOTIF =
+    'RESET_NON_EVACUATED_ENERGY_NOTIF';
+
+export function resetNonEvacuatedEnergyNotif() {
+    return { type: RESET_NON_EVACUATED_ENERGY_NOTIF };
+}
+
 export const ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF =
     'ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF';
 

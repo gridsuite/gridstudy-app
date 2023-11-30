@@ -45,6 +45,8 @@ import {
     RESET_VOLTAGE_INIT_NOTIF,
     ADD_SENSI_NOTIF,
     RESET_SENSI_NOTIF,
+    ADD_NON_EVACUATED_ENERGY_NOTIF,
+    RESET_NON_EVACUATED_ENERGY_NOTIF,
     COMPONENT_LIBRARY,
     FAVORITE_CONTINGENCY_LISTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -168,6 +170,7 @@ const initialComputingStatus = {
     [ComputingType.LOADFLOW]: RunningStatus.IDLE,
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
@@ -221,6 +224,7 @@ const initialState = {
     saNotif: false,
     voltageInitNotif: false,
     sensiNotif: false,
+    nonEvacuatedEnergyNotif: false,
     allBusesShortCircuitNotif: false,
     oneBusShortCircuitNotif: false,
     dynamicSimulationNotif: false,
@@ -574,6 +578,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SENSI_NOTIF]: (state) => {
         state.sensiNotif = false;
+    },
+
+    [ADD_NON_EVACUATED_ENERGY_NOTIF]: (state) => {
+        state.nonEvacuatedEnergyNotif = true;
+    },
+
+    [RESET_NON_EVACUATED_ENERGY_NOTIF]: (state) => {
+        state.nonEvacuatedEnergyNotif = false;
     },
 
     [ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
