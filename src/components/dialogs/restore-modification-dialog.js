@@ -21,6 +21,7 @@ import {
     restoreModifications,
 } from 'services/study/network-modifications';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
     text: (theme) => ({
@@ -62,21 +63,28 @@ const RestoreModificationDialog = ({
 }) => {
     const intl = useIntl();
 
-    const [modificationsToRestore, setModificationsToRestore] = useState([]);
+    const [stashedModifications, setStashedModifications] = useState([]);
     const [selectedItems, setSelectedItems] = useState(new Set());
-    const [toggleSelectAll, setToggleSelectAll] = useState(false);
-    const [openAlert, setOpenAlert] = useState(false);
+    const [
+        toggleSelectAllStashedModifications,
+        setToggleSelectAllStashedModifications,
+    ] = useState(false);
+    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
+        useState(false);
 
     const handleClose = () => {
         onClose();
     };
 
     const handleDelete = () => {
-        setOpenAlert(false);
+        const selectedModificationsUuidsToDelete = [
+            ...selectedItems.values(),
+        ].map((item) => item.uuid);
+        setOpenDeleteConfirmationPopup(false);
         deleteModifications(
             studyUuid,
             currentNode.id,
-            [...selectedItems].map((item) => item.uuid)
+            selectedModificationsUuidsToDelete
         );
         handleClose();
     };
@@ -85,6 +93,7 @@ const RestoreModificationDialog = ({
         const selectedModificationsUuidToRestore = [
             ...selectedItems.values(),
         ].map((item) => item.uuid);
+
         restoreModifications(
             studyUuid,
             currentNode.id,
@@ -94,11 +103,11 @@ const RestoreModificationDialog = ({
     };
 
     const handleSelectAll = useCallback(() => {
-        setToggleSelectAll((prev) => !prev);
+        setToggleSelectAllStashedModifications((prev) => !prev);
     }, []);
 
     useEffect(() => {
-        setModificationsToRestore(modifToRestore);
+        setStashedModifications(modifToRestore);
     }, [modifToRestore]);
 
     return (
@@ -137,7 +146,7 @@ const RestoreModificationDialog = ({
                                         edge="start"
                                         checked={
                                             selectedItems.size ===
-                                            modificationsToRestore.length
+                                            stashedModifications.length
                                         }
                                         onClick={handleSelectAll}
                                         disableRipple
@@ -151,7 +160,7 @@ const RestoreModificationDialog = ({
                                 <CheckboxList
                                     sx={styles.list}
                                     onChecked={setSelectedItems}
-                                    values={modificationsToRestore}
+                                    values={stashedModifications}
                                     itemComparator={(a, b) => a.uuid === b.uuid}
                                     itemRenderer={(props) => (
                                         <>
@@ -162,13 +171,15 @@ const RestoreModificationDialog = ({
                                                 isOneNodeBuilding={false}
                                                 disabled={false}
                                                 listSize={
-                                                    modificationsToRestore.length
+                                                    stashedModifications.length
                                                 }
                                                 {...props}
                                             />
                                         </>
                                     )}
-                                    toggleSelectAll={toggleSelectAll}
+                                    toggleSelectAll={
+                                        toggleSelectAllStashedModifications
+                                    }
                                 />
                                 {provided.placeholder}
                             </div>
@@ -176,13 +187,12 @@ const RestoreModificationDialog = ({
                     </Droppable>
                 </DragDropContext>
             </DialogContent>
-
             <DialogActions>
                 <Button onClick={handleClose}>
                     <FormattedMessage id="close" />
                 </Button>
                 <Button
-                    onClick={() => setOpenAlert(true)}
+                    onClick={() => setOpenDeleteConfirmationPopup(true)}
                     disabled={!selectedItems.size}
                 >
                     <FormattedMessage id="DeleteRows" />
@@ -191,33 +201,20 @@ const RestoreModificationDialog = ({
                     <FormattedMessage id="restore" />
                 </Button>
             </DialogActions>
-            <Dialog
-                fullWidth
-                maxWidth="xs"
-                open={openAlert}
-                onClose={handleClose}
-                aria-labelledby="dialog-confirm-delete-modifications"
-            >
-                <DialogTitle>
-                    <FormattedMessage
-                        id="DeleteModificationText"
-                        values={{
-                            numberToDelete: selectedItems.size,
-                        }}
-                    />
-                </DialogTitle>
-                <DialogActions>
-                    <Button onClick={() => setOpenAlert(false)}>
-                        <FormattedMessage id="close" />
-                    </Button>
-                    <Button
-                        onClick={handleDelete}
-                        disabled={!selectedItems.size}
-                    >
-                        <FormattedMessage id="DeleteRows" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {openDeleteConfirmationPopup && (
+                <CustomDialog
+                    content={
+                        <FormattedMessage
+                            id="DeleteModificationText"
+                            values={{
+                                numberToDelete: selectedItems.size,
+                            }}
+                        />
+                    }
+                    onValidate={handleDelete}
+                    onClose={() => setOpenDeleteConfirmationPopup(false)}
+                />
+            )}
         </Dialog>
     );
 };
