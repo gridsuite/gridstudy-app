@@ -25,6 +25,7 @@ import {
     INJECTIONS,
     PARAMETER_SENSI_INJECTION,
     ACTIVATED,
+    MAXIMUM_ACTIVE_POWER,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 
@@ -233,25 +234,46 @@ export const getSensiInjectionsformatNewParams = (
 export const getSensiInjectionsSetFormSchema = () => ({
     [PARAMETER_SENSI_INJECTIONS_SET]: yup.array().of(
         yup.object().shape({
-            [MONITORED_BRANCHES]: yup.array().of(
-                yup.object().shape({
-                    [ID]: yup.string().required(),
-                    [NAME]: yup.string().required(),
-                })
-            ),
-            [INJECTIONS]: yup.array().of(
-                yup.object().shape({
-                    [ID]: yup.string().required(),
-                    [NAME]: yup.string().required(),
-                })
-            ),
+            [MONITORED_BRANCHES]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [ID]: yup.string().required(),
+                        [NAME]: yup.string().required(),
+                    })
+                )
+                .required()
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.min(1, 'FieldIsRequired'),
+                }),
+            [INJECTIONS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [ID]: yup.string().required(),
+                        [NAME]: yup.string().required(),
+                    })
+                )
+                .required()
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.min(1, 'FieldIsRequired'),
+                }),
             [DISTRIBUTION_TYPE]: yup.string().nullable(),
-            [CONTINGENCIES]: yup.array().of(
-                yup.object().shape({
-                    [ID]: yup.string().required(),
-                    [NAME]: yup.string().required(),
-                })
-            ),
+            [CONTINGENCIES]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [ID]: yup.string().required(),
+                        [NAME]: yup.string().required(),
+                    })
+                )
+                .required()
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.min(1, 'FieldIsRequired'),
+                }),
             [ACTIVATED]: yup.boolean().nullable(),
         })
     ),

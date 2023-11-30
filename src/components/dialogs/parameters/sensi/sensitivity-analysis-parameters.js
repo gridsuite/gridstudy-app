@@ -64,6 +64,7 @@ import {
 } from './utils';
 import { SelectOptionsDialog } from '../../../../utils/dialogs';
 import DialogContentText from '@mui/material/DialogContentText';
+import Alert from '@mui/material/Alert';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -110,7 +111,8 @@ export const SensitivityAnalysisParameters = ({
     const { snackError } = useSnackMessage();
 
     const [popupConfirm, setPopupConfirm] = useState(false);
-
+    const [analysisComputeComplexity, setAnalysisComputeComplexity] =
+        useState(0);
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
     const formattedProviders = [
@@ -202,7 +204,12 @@ export const SensitivityAnalysisParameters = ({
                 studyUuid,
                 formatNewParams(newParams)
             )
-                .then(() => {
+                .then((response) => {
+                    response
+                        .text()
+                        .then((value) =>
+                            setAnalysisComputeComplexity(value && Number(value))
+                        );
                     setSensitivityAnalysisParams(
                         formatNewParams(newParams, false)
                     );
@@ -467,6 +474,19 @@ export const SensitivityAnalysisParameters = ({
                     />
                     <Grid container paddingTop={1} paddingBottom={2}>
                         <LineSeparator />
+                    </Grid>
+                    <Grid container justifyContent={'right'}>
+                        <Grid item marginBottom="-50px">
+                            <Alert
+                                severity={
+                                    analysisComputeComplexity > 500000
+                                        ? 'error'
+                                        : 'info'
+                                }
+                            >
+                                {analysisComputeComplexity}
+                            </Alert>
+                        </Grid>
                     </Grid>
                     <SensitivityParametersSelector
                         reset={reset}
