@@ -1172,7 +1172,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'DroopColumnName',
+                id: 'ActivePowerRegulationDroop',
                 field: 'activePowerControl.droop',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
