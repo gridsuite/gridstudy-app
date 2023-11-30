@@ -75,7 +75,7 @@
     "lineParallelPath": "Spread overlapping lines",
     "LineFlowMode": "Line flow mode",
     "None": "None",
-    "NoneUpcomingOverload": "None",    
+    "NoneUpcomingOverload": "None",
     "StaticArrows": "Static arrows",
     "AnimatedArrows": "Animated arrows",
     "Feeders": "Feeder",
@@ -409,7 +409,7 @@
     "LimitAcceptableDuration": "Duration",
     "Overload": "Overload",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
-    
+
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
     "true": "true",
@@ -1262,7 +1262,7 @@
     "RatedNominalPower": "Rated nominal power (MVA)",
 
     "ShortcircuitInProgress": "Shortcircuit computation in progress...",
-    
+
     "tableChangingError": "An error occured when modifying the data",
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationNotIndexed": "Serverside warning: Something went wrong, Study equipments aren't indexed anymore. Please refresh the page (F5)",
@@ -1305,7 +1305,7 @@
     "customAgGridFilter.contains": "Contains",
     "customAgGridFilter.notEqual": "Not equal",
     "customAgGridFilter.lessThanOrEqual": "Less than or equal",
-    "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",    
+    "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",
     "customAgGridFilter.filterOoo": "Filter...",
     "undefined" : "undefined"
 }
