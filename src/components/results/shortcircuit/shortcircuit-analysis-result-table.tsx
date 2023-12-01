@@ -91,61 +91,59 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const intl = useIntl();
     const theme = useTheme();
 
-    const columns = useMemo(
-        () => [
+    const columns = useMemo(() => {
+        const isAllBusesAnalysisType =
+            analysisType === ShortCircuitAnalysisType.ALL_BUSES;
+        const isOneBusAnalysisType =
+            analysisType === ShortCircuitAnalysisType.ONE_BUS;
+
+        const sortPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
+            ? sortProps
+            : undefined;
+        const sortPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType
+            ? sortProps
+            : undefined;
+
+        const filterPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
+            ? filterProps
+            : undefined;
+        const filterPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType
+            ? filterProps
+            : undefined;
+
+        const textFilterParams = {
+            filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComparators: [
+                FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                FILTER_TEXT_COMPARATORS.CONTAINS,
+            ],
+        };
+        const autoCompleteFilterParams = {
+            filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterEnums,
+        };
+
+        return [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
-                filterProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? filterProps
-                        : undefined,
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: textFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
-                filterProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? filterProps
-                        : undefined,
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterEnums,
-                },
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: autoCompleteFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ONE_BUS
-                        ? sortProps
-                        : undefined,
-                filterProps:
-                    analysisType === ShortCircuitAnalysisType.ONE_BUS
-                        ? filterProps
-                        : undefined,
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
+                sortProps: sortPropsCheckedForOneBusAnalysisType,
+                filterProps: filterPropsCheckedForOneBusAnalysisType,
+                filterParams: textFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
@@ -157,76 +155,51 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
-                filterProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? filterProps
-                        : undefined,
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterEnums,
-                },
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: autoCompleteFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
                 numeric: true,
                 fractionDigits: 1,
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
                 numeric: true,
                 fractionDigits: 1,
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
                 numeric: true,
                 fractionDigits: 1,
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
                 field: 'deltaCurrentIpMin',
                 numeric: true,
                 fractionDigits: 1,
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
                 numeric: true,
                 fractionDigits: 1,
-                sortProps:
-                    analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                        ? sortProps
-                        : undefined,
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
             }),
             {
                 field: 'linkedElementId',
                 hide: true,
             },
-        ],
-        [intl, analysisType, sortProps, filterProps, filterEnums]
-    );
+        ];
+    }, [intl, analysisType, sortProps, filterProps, filterEnums]);
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
