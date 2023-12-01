@@ -366,8 +366,8 @@ export const NonEvacuatedEnergyParameters = ({
     );
 
     const combineStagesDefinition = useCallback((stagesDefinition) => {
-        const stagesDefinitionsCount = 3;
-        const stagesPmaxPercentsCount = 3;
+        const stagesDefinitionsCount = 3; // only 3 stage definitions
+        const stagesPmaxPercentsCount = 3; // only 3 pmax percents
         const stagesSelectionsCount = Math.pow(
             stagesPmaxPercentsCount,
             stagesDefinitionsCount
