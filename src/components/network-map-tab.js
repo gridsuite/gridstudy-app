@@ -839,11 +839,16 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         // when root node geodata are loaded, we fetch current node missing geo-data
-        if (isRootNodeDataLoaded && !isInitialized && geoData) {
+        if (isRootNodeDataLoaded && !isInitialized && mapEquipments) {
             loadMissingGeoData();
             setInitialized(true);
         }
-    }, [isRootNodeDataLoaded, isInitialized, geoData, loadMissingGeoData]);
+    }, [
+        isRootNodeDataLoaded,
+        isInitialized,
+        loadMissingGeoData,
+        mapEquipments,
+    ]);
 
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {
