@@ -6,7 +6,13 @@
  */
 
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useRef,
+    useMemo,
+} from 'react';
 import PropTypes from 'prop-types';
 import GeoData from './network/geo-data';
 import withBranchMenu from './menus/branch-menu';
@@ -80,10 +86,21 @@ export const NetworkMapTab = ({
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+
+    const rootNodeId = useMemo(() => {
+        const rootNode = treeModel.treeNodes.find(
+            (node) => node?.data?.label === 'Root'
+        );
+        return rootNode?.id;
+    }, [treeModel]);
 
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
+    const [isRootNodeDataLoaded, setIsRootNodeDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
 
     const { snackError } = useSnackMessage();
@@ -584,19 +601,16 @@ export const NetworkMapTab = ({
         updateLinesTemporaryGeoData,
     ]);
 
-    const loadAllGeoData = useCallback(() => {
+    // loads all root node geo-data then saves them in redux
+    // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
+    const loadRootNodeGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
-        const nodeBeforeFetch = currentNodeRef.current;
 
         const substationPositionsDone = fetchSubstationPositions(
             studyUuid,
-            currentNodeRef.current?.id
+            rootNodeId
         ).then((data) => {
-            if (!checkNodeConsistency(nodeBeforeFetch)) {
-                return Promise(true); // break
-            }
-
             console.info(`Received substations of study '${studyUuid}'...`);
             const newGeoData = new GeoData(
                 new Map(),
@@ -609,35 +623,24 @@ export const NetworkMapTab = ({
 
         const linePositionsDone = !lineFullPath
             ? Promise.resolve()
-            : fetchLinePositions(studyUuid, currentNodeRef.current?.id).then(
-                  (data) => {
-                      if (!checkNodeConsistency(nodeBeforeFetch)) {
-                          return Promise(true); // break
-                      }
-
-                      console.info(`Received lines of study '${studyUuid}'...`);
-                      const newGeoData = new GeoData(
-                          geoDataRef.current?.substationPositionsById ||
-                              new Map(),
-                          new Map()
-                      );
-                      newGeoData.setLinePositions(data);
-                      setGeoData(newGeoData);
-                      geoDataRef.current = newGeoData;
-                  }
-              );
+            : fetchLinePositions(studyUuid, rootNodeId).then((data) => {
+                  console.info(`Received lines of study '${studyUuid}'...`);
+                  const newGeoData = new GeoData(
+                      geoDataRef.current?.substationPositionsById || new Map(),
+                      new Map()
+                  );
+                  newGeoData.setLinePositions(data);
+                  setGeoData(newGeoData);
+                  geoDataRef.current = newGeoData;
+              });
 
         Promise.all([substationPositionsDone, linePositionsDone])
             .then(() => {
                 temporaryGeoDataIdsRef.current = new Set();
+                setIsRootNodeDataLoaded(true);
             })
             .catch(function (error) {
                 console.error(error.message);
-
-                // we display the error to the user only if the node is built
-                if (!checkNodeConsistency(nodeBeforeFetch)) {
-                    return;
-                }
                 snackError({
                     messageTxt: error.message,
                     headerId: 'geoDataLoadingFail',
@@ -646,7 +649,7 @@ export const NetworkMapTab = ({
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [lineFullPath, studyUuid, dispatch, snackError]);
+    }, [rootNodeId, lineFullPath, studyUuid, dispatch, snackError]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -658,12 +661,12 @@ export const NetworkMapTab = ({
             ) {
                 loadMissingGeoData();
             } else {
-                loadAllGeoData();
+                loadRootNodeGeoData();
             }
         }
-    }, [studyUuid, loadAllGeoData, loadMissingGeoData, lineFullPath]);
+    }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
 
-    const loadMapEquipments = useCallback(() => {
+    const loadDefaultNodeMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
@@ -804,30 +807,43 @@ export const NetworkMapTab = ({
         if (refIsMapManualRefreshEnabled.current && isInitialized) {
             return;
         }
+        // as long as rootNodeId is not set, we don't fetch any geodata
+        if (!rootNodeId) {
+            return;
+        }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) {
             return;
         }
-        if (!isInitialized) {
-            loadMapEquipments();
-            loadAllGeoData();
+        if (!isRootNodeDataLoaded) {
+            loadDefaultNodeMapEquipments();
+            loadRootNodeGeoData();
         } else {
             updateMapEquipmentsAndGeoData();
         }
-        setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
+        rootNodeId,
         disabled,
         studyUuid,
         currentNode,
-        loadMapEquipments,
+        loadDefaultNodeMapEquipments,
         updateMapEquipmentsAndGeoData,
-        loadAllGeoData,
+        loadRootNodeGeoData,
+        isRootNodeDataLoaded,
         isInitialized,
         reloadMapNeeded,
         updatedSubstationsIds,
     ]);
+
+    useEffect(() => {
+        // when root node geodata are loaded, we fetch current node missing geo-data
+        if (isRootNodeDataLoaded && !isInitialized && geoData) {
+            loadMissingGeoData();
+            setInitialized(true);
+        }
+    }, [isRootNodeDataLoaded, isInitialized, geoData, loadMissingGeoData]);
 
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {
