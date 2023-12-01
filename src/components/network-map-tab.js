@@ -51,9 +51,9 @@ const styles = {
         position: 'absolute',
         right: '10px',
         bottom: '30px',
-        zIndex: 0,
+        zIndex: 10, // now needs to be at least 2 for the voltage filter to be above our deckgl lines and substations. TODO duplicated on many elements, improve our stacking context handling ?
         '&:hover': {
-            zIndex: 1,
+            zIndex: 11, // now needs to be at least 2 for the voltage filter to be above our deckgl lines and substations. TODO duplicated on many elements, improve our stacking context handling ?
         },
     },
     divTemporaryGeoDataLoading: {

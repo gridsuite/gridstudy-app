@@ -324,6 +324,7 @@ const styles = {
     minimizedDiagram: {
         bottom: '60px',
         position: 'absolute',
+        zIndex: 10, // now needs to be at least 2 for the minimized badges to be above our deckgl lines and substations. TODO duplicated on many elements, improve our stacking context handling ?
     },
     separator: {
         flexGrow: 1,
