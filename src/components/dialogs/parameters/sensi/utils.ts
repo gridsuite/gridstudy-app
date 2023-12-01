@@ -25,7 +25,6 @@ import {
     INJECTIONS,
     PARAMETER_SENSI_INJECTION,
     ACTIVATED,
-    MAXIMUM_ACTIVE_POWER,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 
