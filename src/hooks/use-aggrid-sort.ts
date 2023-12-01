@@ -9,7 +9,7 @@ import { useCallback, useState } from 'react';
 
 export type SortConfigType = {
     colKey: string;
-    sortWay: string | number;
+    sortWay: number;
 };
 
 export type SortPropsType = {

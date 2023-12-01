@@ -141,7 +141,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             filter: filterSelector,
             sort: {
                 colKey: fromFrontColumnToBackKeys[colKey],
-                sortWay: getSortValue(sortWay as number),
+                sortWay,
             },
         };
 

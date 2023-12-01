@@ -11,6 +11,7 @@ import {
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { getSortValue } from '../../hooks/use-aggrid-sort';
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(
@@ -121,7 +122,7 @@ export function fetchShortCircuitAnalysisPagedResults({
 
     if (sort) {
         const { colKey, sortWay } = sort;
-        urlSearchParams.append('sort', `${colKey},${sortWay}`);
+        urlSearchParams.append('sort', `${colKey},${getSortValue(sortWay)}`);
     }
 
     if (size) {
