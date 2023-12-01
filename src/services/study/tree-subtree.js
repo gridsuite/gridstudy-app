@@ -224,6 +224,7 @@ export function deleteStashedNodes(studyUuid, nodeToDeleteIds) {
         'ids',
         nodeToDeleteIds.map((id) => encodeURIComponent(id))
     );
+    urlSearchParams.append('deleteChildren', true);
 
     console.info('Delete nodes %s of study : %s', nodeToDeleteIds, studyUuid);
     const url =

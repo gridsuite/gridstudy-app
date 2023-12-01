@@ -30,10 +30,10 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
-    selectAll: (theme) => ({
+    selectAll: {
         display: 'flex',
         alignItems: 'center',
-    }),
+    },
 };
 
 /**
