@@ -662,6 +662,7 @@ export const NetworkMapTab = ({
                 loadMissingGeoData();
             } else {
                 loadRootNodeGeoData();
+                setInitialized(false);
             }
         }
     }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
@@ -839,6 +840,7 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         // when root node geodata are loaded, we fetch current node missing geo-data
+        // we check mapEquipments to prevent crash if network-map-server is not responding
         if (isRootNodeDataLoaded && !isInitialized && mapEquipments) {
             loadMissingGeoData();
             setInitialized(true);
