@@ -8,11 +8,12 @@
 import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
+import { ExpertFilter } from '../../components/dialogs/filter/expert/expert-filter.type';
 
 export function evaluateFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    filter: Object
+    filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
 ) {
     console.info(
         `Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`

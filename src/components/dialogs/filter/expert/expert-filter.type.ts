@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { UUID } from 'crypto';
 
 // TODO this file is duplicated from the gridexplore-app => to be merged when merging two projects
 export enum OperatorType {
@@ -17,6 +18,7 @@ export enum OperatorType {
     CONTAINS = 'CONTAINS',
     BEGINS_WITH = 'BEGINS_WITH',
     ENDS_WITH = 'ENDS_WITH',
+    EXISTS = 'EXISTS',
     IN = 'IN',
     NOT_IN = 'NOT_IN',
 }
@@ -38,6 +40,7 @@ export enum FieldType {
     ENERGY_SOURCE = 'ENERGY_SOURCE',
     COUNTRY = 'COUNTRY',
     VOLTAGE_REGULATOR_ON = 'VOLTAGE_REGULATOR_ON',
+    PLANNED_ACTIVE_POWER_SET_POINT = 'PLANNED_ACTIVE_POWER_SET_POINT',
     VOLTAGE_LEVEL_ID = 'VOLTAGE_LEVEL_ID',
 }
 
@@ -60,4 +63,11 @@ export interface RuleGroupTypeExport {
     combinator: CombinatorType;
     dataType: DataType;
     rules: (RuleTypeExport | RuleGroupTypeExport)[];
+}
+
+export interface ExpertFilter {
+    id?: UUID;
+    type: 'EXPERT';
+    equipmentType: string; // TODO must be EquipmentType enum
+    rules: RuleGroupTypeExport;
 }
