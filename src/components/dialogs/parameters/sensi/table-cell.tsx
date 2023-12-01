@@ -13,7 +13,6 @@ import {
     SwitchInput,
     FloatInput,
     TextInput,
-    FieldLabel,
 } from '@gridsuite/commons-ui';
 
 function EditableTableCell(
