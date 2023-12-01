@@ -174,7 +174,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             const value = cellData.value;
             return (
                 <Box sx={styles.cell}>
-                    {!isNaN(value) ? value.toFixed(1) : ''}
+                    {!isNaN(value) ? value.toFixed(2) : ''}
                 </Box>
             );
         },
@@ -355,7 +355,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderCurrentTab && <LinearProgress />}
                 </Box>
-                {loadFlowStatus === RunningStatus.SUCCEED && (
+                {(loadFlowStatus === RunningStatus.SUCCEED ||
+                    loadFlowStatus === RunningStatus.FAILED) && (
                     <ComputationReportViewer
                         reportType={REPORT_TYPES.LOADFLOW}
                     />

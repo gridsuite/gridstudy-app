@@ -28,6 +28,7 @@ import {
 import {
     ContingencyCellRenderer,
     convertDuration,
+    formatNAValue,
     parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
 import CustomHeaderComponent, {
@@ -87,6 +88,7 @@ export const flattenNmKResultsContingencies = (
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
+                    limitName: limitViolation.limitName,
                     side: limitViolation.side
                         ? intl.formatMessage({ id: limitViolation.side })
                         : '',
@@ -168,6 +170,8 @@ const makeColumn = ({
     valueFormatter, // valueFormatter: A function to format the value displayed in the cell
     onSortChanged, // onSortChanged: A function to handle the event when sorting is changed
     updateFilter, // updateFilter: A function to update the filter applied to this column
+    numeric = false, // numeric: boolean to determine if the field is numeric
+    fractionDigits, // fractionDigits: indicate the number of digits a numeric value have
 }: CustomColDef) => {
     const { options: filterOptions = [] } =
         filtersDef.find((filterDef) => filterDef?.field === field) || {};
@@ -182,6 +186,8 @@ const makeColumn = ({
         valueGetter,
         cellRenderer,
         valueFormatter,
+        numeric,
+        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         hide: isHidden,
         headerTooltip: headerName,
         headerComponent: CustomHeaderComponent,
@@ -252,6 +258,8 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterSelector,
         onSortChanged,
         updateFilter,
+        valueFormatter: (params: ValueFormatterParams) =>
+            formatNAValue(params.value, intl),
         sortConfig,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.TEXT,
@@ -273,8 +281,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         onSortChanged,
         updateFilter,
         sortConfig,
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.limit?.toFixed(1),
+        fractionDigits: 2,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
@@ -290,8 +297,8 @@ export const securityAnalysisTableNColumnsDefinition = (
         onSortChanged,
         updateFilter,
         sortConfig,
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.value?.toFixed(1),
+        numeric: true,
+        fractionDigits: 2,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
@@ -308,8 +315,8 @@ export const securityAnalysisTableNColumnsDefinition = (
         onSortChanged,
         updateFilter,
         sortConfig,
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.loading?.toFixed(1),
+        numeric: true,
+        fractionDigits: 2,
         filterParams: {
             filterUIType: FILTER_UI_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
@@ -428,6 +435,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterSelector,
             onSortChanged,
             updateFilter,
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatNAValue(params.value, intl),
             sortConfig,
             isFilterable: true,
             filterParams: {
@@ -439,14 +448,37 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
+            headerName: intl.formatMessage({ id: 'Limit' }),
+            field: 'limit',
+            numeric: true,
             filtersDef,
             filterSelector,
             onSortChanged,
             updateFilter,
             sortConfig,
-            isFilterable: true,
+            fractionDigits: 2,
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            field: 'value',
+            numeric: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            fractionDigits: 2,
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'Loading' }),
+            field: 'loading',
+            numeric: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            fractionDigits: 2,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -462,37 +494,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'Limit' }),
-            field: 'limit',
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
             filtersDef,
             filterSelector,
             onSortChanged,
             updateFilter,
             sortConfig,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.limit?.toFixed(1),
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            field: 'value',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.value?.toFixed(1),
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({ id: 'Loading' }),
-            field: 'loading',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.loading?.toFixed(1),
+            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
@@ -585,6 +594,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterSelector,
             onSortChanged,
             updateFilter,
+            valueFormatter: (params: ValueFormatterParams) =>
+                formatNAValue(params.value, intl),
             sortConfig,
             isFilterable: true,
             filterParams: {
@@ -596,14 +607,37 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
+            headerName: intl.formatMessage({ id: 'Limit' }),
+            field: 'limit',
+            numeric: true,
             filtersDef,
             filterSelector,
             onSortChanged,
             updateFilter,
             sortConfig,
-            isFilterable: true,
+            fractionDigits: 2,
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            field: 'value',
+            numeric: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            fractionDigits: 2,
+        }),
+        makeColumn({
+            headerName: intl.formatMessage({ id: 'Loading' }),
+            field: 'loading',
+            numeric: true,
+            filtersDef,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+            sortConfig,
+            fractionDigits: 2,
         }),
         makeColumn({
             headerName: intl.formatMessage({
@@ -619,37 +653,14 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 convertDuration(value.data.acceptableDuration),
         }),
         makeColumn({
-            headerName: intl.formatMessage({ id: 'Limit' }),
-            field: 'limit',
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
             filtersDef,
             filterSelector,
             onSortChanged,
             updateFilter,
             sortConfig,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.limit?.toFixed(1),
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            field: 'value',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.value?.toFixed(1),
-        }),
-        makeColumn({
-            headerName: intl.formatMessage({ id: 'Loading' }),
-            field: 'loading',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.loading?.toFixed(1),
+            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions

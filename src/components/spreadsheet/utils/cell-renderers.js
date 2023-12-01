@@ -68,6 +68,8 @@ const styles = {
     }),
 };
 
+export const NA_Value = 'N/A';
+
 export const BooleanCellRenderer = (props) => {
     const isChecked = Boolean(props.value);
     return (
@@ -313,4 +315,8 @@ export const EditingCellRenderer = (props) => {
             </IconButton>
         </Box>
     );
+};
+
+export const formatNAValue = (value, intl) => {
+    return value === NA_Value ? intl.formatMessage({ id: 'Undefined' }) : value;
 };

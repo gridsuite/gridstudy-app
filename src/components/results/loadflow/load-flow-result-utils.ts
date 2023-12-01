@@ -6,7 +6,6 @@
  */
 
 import {
-    LimitNames,
     LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
@@ -18,7 +17,10 @@ import {
     ValueFormatterParams,
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
-import { convertDuration } from '../../spreadsheet/utils/cell-renderers';
+import {
+    convertDuration,
+    formatNAValue,
+} from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
@@ -88,29 +90,26 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 id: 'LimitNameCurrentViolation',
             }),
             valueFormatter: (params: ValueFormatterParams) =>
-                formatLimitName(params.value, intl),
+                formatNAValue(params.value, intl),
             field: 'limitName',
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
             field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
             field: 'value',
             numeric: true,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'overload',
             numeric: true,
-            fractionDigits: 0,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({
@@ -142,11 +141,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     ];
 };
 
-export const formatLimitName = (limitName: string, intl: IntlShape) => {
-    return limitName === LimitNames.NA
-        ? intl.formatMessage({ id: 'Undefined' })
-        : limitName;
-};
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
         ? intl.formatMessage({ id: limitType })
@@ -169,15 +163,14 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
             field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
             field: 'value',
             numeric: true,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            fractionDigits: 2,
         },
     ];
 };
@@ -193,12 +186,16 @@ export const loadFlowResultColumnsDefinition = (
                 id: 'connectedComponentNum',
             }),
             field: 'connectedComponentNum',
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({
                 id: 'synchronousComponentNum',
             }),
             field: 'synchronousComponentNum',
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'status' }),
@@ -222,6 +219,8 @@ export const loadFlowResultColumnsDefinition = (
                 id: 'slackBusActivePowerMismatch',
             }),
             field: 'slackBusActivePowerMismatch',
+            numeric: true,
+            fractionDigits: 2,
             cellRenderer: numberRenderer,
         },
     ];

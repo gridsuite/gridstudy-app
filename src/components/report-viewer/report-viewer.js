@@ -83,7 +83,6 @@ export default function ReportViewer({
                 >
                     {logReport
                         .getSubReports()
-                        .slice(0, maxSubReports)
                         .map((value) => createReporterItem(value))}
                 </ReportItem>
             );
@@ -167,7 +166,6 @@ export default function ReportViewer({
 
             Promise.resolve(getFetchPromise(nodeId, severityList))
                 .then((fetchedData) => {
-                    clearTimeout(timer);
                     const logReporter = buildLogReport(makeReport(fetchedData));
                     setSelectedNode(nodeId);
                     setLogs(logReporter.getAllLogs());

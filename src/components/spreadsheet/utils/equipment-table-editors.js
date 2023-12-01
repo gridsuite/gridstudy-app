@@ -101,7 +101,7 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal, allowZero) => {
-                if (val === undefined || val === null) {
+                if (val === undefined || val === null || isNaN(val)) {
                     if (optional) {
                         return true;
                     }
