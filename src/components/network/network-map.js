@@ -7,14 +7,9 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-import {
-    _MapContext as MapContext,
-    NavigationControl,
-    StaticMap,
-} from 'react-map-gl';
-import { FlyToInterpolator } from '@deck.gl/core';
-import DeckGL from '@deck.gl/react';
+import { Map, NavigationControl, useControl } from 'react-map-gl';
 
 import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
@@ -37,6 +32,16 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchMapBoxToken } from '../../services/utils';
 import { Box } from '@mui/system';
 
+import { MapboxOverlay } from '@deck.gl/mapbox';
+
+// Small boilerplate recommended by deckgl, to bridge to a react-map-gl control declaratively
+// see https://deck.gl/docs/api-reference/mapbox/mapbox-overlay#using-with-react-map-gl
+function DeckGLOverlay(props) {
+    const overlay = useControl(() => new MapboxOverlay(props));
+    overlay.setProps(props);
+    return null;
+}
+
 const styles = {
     mapManualRefreshBackdrop: {
         width: '100%',
@@ -47,6 +52,7 @@ const styles = {
         justifyContent: 'center',
         background: 'grey',
         opacity: '0.8',
+        position: 'relative',
         zIndex: 99,
         fontSize: 30,
     },
@@ -63,7 +69,7 @@ const NetworkMap = (props) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
     const [showTooltip, setShowTooltip] = useState(true);
-    const [deck, setDeck] = useState(null);
+    const mapRef = useRef();
     const [centered, setCentered] = useState({
         lastCenteredSubstation: null,
         centeredSubstationId: null,
@@ -78,6 +84,7 @@ const NetworkMap = (props) => {
         return labelColor;
     }, [theme]);
     const [cursorType, setCursorType] = useState('grab');
+    const [isDragging, setDragging] = useState(false);
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
@@ -130,10 +137,14 @@ const NetworkMap = (props) => {
         });
     }, [centerOnSubstation]);
 
+    // TODO simplify this, now we use Map as the camera controlling component
+    // so  we don't need the deckgl ref anymore. The following comments are
+    // probably outdated, cleanup everything:
     // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
     // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
     // we get the ref to the deck and it has not yet initialized..)
     function onAfterRender() {
+        // TODO outdated comment
         //use centered and deck to execute this block only once when the data is ready and deckgl is initialized
         //TODO, replace the next lines with setProps( { initialViewState } ) when we upgrade to 8.1.0
         //see https://github.com/uber/deck.gl/pull/4038
@@ -143,8 +154,6 @@ const NetworkMap = (props) => {
                 (centered.centeredSubstationId &&
                     centered.centeredSubstationId !==
                         centered.lastCenteredSubstation)) &&
-            deck !== null &&
-            deck.viewManager != null &&
             props.geoData !== null
         ) {
             if (props.geoData.substationPositionsById.size > 0) {
@@ -155,25 +164,10 @@ const NetworkMap = (props) => {
                     if (!geodata) {
                         return;
                     } // can't center on substation if no coordinate.
-                    const copyViewState =
-                        lastViewStateRef.current || deck.viewState;
-                    const newViewState = {
-                        longitude: geodata.lon,
-                        latitude: geodata.lat,
-                        zoom: copyViewState.zoom,
-                        maxZoom: deck.viewState.maxZoom,
-                        pitch: copyViewState.pitch,
-                        bearing: copyViewState.bearing,
-                    };
-                    // if this is not the page load, use a fly to animation. On page load, we want to center directly
-                    if (centered.centered) {
-                        newViewState.transitionDuration = 2000;
-                        newViewState.transitionInterpolator =
-                            new FlyToInterpolator();
-                    }
-                    deck.viewState = newViewState;
-                    deck.setProps({});
-                    deck._onViewStateChange({ viewState: deck.viewState });
+                    mapRef.current?.flyTo({
+                        center: [geodata.lon, geodata.lat],
+                        duration: 2000,
+                    });
                     setCentered({
                         lastCenteredSubstation: centered.centeredSubstationId,
                         centeredSubstationId: centered.centeredSubstationId,
@@ -201,24 +195,13 @@ const NetworkMap = (props) => {
                     );
                     const marginlon = (maxlon - minlon) / 10;
                     const marginlat = (maxlat - minlat) / 10;
-                    const viewport = deck.getViewports()[0];
-                    const boundedViewport = viewport.fitBounds([
-                        [minlon - marginlon / 2, minlat - marginlat / 2],
-                        [maxlon + marginlon / 2, maxlat + marginlat / 2],
-                    ]);
-                    deck.viewState = {
-                        longitude: boundedViewport.longitude,
-                        latitude: boundedViewport.latitude,
-                        zoom: Math.min(
-                            deck.viewState.maxZoom,
-                            boundedViewport.zoom
-                        ),
-                        maxZoom: deck.viewState.maxZoom,
-                        pitch: deck.viewState.pitch,
-                        bearing: deck.viewState.bearing,
-                    };
-                    deck.setProps({});
-                    deck._onViewStateChange({ viewState: deck.viewState });
+                    mapRef.current?.fitBounds(
+                        [
+                            [minlon - marginlon / 2, minlat - marginlat / 2],
+                            [maxlon + marginlon / 2, maxlat + marginlat / 2],
+                        ],
+                        { animate: false }
+                    );
                     setCentered({
                         lastCenteredSubstation: null,
                         centered: true,
@@ -303,37 +286,46 @@ const NetworkMap = (props) => {
                 }
             }
             if (idVl !== undefined) {
-                if (props.onSubstationClick && event.leftButton) {
+                if (
+                    props.onSubstationClick &&
+                    !event.srcEvent.originalEvent.shiftKey
+                ) {
                     props.onSubstationClick(idVl);
-                } else if (props.onVoltageLevelMenuClick && event.rightButton) {
+                } else if (
+                    props.onVoltageLevelMenuClick &&
+                    event.srcEvent.originalEvent.shiftKey
+                ) {
                     props.onVoltageLevelMenuClick(
                         network.getVoltageLevel(idVl),
-                        event.center.x,
-                        event.center.y
+                        event.srcEvent.originalEvent.x,
+                        event.srcEvent.originalEvent.y
                     );
                 }
             }
             if (idSubstation !== undefined) {
                 if (
                     props.onSubstationClickChooseVoltageLevel &&
-                    event.leftButton
+                    !event.srcEvent.originalEvent.shiftKey
                 ) {
                     props.onSubstationClickChooseVoltageLevel(
                         idSubstation,
-                        event.center.x,
-                        event.center.y
+                        event.srcEvent.originalEvent.x,
+                        event.srcEvent.originalEvent.y
                     );
-                } else if (props.onSubstationMenuClick && event.rightButton) {
+                } else if (
+                    props.onSubstationMenuClick &&
+                    event.srcEvent.originalEvent.shiftKey
+                ) {
                     props.onSubstationMenuClick(
                         network.getSubstation(idSubstation),
-                        event.center.x,
-                        event.center.y
+                        event.srcEvent.originalEvent.x,
+                        event.srcEvent.originalEvent.y
                     );
                 }
             }
         }
         if (
-            event.rightButton &&
+            event.srcEvent.originalEvent.shiftKey &&
             info.layer &&
             info.layer.id.startsWith(LINE_LAYER_PREFIX) &&
             info.object &&
@@ -345,21 +337,25 @@ const NetworkMap = (props) => {
             // because pickable object infos might not be up to date
             let line = network.getLine(info.object.id);
             if (line) {
-                props.onLineMenuClick(line, event.center.x, event.center.y);
+                props.onLineMenuClick(
+                    line,
+                    event.srcEvent.originalEvent.x,
+                    event.srcEvent.originalEvent.y
+                );
             } else {
                 let hvdcLine = network.getHvdcLine(info.object.id);
                 if (hvdcLine) {
                     props.onHvdcLineMenuClick(
                         hvdcLine,
-                        event.center.x,
-                        event.center.y
+                        event.srcEvent.originalEvent.x,
+                        event.srcEvent.originalEvent.y
                     );
                 }
             }
         }
     }
 
-    function cursorHandler({ isDragging }) {
+    function cursorHandler() {
         return isDragging ? 'grabbing' : cursorType;
     }
 
@@ -449,23 +445,19 @@ const NetworkMap = (props) => {
     );
 
     return (
-        <>
-            <DeckGL
-                onViewStateChange={onViewStateChange}
-                ref={(ref) => {
-                    // save a reference to the Deck instance to be able to center in onAfterRender
-                    setDeck(ref && ref.deck);
-                }}
-                onClick={(info, event) => {
-                    onClickHandler(info, event, props.mapEquipments);
-                }}
-                onAfterRender={onAfterRender}
-                layers={layers}
+        mapBoxToken && (
+            <Map
+                ref={mapRef}
+                onMove={onViewStateChange}
+                dragRotate={false}
+                boxZoom={false}
+                mapStyle={theme.mapboxStyle}
+                preventStyleDiffing={true}
+                mapboxAccessToken={mapBoxToken}
                 initialViewState={initialViewState}
-                controller={{ doubleClickZoom: false }}
-                ContextProvider={MapContext.Provider}
-                getCursor={cursorHandler}
-                pickingRadius={5}
+                cursor={cursorHandler()} //TODO needed for pointer on our features, but forces us to reeimplement grabbing/grab for panning. Can we avoid reimplementing?
+                onDrag={() => setDragging(true)}
+                onDragEnd={() => setDragging(false)}
             >
                 {props.displayOverlayLoader && renderOverlay()}
                 {mapManualRefresh &&
@@ -483,19 +475,18 @@ const NetworkMap = (props) => {
                             </Button>
                         </Box>
                     )}
-
-                {mapBoxToken && (
-                    <StaticMap
-                        mapStyle={theme.mapboxStyle}
-                        preventStyleDiffing={true}
-                        mapboxApiAccessToken={mapBoxToken}
-                    >
-                        {showTooltip && renderTooltip()}
-                    </StaticMap>
-                )}
-                <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
-            </DeckGL>
-        </>
+                <DeckGLOverlay
+                    onClick={(info, event) => {
+                        onClickHandler(info, event, props.mapEquipments);
+                    }}
+                    onAfterRender={onAfterRender} // TODO simplify this
+                    layers={layers}
+                    pickingRadius={5}
+                ></DeckGLOverlay>
+                {showTooltip && renderTooltip()}
+                <NavigationControl />
+            </Map>
+        )
     );
 };
 
