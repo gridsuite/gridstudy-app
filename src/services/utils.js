@@ -127,7 +127,7 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
                 })
                 .catch((error) => {
                     console.error(error);
-                    console.log(
+                    console.warn(
                         `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`
                     );
                     return false;
