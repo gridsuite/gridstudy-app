@@ -662,6 +662,7 @@ export const NetworkMapTab = ({
                 loadMissingGeoData();
             } else {
                 loadRootNodeGeoData();
+                // set initialized to false to trigger missing geo-data fetching on next render
                 setInitialized(false);
             }
         }
