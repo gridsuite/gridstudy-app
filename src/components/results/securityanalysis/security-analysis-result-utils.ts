@@ -207,8 +207,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         headerName: intl.formatMessage({ id: 'Limit' }),
         field: 'limit',
         numeric: true,
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.limit?.toFixed(1),
+        fractionDigits: 2,
         sortProps,
         filterProps,
         filterParams: {
@@ -220,8 +219,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'CalculatedValue' }),
         field: 'value',
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.value?.toFixed(1),
+        numeric: true,
+        fractionDigits: 2,
         sortProps,
         filterProps,
         filterParams: {
@@ -233,8 +232,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
-        valueFormatter: (params: ValueFormatterParams) =>
-            params.data?.loading?.toFixed(1),
+        numeric: true,
+        fractionDigits: 2,
         sortProps,
         filterProps,
         filterParams: {
@@ -343,8 +342,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.limit?.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -354,14 +353,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.value?.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.loading?.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -455,8 +454,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.limit?.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -466,14 +465,14 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.value?.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.data?.loading?.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
