@@ -32,10 +32,14 @@ import {
     OperatorType,
 } from '../../../../filter/expert/expert-filter.type';
 
-export const CURVE_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.LOAD,
-];
+export const CURVE_EQUIPMENT_TYPES = {
+    [EQUIPMENT_TYPES.GENERATOR]: [EQUIPMENT_TYPES.GENERATOR],
+    [EQUIPMENT_TYPES.LOAD]: [EQUIPMENT_TYPES.LOAD],
+    [EQUIPMENT_TYPES.BUS]: [
+        EQUIPMENT_TYPES.BUS,
+        EQUIPMENT_TYPES.BUSBAR_SECTION,
+    ],
+};
 
 const NOMINAL_VOLTAGE_UNIT = 'kV';
 
@@ -172,21 +176,26 @@ const EquipmentFilter = forwardRef(
                 };
             };
 
-            const expertFilter = {
-                type: 'EXPERT',
-                equipmentType: equipmentType,
-                rules: buildExpertRules(
-                    selectedVoltageLevelIds,
-                    selectedCountries,
-                    selectedNominalVoltages
-                ),
-            };
+            const expertFilters = CURVE_EQUIPMENT_TYPES[equipmentType].map(
+                (fetchEquipmentType) => ({
+                    type: 'EXPERT',
+                    equipmentType: fetchEquipmentType,
+                    rules: buildExpertRules(
+                        selectedVoltageLevelIds,
+                        selectedCountries,
+                        selectedNominalVoltages
+                    ),
+                })
+            );
 
-            // evaluate by filter-server
-            return evaluateFilter(studyUuid, currentNode.id, expertFilter)
+            Promise.all(
+                expertFilters.map((expertFilter) =>
+                    evaluateFilter(studyUuid, currentNode.id, expertFilter)
+                )
+            )
                 .then((equipments) => {
                     // take only ids when return
-                    return equipments.map(({ id }) => ({ id }));
+                    return equipments.flat();
                 })
                 .catch((error) => {
                     snackError({
@@ -295,7 +304,7 @@ const EquipmentFilter = forwardRef(
                             size="small"
                             sx={{ width: '100%' }}
                         >
-                            {CURVE_EQUIPMENT_TYPES.map((type) => (
+                            {Object.keys(CURVE_EQUIPMENT_TYPES).map((type) => (
                                 <MenuItem key={type} value={type}>
                                     {intl.formatMessage({ id: type })}
                                 </MenuItem>
