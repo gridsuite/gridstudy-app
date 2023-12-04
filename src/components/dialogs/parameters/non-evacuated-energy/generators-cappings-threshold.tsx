@@ -24,7 +24,7 @@ const GeneratorsCappingsThreshold: FunctionComponent = () => {
             >
                 <FormattedMessage id={'generatorsCappingSensitivityValue'} />
             </Grid>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} paddingBottom={2}>
                 <Grid item xs={4}>
                     <FloatInput
                         name={SENSITIVITY_THRESHOLD}

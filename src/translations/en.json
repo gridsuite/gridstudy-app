@@ -1335,5 +1335,6 @@
     "nonEvacuatedEnergyAnalysisError": "An error occured when executing sensitivity analysis non evacuated energy",
     "fetchNonEvacuatedEnergyProvidersError": "An error occured when fetching sensitivity analysis provider list",
     "fetchNonEvacuatedEnergyProviderError": "An error occured when fetching sensitivity analysis provider",
-    "generateStagesSelection": "Generated stages to simulate"
+    "generateStagesSelection": "Generated stages to simulate",
+    "exportResult": "Export result"
 }

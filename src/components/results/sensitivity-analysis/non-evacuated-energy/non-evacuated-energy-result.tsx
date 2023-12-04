@@ -4,45 +4,43 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 
-import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../../redux/reducer.type';
 import { NonEvacuatedEnergyResultProps } from './non-evacuated-energy-result.type';
-import ReactJson from 'react-json-view';
-import { PARAM_THEME } from '../../../../utils/config-params';
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
-import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import { Box } from '@mui/system';
+import { FormattedMessage } from 'react-intl';
 
 const styles = {
-    nonEvacuatedEnergyResult: {
+    buttonExportResult: {
         display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        overflowY: 'auto',
-        margin: 1,
+        position: 'relative',
     },
 };
 
 export const NonEvacuatedEnergyResult: FunctionComponent<
     NonEvacuatedEnergyResultProps
 > = ({ result, studyUuid, nodeUuid, isWaiting }) => {
-    const theme = useSelector((state: ReduxState) => state[PARAM_THEME]);
+    const exportResult = useCallback(() => {
+        const fileSaver = require('file-saver');
+        const blob = new Blob([JSON.stringify(result, null, 2)], {
+            type: 'application/json',
+        });
+        fileSaver.saveAs(blob, 'non_evacuated_energy_result.json');
+    }, [result]);
 
     const renderResult = () => {
         return (
             result && (
-                <Paper sx={styles.nonEvacuatedEnergyResult}>
-                    <ReactJson
-                        src={result}
-                        onEdit={false}
-                        onAdd={false}
-                        onDelete={false}
-                        theme={
-                            theme === LIGHT_THEME ? 'rjv-default' : 'monokai'
-                        }
-                    />
-                </Paper>
+                <Box sx={styles.buttonExportResult}>
+                    <Button
+                        variant="outlined"
+                        onClick={exportResult}
+                        disabled={!result}
+                    >
+                        <FormattedMessage id="exportResult" />
+                    </Button>
+                </Box>
             )
         );
     };

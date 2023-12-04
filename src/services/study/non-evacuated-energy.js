@@ -81,3 +81,24 @@ export function setNonEvacuatedEnergyParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
+export function fetchNonEvacuatedEnergyProvider(studyUuid) {
+    console.info('fetch non evacuated energy provider');
+    const url = `${getStudyUrl(studyUuid)}/non-evacuated-energy/provider`;
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function updateNonEvacuatedEnergyProvider(studyUuid, newProvider) {
+    console.info('update non evacuated energy provider');
+    const url = `${getStudyUrl(studyUuid)}/non-evacuated-energy/provider`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newProvider,
+    });
+}

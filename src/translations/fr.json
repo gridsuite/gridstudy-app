@@ -1352,5 +1352,6 @@
     "nonEvacuatedEnergyAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité énergie non évacuée",
     "fetchNonEvacuatedEnergyProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sensibilité",
     "fetchNonEvacuatedEnergyProviderError": "Une erreur est survenue lors de la récupération du fournisseur courant d'analyse de sensibilité",
-    "generateStagesSelection": "Générer paliers à simuler"
+    "generateStagesSelection": "Générer paliers à simuler",
+    "exportResult": "Exporter résultat"
 }

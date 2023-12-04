@@ -5,12 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    SelectInput,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { DropDown, LabelledButton, styles } from '../parameters';
+import { LabelledButton, styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -110,13 +114,13 @@ export const NonEvacuatedEnergyParameters = ({
 
     const [popupConfirm, setPopupConfirm] = useState(false);
 
-    const [providers, provider, updateProvider] = parametersBackend;
+    const [providers, provider, updateProvider, resetProvider] =
+        parametersBackend;
 
-    const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
-    const updateProviderCallback = useCallback(handleUpdateProvider, [
-        updateProvider,
-    ]);
-
+    const formattedProviders = [
+        { id: providers.OpenLoadFlow, label: providers.OpenLoadFlow },
+        { id: providers.Hades2, label: providers.Hades2 },
+    ];
     const handlePopupConfirm = useCallback(() => {
         hideParameters();
         setPopupConfirm(false);
@@ -128,7 +132,7 @@ export const NonEvacuatedEnergyParameters = ({
 
     const emptyFormData = useMemo(() => {
         return {
-            [PROVIDER]: 'OpenLoadFlow',
+            [PROVIDER]: provider,
             [STAGES_DEFINITION]: [
                 {
                     [GENERATION_STAGES_KIND]: 'WIND',
@@ -182,7 +186,7 @@ export const NonEvacuatedEnergyParameters = ({
             [MONITORED_BRANCHES]: [],
             [CONTINGENCIES]: [],
         };
-    }, []);
+    }, [provider]);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -215,9 +219,8 @@ export const NonEvacuatedEnergyParameters = ({
             });
     }, [studyUuid, emptyFormData, setNonEvacuatedEnergyParams, snackError]);
 
-    const formatNewParams = useCallback((newParams) => {
-        return {
-            [PROVIDER]: newParams[PROVIDER],
+    const formatNewParams = useCallback((newParams, isBackedPost = true) => {
+        let params = {
             ...getGenerationStagesDefinitionParams(newParams),
             ...getGenerationStagesSelectionParams(newParams),
             [GENERATORS_LIMIT]: getGeneratorsLimitParams(
@@ -227,6 +230,12 @@ export const NonEvacuatedEnergyParameters = ({
             ...getMonitoredBranchesParams(newParams),
             ...getContingenciesParams(newParams),
         };
+        return isBackedPost
+            ? params
+            : {
+                  [PROVIDER]: newParams[PROVIDER],
+                  ...params,
+              };
     }, []);
 
     const onSubmit = useCallback(
@@ -236,7 +245,9 @@ export const NonEvacuatedEnergyParameters = ({
                 formatNewParams(newParams)
             )
                 .then(() => {
-                    setNonEvacuatedEnergyParams(formatNewParams(newParams));
+                    setNonEvacuatedEnergyParams(
+                        formatNewParams(newParams, false)
+                    );
                 })
                 .catch((error) => {
                     snackError({
@@ -244,8 +255,15 @@ export const NonEvacuatedEnergyParameters = ({
                         headerId: 'NonEvacuatedEnergyParametersError',
                     });
                 });
+            updateProvider(newParams[PROVIDER]);
         },
-        [setNonEvacuatedEnergyParams, snackError, studyUuid, formatNewParams]
+        [
+            setNonEvacuatedEnergyParams,
+            snackError,
+            studyUuid,
+            formatNewParams,
+            updateProvider,
+        ]
     );
 
     const fromNonEvacuatedEnergyParamsDataToFormValues = useCallback(
@@ -451,6 +469,7 @@ export const NonEvacuatedEnergyParameters = ({
     }, [
         fromNonEvacuatedEnergyParamsDataToFormValues,
         nonEvacuatedEnergyParams,
+        parametersBackend,
     ]);
 
     useEffect(() => {
@@ -469,19 +488,30 @@ export const NonEvacuatedEnergyParameters = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
+        resetProvider();
         resetNonEvacuatedEnergyParameters();
-    }, [emptyFormData, reset, resetNonEvacuatedEnergyParameters]);
+    }, [
+        emptyFormData,
+        reset,
+        resetProvider,
+        resetNonEvacuatedEnergyParameters,
+    ]);
 
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container spacing={1} paddingTop={1}>
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={providers}
-                        callback={updateProviderCallback}
-                    />
+                    <Grid item xs={8} sx={styles.parameterName}>
+                        <FormattedMessage id="Provider" />
+                    </Grid>
+                    <Grid item xs={4} sx={styles.controlItem}>
+                        <SelectInput
+                            name={PROVIDER}
+                            disableClearable
+                            size="small"
+                            options={Object.values(formattedProviders)}
+                        ></SelectInput>
+                    </Grid>
                 </Grid>
                 <Grid
                     container

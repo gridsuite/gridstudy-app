@@ -78,6 +78,10 @@ import {
     fetchSensitivityAnalysisProvider,
     updateSensitivityAnalysisProvider,
 } from '../../../services/study/sensitivity-analysis';
+import {
+    fetchNonEvacuatedEnergyProvider,
+    updateNonEvacuatedEnergyProvider,
+} from '../../../services/study/non-evacuated-energy';
 import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
 import {
     OptionalServicesNames,
@@ -655,11 +659,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const nonEvacuatedEnergyBackend = useParametersBackend(
         user,
         'NonEvacuatedEnergy',
-        sensitivityAnalysisAvailability,
-        fetchSensitivityAnalysisProviders,
-        fetchSensitivityAnalysisProvider,
-        fetchDefaultSensitivityAnalysisProvider,
-        updateSensitivityAnalysisProvider
+        sensitivityAnalysisAvailability, // same backing service as the one for sensitivity analysis
+        fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
+        fetchNonEvacuatedEnergyProvider,
+        fetchDefaultSensitivityAnalysisProvider, // same default provider as the one for sensitivity-analysis
+        updateNonEvacuatedEnergyProvider
     );
 
     const useSensitivityAnalysisParameters =
