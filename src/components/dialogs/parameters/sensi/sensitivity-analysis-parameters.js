@@ -484,8 +484,10 @@ export const SensitivityAnalysisParameters = ({
                                         : 'info'
                                 }
                             >
-                                {analysisComputeComplexity}
+                                {analysisComputeComplexity}{' '}
+                                <FormattedMessage id="SimulatedCalculation" />
                             </Alert>
+                            <FormattedMessage id="SimulatedCalculationMax" />
                         </Grid>
                     </Grid>
                     <SensitivityParametersSelector
