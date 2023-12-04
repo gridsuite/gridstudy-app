@@ -64,7 +64,6 @@ const RunButton = (props) => {
     }, [getRunnable, props]);
 
     let buttonDisabled =
-        props.disabled ||
         (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
         (selectedIndex === 1 && isRunning()) ||
         (selectedIndex === 4 /* Dynamic simulation button is selected */ &&
@@ -78,7 +77,7 @@ const RunButton = (props) => {
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
             runningStatus={getRunningStatus()}
-            buttonDisabled={buttonDisabled}
+            buttonDisabled={props.disabled || buttonDisabled}
             selectionDisabled={props.disabled}
             text={
                 props.getText
