@@ -20,8 +20,8 @@ import {
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { RunningStatus } from './utils/running-status';
-import { ComputingType } from './computing-status/computing-type';
+import RunningStatus from './utils/running-status';
+import ComputingType from './computing-status/computing-type';
 
 import {
     PARAM_DEVELOPER_MODE,
