@@ -323,7 +323,7 @@ const PropertiesEditorHeader = ({
         <TableHead>
             <TableRow>
                 {columnDefs.map((column: any) => (
-                    <TableCell>
+                    <TableCell key={column.label}>
                         <Box
                             sx={{
                                 backgroundColor: column.color,
