@@ -8,7 +8,11 @@
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
-import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    REGULATION_TYPES,
+} from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -25,7 +29,18 @@ const generateTapPositions = (params) => {
           )
         : [];
 };
-
+const RegulatingTerminalCellRenderer = (params) => {
+    const regulatingTerminalConnectableId =
+        params.data?.regulatingTerminalConnectableId;
+    if (
+        params.data?.regulatingTerminalVlId ||
+        regulatingTerminalConnectableId
+    ) {
+        return `${params.data.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
+    } else {
+        return null;
+    }
+};
 const applyFluxConvention = (convention, val) => {
     if (convention === FluxConventions.TARGET && val !== undefined) {
         return -val;
@@ -1320,6 +1335,49 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RegulationTypeText',
+                field: 'RegulationTypeText',
+                type: 'editableCell',
+                valueGetter: (params) =>
+                    params.data?.regulatingTerminalVlId ||
+                    params.data?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id,
+                cellEditor: 'agSelectCellEditor',
+                valueSetter: (params) => {
+                    if (params.newValue === 'DISTANT') {
+                        params.data.regulatingTerminalVlId = ' ';
+                        params.data.regulatingTerminalConnectableId = ' ';
+                        params.data.regulatingTerminalConnectableId = ' ';
+                        params.data.regulatingTerminalConnectableType = ' ';
+                    }
+                    if (params.newValue === 'LOCAL') {
+                        console.log('$$$$$$$$$$$$ ', 'LOCAL');
+                        params.data.regulatingTerminalVlId = null;
+                        params.data.regulatingTerminalConnectableId = null;
+                        params.data.regulatingTerminalConnectableType = null;
+                    }
+                    return params;
+                },
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(REGULATION_TYPES).map(
+                                (shuntType) => shuntType.id
+                            ),
+                        ],
+                    };
+                },
+                enableCellChangeFlash: true,
+            },
+            {
+                id: 'RegulatingTerminalGenerator',
+                cellRenderer: RegulatingTerminalCellRenderer,
+                enableCellChangeFlash: true,
+
+                //onCellClicked: handleGeneratorsCellClick,
             },
         ],
     },

@@ -10,6 +10,8 @@ import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
+import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -19,6 +21,8 @@ export const EquipmentTable = ({
     topPinnedData,
     columnData,
     gridRef,
+    studyUuid,
+    currentNode,
     handleColumnDrag,
     handleCellEditing,
     handleGridReady,
@@ -26,8 +30,16 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
+    popupEditRegulatingTerminal,
+    setPopupEditRegulatingTerminal,
+    editingData,
+    setEditingData,
 }) => {
     const theme = useTheme();
+
+    const onRegulatingTerminalPopupClose = () => {
+        setPopupEditRegulatingTerminal(false);
+    };
     const intl = useIntl();
     const getRowStyle = useCallback(
         (params) => {
@@ -60,7 +72,13 @@ export const EquipmentTable = ({
         }),
         []
     );
-
+    const handleSavePopupRegulatingTerminal = (d) => {
+        setPopupEditRegulatingTerminal(false);
+        editingData.voltageRegulationType = REGULATION_TYPES.DISTANT.id;
+        editingData.regulatingTerminalConnectableType = d.equipment.type;
+        editingData.regulatingTerminalConnectableId = d.equipment.id;
+        editingData.regulatingTerminalVlId = d.voltageLevel.id;
+    };
     const gridContext = useMemo(() => {
         return {
             network: network,
@@ -74,6 +92,7 @@ export const EquipmentTable = ({
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
         []
     );
+    console.log(gridContext," gridContext ==========")
 
     const rowsToShow = useMemo(() => {
         return fetched && rowData.length > 0 ? rowData : [];
@@ -120,35 +139,53 @@ export const EquipmentTable = ({
     };
 
     return (
-        <CustomAGGrid
-            ref={gridRef}
-            getRowId={getRowId}
-            rowData={rowsToShow}
-            pinnedTopRowData={topPinnedData}
-            debounceVerticalScrollbar={true}
-            getRowStyle={getRowStyle}
-            columnDefs={columnData}
-            defaultColDef={defaultColDef}
-            enableCellTextSelection={true}
-            undoRedoCellEditing={true}
-            onCellEditingStopped={handleCellEditing}
-            onRowDataUpdated={handleRowDataUpdated}
-            onColumnMoved={handleColumnDrag}
-            suppressDragLeaveHidesColumns={true}
-            suppressColumnVirtualisation={true}
-            suppressClickEdit={!topPinnedData}
-            singleClickEdit={true}
-            context={gridContext}
-            onGridReady={handleGridReady}
-            shouldHidePinnedHeaderRightBorder={
-                shouldHidePinnedHeaderRightBorder
-            }
-            getRowHeight={getRowHeight}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
-            columnTypes={columnTypes}
-        />
+        <>
+            <CustomAGGrid
+                ref={gridRef}
+                getRowId={getRowId}
+                rowData={rowsToShow}
+                pinnedTopRowData={topPinnedData}
+                debounceVerticalScrollbar={true}
+                getRowStyle={getRowStyle}
+                columnDefs={columnData}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                undoRedoCellEditing={true}
+                onCellEditingStopped={handleCellEditing}
+                onRowDataUpdated={handleRowDataUpdated}
+                onColumnMoved={handleColumnDrag}
+                suppressDragLeaveHidesColumns={true}
+                suppressColumnVirtualisation={true}
+                suppressClickEdit={!topPinnedData}
+                singleClickEdit={true}
+                context={gridContext}
+                onGridReady={handleGridReady}
+                shouldHidePinnedHeaderRightBorder={
+                    shouldHidePinnedHeaderRightBorder
+                }
+                getRowHeight={getRowHeight}
+                overlayNoRowsTemplate={message}
+                loadingOverlayComponent={loadingOverlayComponent}
+                loadingOverlayComponentParams={loadingOverlayComponentParams}
+                showOverlay={true}
+                columnTypes={columnTypes}
+            />
+            {popupEditRegulatingTerminal && (
+                <RegulatingTerminalModificationDialog
+                    open={popupEditRegulatingTerminal}
+                    onClose={onRegulatingTerminalPopupClose}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    onModifyRegulatingTerminalGenerator={(
+                        updatedRegulatedTerminal
+                    ) => {
+                        handleSavePopupRegulatingTerminal(
+                            updatedRegulatedTerminal
+                        );
+                    }}
+                    data={gridContext.dynamicValidation}
+                />
+            )}
+        </>
     );
 };

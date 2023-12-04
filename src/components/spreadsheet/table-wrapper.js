@@ -499,7 +499,20 @@ const TableWrapper = (props) => {
                         ),
                         undefined,
                         undefined,
-                        undefined
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        'DISTANT', //editingData.voltageRegulationType
+                        editingData.regulatingTerminalConnectableId,
+
+                        editingData.regulatingTerminalConnectableType,
+
+                        editingData.regulatingTerminalVlId
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -678,6 +691,20 @@ const TableWrapper = (props) => {
             tabIndex,
         ]
     );
+    const [popupEditRegulatingTerminal, setPopupEditRegulatingTerminal] =
+        React.useState(false);
+
+    const updateGeneratorCells = useCallback((params) => {
+        const colId = params.column.colId;
+        const regulatingTerminalVlId = params.data.regulatingTerminalVlId;
+        const regulatingTerminalConnectableId =
+            params.data.regulatingTerminalConnectableId;
+        if (colId === 'RegulationTypeText') {
+            if (regulatingTerminalConnectableId || regulatingTerminalVlId) {
+                setPopupEditRegulatingTerminal(true);
+            }
+        }
+    }, []);
 
     const updateShuntCompensatorCells = useCallback((params) => {
         const rowNode = params.node;
@@ -780,10 +807,14 @@ const TableWrapper = (props) => {
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR
             ) {
                 updateShuntCompensatorCells(params);
+            } else if (
+                params.data.metadata.equipmentType === EQUIPMENT_TYPES.GENERATOR
+            ) {
+                updateGeneratorCells(params);
             }
             addDataToBuffer(params.colDef.field, params.oldValue);
         },
-        [addDataToBuffer, updateShuntCompensatorCells]
+        [addDataToBuffer, updateGeneratorCells, updateShuntCompensatorCells]
     );
 
     const handleEditingStarted = useCallback((params) => {
@@ -948,6 +979,7 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}
@@ -961,6 +993,14 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
+                        popupEditRegulatingTerminal={
+                            popupEditRegulatingTerminal
+                        }
+                        setPopupEditRegulatingTerminal={
+                            setPopupEditRegulatingTerminal
+                        }
+                        editingData={editingData}
+                        setEditingData={setEditingData}
                     />
                 </Box>
             )}
