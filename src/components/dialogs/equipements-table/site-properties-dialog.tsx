@@ -33,6 +33,14 @@ import {
     modifySubstation,
 } from 'services/study/network-modifications';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import yup from '../../utils/yup-config';
+
+const validationSchema = yup.array().of(
+    yup.object().shape({
+        key: yup.string().required('Key is required'),
+        value: yup.string().required('Value is required'),
+    })
+);
 
 type SitePropertiesDialogProps = {
     open: boolean;
@@ -98,38 +106,71 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
 
     const performValidation = () => {
         const names = new Set<string>();
+        // let hasError = false;
+        // const invalidCells: number[] = [];
+
+        // rowData.forEach((item, index) => {
+        //     if (item.key.trim() === '' || item.value.trim() === '') {
+        //         setError(
+        //             intl.formatMessage({
+        //                 id: 'FillAllFields',
+        //             })
+        //         );
+        //         hasError = true;
+        //         invalidCells.push(index);
+        //     } else if (names.has(item.key)) {
+        //         setError(
+        //             intl.formatMessage({
+        //                 id: 'DuplicateProperty',
+        //             })
+        //         );
+        //         hasError = true;
+        //         invalidCells.push(index);
+        //     } else {
+        //         names.add(item.key);
+        //     }
+        // });
+
+        // if (!hasError) {
+        //     setError('');
+        //     closeDialog(true);
+        //     prepareDataAndSendRequest();
+        // }
+
+        //validate rowData with yup and display error message and erros cells if any
         let hasError = false;
+        let errors: any = null;
+        try {
+            hasError = !validationSchema.isValidSync(rowData);
+            errors = validationSchema.validateSync(rowData, {
+                abortEarly: false,
+            });
+        } catch (err) {
+            console.log('yup', err);
+            console.log('yup', errors);
+        }
         const invalidCells: number[] = [];
-
-        rowData.forEach((item, index) => {
-            if (item.key.trim() === '' || item.value.trim() === '') {
-                setError(
-                    intl.formatMessage({
-                        id: 'FillAllFields',
-                    })
-                );
-                hasError = true;
-                invalidCells.push(index);
-            } else if (names.has(item.key)) {
-                setError(
-                    intl.formatMessage({
-                        id: 'DuplicateProperty',
-                    })
-                );
-                hasError = true;
-                invalidCells.push(index);
-            } else {
-                names.add(item.key);
+        if (hasError) {
+            setError(
+                intl.formatMessage({
+                    id: 'FillAllFields',
+                })
+            );
+            if (errors) {
+                errors.forEach((error: any, index: number) => {
+                    console.log(`Error at index ${index}:`, error);
+                    invalidCells.push(index);
+                });
             }
-        });
-
-        if (!hasError) {
+        } else {
             setError('');
             closeDialog(true);
             prepareDataAndSendRequest();
         }
 
-        setInvalidCells(invalidCells);
+
+
+        // setInvalidCells(invalidCells);
 
         return !hasError;
     };
