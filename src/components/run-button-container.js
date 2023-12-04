@@ -563,16 +563,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
 }
 
 RunButtonContainer.propTypes = {
-    runnable: PropTypes.object,
-    actionOnRunnable: PropTypes.shape({
-        action: PropTypes.func,
-        text: PropTypes.string,
-    }),
+    studyUuid: PropTypes.string.isRequired,
     currentNode: PropTypes.object,
-    status: PropTypes.func,
-    onStartClick: PropTypes.func,
-    text: PropTypes.func,
-    startIcon: PropTypes.func,
-    computationStopped: PropTypes.bool,
     disabled: PropTypes.bool,
 };
