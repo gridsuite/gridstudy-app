@@ -59,7 +59,6 @@ interface ShortCircuitAnalysisResultsFaultHeader {
     limitType?: string | null;
     limitMin?: number | null;
     limitMax?: number | null;
-    limitName?: string;
     deltaCurrentIpMax?: number | null;
     deltaCurrentIpMin?: number | null;
 }
@@ -69,7 +68,6 @@ interface ShortCircuitAnalysisResultsLimitViolation {
     limitType?: string | null;
     limitMin?: number | null;
     limitMax?: number | null;
-    limitName?: string;
 }
 
 interface ShortCircuitAnalysisResultsFeederResult {
@@ -267,7 +265,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                             limitType: intl.formatMessage({
                                 id: lv.limitType,
                             }),
-                            limitName: lv.limitName,
                         };
                     }
 
@@ -308,7 +305,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                                 lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
                                     ? unitToKiloUnit(lv.limit)
                                     : null,
-                            limitName: lv.limitName,
                             current: lv.value,
                             elementId: '', // we have to add this otherwise it's automatically filtered
                             faultType: '', // we have to add this otherwise it's automatically filtered
