@@ -7,6 +7,7 @@
 
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
 import { RunningStatus } from './utils/running-status';
@@ -14,17 +15,19 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 
 const RunButton = (props) => {
+    const intl = useIntl();
+
     const [selectedIndex, setSelectedIndex] = React.useState(0);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    function getOptions(runningStatus, runnables, actionOnRunnable) {
+    function getOptions(runningStatus, runnables) {
         switch (runningStatus) {
             case RunningStatus.SUCCEED:
             case RunningStatus.FAILED:
             case RunningStatus.IDLE:
                 return runnables;
             case RunningStatus.RUNNING:
-                return Array.of(actionOnRunnable.text);
+                return Array.of(intl.formatMessage({ id: 'StopComputation' }));
             default:
                 return '';
         }
@@ -68,17 +71,9 @@ const RunButton = (props) => {
             props.getStatus(props.runnables[0]) !==
                 RunningStatus.SUCCEED); /* Load flow button's status must SUCCEED */
 
-    function handleActionOnRunnable() {
-        props.actionOnRunnable.action(getRunnable());
-    }
-
     return (
         <SplitButton
-            options={getOptions(
-                getRunningStatus(),
-                props.runnables,
-                props.actionOnRunnable
-            )}
+            options={getOptions(getRunningStatus(), props.runnables)}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
@@ -90,7 +85,7 @@ const RunButton = (props) => {
                     ? props.getText(getRunnable(), getRunningStatus())
                     : ''
             }
-            actionOnRunnable={handleActionOnRunnable}
+            actionOnRunnable={() => props.actionOnRunnable(getRunnable())}
             isRunning={isRunning()}
             computationStopped={props.computationStopped}
         />
@@ -102,7 +97,7 @@ RunButton.propTypes = {
     getStatus: PropTypes.func.isRequired,
     getText: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
-    actionOnRunnable: PropTypes.object.isRequired,
+    actionOnRunnable: PropTypes.func.isRequired,
     computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
 };

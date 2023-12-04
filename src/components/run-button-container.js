@@ -221,42 +221,38 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         loadFlowStatus,
     ]);
 
-    const ACTION_ON_RUNNABLES = {
-        text: intl.formatMessage({ id: 'StopComputation' }),
-        action: (action) => {
-            let type;
-            switch (action) {
-                case runnable[ComputingType.SECURITY_ANALYSIS]:
-                    type = ComputingType.SECURITY_ANALYSIS;
-                    stopSecurityAnalysis(studyUuid, currentNode?.id);
-                    break;
-                case runnable[ComputingType.SENSITIVITY_ANALYSIS]:
-                    type = ComputingType.SENSITIVITY_ANALYSIS;
-                    stopSensitivityAnalysis(studyUuid, currentNode?.id);
-                    break;
-                case runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]:
-                    type = ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS;
-                    stopShortCircuitAnalysis(studyUuid, currentNode?.id);
-                    break;
-                case runnable[ComputingType.DYNAMIC_SIMULATION]:
-                    type = ComputingType.DYNAMIC_SIMULATION;
-                    stopDynamicSimulation(studyUuid, currentNode?.id);
-                    break;
-                case runnable[ComputingType.VOLTAGE_INIT]:
-                    type = ComputingType.VOLTAGE_INIT;
-                    stopVoltageInit(studyUuid, currentNode?.id);
-                    break;
-                case runnable[ComputingType.LOADFLOW]:
-                    type = ComputingType.LOADFLOW;
-                    stopLoadFlow(studyUuid, currentNode?.id);
-                    break;
-                default:
-                    return;
-            }
-
-            dispatch(setComputingStatus(type, RunningStatus.IDLE));
-            setComputationStopped(true);
-        },
+    const ACTION_ON_RUNNABLES = (action) => {
+        let type;
+        switch (action) {
+            case runnable[ComputingType.SECURITY_ANALYSIS]:
+                type = ComputingType.SECURITY_ANALYSIS;
+                stopSecurityAnalysis(studyUuid, currentNode?.id);
+                break;
+            case runnable[ComputingType.SENSITIVITY_ANALYSIS]:
+                type = ComputingType.SENSITIVITY_ANALYSIS;
+                stopSensitivityAnalysis(studyUuid, currentNode?.id);
+                break;
+            case runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]:
+                type = ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS;
+                stopShortCircuitAnalysis(studyUuid, currentNode?.id);
+                break;
+            case runnable[ComputingType.DYNAMIC_SIMULATION]:
+                type = ComputingType.DYNAMIC_SIMULATION;
+                stopDynamicSimulation(studyUuid, currentNode?.id);
+                break;
+            case runnable[ComputingType.VOLTAGE_INIT]:
+                type = ComputingType.VOLTAGE_INIT;
+                stopVoltageInit(studyUuid, currentNode?.id);
+                break;
+            case runnable[ComputingType.LOADFLOW]:
+                type = ComputingType.LOADFLOW;
+                stopLoadFlow(studyUuid, currentNode?.id);
+                break;
+            default:
+                return;
+        }
+        dispatch(setComputingStatus(type, RunningStatus.IDLE));
+        setComputationStopped(true);
     };
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
