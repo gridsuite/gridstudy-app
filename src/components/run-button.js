@@ -29,7 +29,7 @@ const RunButton = (props) => {
             case RunningStatus.RUNNING:
                 return Array.of(intl.formatMessage({ id: 'StopComputation' }));
             default:
-                return '';
+                return [];
         }
     }
 
