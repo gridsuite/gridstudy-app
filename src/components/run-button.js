@@ -14,7 +14,15 @@ import { RunningStatus } from './utils/running-status';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 
-const RunButton = (props) => {
+const RunButton = ({
+    runnables,
+    getStatus,
+    getText,
+    onStartClick,
+    actionOnRunnable,
+    computationStopped,
+    disabled,
+}) => {
     const intl = useIntl();
 
     const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -38,19 +46,19 @@ const RunButton = (props) => {
     }
 
     const handleClick = () => {
-        if (props.onStartClick) {
-            props.onStartClick(getRunnable());
+        if (onStartClick) {
+            onStartClick(getRunnable());
         }
     };
 
     const getRunnable = useCallback(() => {
-        if (selectedIndex < props.runnables.length) {
-            return props.runnables[selectedIndex];
+        if (selectedIndex < runnables.length) {
+            return runnables[selectedIndex];
         }
         // selectedIndex out of range, then return first runnable
         // (possible cause: developer mode is disabled and runnable list is now smaller)
-        return props.runnables[0];
-    }, [props.runnables, selectedIndex]);
+        return runnables[0];
+    }, [runnables, selectedIndex]);
 
     useEffect(() => {
         if (!enableDeveloperMode) {
@@ -60,33 +68,29 @@ const RunButton = (props) => {
     }, [enableDeveloperMode, setSelectedIndex]);
 
     const getRunningStatus = useCallback(() => {
-        return props.getStatus(getRunnable());
-    }, [getRunnable, props]);
+        return getStatus(getRunnable());
+    }, [getRunnable, getStatus]);
 
     let buttonDisabled =
         (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
         (selectedIndex === 1 && isRunning()) ||
         (selectedIndex === 4 /* Dynamic simulation button is selected */ &&
-            props.getStatus(props.runnables[0]) !==
+            getStatus(runnables[0]) !==
                 RunningStatus.SUCCEED); /* Load flow button's status must SUCCEED */
 
     return (
         <SplitButton
-            options={getOptions(getRunningStatus(), props.runnables)}
+            options={getOptions(getRunningStatus(), runnables)}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
             runningStatus={getRunningStatus()}
-            buttonDisabled={props.disabled || buttonDisabled}
-            selectionDisabled={props.disabled}
-            text={
-                props.getText
-                    ? props.getText(getRunnable(), getRunningStatus())
-                    : ''
-            }
-            actionOnRunnable={() => props.actionOnRunnable(getRunnable())}
+            buttonDisabled={disabled || buttonDisabled}
+            selectionDisabled={disabled}
+            text={getText ? getText(getRunnable(), getRunningStatus()) : ''}
+            actionOnRunnable={() => actionOnRunnable(getRunnable())}
             isRunning={isRunning()}
-            computationStopped={props.computationStopped}
+            computationStopped={computationStopped}
         />
     );
 };
