@@ -83,7 +83,6 @@ export default function ReportViewer({
                 >
                     {logReport
                         .getSubReports()
-                        .slice(0, maxSubReports)
                         .map((value) => createReporterItem(value))}
                 </ReportItem>
             );

@@ -63,7 +63,7 @@ const SensitivityAnalysisResult = ({
             return {
                 field,
                 numeric: isNum,
-                fractionDigits: isNum ? 4 : undefined,
+                fractionDigits: isNum ? 2 : undefined,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     field,

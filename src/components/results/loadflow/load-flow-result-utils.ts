@@ -96,23 +96,20 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
             field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
             field: 'value',
             numeric: true,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'overload',
             numeric: true,
-            fractionDigits: 0,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({
@@ -166,15 +163,14 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
             field: 'limit',
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
             field: 'value',
             numeric: true,
-            valueFormatter: (params: ValueFormatterParams) =>
-                params.value.toFixed(1),
+            fractionDigits: 2,
         },
     ];
 };
@@ -190,12 +186,16 @@ export const loadFlowResultColumnsDefinition = (
                 id: 'connectedComponentNum',
             }),
             field: 'connectedComponentNum',
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({
                 id: 'synchronousComponentNum',
             }),
             field: 'synchronousComponentNum',
+            numeric: true,
+            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'status' }),
@@ -219,6 +219,8 @@ export const loadFlowResultColumnsDefinition = (
                 id: 'slackBusActivePowerMismatch',
             }),
             field: 'slackBusActivePowerMismatch',
+            numeric: true,
+            fractionDigits: 2,
             cellRenderer: numberRenderer,
         },
     ];
