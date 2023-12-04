@@ -39,7 +39,7 @@ import {
     fetchNetworkModificationTreeNode,
     fetchStashedNodes,
 } from '../services/study/tree-subtree';
-import { buildNode, getUniqueNodeName } from '../services/study';
+import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study';
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 
@@ -480,6 +480,18 @@ export const NetworkModificationTreePane = ({
         [studyUuid, snackError]
     );
 
+    const handleUnbuildNode = useCallback(
+        (element) => {
+            unbuildNode(studyUuid, element.id).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NodeUnbuildingError',
+                });
+            });
+        },
+        [studyUuid, snackError]
+    );
+
     const handleBuildNode = useCallback(
         (element) => {
             buildNode(studyUuid, element.id).catch((error) => {
@@ -625,6 +637,7 @@ export const NetworkModificationTreePane = ({
                     position={createNodeMenu.position}
                     activeNode={activeNode}
                     handleBuildNode={handleBuildNode}
+                    handleUnbuildNode={handleUnbuildNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
