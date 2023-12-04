@@ -253,7 +253,7 @@ export default function ReportViewer({
 
     return (
         rootReport.current && (
-            <Grid container style={{ height: '100%' }}>
+            <Grid container style={{ height: '99%' }}>
                 <Grid
                     item
                     xs={12}

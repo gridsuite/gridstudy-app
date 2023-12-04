@@ -280,17 +280,27 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             >
                 {renderTableView()}
             </TabPanelLazy>
-            <TabPanelLazy
-                key={`results-${currentNode?.id}`}
-                selected={props.view === StudyView.RESULTS}
+
+            <div
+                style={{
+                    height: '95%',
+                    display: props.view === StudyView.RESULTS ? 'flex' : 'none',
+                    flexDirection: 'column',
+                }}
             >
-                <ResultViewTab
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
-                    disabled={disabled}
-                />
-            </TabPanelLazy>
+                <TabPanelLazy
+                    key={`results-${currentNode?.id}`}
+                    selected={props.view === StudyView.RESULTS}
+                >
+                    <ResultViewTab
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
+                        disabled={disabled}
+                    />
+                </TabPanelLazy>
+            </div>
+
             <div
                 className="singlestretch-child"
                 style={{
