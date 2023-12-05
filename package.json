@@ -75,17 +75,40 @@
             "curly": "error"
         }
     },
+    "//": [
+        "We support currently only desktop navigator, we can excude others to gain in build size",
+        "Desktop navigators: Chrome, Edge, Firefox, Opera, Safari"
+    ],
     "browserslist": {
         "production": [
             ">0.2% and supports es6-class",
             "not dead",
+            "not and_chr >= 0",
+            "not android >= 0",
+            "not and_ff >=0",
+            "not and_uc >= 0",
+            "not and_qq >= 0",
+            "not samsung >= 0",
+            "not ios_saf >= 0",
+            "not ios >= 0",
             "not op_mini all",
-            "not chrome < 51",
-            "not safari < 10"
+            "not op_mob >= 0",
+            "edge 97",
+            "edge 107",
+            "Firefox ESR",
+            "firefox 102",
+            "firefox 107"
         ],
         "development": [
             "last 1 chrome version",
+            "last 1 opera version",
+            "last 1 edge version",
+            "edge 97",
+            "edge 107",
             "last 1 firefox version",
+            "Firefox ESR",
+            "firefox 102",
+            "firefox 107",
             "last 1 safari version"
         ]
     },
