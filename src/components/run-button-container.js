@@ -192,102 +192,102 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         loadFlowStatus,
     ]);
 
-    const handleStartSecurityAnalysis = (contingencyListNames) => {
-        // close the contingency list selection window
-        setShowContingencyListSelector(false);
+    const startComputationAsync = useCallback(
+        (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId) => {
+            dispatch(setComputingStatus(computingType, RunningStatus.RUNNING));
+            fnStart.then(fnThen).catch((error) => {
+                if (fnBefore) {
+                    fnBefore();
+                }
+                dispatch(
+                    setComputingStatus(computingType, RunningStatus.FAILED)
+                );
+                if (fnCatch) {
+                    fnCatch(error);
+                }
+                if (errorHeaderId) {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: errorHeaderId,
+                    });
+                }
+            });
+        },
+        [dispatch, snackError]
+    );
 
-        setComputationStopped(false);
-        dispatch(
-            setComputingStatus(
-                ComputingType.SECURITY_ANALYSIS,
-                RunningStatus.RUNNING
-            )
-        );
-        // start server side security analysis
-        startSecurityAnalysis(
-            studyUuid,
-            currentNode?.id,
-            contingencyListNames
-        ).catch(() =>
-            dispatch(
-                setComputingStatus(
-                    ComputingType.SECURITY_ANALYSIS,
-                    RunningStatus.FAILED
-                )
-            )
+    const handleStartSecurityAnalysis = (contingencyListNames) => {
+        startComputationAsync(
+            ComputingType.SECURITY_ANALYSIS,
+            () => {
+                // close the contingency list selection window
+                setShowContingencyListSelector(false);
+                setComputationStopped(false);
+            },
+            () =>
+                startSecurityAnalysis(
+                    studyUuid,
+                    currentNode?.id,
+                    contingencyListNames
+                ),
+            () => {},
+            null,
+            null
         );
     };
 
     const handleStartDynamicSimulation = (dynamicSimulationConfiguration) => {
-        // close the dialog
-        setShowDynamicSimulationParametersSelector(false);
-
-        setComputationStopped(false);
-        dispatch(
-            setComputingStatus(
-                ComputingType.DYNAMIC_SIMULATION,
-                RunningStatus.RUNNING
-            )
+        startComputationAsync(
+            ComputingType.DYNAMIC_SIMULATION,
+            () => {
+                // close the dialog
+                setShowDynamicSimulationParametersSelector(false);
+                setComputationStopped(false);
+            },
+            () =>
+                startDynamicSimulation(
+                    studyUuid,
+                    currentNode?.id,
+                    dynamicSimulationConfiguration
+                ),
+            () => {},
+            null,
+            'DynamicSimulationRunError'
         );
-        // start server side dynamic simulation
-        return startDynamicSimulation(
-            studyUuid,
-            currentNode?.id,
-            dynamicSimulationConfiguration
-        ).catch((error) => {
-            dispatch(
-                setComputingStatus(
-                    ComputingType.DYNAMIC_SIMULATION,
-                    RunningStatus.FAILED
-                )
-            );
-            snackError({
-                messageTxt: error.message,
-                headerId: 'DynamicSimulationRunError',
-            });
-        });
     };
 
     const runnables = useMemo(() => {
-        function actionOnRunnables(type) {
-            dispatch(setComputingStatus(type, RunningStatus.IDLE));
-            setComputationStopped(true);
+        function actionOnRunnables(type, fnStop) {
+            fnStop.finally(() => {
+                dispatch(setComputingStatus(type, RunningStatus.IDLE));
+                setComputationStopped(true);
+            });
         }
 
         return {
             [ComputingType.LOADFLOW]: {
                 messageId: 'LoadFlow',
                 startComputation() {
-                    dispatch(
-                        setComputingStatus(
-                            ComputingType.LOADFLOW,
-                            RunningStatus.RUNNING
-                        )
-                    );
-                    setComputationStopped(false);
-                    startLoadFlow(
-                        studyUuid,
-                        currentNode?.id,
-                        limitReductionParam / 100.0
-                    )
-                        .then(() => setRanLoadflow(true))
-                        .catch((error) => {
-                            dispatch(
-                                setComputingStatus(
-                                    ComputingType.LOADFLOW,
-                                    RunningStatus.FAILED
-                                )
+                    startComputationAsync(
+                        ComputingType.LOADFLOW,
+                        null,
+                        () => {
+                            setComputationStopped(false);
+                            return startLoadFlow(
+                                studyUuid,
+                                currentNode?.id,
+                                limitReductionParam / 100.0
                             );
-                            setRanLoadflow(false);
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'startLoadFlowError',
-                            });
-                        });
+                        },
+                        () => setRanLoadflow(true),
+                        () => setRanLoadflow(false),
+                        'startLoadFlowError'
+                    );
                 },
                 actionOnRunnable() {
-                    stopLoadFlow(studyUuid, currentNode?.id);
-                    actionOnRunnables(ComputingType.LOADFLOW);
+                    actionOnRunnables(ComputingType.LOADFLOW, () =>
+                        stopLoadFlow(studyUuid, currentNode?.id)
+                    );
                 },
             },
             [ComputingType.SECURITY_ANALYSIS]: {
@@ -297,67 +297,54 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     setRanSA(true);
                 },
                 actionOnRunnable() {
-                    stopSecurityAnalysis(studyUuid, currentNode?.id);
-                    actionOnRunnables(ComputingType.SECURITY_ANALYSIS);
+                    actionOnRunnables(ComputingType.SECURITY_ANALYSIS, () =>
+                        stopSecurityAnalysis(studyUuid, currentNode?.id)
+                    );
                 },
             },
             [ComputingType.SENSITIVITY_ANALYSIS]: {
                 messageId: 'SensitivityAnalysis',
                 startComputation() {
-                    dispatch(
-                        setComputingStatus(
-                            ComputingType.SENSITIVITY_ANALYSIS,
-                            RunningStatus.RUNNING
-                        )
+                    startComputationAsync(
+                        ComputingType.SENSITIVITY_ANALYSIS,
+                        null,
+                        () =>
+                            startSensitivityAnalysis(
+                                studyUuid,
+                                currentNode?.id
+                            ),
+                        () => setRanSensi(true),
+                        null,
+                        'startSensitivityAnalysisError'
                     );
-                    startSensitivityAnalysis(studyUuid, currentNode?.id)
-                        .then(() => setRanSensi(true))
-                        .catch((error) => {
-                            dispatch(
-                                setComputingStatus(
-                                    ComputingType.SENSITIVITY_ANALYSIS,
-                                    RunningStatus.FAILED
-                                )
-                            );
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'startSensitivityAnalysisError',
-                            });
-                        });
                 },
                 actionOnRunnable() {
-                    stopSensitivityAnalysis(studyUuid, currentNode?.id);
-                    actionOnRunnables(ComputingType.SENSITIVITY_ANALYSIS);
+                    actionOnRunnables(ComputingType.SENSITIVITY_ANALYSIS, () =>
+                        stopSensitivityAnalysis(studyUuid, currentNode?.id)
+                    );
                 },
             },
             [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: {
                 messageId: 'ShortCircuitAnalysis',
                 startComputation() {
-                    dispatch(
-                        setComputingStatus(
-                            ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
-                            RunningStatus.RUNNING
-                        )
+                    startComputationAsync(
+                        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+                        null,
+                        () =>
+                            startShortCircuitAnalysis(
+                                studyUuid,
+                                currentNode?.id
+                            ),
+                        () => setRanShortCircuit(true),
+                        null,
+                        'startShortCircuitError'
                     );
-                    startShortCircuitAnalysis(studyUuid, currentNode?.id)
-                        .then(() => setRanShortCircuit(true))
-                        .catch((error) => {
-                            dispatch(
-                                setComputingStatus(
-                                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
-                                    RunningStatus.FAILED
-                                )
-                            );
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'startShortCircuitError',
-                            });
-                        });
                 },
                 actionOnRunnable() {
-                    stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                     actionOnRunnables(
-                        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+                        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+                        () =>
+                            stopShortCircuitAnalysis(studyUuid, currentNode?.id)
                     );
                 },
             },
@@ -374,15 +361,10 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 setRanDynamicSimulation(true);
                             } else {
                                 // start server side dynamic simulation directly
-                                startDynamicSimulation(
+                                return startDynamicSimulation(
                                     studyUuid,
                                     currentNode?.id
-                                ).catch((error) => {
-                                    snackError({
-                                        messageTxt: error.message,
-                                        headerId: 'DynamicSimulationRunError',
-                                    });
-                                });
+                                );
                             }
                         })
                         .catch((error) => {
@@ -393,46 +375,37 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         });
                 },
                 actionOnRunnable() {
-                    stopDynamicSimulation(studyUuid, currentNode?.id);
-                    actionOnRunnables(ComputingType.DYNAMIC_SIMULATION);
+                    actionOnRunnables(ComputingType.DYNAMIC_SIMULATION, () =>
+                        stopDynamicSimulation(studyUuid, currentNode?.id)
+                    );
                 },
             },
             [ComputingType.VOLTAGE_INIT]: {
                 messageId: 'VoltageInit',
                 startComputation() {
-                    dispatch(
-                        setComputingStatus(
-                            ComputingType.VOLTAGE_INIT,
-                            RunningStatus.RUNNING
-                        )
+                    startComputationAsync(
+                        ComputingType.VOLTAGE_INIT,
+                        null,
+                        startVoltageInit(studyUuid, currentNode?.id),
+                        () => setRanVoltageInit(true),
+                        null,
+                        'startVoltageInitError'
                     );
-                    startVoltageInit(studyUuid, currentNode?.id)
-                        .then(() => setRanVoltageInit(true))
-                        .catch((error) => {
-                            dispatch(
-                                setComputingStatus(
-                                    ComputingType.VOLTAGE_INIT,
-                                    RunningStatus.FAILED
-                                )
-                            );
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'startVoltageInitError',
-                            });
-                        });
                 },
                 actionOnRunnable() {
-                    stopVoltageInit(studyUuid, currentNode?.id);
-                    actionOnRunnables(ComputingType.VOLTAGE_INIT);
+                    actionOnRunnables(ComputingType.VOLTAGE_INIT, () =>
+                        stopVoltageInit(studyUuid, currentNode?.id)
+                    );
                 },
             },
         };
     }, [
-        currentNode?.id,
         dispatch,
-        limitReductionParam,
         snackError,
+        startComputationAsync,
         studyUuid,
+        limitReductionParam,
+        currentNode?.id,
         setRanLoadflow,
         setShowContingencyListSelector,
         setRanSA,
@@ -503,10 +476,13 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     ]);
 
     useEffect(() => {
-        const computationRunning = activeRunnables.some(function (runnable) {
-            return getRunningStatus(runnable) === RunningStatus.RUNNING;
-        });
-        dispatch(setComputationRunning(computationRunning));
+        dispatch(
+            setComputationRunning(
+                activeRunnables.some(function (runnable) {
+                    return getRunningStatus(runnable) === RunningStatus.RUNNING;
+                })
+            )
+        );
     }, [dispatch, getRunningStatus, activeRunnables]);
 
     return (
