@@ -67,8 +67,9 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
+            theme: theme,
         };
-    }, [network, topPinnedData]);
+    }, [network, theme, topPinnedData]);
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -97,27 +98,6 @@ export const EquipmentTable = ({
             loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
         };
     }, [intl]);
-
-    const editableCellStyle = useCallback(
-        (params) => {
-            if (params.context.isEditing && params.node.rowPinned === 'top') {
-                return theme.editableCell;
-            }
-            return null;
-        },
-        [theme.editableCell]
-    );
-
-    const isEditable = useCallback((params) => {
-        return params.context.isEditing && params.node.rowPinned === 'top';
-    }, []);
-
-    const columnTypes = {
-        editableCell: {
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-        },
-    };
 
     return (
         <CustomAGGrid
@@ -148,7 +128,6 @@ export const EquipmentTable = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
-            columnTypes={columnTypes}
         />
     );
 };

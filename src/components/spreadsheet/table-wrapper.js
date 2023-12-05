@@ -175,7 +175,7 @@ const TableWrapper = (props) => {
             !props.disabled &&
             TABLES_DEFINITION_INDEXES.get(tabIndex).type &&
             TABLES_DEFINITION_INDEXES.get(tabIndex)
-                .columns.filter((c) => c.type === 'editableCell')
+                .columns.filter((c) => c.editable)
                 .filter((c) => selectedColumnsNames.has(c.id)).length > 0
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
