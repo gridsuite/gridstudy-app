@@ -23,6 +23,7 @@ import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
+import { getNewVoltageLevelData } from 'components/dialogs/connectivity/connectivity-form-utils';
 
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
@@ -58,12 +59,8 @@ const LineSplitWithVoltageLevelForm = ({
         if (!voltageLevelToEdit) {
             return voltageLevelOptions;
         } else {
-            const formattedVoltageLevel = {
-                id: voltageLevelToEdit.equipmentId,
-                name: voltageLevelToEdit.equipmentName ?? '',
-                substationId: voltageLevelToEdit.substationId,
-                topologyKind: voltageLevelToEdit.topologyKind,
-            };
+            const formattedVoltageLevel =
+                getNewVoltageLevelData(voltageLevelToEdit);
             return [
                 formattedVoltageLevel,
                 ...voltageLevelOptions.filter(
