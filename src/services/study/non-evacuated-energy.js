@@ -5,7 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
+import {
+    getStudyUrl,
+    getStudyUrlWithNodeUuid,
+    PREFIX_STUDY_QUERIES,
+} from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
@@ -85,6 +89,15 @@ export function setNonEvacuatedEnergyParameters(studyUuid, newParams) {
 export function fetchNonEvacuatedEnergyProvider(studyUuid) {
     console.info('fetch non evacuated energy provider');
     const url = `${getStudyUrl(studyUuid)}/non-evacuated-energy/provider`;
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchDefaultNonEvacuatedEnergyProvider() {
+    console.info(
+        'fetch default sensitivity analysis non evacuated energy provider'
+    );
+    const url = `${PREFIX_STUDY_QUERIES}/v1/non-evacuated-energy-default-provider`;
     console.debug(url);
     return backendFetchText(url);
 }

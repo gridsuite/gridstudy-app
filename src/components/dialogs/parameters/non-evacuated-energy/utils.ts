@@ -205,7 +205,11 @@ export const getGeneratorsLimitFormSchema = () => ({
                         [NAME]: yup.string().required(),
                     })
                 )
-                .min(1, 'At least one generators filter must be given'),
+                .required()
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.min(1, 'FieldIsRequired'),
+                }),
             [ACTIVATED]: yup.boolean().required(),
         })
     ),
@@ -248,7 +252,11 @@ export const getMonitoredBranchesFormSchema = () => ({
                         [NAME]: yup.string().required(),
                     })
                 )
-                .min(1, 'At least one branch filter must be given'),
+                .required()
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.min(1, 'FieldIsRequired'),
+                }),
             [MONITORED_BRANCHES_IST_N]: yup.boolean().required(),
             [MONITORED_BRANCHES_LIMIT_NAME_N]: yup.string().nullable(),
             [MONITORED_BRANCHES_COEFF_N]: yup
@@ -307,7 +315,11 @@ export const getContingenciesFormSchema = () => ({
                         [NAME]: yup.string().required(),
                     })
                 )
-                .min(1, 'At least one contingencies list must be given'),
+                .required()
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.min(1, 'FieldIsRequired'),
+                }),
             [ACTIVATED]: yup.boolean().required(),
         })
     ),
