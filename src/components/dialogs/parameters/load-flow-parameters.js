@@ -411,7 +411,7 @@ const SpecificLoadFlowParameters = ({
         >
             <FlatParameters
                 sx={styles.parameterName}
-                paramsAsArray={specificParamsDescription}
+                paramsAsArray={specificParamsDescription ?? []}
                 initValues={specificCurrentParams}
                 onChange={onChange}
             />
@@ -430,6 +430,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetParameters,
         specificParamsDescriptions,
     ] = parametersBackend;
+    console.log('specificParamsDescriptions: ', specificParamsDescriptions);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
