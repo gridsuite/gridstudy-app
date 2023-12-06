@@ -856,7 +856,7 @@ export const NetworkMapTab = ({
         isRootNodeDataLoaded,
         isInitialized,
         loadMissingGeoData,
-        mapEquipments,
+        isEquipmentsInitiliazed,
     ]);
 
     // Reload geo data (if necessary) when we switch on full path
