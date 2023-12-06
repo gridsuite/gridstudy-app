@@ -15,13 +15,12 @@ import {
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
-import { CloseButton, useParameterState, styles } from './parameters';
+import { useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { ParamLine, ParameterType } from './widget';
 import { useState } from 'react';
-import { mergeSx } from '../../utils/functions';
 
-export const MapParameters = ({ hideParameters }) => {
+export const MapParameters = () => {
     const alertThresholdMarks = [
         {
             value: 0,
@@ -104,13 +103,6 @@ export const MapParameters = ({ hideParameters }) => {
                     label="MapManualRefresh"
                     marks={alertThresholdMarks}
                 />
-            </Grid>
-            <Grid
-                container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
-            >
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

@@ -10,7 +10,7 @@ import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles, TabPanel, CloseButton } from '../parameters';
+import { styles, TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { SubmitButton } from '@gridsuite/commons-ui';
@@ -150,10 +150,7 @@ const formSchema = yup.object().shape({
     ),
 });
 
-export const VoltageInitParameters = ({
-    hideParameters,
-    useVoltageInitParameters,
-}) => {
+export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] =
@@ -297,7 +294,7 @@ export const VoltageInitParameters = ({
                     key="voltageInitParameters"
                     sx={styles.scrollableGrid}
                 >
-                    <Grid item maxWidth="md" width="100%">
+                    <Grid item width="100%">
                         <Tabs
                             value={tabValue}
                             variant="scrollable"
@@ -376,7 +373,6 @@ export const VoltageInitParameters = ({
                                     onValidationError
                                 )}
                             />
-                            <CloseButton hideParameters={hideParameters} />
                         </DialogActions>
                     </Grid>
                 </Grid>

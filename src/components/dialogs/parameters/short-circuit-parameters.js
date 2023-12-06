@@ -8,7 +8,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
-import { CloseButton, styles } from './parameters';
+import { styles } from './parameters';
 import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LineSeparator } from '../dialogUtils';
@@ -102,10 +102,7 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
         parameters: parameters,
     };
 };
-export const ShortCircuitParameters = ({
-    hideParameters,
-    useShortCircuitParameters,
-}) => {
+export const ShortCircuitParameters = ({ useShortCircuitParameters }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [shortCircuitParams, setShortCircuitParams] =
@@ -235,12 +232,10 @@ export const ShortCircuitParameters = ({
             <Grid
                 container
                 sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
             >
                 <SubmitButton onClick={handleSubmit(onSubmit)}>
                     <FormattedMessage id="validate" />
                 </SubmitButton>
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </FormProvider>
     );

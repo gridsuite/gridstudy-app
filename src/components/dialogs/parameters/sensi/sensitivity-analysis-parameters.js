@@ -21,7 +21,7 @@ import {
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { LabelledButton, styles } from '../parameters';
+import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -73,8 +73,6 @@ import {
     getSensiPstformatNewParams,
     getSensiPSTsFormSchema,
 } from './utils';
-import { SelectOptionsDialog } from '../../../../utils/dialogs';
-import DialogContentText from '@mui/material/DialogContentText';
 import Alert from '@mui/material/Alert';
 
 export const useGetSensitivityAnalysisParameters = () => {
@@ -116,13 +114,11 @@ const formSchema = yup
 
 const numberMax = 500000;
 export const SensitivityAnalysisParameters = ({
-    hideParameters,
     parametersBackend,
     useSensitivityAnalysisParameters,
 }) => {
     const { snackError } = useSnackMessage();
 
-    const [popupConfirm, setPopupConfirm] = useState(false);
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
@@ -133,15 +129,6 @@ export const SensitivityAnalysisParameters = ({
         id: key,
         label: providers[key],
     }));
-
-    const handlePopupConfirm = useCallback(() => {
-        hideParameters();
-        setPopupConfirm(false);
-    }, [hideParameters]);
-
-    const handleClosePopupConfirm = useCallback(() => {
-        setPopupConfirm(false);
-    }, []);
 
     const resetSensitivityParametersAndProvider = useCallback(() => {
         resetProvider();
@@ -165,7 +152,7 @@ export const SensitivityAnalysisParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
+    const { reset, handleSubmit, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
@@ -521,17 +508,6 @@ export const SensitivityAnalysisParameters = ({
         [reset]
     );
 
-    const handleClose = useCallback(() => {
-        if (
-            formState.dirtyFields &&
-            Object.keys(formState.dirtyFields).length === 0
-        ) {
-            hideParameters();
-        } else {
-            setPopupConfirm(true);
-        }
-    }, [hideParameters, formState.dirtyFields]);
-
     useEffect(() => {
         if (sensitivityAnalysisParams) {
             fromSensitivityAnalysisParamsDataToFormValues(
@@ -657,20 +633,8 @@ export const SensitivityAnalysisParameters = ({
                     >
                         <FormattedMessage id="validate" />
                     </SubmitButton>
-                    <LabelledButton callback={handleClose} label="cancel" />
                 </DialogActions>
             </FormProvider>
-
-            <SelectOptionsDialog
-                open={popupConfirm}
-                onClose={handleClosePopupConfirm}
-                onClick={handlePopupConfirm}
-                child={
-                    <DialogContentText>
-                        <FormattedMessage id="genericConfirmQuestion" />
-                    </DialogContentText>
-                }
-            />
         </>
     );
 };

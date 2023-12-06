@@ -14,11 +14,10 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { CloseButton, styles } from './parameters';
+import { styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { getAvailableComponentLibraries } from '../../../services/study';
 import { ParamLine, ParameterType } from './widget';
-import { mergeSx } from '../../utils/functions';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);
@@ -34,10 +33,7 @@ export const useGetAvailableComponentLibraries = (user) => {
     return componentLibraries;
 };
 
-export const SingleLineDiagramParameters = ({
-    hideParameters,
-    componentLibraries,
-}) => {
+export const SingleLineDiagramParameters = ({ componentLibraries }) => {
     const componentLibsRenderCache = useMemo(
         () =>
             Array.from(componentLibraries).reduce(
@@ -93,15 +89,6 @@ export const SingleLineDiagramParameters = ({
                     labelValue="component-library-select-label"
                     values={componentLibsRenderCache}
                 />
-            </Grid>
-            <Grid
-                container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
-                position={'sticky'}
-                top={0}
-            >
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

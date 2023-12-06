@@ -33,6 +33,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
 import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
+import ParametersTab from './parameter-tab';
 
 const styles = {
     map: {
@@ -80,6 +81,7 @@ export const StudyView = {
     SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
     LOGS: 'Logs',
+    PARAMETERS: 'Parameters',
 };
 
 const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
@@ -307,6 +309,15 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     currentNode={currentNode}
                     disabled={disabled}
                 />
+            </div>
+            <div
+                className="singlestretch-child"
+                style={{
+                    display:
+                        props.view === StudyView.PARAMETERS ? null : 'none',
+                }}
+            >
+                <ParametersTab studyId={studyUuid} />
             </div>
         </>
     );

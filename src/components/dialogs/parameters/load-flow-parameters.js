@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Autocomplete, Chip, Grid, TextField } from '@mui/material';
 import {
-    CloseButton,
     DropDown,
     LabelledButton,
     SwitchWithLabel,
@@ -419,7 +418,7 @@ const SpecificLoadFlowParameters = ({
     );
 };
 
-export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
+export const LoadFlowParameters = ({ parametersBackend }) => {
     const [
         providers,
         provider,
@@ -579,7 +578,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
             <Grid
                 container
                 sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
             >
                 <LabelledButton
                     callback={resetLfParametersAndLfProvider}
@@ -589,7 +587,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     callback={resetLfParameters}
                     label="resetProviderValuesToDefault"
                 />
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

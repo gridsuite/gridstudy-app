@@ -11,12 +11,7 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FLUX_CONVENTION,
 } from '../../../utils/config-params';
-import {
-    CloseButton,
-    LabelledButton,
-    useParameterState,
-    styles,
-} from './parameters';
+import { LabelledButton, useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
 import { fetchDefaultParametersValues } from '../../../services/utils';
@@ -28,7 +23,7 @@ export const FluxConventions = {
     TARGET: 'target',
 };
 
-export const NetworkParameters = ({ hideParameters }) => {
+export const NetworkParameters = () => {
     const [, handleChangeFluxConvention] = useParameterState(
         PARAM_FLUX_CONVENTION
     );
@@ -84,13 +79,11 @@ export const NetworkParameters = ({ hideParameters }) => {
             <Grid
                 container
                 sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
             >
                 <LabelledButton
                     callback={resetNetworkParameters}
                     label="resetToDefault"
                 />
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

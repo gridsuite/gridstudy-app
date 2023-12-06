@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { CloseButton, DropDown, LabelledButton, styles } from './parameters';
+import { DropDown, LabelledButton, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
@@ -160,10 +160,7 @@ const SecurityAnalysisFields = ({
     );
 };
 
-export const SecurityAnalysisParameters = ({
-    hideParameters,
-    parametersBackend,
-}) => {
+export const SecurityAnalysisParameters = ({ parametersBackend }) => {
     const [
         providers,
         provider,
@@ -289,7 +286,9 @@ export const SecurityAnalysisParameters = ({
 
                 {fieldsToShow?.map((item) => {
                     return (
-                        <SecurityAnalysisFields key={item.label} {...item} />
+                        <Grid item xs={16} key={item.label}>
+                            <SecurityAnalysisFields {...item} />
+                        </Grid>
                     );
                 })}
             </Grid>
@@ -303,7 +302,6 @@ export const SecurityAnalysisParameters = ({
             <Grid
                 container
                 sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
             >
                 <LabelledButton
                     callback={resetSAParametersAndProvider}
@@ -313,7 +311,6 @@ export const SecurityAnalysisParameters = ({
                     label="resetProviderValuesToDefault"
                     callback={resetSAParameters}
                 />
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

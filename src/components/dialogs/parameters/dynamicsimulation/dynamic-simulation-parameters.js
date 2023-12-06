@@ -29,7 +29,6 @@ import MappingParameters, {
 } from './mapping-parameters';
 import { LineSeparator } from '../../dialogUtils';
 import {
-    CloseButton,
     DropDown,
     LabelledButton,
     TabPanel,
@@ -70,7 +69,7 @@ const TAB_VALUES = {
     CURVE: 'curve',
 };
 
-const DynamicSimulationParameters = ({ user, hideParameters }) => {
+const DynamicSimulationParameters = ({ user }) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
@@ -258,7 +257,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     <LineSeparator />
                 </Grid>
 
-                <Grid item maxWidth="md" width="100%">
+                <Grid item width="100%">
                     <Tabs
                         value={tabValue}
                         variant="scrollable"
@@ -355,7 +354,6 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
             <Grid
                 container
                 sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
             >
                 <LabelledButton
                     callback={handleResetParametersAndProvider}
@@ -364,7 +362,6 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                 <SubmitButton onClick={handleSubmit(onSubmit)}>
                     <FormattedMessage id={'validate'} />
                 </SubmitButton>
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </FormProvider>
     );
