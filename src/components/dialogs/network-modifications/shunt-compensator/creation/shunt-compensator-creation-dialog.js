@@ -89,7 +89,7 @@ const ShuntCompensatorCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -120,8 +120,13 @@ const ShuntCompensatorCreationDialog = ({
                     maximumSectionCount: shuntCompensator.maximumSectionCount,
                 }),
             });
+            if (!shuntCompensator.isLinear) {
+                snackWarning({
+                    headerId: 'partialCopyShuntCompensator',
+                });
+            }
         },
-        [reset]
+        [reset, snackWarning]
     );
 
     const fromEditDataToFormValues = useCallback(
