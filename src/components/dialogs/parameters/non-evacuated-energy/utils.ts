@@ -258,13 +258,27 @@ export const getMonitoredBranchesFormSchema = () => ({
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
             [MONITORED_BRANCHES_IST_N]: yup.boolean().required(),
-            [MONITORED_BRANCHES_LIMIT_NAME_N]: yup.string().nullable(),
+            [MONITORED_BRANCHES_LIMIT_NAME_N]: yup
+                .string()
+                .nullable()
+                .when([MONITORED_BRANCHES_IST_N, ACTIVATED], {
+                    is: (istN: boolean, activated: boolean) =>
+                        activated && !istN,
+                    then: (schema) => schema.required(),
+                }),
             [MONITORED_BRANCHES_COEFF_N]: yup
                 .number()
                 .min(0, 'Value must be greather or equal than 0')
                 .required(),
             [MONITORED_BRANCHES_IST_N_1]: yup.boolean().required(),
-            [MONITORED_BRANCHES_LIMIT_NAME_N_1]: yup.string().nullable(),
+            [MONITORED_BRANCHES_LIMIT_NAME_N_1]: yup
+                .string()
+                .nullable()
+                .when([MONITORED_BRANCHES_IST_N_1, ACTIVATED], {
+                    is: (istN1: boolean, activated: boolean) =>
+                        activated && !istN1,
+                    then: (schema) => schema.required(),
+                }),
             [MONITORED_BRANCHES_COEFF_N_1]: yup
                 .number()
                 .min(0, 'Value must be greather or equal than 0')

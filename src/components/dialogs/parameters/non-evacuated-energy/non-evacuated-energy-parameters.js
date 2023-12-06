@@ -242,7 +242,7 @@ export const NonEvacuatedEnergyParameters = ({
         (newParams) => {
             setNonEvacuatedEnergyParameters(
                 studyUuid,
-                formatNewParams(newParams)
+                formatNewParams(newParams, true)
             )
                 .then(() => {
                     setNonEvacuatedEnergyParams(
@@ -461,15 +461,17 @@ export const NonEvacuatedEnergyParameters = ({
     }, [hideParameters, formState.dirtyFields]);
 
     useEffect(() => {
-        if (nonEvacuatedEnergyParams) {
-            fromNonEvacuatedEnergyParamsDataToFormValues(
-                nonEvacuatedEnergyParams
-            );
-        }
+        let params =
+            nonEvacuatedEnergyParams[STAGES_DEFINITION] &&
+            nonEvacuatedEnergyParams[STAGES_DEFINITION].length > 0
+                ? nonEvacuatedEnergyParams
+                : emptyFormData;
+        fromNonEvacuatedEnergyParamsDataToFormValues(params);
     }, [
         fromNonEvacuatedEnergyParamsDataToFormValues,
         nonEvacuatedEnergyParams,
         parametersBackend,
+        emptyFormData,
     ]);
 
     useEffect(() => {
