@@ -763,7 +763,6 @@ const TableWrapper = (props) => {
     //this listener is called once all cells listener have been called
     const handleRowEditing = useCallback(
         (params) => {
-            console.log('debug',params, isValidatingData.current);
             if (isValidatingData.current) {
                 validateEdit(params);
             }
@@ -798,9 +797,9 @@ const TableWrapper = (props) => {
         }
     }, [editingData]);
 
-    const validateAllEdits = useCallback(() => {
+    const validateAllEdits = () => {
         isValidatingData.current = true;
-    });
+    };
 
     return (
         <>
@@ -881,7 +880,6 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
-                        editingData={editingData}
                         validateAllEdits={validateAllEdits}
                     />
                 </Box>

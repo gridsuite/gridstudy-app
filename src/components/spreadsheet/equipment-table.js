@@ -33,7 +33,6 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
-    editingData,
     validateAllEdits,
 }) => {
     const theme = useTheme();
@@ -166,7 +165,6 @@ export const EquipmentTable = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     equipmentId={equipmentId}
-                    editingData={editingData}
                     validateAllEdits={validateAllEdits}
                 ></SitePropertiesDialog>
             )}

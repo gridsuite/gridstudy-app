@@ -55,7 +55,6 @@ const validationSchema = yup
         return keys.length === uniqueKeys.size;
     });
 
-
 type SitePropertiesDialogProps = {
     open: boolean;
     spreadsheetApi: any;
@@ -65,7 +64,7 @@ type SitePropertiesDialogProps = {
     currentNode: any;
     equipmentId: string;
     editingData: any;
-    validateAllEdits: any;
+    validateAllEdits: () => void;
 };
 
 /**
@@ -118,8 +117,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     const performValidation = () => {
         //validate rowData with yup and display error message and erros cells if any
         let hasError = false;
-        let errors: any = null;
-
         validateAllEdits();
         spreadsheetApi?.stopEditing();
         validateAllEdits();
@@ -131,10 +128,9 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             }
         });
 
-
         try {
             hasError = !validationSchema.isValidSync(rowData);
-            errors = validationSchema.validateSync(rowData, {
+            validationSchema.validateSync(rowData, {
                 abortEarly: true,
             });
         } catch (err: any) {
@@ -178,10 +174,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             initialPropertiesMapped,
             properties
         );
-
-        // console.log('debug', editingData);
-
-        
 
         modifySubstation(
             studyUuid,
@@ -283,9 +275,13 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                                         >
                                                             <DeleteIcon
                                                                 sx={{
-                                                                    color: theme
-                                                                        ? 'white'
-                                                                        : 'black',
+                                                                    color:
+                                                                        theme
+                                                                            .palette
+                                                                            .mode ===
+                                                                        'dark'
+                                                                            ? 'white'
+                                                                            : 'black',
                                                                 }}
                                                             />
                                                         </IconButton>
