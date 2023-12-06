@@ -63,7 +63,6 @@ type SitePropertiesDialogProps = {
     studyUuid: string;
     currentNode: any;
     equipmentId: string;
-    editingData: any;
     validateAllEdits: () => void;
 };
 
@@ -78,7 +77,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     studyUuid,
     currentNode,
     equipmentId,
-    editingData,
     validateAllEdits,
 }) => {
     const theme = useTheme();
