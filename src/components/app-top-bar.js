@@ -341,7 +341,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         >
                             {STUDY_VIEWS.map((tabName) => {
                                 let label;
-                                let style;
+                                let style = {};
                                 if (
                                     tabName === StudyView.RESULTS &&
                                     notificationsCount > 0
