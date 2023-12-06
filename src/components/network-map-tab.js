@@ -135,6 +135,10 @@ export const NetworkMapTab = ({
 
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
+    const isEquipmentsInitiliazed = useSelector(
+        (state) => state.isEquipmentsInitiliazed
+    );
+
     const deletedEquipments = useSelector((state) => state.deletedEquipments);
 
     const updatedSubstationsIds = useSelector(
@@ -841,8 +845,8 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         // when root node geodata are loaded, we fetch current node missing geo-data
-        // we check mapEquipments to prevent crash if network-map-server is not responding
-        if (isRootNodeDataLoaded && !isInitialized && mapEquipments) {
+        // we check if equipments are done initializing because they are checked to fetch accurat missing geo data
+        if (isRootNodeDataLoaded && isEquipmentsInitiliazed && !isInitialized) {
             loadMissingGeoData();
             setInitialized(true);
         }
