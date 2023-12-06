@@ -430,7 +430,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetParameters,
         specificParamsDescriptions,
     ] = parametersBackend;
-    console.log('specificParamsDescriptions: ', specificParamsDescriptions);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
