@@ -672,7 +672,7 @@ export const NetworkMapTab = ({
         }
     }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
 
-    const loadDefaultNodeMapEquipments = useCallback(() => {
+    const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
@@ -823,7 +823,9 @@ export const NetworkMapTab = ({
             return;
         }
         if (!isRootNodeDataLoaded) {
-            loadDefaultNodeMapEquipments();
+            // load default node map equipments
+            loadMapEquipments();
+            // load root node geodata
             loadRootNodeGeoData();
         } else {
             updateMapEquipmentsAndGeoData();
@@ -834,7 +836,7 @@ export const NetworkMapTab = ({
         disabled,
         studyUuid,
         currentNode,
-        loadDefaultNodeMapEquipments,
+        loadMapEquipments,
         updateMapEquipmentsAndGeoData,
         loadRootNodeGeoData,
         isRootNodeDataLoaded,
