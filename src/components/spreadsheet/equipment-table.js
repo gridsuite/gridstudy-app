@@ -31,6 +31,7 @@ export const EquipmentTable = ({
     network,
     shouldHidePinnedHeaderRightBorder,
     editingData,
+    setEditingData,
     editingDataRef,
 }) => {
     const theme = useTheme();
@@ -75,14 +76,21 @@ export const EquipmentTable = ({
     const openGeneratorPopup = () => {
         setPopupEditRegulatingTerminal(true);
     };
-    const handleSavePopupRegulatingTerminal = (d, params) => {
+    const handleSavePopupRegulatingTerminal = (d) => {
         setPopupEditRegulatingTerminal(false);
-        editingData.voltageRegulationType = REGULATION_TYPES.DISTANT.id;
-        editingData.regulatingTerminalConnectableType = d.equipment.type;
-        editingData.regulatingTerminalConnectableId = d.equipment.id;
-        editingData.regulatingTerminalVlId = d.voltageLevel.id;
-        console.log("pppp editingData ", editingData )
-        console.log('pppp editingDataREf ', editingDataRef);
+
+        const {
+            equipment: { type: equipmentType, id: equipmentId } = {},
+            voltageLevel: { id: voltageLevelId } = {},
+        } = d || {};
+
+        setEditingData((prevEditingData) => ({
+            ...prevEditingData,
+            voltageRegulationType: REGULATION_TYPES.DISTANT.id,
+            regulatingTerminalConnectableType: equipmentType,
+            regulatingTerminalConnectableId: equipmentId,
+            regulatingTerminalVlId: voltageLevelId,
+        }));
     };
 
     const gridContext = useMemo(() => {
@@ -90,7 +98,7 @@ export const EquipmentTable = ({
             network: network,
             editErrors: {},
             dynamicValidation: {},
-            isEditing: topPinnedData ? true : false,
+            isEditing: !!topPinnedData,
             theme: theme,
             handleCellClick: {
                 //functions for handling cell click for Generator Spreadsheet
@@ -100,6 +108,7 @@ export const EquipmentTable = ({
             },
         };
     }, [network, theme, topPinnedData]);
+
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -174,7 +183,7 @@ export const EquipmentTable = ({
                         );
                     }}
                     data={editingData}
-                    previousdata={editingDataRef.current}
+                    previousData={editingDataRef.current}
                 />
             )}
         </>

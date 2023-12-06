@@ -38,15 +38,12 @@ const emptyFormData = {
 
 const RegulatingTerminalModificationDialog = ({
     data,
-    previousdata,
-
+    previousData,
     currentNode,
     studyUuid,
     onModifyRegulatingTerminalGenerator,
     ...dialogProps
 }) => {
-    console.log('editing data', data);
-    console.log('previousdata data', previousdata);
     // const formSchema = yup
     //     .object()
     //     .shape({
@@ -168,10 +165,10 @@ const RegulatingTerminalModificationDialog = ({
             currentNodeUuid={currentNode.id}
             studyUuid={studyUuid}
             previousRegulatingTerminalValue={
-                previousdata?.regulatingTerminalVlId //kenet previous
+                previousData?.regulatingTerminalVlId //kenet previous
             }
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                previousdata
+                previousData
             )}
         />
     );

@@ -379,7 +379,7 @@ const TableWrapper = (props) => {
             if (event.finished && event.column) {
                 const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
                     reorderedTableDefinitionIndexes.indexOf(
-                        event.column.colDef.id
+                        event.column.colDef?.id
                     ),
                     1
                 );
@@ -409,7 +409,7 @@ const TableWrapper = (props) => {
 
                 const [reorderedColDef] = columnData.splice(
                     columnData.findIndex((obj) => {
-                        return obj.id === event.column.colDef.id;
+                        return obj.id === event.column.colDef?.id;
                     }),
                     1
                 );
@@ -654,12 +654,12 @@ const TableWrapper = (props) => {
             };
             Object.entries(priorValuesBuffer).forEach(([field, value]) => {
                 const column = gridRef.current.columnApi.getColumn(field);
-                const val = column.colDef.valueGetter
-                    ? column.colDef.valueGetter(wrappedEditedData)
+                const val = column.colDef?.valueGetter
+                    ? column.colDef?.valueGetter(wrappedEditedData)
                     : editingData[field];
 
                 groovyCr +=
-                    column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
+                    column.colDef?.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
             const editPromise = buildEditPromise(editingData, groovyCr);
@@ -818,7 +818,6 @@ const TableWrapper = (props) => {
                 rowNode.setDataValue('RegulatingTerminalGenerator', ' ');
             }
         }
-         
     }, []);
     //this listener is called for each cell modified
     const handleCellEditing = useCallback(
@@ -838,7 +837,7 @@ const TableWrapper = (props) => {
             ) {
                 updateGeneratorCells(params);
             }
-            addDataToBuffer(params.colDef.field, params.oldValue);
+            addDataToBuffer(params.colDef?.field, params.oldValue);
         },
         [addDataToBuffer, updateGeneratorCells, updateShuntCompensatorCells]
     );
@@ -1020,6 +1019,7 @@ const TableWrapper = (props) => {
                             isLockedColumnNamesEmpty
                         }
                         editingData={editingData}
+                        setEditingData={setEditingData}
                         editingDataRef={editingDataRef}
                     />
                 </Box>
