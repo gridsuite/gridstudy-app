@@ -29,6 +29,7 @@ import {
     getConnectivityData,
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityWithoutPositionValidationSchema,
+    getNewVoltageLevelData,
 } from '../../connectivity/connectivity-form-utils';
 import LineSplitWithVoltageLevelForm from './line-split-with-voltage-level-form';
 import LineSplitWithVoltageLevelIllustration from './line-split-with-voltage-level-illustration';
@@ -97,7 +98,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (lineSplit) => {
-            reset({
+            let formData = {
                 [LINE1_ID]: lineSplit.newLine1Id,
                 [LINE1_NAME]: lineSplit.newLine1Name,
                 [LINE2_ID]: lineSplit.newLine2Id,
@@ -112,8 +113,19 @@ const LineSplitWithVoltageLevelDialog = ({
                         lineSplit?.existingVoltageLevelId ??
                         lineSplit?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
-            });
+            };
             const newVoltageLevel = lineSplit?.mayNewVoltageLevelInfos;
+            if (newVoltageLevel) {
+                formData = {
+                    ...formData,
+                    [CONNECTIVITY]: {
+                        ...formData[CONNECTIVITY],
+                        [VOLTAGE_LEVEL]:
+                            getNewVoltageLevelData(newVoltageLevel),
+                    },
+                };
+            }
+            reset(formData);
             if (newVoltageLevel) {
                 newVoltageLevel.busbarSections = buildNewBusbarSections(
                     newVoltageLevel?.equipmentId,

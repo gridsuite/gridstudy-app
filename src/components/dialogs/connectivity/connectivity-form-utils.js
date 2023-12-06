@@ -124,6 +124,13 @@ export const getConnectivityPropertiesData = ({
     };
 };
 
+export const getNewVoltageLevelData = (newVoltageLevel) => ({
+    id: newVoltageLevel.equipmentId,
+    name: newVoltageLevel.equipmentName ?? '',
+    substationId: newVoltageLevel.substationId,
+    topologyKind: newVoltageLevel.topologyKind,
+});
+
 export const getConnectivityData = (
     { voltageLevelId, busbarSectionId, busbarSectionName },
     id = CONNECTIVITY
