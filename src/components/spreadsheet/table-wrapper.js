@@ -499,7 +499,21 @@ const TableWrapper = (props) => {
                         ),
                         undefined,
                         undefined,
-                        undefined
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        editingData?.regulatingTerminalVlId ||
+                            editingData?.regulatingTerminalConnectableId
+                            ? 'DISTANT'
+                            : 'LOCAL',
+                        editingData.regulatingTerminalConnectableId,
+                        editingData.regulatingTerminalConnectableType,
+                        editingData.regulatingTerminalVlId
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -768,6 +782,44 @@ const TableWrapper = (props) => {
         }
     }, []);
 
+    const updateGeneratorCells = useCallback((params) => {
+        const rowNode = params.node;
+        const colId = params.column.colId;
+        const regulationTypeText = params.data.RegulationTypeText;
+        console.log(rowNode, 'mlmlmlmlmlmlmlm');
+        if (colId === 'RegulationTypeText') {
+            if (
+                regulationTypeText === 'DISTANT' &&
+                params.oldValue !== regulationTypeText //add
+            ) {
+                // set temporary values that should be changed when opening popup
+                params.data.regulatingTerminalVlId =
+                    editingDataRef.current?.regulatingTerminalVlId ?? ' ';
+                params.data.regulatingTerminalConnectableId =
+                    editingDataRef.current?.regulatingTerminalConnectableId ??
+                    ' ';
+                params.data.regulatingTerminalConnectableType =
+                    editingDataRef.current?.regulatingTerminalConnectableType ??
+                    ' ';
+                // params.data.regulatingTerminalVlId = ' ';
+                // params.data.regulatingTerminalConnectableId = ' ';
+                // params.data.regulatingTerminalConnectableType = ' ';
+
+                // rowNode.setDataValue(
+                //     'RegulatingTerminalGenerator',
+                //     editingDataRef.current?.regulatingTerminalVlId ?? 'ss '
+                // );
+                // rowNode.setDataValue('regulatingTerminalVlId', ' ');
+            }
+            if (regulationTypeText === 'LOCAL') {
+                params.data.regulatingTerminalConnectableId = undefined;
+                params.data.regulatingTerminalConnectableType = undefined;
+                params.data.regulatingTerminalVlId = undefined;
+                rowNode.setDataValue('RegulatingTerminalGenerator', ' ');
+            }
+        }
+         
+    }, []);
     //this listener is called for each cell modified
     const handleCellEditing = useCallback(
         (params) => {
@@ -776,14 +828,19 @@ const TableWrapper = (props) => {
                 rowNode.setDataValue(params.column.colId, params.oldValue);
                 params.context.editErrors = {};
             } else if (
-                params.data.metadata.equipmentType ===
+                params.data.metadata?.equipmentType ===
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR
             ) {
                 updateShuntCompensatorCells(params);
+            } else if (
+                params.data.metadata?.equipmentType ===
+                EQUIPMENT_TYPES.GENERATOR
+            ) {
+                updateGeneratorCells(params);
             }
             addDataToBuffer(params.colDef.field, params.oldValue);
         },
-        [addDataToBuffer, updateShuntCompensatorCells]
+        [addDataToBuffer, updateGeneratorCells, updateShuntCompensatorCells]
     );
 
     const handleEditingStarted = useCallback((params) => {
@@ -948,6 +1005,7 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}
@@ -961,6 +1019,8 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
+                        editingData={editingData}
+                        editingDataRef={editingDataRef}
                     />
                 </Box>
             )}
