@@ -39,11 +39,23 @@ export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.BUSBAR_SECTION,
 ];
 
-export const getEquipmentTypeForModel = (equipmentType) => {
+// this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
+export const getReferencedEquipmentTypeForModel = (equipmentType) => {
     // particular cas, BUSBAR_SECTION and BUS use the same default model for Bus
     return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION
         ? EQUIPMENT_TYPES.BUS
         : equipmentType;
+};
+
+// this function is used to provide some basic values of expert filter for some particular cases
+const getExpertFilterBasicFieldsForType = (equipmentType) => {
+    if (equipmentType === EQUIPMENT_TYPES.BUS) {
+        return {
+            topologyKind: 'BUS_BREAKER',
+        };
+    } else {
+        return {};
+    }
 };
 
 const NOMINAL_VOLTAGE_UNIT = 'kV';
@@ -182,6 +194,7 @@ const EquipmentFilter = forwardRef(
             };
 
             const expertFilter = {
+                ...getExpertFilterBasicFieldsForType(equipmentType),
                 type: 'EXPERT',
                 equipmentType: equipmentType,
                 rules: buildExpertRules(

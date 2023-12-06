@@ -70,4 +70,5 @@ export interface ExpertFilter {
     type: 'EXPERT';
     equipmentType: string; // TODO must be EquipmentType enum
     rules: RuleGroupTypeExport;
+    topologyKind?: string; // TODO must be TopologyKind enum
 }

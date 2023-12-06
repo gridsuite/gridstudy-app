@@ -6,7 +6,9 @@
  */
 
 import { Grid, Typography, useTheme } from '@mui/material';
-import EquipmentFilter, { getEquipmentTypeForModel } from './equipment-filter';
+import EquipmentFilter, {
+    getReferencedEquipmentTypeForModel,
+} from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, {
@@ -92,7 +94,9 @@ const CurveSelector = forwardRef((props, ref) => {
                 </Typography>
                 <ModelFilter
                     ref={modelFilterRef}
-                    equipmentType={getEquipmentTypeForModel(equipmentType)}
+                    equipmentType={getReferencedEquipmentTypeForModel(
+                        equipmentType
+                    )}
                 />
             </Grid>
         </>
