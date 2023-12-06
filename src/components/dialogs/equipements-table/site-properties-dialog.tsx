@@ -35,12 +35,26 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../utils/yup-config';
 
-const validationSchema = yup.array().of(
-    yup.object().shape({
-        key: yup.string().required('Key is required'),
-        value: yup.string().required('Value is required'),
-    })
-);
+type IData = {
+    id: number;
+    key: string;
+    value: any;
+};
+
+const validationSchema = yup
+    .array()
+    .of(
+        yup.object().shape({
+            key: yup.string().required('FillAllFields'),
+            value: yup.string().required('FillAllFields'),
+        })
+    )
+    .test('unique-keys', 'DuplicatedProps', (values: any) => {
+        const keys = values.map((value: IData) => value.key);
+        const uniqueKeys = new Set(keys);
+        return keys.length === uniqueKeys.size;
+    });
+
 
 type SitePropertiesDialogProps = {
     open: boolean;
@@ -50,12 +64,8 @@ type SitePropertiesDialogProps = {
     studyUuid: string;
     currentNode: any;
     equipmentId: string;
-};
-
-type IData = {
-    id: number;
-    key: string;
-    value: any;
+    editingData: any;
+    validateAllEdits: any;
 };
 
 /**
@@ -69,10 +79,11 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     studyUuid,
     currentNode,
     equipmentId,
+    editingData,
+    validateAllEdits,
 }) => {
     const theme = useTheme();
     const [error, setError] = useState<string>('');
-    const [invalidCells, setInvalidCells] = useState<number[]>([]);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const [rowData, setRowData] = useState<IData[]>(() => {
@@ -105,72 +116,39 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     };
 
     const performValidation = () => {
-        const names = new Set<string>();
-        // let hasError = false;
-        // const invalidCells: number[] = [];
-
-        // rowData.forEach((item, index) => {
-        //     if (item.key.trim() === '' || item.value.trim() === '') {
-        //         setError(
-        //             intl.formatMessage({
-        //                 id: 'FillAllFields',
-        //             })
-        //         );
-        //         hasError = true;
-        //         invalidCells.push(index);
-        //     } else if (names.has(item.key)) {
-        //         setError(
-        //             intl.formatMessage({
-        //                 id: 'DuplicateProperty',
-        //             })
-        //         );
-        //         hasError = true;
-        //         invalidCells.push(index);
-        //     } else {
-        //         names.add(item.key);
-        //     }
-        // });
-
-        // if (!hasError) {
-        //     setError('');
-        //     closeDialog(true);
-        //     prepareDataAndSendRequest();
-        // }
-
         //validate rowData with yup and display error message and erros cells if any
         let hasError = false;
         let errors: any = null;
+
+        validateAllEdits();
+        spreadsheetApi?.stopEditing();
+        validateAllEdits();
+        //get the content of the pined row
+        spreadsheetApi?.forEachNode((node: any) => {
+            if (node.rowPinned) {
+                const data = node.data;
+                console.log('debug', data);
+            }
+        });
+
+
         try {
             hasError = !validationSchema.isValidSync(rowData);
             errors = validationSchema.validateSync(rowData, {
-                abortEarly: false,
+                abortEarly: true,
             });
-        } catch (err) {
-            console.log('yup', err);
-            console.log('yup', errors);
-        }
-        const invalidCells: number[] = [];
-        if (hasError) {
+        } catch (err: any) {
             setError(
                 intl.formatMessage({
-                    id: 'FillAllFields',
+                    id: err.errors[0],
                 })
             );
-            if (errors) {
-                errors.forEach((error: any, index: number) => {
-                    console.log(`Error at index ${index}:`, error);
-                    invalidCells.push(index);
-                });
-            }
-        } else {
+        }
+        if (!hasError) {
             setError('');
             closeDialog(true);
             prepareDataAndSendRequest();
         }
-
-
-
-        // setInvalidCells(invalidCells);
 
         return !hasError;
     };
@@ -200,6 +178,10 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             initialPropertiesMapped,
             properties
         );
+
+        // console.log('debug', editingData);
+
+        
 
         modifySubstation(
             studyUuid,
@@ -275,9 +257,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                                                 e.target.value
                                                             )
                                                         }
-                                                        error={invalidCells.includes(
-                                                            index
-                                                        )}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
@@ -291,9 +270,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                                                                 e.target.value
                                                             )
                                                         }
-                                                        error={invalidCells.includes(
-                                                            index
-                                                        )}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
