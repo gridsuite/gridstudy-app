@@ -140,3 +140,20 @@ export function setSensitivityAnalysisParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
+export function fetchSensitivityAnalysisParametersComplexity(
+    studyUuid,
+    newParams
+) {
+    console.info('fetch sensitivity analysis parameters complexity');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/complexity';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}

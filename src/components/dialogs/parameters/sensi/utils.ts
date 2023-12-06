@@ -408,7 +408,7 @@ export const getSensiNodesFormSchema = () => ({
 
 export const getSensiNodesformatNewParams = (newParams: INewParamsNodes) => {
     return {
-        [PARAMETER_SENSI_NODES]: newParams.sensitivityNodes.map(
+        [PARAMETER_SENSI_NODES]: newParams.sensitivityNodes?.map(
             (sensitivityNode) => {
                 return {
                     [SUPERVISED_VOLTAGE_LEVELS]: sensitivityNode[

@@ -44,6 +44,7 @@ import {
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
+    fetchSensitivityAnalysisParametersComplexity,
     getSensitivityAnalysisParameters,
     setSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
@@ -150,7 +151,7 @@ export const SensitivityAnalysisParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit, formState } = formMethods;
+    const { reset, handleSubmit, formState, getValues } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
@@ -198,18 +199,22 @@ export const SensitivityAnalysisParameters = ({
               };
     }, []);
 
+    const formatFiltredParams = useCallback((newParams) => {
+        return {
+            ...getSensiInjectionsSetformatNewParams(newParams),
+            ...getSensiInjectionsformatNewParams(newParams),
+            ...getSensiHvdcformatNewParams(newParams),
+            ...getSensiPstformatNewParams(newParams),
+        };
+    }, []);
+
     const onSubmit = useCallback(
         (newParams) => {
             setSensitivityAnalysisParameters(
                 studyUuid,
                 formatNewParams(newParams)
             )
-                .then((response) => {
-                    response
-                        .text()
-                        .then((value) =>
-                            setAnalysisComputeComplexity(value && Number(value))
-                        );
+                .then(() => {
                     setSensitivityAnalysisParams(
                         formatNewParams(newParams, false)
                     );
@@ -230,6 +235,52 @@ export const SensitivityAnalysisParameters = ({
             updateProvider,
         ]
     );
+
+    const onChangeParams = useCallback(
+        (newParams) => {
+            fetchSensitivityAnalysisParametersComplexity(
+                studyUuid,
+                formatFiltredParams(newParams)
+            )
+                .then((response) => {
+                    response
+                        .text()
+                        .then((value) =>
+                            setAnalysisComputeComplexity(value && Number(value))
+                        );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId:
+                            'SensitivityAnalysisFilteredActiveParametersError',
+                    });
+                });
+        },
+        [snackError, studyUuid, formatFiltredParams]
+    );
+
+    const trigger = (data) => {
+        let isTriggerable =
+            data.sensitivityInjectionsSet.length +
+                +data.sensitivityInjection.length +
+                data.sensitivityHVDC.length +
+                data.sensitivityPST.length >
+            0;
+        return isTriggerable && formState.isValid;
+    };
+
+    useEffect(() => {
+        const data = getValues();
+        const filtredData = {
+            sensitivityInjectionsSet: data.sensitivityInjectionsSet,
+            sensitivityInjection: data.sensitivityInjection,
+            sensitivityHVDC: data.sensitivityHVDC,
+            sensitivityPST: data.sensitivityPST,
+        };
+        trigger(filtredData) && onChangeParams(filtredData);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formState.isValid, getValues()]);
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
@@ -442,6 +493,8 @@ export const SensitivityAnalysisParameters = ({
         resetSensitivityParametersAndProvider,
     ]);
 
+    const isMaxReached = () => analysisComputeComplexity > 500000;
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -477,13 +530,7 @@ export const SensitivityAnalysisParameters = ({
                     </Grid>
                     <Grid container justifyContent={'right'}>
                         <Grid item marginBottom="-50px">
-                            <Alert
-                                severity={
-                                    analysisComputeComplexity > 500000
-                                        ? 'error'
-                                        : 'info'
-                                }
-                            >
+                            <Alert severity={isMaxReached() ? 'error' : 'info'}>
                                 {analysisComputeComplexity}{' '}
                                 <FormattedMessage id="SimulatedCalculation" />
                             </Alert>
@@ -504,6 +551,7 @@ export const SensitivityAnalysisParameters = ({
                     <SubmitButton
                         onClick={handleSubmit(onSubmit)}
                         variant="outlined"
+                        disabled={isMaxReached()}
                     >
                         <FormattedMessage id="validate" />
                     </SubmitButton>
