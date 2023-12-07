@@ -341,7 +341,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         >
                             {STUDY_VIEWS.map((tabName) => {
                                 let label;
-                                let style = {};
+                                let style;
                                 if (
                                     tabName === StudyView.RESULTS &&
                                     notificationsCount > 0
@@ -356,13 +356,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                     );
                                 } else if (tabName === StudyView.PARAMETERS) {
                                     label = <Settings />;
-                                    style = { minWidth: 0, padding: '4px' };
+                                    style = { minWidth: 'initial' };
                                 } else {
                                     label = <FormattedMessage id={tabName} />;
                                 }
                                 return (
                                     <Tab
-                                        style={style}
+                                        sx={style}
                                         key={tabName}
                                         label={label}
                                     />

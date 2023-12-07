@@ -296,12 +296,9 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     />
                 </TabPanelLazy>
             </Box>
-
-            <div
-                className="singlestretch-child"
-                style={{
-                    display: props.view === StudyView.LOGS ? null : 'none',
-                }}
+            <TabPanelLazy
+                selected={props.view === StudyView.LOGS}
+                key={`logs-${currentNode?.id}`}
             >
                 <ReportViewerTab
                     studyId={studyUuid}
@@ -309,16 +306,13 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     currentNode={currentNode}
                     disabled={disabled}
                 />
-            </div>
-            <div
-                className="singlestretch-child"
-                style={{
-                    display:
-                        props.view === StudyView.PARAMETERS ? null : 'none',
-                }}
+            </TabPanelLazy>
+            <TabPanelLazy
+                key={`parameters-${currentNode?.id}`}
+                selected={props.view === StudyView.PARAMETERS}
             >
                 <ParametersTab studyId={studyUuid} />
-            </div>
+            </TabPanelLazy>
         </>
     );
 };
