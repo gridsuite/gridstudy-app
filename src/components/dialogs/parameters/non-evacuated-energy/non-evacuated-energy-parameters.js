@@ -248,6 +248,7 @@ export const NonEvacuatedEnergyParameters = ({
                     setNonEvacuatedEnergyParams(
                         formatNewParams(newParams, false)
                     );
+                    updateProvider(newParams[PROVIDER]);
                 })
                 .catch((error) => {
                     snackError({
@@ -255,7 +256,6 @@ export const NonEvacuatedEnergyParameters = ({
                         headerId: 'NonEvacuatedEnergyParametersError',
                     });
                 });
-            updateProvider(newParams[PROVIDER]);
         },
         [
             setNonEvacuatedEnergyParams,
