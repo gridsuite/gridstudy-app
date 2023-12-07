@@ -1449,7 +1449,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
-                editable: true,
                 columnWidth: MIN_COLUMN_WIDTH,
             },
             {
