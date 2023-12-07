@@ -281,11 +281,11 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                 {renderTableView()}
             </TabPanelLazy>
 
-            <div
-                style={{
+            <Box
+                sx={{
                     height: '100%',
-                    display: props.view === StudyView.RESULTS ? 'flex' : 'none',
                     flexDirection: 'column',
+                    display: props.view === StudyView.RESULTS ? 'flex' : 'none',
                 }}
             >
                 <TabPanelLazy
@@ -299,7 +299,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                         disabled={disabled}
                     />
                 </TabPanelLazy>
-            </div>
+            </Box>
 
             <div
                 className="singlestretch-child"
