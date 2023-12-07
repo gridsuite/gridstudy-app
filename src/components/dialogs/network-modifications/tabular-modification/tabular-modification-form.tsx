@@ -54,12 +54,17 @@ const TabularModificationForm = () => {
     }, [intl, watchType]);
 
     const explanationComment = useMemo(() => {
-        if (watchType === EQUIPMENT_TYPES.GENERATOR) {
-            return intl.formatMessage({
-                id: 'TabularModificationGeneratorSkeletonComment',
-            });
-        } else {
-            return '';
+        switch (watchType) {
+            case EQUIPMENT_TYPES.GENERATOR:
+                return intl.formatMessage({
+                    id: 'TabularModificationGeneratorSkeletonComment',
+                });
+            case EQUIPMENT_TYPES.LOAD:
+                return intl.formatMessage({
+                    id: 'TabularModificationLoadSkeletonComment',
+                });
+            default:
+                return '';
         }
     }, [intl, watchType]);
 

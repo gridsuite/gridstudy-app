@@ -1125,7 +1125,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1625,7 +1625,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
             },
             {
-                id: 'LoadType',
+                id: 'loadType',
                 field: 'type',
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
@@ -1661,7 +1661,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1752,7 +1752,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1939,7 +1939,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2013,7 +2013,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2326,7 +2326,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2401,7 +2401,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2491,7 +2491,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePower',
+                id: 'reactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
