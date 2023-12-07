@@ -101,6 +101,7 @@ const TabularModificationForm = () => {
                     );
                     return transformedHeader ?? header;
                 },
+                transform: (value) => value.trim(),
             });
         }
     }, [
