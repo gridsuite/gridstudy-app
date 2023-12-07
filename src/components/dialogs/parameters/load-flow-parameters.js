@@ -411,7 +411,7 @@ const SpecificLoadFlowParameters = ({
         >
             <FlatParameters
                 sx={styles.parameterName}
-                paramsAsArray={specificParamsDescription}
+                paramsAsArray={specificParamsDescription ?? []}
                 initValues={specificCurrentParams}
                 onChange={onChange}
             />
