@@ -100,7 +100,8 @@ export const NetworkMapTab = ({
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
-    const [isRootNodeDataLoaded, setIsRootNodeDataLoaded] = useState(false);
+    const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] =
+        useState(false);
     const [isInitialized, setInitialized] = useState(false);
 
     const { snackError } = useSnackMessage();
@@ -135,7 +136,7 @@ export const NetworkMapTab = ({
 
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
-    const isEquipmentsInitiliazed = useSelector(
+    const isMapEquipmentsInitiliazed = useSelector(
         (state) => state.isEquipmentsInitiliazed
     );
 
@@ -641,7 +642,7 @@ export const NetworkMapTab = ({
         Promise.all([substationPositionsDone, linePositionsDone])
             .then(() => {
                 temporaryGeoDataIdsRef.current = new Set();
-                setIsRootNodeDataLoaded(true);
+                setIsRootNodeGeoDataLoaded(true);
             })
             .catch(function (error) {
                 console.error(error.message);
@@ -665,12 +666,13 @@ export const NetworkMapTab = ({
             ) {
                 loadMissingGeoData();
             } else {
-                loadRootNodeGeoData();
-                // set initialized to false to trigger missing geo-data fetching on next render
+                // set isRootNodeGeoDataLoaded to false to trigger root node geo-data fetching (in order to fetch lines geo-data)
+                setIsRootNodeGeoDataLoaded(false);
+                // set initialized to false to trigger missing geo-data fetching
                 setInitialized(false);
             }
         }
-    }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
+    }, [studyUuid, loadMissingGeoData, lineFullPath]);
 
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -822,12 +824,15 @@ export const NetworkMapTab = ({
         if (!reloadMapNeeded) {
             return;
         }
-        if (!isRootNodeDataLoaded) {
+        if (!isMapEquipmentsInitiliazed) {
             // load default node map equipments
             loadMapEquipments();
+        }
+        if (!isRootNodeGeoDataLoaded) {
             // load root node geodata
             loadRootNodeGeoData();
-        } else {
+        }
+        if (isRootNodeGeoDataLoaded && isMapEquipmentsInitiliazed) {
             updateMapEquipmentsAndGeoData();
         }
         // Note: studyUuid and dispatch don't change
@@ -839,7 +844,8 @@ export const NetworkMapTab = ({
         loadMapEquipments,
         updateMapEquipmentsAndGeoData,
         loadRootNodeGeoData,
-        isRootNodeDataLoaded,
+        isRootNodeGeoDataLoaded,
+        isMapEquipmentsInitiliazed,
         isInitialized,
         reloadMapNeeded,
         updatedSubstationsIds,
@@ -848,15 +854,19 @@ export const NetworkMapTab = ({
     useEffect(() => {
         // when root node geodata are loaded, we fetch current node missing geo-data
         // we check if equipments are done initializing because they are checked to fetch accurat missing geo data
-        if (isRootNodeDataLoaded && isEquipmentsInitiliazed && !isInitialized) {
+        if (
+            isRootNodeGeoDataLoaded &&
+            isMapEquipmentsInitiliazed &&
+            !isInitialized
+        ) {
             loadMissingGeoData();
             setInitialized(true);
         }
     }, [
-        isRootNodeDataLoaded,
+        isRootNodeGeoDataLoaded,
         isInitialized,
         loadMissingGeoData,
-        isEquipmentsInitiliazed,
+        isMapEquipmentsInitiliazed,
     ]);
 
     // Reload geo data (if necessary) when we switch on full path

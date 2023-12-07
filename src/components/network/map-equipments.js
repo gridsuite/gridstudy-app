@@ -8,7 +8,7 @@
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import {
     mapEquipmentsCreated,
-    setEquipementsInitialized,
+    setMapEquipementsInitialized,
 } from '../../redux/actions';
 import {
     fetchHvdcLinesMapInfos,
@@ -63,7 +63,7 @@ export default class MapEquipments {
             false
         );
 
-        this.dispatch(setEquipementsInitialized(false));
+        this.dispatch(setMapEquipementsInitialized(false));
 
         fetchSubstationsMapInfosPromise
             .then((val) => {
@@ -118,7 +118,7 @@ export default class MapEquipments {
             fetchLinesMapInfosPromise,
             fetchHvdcLinesMapInfosPromise,
         ]).finally(() => {
-            this.dispatch(setEquipementsInitialized(true));
+            this.dispatch(setMapEquipementsInitialized(true));
         });
     }
 

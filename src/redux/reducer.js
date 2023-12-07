@@ -100,7 +100,7 @@ import {
     MAP_DATA_LOADING,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
-    EQUIPMENTS_INITIALIZED,
+    MAP_EQUIPMENTS_INITIALIZED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -238,7 +238,7 @@ const initialState = {
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     diagramStates: [],
     reloadMap: true,
-    isEquipmentsInitiliazed: false,
+    isMapEquipmentsInitiliazed: false,
     updatedSubstationsIds: [],
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
@@ -538,8 +538,8 @@ export const reducer = createReducer(initialState, {
         state.reloadMap = false;
     },
 
-    [EQUIPMENTS_INITIALIZED]: (state, action) => {
-        state.isEquipmentsInitiliazed = action.newValue;
+    [MAP_EQUIPMENTS_INITIALIZED]: (state, action) => {
+        state.isMapEquipmentsInitiliazed = action.newValue;
     },
 
     [SET_UPDATED_SUBSTATIONS_IDS]: (state, action) => {

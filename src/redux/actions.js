@@ -342,11 +342,11 @@ export function resetMapReloaded() {
     };
 }
 
-export const EQUIPMENTS_INITIALIZED = 'EQUIPMENTS_INITIALIZED';
+export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 
-export function setEquipementsInitialized(newValue) {
+export function setMapEquipementsInitialized(newValue) {
     return {
-        type: EQUIPMENTS_INITIALIZED,
+        type: MAP_EQUIPMENTS_INITIALIZED,
         newValue,
     };
 }
