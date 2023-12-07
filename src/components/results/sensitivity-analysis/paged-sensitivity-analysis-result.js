@@ -12,6 +12,7 @@ import {
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     PAGE_OPTIONS,
+    SENSITIVITY_AT_NODE,
 } from './sensitivity-analysis-content';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
@@ -28,7 +29,7 @@ import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
-    sensiKindIndex,
+    sensiKind,
     studyUuid,
     nodeUuid,
     updateFilter,
@@ -54,7 +55,10 @@ const PagedSensitivityAnalysisResult = ({
             {
                 field: 'funcId',
                 label: intl.formatMessage({
-                    id: sensiKindIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
+                    id:
+                        sensiKind === SENSITIVITY_AT_NODE
+                            ? 'BusBarBus'
+                            : 'SupervisedBranches',
                 }),
                 options: options?.allFunctionIds || [],
             },
@@ -74,7 +78,7 @@ const PagedSensitivityAnalysisResult = ({
         }
 
         return baseFilters;
-    }, [intl, sensiKindIndex, nOrNkIndex, options]);
+    }, [intl, sensiKind, nOrNkIndex, options]);
 
     const { snackError } = useSnackMessage();
 
@@ -104,7 +108,7 @@ const PagedSensitivityAnalysisResult = ({
     const fetchFilterOptions = useCallback(() => {
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
-            functionType: FUNCTION_TYPES[sensiKindIndex],
+            functionType: FUNCTION_TYPES[sensiKind],
         };
 
         fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, selector)
@@ -119,7 +123,7 @@ const PagedSensitivityAnalysisResult = ({
                     }),
                 });
             });
-    }, [nOrNkIndex, sensiKindIndex, studyUuid, nodeUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, snackError, intl]);
 
     useEffect(() => {
         fetchFilterOptions();
@@ -139,7 +143,7 @@ const PagedSensitivityAnalysisResult = ({
 
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
-            functionType: FUNCTION_TYPES[sensiKindIndex],
+            functionType: FUNCTION_TYPES[sensiKind],
             offset: page * rowsPerPage,
             pageSize: rowsPerPage,
             pageNumber: page,
@@ -167,7 +171,7 @@ const PagedSensitivityAnalysisResult = ({
             });
     }, [
         nOrNkIndex,
-        sensiKindIndex,
+        sensiKind,
         page,
         rowsPerPage,
         filterSelector,
@@ -192,7 +196,7 @@ const PagedSensitivityAnalysisResult = ({
             <SensitivityAnalysisResult
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
-                sensiToIndex={sensiKindIndex}
+                sensiKind={sensiKind}
                 onSortChanged={onSortChanged}
                 sortConfig={sortConfig}
                 updateFilter={handleUpdateFilter}
@@ -214,7 +218,7 @@ const PagedSensitivityAnalysisResult = ({
 
 PagedSensitivityAnalysisResult.propTypes = {
     nOrNkIndex: PropTypes.number.isRequired,
-    sensiKindIndex: PropTypes.number.isRequired,
+    sensiKind: PropTypes.string.isRequired,
     studyUuid: PropTypes.string.isRequired,
     nodeUuid: PropTypes.string.isRequired,
     updateFilter: PropTypes.func,
