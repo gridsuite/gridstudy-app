@@ -5,20 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useIntl } from 'react-intl';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useState,
+} from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    Theme,
-    List,
-    ListItemButton,
-    ListItemText,
-    ListItem,
-    Box,
-    darken,
-    lighten,
-    Divider,
-} from '@mui/material';
+import { Theme, Box, darken, lighten, Divider, Tabs, Tab } from '@mui/material';
 
 import {
     useParameterState,
@@ -77,11 +72,9 @@ import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
+import { getStudyUrlWithNodeUuid } from 'services/study';
 
-export const styles = {
-    title: (theme: Theme) => ({
-        padding: theme.spacing(4),
-    }),
+const styles = {
     panel: (theme: Theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(1),
@@ -92,7 +85,7 @@ export const styles = {
         height: '100%',
     },
     listDisplay: (theme: Theme) => ({
-        displat: 'flex',
+        display: 'flex',
         width: '20%',
         height: '100%',
         backgroundColor:
@@ -100,8 +93,18 @@ export const styles = {
                 ? darken(theme.palette.background.paper, 0.1)
                 : theme.palette.background.paper,
     }),
+    listTitleDisplay: (theme: Theme) => ({
+        paddingTop: theme.spacing(8),
+        paddingBottom: theme.spacing(8),
+        paddingLeft: theme.spacing(4),
+        textTransform: 'none',
+        alignItems: 'start',
+        fontSize: '1.1rem',
+    }),
     listItemDisplay: (theme: Theme) => ({
         paddingLeft: theme.spacing(4),
+        textTransform: 'none',
+        alignItems: 'start',
     }),
     parametersBox: (theme: Theme) => ({
         width: '80%',
@@ -114,25 +117,23 @@ export const styles = {
     }),
 };
 
-const TAB_VALUES = {
-    sldParamsTabValue: 'SingleLineDiagram',
-    mapParamsTabValue: 'Map',
-    lfParamsTabValue: 'LoadFlow',
-    securityAnalysisParamsTabValue: 'SecurityAnalysis',
-    sensitivityAnalysisParamsTabValue: 'SensitivityAnalysis',
-    shortCircuitParamsTabValue: 'ShortCircuit',
-    dynamicSimulationParamsTabValue: 'DynamicSimulation',
-    advancedParamsTabValue: 'Advanced',
-    voltageInitParamsTabValue: 'VoltageInit',
-};
-
-interface OwnProps {
-    studyId: string;
+enum TAB_VALUES {
+    sldParamsTabValue = 'SingleLineDiagram',
+    mapParamsTabValue = 'Map',
+    lfParamsTabValue = 'LoadFlow',
+    securityAnalysisParamsTabValue = 'SecurityAnalysis',
+    sensitivityAnalysisParamsTabValue = 'SensitivityAnalysis',
+    shortCircuitParamsTabValue = 'ShortCircuit',
+    dynamicSimulationParamsTabValue = 'DynamicSimulation',
+    advancedParamsTabValue = 'Advanced',
+    voltageInitParamsTabValue = 'VoltageInit',
 }
 
-function ParametersTab(props: OwnProps) {
-    const intl = useIntl();
+type OwnProps = {
+    studyId: string;
+};
 
+const ParametersTab: FunctionComponent<OwnProps> = (props) => {
     const user = useSelector((state: ReduxState) => state.user);
 
     const [tabValue, setTabValue] = useState<string>(
@@ -277,169 +278,103 @@ function ParametersTab(props: OwnProps) {
 
     return (
         <Box sx={styles.tab}>
-            <List sx={styles.listDisplay}>
-                <ListItem sx={styles.title}>
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'parameters',
-                        })}
-                    />
-                </ListItem>
-
-                <ListItemButton
+            <Tabs
+                value={tabValue}
+                variant="scrollable"
+                onChange={(event, newValue) => setTabValue(newValue)}
+                aria-label="parameters"
+                orientation="vertical"
+                sx={styles.listDisplay}
+            >
+                <Box sx={styles.listTitleDisplay}>
+                    <FormattedMessage id="parameters" />
+                </Box>
+                <Tab
                     sx={styles.listItemDisplay}
                     disabled={!props.studyId}
-                    selected={tabValue === TAB_VALUES.lfParamsTabValue}
-                    onClick={() => setTabValue(TAB_VALUES.lfParamsTabValue)}
-                >
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'LoadFlow',
-                        })}
-                    />
-                </ListItemButton>
-                {securityAnalysisAvailability === OptionalServicesStatus.Up && (
-                    <ListItemButton
-                        sx={styles.listItemDisplay}
-                        disabled={!props.studyId}
-                        selected={
-                            tabValue ===
-                            TAB_VALUES.securityAnalysisParamsTabValue
-                        }
-                        onClick={() =>
-                            setTabValue(
-                                TAB_VALUES.securityAnalysisParamsTabValue
-                            )
-                        }
-                    >
-                        <ListItemText
-                            primary={intl.formatMessage({
-                                id: 'SecurityAnalysis',
-                            })}
-                        />
-                    </ListItemButton>
-                )}
-                {sensitivityAnalysisAvailability ===
-                    OptionalServicesStatus.Up && (
-                    <ListItemButton
-                        sx={styles.listItemDisplay}
-                        disabled={!props.studyId}
-                        selected={
-                            tabValue ===
-                            TAB_VALUES.sensitivityAnalysisParamsTabValue
-                        }
-                        onClick={() =>
-                            setTabValue(
-                                TAB_VALUES.sensitivityAnalysisParamsTabValue
-                            )
-                        }
-                    >
-                        <ListItemText
-                            primary={intl.formatMessage({
-                                id: 'SensitivityAnalysis',
-                            })}
-                        />
-                    </ListItemButton>
-                )}
-                {shortCircuitAvailability === OptionalServicesStatus.Up && (
-                    <ListItemButton
-                        sx={styles.listItemDisplay}
-                        disabled={!props.studyId}
-                        selected={
-                            tabValue === TAB_VALUES.shortCircuitParamsTabValue
-                        }
-                        onClick={() =>
-                            setTabValue(TAB_VALUES.shortCircuitParamsTabValue)
-                        }
-                    >
-                        <ListItemText
-                            primary={intl.formatMessage({
-                                id: 'ShortCircuit',
-                            })}
-                        />
-                    </ListItemButton>
-                )}
-
-                {dynamicSimulationAvailability === OptionalServicesStatus.Up &&
-                    enableDeveloperMode && (
-                        <ListItemButton
-                            sx={styles.listItemDisplay}
-                            disabled={!props.studyId}
-                            selected={
-                                tabValue ===
-                                TAB_VALUES.dynamicSimulationParamsTabValue
-                            }
-                            onClick={() =>
-                                setTabValue(
-                                    TAB_VALUES.dynamicSimulationParamsTabValue
-                                )
-                            }
-                        >
-                            <ListItemText
-                                primary={intl.formatMessage({
-                                    id: 'DynamicSimulation',
-                                })}
-                            />
-                        </ListItemButton>
-                    )}
-                {voltageInitAvailability === OptionalServicesStatus.Up && (
-                    <ListItemButton
-                        sx={styles.listItemDisplay}
-                        disabled={!props.studyId}
-                        selected={
-                            tabValue === TAB_VALUES.voltageInitParamsTabValue
-                        }
-                        onClick={() =>
-                            setTabValue(TAB_VALUES.voltageInitParamsTabValue)
-                        }
-                    >
-                        <ListItemText
-                            primary={intl.formatMessage({
-                                id: 'VoltageInit',
-                            })}
-                        />
-                    </ListItemButton>
-                )}
-                <Divider />
-                <ListItemButton
+                    label={<FormattedMessage id="LoadFlow" />}
+                    value={TAB_VALUES.lfParamsTabValue}
+                />
+                <Tab
                     sx={styles.listItemDisplay}
-                    selected={tabValue === TAB_VALUES.sldParamsTabValue}
-                    onClick={() => setTabValue(TAB_VALUES.sldParamsTabValue)}
-                >
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'SingleLineDiagram',
-                        })}
-                    />
-                </ListItemButton>
-                <ListItemButton
-                    sx={styles.listItemDisplay}
-                    selected={tabValue === TAB_VALUES.mapParamsTabValue}
-                    onClick={() => setTabValue(TAB_VALUES.mapParamsTabValue)}
-                >
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'Map',
-                        })}
-                    />
-                </ListItemButton>
-                <ListItemButton
-                    sx={styles.listItemDisplay}
-                    selected={tabValue === TAB_VALUES.advancedParamsTabValue}
-                    onClick={() =>
-                        setTabValue(TAB_VALUES.advancedParamsTabValue)
+                    disabled={
+                        !(
+                            getStudyUrlWithNodeUuid ||
+                            securityAnalysisAvailability ===
+                                OptionalServicesStatus.Up
+                        )
                     }
-                >
-                    <ListItemText
-                        primary={intl.formatMessage({
-                            id: 'Advanced',
-                        })}
-                    />
-                </ListItemButton>
-            </List>
+                    label={<FormattedMessage id="SecurityAnalysis" />}
+                    value={TAB_VALUES.securityAnalysisParamsTabValue}
+                />
+                <Tab
+                    sx={styles.listItemDisplay}
+                    disabled={
+                        !(
+                            getStudyUrlWithNodeUuid ||
+                            sensitivityAnalysisAvailability ===
+                                OptionalServicesStatus.Up
+                        )
+                    }
+                    label={<FormattedMessage id="SensitivityAnalysis" />}
+                    value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
+                />
+                <Tab
+                    sx={styles.listItemDisplay}
+                    disabled={
+                        !(
+                            getStudyUrlWithNodeUuid ||
+                            shortCircuitAvailability ===
+                                OptionalServicesStatus.Up
+                        )
+                    }
+                    label={<FormattedMessage id="ShortCircuit" />}
+                    value={TAB_VALUES.shortCircuitParamsTabValue}
+                />
+                <Tab
+                    sx={styles.listItemDisplay}
+                    disabled={
+                        !(
+                            getStudyUrlWithNodeUuid ||
+                            dynamicSimulationAvailability ===
+                                OptionalServicesStatus.Up
+                        )
+                    }
+                    label={<FormattedMessage id="DynamicSimulation" />}
+                    value={TAB_VALUES.dynamicSimulationParamsTabValue}
+                />
+                <Tab
+                    sx={styles.listItemDisplay}
+                    disabled={
+                        !(
+                            getStudyUrlWithNodeUuid ||
+                            voltageInitAvailability ===
+                                OptionalServicesStatus.Up
+                        )
+                    }
+                    label={<FormattedMessage id="VoltageInit" />}
+                    value={TAB_VALUES.voltageInitParamsTabValue}
+                />
+                <Divider />
+                <Tab
+                    sx={styles.listItemDisplay}
+                    label={<FormattedMessage id="SingleLineDiagram" />}
+                    value={TAB_VALUES.sldParamsTabValue}
+                />
+                <Tab
+                    sx={styles.listItemDisplay}
+                    label={<FormattedMessage id="Map" />}
+                    value={TAB_VALUES.mapParamsTabValue}
+                />
+                <Tab
+                    sx={styles.listItemDisplay}
+                    label={<FormattedMessage id="Advanced" />}
+                    value={TAB_VALUES.advancedParamsTabValue}
+                />
+            </Tabs>
             <Box sx={styles.parametersBox}>{displayTab()}</Box>
         </Box>
     );
-}
+};
 
 export default ParametersTab;
