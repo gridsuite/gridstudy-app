@@ -253,13 +253,13 @@ export default function ReportViewer({
 
     return (
         rootReport.current && (
-            <Grid container style={{ height: '99%' }}>
+            <Grid container style={{ height: 'calc(100% - 100px)' }}>
                 <Grid
                     item
                     xs={12}
                     sm={3}
                     style={{
-                        height: '95%',
+                        height: '100%',
                         borderRight: '1px solid rgba(81, 81, 81, 1)',
                     }}
                 >
@@ -286,7 +286,7 @@ export default function ReportViewer({
                         </TreeView>
                     </ReportTreeViewContext.Provider>
                 </Grid>
-                <Grid item xs={12} sm={9} style={{ height: '95%' }}>
+                <Grid item xs={12} sm={9} style={{ height: '100%' }}>
                     <WaitingLoader
                         loading={waitingLoadReport}
                         message={'loadingReport'}
