@@ -23,6 +23,10 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
+import {
+    SENSITIVITY_AT_NODE,
+    SUFFIX_TYPES,
+} from './sensitivity-analysis-content';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -37,7 +41,7 @@ function makeRows(resultRecord) {
 const SensitivityAnalysisResult = ({
     result,
     nOrNkIndex,
-    sensiToIndex,
+    sensiKind,
     filtersDef,
     onSortChanged,
     sortConfig,
@@ -101,7 +105,10 @@ const SensitivityAnalysisResult = ({
         returnedTable.push(
             makeColumn({
                 field: 'funcId',
-                labelId: sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
+                labelId:
+                    sensiKind === SENSITIVITY_AT_NODE
+                        ? 'BusBarBus'
+                        : 'SupervisedBranches',
                 pinned: true,
                 maxWidth: 350,
             })
@@ -124,7 +131,7 @@ const SensitivityAnalysisResult = ({
             );
         }
 
-        const suffix1 = 'In' + ['kW', 'kA', 'kV'][sensiToIndex];
+        const suffix1 = 'In' + SUFFIX_TYPES[sensiKind];
         const suffix = suffix1 + (nOrNkIndex !== 1 ? '' : 'BeforeContingency');
 
         returnedTable.push(
@@ -160,7 +167,7 @@ const SensitivityAnalysisResult = ({
         }
 
         return returnedTable;
-    }, [makeColumn, nOrNkIndex, sensiToIndex]);
+    }, [makeColumn, nOrNkIndex, sensiKind]);
 
     const rows = useMemo(() => makeRows(result), [result]);
 
@@ -219,13 +226,13 @@ const SensitivityAnalysisResult = ({
 SensitivityAnalysisResult.defaultProps = {
     result: null,
     nOrNkIndex: 0,
-    sensiToIndex: 0,
+    sensiKind: 0,
 };
 
 SensitivityAnalysisResult.propTypes = {
     result: PropTypes.array,
     nOrNkIndex: PropTypes.number,
-    sensiToIndex: PropTypes.number,
+    sensiKind: PropTypes.string,
     onSortChanged: PropTypes.func.isRequired,
     isLoading: PropTypes.bool,
 };
