@@ -24,8 +24,11 @@ const RunButton = ({
 
     const runnablesText = useMemo(
         () =>
-            activeRunnables.map((k) =>
-                intl.formatMessage({ id: runnables[k].messageId })
+            Object.fromEntries(
+                activeRunnables.map((k) => [
+                    k,
+                    intl.formatMessage({ id: runnables[k].messageId }),
+                ])
             ),
         [intl, runnables, activeRunnables]
     );
@@ -38,7 +41,7 @@ const RunButton = ({
             case RunningStatus.SUCCEED:
             case RunningStatus.FAILED:
             case RunningStatus.IDLE:
-                return runnablesText;
+                return Object.values(runnablesText);
             case RunningStatus.RUNNING:
                 return Array.of(intl.formatMessage({ id: 'StopComputation' }));
             default:
