@@ -194,24 +194,26 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
 
     const startComputationAsync = useCallback(
         (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId) => {
+            if (fnBefore) {
+                fnBefore();
+            }
             dispatch(setComputingStatus(computingType, RunningStatus.RUNNING));
-            fnStart.then(fnThen).catch((error) => {
-                if (fnBefore) {
-                    fnBefore();
-                }
-                dispatch(
-                    setComputingStatus(computingType, RunningStatus.FAILED)
-                );
-                if (fnCatch) {
-                    fnCatch(error);
-                }
-                if (errorHeaderId) {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: errorHeaderId,
-                    });
-                }
-            });
+            fnStart()
+                .then(fnThen)
+                .catch((error) => {
+                    dispatch(
+                        setComputingStatus(computingType, RunningStatus.FAILED)
+                    );
+                    if (fnCatch) {
+                        fnCatch(error);
+                    }
+                    if (errorHeaderId) {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: errorHeaderId,
+                        });
+                    }
+                });
         },
         [dispatch, snackError]
     );
