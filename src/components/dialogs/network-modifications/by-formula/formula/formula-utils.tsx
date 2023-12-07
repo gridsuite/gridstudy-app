@@ -29,13 +29,13 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'MARGINAL_COST', label: 'StartupCost' },
         { id: 'PLANNED_OUTAGE_RATE', label: 'PlannedOutageRate' },
         { id: 'FORCED_OUTAGE_RATE', label: 'ForcedOutageRate' },
-        { id: 'DROOP', label: 'Droop' },
+        { id: 'DROOP', label: 'ActivePowerRegulationDroop' },
         { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm' },
         {
             id: 'STEP_UP_TRANSFORMER_REACTANCE',
             label: 'TransformerReactanceForm',
         },
-        { id: 'Q_PERCENT', label: 'QPercentText' },
+        { id: 'Q_PERCENT', label: 'ReactivePercentageVoltageRegulation' },
     ],
     [EQUIPMENT_TYPES.BATTERY]: [
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText' },
