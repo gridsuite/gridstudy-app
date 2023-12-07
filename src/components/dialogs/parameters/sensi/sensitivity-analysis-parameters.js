@@ -260,28 +260,6 @@ export const SensitivityAnalysisParameters = ({
         [snackError, studyUuid, formatFiltredParams]
     );
 
-    const trigger = (data) => {
-        let isTriggerable =
-            data.sensitivityInjectionsSet.length +
-                +data.sensitivityInjection.length +
-                data.sensitivityHVDC.length +
-                data.sensitivityPST.length >
-            0;
-        return isTriggerable && formState.isValid;
-    };
-
-    useEffect(() => {
-        const data = getValues();
-        const filtredData = {
-            sensitivityInjectionsSet: data.sensitivityInjectionsSet,
-            sensitivityInjection: data.sensitivityInjection,
-            sensitivityHVDC: data.sensitivityHVDC,
-            sensitivityPST: data.sensitivityPST,
-        };
-        trigger(filtredData) && onChangeParams(filtredData);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [formState.isValid, getValues()]);
-
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
             reset({
@@ -494,6 +472,48 @@ export const SensitivityAnalysisParameters = ({
     ]);
 
     const isMaxReached = () => analysisComputeComplexity > 500000;
+
+    const getFilteredData = useCallback(() => {
+        debugger;
+        return {
+            sensitivityInjectionsSet:
+                getValues().sensitivityInjectionsSet.filter(
+                    (entry) => entry[ACTIVATED]
+                ),
+            sensitivityInjection: getValues().sensitivityInjection.filter(
+                (entry) => entry[ACTIVATED]
+            ),
+            sensitivityHVDC: getValues().sensitivityHVDC.filter(
+                (entry) => entry[ACTIVATED]
+            ),
+            sensitivityPST: getValues().sensitivityPST.filter(
+                (entry) => entry[ACTIVATED]
+            ),
+        };
+    }, [getValues]);
+
+    const trigger = useCallback(
+        (data) => {
+            let isTriggerable =
+                data.sensitivityInjectionsSet.length +
+                    data.sensitivityInjection.length +
+                    data.sensitivityHVDC.length +
+                    data.sensitivityPST.length >
+                0;
+            //debugger;
+            if (isTriggerable && formState.isValid) {
+                return true;
+            }
+            return false;
+        },
+        [formState.isValid]
+    );
+
+    useEffect(() => {
+        const filtredData = getFilteredData();
+        debugger;
+        trigger(filtredData) && onChangeParams(filtredData);
+    }, [onChangeParams, trigger, getFilteredData, onChange]);
 
     return (
         <>
