@@ -286,12 +286,7 @@ export default function ReportViewer({
                         </TreeView>
                     </ReportTreeViewContext.Provider>
                 </Grid>
-                <Grid
-                    item
-                    xs={12}
-                    sm={9}
-                    sx={{ height: '100%' }}
-                >
+                <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     <WaitingLoader
                         loading={waitingLoadReport}
                         message={'loadingReport'}
