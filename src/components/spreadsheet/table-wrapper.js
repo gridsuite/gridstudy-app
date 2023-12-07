@@ -786,7 +786,7 @@ const TableWrapper = (props) => {
         const rowNode = params.node;
         const colId = params.column.colId;
         const regulationTypeText = params.data.RegulationTypeText;
-        console.log(rowNode, 'mlmlmlmlmlmlmlm');
+
         if (colId === 'RegulationTypeText') {
             if (
                 regulationTypeText === 'DISTANT' &&
@@ -810,6 +810,11 @@ const TableWrapper = (props) => {
                 //     editingDataRef.current?.regulatingTerminalVlId ?? 'ss '
                 // );
                 // rowNode.setDataValue('regulatingTerminalVlId', ' ');
+
+                rowNode.setDataValue(
+                    'RegulatingTerminalGenerator',
+                    editingDataRef.current?.regulatingTerminalVlId ?? ''
+                );
             }
             if (regulationTypeText === 'LOCAL') {
                 params.data.regulatingTerminalConnectableId = undefined;
