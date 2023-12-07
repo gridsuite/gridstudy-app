@@ -1347,7 +1347,7 @@
     "istNm1": "IST en N-1",
     "limitNameNm1": "Seuil en N-1",
     "coeffNm1": "Coeff en N-1 (%)",
-    "NonEvacuatedEnergyAnalysis": "Analyse de sensibilité énergie non évacuée",
+    "NonEvacuatedEnergyAnalysis": "Energie non évacuée",
     "startNonEvacuatedEnergyAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité énergie non évacuée",
     "nonEvacuatedEnergyAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité énergie non évacuée",
     "fetchNonEvacuatedEnergyProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sensibilité",

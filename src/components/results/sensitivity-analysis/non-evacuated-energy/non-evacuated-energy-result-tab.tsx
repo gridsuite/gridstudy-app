@@ -5,31 +5,112 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
 import { NonEvacuatedEnergyTabProps } from './non-evacuated-energy-result.type';
 import { NonEvacuatedEnergyResult } from './non-evacuated-energy-result';
 import { useNodeData } from '../../../study-container';
 import { fetchNonEvacuatedEnergyResult } from '../../../../services/study/non-evacuated-energy';
+import { Box } from '@mui/system';
+import { useOpenLoaderShortWait } from '../../../dialogs/commons/handle-loader';
+import { LinearProgress, Tab, Tabs } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
+import { RunningStatus } from '../../../utils/running-status';
+import { ComputationReportViewer } from '../../common/computation-report-viewer';
+import { REPORT_TYPES } from '../../../utils/report-type';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../../../redux/reducer.type';
+import { ComputingType } from '../../../computing-status/computing-type';
+import { RESULTS_LOADING_DELAY } from '../../../network/constants';
+
+const styles = {
+    container: {
+        display: 'flex',
+        position: 'relative',
+    },
+    tabs: {
+        position: 'relative',
+        top: 0,
+        left: 0,
+    },
+    loader: {
+        height: '4px',
+    },
+    resultContainer: {
+        flexGrow: 1,
+    },
+};
+
+export const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = [
+    'nonEvacuatedEnergyResult',
+];
 
 export const NonEvacuatedEnergyResultTab: FunctionComponent<
     NonEvacuatedEnergyTabProps
 > = ({ studyUuid, nodeUuid }) => {
-    const nonEvacuatedEnergyResultInvalidations = ['nonEvacuatedEnergyResult'];
+    const [tabIndex, setTabIndex] = useState(0);
+
+    const RESULTS_TAB_INDEX = 0;
+    const LOGS_TAB_INDEX = 1;
+
+    const nonEvacuatedEnergyStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+    );
 
     const [nonEvacuatedEnergyResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
         fetchNonEvacuatedEnergyResult,
-        nonEvacuatedEnergyResultInvalidations
+        NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS
     );
+
+    const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
+        setTabIndex(newTabIndex);
+    };
+
+    const shouldOpenLoader = useOpenLoaderShortWait({
+        isLoading: nonEvacuatedEnergyStatus === RunningStatus.RUNNING,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
     return (
         <>
-            <NonEvacuatedEnergyResult
-                studyUuid={studyUuid}
-                nodeUuid={nodeUuid}
-                result={nonEvacuatedEnergyResult}
-                isWaiting={isWaiting}
-            />
+            <Box sx={styles.container}>
+                <Box sx={styles.tabs}>
+                    <Tabs value={tabIndex} onChange={handleTabChange}>
+                        <Tab label="Results" />
+                        <Tab
+                            label={
+                                <FormattedMessage
+                                    id={'ComputationResultsLogs'}
+                                />
+                            }
+                        />
+                    </Tabs>
+                </Box>
+            </Box>
+            <Box sx={styles.loader}>
+                {shouldOpenLoader && <LinearProgress />}
+            </Box>
+            <Box sx={styles.resultContainer}>
+                {tabIndex === RESULTS_TAB_INDEX && (
+                    <NonEvacuatedEnergyResult
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        result={nonEvacuatedEnergyResult}
+                        isWaiting={isWaiting}
+                    />
+                )}
+                {tabIndex === LOGS_TAB_INDEX &&
+                    (nonEvacuatedEnergyStatus === RunningStatus.SUCCEED ||
+                        nonEvacuatedEnergyStatus === RunningStatus.FAILED) && (
+                        <ComputationReportViewer
+                            reportType={
+                                REPORT_TYPES.NON_EVACUATED_ENERGY_ANALYSIS
+                            }
+                        />
+                    )}
+            </Box>
         </>
     );
 };

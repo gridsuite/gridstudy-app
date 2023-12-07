@@ -1330,7 +1330,7 @@
     "istNm1": "N-1 IST",
     "limitNameNm1": "N-1 limit",
     "coeffNm1": "N-1 coeff (%)",
-    "NonEvacuatedEnergyAnalysis": "Sensitivity analysis non evacuated energy",
+    "NonEvacuatedEnergyAnalysis": "Non evacuated energy",
     "startNonEvacuatedEnergyAnalysisError": "An error occurred while executing the sensitivity analysis non evacuated energy",
     "nonEvacuatedEnergyAnalysisError": "An error occured when executing sensitivity analysis non evacuated energy",
     "fetchNonEvacuatedEnergyProvidersError": "An error occured when fetching sensitivity analysis provider list",
