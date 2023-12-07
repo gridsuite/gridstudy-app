@@ -507,12 +507,27 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         undefined,
-                        editingData?.regulatingTerminalVlId ||
-                            editingData?.regulatingTerminalConnectableId
-                            ? 'DISTANT'
-                            : 'LOCAL',
-                        editingData.regulatingTerminalConnectableId,
-                        editingData.regulatingTerminalConnectableType,
+                        getFieldValue(
+                            editingData?.regulatingTerminalVlId ||
+                                editingData?.regulatingTerminalConnectableId
+                                ? 'DISTANT'
+                                : 'LOCAL',
+                            editingDataRef.current?.regulatingTerminalVlId ||
+                                editingDataRef.current
+                                    ?.regulatingTerminalConnectableId
+                                ? 'DISTANT'
+                                : 'LOCAL'
+                        ),
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableId,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableId
+                        ),
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableType,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableType
+                        ),
                         editingData.regulatingTerminalVlId
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
@@ -794,15 +809,17 @@ const TableWrapper = (props) => {
             ) {
                 // set temporary values that should be changed when opening popup
                 params.data.regulatingTerminalVlId =
-                    editingData?.regulatingTerminalVlId ?? ' ';
+                    editingDataRef.current?.regulatingTerminalVlId ?? ' ';
                 params.data.regulatingTerminalConnectableId =
-                    editingData?.regulatingTerminalConnectableId ?? ' ';
+                    editingDataRef.current?.regulatingTerminalConnectableId ??
+                    ' ';
                 params.data.regulatingTerminalConnectableType =
-                    editingData?.regulatingTerminalConnectableType ?? ' ';
+                    editingDataRef.current?.regulatingTerminalConnectableType ??
+                    ' ';
 
                 rowNode.setDataValue(
                     'RegulatingTerminalGenerator',
-                    editingData?.regulatingTerminalVlId ?? ''
+                    editingDataRef.current?.regulatingTerminalVlId ?? ''
                 );
             }
             if (regulationTypeText === 'LOCAL') {
@@ -934,6 +951,15 @@ const TableWrapper = (props) => {
         if (editingData) {
             if (!editingDataRef?.current) {
                 editingDataRef.current = { ...editingData };
+
+                Object.keys(editingData).forEach((key) => {
+                    if (editingDataRef?.current[key] !== editingData[key]) {
+                        editingDataRef.current[key] = editingData[key];
+                    }
+                });
+                // if (!editingDataRef?.current) {
+                //     editingDataRef.current = { ...editingData };
+                // }
             }
             return [editingData];
         } else {
