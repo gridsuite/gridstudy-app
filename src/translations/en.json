@@ -1235,7 +1235,6 @@
     "StartupCost": "Startup cost",
 
     "Connect": "Reconnect ?",
-    "Connected": "Connected",
     "ConnectedSide1": "Connected 1",
     "ConnectedSide2": "Connected 2",
     "ConnectedSide3": "Connected 3",
@@ -1280,6 +1279,19 @@
     "ValueMustBeRefWhenPercentageError": "When using %, this field must be a valid field reference",
     "addNewFormula": "Add new formula",
     "byFormulaChangeTypeConfirmation": "Do you want to change the type? All fields values will be erased",
+    "RatioLowTapPosition": "Ratio low tap position",
+    "RatioTapPosition": "Ratio tap position",
+    "RatioDeadBand": "Ratio deadband",
+    "PhaseLowTapPosition": "Phase low tap position",
+    "PhaseTapPosition": "Phase tap position",
+    "PhaseDeadBand": "Phase deadband",
+    "RatedVoltage1": "Rated voltage 1",
+    "RatedVoltage2": "Rated voltage 2",
+    "PhaseRegulatingValue": "Phase regulating value",
+    "RatioTargetV": "Ratio voltage set point",
+    "GeneratorTargetV": "Target V",
+    "ReactivePercentageVoltageRegulation": "Reactive percentage",
+    "ActivePowerRegulationDroop": "Active power regulation droop",
 
     "waitingStudyIndexation": "Waiting for study indexation...",
 
