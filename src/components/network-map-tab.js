@@ -137,7 +137,7 @@ export const NetworkMapTab = ({
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
     const isMapEquipmentsInitiliazed = useSelector(
-        (state) => state.isEquipmentsInitiliazed
+        (state) => state.isMapEquipmentsInitiliazed
     );
 
     const deletedEquipments = useSelector((state) => state.deletedEquipments);
@@ -666,13 +666,15 @@ export const NetworkMapTab = ({
             ) {
                 loadMissingGeoData();
             } else {
-                // set isRootNodeGeoDataLoaded to false to trigger root node geo-data fetching (in order to fetch lines geo-data)
-                setIsRootNodeGeoDataLoaded(false);
-                // set initialized to false to trigger missing geo-data fetching
+                // trigger root node geodata fetching
+                loadRootNodeGeoData();
+                // set initialized to false to trigger "missing geo-data fetching"
                 setInitialized(false);
+                // set isRootNodeGeoDataLoaded to false so "missing geo-data fetching" waits for root node geo-data to be fully fetched before triggering
+                setIsRootNodeGeoDataLoaded(false);
             }
         }
-    }, [studyUuid, loadMissingGeoData, lineFullPath]);
+    }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
 
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -864,9 +866,9 @@ export const NetworkMapTab = ({
         }
     }, [
         isRootNodeGeoDataLoaded,
+        isMapEquipmentsInitiliazed,
         isInitialized,
         loadMissingGeoData,
-        isMapEquipmentsInitiliazed,
     ]);
 
     // Reload geo data (if necessary) when we switch on full path
