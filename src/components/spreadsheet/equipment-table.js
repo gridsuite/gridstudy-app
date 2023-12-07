@@ -132,6 +132,7 @@ export const EquipmentTable = ({
     const loadingOverlayComponent = (props) => {
         return <>{props.loadingMessage}</>;
     };
+
     const loadingOverlayComponentParams = useMemo(() => {
         return {
             loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),

@@ -794,26 +794,15 @@ const TableWrapper = (props) => {
             ) {
                 // set temporary values that should be changed when opening popup
                 params.data.regulatingTerminalVlId =
-                    editingDataRef.current?.regulatingTerminalVlId ?? ' ';
+                    editingData?.regulatingTerminalVlId ?? ' ';
                 params.data.regulatingTerminalConnectableId =
-                    editingDataRef.current?.regulatingTerminalConnectableId ??
-                    ' ';
+                    editingData?.regulatingTerminalConnectableId ?? ' ';
                 params.data.regulatingTerminalConnectableType =
-                    editingDataRef.current?.regulatingTerminalConnectableType ??
-                    ' ';
-                // params.data.regulatingTerminalVlId = ' ';
-                // params.data.regulatingTerminalConnectableId = ' ';
-                // params.data.regulatingTerminalConnectableType = ' ';
-
-                // rowNode.setDataValue(
-                //     'RegulatingTerminalGenerator',
-                //     editingDataRef.current?.regulatingTerminalVlId ?? 'ss '
-                // );
-                // rowNode.setDataValue('regulatingTerminalVlId', ' ');
+                    editingData?.regulatingTerminalConnectableType ?? ' ';
 
                 rowNode.setDataValue(
                     'RegulatingTerminalGenerator',
-                    editingDataRef.current?.regulatingTerminalVlId ?? ''
+                    editingData?.regulatingTerminalVlId ?? ''
                 );
             }
             if (regulationTypeText === 'LOCAL') {
@@ -943,12 +932,15 @@ const TableWrapper = (props) => {
 
     const topPinnedData = useMemo(() => {
         if (editingData) {
-            editingDataRef.current = { ...editingData };
+            if (!editingDataRef?.current) {
+                editingDataRef.current = { ...editingData };
+            }
             return [editingData];
         } else {
             return undefined;
         }
     }, [editingData]);
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
