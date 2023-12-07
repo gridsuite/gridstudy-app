@@ -353,6 +353,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     RunningStatus.RUNNING
                 )
             );
+            setComputationStopped(false);
             startSensitivityAnalysis(studyUuid, currentNode?.id)
                 .then(setRanSensi(true))
                 .catch((error) => {
@@ -376,6 +377,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     RunningStatus.RUNNING
                 )
             );
+            setComputationStopped(false);
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(() => setRanShortCircuit(true))
                 .catch((error) => {
@@ -397,6 +399,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     RunningStatus.RUNNING
                 )
             );
+            setComputationStopped(false);
             startVoltageInit(studyUuid, currentNode?.id)
                 .then(setRanVoltageInit(true))
                 .catch((error) => {
