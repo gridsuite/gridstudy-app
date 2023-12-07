@@ -51,7 +51,7 @@ declare module '@gridsuite/commons-ui' {
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
-        getOptionLabel?: (rt: string | { id: string; label: string }) => string;
+        getOptionLabel?: (rt: string | { id: string; label: string }) => string | null;
         formProps?: Omit<
             TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
