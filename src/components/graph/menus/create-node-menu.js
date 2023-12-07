@@ -177,8 +177,16 @@ const CreateNodeMenu = ({
         );
     }
 
-    function isNodeUnbuildingOrRemovingAllowed() {
+    function isNodeRemovingAllowed() {
         return !isAnyNodeBuilding && !mapDataLoading;
+    }
+
+    function isNodeUnbuildingAllowed() {
+        return (
+            !isAnyNodeBuilding &&
+            !mapDataLoading &&
+            activeNode?.data?.globalBuildStatus?.startsWith('BUILT')
+        );
     }
 
     function isNodeRestorationAllowed() {
@@ -294,13 +302,13 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => unbuildNode(),
             id: 'unbuildNode',
-            disabled: !isNodeUnbuildingOrRemovingAllowed(),
+            disabled: !isNodeUnbuildingAllowed(),
         },
         REMOVE_NODE: {
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
-            disabled: !isNodeUnbuildingOrRemovingAllowed(),
+            disabled: !isNodeRemovingAllowed(),
             sectionEnd: true,
         },
         COPY_SUBTREE: {
