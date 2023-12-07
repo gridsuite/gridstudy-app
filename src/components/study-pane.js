@@ -283,7 +283,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
             <div
                 style={{
-                    height: '95%',
+                    height: '100%',
                     display: props.view === StudyView.RESULTS ? 'flex' : 'none',
                     flexDirection: 'column',
                 }}
