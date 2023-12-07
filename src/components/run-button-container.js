@@ -308,11 +308,13 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.SENSITIVITY_ANALYSIS,
                         null,
-                        () =>
-                            startSensitivityAnalysis(
+                        () => {
+                            setComputationStopped(false);
+                            return startSensitivityAnalysis(
                                 studyUuid,
                                 currentNode?.id
-                            ),
+                            );
+                        },
                         () => setRanSensi(true),
                         null,
                         'startSensitivityAnalysisError'
@@ -330,11 +332,13 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
                         null,
-                        () =>
-                            startShortCircuitAnalysis(
+                        () => {
+                            setComputationStopped(false);
+                            return startShortCircuitAnalysis(
                                 studyUuid,
                                 currentNode?.id
-                            ),
+                            );
+                        },
                         () => setRanShortCircuit(true),
                         null,
                         'startShortCircuitError'
@@ -386,7 +390,10 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.VOLTAGE_INIT,
                         null,
-                        startVoltageInit(studyUuid, currentNode?.id),
+                        () => {
+                            setComputationStopped(false);
+                            return startVoltageInit(studyUuid, currentNode?.id);
+                        },
                         () => setRanVoltageInit(true),
                         null,
                         'startVoltageInitError'
