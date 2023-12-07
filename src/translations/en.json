@@ -139,7 +139,7 @@
     "ShuntSusceptance2": "Shunt susceptance 2 (μS)",
     "ActivePowerControl": "Active power control",
     "DroopColumnName": "Droop (%)",
-    "TargetQ": "target Q (MVar)",
+    "reactivePowerSetpoint": "target Q (MVar)",
     "RatioTap": "Ratio tap",
     "PhaseTap": "Phase tap",
     "RatioTap1": "Ratio tap 1",
@@ -522,7 +522,6 @@
     "ConvertersMode": "Converters mode",
     "R": "Resistance",
     "ActivePowerSetpoint": "Active power set point (MW)",
-    "TargetV": "Target V (kV)",
     "TargetDeadband": "Target deadband",
     "ConverterStationId1": "Converter Station Id 1",
     "ConverterStationId2": "Converter Station Id 2",
@@ -716,7 +715,7 @@
     "NbModification": "{nb} modification{several} to paste",
     "NbModificationToRestore": "{nb} modification{several} to restore",
     "GeneratorCreationError": "Error while creating generator",
-    "EnergySourceText": "Energy source",
+    "energySource": "Energy source",
     "Hydro": "Hydro",
     "Nuclear": "Nuclear",
     "Wind": "Wind",
@@ -1067,7 +1066,7 @@
     "LoadTapChanging3Capabilities": "Ratio on-load 3",
     "RegulatingRatio3": "Ratio regulating 3",
     "TargetVPoint3": "Voltage set point (kV) 3",
-    "VoltageSetpointKV": "Voltage set point (kV)",
+    "voltageSetpoint": "Voltage set point (kV)",
     "ReactivePowerSetpointMVAR": "Reactive power set point (MVar)",
     "RatioTapChangerPosition": "Ratio tap",
     "Leg": "Leg",
@@ -1259,7 +1258,7 @@
 
     "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
-    "RatedNominalPower": "Rated nominal power (MVA)",
+    "ratedNominalPower": "Rated nominal power (MVA)",
 
     "ShortcircuitInProgress": "Shortcircuit computation in progress...",
     

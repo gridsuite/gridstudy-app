@@ -18,6 +18,10 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'activePowerSetpoint',
         'maxActivePower',
         'voltageRegulationOn',
+        'reactivePowerSetpoint',
+        'voltageSetpoint',
+        'energySource',
+        'ratedNominalPower',
     ],
     LOAD: ['equipmentId', 'activePower'],
 };

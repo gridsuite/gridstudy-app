@@ -600,7 +600,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatedNominalPower',
+                id: 'ratedNominalPower',
                 field: 'ratedS',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1183,7 +1183,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1236,7 +1236,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetV',
+                id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1590,7 +1590,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'VoltageSetpointKV',
+                id: 'voltageSetpoint',
                 field: 'voltageSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1785,7 +1785,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2052,7 +2052,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'VoltageSetpointKV',
+                id: 'voltageSetpoint',
                 field: 'voltageSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
