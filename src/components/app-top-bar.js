@@ -280,7 +280,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         .then((res) => setGlobalVersion(res.deployVersion))
                         .catch((reason) => setGlobalVersion(null))
                 }
-                getAdditionalComponents={(setServers) =>
+                getAdditionalModules={(setServers) =>
                     getServersInfos()
                         .then((res) =>
                             setServers(
