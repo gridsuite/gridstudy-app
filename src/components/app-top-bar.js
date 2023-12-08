@@ -193,10 +193,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [isParametersOpen, setParametersOpen] = useState(false);
 
-    const getterGlobalVersion = useCallback((setGlobalVersion) => {
-        fetchVersion().then((res) => setGlobalVersion(res.deployVersion));
-    }, []);
-
     const { openDiagramView } = useDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
