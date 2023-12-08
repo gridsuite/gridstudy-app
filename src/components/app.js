@@ -97,7 +97,10 @@ import {
     fetchConfigParameter,
     fetchConfigParameters,
 } from '../services/config';
-import { fetchDefaultParametersValues } from '../services/utils';
+import {
+    fetchAuthorizationCodeFlowFeatureFlag,
+    fetchDefaultParametersValues,
+} from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import { defaultOptionalServicesState } from 'redux/reducer';
 
@@ -390,12 +393,16 @@ const App = () => {
     });
 
     useEffect(() => {
-        initializeAuthenticationProd(
-            dispatch,
-            initialMatchSilentRenewCallbackUrl != null,
-            fetch('idpSettings.json'),
-            fetchValidateUser
-        )
+        fetchAuthorizationCodeFlowFeatureFlag()
+            .then((authorizationCodeFlowEnabled) => {
+                return initializeAuthenticationProd(
+                    dispatch,
+                    initialMatchSilentRenewCallbackUrl != null,
+                    fetch('idpSettings.json'),
+                    fetchValidateUser,
+                    authorizationCodeFlowEnabled
+                );
+            })
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
             })
