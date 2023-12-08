@@ -94,13 +94,16 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
             });
             setDirectoryItemSelectorOpen(false);
         },
-        [append, getValues, snackError, name]
+        [append, getValues, snackError, name, isFormChanged]
     );
 
-    const removeElements = useCallback((index: number) => {
-        remove(index);
-        isFormChanged && isFormChanged(true);
-    }, []);
+    const removeElements = useCallback(
+        (index: number) => {
+            remove(index);
+            isFormChanged && isFormChanged(true);
+        },
+        [isFormChanged, remove]
+    );
 
     return (
         <>
