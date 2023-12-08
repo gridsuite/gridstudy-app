@@ -19,15 +19,15 @@ export default class LogReportItem {
         TRACE: {
             name: 'TRACE',
             level: 1,
-            colorName: 'silver',
-            colorHexCode: '#C0C0C0',
+            colorName: 'SlateGray',
+            colorHexCode: '#708090',
             displayedByDefault: false,
         },
         DEBUG: {
             name: 'DEBUG',
             level: 2,
-            colorName: 'gold', // TEMP COLOR
-            colorHexCode: '#FFD700',
+            colorName: 'DarkCyan',
+            colorHexCode: '#008B8B',
             displayedByDefault: false,
         },
         INFO: {
