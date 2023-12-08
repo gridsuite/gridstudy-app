@@ -9,24 +9,42 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl/lib';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { useParameterState } from '../../dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import {
+    COMPUTATION_RESULTS_LOGS,
+    SENSITIVITY_AT_NODE,
+    SENSITIVITY_IN_DELTA_A,
+    SENSITIVITY_IN_DELTA_MW,
+} from './sensitivity-analysis-content';
 
-const SensitivityAnalysisTabs = ({ sensiKindIndex, setSensiKindIndex }) => {
+const SensitivityAnalysisTabs = ({ sensiKind, setSensiKind }) => {
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    const sensiKindTabs = [
+        SENSITIVITY_IN_DELTA_MW,
+        SENSITIVITY_IN_DELTA_A,
+        ...((enableDeveloperMode && [SENSITIVITY_AT_NODE]) || []),
+        COMPUTATION_RESULTS_LOGS,
+    ];
+
     return (
         <Tabs
-            value={sensiKindIndex}
-            onChange={(_, newTabIndex) => setSensiKindIndex(newTabIndex)}
+            value={sensiKindTabs.indexOf(sensiKind)}
+            onChange={(_, newTabIndex) =>
+                setSensiKind(sensiKindTabs[newTabIndex])
+            }
         >
-            <Tab label={<FormattedMessage id={'SensitivityInDeltaMW'} />} />
-            <Tab label={<FormattedMessage id={'SensitivityInDeltaA'} />} />
-            <Tab label={<FormattedMessage id={'SensitivityAtNode'} />} />
-            <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
+            {sensiKindTabs.map((sensiKind) => (
+                <Tab label={<FormattedMessage id={sensiKind} />} />
+            ))}
         </Tabs>
     );
 };
 
 SensitivityAnalysisTabs.propTypes = {
-    setSensiKindIndex: PropTypes.func.isRequired,
-    sensiKindIndex: PropTypes.number.isRequired,
+    setSensiKind: PropTypes.func.isRequired,
+    sensiKind: PropTypes.string.isRequired,
 };
 
 export default SensitivityAnalysisTabs;
