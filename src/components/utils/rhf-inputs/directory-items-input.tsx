@@ -39,6 +39,7 @@ interface DirectoryItemsInputProps {
     titleId?: string;
     hideErrorMessage?: boolean;
     isFormChanged?: (a: boolean) => void;
+    disable?: boolean;
 }
 
 const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
@@ -50,6 +51,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
     isFormChanged,
+    disable = false,
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -155,6 +157,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                             <IconButton
                                 sx={styles.addDirectoryElements}
                                 size={'small'}
+                                disabled={disable}
                                 onClick={() =>
                                     setDirectoryItemSelectorOpen(true)
                                 }
