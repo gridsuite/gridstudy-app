@@ -238,7 +238,7 @@ const initialState = {
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     diagramStates: [],
     reloadMap: true,
-    isMapEquipmentsInitiliazed: false,
+    isMapEquipmentsInitialized: false,
     updatedSubstationsIds: [],
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
@@ -539,7 +539,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [MAP_EQUIPMENTS_INITIALIZED]: (state, action) => {
-        state.isMapEquipmentsInitiliazed = action.newValue;
+        state.isMapEquipmentsInitialized = action.newValue;
     },
 
     [SET_UPDATED_SUBSTATIONS_IDS]: (state, action) => {

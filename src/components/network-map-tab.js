@@ -136,8 +136,8 @@ export const NetworkMapTab = ({
 
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
-    const isMapEquipmentsInitiliazed = useSelector(
-        (state) => state.isMapEquipmentsInitiliazed
+    const isMapEquipmentsInitialized = useSelector(
+        (state) => state.isMapEquipmentsInitialized
     );
 
     const deletedEquipments = useSelector((state) => state.deletedEquipments);
@@ -826,7 +826,7 @@ export const NetworkMapTab = ({
         if (!reloadMapNeeded) {
             return;
         }
-        if (!isMapEquipmentsInitiliazed) {
+        if (!isMapEquipmentsInitialized) {
             // load default node map equipments
             loadMapEquipments();
         }
@@ -834,7 +834,7 @@ export const NetworkMapTab = ({
             // load root node geodata
             loadRootNodeGeoData();
         }
-        if (isRootNodeGeoDataLoaded && isMapEquipmentsInitiliazed) {
+        if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized) {
             updateMapEquipmentsAndGeoData();
         }
         // Note: studyUuid and dispatch don't change
@@ -847,7 +847,7 @@ export const NetworkMapTab = ({
         updateMapEquipmentsAndGeoData,
         loadRootNodeGeoData,
         isRootNodeGeoDataLoaded,
-        isMapEquipmentsInitiliazed,
+        isMapEquipmentsInitialized,
         isInitialized,
         reloadMapNeeded,
         updatedSubstationsIds,
@@ -858,7 +858,7 @@ export const NetworkMapTab = ({
         // we check if equipments are done initializing because they are checked to fetch accurat missing geo data
         if (
             isRootNodeGeoDataLoaded &&
-            isMapEquipmentsInitiliazed &&
+            isMapEquipmentsInitialized &&
             !isInitialized
         ) {
             loadMissingGeoData();
@@ -866,7 +866,7 @@ export const NetworkMapTab = ({
         }
     }, [
         isRootNodeGeoDataLoaded,
-        isMapEquipmentsInitiliazed,
+        isMapEquipmentsInitialized,
         isInitialized,
         loadMissingGeoData,
     ]);
