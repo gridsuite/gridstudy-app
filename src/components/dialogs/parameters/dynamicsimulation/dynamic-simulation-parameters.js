@@ -69,7 +69,7 @@ const TAB_VALUES = {
     CURVE: 'curve',
 };
 
-const DynamicSimulationParameters = ({ user }) => {
+const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
@@ -133,12 +133,7 @@ const DynamicSimulationParameters = ({ user }) => {
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        reset,
-        handleSubmit,
-        formState: { errors },
-        clearErrors,
-    } = formMethods;
+    const { reset, handleSubmit, formState, clearErrors } = formMethods;
 
     const onError = useCallback(
         (errors) => {
@@ -174,7 +169,7 @@ const DynamicSimulationParameters = ({ user }) => {
     );
 
     // errors is a mutable object => convert to json to activate useEffect
-    const errorsJSON = JSON.stringify(errors);
+    const errorsJSON = JSON.stringify(formState.errors);
 
     useEffect(() => {
         onError(JSON.parse(errorsJSON));
@@ -234,6 +229,10 @@ const DynamicSimulationParameters = ({ user }) => {
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
     }, []);
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -326,7 +325,7 @@ const DynamicSimulationParameters = ({ user }) => {
                                     : undefined
                             }
                             path={TAB_VALUES.SOLVER}
-                            errors={errors[TAB_VALUES.SOLVER]}
+                            errors={formState.errors[TAB_VALUES.SOLVER]}
                             clearErrors={clearErrors}
                         />
                     </TabPanel>

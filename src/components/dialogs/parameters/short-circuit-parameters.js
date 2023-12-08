@@ -102,7 +102,10 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
         parameters: parameters,
     };
 };
-export const ShortCircuitParameters = ({ useShortCircuitParameters }) => {
+export const ShortCircuitParameters = ({
+    useShortCircuitParameters,
+    setHaveDirtyFields,
+}) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [shortCircuitParams, setShortCircuitParams] =
@@ -136,7 +139,7 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters }) => {
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, handleSubmit } = formMethods;
+    const { reset, setValue, handleSubmit, formState } = formMethods;
 
     // submit the new parameters
     const onSubmit = useCallback(
@@ -219,6 +222,10 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters }) => {
         },
         [setValue]
     );
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>

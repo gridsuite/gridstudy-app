@@ -116,6 +116,7 @@ const numberMax = 500000;
 export const SensitivityAnalysisParameters = ({
     parametersBackend,
     useSensitivityAnalysisParameters,
+    setHaveDirtyFields,
 }) => {
     const { snackError } = useSnackMessage();
 
@@ -571,6 +572,10 @@ export const SensitivityAnalysisParameters = ({
         () => analysisComputeComplexity > numberMax,
         [analysisComputeComplexity]
     );
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
 
     return (
         <>

@@ -150,7 +150,10 @@ const formSchema = yup.object().shape({
     ),
 });
 
-export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
+export const VoltageInitParameters = ({
+    useVoltageInitParameters,
+    setHaveDirtyFields,
+}) => {
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] =
@@ -176,7 +179,7 @@ export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, handleSubmit, getValues, trigger } = formMethods;
+    const { reset, handleSubmit, getValues, trigger, formState } = formMethods;
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -286,6 +289,10 @@ export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
         });
     }, [trigger]);
 
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -353,29 +360,22 @@ export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
                                 />
                             </TabPanel>
                         </Grid>
-                        <DialogActions>
-                            <Button
-                                onClick={() =>
-                                    setOpenSelectParameterDialog(true)
-                                }
-                            >
-                                <FormattedMessage id="loadParameters" />
-                            </Button>
-                            <Button onClick={handleOpenSaveDialog}>
-                                <FormattedMessage id="save" />
-                            </Button>
-                            <Button onClick={clear}>
-                                <FormattedMessage id="resetToDefault" />
-                            </Button>
-                            <SubmitButton
-                                onClick={handleSubmit(
-                                    onSubmit,
-                                    onValidationError
-                                )}
-                            />
-                        </DialogActions>
                     </Grid>
                 </Grid>
+                <DialogActions>
+                    <Button onClick={() => setOpenSelectParameterDialog(true)}>
+                        <FormattedMessage id="loadParameters" />
+                    </Button>
+                    <Button onClick={handleOpenSaveDialog}>
+                        <FormattedMessage id="save" />
+                    </Button>
+                    <Button onClick={clear}>
+                        <FormattedMessage id="resetToDefault" />
+                    </Button>
+                    <SubmitButton
+                        onClick={handleSubmit(onSubmit, onValidationError)}
+                    />
+                </DialogActions>
             </FormProvider>
 
             {openCreateParameterDialog && (
