@@ -15,3 +15,5 @@ export enum ComputingType {
     DYNAMIC_SIMULATION = 'DYNAMIC_SIMULATION',
     VOLTAGE_INIT = 'VOLTAGE_INIT',
 }
+
+export default ComputingType;

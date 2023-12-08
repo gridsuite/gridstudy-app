@@ -5,28 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
-import { RunningStatus } from './utils/running-status';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
+import RunningStatus from './utils/running-status';
+import ComputingType from './computing-status/computing-type';
 
-const RunButton = (props) => {
-    const [selectedIndex, setSelectedIndex] = React.useState(0);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+const RunButton = ({
+    runnables,
+    activeRunnables,
+    getStatus,
+    computationStopped,
+    disabled,
+}) => {
+    const intl = useIntl();
 
-    function getOptions(runningStatus, runnables, actionOnRunnable) {
-        switch (runningStatus) {
+    const runnablesText = useMemo(
+        () =>
+            Object.fromEntries(
+                activeRunnables.map((k) => [
+                    k,
+                    intl.formatMessage({ id: runnables[k].messageId }),
+                ])
+            ),
+        [intl, runnables, activeRunnables]
+    );
+    const [selectedRunnable, setSelectedRunnable] = React.useState(
+        activeRunnables[0]
+    );
+
+    function getOptions() {
+        switch (getRunningStatus()) {
             case RunningStatus.SUCCEED:
             case RunningStatus.FAILED:
             case RunningStatus.IDLE:
-                return runnables;
+                return Object.values(runnablesText);
             case RunningStatus.RUNNING:
-                return Array.of(actionOnRunnable.text);
+                return Array.of(intl.formatMessage({ id: 'StopComputation' }));
             default:
-                return '';
+                return [];
         }
     }
 
@@ -34,75 +53,61 @@ const RunButton = (props) => {
         return getRunningStatus() === RunningStatus.RUNNING;
     }
 
-    const handleClick = () => {
-        if (props.onStartClick) {
-            props.onStartClick(getRunnable());
-        }
-    };
-
-    const getRunnable = useCallback(() => {
-        if (selectedIndex < props.runnables.length) {
-            return props.runnables[selectedIndex];
-        }
-        // selectedIndex out of range, then return first runnable
-        // (possible cause: developer mode is disabled and runnable list is now smaller)
-        return props.runnables[0];
-    }, [props.runnables, selectedIndex]);
-
     useEffect(() => {
-        if (!enableDeveloperMode) {
+        if (!activeRunnables.includes(selectedRunnable)) {
             // a computation may become unavailable when developer mode is disabled, then switch on first one
-            setSelectedIndex(0);
+            setSelectedRunnable(activeRunnables[0]);
         }
-    }, [enableDeveloperMode, setSelectedIndex]);
+    }, [activeRunnables, selectedRunnable, setSelectedRunnable]);
 
     const getRunningStatus = useCallback(() => {
-        return props.getStatus(getRunnable());
-    }, [getRunnable, props]);
+        return getStatus(selectedRunnable);
+    }, [selectedRunnable, getStatus]);
 
-    let buttonDisabled =
-        props.disabled ||
-        (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
-        (selectedIndex === 1 && isRunning()) ||
-        (selectedIndex === 5 /* Dynamic simulation button is selected */ &&
-            props.getStatus(props.runnables[0]) !==
-                RunningStatus.SUCCEED); /* Load flow button's status must SUCCEED */
-
-    function handleActionOnRunnable() {
-        props.actionOnRunnable.action(getRunnable());
+    function isButtonDisable() {
+        if (selectedRunnable === ComputingType.LOADFLOW) {
+            // We run once loadflow analysis, as it will always return the same result for one hypothesis
+            return getRunningStatus() !== RunningStatus.IDLE;
+        } else if (selectedRunnable === ComputingType.SECURITY_ANALYSIS) {
+            // We can run only 1 analysis at a time
+            return getRunningStatus() === RunningStatus.RUNNING;
+        } else if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
+            // Load flow button's status must be "SUCCEED"
+            return getStatus(ComputingType.LOADFLOW) !== RunningStatus.SUCCEED;
+        } else {
+            return false;
+        }
     }
 
     return (
         <SplitButton
-            options={getOptions(
-                getRunningStatus(),
-                props.runnables,
-                props.actionOnRunnable
-            )}
-            selectedIndex={selectedIndex}
-            onSelectionChange={(index) => setSelectedIndex(index)}
-            onClick={handleClick}
-            runningStatus={getRunningStatus()}
-            buttonDisabled={buttonDisabled}
-            selectionDisabled={props.disabled}
-            text={
-                props.getText
-                    ? props.getText(getRunnable(), getRunningStatus())
-                    : ''
+            options={getOptions()}
+            selectedIndex={activeRunnables.indexOf(selectedRunnable)}
+            onSelectionChange={(index) =>
+                setSelectedRunnable(activeRunnables[index])
             }
-            actionOnRunnable={handleActionOnRunnable}
+            onClick={runnables[selectedRunnable].startComputation}
+            runningStatus={getRunningStatus()}
+            buttonDisabled={disabled || isButtonDisable()}
+            selectionDisabled={disabled}
+            text={runnablesText[selectedRunnable] || ''}
+            actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
             isRunning={isRunning()}
-            computationStopped={props.computationStopped}
+            computationStopped={computationStopped}
         />
     );
 };
 
 RunButton.propTypes = {
-    runnables: PropTypes.array.isRequired,
+    runnables: PropTypes.objectOf(
+        PropTypes.exact({
+            messageId: PropTypes.string.isRequired,
+            startComputation: PropTypes.func,
+            actionOnRunnable: PropTypes.func.isRequired,
+        }).isRequired
+    ).isRequired,
+    activeRunnables: PropTypes.arrayOf(PropTypes.string).isRequired,
     getStatus: PropTypes.func.isRequired,
-    getText: PropTypes.func.isRequired,
-    onStartClick: PropTypes.func,
-    actionOnRunnable: PropTypes.object.isRequired,
     computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
 };

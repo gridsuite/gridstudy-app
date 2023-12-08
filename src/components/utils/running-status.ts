@@ -12,6 +12,8 @@ export enum RunningStatus {
     RUNNING = 'RUNNING',
 }
 
+export default RunningStatus;
+
 export function getLoadFlowRunningStatus(
     loadFlowStatus: string
 ): RunningStatus {
