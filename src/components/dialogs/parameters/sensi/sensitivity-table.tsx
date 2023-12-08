@@ -29,6 +29,7 @@ interface SensitivityTableProps {
     columnsDefinition: IColumnsDef[];
     tableHeight: number;
     createRows: (a: number) => void;
+    isFormChanged: (a: boolean) => void;
 }
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
@@ -36,6 +37,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     columnsDefinition,
     tableHeight,
     createRows,
+    isFormChanged,
 }) => {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -54,8 +56,9 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             if (index >= 0 && index < currentRowsValues.length) {
                 remove(index);
             }
+            isFormChanged(true);
         },
-        [arrayFormName, getValues, remove]
+        [arrayFormName, getValues, remove, isFormChanged]
     );
 
     return (
@@ -96,6 +99,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 row={row}
                                 index={index}
                                 handleDeleteButton={handleDeleteButton}
+                                isFormChanged={isFormChanged}
                             />
                         )
                     )}

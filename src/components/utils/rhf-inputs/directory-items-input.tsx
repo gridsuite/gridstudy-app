@@ -38,6 +38,7 @@ interface DirectoryItemsInputProps {
     itemFilter?: any;
     titleId?: string;
     hideErrorMessage?: boolean;
+    isFormChanged?: (a: boolean) => void;
 }
 
 const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
@@ -48,6 +49,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
+    isFormChanged,
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -87,12 +89,18 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                     });
                 } else {
                     append(otherElementAttributes);
+                    isFormChanged && isFormChanged(true);
                 }
             });
             setDirectoryItemSelectorOpen(false);
         },
         [append, getValues, snackError, name]
     );
+
+    const removeElements = useCallback((index: number) => {
+        remove(index);
+        isFormChanged && isFormChanged(true);
+    }, []);
 
     return (
         <>
@@ -121,7 +129,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                             <Chip
                                 key={item.id}
                                 size="small"
-                                onDelete={() => remove(index)}
+                                onDelete={() => removeElements(index)}
                                 label={
                                     <OverflowableText
                                         text={

@@ -114,6 +114,7 @@ export const SensitivityAnalysisParameters = ({
     const [popupConfirm, setPopupConfirm] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
+    const [isFormChanged, setIsFormChanged] = useState(false);
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
     const formattedProviders = [
@@ -243,11 +244,10 @@ export const SensitivityAnalysisParameters = ({
                 formatFiltredParams(newParams)
             )
                 .then((response) => {
-                    response
-                        .text()
-                        .then((value) =>
-                            setAnalysisComputeComplexity(value && Number(value))
-                        );
+                    response.text().then((value) => {
+                        setAnalysisComputeComplexity(value && Number(value));
+                        hasFormChanged(false);
+                    });
                 })
                 .catch((error) => {
                     snackError({
@@ -262,7 +262,7 @@ export const SensitivityAnalysisParameters = ({
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
-            reset({
+            const values = {
                 [PROVIDER]: parameters[PROVIDER],
                 [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                     parameters.flowFlowSensitivityValueThreshold,
@@ -432,7 +432,8 @@ export const SensitivityAnalysisParameters = ({
                             [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
                         };
                     }) ?? [],
-            });
+            };
+            reset(values);
         },
         [reset]
     );
@@ -474,7 +475,6 @@ export const SensitivityAnalysisParameters = ({
     const isMaxReached = () => analysisComputeComplexity > 500000;
 
     const getFilteredData = useCallback(() => {
-        debugger;
         return {
             sensitivityInjectionsSet:
                 getValues().sensitivityInjectionsSet.filter(
@@ -495,25 +495,25 @@ export const SensitivityAnalysisParameters = ({
     const trigger = useCallback(
         (data) => {
             let isTriggerable =
-                data.sensitivityInjectionsSet.length +
-                    data.sensitivityInjection.length +
-                    data.sensitivityHVDC.length +
-                    data.sensitivityPST.length >
-                0;
-            //debugger;
+                data.sensitivityInjectionsSet.length ||
+                data.sensitivityInjection.length ||
+                data.sensitivityHVDC.length ||
+                data.sensitivityPST.length;
+            isTriggerable = isTriggerable || isFormChanged;
             if (isTriggerable && formState.isValid) {
                 return true;
             }
             return false;
         },
-        [formState.isValid]
+        [formState.isValid, isFormChanged]
     );
+
+    const hasFormChanged = (isFormChanged) => setIsFormChanged(isFormChanged);
 
     useEffect(() => {
         const filtredData = getFilteredData();
-        debugger;
         trigger(filtredData) && onChangeParams(filtredData);
-    }, [onChangeParams, trigger, getFilteredData, onChange]);
+    }, [onChangeParams, trigger, getFilteredData]);
 
     return (
         <>
@@ -562,6 +562,7 @@ export const SensitivityAnalysisParameters = ({
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
                         }
+                        isFormChanged={hasFormChanged}
                     />
                 </Grid>
                 <DialogActions>
