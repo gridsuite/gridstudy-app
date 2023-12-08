@@ -21,21 +21,21 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText' },
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText' },
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText' },
-        { id: 'VOLTAGE_SET_POINT', label: 'VoltageText' },
+        { id: 'VOLTAGE_SET_POINT', label: 'GeneratorTargetV' },
         {
             id: 'PLANNED_ACTIVE_POWER_SET_POINT',
             label: 'PlannedActivePowerSetPointForm',
         },
-        { id: 'MARGINAL_COST', label: 'MarginalCost' },
+        { id: 'MARGINAL_COST', label: 'StartupCost' },
         { id: 'PLANNED_OUTAGE_RATE', label: 'PlannedOutageRate' },
         { id: 'FORCED_OUTAGE_RATE', label: 'ForcedOutageRate' },
-        { id: 'DROOP', label: 'Droop' },
+        { id: 'DROOP', label: 'ActivePowerRegulationDroop' },
         { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm' },
         {
             id: 'STEP_UP_TRANSFORMER_REACTANCE',
             label: 'TransformerReactanceForm',
         },
-        { id: 'Q_PERCENT', label: 'QPercentText' },
+        { id: 'Q_PERCENT', label: 'ReactivePercentageVoltageRegulation' },
     ],
     [EQUIPMENT_TYPES.BATTERY]: [
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText' },
@@ -67,6 +67,23 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'ACTIVE_POWER', label: 'ActivePowerText' },
         { id: 'REACTIVE_POWER', label: 'ReactivePowerText' },
     ],
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
+        { id: 'SERIES_RESISTANCE', label: 'SeriesResistanceText' },
+        { id: 'SERIES_REACTANCE', label: 'SeriesReactanceText' },
+        { id: 'MAGNETIZING_CONDUCTANCE', label: 'MagnetizingConductance' },
+        { id: 'MAGNETIZING_SUSCEPTANCE', label: 'MagnetizingSusceptance' },
+        { id: 'RATED_VOLTAGE_1', label: 'RatedVoltage1' },
+        { id: 'RATED_VOLTAGE_2', label: 'RatedVoltage2' },
+        { id: 'RATED_S', label: 'RatedNominalPowerText' },
+        { id: 'TARGET_V', label: 'RatioTargetV' },
+        { id: 'RATIO_LOW_TAP_POSITION', label: 'RatioLowTapPosition' },
+        { id: 'RATIO_TAP_POSITION', label: 'RatioTapPosition' },
+        { id: 'RATIO_TARGET_DEADBAND', label: 'RatioDeadBand' },
+        { id: 'REGULATION_VALUE', label: 'PhaseRegulatingValue' },
+        { id: 'PHASE_LOW_TAP_POSITION', label: 'PhaseLowTapPosition' },
+        { id: 'PHASE_TAP_POSITION', label: 'PhaseTapPosition' },
+        { id: 'PHASE_TARGET_DEADBAND', label: 'PhaseDeadBand' },
+    ],
 };
 
 function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {
@@ -84,7 +101,8 @@ const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (
     value,
     context
 ) => {
-    if (!isNaN(parseFloat(value))) {
+    const newValue = value.replace(',', '.');
+    if (!isNaN(parseFloat(newValue))) {
         return true;
     }
 

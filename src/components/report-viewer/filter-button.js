@@ -6,9 +6,8 @@
  */
 import React, { useMemo, useState } from 'react';
 import { Box, IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { MultiSelectList } from './multi-select-list';
-import LogReportItem from './log-report-item';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -58,19 +57,17 @@ export const FilterButton = ({ selectedItems, setSelectedItems }) => {
         handleClose();
     };
 
-    const isInitialStateModified = useMemo(() => {
-        return Object.keys(selectedItems).some(
-            (key) =>
-                LogReportItem.getDefaultSeverityFilter()[key] !==
-                selectedItems[key]
-        );
+    const areSomeSeveritiesUnchecked = useMemo(() => {
+        return Object.keys(selectedItems).some((key) => !selectedItems[key]);
     }, [selectedItems]);
 
     return (
         <Box sx={styles.container}>
             <IconButton onClick={handleClick}>
-                <MenuIcon sx={styles.icon} />
-                {isInitialStateModified && <Box sx={styles.notificationDot} />}
+                <FilterAltIcon sx={styles.icon} />
+                {areSomeSeveritiesUnchecked && (
+                    <Box sx={styles.notificationDot} />
+                )}
             </IconButton>
             <MultiSelectList
                 selectedItems={selectedItems}
