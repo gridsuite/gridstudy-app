@@ -4,12 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
-    FunctionComponent,
-    useCallback,
-    useMemo,
-    useState,
-} from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import {
     Grid,
     IconButton,
@@ -28,11 +23,6 @@ import { Box } from '@mui/system';
 import Tooltip from '@mui/material/Tooltip';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import {
-    formatPropertiesForBackend,
-    modifySubstation,
-} from 'services/study/network-modifications';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../utils/yup-config';
 
 type IData = {
@@ -60,10 +50,6 @@ type SitePropertiesDialogProps = {
     spreadsheetApi: any;
     spreadsheetContext: any;
     closeDialog: (status: boolean) => void;
-    studyUuid: string;
-    currentNode: any;
-    equipmentId: string;
-    validateAllEdits: () => void;
     editingData: any;
     setEditingData: any;
 };
@@ -76,17 +62,12 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     spreadsheetApi,
     spreadsheetContext,
     closeDialog,
-    studyUuid,
-    currentNode,
-    equipmentId,
-    validateAllEdits,
     editingData,
     setEditingData,
 }) => {
     const theme = useTheme();
     const [error, setError] = useState<string>('');
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
     const [rowData, setRowData] = useState<IData[]>(() => {
         const data = spreadsheetContext.dynamicValidation;
         if (!data?.properties) {
@@ -149,63 +130,15 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     };
 
     const prepareDataAndSendRequest = () => {
-        const initialProperties =
-            spreadsheetContext.dynamicValidation.properties;
-        //extract keys and values from initial properties to an array of objects with name and value
-        const initialPropertiesMapped = initialProperties
-            ? Object.keys(initialProperties).map((key) => {
-                  return {
-                      name: key,
-                      value: initialProperties[key],
-                  };
-              })
-            : [];
-
-        //extract keys and values from current properties to an array of objects with name and value
-        const properties = rowData.map((row) => {
-            return {
-                name: row.key,
-                value: row.value,
-            };
-        });
-
-        const propertiesSiteFormated = formatPropertiesForBackend(
-            initialPropertiesMapped,
-            properties
-        );
-
-        console.log('debug', 'properties', properties);
         //take each value from properties Array and add it to editingData where 'name' is the key and 'value' is the value
-        function arrayToObject(arr: any[]) {
-            return arr.reduce((obj, item) => {
-                obj[item.name] = item.value;
+        function arrayToObject(arr: IData[]) {
+            return arr.reduce((obj: any, item) => {
+                obj[item.key] = item.value;
                 return obj;
             }, {});
         }
-
-        console.log('debug', 'editingData', arrayToObject(properties));
         // add properties to editingData
-        setEditingData({ ...editingData , properties:  arrayToObject(properties)});
-        // console.log('debug', 'editingDataCopy', editingDataCopy);
-        // modifySubstation(
-        //     studyUuid,
-        //     currentNode.id,
-        //     spreadsheetContext.dynamicValidation.id,
-        //     equipmentId,
-        //     null,
-        //     false,
-        //     null,
-        //     propertiesSiteFormated
-        // )
-        //     .catch((err) => {
-        //         snackError({
-        //             messageTxt: err.message,
-        //             headerId: 'SubstationModificationError',
-        //         });
-        //     })
-        //     .finally(() => {
-        //         spreadsheetApi?.stopEditing();
-        //     });
+        setEditingData({ ...editingData, properties: arrayToObject(rowData) , previousProperties: spreadsheetContext.dynamicValidation.properties});
     };
 
     const handleNameChange = (index: number, value: string) => {

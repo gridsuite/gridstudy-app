@@ -33,7 +33,6 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
-    validateAllEdits,
     editingData,
     setEditingData,
 }) => {
@@ -164,10 +163,6 @@ export const EquipmentTable = ({
                     closeDialog={(shouldClose) => {
                         setOpenPopupEditSiteProperties(!shouldClose);
                     }}
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    equipmentId={equipmentId}
-                    validateAllEdits={validateAllEdits}
                     editingData={editingData}
                     setEditingData={setEditingData}
                 ></SitePropertiesDialog>

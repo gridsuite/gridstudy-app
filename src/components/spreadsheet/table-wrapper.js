@@ -47,8 +47,8 @@ import {
     modifyGenerator,
     modifyLoad,
     modifyVoltageLevel,
-    requestNetworkChange,
-} from '../../services/study/network-modifications';
+    requestNetworkChange, formatPropertiesForBackend
+} from "../../services/study/network-modifications";
 import { Box } from '@mui/system';
 
 const useEditBuffer = () => {
@@ -530,15 +530,16 @@ const TableWrapper = (props) => {
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
+                    const propertiesForBackend = formatPropertiesForBackend(editingData.previousProperties ?? {} , editingData.properties ?? {});
                     return modifySubstation(
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
                         editingData.name,
-                        editingData.countryName,
+                        editingData.countryName ?? editingData.countryCode,
                         false,
                         undefined,
-                        undefined
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
@@ -797,10 +798,6 @@ const TableWrapper = (props) => {
         }
     }, [editingData]);
 
-    const validateAllEdits = () => {
-        isValidatingData.current = true;
-    };
-
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -880,7 +877,6 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
-                        validateAllEdits={validateAllEdits}
                         editingData={editingData}
                         setEditingData={setEditingData}
                     />

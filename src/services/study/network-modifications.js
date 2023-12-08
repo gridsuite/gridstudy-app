@@ -1094,14 +1094,23 @@ export function createSubstation(
 
 /**
  * Formats the properties of an array of properties so it can be consumed by the backend.
- * @param {Array<{name: string, value: string}>} previousPropertiesArray - The previous propeties values.
- * @param {Array<{name: string, value: string}>} newPropertiesArray - The new properties values.
- * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean}>} - The modified properties.
+ * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean} | null>} - The modified properties.
  */
-export function formatPropertiesForBackend(
-    previousPropertiesArray,
-    newPropertiesArray
-) {
+export function formatPropertiesForBackend(previousProperties, newProperties) {
+    if (JSON.stringify(previousProperties) === JSON.stringify(newProperties)) {
+        // return null so the backend does not update the properties
+        console.log('debug', previousProperties, newProperties);
+        return null;
+    }
+
+    //take each attribute of previousProperties and convert it to and array of { 'name': aa, 'value': yy }
+    const previousPropertiesArray = Object.entries(previousProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+    const newPropertiesArray = Object.entries(newProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+
     const propertiesModifications = [];
     previousPropertiesArray.forEach((previousPropertiePair) => {
         const updatedProperty = newPropertiesArray.find(
