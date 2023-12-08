@@ -91,7 +91,7 @@ export const NetworkMapTab = ({
     );
 
     const rootNodeId = useMemo(() => {
-        const rootNode = treeModel.treeNodes.find(
+        const rootNode = treeModel?.treeNodes.find(
             (node) => node?.data?.label === 'Root'
         );
         return rootNode?.id;
@@ -855,7 +855,7 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         // when root node geodata are loaded, we fetch current node missing geo-data
-        // we check if equipments are done initializing because they are checked to fetch accurat missing geo data
+        // we check if equipments are done initializing because they are checked to fetch accurate missing geo data
         if (
             isRootNodeGeoDataLoaded &&
             isMapEquipmentsInitialized &&
