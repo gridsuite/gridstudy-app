@@ -612,6 +612,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
@@ -660,7 +663,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const nonEvacuatedEnergyBackend = useParametersBackend(
         user,
         'NonEvacuatedEnergy',
-        sensitivityAnalysisAvailability, // same backing service as the one for sensitivity analysis
+        nonEvacuatedEnergyAvailability,
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
         fetchNonEvacuatedEnergyProvider,
         fetchDefaultNonEvacuatedEnergyProvider,
@@ -772,7 +775,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        {sensitivityAnalysisAvailability ===
+                        {nonEvacuatedEnergyAvailability ===
                             OptionalServicesStatus.Up && (
                             <Tab
                                 disabled={!studyUuid}
@@ -891,7 +894,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 )}
                             </TabPanel>
                         )}
-                        {sensitivityAnalysisAvailability ===
+                        {nonEvacuatedEnergyAvailability ===
                             OptionalServicesStatus.Up && (
                             <TabPanel
                                 value={tabValue}
