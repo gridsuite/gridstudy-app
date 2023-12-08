@@ -407,6 +407,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     RunningStatus.RUNNING
                 )
             );
+            setComputationStopped(false);
             startNonEvacuatedEnergy(studyUuid, currentNode?.id)
                 .then(setRanNonEvacuatedEnergy(true))
                 .catch((error) => {
