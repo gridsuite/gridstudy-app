@@ -13,7 +13,16 @@ import React, {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Theme, Box, darken, lighten, Divider, Tabs, Tab } from '@mui/material';
+import {
+    Theme,
+    Box,
+    darken,
+    lighten,
+    Divider,
+    Tabs,
+    Tab,
+    DialogContentText,
+} from '@mui/material';
 
 import {
     useParameterState,
@@ -73,6 +82,7 @@ import { SecurityAnalysisParameters } from './dialogs/parameters/security-analys
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { getStudyUrlWithNodeUuid } from 'services/study';
+import { SelectOptionsDialog } from 'utils/dialogs';
 
 const styles = {
     panel: (theme: Theme) => ({
@@ -129,6 +139,13 @@ enum TAB_VALUES {
     voltageInitParamsTabValue = 'VoltageInit',
 }
 
+const hasValidationTabs = [
+    TAB_VALUES.sensitivityAnalysisParamsTabValue,
+    TAB_VALUES.shortCircuitParamsTabValue,
+    TAB_VALUES.dynamicSimulationParamsTabValue,
+    TAB_VALUES.voltageInitParamsTabValue,
+];
+
 type OwnProps = {
     studyId: string;
 };
@@ -139,6 +156,12 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
     const [tabValue, setTabValue] = useState<string>(
         TAB_VALUES.sldParamsTabValue
     );
+    const [nextTabValue, setNextTabValue] = useState<string | undefined>(
+        undefined
+    );
+    const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
+
+    const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -202,6 +225,26 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
 
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
+    const handleChangeTab = (newValue: string) => {
+        if (
+            hasValidationTabs.includes(tabValue as TAB_VALUES) &&
+            haveDirtyFields
+        ) {
+            setNextTabValue(newValue);
+            setIsPopupOpen(true);
+        } else {
+            setTabValue(newValue);
+        }
+    };
+
+    const handlePopupChangeTab = useCallback(() => {
+        if (nextTabValue) {
+            setTabValue(nextTabValue);
+        }
+        setHaveDirtyFields(false);
+        setIsPopupOpen(false);
+    }, [nextTabValue]);
+
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
@@ -245,20 +288,28 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
                         }
+                        setHaveDirtyFields={setHaveDirtyFields}
                     />
                 );
             case TAB_VALUES.shortCircuitParamsTabValue:
                 return (
                     <ShortCircuitParameters
                         useShortCircuitParameters={useShortCircuitParameters}
+                        setHaveDirtyFields={setHaveDirtyFields}
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
-                return <DynamicSimulationParameters user={user} />;
+                return (
+                    <DynamicSimulationParameters
+                        user={user}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                    />
+                );
             case TAB_VALUES.voltageInitParamsTabValue:
                 return (
                     <VoltageInitParameters
                         useVoltageInitParameters={useVoltageInitParameters}
+                        setHaveDirtyFields={setHaveDirtyFields}
                     />
                 );
             case TAB_VALUES.advancedParamsTabValue:
@@ -281,7 +332,7 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
             <Tabs
                 value={tabValue}
                 variant="scrollable"
-                onChange={(event, newValue) => setTabValue(newValue)}
+                onChange={(event, newValue) => handleChangeTab(newValue)}
                 aria-label="parameters"
                 orientation="vertical"
                 sx={styles.listDisplay}
@@ -373,6 +424,18 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                 />
             </Tabs>
             <Box sx={styles.parametersBox}>{displayTab()}</Box>
+            <SelectOptionsDialog
+                title={''}
+                open={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                onClick={handlePopupChangeTab}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="genericConfirmQuestion" />
+                    </DialogContentText>
+                }
+                style
+            />
         </Box>
     );
 };
