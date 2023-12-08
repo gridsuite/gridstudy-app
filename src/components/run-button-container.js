@@ -260,7 +260,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
 
     const runnables = useMemo(() => {
         function actionOnRunnables(type, fnStop) {
-            fnStop.finally(() => {
+            fnStop().finally(() => {
                 dispatch(setComputingStatus(type, RunningStatus.IDLE));
                 setComputationStopped(true);
             });
