@@ -98,6 +98,7 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                         result={nonEvacuatedEnergyResult}
+                        status={nonEvacuatedEnergyStatus}
                         isWaiting={isWaiting}
                     />
                 )}

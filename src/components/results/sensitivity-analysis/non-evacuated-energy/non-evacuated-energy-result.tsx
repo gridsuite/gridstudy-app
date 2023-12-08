@@ -10,17 +10,19 @@ import { NonEvacuatedEnergyResultProps } from './non-evacuated-energy-result.typ
 import Button from '@mui/material/Button';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
+import { RunningStatus } from '../../../utils/running-status';
 
 const styles = {
     buttonExportResult: {
         display: 'flex',
         position: 'relative',
+        marginTop: '10px',
     },
 };
 
 export const NonEvacuatedEnergyResult: FunctionComponent<
     NonEvacuatedEnergyResultProps
-> = ({ result, studyUuid, nodeUuid, isWaiting }) => {
+> = ({ result, status, studyUuid, nodeUuid, isWaiting }) => {
     const exportResult = useCallback(() => {
         const fileSaver = require('file-saver');
         const blob = new Blob([JSON.stringify(result, null, 2)], {
@@ -36,7 +38,7 @@ export const NonEvacuatedEnergyResult: FunctionComponent<
                     <Button
                         variant="outlined"
                         onClick={exportResult}
-                        disabled={!result}
+                        disabled={!result || status !== RunningStatus.SUCCEED}
                     >
                         <FormattedMessage id="exportResult" />
                     </Button>
