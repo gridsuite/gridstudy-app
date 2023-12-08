@@ -146,6 +146,11 @@ const TableWrapper = (props) => {
         [lockedColumnsNames.size]
     );
 
+    const setEditingDataAndRef = (editingData) => {
+        setEditingData(editingData ? { ...editingData } : undefined);
+        editingDataRef.current = editingData;
+    };
+
     const globalFilterRef = useRef();
 
     const [columnData, setColumnData] = useState([]);
@@ -157,9 +162,8 @@ const TableWrapper = (props) => {
             gridRef.current.api.undoCellEditing();
         });
         resetBuffer();
-        setEditingData();
-        editingDataRef.current = editingData;
-    }, [priorValuesBuffer, resetBuffer, editingData]);
+        setEditingDataAndRef();
+    }, [priorValuesBuffer, resetBuffer]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -379,7 +383,7 @@ const TableWrapper = (props) => {
             if (event.finished && event.column) {
                 const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
                     reorderedTableDefinitionIndexes.indexOf(
-                        event.column.colDef.id
+                        event.column.colDef?.id
                     ),
                     1
                 );
@@ -409,7 +413,7 @@ const TableWrapper = (props) => {
 
                 const [reorderedColDef] = columnData.splice(
                     columnData.findIndex((obj) => {
-                        return obj.id === event.column.colDef.id;
+                        return obj.id === event.column.colDef?.id;
                     }),
                     1
                 );
@@ -499,7 +503,36 @@ const TableWrapper = (props) => {
                         ),
                         undefined,
                         undefined,
-                        undefined
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        getFieldValue(
+                            editingData?.regulatingTerminalVlId ||
+                                editingData?.regulatingTerminalConnectableId
+                                ? 'DISTANT'
+                                : 'LOCAL',
+                            editingDataRef.current?.regulatingTerminalVlId ||
+                                editingDataRef.current
+                                    ?.regulatingTerminalConnectableId
+                                ? 'DISTANT'
+                                : 'LOCAL'
+                        ),
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableId,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableId
+                        ),
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableType,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableType
+                        ),
+                        editingData.regulatingTerminalVlId
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -640,12 +673,12 @@ const TableWrapper = (props) => {
             };
             Object.entries(priorValuesBuffer).forEach(([field, value]) => {
                 const column = gridRef.current.columnApi.getColumn(field);
-                const val = column.colDef.valueGetter
-                    ? column.colDef.valueGetter(wrappedEditedData)
+                const val = column.colDef?.valueGetter
+                    ? column.colDef?.valueGetter(wrappedEditedData)
                     : editingData[field];
 
                 groovyCr +=
-                    column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
+                    column.colDef?.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
             const editPromise = buildEditPromise(editingData, groovyCr);
@@ -655,9 +688,8 @@ const TableWrapper = (props) => {
                         update: [editingData],
                     };
                     gridRef.current.api.applyTransaction(transaction);
-                    setEditingData();
                     resetBuffer();
-                    editingDataRef.current = editingData;
+                    setEditingDataAndRef();
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
@@ -768,6 +800,39 @@ const TableWrapper = (props) => {
         }
     }, []);
 
+    const updateGeneratorCells = useCallback((params) => {
+        const rowNode = params.node;
+        const colId = params.column.colId;
+        const regulationTypeText = params.data.RegulationTypeText;
+
+        if (colId === 'RegulationTypeText') {
+            if (
+                regulationTypeText === 'DISTANT' &&
+                params.oldValue !== regulationTypeText //add
+            ) {
+                // set temporary values that should be changed when opening popup
+                params.data.regulatingTerminalVlId =
+                    editingDataRef.current?.regulatingTerminalVlId ?? ' ';
+                params.data.regulatingTerminalConnectableId =
+                    editingDataRef.current?.regulatingTerminalConnectableId ??
+                    ' ';
+                params.data.regulatingTerminalConnectableType =
+                    editingDataRef.current?.regulatingTerminalConnectableType ??
+                    ' ';
+
+                rowNode.setDataValue(
+                    'RegulatingTerminalGenerator',
+                    editingDataRef.current?.regulatingTerminalVlId ?? ''
+                );
+            }
+            if (regulationTypeText === 'LOCAL') {
+                params.data.regulatingTerminalConnectableId = undefined;
+                params.data.regulatingTerminalConnectableType = undefined;
+                params.data.regulatingTerminalVlId = undefined;
+                rowNode.setDataValue('RegulatingTerminalGenerator', ' ');
+            }
+        }
+    }, []);
     //this listener is called for each cell modified
     const handleCellEditing = useCallback(
         (params) => {
@@ -776,14 +841,19 @@ const TableWrapper = (props) => {
                 rowNode.setDataValue(params.column.colId, params.oldValue);
                 params.context.editErrors = {};
             } else if (
-                params.data.metadata.equipmentType ===
+                params.data.metadata?.equipmentType ===
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR
             ) {
                 updateShuntCompensatorCells(params);
+            } else if (
+                params.data.metadata?.equipmentType ===
+                EQUIPMENT_TYPES.GENERATOR
+            ) {
+                updateGeneratorCells(params);
             }
-            addDataToBuffer(params.colDef.field, params.oldValue);
+            addDataToBuffer(params.colDef?.field, params.oldValue);
         },
-        [addDataToBuffer, updateShuntCompensatorCells]
+        [addDataToBuffer, updateGeneratorCells, updateShuntCompensatorCells]
     );
 
     const handleEditingStarted = useCallback((params) => {
@@ -817,7 +887,7 @@ const TableWrapper = (props) => {
                         return {
                             component: EditingCellRenderer,
                             params: {
-                                setEditingData: setEditingData,
+                                setEditingData: setEditingDataAndRef,
                                 startEditing: handleEditingStarted,
                                 stopEditing: handleEditingStopped,
                             },
@@ -830,7 +900,7 @@ const TableWrapper = (props) => {
                         return {
                             component: EditableCellRenderer,
                             params: {
-                                setEditingData: setEditingData,
+                                setEditingData: setEditingDataAndRef,
                                 equipmentType:
                                     TABLES_DEFINITION_INDEXES.get(tabIndex)
                                         .type,
@@ -882,12 +952,12 @@ const TableWrapper = (props) => {
 
     const topPinnedData = useMemo(() => {
         if (editingData) {
-            editingDataRef.current = { ...editingData };
             return [editingData];
         } else {
             return undefined;
         }
     }, [editingData]);
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -948,6 +1018,7 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}
@@ -961,6 +1032,9 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
+                        editingData={editingData}
+                        setEditingData={setEditingData}
+                        editingDataRef={editingDataRef}
                     />
                 </Box>
             )}

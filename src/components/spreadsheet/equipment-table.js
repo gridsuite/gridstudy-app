@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
+import { REGULATION_TYPES } from 'components/network/constants';
+import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -19,6 +21,8 @@ export const EquipmentTable = ({
     topPinnedData,
     columnData,
     gridRef,
+    studyUuid,
+    currentNode,
     handleColumnDrag,
     handleCellEditing,
     handleGridReady,
@@ -26,6 +30,9 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
+    editingData,
+    setEditingData,
+    editingDataRef,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -60,16 +67,48 @@ export const EquipmentTable = ({
         }),
         []
     );
+    const [popupEditRegulatingTerminal, setPopupEditRegulatingTerminal] =
+        useState(false);
+
+    const onRegulatingTerminalPopupClose = () => {
+        setPopupEditRegulatingTerminal(false);
+    };
+    const openGeneratorPopup = () => {
+        setPopupEditRegulatingTerminal(true);
+    };
+    const handleSavePopupRegulatingTerminal = (d) => {
+        setPopupEditRegulatingTerminal(false);
+
+        const {
+            equipment: { type: equipmentType, id: equipmentId } = {},
+            voltageLevel: { id: voltageLevelId } = {},
+        } = d || {};
+
+        setEditingData((prevEditingData) => ({
+            ...prevEditingData,
+            voltageRegulationType: REGULATION_TYPES.DISTANT.id,
+            regulatingTerminalConnectableType: equipmentType,
+            regulatingTerminalConnectableId: equipmentId,
+            regulatingTerminalVlId: voltageLevelId,
+        }));
+    };
 
     const gridContext = useMemo(() => {
         return {
             network: network,
             editErrors: {},
             dynamicValidation: {},
-            isEditing: topPinnedData ? true : false,
+            isEditing: !!topPinnedData,
             theme: theme,
+            handleCellClick: {
+                //functions for handling cell click for Generator Spreadsheet
+                openGeneratorDialog: () => {
+                    openGeneratorPopup();
+                },
+            },
         };
     }, [network, theme, topPinnedData]);
+
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -93,6 +132,7 @@ export const EquipmentTable = ({
     const loadingOverlayComponent = (props) => {
         return <>{props.loadingMessage}</>;
     };
+
     const loadingOverlayComponentParams = useMemo(() => {
         return {
             loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
@@ -100,34 +140,53 @@ export const EquipmentTable = ({
     }, [intl]);
 
     return (
-        <CustomAGGrid
-            ref={gridRef}
-            getRowId={getRowId}
-            rowData={rowsToShow}
-            pinnedTopRowData={topPinnedData}
-            debounceVerticalScrollbar={true}
-            getRowStyle={getRowStyle}
-            columnDefs={columnData}
-            defaultColDef={defaultColDef}
-            enableCellTextSelection={true}
-            undoRedoCellEditing={true}
-            onCellEditingStopped={handleCellEditing}
-            onRowDataUpdated={handleRowDataUpdated}
-            onColumnMoved={handleColumnDrag}
-            suppressDragLeaveHidesColumns={true}
-            suppressColumnVirtualisation={true}
-            suppressClickEdit={!topPinnedData}
-            singleClickEdit={true}
-            context={gridContext}
-            onGridReady={handleGridReady}
-            shouldHidePinnedHeaderRightBorder={
-                shouldHidePinnedHeaderRightBorder
-            }
-            getRowHeight={getRowHeight}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
-        />
+        <>
+            <CustomAGGrid
+                ref={gridRef}
+                getRowId={getRowId}
+                rowData={rowsToShow}
+                pinnedTopRowData={topPinnedData}
+                debounceVerticalScrollbar={true}
+                getRowStyle={getRowStyle}
+                columnDefs={columnData}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                undoRedoCellEditing={true}
+                onCellEditingStopped={handleCellEditing}
+                onRowDataUpdated={handleRowDataUpdated}
+                onColumnMoved={handleColumnDrag}
+                suppressDragLeaveHidesColumns={true}
+                suppressColumnVirtualisation={true}
+                suppressClickEdit={!topPinnedData}
+                singleClickEdit={true}
+                context={gridContext}
+                onGridReady={handleGridReady}
+                shouldHidePinnedHeaderRightBorder={
+                    shouldHidePinnedHeaderRightBorder
+                }
+                getRowHeight={getRowHeight}
+                overlayNoRowsTemplate={message}
+                loadingOverlayComponent={loadingOverlayComponent}
+                loadingOverlayComponentParams={loadingOverlayComponentParams}
+                showOverlay={true}
+            />
+            {popupEditRegulatingTerminal && (
+                <RegulatingTerminalModificationDialog
+                    open={popupEditRegulatingTerminal}
+                    onClose={onRegulatingTerminalPopupClose}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    onModifyRegulatingTerminalGenerator={(
+                        updatedRegulatedTerminal
+                    ) => {
+                        handleSavePopupRegulatingTerminal(
+                            updatedRegulatedTerminal
+                        );
+                    }}
+                    data={editingData}
+                    previousData={editingDataRef.current}
+                />
+            )}
+        </>
     );
 };
