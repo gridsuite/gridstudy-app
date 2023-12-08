@@ -881,6 +881,8 @@ const TableWrapper = (props) => {
                             isLockedColumnNamesEmpty
                         }
                         validateAllEdits={validateAllEdits}
+                        editingData={editingData}
+                        setEditingData={setEditingData}
                     />
                 </Box>
             )}

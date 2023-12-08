@@ -64,6 +64,8 @@ type SitePropertiesDialogProps = {
     currentNode: any;
     equipmentId: string;
     validateAllEdits: () => void;
+    editingData: any;
+    setEditingData: any;
 };
 
 /**
@@ -78,6 +80,8 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     currentNode,
     equipmentId,
     validateAllEdits,
+    editingData,
+    setEditingData,
 }) => {
     const theme = useTheme();
     const [error, setError] = useState<string>('');
@@ -115,9 +119,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     const performValidation = () => {
         //validate rowData with yup and display error message and erros cells if any
         let hasError = false;
-        validateAllEdits();
-        spreadsheetApi?.stopEditing();
-        validateAllEdits();
         //get the content of the pined row
         spreadsheetApi?.forEachNode((node: any) => {
             if (node.rowPinned) {
@@ -173,25 +174,38 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             properties
         );
 
-        modifySubstation(
-            studyUuid,
-            currentNode.id,
-            spreadsheetContext.dynamicValidation.id,
-            equipmentId,
-            null,
-            false,
-            null,
-            propertiesSiteFormated
-        )
-            .catch((err) => {
-                snackError({
-                    messageTxt: err.message,
-                    headerId: 'SubstationModificationError',
-                });
-            })
-            .finally(() => {
-                spreadsheetApi?.stopEditing();
-            });
+        console.log('debug', 'properties', properties);
+        //take each value from properties Array and add it to editingData where 'name' is the key and 'value' is the value
+        function arrayToObject(arr: any[]) {
+            return arr.reduce((obj, item) => {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
+        }
+
+        console.log('debug', 'editingData', arrayToObject(properties));
+        // add properties to editingData
+        setEditingData({ ...editingData , properties:  arrayToObject(properties)});
+        // console.log('debug', 'editingDataCopy', editingDataCopy);
+        // modifySubstation(
+        //     studyUuid,
+        //     currentNode.id,
+        //     spreadsheetContext.dynamicValidation.id,
+        //     equipmentId,
+        //     null,
+        //     false,
+        //     null,
+        //     propertiesSiteFormated
+        // )
+        //     .catch((err) => {
+        //         snackError({
+        //             messageTxt: err.message,
+        //             headerId: 'SubstationModificationError',
+        //         });
+        //     })
+        //     .finally(() => {
+        //         spreadsheetApi?.stopEditing();
+        //     });
     };
 
     const handleNameChange = (index: number, value: string) => {
