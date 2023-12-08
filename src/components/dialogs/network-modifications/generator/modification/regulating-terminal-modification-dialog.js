@@ -19,11 +19,10 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { FormattedMessage } from 'react-intl';
-import { REGULATION_TYPES } from 'components/network/constants';
 import { Grid } from '@mui/material';
 import RegulatingTerminalForm from 'components/dialogs/regulating-terminal/regulating-terminal-form';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
@@ -47,8 +46,6 @@ const RegulatingTerminalModificationDialog = ({
     const formSchema = yup
         .object()
         .shape({
-            [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
-
             [VOLTAGE_LEVEL]: yup
                 .object()
                 .nullable()
@@ -58,7 +55,7 @@ const RegulatingTerminalModificationDialog = ({
                     [SUBSTATION_ID]: yup.string(),
                     [NOMINAL_VOLTAGE]: yup.string(),
                     [TOPOLOGY_KIND]: yup.string().nullable(),
-                }),
+                }).required(),
             [EQUIPMENT]: yup
                 .object()
                 .nullable()
@@ -66,7 +63,8 @@ const RegulatingTerminalModificationDialog = ({
                     [ID]: yup.string(),
                     [NAME]: yup.string().nullable(),
                     [TYPE]: yup.string(),
-                }),
+                })
+                .required(),
         })
         .required();
     const formMethods = useForm({
@@ -80,27 +78,6 @@ const RegulatingTerminalModificationDialog = ({
     }, [reset]);
 
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-
-    const previousRegulationType = useMemo(() => {
-        if (
-            data?.regulatingTerminalVlId ||
-            data?.regulatingTerminalConnectableId
-        ) {
-            return REGULATION_TYPES.DISTANT.id;
-        } else {
-            return REGULATION_TYPES.LOCAL.id;
-        }
-    }, [data]);
-
-    const getPreviousRegulationTypeValues = useCallback(() => {
-        reset({
-            [VOLTAGE_REGULATION_TYPE]: previousRegulationType,
-        });
-    }, [previousRegulationType, reset]);
-
-    useEffect(() => {
-        getPreviousRegulationTypeValues();
-    }, [getPreviousRegulationTypeValues]);
 
     useEffect(() => {
         if (studyUuid && currentNode.id) {
@@ -150,7 +127,7 @@ const RegulatingTerminalModificationDialog = ({
             currentNodeUuid={currentNode.id}
             studyUuid={studyUuid}
             previousRegulatingTerminalValue={
-                previousData?.regulatingTerminalVlId //kenet previous
+                previousData?.regulatingTerminalVlId
             }
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
                 previousData
@@ -159,7 +136,11 @@ const RegulatingTerminalModificationDialog = ({
     );
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <FormProvider
+            removeOptional={true}
+            validationSchema={formSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
