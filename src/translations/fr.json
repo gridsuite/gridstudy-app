@@ -693,6 +693,7 @@
     "activePowerSetpoint": "P consigne (MW)",
     "minActivePower": "P min (MW)",
     "voltageRegulationOn": "Réglage de tension",
+    "EditVoltageRegulation": "Modification du terminal distant",
     "ModificationsRequiredTabError": "Au moins une modification est requise",
 
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",

@@ -694,6 +694,7 @@
     "activePowerSetpoint": "target P (MW)",
     "minActivePower": "Min P (MW)",
     "voltageRegulationOn": "Voltage regulation",
+    "EditVoltageRegulation": "Edit Regulating terminal",
     "ModificationsRequiredTabError": "At least one modification is required",
 
     "UnableToDeleteEquipment": "Unable to delete the equipment",

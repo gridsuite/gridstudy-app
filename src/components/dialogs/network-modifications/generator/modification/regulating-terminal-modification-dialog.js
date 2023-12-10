@@ -15,7 +15,6 @@ import {
     TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
-    VOLTAGE_REGULATION_TYPE,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
@@ -30,7 +29,6 @@ import { fetchVoltageLevelsListInfos } from 'services/study/network';
 import { getRegulatingTerminalFormData } from 'components/dialogs/regulating-terminal/regulating-terminal-form-utils';
 
 const emptyFormData = {
-    [VOLTAGE_REGULATION_TYPE]: null,
     [VOLTAGE_LEVEL]: null,
     [EQUIPMENT]: null,
 };
@@ -55,7 +53,8 @@ const RegulatingTerminalModificationDialog = ({
                     [SUBSTATION_ID]: yup.string(),
                     [NOMINAL_VOLTAGE]: yup.string(),
                     [TOPOLOGY_KIND]: yup.string().nullable(),
-                }).required(),
+                })
+                .required(),
             [EQUIPMENT]: yup
                 .object()
                 .nullable()
