@@ -81,7 +81,6 @@ import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
-import { getStudyUrlWithNodeUuid } from 'services/study';
 import { SelectOptionsDialog } from 'utils/dialogs';
 
 const styles = {
@@ -350,7 +349,7 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                     sx={styles.listItemDisplay}
                     disabled={
                         !(
-                            getStudyUrlWithNodeUuid ||
+                            !props.studyId ||
                             securityAnalysisAvailability ===
                                 OptionalServicesStatus.Up
                         )
@@ -362,7 +361,7 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                     sx={styles.listItemDisplay}
                     disabled={
                         !(
-                            getStudyUrlWithNodeUuid ||
+                            !props.studyId ||
                             sensitivityAnalysisAvailability ===
                                 OptionalServicesStatus.Up
                         )
@@ -374,7 +373,7 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                     sx={styles.listItemDisplay}
                     disabled={
                         !(
-                            getStudyUrlWithNodeUuid ||
+                            !props.studyId ||
                             shortCircuitAvailability ===
                                 OptionalServicesStatus.Up
                         )
@@ -386,7 +385,7 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                     sx={styles.listItemDisplay}
                     disabled={
                         !(
-                            getStudyUrlWithNodeUuid ||
+                            !props.studyId ||
                             dynamicSimulationAvailability ===
                                 OptionalServicesStatus.Up
                         )
@@ -398,7 +397,7 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                     sx={styles.listItemDisplay}
                     disabled={
                         !(
-                            getStudyUrlWithNodeUuid ||
+                            !props.studyId ||
                             voltageInitAvailability ===
                                 OptionalServicesStatus.Up
                         )
