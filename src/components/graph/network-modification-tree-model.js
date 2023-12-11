@@ -39,31 +39,7 @@ export default class NetworkModificationTreeModel {
             (node) => node.id === referenceNodeId
         );
         switch (insertMode) {
-            case NodeInsertModes.Before: {
-                // We need to insert the node just before the active(reference) node
-                if (referenceNodeIndex === -1) {
-                    const referenceNode = this.treeNodes.find(
-                        (node) => node.id === parentId
-                    );
-                    // Update parentId to new parent
-                    parentId = referenceNode.data.parentNodeUuid;
-                    const parentIndex = this.treeNodes.findIndex(
-                        (node) => node.id === parentId
-                    );
-                    this.treeNodes.splice(
-                        parentIndex + 1,
-                        0,
-                        convertNodetoReactFlowModelNode(newNode, parentId)
-                    );
-                } else {
-                    this.treeNodes.splice(
-                        referenceNodeIndex,
-                        0,
-                        convertNodetoReactFlowModelNode(newNode, parentId)
-                    );
-                }
-                break;
-            }
+            case NodeInsertModes.Before:
             case NodeInsertModes.After: {
                 // We need to insert the node just after the active(reference) node
                 this.treeNodes.splice(
