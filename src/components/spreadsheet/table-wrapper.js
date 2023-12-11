@@ -56,6 +56,7 @@ import {
     computeSwitchedOnValue,
 } from 'components/utils/utils';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -464,6 +465,23 @@ const TableWrapper = (props) => {
                         undefined
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
+                    const regulatingTerminalConnectableIdFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableId,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableId
+                        );
+                    const regulatingTerminalConnectableTypeFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableType,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableType
+                        );
+                    const regulatingTerminalVlIdFieldValue =
+                        regulatingTerminalConnectableIdFieldValue !== null ||
+                        regulatingTerminalConnectableTypeFieldValue !== null
+                            ? editingData.regulatingTerminalVlId
+                            : null;
                     return modifyGenerator(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -522,17 +540,9 @@ const TableWrapper = (props) => {
                                 ? 'DISTANT'
                                 : 'LOCAL'
                         ),
-                        getFieldValue(
-                            editingData.regulatingTerminalConnectableId,
-                            editingDataRef.current
-                                ?.regulatingTerminalConnectableId
-                        ),
-                        getFieldValue(
-                            editingData.regulatingTerminalConnectableType,
-                            editingDataRef.current
-                                ?.regulatingTerminalConnectableType
-                        ),
-                        editingData.regulatingTerminalVlId
+                        regulatingTerminalConnectableIdFieldValue,
+                        regulatingTerminalConnectableTypeFieldValue,
+                        regulatingTerminalVlIdFieldValue
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -807,8 +817,8 @@ const TableWrapper = (props) => {
 
         if (colId === 'RegulationTypeText') {
             if (
-                regulationTypeText === 'DISTANT' &&
-                params.oldValue !== regulationTypeText //add
+                regulationTypeText === REGULATION_TYPES.DISTANT.id
+                // params.oldValue !== regulationTypeText //add
             ) {
                 // set temporary values that should be changed when opening popup
                 params.data.regulatingTerminalVlId =
@@ -825,11 +835,11 @@ const TableWrapper = (props) => {
                     editingDataRef.current?.regulatingTerminalVlId ?? ''
                 );
             }
-            if (regulationTypeText === 'LOCAL') {
+            if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
                 params.data.regulatingTerminalConnectableId = undefined;
                 params.data.regulatingTerminalConnectableType = undefined;
                 params.data.regulatingTerminalVlId = undefined;
-                rowNode.setDataValue('RegulatingTerminalGenerator', ' ');
+                rowNode.setDataValue('RegulatingTerminalGenerator', null);
             }
         }
     }, []);

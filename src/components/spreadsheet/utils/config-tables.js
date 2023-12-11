@@ -72,6 +72,13 @@ const propertiesGetter = (params) => {
         return null;
     }
 };
+const isEditableRegulatingTerminalCell = (params) =>
+    params.node.rowIndex === 0 &&
+    params.node.rowPinned === 'top' &&
+    (params.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
+        params.data?.regulatingTerminalVlId ||
+        params.data?.regulatingTerminalConnectableId) &&
+    params.context.dynamicValidation.id === params.data.id;
 
 const RegulatingTerminalCellGetter = (params) => {
     const regulatingTerminalConnectableId =
@@ -94,8 +101,8 @@ const handleGeneratorsCellClick = (event) => {
     if (
         isEditing &&
         event.node.rowIndex === 0 &&
-        event.rowPinned === 'top' &&
-        (event.data.RegulationTypeText === 'DISTANT' ||
+        event.node.rowPinned === 'top' &&
+        (event.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
             event.data?.regulatingTerminalVlId ||
             event.data?.regulatingTerminalConnectableId) &&
         event.context.dynamicValidation.id === event.data.id
@@ -1416,11 +1423,11 @@ export const TABLES_DEFINITIONS = {
                 field: 'RegulatingTerminalGenerator',
                 valueGetter: RegulatingTerminalCellGetter,
                 enableCellChangeFlash: true,
-                cellStyle: editableCellStyle,
-                editable: (params) =>
-                    params.data.RegulationTypeText === 'DISTANT' ||
-                    params.data?.regulatingTerminalVlId ||
-                    params.data?.regulatingTerminalConnectableId,
+                cellStyle: (params) =>
+                    isEditableRegulatingTerminalCell(params)
+                        ? editableCellStyle(params)
+                        : null,
+                editable: (params) => isEditableRegulatingTerminalCell(params),
                 onCellClicked: handleGeneratorsCellClick,
                 cellEditorParams: (params) => {
                     return {
