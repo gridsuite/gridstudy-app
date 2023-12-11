@@ -93,7 +93,7 @@
     "CurrentViolationValue": "Intensité calculée (A)",
     "CurrentViolationLimit": "Valeur du seuil (A)",
     "VoltageViolationLimit": "Valeur du seuil (kV)",
-    "VoltageViolationValue": "Valeur calculée (kV)",  
+    "VoltageViolationValue": "Valeur calculée (kV)",
     "load": "transit",
     "Load": "Transit",
     "MapManualRefresh": "Mise à jour manuelle de l'image réseau géographique",
@@ -415,7 +415,7 @@
     "PermanentLimitName": "IST",
     "LimitAcceptableDuration": "Durée",
     "Overload": "Surcharge",
-   
+
     "ErrFetchViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
