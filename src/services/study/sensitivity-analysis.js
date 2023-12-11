@@ -143,10 +143,17 @@ export function setSensitivityAnalysisParameters(studyUuid, newParams) {
 
 export function fetchSensitivityAnalysisParametersComplexity(
     studyUuid,
+    isInjectionsSet,
     newParams
 ) {
     console.info('fetch sensitivity analysis parameters complexity');
-    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/complexity';
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(isInjectionsSet);
+    urlSearchParams.append('isInjectionsSet', jsoned);
+
+    const url =
+        getStudyUrl(studyUuid) +
+        `/sensitivity-analysis/complexity?${urlSearchParams}`;
     console.debug(url);
     return backendFetch(url, {
         method: 'POST',

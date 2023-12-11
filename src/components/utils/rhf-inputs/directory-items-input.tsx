@@ -38,7 +38,7 @@ interface DirectoryItemsInputProps {
     itemFilter?: any;
     titleId?: string;
     hideErrorMessage?: boolean;
-    isFormChanged?: (a: boolean) => void;
+    isRowChanged?: (a: boolean) => void;
 }
 
 const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
@@ -49,7 +49,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
-    isFormChanged,
+    isRowChanged,
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -89,20 +89,20 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                     });
                 } else {
                     append(otherElementAttributes);
-                    isFormChanged && isFormChanged(true);
+                    isRowChanged && isRowChanged(true);
                 }
             });
             setDirectoryItemSelectorOpen(false);
         },
-        [append, getValues, snackError, name, isFormChanged]
+        [append, getValues, snackError, name, isRowChanged]
     );
 
     const removeElements = useCallback(
         (index: number) => {
             remove(index);
-            isFormChanged && isFormChanged(true);
+            isRowChanged && isRowChanged(true);
         },
-        [isFormChanged, remove]
+        [isRowChanged, remove]
     );
 
     return (

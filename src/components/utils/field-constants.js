@@ -158,6 +158,8 @@ export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
 
+export const COUNT = 'count';
+
 export const ACTIVATED = 'activated';
 
 //generator

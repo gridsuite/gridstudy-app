@@ -21,6 +21,7 @@ interface TableRowComponentProps {
     index: number;
     handleDeleteButton: (index: number) => void;
     isFormChanged: (a: boolean) => void;
+    fetchCount: (a: string, b: number) => void;
 }
 
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
@@ -30,12 +31,18 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     index,
     handleDeleteButton,
     isFormChanged,
+    fetchCount,
 }) => {
     const [isHover, setIsHover] = useState(false);
     const intl = useIntl();
     function handleHover(enter: boolean) {
         return setIsHover(enter);
     }
+    const handleIsRowChanged = (isChanged: boolean) => {
+        isChanged && fetchCount(arrayFormName, index);
+        isFormChanged(isChanged);
+    };
+
     return (
         <TableRow
             key={row.id}
@@ -43,7 +50,12 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
             onMouseLeave={() => handleHover(false)}
         >
             {columnsDefinition.map((column: IColumnsDef) =>
-                EditableTableCell(arrayFormName, index, column, isFormChanged)
+                EditableTableCell(
+                    arrayFormName,
+                    index,
+                    column,
+                    handleIsRowChanged
+                )
             )}
             <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
                 {isHover && (

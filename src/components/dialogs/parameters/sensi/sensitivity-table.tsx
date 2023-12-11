@@ -20,6 +20,12 @@ import { useIntl } from 'react-intl';
 import { UseFieldArrayReturn, useFormContext } from 'react-hook-form';
 import TableRowComponent from './table-row';
 import { IColumnsDef } from './columns-definitions';
+import {
+    ACTIVATED,
+    CONTINGENCIES,
+    INJECTIONS,
+    MONITORED_BRANCHES,
+} from '../../../utils/field-constants';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -30,6 +36,7 @@ interface SensitivityTableProps {
     tableHeight: number;
     createRows: (a: number) => void;
     isFormChanged: (a: boolean) => void;
+    onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
@@ -38,6 +45,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     tableHeight,
     createRows,
     isFormChanged,
+    onChangeParams,
 }) => {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -59,6 +67,21 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             isFormChanged(true);
         },
         [arrayFormName, getValues, remove, isFormChanged]
+    );
+
+    const fetchCount = useCallback(
+        (arrayFormName: string, index: number) => {
+            let row = getValues(arrayFormName)[index];
+            if (
+                row[ACTIVATED] &&
+                row[MONITORED_BRANCHES].length &&
+                row[INJECTIONS].length &&
+                row[CONTINGENCIES].length
+            ) {
+                onChangeParams(row, arrayFormName, index);
+            }
+        },
+        [onChangeParams, getValues]
     );
 
     return (
@@ -100,6 +123,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 index={index}
                                 handleDeleteButton={handleDeleteButton}
                                 isFormChanged={isFormChanged}
+                                fetchCount={fetchCount}
                             />
                         )
                     )}

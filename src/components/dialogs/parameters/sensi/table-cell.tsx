@@ -14,7 +14,7 @@ function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
     column: any,
-    isFormChanged: (a: boolean) => void
+    isRowChanged: (a: boolean) => void
 ) {
     return (
         <TableCell
@@ -32,7 +32,7 @@ function EditableTableCell(
                     hideErrorMessage={true}
                     label={undefined}
                     itemFilter={undefined}
-                    isFormChanged={isFormChanged}
+                    isRowChanged={isRowChanged}
                 />
             )}
             {column.menuItems && (
@@ -46,7 +46,7 @@ function EditableTableCell(
             )}
 
             {column.checkboxItems && (
-                <span onChange={() => isFormChanged(true)}>
+                <span onChange={() => isRowChanged(true)}>
                     <SwitchInput
                         name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     />

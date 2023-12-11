@@ -339,6 +339,32 @@ interface INewParamsInjectionsSet {
     }>;
 }
 
+interface IRowNewParams {
+    [MONITORED_BRANCHES]: Array<{
+        [ID]: string;
+    }>;
+    [INJECTIONS]: Array<{
+        [ID]: string;
+    }>;
+    [CONTINGENCIES]: Array<{
+        [ID]: string;
+    }>;
+}
+
+export const getGenericRowNewParams = (newRowParams: IRowNewParams) => {
+    return {
+        [MONITORED_BRANCHES]: newRowParams[MONITORED_BRANCHES].map(
+            (container) => container[ID]
+        ),
+        [INJECTIONS]: newRowParams[INJECTIONS].map(
+            (container) => container[ID]
+        ),
+        [CONTINGENCIES]: newRowParams[CONTINGENCIES].map(
+            (container) => container[ID]
+        ),
+    };
+};
+
 export const getSensiInjectionsSetformatNewParams = (
     newParams: INewParamsInjectionsSet
 ) => {

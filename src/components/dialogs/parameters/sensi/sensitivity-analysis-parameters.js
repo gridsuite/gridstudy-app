@@ -41,6 +41,8 @@ import {
     SUPERVISED_VOLTAGE_LEVELS,
     ACTIVATED,
     PROVIDER,
+    SENSI_INJECTIONS_SET,
+    COUNT,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
@@ -52,6 +54,7 @@ import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import { LineSeparator } from '../../dialogUtils';
 import {
+    getGenericRowNewParams,
     getSensiHvdcformatNewParams,
     getSensiHVDCsFormSchema,
     getSensiInjectionsformatNewParams,
@@ -104,6 +107,7 @@ const formSchema = yup
     })
     .required();
 
+const numberMax = 500000;
 export const SensitivityAnalysisParameters = ({
     hideParameters,
     parametersBackend,
@@ -114,7 +118,6 @@ export const SensitivityAnalysisParameters = ({
     const [popupConfirm, setPopupConfirm] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
-    const [isFormChanged, setIsFormChanged] = useState(false);
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
     const formattedProviders = [
@@ -152,7 +155,7 @@ export const SensitivityAnalysisParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit, formState, getValues } = formMethods;
+    const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
@@ -200,13 +203,8 @@ export const SensitivityAnalysisParameters = ({
               };
     }, []);
 
-    const formatFiltredParams = useCallback((newParams) => {
-        return {
-            ...getSensiInjectionsSetformatNewParams(newParams),
-            ...getSensiInjectionsformatNewParams(newParams),
-            ...getSensiHvdcformatNewParams(newParams),
-            ...getSensiPstformatNewParams(newParams),
-        };
+    const formatFiltredParams = useCallback((row) => {
+        return getGenericRowNewParams(row);
     }, []);
 
     const onSubmit = useCallback(
@@ -237,15 +235,50 @@ export const SensitivityAnalysisParameters = ({
         ]
     );
 
+    const getResultCount = useCallback(() => {
+        const values = getValues();
+        var resultCountByTab = {
+            sensitivityInjectionsSet: values.sensitivityInjectionsSet
+                .filter((entry) => entry[ACTIVATED])
+                .map((entry) => entry[COUNT])
+                .reduce((a, b) => a + b, 0),
+            sensitivityInjection: values.sensitivityInjection
+                .filter((entry) => entry[ACTIVATED])
+                .map((entry) => entry[COUNT])
+                .reduce((a, b) => a + b, 0),
+            sensitivityHVDC: values.sensitivityHVDC
+                .filter((entry) => entry[ACTIVATED])
+                .map((entry) => entry[COUNT])
+                .reduce((a, b) => a + b, 0),
+            sensitivityPST: values.sensitivityPST
+                .filter((entry) => entry[ACTIVATED])
+                .filter((entry) => entry[COUNT])
+                .reduce((a, b) => a + b, 0),
+        };
+        return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
+    }, [getValues]);
+
+    const hasFormChanged = useCallback(
+        (isFormChanged) => {
+            isFormChanged && setAnalysisComputeComplexity(getResultCount());
+        },
+        [setAnalysisComputeComplexity, getResultCount]
+    );
+
     const onChangeParams = useCallback(
-        (newParams) => {
+        (row, arrayFormName, index) => {
             fetchSensitivityAnalysisParametersComplexity(
                 studyUuid,
-                formatFiltredParams(newParams)
+                arrayFormName === SENSI_INJECTIONS_SET,
+                formatFiltredParams(row)
             )
                 .then((response) => {
                     response.text().then((value) => {
-                        setAnalysisComputeComplexity(value && Number(value));
+                        setValue(
+                            `${arrayFormName}[${index}].[${COUNT}]`,
+                            value && Number(value)
+                        );
+                        setAnalysisComputeComplexity(getResultCount());
                         hasFormChanged(false);
                     });
                 })
@@ -257,7 +290,14 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [snackError, studyUuid, formatFiltredParams]
+        [
+            snackError,
+            studyUuid,
+            formatFiltredParams,
+            setValue,
+            getResultCount,
+            hasFormChanged,
+        ]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
@@ -472,48 +512,7 @@ export const SensitivityAnalysisParameters = ({
         resetSensitivityParametersAndProvider,
     ]);
 
-    const isMaxReached = () => analysisComputeComplexity > 500000;
-
-    const getFilteredData = useCallback(() => {
-        return {
-            sensitivityInjectionsSet:
-                getValues().sensitivityInjectionsSet.filter(
-                    (entry) => entry[ACTIVATED]
-                ),
-            sensitivityInjection: getValues().sensitivityInjection.filter(
-                (entry) => entry[ACTIVATED]
-            ),
-            sensitivityHVDC: getValues().sensitivityHVDC.filter(
-                (entry) => entry[ACTIVATED]
-            ),
-            sensitivityPST: getValues().sensitivityPST.filter(
-                (entry) => entry[ACTIVATED]
-            ),
-        };
-    }, [getValues]);
-
-    const trigger = useCallback(
-        (data) => {
-            let isTriggerable =
-                data.sensitivityInjectionsSet.length ||
-                data.sensitivityInjection.length ||
-                data.sensitivityHVDC.length ||
-                data.sensitivityPST.length;
-            isTriggerable = isTriggerable || isFormChanged;
-            if (isTriggerable && formState.isValid) {
-                return true;
-            }
-            return false;
-        },
-        [formState.isValid, isFormChanged]
-    );
-
-    const hasFormChanged = (isFormChanged) => setIsFormChanged(isFormChanged);
-
-    useEffect(() => {
-        const filtredData = getFilteredData();
-        trigger(filtredData) && onChangeParams(filtredData);
-    }, [onChangeParams, trigger, getFilteredData]);
+    const isMaxReached = () => analysisComputeComplexity > numberMax;
 
     return (
         <>
@@ -563,6 +562,7 @@ export const SensitivityAnalysisParameters = ({
                             useSensitivityAnalysisParameters
                         }
                         isFormChanged={hasFormChanged}
+                        onChangeParams={onChangeParams}
                     />
                 </Grid>
                 <DialogActions>
