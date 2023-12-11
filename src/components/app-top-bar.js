@@ -274,7 +274,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 getGlobalVersion={(setGlobalVersion) =>
                     fetchVersion()
                         .then((res) => setGlobalVersion(res.deployVersion))
-                        .catch((reason) => setGlobalVersion(null))
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the version : ' + reason
+                            );
+                            setGlobalVersion(null);
+                        })
                 }
                 getAdditionalModules={(setServers) =>
                     getServersInfos()
@@ -295,7 +300,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                 }))
                             )
                         )
-                        .catch((reason) => setServers(null))
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the servers infos : ' +
+                                    reason
+                            );
+                            setServers(null);
+                        })
                 }
                 theme={themeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
