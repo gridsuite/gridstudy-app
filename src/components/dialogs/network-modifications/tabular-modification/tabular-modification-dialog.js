@@ -72,6 +72,18 @@ const TabularModificationDialog = ({
 
     const { reset } = formMethods;
 
+    const toEnumValue = useCallback(
+        (userValue, enumValues) =>
+            enumValues
+                .find(
+                    (e) =>
+                        intl.formatMessage({ id: e }).toUpperCase() ===
+                        userValue.toUpperCase()
+                )
+                ?.toUpperCase(),
+        [intl]
+    );
+
     useEffect(() => {
         if (editData) {
             const equipmentType = getEquipmentTypeFromModificationType(
@@ -105,10 +117,25 @@ const TabularModificationDialog = ({
                 };
                 Object.keys(row).forEach((key) => {
                     const value = row[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = value;
-                    } else {
-                        modification[key] = toModificationOperation(value);
+                    switch (key) {
+                        case 'equipmentId':
+                            modification[key] = value;
+                            break;
+                        case 'energySource':
+                            modification[key] = toModificationOperation(
+                                toEnumValue(value, [
+                                    'Hydro',
+                                    'Nuclear',
+                                    'Wind',
+                                    'Thermal',
+                                    'Solar',
+                                    'Other',
+                                ])
+                            );
+                            break;
+                        default:
+                            modification[key] = toModificationOperation(value);
+                            break;
                     }
                 });
                 return modification;
@@ -127,7 +154,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid, toEnumValue]
     );
 
     const clear = useCallback(() => {
