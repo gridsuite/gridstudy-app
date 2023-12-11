@@ -29,6 +29,7 @@ import {
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import AppPackage from '../../package.json';
 import {
     centerOnSubstation,
     openDiagram,
@@ -46,12 +47,13 @@ import {
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
+import { getServersInfos } from '../services/study';
 import { fetchNetworkElementInfos } from '../services/study/network';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { fetchAppsAndUrls } from '../services/utils';
+import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 import { useComputationNotification } from '../hooks/use-computation-notification';
@@ -190,6 +192,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
+
     const { openDiagramView } = useDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
@@ -227,14 +230,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         }
     }, [user]);
 
-    function showParameters() {
-        setParametersOpen(true);
-    }
-
-    function hideParameters() {
-        setParametersOpen(false);
-    }
-
     function getDisableReason() {
         if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
             return intl.formatMessage({
@@ -269,12 +264,50 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <GridStudyLogoDark />
                     )
                 }
-                onParametersClick={showParameters}
+                onParametersClick={() => setParametersOpen(true)}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}
-                onAboutClick={() => console.debug('about')}
+                appVersion={AppPackage.version}
+                appLicense={AppPackage.license}
+                getGlobalVersion={(setGlobalVersion) =>
+                    fetchVersion()
+                        .then((res) => setGlobalVersion(res.deployVersion))
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the version : ' + reason
+                            );
+                            setGlobalVersion(null);
+                        })
+                }
+                getAdditionalModules={(setServers) =>
+                    getServersInfos()
+                        .then((res) =>
+                            setServers(
+                                Object.entries(res).map(([name, infos]) => ({
+                                    name:
+                                        infos?.build?.name ||
+                                        infos?.build?.artifact ||
+                                        name,
+                                    type: 'server',
+                                    version: infos?.build?.version,
+                                    gitTag:
+                                        infos?.git?.tags ||
+                                        infos?.git?.commit?.id[
+                                            'describe-short'
+                                        ],
+                                }))
+                            )
+                        )
+                        .catch((reason) => {
+                            console.error(
+                                'Error while fetching the servers infos : ' +
+                                    reason
+                            );
+                            setServers(null);
+                        })
+                }
                 theme={themeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
@@ -312,9 +345,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             sx={styles.label}
                             text={
                                 currentNode?.data?.label === 'Root'
-                                    ? intl.formatMessage({
-                                          id: 'root',
-                                      })
+                                    ? intl.formatMessage({ id: 'root' })
                                     : currentNode?.data?.label
                             }
                         />
@@ -370,7 +401,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             {studyUuid && (
                 <Parameters
                     isParametersOpen={isParametersOpen}
-                    hideParameters={hideParameters}
+                    hideParameters={() => setParametersOpen(false)}
                     user={user}
                 />
             )}
