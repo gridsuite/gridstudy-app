@@ -1347,5 +1347,8 @@
     "customAgGridFilter.lessThanOrEqual": "Inférieur ou égal",
     "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
     "customAgGridFilter.filterOoo": "Filtrer...",
-    "undefined" : "non défini"
+    "undefined" : "non défini",
+    "nominalVoltage": "Tension nominale (kV)",
+    "lowVoltageLimit": "Limite tension basse (kV)",
+    "highVoltageLimit": "Limite tension haute (kV)"
 }
