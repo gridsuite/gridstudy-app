@@ -1297,11 +1297,6 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RegulatingTerminal',
-                field: 'regulatingTerminal',
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
                 id: 'TransientReactance',
                 field: 'generatorShortCircuit.transientReactance',
                 numeric: true,
