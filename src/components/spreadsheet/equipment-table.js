@@ -20,7 +20,8 @@ export const EquipmentTable = ({
     columnData,
     gridRef,
     handleColumnDrag,
-    handleCellEditing,
+    handleCellEditingStarted,
+    handleCellEditingStopped,
     handleGridReady,
     handleRowDataUpdated,
     fetched,
@@ -111,7 +112,8 @@ export const EquipmentTable = ({
             defaultColDef={defaultColDef}
             enableCellTextSelection={true}
             undoRedoCellEditing={true}
-            onCellEditingStopped={handleCellEditing}
+            onCellEditingStarted={handleCellEditingStarted}
+            onCellEditingStopped={handleCellEditingStopped}
             onRowDataUpdated={handleRowDataUpdated}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}

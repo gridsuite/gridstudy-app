@@ -50,12 +50,11 @@ import {
     requestNetworkChange,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
-import {
-    computeMaxQAtNominalV,
-    computeMaxSusceptance,
-    computeSwitchedOnValue,
-} from 'components/utils/utils';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
+import {
+    checkValidationsAndRefreshCells,
+    updateShuntCompensatorCells,
+} from './utils/equipment-table-utils';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -151,15 +150,10 @@ const TableWrapper = (props) => {
     const [columnData, setColumnData] = useState([]);
 
     const rollbackEdit = useCallback(() => {
-        //system to undo last edits if they are invalidated
-        //we need to call undoCellEditing for each field edited, the method only undo the last change to an individual cell
-        Object.entries(priorValuesBuffer).forEach(() => {
-            gridRef.current.api.undoCellEditing();
-        });
         resetBuffer();
         setEditingData();
         editingDataRef.current = editingData;
-    }, [priorValuesBuffer, resetBuffer, editingData]);
+    }, [resetBuffer, editingData]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -431,7 +425,7 @@ const TableWrapper = (props) => {
     }, []);
 
     const buildEditPromise = useCallback(
-        (editingData, groovyCr) => {
+        (editingData, groovyCr, context) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
@@ -595,14 +589,18 @@ const TableWrapper = (props) => {
                             editingData.sectionCount,
                             editingDataRef.current.sectionCount
                         ),
-                        getFieldValue(
-                            editingData.maxSusceptance,
-                            editingDataRef.current.maxSusceptance
-                        ),
-                        getFieldValue(
-                            editingData.maxQAtNominalV,
-                            editingDataRef.current.maxQAtNominalV
-                        ),
+                        context.lastEditedField === 'maxSusceptance'
+                            ? getFieldValue(
+                                  editingData.maxSusceptance,
+                                  editingDataRef.current.maxSusceptance
+                              )
+                            : null,
+                        context.lastEditedField === 'maxQAtNominalV'
+                            ? getFieldValue(
+                                  editingData.maxQAtNominalV,
+                                  editingDataRef.current.maxQAtNominalV
+                              )
+                            : null,
                         getFieldValue(
                             editingData.type,
                             editingDataRef.current.maxSusceptance > 0
@@ -648,7 +646,11 @@ const TableWrapper = (props) => {
                     column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
-            const editPromise = buildEditPromise(editingData, groovyCr);
+            const editPromise = buildEditPromise(
+                editingData,
+                groovyCr,
+                params.context
+            );
             Promise.resolve(editPromise)
                 .then(() => {
                     const transaction = {
@@ -679,119 +681,27 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const updateShuntCompensatorCells = useCallback((params) => {
-        const rowNode = params.node;
-        const colId = params.column.colId;
-        const type = params.data.type;
-        const maxSusceptance = params.data.maxSusceptance;
-        const nominalVoltage = params.data.nominalVoltage;
-        const maxQAtNominalV = params.data.maxQAtNominalV;
-        const maximumSectionCount = params.data.maximumSectionCount;
-        const sectionCount = params.data.sectionCount;
-        if (colId === 'type') {
-            if (
-                (type === 'REACTOR' && maxSusceptance > 0) ||
-                (type === 'CAPACITOR' && maxSusceptance < 0)
-            ) {
-                rowNode.setDataValue('maxSusceptance', -maxSusceptance);
-                rowNode.setDataValue('switchedOnSusceptance', -maxSusceptance);
-            }
-        } else if (colId === 'maxSusceptance') {
-            if (Math.abs(maxSusceptance) !== Math.abs(params.oldValue)) {
-                rowNode.setDataValue(
-                    'maxQAtNominalV',
-                    computeMaxQAtNominalV(maxSusceptance, nominalVoltage)
-                );
-                rowNode.setDataValue(
-                    'switchedOnQAtNominalV',
-                    computeSwitchedOnValue(
-                        sectionCount,
-                        maximumSectionCount,
-                        maxQAtNominalV
-                    )
-                );
-            }
-            rowNode.setDataValue(
-                'switchedOnSusceptance',
-                computeSwitchedOnValue(
-                    sectionCount,
-                    maximumSectionCount,
-                    maxSusceptance
-                )
-            );
-            if (maxSusceptance < 0 && type !== 'REACTOR') {
-                rowNode.setDataValue('type', 'REACTOR');
-            } else if (maxSusceptance > 0 && type !== 'CAPACITOR') {
-                rowNode.setDataValue('type', 'CAPACITOR');
-            }
-        } else if (colId === 'maxQAtNominalV') {
-            rowNode.setDataValue(
-                'switchedOnQAtNominalV',
-                computeSwitchedOnValue(
-                    sectionCount,
-                    maximumSectionCount,
-                    maxQAtNominalV
-                )
-            );
-            rowNode.setDataValue(
-                'maxSusceptance',
-                computeMaxSusceptance(maxQAtNominalV, nominalVoltage)
-            );
-            rowNode.setDataValue(
-                'switchedOnSusceptance',
-                computeSwitchedOnValue(
-                    sectionCount,
-                    maximumSectionCount,
-                    maxSusceptance
-                )
-            );
-        } else if (
-            colId === 'sectionCount' ||
-            colId === 'maximumSectionCount'
-        ) {
-            rowNode.setDataValue(
-                'switchedOnQAtNominalV',
-                computeSwitchedOnValue(
-                    sectionCount,
-                    maximumSectionCount,
-                    maxQAtNominalV
-                )
-            );
-            rowNode.setDataValue(
-                'switchedOnSusceptance',
-                computeSwitchedOnValue(
-                    sectionCount,
-                    maximumSectionCount,
-                    maxSusceptance
-                )
-            );
-        }
-    }, []);
-
     //this listener is called for each cell modified
-    const handleCellEditing = useCallback(
+    const handleCellEditingStopped = useCallback(
         (params) => {
-            const rowNode = params.node;
-            if (Object.entries(params.context.editErrors).length !== 0) {
-                rowNode.setDataValue(params.column.colId, params.oldValue);
-                params.context.editErrors = {};
-            } else if (
+            if (
                 params.data.metadata.equipmentType ===
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR
             ) {
                 updateShuntCompensatorCells(params);
             }
             addDataToBuffer(params.colDef.field, params.oldValue);
+            checkValidationsAndRefreshCells(params.api, params.context);
         },
-        [addDataToBuffer, updateShuntCompensatorCells]
+        [addDataToBuffer]
     );
 
-    const handleEditingStarted = useCallback((params) => {
+    const handleCellEditingStarted = useCallback((params) => {
         // we initialize the dynamicValidation with the initial data
         params.context.dynamicValidation = { ...params.data };
     }, []);
 
-    const handleEditingStopped = useCallback(
+    const handleSubmitEditing = useCallback(
         (params) => {
             params.context.dynamicValidation = {};
             validateEdit(params);
@@ -817,9 +727,8 @@ const TableWrapper = (props) => {
                         return {
                             component: EditingCellRenderer,
                             params: {
-                                setEditingData: setEditingData,
-                                startEditing: handleEditingStarted,
-                                stopEditing: handleEditingStopped,
+                                rollbackEdit: rollbackEdit,
+                                handleSubmitEditing: handleSubmitEditing,
                             },
                         };
                     } else if (editingData?.id === params.data.id) {
@@ -840,7 +749,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData?.id, handleEditingStarted, handleEditingStopped, tabIndex]
+        [editingData?.id, handleSubmitEditing, rollbackEdit, tabIndex]
     );
 
     const generateTableColumns = useCallback(
@@ -955,7 +864,8 @@ const TableWrapper = (props) => {
                         fetched={equipments || errorMessage}
                         visible={props.visible}
                         handleColumnDrag={handleColumnDrag}
-                        handleCellEditing={handleCellEditing}
+                        handleCellEditingStarted={handleCellEditingStarted}
+                        handleCellEditingStopped={handleCellEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={

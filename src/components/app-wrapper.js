@@ -78,6 +78,15 @@ let lightTheme = createTheme({
         borderRadius: '3px',
         boxShadow: '0 1px 20px 1px #BABFC766',
     },
+    editableCellError: {
+        outline: 'solid 1px red',
+        background: '#FFF',
+        backgroundColor: '#F8F8F8',
+        border: 'solid 1px #BABFC7',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #BABFC766',
+    },
+    aggridValueChangeHighlightBackgroundColor: '#C8E6C9 !important',
     tooltipTable: {
         background: '#e6e6e6',
     },
@@ -116,6 +125,14 @@ let darkTheme = createTheme({
     },
     editableCell: {
         outline: 'solid 1px #90CAF9',
+        background: '#181D1F',
+        backgroundColor: '#222628',
+        border: 'solid 1px #68686E',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #000',
+    },
+    editableCellError: {
+        outline: 'solid 1px red',
         background: '#181D1F',
         backgroundColor: '#222628',
         border: 'solid 1px #68686E',

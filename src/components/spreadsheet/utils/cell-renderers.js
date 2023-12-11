@@ -8,7 +8,7 @@
 import { Checkbox, Tooltip, IconButton } from '@mui/material';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -269,22 +269,17 @@ export const ReferenceLineCellRenderer = (props) => {
 
 export const EditingCellRenderer = (props) => {
     const validateEdit = useCallback(() => {
-        props.stopEditing(props);
+        props.handleSubmitEditing(props);
     }, [props]);
 
     const resetEdit = useCallback(() => {
-        props.api?.stopEditing(true);
-        props.setEditingData();
+        props.rollbackEdit();
     }, [props]);
 
     const isFormInvalid = useMemo(
         () => Object.entries(props.context.editErrors).length !== 0,
         [props.context.editErrors]
     );
-
-    useEffect(() => {
-        props.startEditing(props);
-    }, [props]);
 
     return (
         <Box sx={mergeSx(styles.leftFade, styles.editCell)}>

@@ -32,7 +32,13 @@ const isEditable = (params) => {
 
 const editableCellStyle = (params) => {
     if (params.context.isEditing && params.node.rowPinned === 'top') {
-        return params.context.theme.editableCell;
+        if (
+            Object.keys(params.context.editErrors).includes(params.column.colId)
+        ) {
+            return params.context.theme.editableCellError;
+        } else {
+            return params.context.theme.editableCell;
+        }
     }
     return null;
 };
@@ -92,14 +98,15 @@ const generateEditableNumericColumnDefinition = (
         cellEditor: NumericalField,
         cellEditorParams: (params) => {
             return {
-                optional,
-                ...(minExpression && { minExpression: minExpression }),
-                ...(maxExpression && { maxExpression: maxExpression }),
                 defaultValue: params.data[field],
                 gridContext: params.context,
                 gridApi: params.api,
                 colDef: params.colDef,
             };
+        },
+        crossValidation: {
+            minExpression: minExpression,
+            maxExpression: maxExpression,
         },
         ...(excludeFromGlobalFilter && {
             getQuickFilterText: excludeFromGlobalFilter,
@@ -1152,7 +1159,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        maxExpression: 'maxP',
                         defaultValue: params.data.minP,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1160,6 +1166,9 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
+                crossValidation: {
+                    maxExpression: 'maxP',
+                },
             },
             {
                 id: 'maxActivePower',
@@ -1173,7 +1182,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        minExpression: 'minP',
                         defaultValue: params.data.maxP,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1181,6 +1189,9 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
+                crossValidation: {
+                    minExpression: 'minP',
+                },
             },
             {
                 id: 'activePowerSetpoint',
@@ -1199,9 +1210,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        minExpression: 'minP',
-                        maxExpression: 'maxP',
-                        allowZero: true,
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1210,6 +1218,11 @@ export const TABLES_DEFINITIONS = {
                 },
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                crossValidation: {
+                    minExpression: 'minP',
+                    maxExpression: 'maxP',
+                    allowZero: true,
+                },
             },
             {
                 id: 'TargetQ',
@@ -1254,16 +1267,6 @@ export const TABLES_DEFINITIONS = {
                         colDef: params.colDef,
                     };
                 },
-                resetColumnsInError: [
-                    {
-                        dependencyColumn: 'targetQ',
-                        value: true,
-                    },
-                    {
-                        dependencyColumn: 'targetV',
-                        value: false,
-                    },
-                ],
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1519,7 +1522,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        minExpression: 0,
                         defaultValue: params.data.maximumSectionCount,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1528,6 +1530,9 @@ export const TABLES_DEFINITIONS = {
                 },
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
+                crossValidation: {
+                    minExpression: 0,
+                },
             },
             {
                 id: 'ShuntSectionCount',
@@ -1538,8 +1543,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        minExpression: 0,
-                        maxExpression: 'maximumSectionCount',
                         defaultValue: params.data.sectionCount,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1548,6 +1551,10 @@ export const TABLES_DEFINITIONS = {
                 },
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
+                crossValidation: {
+                    minExpression: 0,
+                    maxExpression: 'maximumSectionCount',
+                },
             },
             {
                 id: 'Type',
@@ -1568,7 +1575,6 @@ export const TABLES_DEFINITIONS = {
                         ],
                     };
                 },
-                enableCellChangeFlash: true,
             },
             {
                 id: 'maxQAtNominalV',
@@ -1579,7 +1585,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        minExpression: 0,
                         defaultValue: params.data.maxQAtNominalV,
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1589,7 +1594,9 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
-                enableCellChangeFlash: true,
+                crossValidation: {
+                    minExpression: 0,
+                },
             },
             {
                 id: 'SwitchedOnMaxQAtNominalV',
@@ -1602,7 +1609,6 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
-                enableCellChangeFlash: true,
             },
             {
                 id: 'MaxShuntSusceptance',
@@ -1621,7 +1627,6 @@ export const TABLES_DEFINITIONS = {
                 },
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
-                enableCellChangeFlash: true,
             },
             {
                 id: 'SwitchedOnMaxSusceptance',
@@ -1633,7 +1638,6 @@ export const TABLES_DEFINITIONS = {
                     params?.data?.sectionCount,
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
-                enableCellChangeFlash: true,
             },
             {
                 id: 'Connected',
@@ -1836,12 +1840,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        maxExpression: 'maxP',
                         defaultValue: params.data.minP,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                     };
+                },
+                crossValidation: {
+                    maxExpression: 'maxP',
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1856,12 +1862,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        minExpression: 'minP',
                         defaultValue: params.data.maxP,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                     };
+                },
+                crossValidation: {
+                    minExpression: 'minP',
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1876,14 +1884,16 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        minExpression: 'minP',
-                        maxExpression: 'maxP',
-                        allowZero: true,
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                     };
+                },
+                crossValidation: {
+                    minExpression: 'minP',
+                    maxExpression: 'maxP',
+                    allowZero: true,
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },

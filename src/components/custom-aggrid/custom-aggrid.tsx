@@ -23,13 +23,13 @@ interface CustomAGGGridStyleProps {
 interface CustomAGGridProps extends AgGridReactProps, CustomAGGGridStyleProps {}
 
 const styles = {
-    grid: {
+    grid: (theme: Theme) => ({
         width: 'auto',
         height: '100%',
         position: 'relative',
 
         '--ag-value-change-value-highlight-background-color':
-            '#C8E6C9 !important',
+            theme.aggridValueChangeHighlightBackgroundColor,
 
         //overrides the default computed max heigt for ag grid default selector editor to make it more usable
         //can be removed if a custom selector editor is implemented
@@ -42,7 +42,7 @@ const styles = {
             {
                 visibility: 'hidden',
             },
-    },
+    }),
     noBorderRight: {
         // hides right border for header of "Edit" column due to column being pinned
         '& .ag-pinned-left-header': {
@@ -96,7 +96,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
         return (
             <Box
                 sx={mergeSx(
-                    styles.grid,
+                    styles.grid(theme),
                     shouldHidePinnedHeaderRightBorder && styles.noBorderRight,
                     showOverlay && styles.overlayBackground(theme)
                 )}
