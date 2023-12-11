@@ -4,6 +4,7 @@ import {
     computeMaxSusceptance,
     computeSwitchedOnValue,
 } from 'components/utils/utils';
+import { EDIT_COLUMN } from './config-tables';
 
 export const updateShuntCompensatorCells = (params: any) => {
     const rowNode = params.node;
@@ -222,9 +223,12 @@ export const checkValidationsAndRefreshCells = (
     if (rowNode) {
         const refreshConfig = {
             rowNodes: [rowNode],
-            columns: columnsWithCrossValidation.map(
-                (colDef: any) => colDef.field
-            ),
+            columns: [
+                ...columnsWithCrossValidation.map(
+                    (colDef: any) => colDef.field
+                ),
+                EDIT_COLUMN,
+            ],
             force: true,
         };
         gridApi.refreshCells(refreshConfig);
@@ -239,6 +243,9 @@ const checkCrossValidationRequiredOn = (
         dynamicValidation,
         colDef.crossValidation.requiredOn.dependencyColumn
     );
+    if (typeof dependencyValue === 'boolean') {
+        dependencyValue = dependencyValue ? 1 : 0;
+    }
     if ('columnValue' in colDef.crossValidation.requiredOn) {
         // if the prop columnValue exist, then we compare its value with the current value
         return (

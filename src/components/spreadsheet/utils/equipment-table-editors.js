@@ -10,7 +10,6 @@ import React, {
     useState,
     forwardRef,
     useImperativeHandle,
-    useEffect,
     useMemo,
 } from 'react';
 import Select from '@mui/material/Select';
@@ -21,7 +20,10 @@ import { checkValidationsAndRefreshCells } from './equipment-table-utils';
 
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
-        const [error, setError] = useState(false);
+        const error = useMemo(() => {
+            return Object.keys(gridContext.editErrors).includes(colDef.field);
+        }, [colDef.field, gridContext.editErrors]);
+
         const intl = useIntl();
 
         const minExpression = colDef.crossValidation?.minExpression;
@@ -68,9 +70,6 @@ export const NumericalField = forwardRef(
                 setValue(newVal);
                 gridContext.dynamicValidation[colDef.field] = newVal;
                 checkValidationsAndRefreshCells(gridApi, gridContext);
-                setError(
-                    Object.keys(gridContext.editErrors).includes(colDef.field)
-                );
             },
             [colDef.field, gridApi, gridContext]
         );
@@ -160,10 +159,6 @@ export const BooleanListField = forwardRef(
             },
             [colDef.field, gridApi, gridContext]
         );
-
-        useEffect(() => {
-            checkValidationsAndRefreshCells(gridApi, gridContext);
-        }, [gridApi, gridContext, value]);
 
         return (
             <Select

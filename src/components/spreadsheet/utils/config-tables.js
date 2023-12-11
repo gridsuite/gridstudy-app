@@ -1626,6 +1626,7 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 filter: 'agNumberColumnFilter',
+                fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1637,6 +1638,7 @@ export const TABLES_DEFINITIONS = {
                         params?.data?.maximumSectionCount) *
                     params?.data?.sectionCount,
                 filter: 'agNumberColumnFilter',
+                fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
