@@ -10,18 +10,23 @@ import React, {
     useState,
     forwardRef,
     useImperativeHandle,
-    useEffect,
     useMemo,
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { checkValidationsAndRefreshCells } from './equipment-table-utils';
+import {
+    checkValidationsAndRefreshCells,
+    deepUpdateValue,
+} from './equipment-table-utils';
 
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
-        const [error, setError] = useState(false);
+        const error = useMemo(() => {
+            return Object.keys(gridContext.editErrors).includes(colDef.field);
+        }, [colDef.field, gridContext.editErrors]);
+
         const intl = useIntl();
 
         const minExpression = colDef.crossValidation?.minExpression;
@@ -66,11 +71,12 @@ export const NumericalField = forwardRef(
                     newVal = undefined;
                 }
                 setValue(newVal);
-                gridContext.dynamicValidation[colDef.field] = newVal;
-                checkValidationsAndRefreshCells(gridApi, gridContext);
-                setError(
-                    Object.keys(gridContext.editErrors).includes(colDef.field)
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    newVal
                 );
+                checkValidationsAndRefreshCells(gridApi, gridContext);
             },
             [colDef.field, gridApi, gridContext]
         );
@@ -155,15 +161,15 @@ export const BooleanListField = forwardRef(
             (ev) => {
                 const val = ev.target.value;
                 setValue(val);
-                gridContext.dynamicValidation[colDef.field] = val;
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    val
+                );
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
             [colDef.field, gridApi, gridContext]
         );
-
-        useEffect(() => {
-            checkValidationsAndRefreshCells(gridApi, gridContext);
-        }, [gridApi, gridContext, value]);
 
         return (
             <Select

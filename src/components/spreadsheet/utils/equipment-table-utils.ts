@@ -4,6 +4,7 @@ import {
     computeMaxSusceptance,
     computeSwitchedOnValue,
 } from 'components/utils/utils';
+import { EDIT_COLUMN } from './config-tables';
 
 export const updateShuntCompensatorCells = (params: any) => {
     const rowNode = params.node;
@@ -145,6 +146,22 @@ const deepFindValue = (obj: any, path: any) => {
     return current;
 };
 
+export const deepUpdateValue = (obj: any, path: any, value: any) => {
+    let paths = path.split('.'),
+        current = structuredClone(obj),
+        data = current,
+        i;
+
+    for (i = 0; i < paths.length - 1; ++i) {
+        if (current[paths[i]] === undefined) {
+            current[paths[i]] = {};
+        }
+        current = current[paths[i]];
+    }
+    current[paths[i]] = value;
+    return data;
+};
+
 // build object from path and value (e.g. 'a.b.c', 1) => {a: {b: {c: 1}}}
 export const buildObjectFromPath = (path: any, value: any) => {
     const paths = path.split('.');
@@ -222,9 +239,12 @@ export const checkValidationsAndRefreshCells = (
     if (rowNode) {
         const refreshConfig = {
             rowNodes: [rowNode],
-            columns: columnsWithCrossValidation.map(
-                (colDef: any) => colDef.field
-            ),
+            columns: [
+                ...columnsWithCrossValidation.map(
+                    (colDef: any) => colDef.field
+                ),
+                EDIT_COLUMN,
+            ],
             force: true,
         };
         gridApi.refreshCells(refreshConfig);
@@ -239,6 +259,9 @@ const checkCrossValidationRequiredOn = (
         dynamicValidation,
         colDef.crossValidation.requiredOn.dependencyColumn
     );
+    if (typeof dependencyValue === 'boolean') {
+        dependencyValue = dependencyValue ? 1 : 0;
+    }
     if ('columnValue' in colDef.crossValidation.requiredOn) {
         // if the prop columnValue exist, then we compare its value with the current value
         return (
