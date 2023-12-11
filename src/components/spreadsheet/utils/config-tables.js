@@ -1115,7 +1115,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'activePower',
+                id: 'ActivePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1125,7 +1125,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1652,7 +1652,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'activePower',
+                id: 'ActivePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1661,7 +1661,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1752,7 +1752,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1930,7 +1930,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'activePower',
+                id: 'ActivePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1939,7 +1939,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2003,7 +2003,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'activePower',
+                id: 'ActivePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2013,7 +2013,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2317,7 +2317,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hvdcLineId',
             },
             {
-                id: 'activePower',
+                id: 'ActivePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2326,7 +2326,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2392,7 +2392,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hvdcLineId',
             },
             {
-                id: 'activePower',
+                id: 'ActivePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2401,7 +2401,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2482,7 +2482,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'activePower',
+                id: 'ActivePower',
                 field: 'p',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2491,7 +2491,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'reactivePower',
+                id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

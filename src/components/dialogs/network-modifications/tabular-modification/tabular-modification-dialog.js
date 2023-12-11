@@ -12,7 +12,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { FORM_LOADING_DELAY, LOAD_TYPES } from 'components/network/constants';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
@@ -72,6 +72,16 @@ const TabularModificationDialog = ({
 
     const { reset } = formMethods;
 
+    const toModificationFromEnum = useCallback(
+        (content, possibleValuesKeys) => {
+            const value = possibleValuesKeys.find(
+                (option) => intl.formatMessage({ id: option.label }) === content
+            );
+            return { value: value.id, op: 'SET' };
+        },
+        [intl]
+    );
+
     useEffect(() => {
         if (editData) {
             const equipmentType = getEquipmentTypeFromModificationType(
@@ -107,6 +117,11 @@ const TabularModificationDialog = ({
                     const value = row[key];
                     if (key === 'equipmentId') {
                         modification[key] = value;
+                    } else if (key === 'loadType') {
+                        modification[key] = toModificationFromEnum(
+                            value,
+                            LOAD_TYPES
+                        );
                     } else {
                         modification[key] = toModificationOperation(value);
                     }
@@ -127,7 +142,13 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [
+            currentNodeUuid,
+            editData,
+            snackError,
+            studyUuid,
+            toModificationFromEnum,
+        ]
     );
 
     const clear = useCallback(() => {
