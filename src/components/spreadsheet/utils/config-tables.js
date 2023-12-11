@@ -641,40 +641,40 @@ export const TABLES_DEFINITIONS = {
                 field: 'name',
             },
             {
-                id: 'VoltageLevelIdSide1',
+                id: 'VoltageLevelIdT3WSide1',
                 field: 'voltageLevelId1',
             },
             {
-                id: 'VoltageLevelIdSide2',
+                id: 'VoltageLevelIdT3WSide2',
                 field: 'voltageLevelId2',
             },
             {
-                id: 'VoltageLevelIdSide3',
+                id: 'VoltageLevelIdT3WSide3',
                 field: 'voltageLevelId3',
             },
             {
-                id: 'NominalVoltageSide1',
+                id: 'NominalVoltageT3WSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageSide2',
+                id: 'NominalVoltageT3WSide2',
                 field: 'nominalVoltage2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageSide3',
+                id: 'NominalVoltageT3WSide3',
                 field: 'nominalVoltage3',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
             },
             {
-                id: 'ActivePowerSide1',
+                id: 'ActivePowerT3WSide1',
                 field: 'p1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -683,7 +683,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ActivePowerSide2',
+                id: 'ActivePowerT3WSide2',
                 field: 'p2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -692,7 +692,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ActivePowerSide3',
+                id: 'ActivePowerT3WSide3',
                 field: 'p3',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -701,7 +701,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePowerSide1',
+                id: 'ReactivePowerT3WSide1',
                 field: 'q1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -710,7 +710,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePowerSide2',
+                id: 'ReactivePowerT3WSide2',
                 field: 'q2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -719,7 +719,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePowerSide3',
+                id: 'ReactivePowerT3WSide3',
                 field: 'q3',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1022,21 +1022,21 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide1',
+                id: 'ConnectedT3WSide1',
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide2',
+                id: 'ConnectedT3WSide2',
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide3',
+                id: 'ConnectedT3WSide3',
                 field: 'terminal3Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -1449,7 +1449,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
-                editable: true,
                 columnWidth: MIN_COLUMN_WIDTH,
             },
             {

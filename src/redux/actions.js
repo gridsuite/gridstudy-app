@@ -342,6 +342,15 @@ export function resetMapReloaded() {
     };
 }
 
+export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
+
+export function setMapEquipementsInitialized(newValue) {
+    return {
+        type: MAP_EQUIPMENTS_INITIALIZED,
+        newValue,
+    };
+}
+
 export const ADD_LOADFLOW_NOTIF = 'ADD_LOADFLOW_NOTIF';
 
 export function addLoadflowNotif() {
