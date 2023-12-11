@@ -8,7 +8,11 @@
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
-import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    REGULATION_TYPES,
+} from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -72,6 +76,46 @@ const propertiesGetter = (params) => {
             .join(' | ');
     } else {
         return null;
+    }
+};
+
+const isEditableRegulatingTerminalCell = (params) => {
+    return (
+        params.node.rowIndex === 0 &&
+        params.node.rowPinned === 'top' &&
+        (params.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
+            params.data?.regulatingTerminalVlId ||
+            params.data?.regulatingTerminalConnectableId)
+    );
+};
+
+const RegulatingTerminalCellGetter = (params) => {
+    const regulatingTerminalConnectableId =
+        params?.data?.regulatingTerminalConnectableId;
+    const regulatingTerminalVlId = params?.data?.regulatingTerminalVlId;
+    if (
+        regulatingTerminalVlId === ' ' ||
+        regulatingTerminalConnectableId === ' '
+    ) {
+        return ' ';
+    } else if (regulatingTerminalVlId || regulatingTerminalConnectableId) {
+        return `${params?.data?.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
+    } else {
+        return null;
+    }
+};
+
+const handleGeneratorsCellClick = (event) => {
+    const { context: { isEditing, handleCellClick } = {} } = event || {};
+    if (
+        isEditing &&
+        event.node.rowIndex === 0 &&
+        event.node.rowPinned === 'top' &&
+        (event.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
+            event.data?.regulatingTerminalVlId ||
+            event.data?.regulatingTerminalConnectableId)
+    ) {
+        handleCellClick?.openGeneratorDialog();
     }
 };
 
@@ -1350,6 +1394,48 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RegulationTypeText',
+                field: 'RegulationTypeText',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: (params) =>
+                    params.data?.regulatingTerminalVlId ||
+                    params.data?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(REGULATION_TYPES).map(
+                                (shuntType) => shuntType.id
+                            ),
+                        ],
+                    };
+                },
+
+                enableCellChangeFlash: true,
+            },
+            {
+                id: 'RegulatingTerminalGenerator',
+                field: 'RegulatingTerminalGenerator',
+                valueGetter: RegulatingTerminalCellGetter,
+                enableCellChangeFlash: true,
+                cellStyle: (params) =>
+                    isEditableRegulatingTerminalCell(params)
+                        ? editableCellStyle(params)
+                        : {},
+                onCellClicked: handleGeneratorsCellClick,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: RegulatingTerminalCellGetter,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
             },
         ],
     },

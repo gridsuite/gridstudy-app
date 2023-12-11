@@ -55,6 +55,7 @@ import {
     checkValidationsAndRefreshCells,
     updateShuntCompensatorCells,
 } from './utils/equipment-table-utils';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -149,11 +150,15 @@ const TableWrapper = (props) => {
 
     const [columnData, setColumnData] = useState([]);
 
+    const setEditingDataAndRef = (editingData) => {
+        setEditingData(editingData ? { ...editingData } : undefined);
+        editingDataRef.current = editingData;
+    };
+
     const rollbackEdit = useCallback(() => {
         resetBuffer();
-        setEditingData();
-        editingDataRef.current = editingData;
-    }, [resetBuffer, editingData]);
+        setEditingDataAndRef();
+    }, [resetBuffer]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -373,7 +378,7 @@ const TableWrapper = (props) => {
             if (event.finished && event.column) {
                 const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
                     reorderedTableDefinitionIndexes.indexOf(
-                        event.column.colDef.id
+                        event.column.colDef?.id
                     ),
                     1
                 );
@@ -403,7 +408,7 @@ const TableWrapper = (props) => {
 
                 const [reorderedColDef] = columnData.splice(
                     columnData.findIndex((obj) => {
-                        return obj.id === event.column.colDef.id;
+                        return obj.id === event.column.colDef?.id;
                     }),
                     1
                 );
@@ -454,6 +459,23 @@ const TableWrapper = (props) => {
                         undefined
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
+                    const regulatingTerminalConnectableIdFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableId,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableId
+                        );
+                    const regulatingTerminalConnectableTypeFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableType,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableType
+                        );
+                    const regulatingTerminalVlIdFieldValue =
+                        regulatingTerminalConnectableIdFieldValue !== null ||
+                        regulatingTerminalConnectableTypeFieldValue !== null
+                            ? editingData.regulatingTerminalVlId
+                            : null;
                     return modifyGenerator(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -493,7 +515,28 @@ const TableWrapper = (props) => {
                         ),
                         undefined,
                         undefined,
-                        undefined
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        getFieldValue(
+                            editingData?.regulatingTerminalVlId ||
+                                editingData?.regulatingTerminalConnectableId
+                                ? REGULATION_TYPES.DISTANT.id
+                                : REGULATION_TYPES.LOCAL.id,
+                            editingDataRef.current?.regulatingTerminalVlId ||
+                                editingDataRef.current
+                                    ?.regulatingTerminalConnectableId
+                                ? REGULATION_TYPES.DISTANT.id
+                                : REGULATION_TYPES.LOCAL.id
+                        ),
+                        regulatingTerminalConnectableIdFieldValue,
+                        regulatingTerminalConnectableTypeFieldValue,
+                        regulatingTerminalVlIdFieldValue
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -638,14 +681,14 @@ const TableWrapper = (props) => {
             };
             Object.entries(priorValuesBuffer).forEach(([field, value]) => {
                 const column = gridRef.current.columnApi.getColumn(field);
-                const val = column.colDef.valueGetter
-                    ? column.colDef.valueGetter(wrappedEditedData)
+                const val = column.colDef?.valueGetter
+                    ? column.colDef?.valueGetter(wrappedEditedData)
                     : editingData[field];
 
                 groovyCr +=
-                    column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
+                    column.colDef?.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
-
+            console.log('editing .. ', editingData);
             const editPromise = buildEditPromise(
                 editingData,
                 groovyCr,
@@ -657,9 +700,8 @@ const TableWrapper = (props) => {
                         update: [editingData],
                     };
                     gridRef.current.api.applyTransaction(transaction);
-                    setEditingData();
+                    setEditingDataAndRef();
                     resetBuffer();
-                    editingDataRef.current = editingData;
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
@@ -681,19 +723,55 @@ const TableWrapper = (props) => {
         ]
     );
 
+    const updateGeneratorCells = useCallback((params) => {
+        const rowNode = params.node;
+        const colId = params.column.colId;
+        const regulationTypeText = params.data.RegulationTypeText;
+
+        if (colId === 'RegulationTypeText') {
+            if (regulationTypeText === REGULATION_TYPES.DISTANT.id) {
+                // set temporary values that should be changed when opening popup
+                params.data.regulatingTerminalVlId =
+                    editingDataRef.current?.regulatingTerminalVlId ?? ' ';
+                params.data.regulatingTerminalConnectableId =
+                    editingDataRef.current?.regulatingTerminalConnectableId ??
+                    ' ';
+                params.data.regulatingTerminalConnectableType =
+                    editingDataRef.current?.regulatingTerminalConnectableType ??
+                    ' ';
+
+                rowNode.setDataValue(
+                    'RegulatingTerminalGenerator',
+                    editingDataRef.current?.regulatingTerminalVlId ?? ''
+                );
+            }
+            if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
+                params.data.regulatingTerminalConnectableId = undefined;
+                params.data.regulatingTerminalConnectableType = undefined;
+                params.data.regulatingTerminalVlId = undefined;
+                rowNode.setDataValue('RegulatingTerminalGenerator', null);
+            }
+        }
+    }, []);
+
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
         (params) => {
             if (
-                params.data.metadata.equipmentType ===
+                params.data.metadata?.equipmentType ===
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR
             ) {
                 updateShuntCompensatorCells(params);
+            } else if (
+                params.data.metadata?.equipmentType ===
+                EQUIPMENT_TYPES.GENERATOR
+            ) {
+                updateGeneratorCells(params);
             }
             addDataToBuffer(params.colDef.field, params.oldValue);
             checkValidationsAndRefreshCells(params.api, params.context);
         },
-        [addDataToBuffer]
+        [addDataToBuffer, updateGeneratorCells]
     );
 
     const handleCellEditingStarted = useCallback((params) => {
@@ -727,6 +805,7 @@ const TableWrapper = (props) => {
                         return {
                             component: EditingCellRenderer,
                             params: {
+                                setEditingData: setEditingDataAndRef,
                                 rollbackEdit: rollbackEdit,
                                 handleSubmitEditing: handleSubmitEditing,
                             },
@@ -739,7 +818,7 @@ const TableWrapper = (props) => {
                         return {
                             component: EditableCellRenderer,
                             params: {
-                                setEditingData: setEditingData,
+                                setEditingData: setEditingDataAndRef,
                                 equipmentType:
                                     TABLES_DEFINITION_INDEXES.get(tabIndex)
                                         .type,
@@ -791,7 +870,6 @@ const TableWrapper = (props) => {
 
     const topPinnedData = useMemo(() => {
         if (editingData) {
-            editingDataRef.current = { ...editingData };
             return [editingData];
         } else {
             return undefined;
@@ -857,6 +935,7 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}
@@ -871,6 +950,9 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
+                        editingData={editingData}
+                        setEditingData={setEditingData}
+                        editingDataRef={editingDataRef}
                     />
                 </Box>
             )}

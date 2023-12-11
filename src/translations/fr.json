@@ -749,6 +749,7 @@
     "QmaxPmin": "QmaxPmin",
     "Pmax": "Pmax",
     "RegulatingTerminalGenerator": "Terminal distant réglé",
+    "EditVoltageRegulation": "Modification du terminal distant",
     "ShortCircuit": "Court-circuit",
     "LowShortCircuitCurrentLimit": "Limite ICC min",
     "HighShortCircuitCurrentLimit": "Limite ICC max",
