@@ -21,6 +21,55 @@ import {
     deepUpdateValue,
 } from './equipment-table-utils';
 
+export const StringField = forwardRef(
+    ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
+        const error = useMemo(() => {
+            return Object.keys(gridContext.editErrors).includes(colDef.field);
+        }, [colDef.field, gridContext.editErrors]);
+
+        const value = defaultValue;
+
+        useImperativeHandle(
+            ref,
+            () => ({
+                getValue: () => value,
+                getField: () => colDef.field,
+            }),
+            [colDef.field, value]
+        );
+
+        const validateEvent = useCallback(
+            (ev) => {
+                const newVal = ev.target.value;
+                gridContext.dynamicValidation[colDef.field] = newVal;
+                checkValidationsAndRefreshCells(gridApi, gridContext);
+            },
+            [colDef.field, gridApi, gridContext]
+        );
+
+        function renderStringText() {
+            return (
+                <TextField
+                    value={value}
+                    onChange={validateEvent}
+                    error={error}
+                    type={'text'}
+                    size={'small'}
+                    margin={'none'}
+                    autoFocus
+                    inputProps={{
+                        style: {
+                            textAlign: 'center',
+                            fontSize: 'small',
+                        },
+                    }}
+                />
+            );
+        }
+
+        return <div style={{ width: 'inherit' }}>{renderStringText()}</div>;
+    }
+);
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
         const error = useMemo(() => {

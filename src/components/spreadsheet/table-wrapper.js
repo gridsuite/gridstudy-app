@@ -751,6 +751,10 @@ const TableWrapper = (props) => {
                 params.data.regulatingTerminalVlId = undefined;
                 rowNode.setDataValue('RegulatingTerminalGenerator', null);
             }
+            params.api.flashCells({
+                rowNodes: [rowNode],
+                columns: ['RegulationTypeText', 'RegulatingTerminalGenerator'],
+            });
         }
     }, []);
 

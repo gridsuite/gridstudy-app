@@ -7,7 +7,11 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { BooleanListField, NumericalField } from './equipment-table-editors';
+import {
+    BooleanListField,
+    NumericalField,
+    StringField,
+} from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
     LOAD_TYPES,
@@ -1410,24 +1414,28 @@ export const TABLES_DEFINITIONS = {
                     return {
                         values: [
                             ...Object.values(REGULATION_TYPES).map(
-                                (shuntType) => shuntType.id
+                                (type) => type.id
                             ),
                         ],
                     };
                 },
-
-                enableCellChangeFlash: true,
             },
             {
                 id: 'RegulatingTerminalGenerator',
                 field: 'RegulatingTerminalGenerator',
                 valueGetter: RegulatingTerminalCellGetter,
-                enableCellChangeFlash: true,
                 cellStyle: (params) =>
                     isEditableRegulatingTerminalCell(params)
                         ? editableCellStyle(params)
                         : {},
                 onCellClicked: handleGeneratorsCellClick,
+                cellEditor: StringField,
+                editable: (params) => isEditableRegulatingTerminalCell(params),
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'RegulationTypeText',
+                    },
+                },
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: RegulatingTerminalCellGetter,

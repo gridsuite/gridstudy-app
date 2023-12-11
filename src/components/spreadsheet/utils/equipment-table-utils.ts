@@ -210,6 +210,15 @@ export const checkValidationsAndRefreshCells = (
                 isValid = false;
             }
         }
+        if (colDef.field === 'RegulatingTerminalGenerator') {
+            if (
+                gridContext.dynamicValidation.regulatingTerminalVlId ===
+                    undefined ||
+                gridContext.dynamicValidation.regulatingTerminalVlId === ' '
+            ) {
+                isValid = false;
+            }
+        }
         if (colDef.crossValidation?.allowZero && fieldVal === 0) {
             isValid = true;
         }
