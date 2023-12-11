@@ -703,10 +703,14 @@ const TableWrapper = (props) => {
 
     const handleSubmitEditing = useCallback(
         (params) => {
-            params.context.dynamicValidation = {};
-            validateEdit(params);
+            if (Object.values(priorValuesBuffer).length === 0) {
+                rollbackEdit();
+            } else {
+                params.context.dynamicValidation = {};
+                validateEdit(params);
+            }
         },
-        [validateEdit]
+        [priorValuesBuffer, rollbackEdit, validateEdit]
     );
 
     const addEditColumn = useCallback(

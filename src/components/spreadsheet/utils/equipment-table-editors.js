@@ -16,7 +16,10 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { checkValidationsAndRefreshCells } from './equipment-table-utils';
+import {
+    checkValidationsAndRefreshCells,
+    deepUpdateValue,
+} from './equipment-table-utils';
 
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
@@ -68,7 +71,11 @@ export const NumericalField = forwardRef(
                     newVal = undefined;
                 }
                 setValue(newVal);
-                gridContext.dynamicValidation[colDef.field] = newVal;
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    newVal
+                );
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
             [colDef.field, gridApi, gridContext]
@@ -154,7 +161,11 @@ export const BooleanListField = forwardRef(
             (ev) => {
                 const val = ev.target.value;
                 setValue(val);
-                gridContext.dynamicValidation[colDef.field] = val;
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    val
+                );
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
             [colDef.field, gridApi, gridContext]

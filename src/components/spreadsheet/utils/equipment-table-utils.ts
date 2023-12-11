@@ -146,6 +146,22 @@ const deepFindValue = (obj: any, path: any) => {
     return current;
 };
 
+export const deepUpdateValue = (obj: any, path: any, value: any) => {
+    let paths = path.split('.'),
+        current = structuredClone(obj),
+        data = current,
+        i;
+
+    for (i = 0; i < paths.length - 1; ++i) {
+        if (current[paths[i]] === undefined) {
+            current[paths[i]] = {};
+        }
+        current = current[paths[i]];
+    }
+    current[paths[i]] = value;
+    return data;
+};
+
 // build object from path and value (e.g. 'a.b.c', 1) => {a: {b: {c: 1}}}
 export const buildObjectFromPath = (path: any, value: any) => {
     const paths = path.split('.');
