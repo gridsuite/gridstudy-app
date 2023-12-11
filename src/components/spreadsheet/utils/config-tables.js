@@ -1426,8 +1426,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: (params) =>
                     isEditableRegulatingTerminalCell(params)
                         ? editableCellStyle(params)
-                        : null,
-                editable: (params) => isEditableRegulatingTerminalCell(params),
+                        : {},
                 onCellClicked: handleGeneratorsCellClick,
                 cellEditorParams: (params) => {
                     return {
