@@ -185,7 +185,11 @@ const CustomSuffixRenderer = ({ props, element }) => {
         );
     } else {
         return (
-            <TagRenderer styles={equipmentStyles} props={props} element={element} />
+            <TagRenderer
+                styles={equipmentStyles}
+                props={props}
+                element={element}
+            />
         );
     }
 };
