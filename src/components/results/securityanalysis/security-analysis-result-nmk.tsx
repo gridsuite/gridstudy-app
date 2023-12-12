@@ -20,7 +20,6 @@ import {
     PAGE_OPTIONS,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
-    securityAnalysisTableNmKFilterDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
@@ -52,10 +51,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     paginationProps,
     sortProps,
     filterProps,
+    filterEnums,
 }) => {
     const { content } = result || {};
-    const { onSortChanged, sortConfig } = sortProps || {};
-    const { updateFilter, filterEnums, filterSelector } = filterProps || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
@@ -127,41 +125,30 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [onClickNmKConstraint]
     );
 
-    const filtersDef = useMemo(
-        () => securityAnalysisTableNmKFilterDefinition(intl, filterEnums),
-        [filterEnums, intl]
-    );
-
     const columnDefs = useMemo(
         () =>
             isFromContingency
                 ? securityAnalysisTableNmKContingenciesColumnsDefinition(
                       intl,
-                      filtersDef,
-                      filterSelector,
-                      onSortChanged,
-                      updateFilter,
                       SubjectIdRenderer,
-                      sortConfig
+                      filterProps,
+                      sortProps,
+                      filterEnums
                   )
                 : securityAnalysisTableNmKConstraintsColumnsDefinition(
                       intl,
-                      filtersDef,
-                      filterSelector,
-                      onSortChanged,
-                      updateFilter,
                       SubjectIdRenderer,
-                      sortConfig
+                      filterProps,
+                      sortProps,
+                      filterEnums
                   ),
         [
             isFromContingency,
             intl,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
             SubjectIdRenderer,
-            sortConfig,
+            filterProps,
+            sortProps,
+            filterEnums,
         ]
     );
 

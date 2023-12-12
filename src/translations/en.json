@@ -606,6 +606,7 @@
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
     "RestoreModificationText": "Please select modifications to restore",
+    "DeleteModificationText": "Are you sure you want to permanently delete {numberToDelete} modifications ?",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
