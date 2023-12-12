@@ -103,8 +103,8 @@ const styles = {
                 : theme.palette.background.paper,
     }),
     listTitleDisplay: (theme: Theme) => ({
-        paddingTop: theme.spacing(8),
-        paddingBottom: theme.spacing(8),
+        paddingTop: theme.spacing(4),
+        paddingBottom: theme.spacing(4),
         paddingLeft: theme.spacing(4),
         textTransform: 'none',
         alignItems: 'start',
