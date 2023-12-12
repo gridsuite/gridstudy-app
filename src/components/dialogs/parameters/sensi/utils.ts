@@ -346,6 +346,12 @@ interface IRowNewParams {
     [INJECTIONS]: Array<{
         [ID]: string;
     }>;
+    [HVDC_LINES]: Array<{
+        [ID]: string;
+    }>;
+    [PSTS]: Array<{
+        [ID]: string;
+    }>;
     [CONTINGENCIES]: Array<{
         [ID]: string;
     }>;
@@ -356,9 +362,13 @@ export const getGenericRowNewParams = (newRowParams: IRowNewParams) => {
         [MONITORED_BRANCHES]: newRowParams[MONITORED_BRANCHES].map(
             (container) => container[ID]
         ),
-        [INJECTIONS]: newRowParams[INJECTIONS].map(
+        [INJECTIONS]: newRowParams[INJECTIONS]?.map(
             (container) => container[ID]
         ),
+        [HVDC_LINES]: newRowParams[HVDC_LINES]?.map(
+            (container) => container[ID]
+        ),
+        [PSTS]: newRowParams[PSTS]?.map((container) => container[ID]),
         [CONTINGENCIES]: newRowParams[CONTINGENCIES].map(
             (container) => container[ID]
         ),

@@ -23,8 +23,10 @@ import { IColumnsDef } from './columns-definitions';
 import {
     ACTIVATED,
     CONTINGENCIES,
+    HVDC_LINES,
     INJECTIONS,
     MONITORED_BRANCHES,
+    PSTS,
 } from '../../../utils/field-constants';
 
 export const MAX_ROWS_NUMBER = 100;
@@ -75,10 +77,15 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             if (
                 row[ACTIVATED] &&
                 row[MONITORED_BRANCHES].length &&
-                row[INJECTIONS].length &&
                 row[CONTINGENCIES].length
             ) {
-                onChangeParams(row, arrayFormName, index);
+                if (
+                    row[INJECTIONS]?.length ||
+                    row[HVDC_LINES]?.length ||
+                    row[PSTS]?.length
+                ) {
+                    onChangeParams(row, arrayFormName, index);
+                }
             }
         },
         [onChangeParams, getValues]

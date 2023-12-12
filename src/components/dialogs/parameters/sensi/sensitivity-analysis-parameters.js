@@ -46,7 +46,7 @@ import {
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
-    fetchSensitivityAnalysisParametersComplexity,
+    getSensitivityAnalysisParametersComputingCount,
     getSensitivityAnalysisParameters,
     setSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
@@ -237,6 +237,7 @@ export const SensitivityAnalysisParameters = ({
 
     const getResultCount = useCallback(() => {
         const values = getValues();
+        debugger;
         var resultCountByTab = {
             sensitivityInjectionsSet: values.sensitivityInjectionsSet
                 .filter((entry) => entry[ACTIVATED])
@@ -255,6 +256,7 @@ export const SensitivityAnalysisParameters = ({
                 .filter((entry) => entry[COUNT])
                 .reduce((a, b) => a + b, 0),
         };
+        debugger;
         return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
     }, [getValues]);
 
@@ -267,7 +269,7 @@ export const SensitivityAnalysisParameters = ({
 
     const onChangeParams = useCallback(
         (row, arrayFormName, index) => {
-            fetchSensitivityAnalysisParametersComplexity(
+            getSensitivityAnalysisParametersComputingCount(
                 studyUuid,
                 arrayFormName === SENSI_INJECTIONS_SET,
                 formatFiltredParams(row)
