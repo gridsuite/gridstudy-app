@@ -14,7 +14,6 @@ import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     COMPUTATION_RESULTS_LOGS,
     DATA_KEY_TO_FILTER_KEY,
-    DATA_KEY_TO_SORT_KEY,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
@@ -49,11 +48,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';
     const defaultSortOrder = SORT_WAYS.asc;
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        dataKeyToSortKey: DATA_KEY_TO_SORT_KEY,
-        initSortConfig: {
-            colKey: defaultSortColumn,
-            sortWay: defaultSortOrder,
-        },
+        colKey: defaultSortColumn,
+        sortWay: defaultSortOrder,
     });
     const initTable = (nOrNkIndex) => {
         initFilters();
@@ -99,7 +95,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         onChange={handleSensiNOrNkIndexChange}
                     >
                         {SensitivityResultTabs.map((tab) => (
-                            <Tab label={tab.label} />
+                            <Tab key={tab.label} label={tab.label} />
                         ))}
                     </Tabs>
                     <PagedSensitivityAnalysisResult
@@ -107,12 +103,16 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         sensiKind={sensiKind}
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
-                        updateFilter={updateFilter}
-                        filterSelector={filterSelector}
-                        onSortChanged={onSortChanged}
-                        sortConfig={sortConfig}
                         page={page}
                         setPage={setPage}
+                        sortProps={{
+                            onSortChanged,
+                            sortConfig,
+                        }}
+                        filterProps={{
+                            updateFilter,
+                            filterSelector,
+                        }}
                     />
                 </>
             )}
