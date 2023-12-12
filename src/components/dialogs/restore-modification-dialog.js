@@ -122,20 +122,20 @@ const RestoreModificationDialog = ({
                 {intl.formatMessage({ id: 'RestoreModifications' })}
             </DialogTitle>
             <DialogContent>
-                <div sx={styles.text}>
+                <Box sx={styles.text}>
                     <DialogContentText>
                         {intl.formatMessage({
                             id: 'RestoreModificationText',
                         })}
                     </DialogContentText>
-                </div>
+                </Box>
                 <DragDropContext>
                     <Droppable
                         droppableId="restore-modification-list"
                         isDropDisabled={true}
                     >
                         {(provided) => (
-                            <div
+                            <Box
                                 sx={styles.listContainer}
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
@@ -163,26 +163,24 @@ const RestoreModificationDialog = ({
                                     values={stashedModifications}
                                     itemComparator={(a, b) => a.uuid === b.uuid}
                                     itemRenderer={(props) => (
-                                        <>
-                                            <ModificationListItem
-                                                key={props.item.uuid}
-                                                isRestorationDialog
-                                                isDragging={false}
-                                                isOneNodeBuilding={false}
-                                                disabled={false}
-                                                listSize={
-                                                    stashedModifications.length
-                                                }
-                                                {...props}
-                                            />
-                                        </>
+                                        <ModificationListItem
+                                            key={props.item.uuid}
+                                            isRestorationDialog
+                                            isDragging={false}
+                                            isOneNodeBuilding={false}
+                                            disabled={false}
+                                            listSize={
+                                                stashedModifications.length
+                                            }
+                                            {...props}
+                                        />
                                     )}
                                     toggleSelectAll={
                                         toggleSelectAllStashedModifications
                                     }
                                 />
                                 {provided.placeholder}
-                            </div>
+                            </Box>
                         )}
                     </Droppable>
                 </DragDropContext>
