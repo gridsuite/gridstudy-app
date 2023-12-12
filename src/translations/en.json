@@ -1319,5 +1319,6 @@
     "customAgGridFilter.lessThanOrEqual": "Less than or equal",
     "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",    
     "customAgGridFilter.filterOoo": "Filter...",
-    "undefined" : "undefined"
+    "undefined" : "undefined",
+    "modificationsAlreadyApplied": "The modifications have already been applied"
 }

@@ -53,7 +53,12 @@ const styles = {
         display: 'flex',
         position: 'relative',
     },
-
+    labelAppliedModifications: {
+        display: 'flex',
+        position: 'relative',
+        marginTop: '12px',
+        marginLeft: '20px',
+    },
     gridContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -73,9 +78,11 @@ const VoltageInitResult = ({ result, status }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
 
+    const [resultToShow, setResultToShow] = useState(result);
+
     const [tabIndex, setTabIndex] = useState(0);
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
-        !result
+        !resultToShow || !resultToShow.modificationsGroupUuid
     );
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] =
@@ -87,8 +94,10 @@ const VoltageInitResult = ({ result, status }) => {
     const viNotif = useSelector((state) => state.voltageInitNotif);
 
     useEffect(() => {
-        setDisableApplyModifications(!result);
-    }, [result, setDisableApplyModifications]);
+        setDisableApplyModifications(
+            !resultToShow || !resultToShow.modificationsGroupUuid
+        );
+    }, [resultToShow, setDisableApplyModifications]);
 
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
@@ -115,6 +124,10 @@ const VoltageInitResult = ({ result, status }) => {
         cloneVoltageInitModifications(studyUuid, currentNode.id)
             .then(() => {
                 setApplyingModifications(false);
+                setResultToShow({
+                    ...resultToShow,
+                    modificationsGroupUuid: null,
+                });
             })
             .catch((errmsg) => {
                 snackError({
@@ -302,6 +315,12 @@ const VoltageInitResult = ({ result, status }) => {
                         </Button>
                         {previewModificationsDialogOpen &&
                             renderPreviewModificationsDialog()}
+                        {resultToShow &&
+                            !resultToShow.modificationsGroupUuid && (
+                                <div style={styles.labelAppliedModifications}>
+                                    <FormattedMessage id="modificationsAlreadyApplied" />
+                                </div>
+                            )}
                         {applyingModifications && (
                             <div
                                 style={{
@@ -318,13 +337,13 @@ const VoltageInitResult = ({ result, status }) => {
                 </Box>
                 <div style={{ flexGrow: 1 }}>
                     {viNotif &&
-                        result &&
+                        resultToShow &&
                         tabIndex === 0 &&
-                        renderIndicatorsTable(result.indicators)}
+                        renderIndicatorsTable(resultToShow.indicators)}
                     {viNotif &&
-                        result &&
+                        resultToShow &&
                         tabIndex === 1 &&
-                        renderReactiveSlacksTable(result.reactiveSlacks)}
+                        renderReactiveSlacksTable(resultToShow.reactiveSlacks)}
                 </div>
             </>
         );
