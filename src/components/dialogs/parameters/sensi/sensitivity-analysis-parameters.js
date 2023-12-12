@@ -203,7 +203,7 @@ export const SensitivityAnalysisParameters = ({
               };
     }, []);
 
-    const formatFiltredParams = useCallback((row) => {
+    const formatFilteredParams = useCallback((row) => {
         return getGenericRowNewParams(row);
     }, []);
 
@@ -237,7 +237,6 @@ export const SensitivityAnalysisParameters = ({
 
     const getResultCount = useCallback(() => {
         const values = getValues();
-        debugger;
         var resultCountByTab = {
             sensitivityInjectionsSet: values.sensitivityInjectionsSet
                 .filter((entry) => entry[ACTIVATED])
@@ -256,7 +255,6 @@ export const SensitivityAnalysisParameters = ({
                 .filter((entry) => entry[COUNT])
                 .reduce((a, b) => a + b, 0),
         };
-        debugger;
         return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
     }, [getValues]);
 
@@ -272,7 +270,7 @@ export const SensitivityAnalysisParameters = ({
             getSensitivityAnalysisParametersComputingCount(
                 studyUuid,
                 arrayFormName === SENSI_INJECTIONS_SET,
-                formatFiltredParams(row)
+                formatFilteredParams(row)
             )
                 .then((response) => {
                     response.text().then((value) => {
@@ -280,6 +278,7 @@ export const SensitivityAnalysisParameters = ({
                             `${arrayFormName}[${index}].[${COUNT}]`,
                             value && Number(value)
                         );
+                        console.log(value);
                         setAnalysisComputeComplexity(getResultCount());
                         hasFormChanged(false);
                     });
@@ -295,7 +294,7 @@ export const SensitivityAnalysisParameters = ({
         [
             snackError,
             studyUuid,
-            formatFiltredParams,
+            formatFilteredParams,
             setValue,
             getResultCount,
             hasFormChanged,

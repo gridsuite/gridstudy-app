@@ -118,7 +118,10 @@ export const getSensiHVDCsFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [SENSITIVITY_TYPE]: yup.string().required(),
+            [SENSITIVITY_TYPE]: yup.string().when([ACTIVATED], {
+                is: (activated: boolean) => activated,
+                then: (schema) => schema.required(),
+            }),
             [HVDC_LINES]: yup
                 .array()
                 .of(
@@ -132,19 +135,13 @@ export const getSensiHVDCsFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [CONTINGENCIES]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
-                    })
-                )
-                .required()
-                .when([ACTIVATED], {
-                    is: (activated: boolean) => activated,
-                    then: (schema) => schema.min(1, 'FieldIsRequired'),
-                }),
+            [CONTINGENCIES]: yup.array().of(
+                yup.object().shape({
+                    [ID]: yup.string().required(),
+                    [NAME]: yup.string().required(),
+                })
+            ),
+
             [ACTIVATED]: yup.boolean().required(),
         })
     ),
@@ -216,19 +213,12 @@ export const getSensiInjectionsFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [CONTINGENCIES]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
-                    })
-                )
-                .required()
-                .when([ACTIVATED], {
-                    is: (activated: boolean) => activated,
-                    then: (schema) => schema.min(1, 'FieldIsRequired'),
-                }),
+            [CONTINGENCIES]: yup.array().of(
+                yup.object().shape({
+                    [ID]: yup.string().required(),
+                    [NAME]: yup.string().required(),
+                })
+            ),
             [ACTIVATED]: yup.boolean().required(),
         })
     ),
@@ -301,20 +291,16 @@ export const getSensiInjectionsSetFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [DISTRIBUTION_TYPE]: yup.string().nullable(),
-            [CONTINGENCIES]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
-                    })
-                )
-                .required()
-                .when([ACTIVATED], {
-                    is: (activated: boolean) => activated,
-                    then: (schema) => schema.min(1, 'FieldIsRequired'),
-                }),
+            [DISTRIBUTION_TYPE]: yup.string().when([ACTIVATED], {
+                is: (activated: boolean) => activated,
+                then: (schema) => schema.required(),
+            }),
+            [CONTINGENCIES]: yup.array().of(
+                yup.object().shape({
+                    [ID]: yup.string().required(),
+                    [NAME]: yup.string().required(),
+                })
+            ),
             [ACTIVATED]: yup.boolean().nullable(),
         })
     ),
@@ -342,34 +328,44 @@ interface INewParamsInjectionsSet {
 interface IRowNewParams {
     [MONITORED_BRANCHES]: Array<{
         [ID]: string;
+        [NAME]: string;
     }>;
     [INJECTIONS]: Array<{
         [ID]: string;
+        [NAME]: string;
     }>;
     [HVDC_LINES]: Array<{
         [ID]: string;
+        [NAME]: string;
     }>;
     [PSTS]: Array<{
         [ID]: string;
+        [NAME]: string;
     }>;
     [CONTINGENCIES]: Array<{
         [ID]: string;
+        [NAME]: string;
     }>;
 }
 
 export const getGenericRowNewParams = (newRowParams: IRowNewParams) => {
     return {
         [MONITORED_BRANCHES]: newRowParams[MONITORED_BRANCHES].map(
+            (container) => {
+                return {
+                    [CONTAINER_ID]: container[ID],
+                    [CONTAINER_NAME]: container[NAME],
+                };
+            }
+        ),
+        [INJECTIONS]: newRowParams[INJECTIONS].map(
             (container) => container[ID]
         ),
-        [INJECTIONS]: newRowParams[INJECTIONS]?.map(
+        [HVDC_LINES]: newRowParams[HVDC_LINES].map(
             (container) => container[ID]
         ),
-        [HVDC_LINES]: newRowParams[HVDC_LINES]?.map(
-            (container) => container[ID]
-        ),
-        [PSTS]: newRowParams[PSTS]?.map((container) => container[ID]),
-        [CONTINGENCIES]: newRowParams[CONTINGENCIES].map(
+        [PSTS]: newRowParams[PSTS].map((container) => container[ID]),
+        [CONTINGENCIES]: newRowParams[CONTINGENCIES]?.map(
             (container) => container[ID]
         ),
     };
@@ -494,7 +490,10 @@ export const getSensiPSTsFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [SENSITIVITY_TYPE]: yup.string().required(),
+            [SENSITIVITY_TYPE]: yup.string().when([ACTIVATED], {
+                is: (activated: boolean) => activated,
+                then: (schema) => schema.required(),
+            }),
             [PSTS]: yup
                 .array()
                 .of(
@@ -508,19 +507,12 @@ export const getSensiPSTsFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [CONTINGENCIES]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
-                    })
-                )
-                .required()
-                .when([ACTIVATED], {
-                    is: (activated: boolean) => activated,
-                    then: (schema) => schema.min(1, 'FieldIsRequired'),
-                }),
+            [CONTINGENCIES]: yup.array().of(
+                yup.object().shape({
+                    [ID]: yup.string().required(),
+                    [NAME]: yup.string().required(),
+                })
+            ),
             [ACTIVATED]: yup.boolean().required(),
         })
     ),
