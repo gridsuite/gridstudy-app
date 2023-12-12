@@ -14,19 +14,20 @@ import React, {
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
-    Theme,
-    Box,
     darken,
-    lighten,
-    Divider,
-    Tabs,
-    Tab,
     DialogContentText,
+    Divider,
+    Grid,
+    lighten,
+    Tab,
+    Tabs,
+    Theme,
+    Typography,
 } from '@mui/material';
 
 import {
-    useParameterState,
     useParametersBackend,
+    useParameterState,
 } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
@@ -69,8 +70,8 @@ import {
     useGetShortCircuitParameters,
 } from './dialogs/parameters/short-circuit-parameters';
 import {
-    VoltageInitParameters,
     useGetVoltageInitParameters,
+    VoltageInitParameters,
 } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import {
     SingleLineDiagramParameters,
@@ -83,46 +84,55 @@ import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 
-const styles = {
-    panel: (theme: Theme) => ({
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(1),
-    }),
-    tab: {
-        display: 'flex',
-        alignItems: 'center',
+const stylesLayout = {
+    // <Tabs/> need attention with parents flex
+    rootContainer: {
+        width: '100%',
         height: '100%',
     },
-    listDisplay: (theme: Theme) => ({
-        display: 'flex',
-        width: '20%',
+    columnContainer: {
         height: '100%',
+    },
+    listDisplayContainer: {
+        overflow: 'auto',
+        flex: 1,
+    },
+    listDisplay: {
+        height: '100%',
+    },
+};
+const styles = {
+    listTitleDisplay: (theme: Theme) => ({
+        marginTop: 1,
+        marginBottom: 1,
+        width: '100%',
+        textAlign: 'center',
+        fontSize: '1.1rem',
+    }),
+    listDisplay: (theme: Theme) => ({
+        ...stylesLayout.listDisplay,
         backgroundColor:
             theme.palette.mode === 'light'
                 ? darken(theme.palette.background.paper, 0.1)
                 : theme.palette.background.paper,
-    }),
-    listTitleDisplay: (theme: Theme) => ({
-        paddingTop: theme.spacing(4),
-        paddingBottom: theme.spacing(4),
-        paddingLeft: theme.spacing(4),
-        textTransform: 'none',
-        alignItems: 'start',
-        fontSize: '1.1rem',
-    }),
-    listItemDisplay: (theme: Theme) => ({
-        paddingLeft: theme.spacing(4),
-        textTransform: 'none',
-        alignItems: 'start',
+        '.MuiTab-root.MuiButtonBase-root': {
+            textTransform: 'none', //tab text not upper-case
+            textAlign: 'left',
+            alignItems: 'stretch',
+        },
+        '.MuiTabs-scrollButtons.Mui-disabled': {
+            opacity: 0.3,
+        },
+        '.MuiTabScrollButton-root:nth-of-type(1)': {
+            height: '30px', //40px by default
+        },
     }),
     parametersBox: (theme: Theme) => ({
-        width: '80%',
-        height: '100%',
         backgroundColor:
             theme.palette.mode === 'light'
                 ? theme.palette.background.paper
                 : lighten(theme.palette.background.paper, 0.2),
-        padding: theme.spacing(8),
+        padding: 8,
     }),
 };
 
@@ -327,102 +337,128 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
     ]);
 
     return (
-        <Box sx={styles.tab}>
-            <Tabs
-                value={tabValue}
-                variant="scrollable"
-                onChange={(event, newValue) => handleChangeTab(newValue)}
-                aria-label="parameters"
-                orientation="vertical"
-                sx={styles.listDisplay}
-            >
-                <Box sx={styles.listTitleDisplay}>
-                    <FormattedMessage id="parameters" />
-                </Box>
-                <Tab
-                    sx={styles.listItemDisplay}
-                    disabled={!props.studyId}
-                    label={<FormattedMessage id="LoadFlow" />}
-                    value={TAB_VALUES.lfParamsTabValue}
-                />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    disabled={
-                        !(
-                            !props.studyId ||
-                            securityAnalysisAvailability ===
-                                OptionalServicesStatus.Up
-                        )
-                    }
-                    label={<FormattedMessage id="SecurityAnalysis" />}
-                    value={TAB_VALUES.securityAnalysisParamsTabValue}
-                />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    disabled={
-                        !(
-                            !props.studyId ||
-                            sensitivityAnalysisAvailability ===
-                                OptionalServicesStatus.Up
-                        )
-                    }
-                    label={<FormattedMessage id="SensitivityAnalysis" />}
-                    value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
-                />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    disabled={
-                        !(
-                            !props.studyId ||
-                            shortCircuitAvailability ===
-                                OptionalServicesStatus.Up
-                        )
-                    }
-                    label={<FormattedMessage id="ShortCircuit" />}
-                    value={TAB_VALUES.shortCircuitParamsTabValue}
-                />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    disabled={
-                        !(
-                            !props.studyId ||
-                            dynamicSimulationAvailability ===
-                                OptionalServicesStatus.Up
-                        )
-                    }
-                    label={<FormattedMessage id="DynamicSimulation" />}
-                    value={TAB_VALUES.dynamicSimulationParamsTabValue}
-                />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    disabled={
-                        !(
-                            !props.studyId ||
-                            voltageInitAvailability ===
-                                OptionalServicesStatus.Up
-                        )
-                    }
-                    label={<FormattedMessage id="VoltageInit" />}
-                    value={TAB_VALUES.voltageInitParamsTabValue}
-                />
-                <Divider />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    label={<FormattedMessage id="SingleLineDiagram" />}
-                    value={TAB_VALUES.sldParamsTabValue}
-                />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    label={<FormattedMessage id="Map" />}
-                    value={TAB_VALUES.mapParamsTabValue}
-                />
-                <Tab
-                    sx={styles.listItemDisplay}
-                    label={<FormattedMessage id="Advanced" />}
-                    value={TAB_VALUES.advancedParamsTabValue}
-                />
-            </Tabs>
-            <Box sx={styles.parametersBox}>{displayTab()}</Box>
+        <>
+            <Grid container spacing={0} sx={stylesLayout.rootContainer}>
+                <Grid
+                    container
+                    item
+                    xs={2}
+                    direction="column"
+                    sx={stylesLayout.columnContainer}
+                >
+                    <Grid item>
+                        <Typography
+                            variant="subtitle1"
+                            sx={styles.listTitleDisplay}
+                        >
+                            <FormattedMessage id="parameters" />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs sx={stylesLayout.listDisplayContainer}>
+                        <Tabs
+                            value={tabValue}
+                            variant="scrollable"
+                            onChange={(event, newValue) =>
+                                handleChangeTab(newValue)
+                            }
+                            aria-label="parameters"
+                            orientation="vertical"
+                            sx={styles.listDisplay}
+                        >
+                            <Tab
+                                disabled={!props.studyId}
+                                label={<FormattedMessage id="LoadFlow" />}
+                                value={TAB_VALUES.lfParamsTabValue}
+                            />
+                            <Tab
+                                disabled={
+                                    !(
+                                        !props.studyId ||
+                                        securityAnalysisAvailability ===
+                                            OptionalServicesStatus.Up
+                                    )
+                                }
+                                label={
+                                    <FormattedMessage id="SecurityAnalysis" />
+                                }
+                                value={
+                                    TAB_VALUES.securityAnalysisParamsTabValue
+                                }
+                            />
+                            <Tab
+                                disabled={
+                                    !(
+                                        !props.studyId ||
+                                        sensitivityAnalysisAvailability ===
+                                            OptionalServicesStatus.Up
+                                    )
+                                }
+                                label={
+                                    <FormattedMessage id="SensitivityAnalysis" />
+                                }
+                                value={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
+                            />
+                            <Tab
+                                disabled={
+                                    !(
+                                        !props.studyId ||
+                                        shortCircuitAvailability ===
+                                            OptionalServicesStatus.Up
+                                    )
+                                }
+                                label={<FormattedMessage id="ShortCircuit" />}
+                                value={TAB_VALUES.shortCircuitParamsTabValue}
+                            />
+                            <Tab
+                                disabled={
+                                    !(
+                                        !props.studyId ||
+                                        dynamicSimulationAvailability ===
+                                            OptionalServicesStatus.Up
+                                    )
+                                }
+                                label={
+                                    <FormattedMessage id="DynamicSimulation" />
+                                }
+                                value={
+                                    TAB_VALUES.dynamicSimulationParamsTabValue
+                                }
+                            />
+                            <Tab
+                                disabled={
+                                    !(
+                                        !props.studyId ||
+                                        voltageInitAvailability ===
+                                            OptionalServicesStatus.Up
+                                    )
+                                }
+                                label={<FormattedMessage id="VoltageInit" />}
+                                value={TAB_VALUES.voltageInitParamsTabValue}
+                            />
+                            <Divider />
+                            <Tab
+                                label={
+                                    <FormattedMessage id="SingleLineDiagram" />
+                                }
+                                value={TAB_VALUES.sldParamsTabValue}
+                            />
+                            <Tab
+                                label={<FormattedMessage id="Map" />}
+                                value={TAB_VALUES.mapParamsTabValue}
+                            />
+                            <Tab
+                                label={<FormattedMessage id="Advanced" />}
+                                value={TAB_VALUES.advancedParamsTabValue}
+                            />
+                        </Tabs>
+                    </Grid>
+                </Grid>
+                <Grid item xs={10} sx={styles.parametersBox}>
+                    {displayTab()}
+                </Grid>
+            </Grid>
             <SelectOptionsDialog
                 title={''}
                 open={isPopupOpen}
@@ -433,9 +469,8 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                         <FormattedMessage id="genericConfirmQuestion" />
                     </DialogContentText>
                 }
-                style
             />
-        </Box>
+        </>
     );
 };
 
