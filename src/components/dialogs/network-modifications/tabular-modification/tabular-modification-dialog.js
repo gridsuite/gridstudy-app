@@ -12,7 +12,10 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    ENERGY_SOURCES,
+    FORM_LOADING_DELAY,
+} from 'components/network/constants';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
@@ -74,13 +77,11 @@ const TabularModificationDialog = ({
 
     const toEnumValue = useCallback(
         (userValue, enumValues) =>
-            enumValues
-                .find(
-                    (e) =>
-                        intl.formatMessage({ id: e }).toUpperCase() ===
-                        userValue.toUpperCase()
-                )
-                ?.toUpperCase(),
+            enumValues.find(
+                (es) =>
+                    intl.formatMessage({ id: es.label }).toUpperCase() ===
+                    userValue.toUpperCase()
+            )?.id,
         [intl]
     );
 
@@ -123,14 +124,7 @@ const TabularModificationDialog = ({
                             break;
                         case 'energySource':
                             modification[key] = toModificationOperation(
-                                toEnumValue(value, [
-                                    'Hydro',
-                                    'Nuclear',
-                                    'Wind',
-                                    'Thermal',
-                                    'Solar',
-                                    'Other',
-                                ])
+                                toEnumValue(value, ENERGY_SOURCES)
                             );
                             break;
                         default:
