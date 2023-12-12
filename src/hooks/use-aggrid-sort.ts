@@ -7,12 +7,16 @@
 
 import { useCallback, useState } from 'react';
 
-export interface ISortConfig {
+export type SortConfigType = {
     colKey: string;
     sortWay: number;
-}
+};
 
-type DataKeyToSortKey = Record<string, string>;
+export type SortPropsType = {
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig: SortConfigType;
+    initSort?: (colKey: string) => void;
+};
 
 export const SORT_WAYS = {
     asc: 1,
@@ -27,51 +31,24 @@ export const getSortValue = (sortWay: number) => {
     }
 };
 
-const getKeyByValue = (
-    object: Record<string, any>,
-    value: any
-): string | undefined => {
-    return Object.keys(object).find((key) => object[key] === value);
-};
-
-const getSortConfig = (
-    dataKeyToSortKey: DataKeyToSortKey | undefined,
-    colKey: string,
-    sortWay: number
-): ISortConfig => {
-    return {
-        colKey: dataKeyToSortKey
-            ? getKeyByValue(dataKeyToSortKey, colKey) || colKey
-            : colKey,
-        sortWay,
-    };
-};
-
-interface IUseAgGridSortProps {
-    dataKeyToSortKey?: DataKeyToSortKey;
-    initSortConfig: ISortConfig;
-}
-
-export const useAgGridSort = ({
-    dataKeyToSortKey,
-    initSortConfig,
-}: IUseAgGridSortProps) => {
+export const useAgGridSort = (
+    initSortConfig: SortConfigType
+): SortPropsType => {
     const { colKey: initColKey, sortWay: initSortWay } = initSortConfig;
 
-    const [sortConfig, setSortConfig] = useState<ISortConfig>(
-        getSortConfig(dataKeyToSortKey, initColKey, initSortWay)
-    );
+    const [sortConfig, setSortConfig] = useState<SortConfigType>({
+        colKey: initColKey,
+        sortWay: initSortWay,
+    });
 
     const onSortChanged = useCallback(
-        (colKey: string, sortWay: number) =>
-            setSortConfig(getSortConfig(dataKeyToSortKey, colKey, sortWay)),
-        [dataKeyToSortKey]
+        (colKey: string, sortWay: number) => setSortConfig({ colKey, sortWay }),
+        []
     );
 
     const initSort = useCallback(
-        (colKey: string) =>
-            setSortConfig(getSortConfig(dataKeyToSortKey, colKey, initSortWay)),
-        [dataKeyToSortKey, initSortWay]
+        (colKey: string) => setSortConfig({ colKey, sortWay: initSortWay }),
+        [initSortWay]
     );
 
     return { onSortChanged, sortConfig, initSort };
