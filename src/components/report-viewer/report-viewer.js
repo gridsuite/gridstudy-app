@@ -50,12 +50,15 @@ export default function ReportViewer({
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
     const [selectedSeverity, setSelectedSeverity] = useState();
+    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] =
+        useState(undefined);
 
     const { snackError } = useSnackMessage();
 
     const rootReport = useRef(null);
     const reportTreeData = useRef({});
     const treeView = useRef(null);
+    const refReport = useRef(null);
 
     /**
      * Build the tree view (left pane) creating all ReportItem from json data
@@ -196,6 +199,13 @@ export default function ReportViewer({
         setExpandedNodes([rootId]);
         setLogs(rootReport.current.getAllLogs());
         setSelectedSeverity(LogReportItem.getDefaultSeverityFilter());
+
+        // Calculates the report's vertical position in the viewport to fix its height.
+        if (refReport.current) {
+            setReportVerticalPositionFromTop(
+                refReport.current.getBoundingClientRect()?.top
+            );
+        }
     }, [jsonReportTree, createReporterItem]);
 
     const handleToggleNode = (event, nodeIds) => {
@@ -252,14 +262,24 @@ export default function ReportViewer({
 
     return (
         rootReport.current && (
-            <Grid container sx={{ height: 'calc(100vh - 160px)' }}>
+            <Grid
+                container
+                ref={refReport}
+                sx={{
+                    // We calculate the remaining height relative to the viewport and the top position of the report.
+                    height:
+                        'calc(100vh - ' +
+                        (reportVerticalPositionFromTop || '160') + // The value 160 is fine, but leaves a gap below the report.
+                        'px)',
+                }}
+            >
                 <Grid
                     item
                     xs={12}
                     sm={3}
                     sx={{
                         height: '100%',
-                        overflow: 'scroll',
+                        overflow: 'auto',
                         borderRight: '1px solid rgba(81, 81, 81, 1)',
                     }}
                 >
