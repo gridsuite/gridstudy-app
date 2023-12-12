@@ -31,7 +31,6 @@ export const GLOBAL_NODE_TASK_KEY = 'Logs';
 const styles = {
     treeView: {
         height: '100%',
-        overflow: 'scroll',
     },
     treeItem: {
         whiteSpace: 'nowrap',
@@ -253,13 +252,14 @@ export default function ReportViewer({
 
     return (
         rootReport.current && (
-            <Grid container style={{ height: '100%' }}>
+            <Grid container sx={{ height: 'calc(100vh - 160px)' }}>
                 <Grid
                     item
                     xs={12}
                     sm={3}
-                    style={{
-                        height: '95%',
+                    sx={{
+                        height: '100%',
+                        overflow: 'scroll',
                         borderRight: '1px solid rgba(81, 81, 81, 1)',
                     }}
                 >
@@ -286,7 +286,7 @@ export default function ReportViewer({
                         </TreeView>
                     </ReportTreeViewContext.Provider>
                 </Grid>
-                <Grid item xs={12} sm={9} style={{ height: '95%' }}>
+                <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     <WaitingLoader
                         loading={waitingLoadReport}
                         message={'loadingReport'}

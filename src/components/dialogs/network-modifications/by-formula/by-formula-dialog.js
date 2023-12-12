@@ -33,9 +33,10 @@ import {
 } from './formula/formula-utils';
 
 function getFieldOrValue(input) {
-    const isNumber = !isNaN(parseFloat(input));
+    const value = input.replace(',', '.');
+    const isNumber = !isNaN(parseFloat(value));
     return {
-        [VALUE]: isNumber ? input : null,
+        [VALUE]: isNumber ? value : null,
         [EQUIPMENT_FIELD]: isNumber ? null : input,
     };
 }
