@@ -5,10 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community';
-import { AgGridReactProps } from 'ag-grid-react';
-import { ISortConfig } from '../../../hooks/use-aggrid-sort';
 import * as React from 'react';
+import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import { AgGridReactProps } from 'ag-grid-react';
+import { SortConfigType, SortPropsType } from '../../../hooks/use-aggrid-sort';
+import {
+    FilterEnumsType,
+    FilterPropsType,
+    FilterSelectorType,
+} from '../../../hooks/use-aggrid-row-filter';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -75,25 +80,9 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-type FilterValueType = string[] | { text: string; type: string }[];
-
-export type FilterSelectorType = Record<string, FilterValueType> | null;
-
-export type SortTableStateType = {
-    colKey: string;
-    sortValue?: string;
-};
-
-export type FilterTableStateType = {
-    dataType?: string;
-    field?: string;
-    type?: string;
-    value?: FilterValueType;
-};
-
 export type QueryParamsType = Record<
     string,
-    string | number | SortTableStateType | FilterTableStateType[]
+    string | number | SortConfigType | FilterSelectorType[]
 >;
 
 type Sort = {
@@ -124,42 +113,9 @@ type PaginationProps = {
     >;
 };
 
-type SortProps = {
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig?: ISortConfig;
-};
-
-type FilterProps = {
-    updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType | undefined;
-    filterEnums: FilterEnums;
-};
-
-type FilterParams = {
-    filterUIType?: string;
-    filterComparators?: string[];
-    debounceMs?: number;
-    parser?: (value: string) => void;
-};
-
-export type FilterEnums = Record<string, string[] | null>;
-
-export type FilterDef = {
-    field: string;
-    options: string[] | null;
-};
-
-export interface CustomColDef extends ColDef {
-    isSortable?: boolean;
-    isHidden?: boolean;
-    isFilterable?: boolean;
-    filterParams?: FilterParams;
-    filtersDef: FilterDef[];
-    filterSelector: FilterSelectorType | undefined;
-    sortConfig?: ISortConfig;
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    updateFilter: (field: string, value: string) => void;
-}
+export type SubjectIdRendererType = (
+    cellData: ICellRendererParams
+) => React.JSX.Element | undefined;
 
 export interface SecurityAnalysisNmkResult {
     content?:
@@ -188,11 +144,9 @@ export interface SecurityAnalysisTabProps {
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig?: ISortConfig;
-    updateFilter: (field: string, value: string) => void;
-    filterSelector: FilterSelectorType;
-    filterEnums: FilterEnums;
+    sortProps: SortPropsType;
+    filterProps: FilterPropsType;
+    filterEnums: FilterEnumsType;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -203,8 +157,9 @@ export interface SecurityAnalysisResultNmkProps {
     studyUuid?: string;
     nodeUuid?: string;
     paginationProps: PaginationProps;
-    sortProps: SortProps;
-    filterProps: FilterProps;
+    sortProps: SortPropsType;
+    filterProps: FilterPropsType;
+    filterEnums: FilterEnumsType;
 }
 
 export interface SecurityAnalysisNTableRow {
