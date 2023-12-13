@@ -14,14 +14,14 @@ export interface TabularModificationFields {
 export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     GENERATOR: [
         'equipmentId',
-        'minActivePower',
-        'activePowerSetpoint',
-        'maxActivePower',
-        'voltageRegulationOn',
-        'reactivePowerSetpoint',
-        'voltageSetpoint',
         'energySource',
+        'minActivePower',
+        'maxActivePower',
+        'activePowerSetpoint',
         'ratedNominalPower',
+        'reactivePowerSetpoint',
+        'voltageRegulationOn',
+        'voltageSetpoint',
     ],
     LOAD: ['equipmentId', 'activePower'],
 };
