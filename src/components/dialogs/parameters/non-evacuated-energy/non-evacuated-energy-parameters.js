@@ -117,10 +117,6 @@ export const NonEvacuatedEnergyParameters = ({
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
 
-    const formattedProviders = [
-        { id: providers.OpenLoadFlow, label: providers.OpenLoadFlow },
-        { id: providers.Hades2, label: providers.Hades2 },
-    ];
     const handlePopupConfirm = useCallback(() => {
         hideParameters();
         setPopupConfirm(false);
@@ -511,7 +507,11 @@ export const NonEvacuatedEnergyParameters = ({
                             name={PROVIDER}
                             disableClearable
                             size="small"
-                            options={Object.values(formattedProviders)}
+                            options={Object.values(providers).map(
+                                (provider) => {
+                                    return { id: provider, label: provider };
+                                }
+                            )}
                         ></SelectInput>
                     </Grid>
                 </Grid>
