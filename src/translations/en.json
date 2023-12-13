@@ -711,7 +711,7 @@
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
     "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
-    "ShuntCompensatorMultiSectionsError": "It is currently not possible to modify a multi sections shunt compensator",
+    "ShuntCompensatorNonlinearError": "It is currently not possible to modify non-linear shunt compensator",
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
 
     "CreateBattery": "Create battery",

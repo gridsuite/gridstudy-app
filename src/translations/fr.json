@@ -710,7 +710,7 @@
     "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
     "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
-    "ShuntCompensatorMultiSectionsError": "La modification d'un moyen de compensation à plusieurs gradins n'est pas possible pour le moment",
+    "ShuntCompensatorNonlinearError": "La modification d'un moyen de compensation non linéaire n'est pas possible pour le moment",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
 
     "CreateBattery": "Créer une batterie",
