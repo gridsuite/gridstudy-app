@@ -33,7 +33,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
 import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
-import ParametersTab from './parameter-tab';
+import ParametersTabs from './parameters-tabs';
 
 const styles = {
     map: {
@@ -311,7 +311,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                 key={`parameters-${currentNode?.id}`}
                 selected={props.view === StudyView.PARAMETERS}
             >
-                <ParametersTab studyId={studyUuid} />
+                <ParametersTabs studyId={studyUuid} />
             </TabPanelLazy>
         </>
     );

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -159,7 +159,7 @@ type OwnProps = {
     studyId: string;
 };
 
-const ParametersTab: FunctionComponent<OwnProps> = (props) => {
+const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const user = useSelector((state: ReduxState) => state.user);
 
     const [tabValue, setTabValue] = useState<string>(
@@ -366,16 +366,14 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                             sx={styles.listDisplay}
                         >
                             <Tab
-                                disabled={!props.studyId}
                                 label={<FormattedMessage id="LoadFlow" />}
                                 value={TAB_VALUES.lfParamsTabValue}
                             />
                             <Tab
                                 disabled={
                                     !(
-                                        !props.studyId ||
                                         securityAnalysisAvailability ===
-                                            OptionalServicesStatus.Up
+                                        OptionalServicesStatus.Up
                                     )
                                 }
                                 label={
@@ -388,9 +386,8 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                             <Tab
                                 disabled={
                                     !(
-                                        !props.studyId ||
                                         sensitivityAnalysisAvailability ===
-                                            OptionalServicesStatus.Up
+                                        OptionalServicesStatus.Up
                                     )
                                 }
                                 label={
@@ -403,9 +400,8 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                             <Tab
                                 disabled={
                                     !(
-                                        !props.studyId ||
                                         shortCircuitAvailability ===
-                                            OptionalServicesStatus.Up
+                                        OptionalServicesStatus.Up
                                     )
                                 }
                                 label={<FormattedMessage id="ShortCircuit" />}
@@ -414,9 +410,8 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                             <Tab
                                 disabled={
                                     !(
-                                        !props.studyId ||
                                         dynamicSimulationAvailability ===
-                                            OptionalServicesStatus.Up
+                                        OptionalServicesStatus.Up
                                     )
                                 }
                                 label={
@@ -429,9 +424,8 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
                             <Tab
                                 disabled={
                                     !(
-                                        !props.studyId ||
                                         voltageInitAvailability ===
-                                            OptionalServicesStatus.Up
+                                        OptionalServicesStatus.Up
                                     )
                                 }
                                 label={<FormattedMessage id="VoltageInit" />}
@@ -474,4 +468,4 @@ const ParametersTab: FunctionComponent<OwnProps> = (props) => {
     );
 };
 
-export default ParametersTab;
+export default ParametersTabs;
