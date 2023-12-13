@@ -27,7 +27,7 @@ import { Box, Button, useTheme } from '@mui/material';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import {BranchSide} from "../../utils/constants";
+import { BranchSide } from '../../utils/constants';
 
 const styles = {
     container: {
@@ -73,9 +73,15 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                                 // if we didnt find a line or transformer, it's a voltage level
                                 vlId = subjectId;
                             } else if (row.side) {
-                                if (side === intl.formatMessage({id:BranchSide.ONE})) {
+                                if (
+                                    side ===
+                                    intl.formatMessage({ id: BranchSide.ONE })
+                                ) {
                                     vlId = equipment.voltageLevelId1;
-                                } else if (side === intl.formatMessage({id:BranchSide.TWO})) {
+                                } else if (
+                                    side ===
+                                    intl.formatMessage({ id: BranchSide.TWO })
+                                ) {
                                     vlId = equipment.voltageLevelId2;
                                 } else {
                                     vlId = equipment.voltageLevelId3;
@@ -104,7 +110,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 }
             }
         },
-        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid]
+        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
     );
 
     const SubjectIdRenderer = useCallback(
