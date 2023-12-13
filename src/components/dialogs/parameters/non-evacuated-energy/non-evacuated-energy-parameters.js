@@ -215,7 +215,7 @@ export const NonEvacuatedEnergyParameters = ({
             });
     }, [studyUuid, emptyFormData, setNonEvacuatedEnergyParams, snackError]);
 
-    const formatNewParams = useCallback((newParams, isBackedPost = true) => {
+    const formatNewParams = useCallback((newParams, withProvider = true) => {
         let params = {
             ...getGenerationStagesDefinitionParams(newParams),
             ...getGenerationStagesSelectionParams(newParams),
@@ -226,7 +226,7 @@ export const NonEvacuatedEnergyParameters = ({
             ...getMonitoredBranchesParams(newParams),
             ...getContingenciesParams(newParams),
         };
-        return isBackedPost
+        return withProvider
             ? params
             : {
                   [PROVIDER]: newParams[PROVIDER],
