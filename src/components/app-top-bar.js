@@ -415,22 +415,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                 </Button>
                             </Tooltip>
                         </Box>
-                        <Box sx={styles.searchButton}>
-                            <Tooltip
-                                title={
-                                    <FormattedMessage id="equipment_search/label" />
-                                }
-                            >
-                                <IconButton
-                                    color="inherit"
-                                    aria-label="search"
-                                    size="large"
-                                    onClick={() => setDialogSearchOpen(true)}
-                                >
-                                    <Search />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
                         <Box sx={styles.runButtonContainer}>
                             <RunButtonContainer
                                 studyUuid={studyUuid}
