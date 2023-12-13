@@ -692,6 +692,7 @@ const TableWrapper = (props) => {
                     updateShuntCompensatorCells(params);
                 }
                 addDataToBuffer(params.colDef.field, params.oldValue);
+                params.context.dynamicValidation = { ...params.data };
                 checkValidationsAndRefreshCells(params.api, params.context);
             }
         },
