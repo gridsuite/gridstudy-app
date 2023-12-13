@@ -203,20 +203,22 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                         gridRef={gridRef}
                         columns={columns}
                         tableName={tableName}
-                        disabled={rows.length === 0}
+                        disabled={!rows || rows.length === 0}
                         skipColumnHeaders={skipColumnHeaders}
                     />
                 </Box>
-                <Box sx={styles.grid}>
-                    <CustomAGGrid
-                        ref={gridRef}
-                        rowData={rows}
-                        headerHeight={headerHeight}
-                        defaultColDef={defaultColDef}
-                        columnDefs={columns}
-                        onRowDataUpdated={onRowDataUpdated}
-                    />
-                </Box>
+                {rows && (
+                    <Box sx={styles.grid}>
+                        <CustomAGGrid
+                            ref={gridRef}
+                            rowData={rows}
+                            headerHeight={headerHeight}
+                            defaultColDef={defaultColDef}
+                            columnDefs={columns}
+                            onRowDataUpdated={onRowDataUpdated}
+                        />
+                    </Box>
+                )}
             </Box>
         );
     };
