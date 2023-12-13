@@ -36,7 +36,12 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'lowVoltageLimit',
         'highVoltageLimit',
     ],
-    LOAD: ['equipmentId', 'loadType', 'activePower', 'reactivePower'],
+    LOAD: [
+        'equipmentId',
+        'loadType',
+        'constantActivePower',
+        'constantReactivePower',
+    ],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
