@@ -42,6 +42,7 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifySubstation,
     modifyBattery,
     modifyGenerator,
     modifyLoad,
@@ -878,6 +879,8 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
+                        editingData={editingData}
+                        setEditingData={setEditingData}
                     />
                 </Box>
             )}

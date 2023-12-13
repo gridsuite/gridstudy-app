@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
+import SitePropertiesDialog from 'components/dialogs/equipements-table/site-properties-dialog';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -27,9 +28,14 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
+    editingData,
+    setEditingData,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
+    const [openPopupEditSiteProperties, setOpenPopupEditSiteProperties] =
+        useState(false);
+
     const getRowStyle = useCallback(
         (params) => {
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
@@ -69,6 +75,12 @@ export const EquipmentTable = ({
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
             theme: theme,
+            handleCellClick: {
+                //functions for handling cell click
+                openPropertiesDialog: () => {
+                    openPropertiesEditionPopup();
+                },
+            },
         };
     }, [network, theme, topPinnedData]);
     const getRowHeight = useCallback(
@@ -100,7 +112,12 @@ export const EquipmentTable = ({
         };
     }, [intl]);
 
+    const openPropertiesEditionPopup = () => {
+        setOpenPopupEditSiteProperties(true);
+    };
+
     return (
+        <>
         <CustomAGGrid
             ref={gridRef}
             getRowId={getRowId}
@@ -131,5 +148,18 @@ export const EquipmentTable = ({
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
         />
+        {openPopupEditSiteProperties && (
+            <SitePropertiesDialog
+                open={openPopupEditSiteProperties}
+                spreadsheetApi={gridRef.current.api}
+                spreadsheetContext={gridContext}
+                closeDialog={(shouldClose) => {
+                    setOpenPopupEditSiteProperties(!shouldClose);
+                }}
+                editingData={editingData}
+                setEditingData={setEditingData}
+            ></SitePropertiesDialog>
+        )}
+        </>
     );
 };
