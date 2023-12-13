@@ -181,7 +181,7 @@ export const SensitivityAnalysisParameters = ({
             });
     }, [studyUuid, emptyFormData, setSensitivityAnalysisParams, snackError]);
 
-    const formatNewParams = useCallback((newParams, isBackedPost = true) => {
+    const formatNewParams = useCallback((newParams, withProvider = true) => {
         let params = {
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                 newParams[FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD],
@@ -195,7 +195,7 @@ export const SensitivityAnalysisParameters = ({
             ...getSensiPstformatNewParams(newParams),
             ...getSensiNodesformatNewParams(newParams),
         };
-        return isBackedPost
+        return withProvider
             ? params
             : {
                   [PROVIDER]: newParams[PROVIDER],
@@ -237,30 +237,28 @@ export const SensitivityAnalysisParameters = ({
 
     const getResultCount = useCallback(() => {
         const values = getValues();
-        var resultCountByTab = {
-            sensitivityInjectionsSet: values.sensitivityInjectionsSet
+        const getCount = (tab) =>
+            values[tab]
                 .filter((entry) => entry[ACTIVATED])
                 .map((entry) => entry[COUNT])
-                .reduce((a, b) => a + b, 0),
-            sensitivityInjection: values.sensitivityInjection
-                .filter((entry) => entry[ACTIVATED])
-                .map((entry) => entry[COUNT])
-                .reduce((a, b) => a + b, 0),
-            sensitivityHVDC: values.sensitivityHVDC
-                .filter((entry) => entry[ACTIVATED])
-                .map((entry) => entry[COUNT])
-                .reduce((a, b) => a + b, 0),
+                .reduce((a, b) => a + b, 0);
+
+        const resultCountByTab = {
+            sensitivityInjectionsSet: getCount('sensitivityInjectionsSet'),
+            sensitivityInjection: getCount('sensitivityInjection'),
+            sensitivityHVDC: getCount('sensitivityHVDC'),
             sensitivityPST: values.sensitivityPST
                 .filter((entry) => entry[ACTIVATED])
-                .filter((entry) => entry[COUNT])
-                .reduce((a, b) => a + b, 0),
+                .map((entry) => entry[COUNT])
+                .reduce((a, b) => a + b[COUNT], 0),
         };
+
         return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
     }, [getValues]);
 
     const hasFormChanged = useCallback(
-        (isFormChanged) => {
-            isFormChanged && setAnalysisComputeComplexity(getResultCount());
+        (onFormChanged) => {
+            onFormChanged && setAnalysisComputeComplexity(getResultCount());
         },
         [setAnalysisComputeComplexity, getResultCount]
     );
@@ -301,27 +299,25 @@ export const SensitivityAnalysisParameters = ({
     );
 
     const initRowsCount = useCallback(() => {
+        const handleEntries = (entries, parameter) => {
+            entries
+                .filter((entry) => entry[ACTIVATED] && !entry[COUNT])
+                .forEach((entry, index) =>
+                    onChangeParams(entry, parameter, index)
+                );
+        };
+
         const values = getValues();
-        values[PARAMETER_SENSI_INJECTIONS_SET].filter(
-            (entry) => entry[ACTIVATED] && !entry[COUNT]
-        ).forEach((entry, index) =>
-            onChangeParams(entry, PARAMETER_SENSI_INJECTIONS_SET, index)
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTIONS_SET],
+            PARAMETER_SENSI_INJECTIONS_SET
         );
-        values[PARAMETER_SENSI_INJECTION].filter(
-            (entry) => entry[ACTIVATED] && !entry[COUNT]
-        ).forEach((entry, index) =>
-            onChangeParams(entry, PARAMETER_SENSI_INJECTION, index)
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTION],
+            PARAMETER_SENSI_INJECTION
         );
-        values[PARAMETER_SENSI_HVDC].filter(
-            (entry) => entry[ACTIVATED] && !entry[COUNT]
-        ).forEach((entry, index) =>
-            onChangeParams(entry, PARAMETER_SENSI_HVDC, index)
-        );
-        values[PARAMETER_SENSI_PST].filter(
-            (entry) => entry[ACTIVATED] && !entry[COUNT]
-        ).forEach((entry, index) =>
-            onChangeParams(entry, PARAMETER_SENSI_PST, index)
-        );
+        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
+        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
     }, [onChangeParams, getValues]);
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
@@ -591,7 +587,7 @@ export const SensitivityAnalysisParameters = ({
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
                         }
-                        isFormChanged={hasFormChanged}
+                        onFormChanged={hasFormChanged}
                         onChangeParams={onChangeParams}
                     />
                 </Grid>
