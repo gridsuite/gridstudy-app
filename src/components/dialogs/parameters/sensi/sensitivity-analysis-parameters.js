@@ -43,7 +43,6 @@ import {
     PROVIDER,
     SENSI_INJECTIONS_SET,
     COUNT,
-    SENSI_INJECTION,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {

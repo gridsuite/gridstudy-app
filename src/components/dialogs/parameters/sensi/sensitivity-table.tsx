@@ -22,7 +22,6 @@ import TableRowComponent from './table-row';
 import { IColumnsDef } from './columns-definitions';
 import {
     ACTIVATED,
-    CONTINGENCIES,
     HVDC_LINES,
     INJECTIONS,
     MONITORED_BRANCHES,
