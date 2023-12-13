@@ -684,14 +684,16 @@ const TableWrapper = (props) => {
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
         (params) => {
-            if (
-                params.data.metadata.equipmentType ===
-                EQUIPMENT_TYPES.SHUNT_COMPENSATOR
-            ) {
-                updateShuntCompensatorCells(params);
+            if (params.oldValue !== params.newValue) {
+                if (
+                    params.data.metadata.equipmentType ===
+                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR
+                ) {
+                    updateShuntCompensatorCells(params);
+                }
+                addDataToBuffer(params.colDef.field, params.oldValue);
+                checkValidationsAndRefreshCells(params.api, params.context);
             }
-            addDataToBuffer(params.colDef.field, params.oldValue);
-            checkValidationsAndRefreshCells(params.api, params.context);
         },
         [addDataToBuffer]
     );

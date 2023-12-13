@@ -105,6 +105,7 @@ const generateEditableNumericColumnDefinition = (
             };
         },
         crossValidation: {
+            optional: optional,
             minExpression: minExpression,
             maxExpression: maxExpression,
         },
@@ -208,7 +209,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'IpMin',
                 field: 'identifiableShortCircuit.ipMin',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 editable: isEditable,
@@ -231,7 +231,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'IpMax',
                 field: 'identifiableShortCircuit.ipMax',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 editable: isEditable,
@@ -508,7 +507,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap',
                 field: 'ratioTapChanger',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio'),
                 fractionDigits: 0,
@@ -554,7 +552,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap',
                 field: 'phaseTapChanger',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase'),
                 fractionDigits: 0,
@@ -777,7 +774,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap1',
                 field: 'ratioTapChanger1',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
@@ -827,7 +823,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap2',
                 field: 'ratioTapChanger2',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
@@ -877,7 +872,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap3',
                 field: 'ratioTapChanger3',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
@@ -918,7 +912,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap1',
                 field: 'phaseTapChanger1',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
@@ -968,7 +961,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap2',
                 field: 'phaseTapChanger2',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
@@ -1018,7 +1010,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap3',
                 field: 'phaseTapChanger3',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,

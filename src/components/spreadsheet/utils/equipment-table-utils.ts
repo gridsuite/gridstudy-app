@@ -9,8 +9,11 @@ import { EDIT_COLUMN } from './config-tables';
 export const updateShuntCompensatorCells = (params: any) => {
     const rowNode = params.node;
     const colId = params.column.colId;
-    const type = params.data.type;
     const maxSusceptance = params.data.maxSusceptance;
+    const type =
+        params.data.type || maxSusceptance > 0
+            ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
+            : SHUNT_COMPENSATOR_TYPES.REACTOR.id;
     const nominalVoltage = params.data.nominalVoltage;
     const maxQAtNominalV = params.data.maxQAtNominalV;
     const maximumSectionCount = params.data.maximumSectionCount;
@@ -86,9 +89,15 @@ export const updateShuntCompensatorCells = (params: any) => {
                 maxQAtNominalV
             )
         );
+        const maxSusceptance = computeMaxSusceptance(
+            maxQAtNominalV,
+            nominalVoltage
+        );
         rowNode.setDataValue(
             'maxSusceptance',
-            computeMaxSusceptance(maxQAtNominalV, nominalVoltage)
+            type === SHUNT_COMPENSATOR_TYPES.REACTOR.id
+                ? -maxSusceptance
+                : maxSusceptance
         );
         rowNode.setDataValue(
             'switchedOnSusceptance',
@@ -162,7 +171,6 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
     return data;
 };
 
-// build object from path and value (e.g. 'a.b.c', 1) => {a: {b: {c: 1}}}
 export const buildObjectFromPath = (path: any, value: any) => {
     const paths = path.split('.');
     let obj = {};
@@ -177,6 +185,42 @@ export const buildObjectFromPath = (path: any, value: any) => {
     return obj;
 };
 
+const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
+    if (fieldVal === undefined || fieldVal === null || isNaN(fieldVal)) {
+        if (colDef.crossValidation?.optional) {
+            return true;
+        } else if (colDef.crossValidation?.requiredOn) {
+            const isConditionFulfiled = checkCrossValidationRequiredOn(
+                gridContext.dynamicValidation,
+                colDef
+            );
+            if (!isConditionFulfiled) {
+                return false;
+            }
+        } else if (colDef.numeric) {
+            return false;
+        }
+    }
+    if (colDef.crossValidation?.allowZero && fieldVal === 0) {
+        return true;
+    }
+    const minExpression = colDef.crossValidation?.minExpression;
+    const maxExpression = colDef.crossValidation?.maxExpression;
+    if (maxExpression || minExpression) {
+        const minVal = !isNaN(minExpression)
+            ? minExpression
+            : gridContext.dynamicValidation[minExpression];
+        const maxVal = !isNaN(maxExpression)
+            ? maxExpression
+            : gridContext.dynamicValidation[maxExpression];
+        return (
+            (minVal === undefined || fieldVal >= minVal) &&
+            (maxVal === undefined || fieldVal <= maxVal)
+        );
+    }
+    return true;
+};
+
 export const checkValidationsAndRefreshCells = (
     gridApi: any,
     gridContext: any
@@ -184,48 +228,13 @@ export const checkValidationsAndRefreshCells = (
     const updatedErrors = { ...gridContext.editErrors };
     const columnsWithCrossValidation = gridApi
         .getColumnDefs()
-        .filter((colDef: any) => colDef.editable && colDef.crossValidation);
+        .filter((colDef: any) => colDef.editable);
     columnsWithCrossValidation.forEach((colDef: any) => {
-        let isValid = true;
-
         const fieldVal = deepFindValue(
             gridContext.dynamicValidation,
             colDef.field
         );
-
-        if (fieldVal === undefined || fieldVal === null || isNaN(fieldVal)) {
-            if (colDef.crossValidation?.optional) {
-                isValid = true;
-            } else if (colDef.crossValidation?.requiredOn) {
-                const isConditionFulfiled = checkCrossValidationRequiredOn(
-                    gridContext.dynamicValidation,
-                    colDef
-                );
-                if (isConditionFulfiled) {
-                    isValid = true;
-                } else {
-                    isValid = false;
-                }
-            } else {
-                isValid = false;
-            }
-        }
-        if (colDef.crossValidation?.allowZero && fieldVal === 0) {
-            isValid = true;
-        }
-        const minExpression = colDef.crossValidation?.minExpression;
-        const maxExpression = colDef.crossValidation?.maxExpression;
-        if (maxExpression || minExpression) {
-            const minVal = !isNaN(minExpression)
-                ? minExpression
-                : gridContext.dynamicValidation[minExpression];
-            const maxVal = !isNaN(maxExpression)
-                ? maxExpression
-                : gridContext.dynamicValidation[maxExpression];
-            isValid =
-                (minVal === undefined || fieldVal >= minVal) &&
-                (maxVal === undefined || fieldVal <= maxVal);
-        }
+        const isValid = isValueValid(fieldVal, colDef, gridContext);
 
         if (isValid) {
             delete updatedErrors[colDef.field];
