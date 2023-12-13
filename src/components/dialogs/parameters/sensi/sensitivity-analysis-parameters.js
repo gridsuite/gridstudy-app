@@ -278,7 +278,6 @@ export const SensitivityAnalysisParameters = ({
                             `${arrayFormName}[${index}].[${COUNT}]`,
                             value && Number(value)
                         );
-                        console.log(value);
                         setAnalysisComputeComplexity(getResultCount());
                         hasFormChanged(false);
                     });
@@ -504,9 +503,8 @@ export const SensitivityAnalysisParameters = ({
                     }) ?? [],
             };
             reset(values);
-            initRowsCount();
         },
-        [reset, initRowsCount]
+        [reset]
     );
 
     const handleClose = useCallback(() => {
@@ -525,11 +523,13 @@ export const SensitivityAnalysisParameters = ({
             fromSensitivityAnalysisParamsDataToFormValues(
                 sensitivityAnalysisParams
             );
+            initRowsCount();
         }
     }, [
         fromSensitivityAnalysisParamsDataToFormValues,
         sensitivityAnalysisParams,
         parametersBackend,
+        initRowsCount,
     ]);
 
     const clear = useCallback(() => {
