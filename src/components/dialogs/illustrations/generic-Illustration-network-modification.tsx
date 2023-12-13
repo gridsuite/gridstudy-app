@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Paper from '@mui/material/Paper';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
-import { AccordionIllustration } from '../network-modifications/widget/AccordionIllustration';
+import { AccordionIllustration } from './AccordionIllustration';
 import { PARAM_THEME } from 'utils/config-params';
 import { ReduxState } from 'redux/reducer.type';
 
@@ -49,27 +49,27 @@ const GenericIllustrationNetworkModification: React.FC<
     useEffect(() => {
         /**
          * updates opacity according to the theme by updating the 'style' string from the svg element
-         * @param propStr : String preceding and describing the property whose opacity must be changed
+         * @param cssProperty : String preceding and describing the property whose opacity must be changed
          * @param svgElt : element fetched from the svg that should be updated
          */
-        function updateOpacity(propStr: string, svgElt: HTMLElement | null) {
+        function updateOpacity(cssProperty: string, svgElt: HTMLElement | null) {
             if (!!svgElt) {
                 const eltCssText = svgElt.style.cssText;
-                const indexOpacity = eltCssText.indexOf(propStr);
+                const indexOpacity = eltCssText.indexOf(cssProperty);
                 if (indexOpacity !== -1) {
                     svgElt.style.cssText =
-                        eltCssText.substring(0, indexOpacity + propStr.length) +
+                        eltCssText.substring(0, indexOpacity + cssProperty.length) +
                         (theme === LIGHT_THEME ? '0' : '1') +
-                        eltCssText.substring(indexOpacity + propStr.length + 1);
+                        eltCssText.substring(indexOpacity + cssProperty.length + 1);
                 } else {
                     svgElt.style.cssText =
-                        'fill-opacity: ' + (theme === LIGHT_THEME ? '0' : '1');
+                    cssProperty + (theme === LIGHT_THEME ? '0' : '1');
                 }
             }
         }
         updateOpacity(
             'fill-opacity: ',
-            document.getElementById('line-split-illu-background')
+            document.getElementById(backgroundElementId)
         );
     }, [theme]);
 
