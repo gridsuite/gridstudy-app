@@ -60,6 +60,7 @@
     "restore": "Restaurer",
     "close": "Fermer",
     "validate": "Valider",
+    
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
@@ -606,6 +607,7 @@
     "NetworkModificationTree": "Arbre décisionnel",
     "RestoreModifications": "Restaurer les modifications",
     "RestoreModificationText": "Veuillez sélectionner les modifications à restaurer",
+    "DeleteModificationText": "Êtes-vous sûr(e) de vouloir supprimer definitivement {numberToDelete} modifications ?",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
