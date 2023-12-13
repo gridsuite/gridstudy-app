@@ -48,7 +48,7 @@ import {
     modifyLoad,
     modifyShuntCompensator,
     modifyVoltageLevel,
-    requestNetworkChange,
+    requestNetworkChange, formatPropertiesForBackend
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
@@ -428,6 +428,18 @@ const TableWrapper = (props) => {
     const buildEditPromise = useCallback(
         (editingData, groovyCr, context) => {
             switch (editingData?.metadata.equipmentType) {
+                case EQUIPMENT_TYPES.SUBSTATION:
+                    const propertiesForBackend = formatPropertiesForBackend(editingData.previousProperties ?? {} , editingData.properties ?? {});
+                    return modifySubstation(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.countryName ?? editingData.countryCode,
+                        false,
+                        undefined,
+                        propertiesForBackend
+                    );
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
                         props.studyUuid,
