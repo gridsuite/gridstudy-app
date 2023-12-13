@@ -695,7 +695,7 @@
     "TabularModification": "Tabular modification",
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
-    "TabularModificationGeneratorSkeletonComment" : "#,,,,true | false",
+    "TabularModificationGeneratorSkeletonComment" : "#,Hydro | Nuclear | Wind | Thermal | Solar | Other,,,,,,true | false",
     "equipmentId": "ID",
     "activePower": "p (MW)",
     "maxActivePower": "Max P (MW)",

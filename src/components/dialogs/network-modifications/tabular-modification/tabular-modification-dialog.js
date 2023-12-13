@@ -78,9 +78,7 @@ const TabularModificationDialog = ({
     const toEnumValue = useCallback(
         (userValue, enumValues) =>
             enumValues.find(
-                (es) =>
-                    intl.formatMessage({ id: es.label }).toUpperCase() ===
-                    userValue.toUpperCase()
+                (es) => intl.formatMessage({ id: es.label }) === userValue
             )?.id,
         [intl]
     );
@@ -124,7 +122,7 @@ const TabularModificationDialog = ({
                             break;
                         case 'energySource':
                             modification[key] = toModificationOperation(
-                                toEnumValue(value, ENERGY_SOURCES)
+                                toEnumValue(value, ENERGY_SOURCES) ?? value
                             );
                             break;
                         default:
