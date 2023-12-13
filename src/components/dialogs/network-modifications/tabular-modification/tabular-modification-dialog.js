@@ -75,10 +75,10 @@ const TabularModificationDialog = ({
 
     const { reset } = formMethods;
 
-    const toEnumValue = useCallback(
-        (userValue, enumValues) =>
+    const getEnumIdFromLabel = useCallback(
+        (label, enumValues) =>
             enumValues.find(
-                (es) => intl.formatMessage({ id: es.label }) === userValue
+                (es) => intl.formatMessage({ id: es.label }) === label
             )?.id,
         [intl]
     );
@@ -122,7 +122,8 @@ const TabularModificationDialog = ({
                             break;
                         case 'energySource':
                             modification[key] = toModificationOperation(
-                                toEnumValue(value, ENERGY_SOURCES) ?? value
+                                getEnumIdFromLabel(value, ENERGY_SOURCES) ??
+                                    value
                             );
                             break;
                         default:
@@ -146,7 +147,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid, toEnumValue]
+        [currentNodeUuid, editData, snackError, studyUuid, getEnumIdFromLabel]
     );
 
     const clear = useCallback(() => {
