@@ -5,22 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Constraint,
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    CustomColDef,
-    FilterEnums,
-    FilterDef,
-    FilterSelectorType,
     LimitViolation,
     SecurityAnalysisNmkTableRow,
+    SubjectIdRendererType,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
     ColDef,
-    ICellRendererParams,
     PostSortRowsParams,
     ValueFormatterParams,
     ValueGetterParams,
@@ -31,17 +27,22 @@ import {
     formatNAValue,
     parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
-import CustomHeaderComponent, {
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-    FILTER_UI_TYPES,
-} from '../../custom-aggrid/custom-aggrid-header';
 import {
     fetchSecurityAnalysisAvailableBranchSides,
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from '../../../services/security-analysis';
-import { ISortConfig } from 'hooks/use-aggrid-sort';
+import {
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+    FILTER_DATA_TYPES,
+} from '../../custom-aggrid/custom-aggrid-header.type';
+import { SortPropsType } from '../../../hooks/use-aggrid-sort';
+import {
+    FilterEnumsType,
+    FilterPropsType,
+} from '../../../hooks/use-aggrid-row-filter';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -155,81 +156,19 @@ export const flattenNmKResultsConstraints = (
     return rows;
 };
 
-const makeColumn = ({
-    headerName, // headerName: The name to display in the column header
-    field = '', // field: The data object field corresponding to this column (default is empty)
-    valueGetter, // valueGetter: A function to get the cell value if it's not directly in the field
-    cellRenderer, // cellRenderer: A component or function to customize the rendering of cells in the column
-    isSortable = false, // isSortable: A boolean to determine if the column can be sorted
-    isHidden = false, // isHidden: A boolean to determine if the column should be hidden
-    isFilterable = false, // isFilterable: A boolean to determine if the column can be filtered
-    filterParams, // filterParams: Parameters for the column's filtering functionality
-    filtersDef, // filtersDef: Definitions for the filters applicable to this column
-    filterSelector, // filterSelector: Selector for the filter applied to this column
-    sortConfig, // sortConfig: Configuration for sorting this column
-    valueFormatter, // valueFormatter: A function to format the value displayed in the cell
-    onSortChanged, // onSortChanged: A function to handle the event when sorting is changed
-    updateFilter, // updateFilter: A function to update the filter applied to this column
-    numeric = false, // numeric: boolean to determine if the field is numeric
-    fractionDigits, // fractionDigits: indicate the number of digits a numeric value have
-}: CustomColDef) => {
-    const { options: filterOptions = [] } =
-        filtersDef.find((filterDef) => filterDef?.field === field) || {};
-
-    const filterSelectedOptions =
-        FROM_COLUMN_TO_FIELD[field] &&
-        filterSelector?.[FROM_COLUMN_TO_FIELD[field]];
-
-    return {
-        headerName,
-        field,
-        valueGetter,
-        cellRenderer,
-        valueFormatter,
-        numeric,
-        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
-        hide: isHidden,
-        headerTooltip: headerName,
-        headerComponent: CustomHeaderComponent,
-        headerComponentParams: {
-            field,
-            displayName: headerName,
-            sortConfig,
-            onSortChanged: (newSortValue: number = 0) => {
-                onSortChanged(field, newSortValue);
-            },
-            isSortable,
-            isFilterable,
-            filterSelectedOptions,
-            filterParams: {
-                ...filterParams,
-                filterSelector,
-                filterOptions,
-                updateFilter,
-            },
-        },
-    };
-};
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
-    filtersDef: FilterDef[],
-    filterSelector: FilterSelectorType,
-    onSortChanged: (colKey: string, sortWay: number) => void,
-    updateFilter: (field: string, value: string) => void,
-    sortConfig?: ISortConfig
+    sortProps: SortPropsType,
+    filterProps: FilterPropsType,
+    filterEnums: FilterEnumsType
 ): ColDef[] => [
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
         field: 'subjectId',
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
-        sortConfig,
+        sortProps,
+        filterProps,
         filterParams: {
-            filterUIType: FILTER_UI_TYPES.TEXT,
+            filterDataType: FILTER_DATA_TYPES.TEXT,
             filterComparators: [
                 FILTER_TEXT_COMPARATORS.STARTS_WITH,
                 FILTER_TEXT_COMPARATORS.CONTAINS,
@@ -237,32 +176,26 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'ViolationType' }),
         field: 'limitType',
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
-        sortConfig,
+        sortProps,
+        filterProps,
+        filterParams: {
+            filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterEnums,
+        },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitName' }),
         field: 'limitName',
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
         valueFormatter: (params: ValueFormatterParams) =>
             formatNAValue(params.value, intl),
-        sortConfig,
+        sortProps,
+        filterProps,
         filterParams: {
-            filterUIType: FILTER_UI_TYPES.TEXT,
+            filterDataType: FILTER_DATA_TYPES.TEXT,
             filterComparators: [
                 FILTER_TEXT_COMPARATORS.STARTS_WITH,
                 FILTER_TEXT_COMPARATORS.CONTAINS,
@@ -270,447 +203,295 @@ export const securityAnalysisTableNColumnsDefinition = (
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
         field: 'limit',
         numeric: true,
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
-        sortConfig,
         fractionDigits: 2,
+        sortProps,
+        filterProps,
         filterParams: {
-            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
-    makeColumn({
+
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'CalculatedValue' }),
         field: 'value',
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
-        sortConfig,
         numeric: true,
         fractionDigits: 2,
+        sortProps,
+        filterProps,
         filterParams: {
-            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
         field: 'loading',
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
-        sortConfig,
         numeric: true,
         fractionDigits: 2,
+        sortProps,
+        filterProps,
         filterParams: {
-            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({
             id: 'Overload',
         }),
         field: 'acceptableDuration',
         valueFormatter: (value: any) =>
             convertDuration(value.data.acceptableDuration),
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
-        sortConfig,
+        sortProps,
+        filterProps,
         filterParams: {
-            filterUIType: FILTER_UI_TYPES.NUMBER,
+            filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             parser: parseDuration,
         },
     }),
 
-    makeColumn({
+    makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitSide' }),
         field: 'side',
-        isSortable: true,
-        isFilterable: true,
-        filtersDef,
-        filterSelector,
-        onSortChanged,
-        updateFilter,
-        sortConfig,
+        sortProps,
+        filterProps,
+        filterParams: {
+            filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterEnums,
+        },
     }),
 ];
 
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
-    filtersDef: FilterDef[],
-    filterSelector: FilterSelectorType | undefined,
-    onSortChanged: (colKey: string, sortWay: number) => void,
-    updateFilter: (field: string, value: string) => void,
-    subjectIdRenderer: (
-        cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined,
-    sortConfig?: ISortConfig
+    subjectIdRenderer: SubjectIdRendererType,
+    filterProps: FilterPropsType,
+    sortProps: SortPropsType,
+    filterEnums: FilterEnumsType
 ): ColDef[] => {
     return [
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            isSortable: true,
-            isFilterable: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
+            sortProps,
+            filterProps,
             filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterComparators: [
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
-            isFilterable: true,
-            isSortable: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             cellRenderer: subjectIdRenderer,
-            isFilterable: true,
+            filterProps,
             filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterComparators: [
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            isFilterable: true,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
             valueFormatter: (params: ValueFormatterParams) =>
                 formatNAValue(params.value, intl),
-            sortConfig,
-            isFilterable: true,
+            filterProps,
             filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterComparators: [
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             numeric: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             numeric: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             fractionDigits: 2,
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             numeric: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             fractionDigits: 2,
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
             field: 'acceptableDuration',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             field: 'linkedElementId',
-            isHidden: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
+            hide: true,
         }),
     ];
 };
 
 export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
-    filtersDef: FilterDef[],
-    filterSelector: FilterSelectorType | undefined,
-    onSortChanged: (colKey: string, sortWay: number) => void,
-    updateFilter: (field: string, value: string) => void,
-    subjectIdRenderer: (
-        cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined,
-    sortConfig?: ISortConfig
+    subjectIdRenderer: SubjectIdRendererType,
+    filterProps: FilterPropsType,
+    sortProps: SortPropsType,
+    filterEnums: FilterEnumsType
 ): ColDef[] => {
     return [
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            isSortable: true,
-            isFilterable: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
+            sortProps,
+            filterProps,
             filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterComparators: [
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            isFilterable: true,
+            filterProps,
             filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterComparators: [
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            isFilterable: true,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            isFilterable: true,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
             valueFormatter: (params: ValueFormatterParams) =>
                 formatNAValue(params.value, intl),
-            sortConfig,
-            isFilterable: true,
+            filterProps,
             filterParams: {
-                filterUIType: FILTER_UI_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterComparators: [
                     FILTER_TEXT_COMPARATORS.STARTS_WITH,
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
             numeric: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
             field: 'value',
             numeric: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             fractionDigits: 2,
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             numeric: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             fractionDigits: 2,
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
             field: 'acceptableDuration',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
         }),
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
-            isFilterable: true,
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
-        makeColumn({
+        makeAgGridCustomHeaderColumn({
             field: 'linkedElementId',
-            isHidden: true,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            sortConfig,
+            hide: true,
         }),
-    ];
-};
-
-export const securityAnalysisTableNmKFilterDefinition = (
-    intl: IntlShape,
-    filterEnums: FilterEnums = {}
-) => {
-    return [
-        {
-            field: 'status',
-            options: filterEnums.computationsStatus,
-        },
-        {
-            field: 'limitType',
-            options: filterEnums?.limitTypes,
-        },
-
-        {
-            field: 'side',
-            options: filterEnums?.branchSides,
-        },
-    ];
-};
-
-export const securityAnalysisTableNFilterDefinition = (
-    intl: IntlShape,
-    filterEnums: FilterEnums = {}
-) => {
-    return [
-        {
-            field: 'limitType',
-            options: filterEnums?.limitTypes,
-        },
-
-        {
-            field: 'side',
-            options: filterEnums?.branchSides,
-        },
     ];
 };
 
@@ -763,13 +544,13 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 export const useFetchFiltersEnums = (
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
-) => {
+): { error: boolean; loading: boolean; result: FilterEnumsType } => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState<FilterEnums>({
-        computationsStatus: null,
-        limitTypes: null,
-        branchSides: null,
+    const [result, setResult] = useState<FilterEnumsType>({
+        status: null,
+        limitType: null,
+        side: null,
     });
 
     useEffect(() => {
@@ -790,9 +571,9 @@ export const useFetchFiltersEnums = (
                         branchSidesResult,
                     ]) => {
                         setResult({
-                            computationsStatus: computationsStatusResult,
-                            limitTypes: limitTypesResult,
-                            branchSides: branchSidesResult,
+                            status: computationsStatusResult,
+                            limitType: limitTypesResult,
+                            side: branchSidesResult,
                         });
                         setFilter(true);
                         setLoading(false);
