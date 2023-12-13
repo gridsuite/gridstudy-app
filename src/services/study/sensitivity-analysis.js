@@ -141,7 +141,7 @@ export function setSensitivityAnalysisParameters(studyUuid, newParams) {
     });
 }
 
-export function getSensitivityAnalysisParametersComputingCount(
+export function getSensitivityAnalysisFactorsCount(
     studyUuid,
     isInjectionsSet,
     newParams

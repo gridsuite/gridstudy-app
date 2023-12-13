@@ -46,9 +46,9 @@ import {
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
-    getSensitivityAnalysisParametersComputingCount,
     getSensitivityAnalysisParameters,
     setSensitivityAnalysisParameters,
+    getSensitivityAnalysisFactorsCount,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
@@ -120,10 +120,11 @@ export const SensitivityAnalysisParameters = ({
         useState(0);
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
-    const formattedProviders = [
-        { id: providers.OpenLoadFlow, label: providers.OpenLoadFlow },
-        { id: providers.Hades2, label: providers.Hades2 },
-    ];
+    const formattedProviders = Object.keys(providers).map((key) => ({
+        id: key,
+        label: providers[key],
+    }));
+
     const handlePopupConfirm = useCallback(() => {
         hideParameters();
         setPopupConfirm(false);
@@ -217,6 +218,7 @@ export const SensitivityAnalysisParameters = ({
                     setSensitivityAnalysisParams(
                         formatNewParams(newParams, false)
                     );
+                    updateProvider(newParams[PROVIDER]);
                 })
                 .catch((error) => {
                     snackError({
@@ -224,7 +226,6 @@ export const SensitivityAnalysisParameters = ({
                         headerId: 'SensitivityAnalysisParametersError',
                     });
                 });
-            updateProvider(newParams[PROVIDER]);
         },
         [
             setSensitivityAnalysisParams,
@@ -247,10 +248,7 @@ export const SensitivityAnalysisParameters = ({
             sensitivityInjectionsSet: getCount('sensitivityInjectionsSet'),
             sensitivityInjection: getCount('sensitivityInjection'),
             sensitivityHVDC: getCount('sensitivityHVDC'),
-            sensitivityPST: values.sensitivityPST
-                .filter((entry) => entry[ACTIVATED])
-                .map((entry) => entry[COUNT])
-                .reduce((a, b) => a + b[COUNT], 0),
+            sensitivityPST: getCount('sensitivityPST'),
         };
 
         return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
@@ -265,7 +263,7 @@ export const SensitivityAnalysisParameters = ({
 
     const onChangeParams = useCallback(
         (row, arrayFormName, index) => {
-            getSensitivityAnalysisParametersComputingCount(
+            getSensitivityAnalysisFactorsCount(
                 studyUuid,
                 arrayFormName === SENSI_INJECTIONS_SET,
                 formatFilteredParams(row)
@@ -531,6 +529,7 @@ export const SensitivityAnalysisParameters = ({
         reset(emptyFormData);
         resetSensitivityParametersAndProvider();
         resetSensitivityAnalysisParameters();
+        setAnalysisComputeComplexity(0);
     }, [
         emptyFormData,
         reset,
