@@ -75,6 +75,17 @@ const propertiesGetter = (params) => {
     }
 };
 
+const handleGSubstationPropertiesCellClick = (event) => {
+    const { context: { isEditing, handleCellClick } = {} } = event || {};
+    if (
+        isEditing &&
+        event.node.rowIndex === 0 &&
+        event.node.rowPinned === 'top'
+    ) {
+        handleCellClick?.openPropertiesDialog();
+    }
+};
+
 const generateEditableNumericColumnDefinition = (
     id,
     field,
@@ -131,6 +142,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
             },
             {
                 id: 'Country',
@@ -143,6 +156,7 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
+                onCellClicked: handleGSubstationPropertiesCellClick,
             },
         ],
     },
