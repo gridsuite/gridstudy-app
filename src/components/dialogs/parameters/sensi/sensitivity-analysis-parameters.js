@@ -528,7 +528,6 @@ export const SensitivityAnalysisParameters = ({
     }, [
         fromSensitivityAnalysisParamsDataToFormValues,
         sensitivityAnalysisParams,
-        parametersBackend,
         initRowsCount,
     ]);
 
