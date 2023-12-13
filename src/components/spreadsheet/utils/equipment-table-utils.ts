@@ -10,10 +10,7 @@ export const updateShuntCompensatorCells = (params: any) => {
     const rowNode = params.node;
     const colId = params.column.colId;
     const maxSusceptance = params.data.maxSusceptance;
-    const type =
-        params.data.type || maxSusceptance > 0
-            ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
-            : SHUNT_COMPENSATOR_TYPES.REACTOR.id;
+    const type = params.data.type;
     const nominalVoltage = params.data.nominalVoltage;
     const maxQAtNominalV = params.data.maxQAtNominalV;
     const maximumSectionCount = params.data.maximumSectionCount;
