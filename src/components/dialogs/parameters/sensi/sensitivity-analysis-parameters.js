@@ -43,6 +43,7 @@ import {
     PROVIDER,
     SENSI_INJECTIONS_SET,
     COUNT,
+    SENSI_INJECTION,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
@@ -301,6 +302,30 @@ export const SensitivityAnalysisParameters = ({
         ]
     );
 
+    const initRowsCount = useCallback(() => {
+        const values = getValues();
+        values[PARAMETER_SENSI_INJECTIONS_SET].filter(
+            (entry) => entry[ACTIVATED] && !entry[COUNT]
+        ).forEach((entry, index) =>
+            onChangeParams(entry, PARAMETER_SENSI_INJECTIONS_SET, index)
+        );
+        values[PARAMETER_SENSI_INJECTION].filter(
+            (entry) => entry[ACTIVATED] && !entry[COUNT]
+        ).forEach((entry, index) =>
+            onChangeParams(entry, PARAMETER_SENSI_INJECTION, index)
+        );
+        values[PARAMETER_SENSI_HVDC].filter(
+            (entry) => entry[ACTIVATED] && !entry[COUNT]
+        ).forEach((entry, index) =>
+            onChangeParams(entry, PARAMETER_SENSI_HVDC, index)
+        );
+        values[PARAMETER_SENSI_PST].filter(
+            (entry) => entry[ACTIVATED] && !entry[COUNT]
+        ).forEach((entry, index) =>
+            onChangeParams(entry, PARAMETER_SENSI_PST, index)
+        );
+    }, [onChangeParams, getValues]);
+
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
             const values = {
@@ -342,6 +367,7 @@ export const SensitivityAnalysisParameters = ({
                                     };
                                 }),
                                 [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                                [COUNT]: 0,
                             };
                         }
                     ) ?? [],
@@ -376,6 +402,7 @@ export const SensitivityAnalysisParameters = ({
                                 }
                             ),
                             [ACTIVATED]: sensiInjections[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_HVDC]:
@@ -408,6 +435,7 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                             [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_PST]:
@@ -440,6 +468,7 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                             [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_NODES]:
@@ -471,12 +500,14 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                             [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
             };
             reset(values);
+            initRowsCount();
         },
-        [reset]
+        [reset, initRowsCount]
     );
 
     const handleClose = useCallback(() => {
@@ -513,7 +544,7 @@ export const SensitivityAnalysisParameters = ({
         resetSensitivityParametersAndProvider,
     ]);
 
-    const isMaxReached = () => analysisComputeComplexity > numberMax;
+    const isMaxReached = () => Math.abs(analysisComputeComplexity) > numberMax;
 
     return (
         <>

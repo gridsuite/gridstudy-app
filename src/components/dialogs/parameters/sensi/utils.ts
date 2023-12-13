@@ -351,20 +351,15 @@ interface IRowNewParams {
 export const getGenericRowNewParams = (newRowParams: IRowNewParams) => {
     return {
         [MONITORED_BRANCHES]: newRowParams[MONITORED_BRANCHES].map(
-            (container) => {
-                return {
-                    [CONTAINER_ID]: container[ID],
-                    [CONTAINER_NAME]: container[NAME],
-                };
-            }
-        ),
-        [INJECTIONS]: newRowParams[INJECTIONS].map(
             (container) => container[ID]
         ),
-        [HVDC_LINES]: newRowParams[HVDC_LINES].map(
+        [INJECTIONS]: newRowParams[INJECTIONS]?.map(
             (container) => container[ID]
         ),
-        [PSTS]: newRowParams[PSTS].map((container) => container[ID]),
+        [HVDC_LINES]: newRowParams[HVDC_LINES]?.map(
+            (container) => container[ID]
+        ),
+        [PSTS]: newRowParams[PSTS]?.map((container) => container[ID]),
         [CONTINGENCIES]: newRowParams[CONTINGENCIES]?.map(
             (container) => container[ID]
         ),

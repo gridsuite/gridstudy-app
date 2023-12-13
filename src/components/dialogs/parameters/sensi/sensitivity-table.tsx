@@ -77,9 +77,9 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             if (
                 row[ACTIVATED] &&
                 row[MONITORED_BRANCHES].length &&
-                (row[INJECTIONS].length ||
-                    row[HVDC_LINES].length ||
-                    row[PSTS].length)
+                (row[INJECTIONS]?.length ||
+                    row[HVDC_LINES]?.length ||
+                    row[PSTS]?.length)
             ) {
                 onChangeParams(row, arrayFormName, index);
             }
