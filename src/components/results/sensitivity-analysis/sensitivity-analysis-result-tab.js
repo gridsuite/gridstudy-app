@@ -12,8 +12,12 @@ import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
+    COMPUTATION_RESULTS_LOGS,
     DATA_KEY_TO_FILTER_KEY,
     DATA_KEY_TO_SORT_KEY,
+    SENSITIVITY_AT_NODE,
+    SENSITIVITY_IN_DELTA_A,
+    SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-content';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
@@ -31,7 +35,7 @@ export const SensitivityResultTabs = [
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
-    const [sensiKindIndex, setSensiKindIndex] = useState(0);
+    const [sensiKind, setSensiKind] = useState(SENSITIVITY_IN_DELTA_MW);
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
@@ -51,20 +55,19 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             sortWay: defaultSortOrder,
         },
     });
-    const SENSI_LOGS_TAB_INDEX = 3;
     const initTable = (nOrNkIndex) => {
         initFilters();
         initSort(nOrNkIndex ? 'valueAfter' : 'value');
 
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
            for the page prop of MUI TablePagination if was not on the first page
-           for the prev sensiKindIndex */
+           for the prev sensiKind */
         setPage(0);
     };
 
-    const handleSensiKindIndexChange = (newSensiKindIndex) => {
+    const handleSensiKindChange = (newSensiKind) => {
         initTable(nOrNkIndex);
-        setSensiKindIndex(newSensiKindIndex);
+        setSensiKind(newSensiKind);
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
@@ -77,13 +80,19 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         delay: RESULTS_LOADING_DELAY,
     });
 
+    const sensiResultKind = [
+        SENSITIVITY_IN_DELTA_MW,
+        SENSITIVITY_IN_DELTA_A,
+        SENSITIVITY_AT_NODE,
+    ];
+
     return (
         <>
             <SensitivityAnalysisTabs
-                sensiKindIndex={sensiKindIndex}
-                setSensiKindIndex={handleSensiKindIndexChange}
+                sensiKind={sensiKind}
+                setSensiKind={handleSensiKindChange}
             />
-            {sensiKindIndex < SENSI_LOGS_TAB_INDEX && (
+            {sensiResultKind.includes(sensiKind) && (
                 <>
                     <Tabs
                         value={nOrNkIndex}
@@ -95,7 +104,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     </Tabs>
                     <PagedSensitivityAnalysisResult
                         nOrNkIndex={nOrNkIndex}
-                        sensiKindIndex={sensiKindIndex}
+                        sensiKind={sensiKind}
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                         updateFilter={updateFilter}
@@ -107,7 +116,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     />
                 </>
             )}
-            {sensiKindIndex === SENSI_LOGS_TAB_INDEX && (
+            {sensiKind === COMPUTATION_RESULTS_LOGS && (
                 <>
                     <Box sx={{ height: '4px' }}>
                         {openLoader && <LinearProgress />}

@@ -50,8 +50,11 @@ const styles = {
         },
     },
     overlayBackground: (theme: Theme) => ({
-        '& .ag-overlay-wrapper': {
+        '& .ag-overlay-loading-wrapper': {
             background: theme.overlay.background,
+        },
+        '& .ag-overlay-no-rows-wrapper': {
+            background: 'none',
         },
     }),
 };

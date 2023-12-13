@@ -688,7 +688,6 @@ const TableWrapper = (props) => {
                 groovyCr +=
                     column.colDef?.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
-            console.log('editing .. ', editingData);
             const editPromise = buildEditPromise(
                 editingData,
                 groovyCr,
@@ -761,19 +760,21 @@ const TableWrapper = (props) => {
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
         (params) => {
-            if (
-                params.data.metadata?.equipmentType ===
-                EQUIPMENT_TYPES.SHUNT_COMPENSATOR
-            ) {
-                updateShuntCompensatorCells(params);
-            } else if (
-                params.data.metadata?.equipmentType ===
-                EQUIPMENT_TYPES.GENERATOR
-            ) {
-                updateGeneratorCells(params);
+            if (params.oldValue !== params.newValue) {
+                if (
+                    params.data.metadata.equipmentType ===
+                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR
+                ) {
+                    updateShuntCompensatorCells(params);
+                } else if (
+                    params.data.metadata?.equipmentType ===
+                    EQUIPMENT_TYPES.GENERATOR
+                ) {
+                    updateGeneratorCells(params);
+                }
+                addDataToBuffer(params.colDef.field, params.oldValue);
+                checkValidationsAndRefreshCells(params.api, params.context);
             }
-            addDataToBuffer(params.colDef.field, params.oldValue);
-            checkValidationsAndRefreshCells(params.api, params.context);
         },
         [addDataToBuffer, updateGeneratorCells]
     );
