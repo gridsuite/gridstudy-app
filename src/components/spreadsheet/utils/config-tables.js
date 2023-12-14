@@ -157,6 +157,7 @@ export const TABLES_DEFINITIONS = {
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
                 onCellClicked: handleGSubstationPropertiesCellClick,
+                editable: isEditable,
             },
         ],
     },

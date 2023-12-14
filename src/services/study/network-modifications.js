@@ -1117,9 +1117,9 @@ export function createSubstation(
  * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean} | null>} - The modified properties.
  */
 export function formatPropertiesForBackend(previousProperties, newProperties) {
+    console.log('debug', 'formatPropertiesForBackend', previousProperties, newProperties);
     if (JSON.stringify(previousProperties) === JSON.stringify(newProperties)) {
         // return null so the backend does not update the properties
-        console.log('debug', previousProperties, newProperties);
         return null;
     }
 

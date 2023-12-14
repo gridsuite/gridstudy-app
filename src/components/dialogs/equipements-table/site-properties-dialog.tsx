@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
     Grid,
     IconButton,
@@ -47,7 +47,6 @@ const validationSchema = yup
 
 type SitePropertiesDialogProps = {
     open: boolean;
-    spreadsheetApi: any;
     spreadsheetContext: any;
     closeDialog: (status: boolean) => void;
     editingData: any;
@@ -59,7 +58,6 @@ type SitePropertiesDialogProps = {
  */
 const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     open,
-    spreadsheetApi,
     spreadsheetContext,
     closeDialog,
     editingData,
@@ -69,7 +67,7 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     const [error, setError] = useState<string>('');
     const intl = useIntl();
     const [rowData, setRowData] = useState<IData[]>(() => {
-        const data = spreadsheetContext.dynamicValidation;
+        const data = editingData; //spreadsheetContext.dynamicValidation;
         if (!data?.properties) {
             return [];
         }
@@ -92,13 +90,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
         [rowData]
     );
 
-    console.debug(
-        'debug',
-        'dynamicValidation',
-        spreadsheetContext.dynamicValidation
-    );
-    console.debug('debug', 'editingData', editingData);
-
     const handleAddRow = () => {
         const newId = rowData.length;
         setRowData([...rowData, { id: newId, key: '', value: '' }]);
@@ -107,14 +98,6 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     const performValidation = () => {
         //validate rowData with yup and display error message and erros cells if any
         let hasError = false;
-        //get the content of the pined row
-        spreadsheetApi?.forEachNode((node: any) => {
-            if (node.rowPinned) {
-                const data = node.data;
-                console.log('debug', data);
-            }
-        });
-
         try {
             hasError = !validationSchema.isValidSync(rowData);
             validationSchema.validateSync(rowData, {

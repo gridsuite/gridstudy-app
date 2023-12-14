@@ -118,48 +118,48 @@ export const EquipmentTable = ({
 
     return (
         <>
-        <CustomAGGrid
-            ref={gridRef}
-            getRowId={getRowId}
-            rowData={rowsToShow}
-            pinnedTopRowData={topPinnedData}
-            debounceVerticalScrollbar={true}
-            getRowStyle={getRowStyle}
-            columnDefs={columnData}
-            defaultColDef={defaultColDef}
-            enableCellTextSelection={true}
-            undoRedoCellEditing={true}
-            onCellEditingStarted={handleCellEditingStarted}
-            onCellEditingStopped={handleCellEditingStopped}
-            onRowDataUpdated={handleRowDataUpdated}
-            onColumnMoved={handleColumnDrag}
-            suppressDragLeaveHidesColumns={true}
-            suppressColumnVirtualisation={true}
-            suppressClickEdit={!topPinnedData}
-            singleClickEdit={true}
-            context={gridContext}
-            onGridReady={handleGridReady}
-            shouldHidePinnedHeaderRightBorder={
-                shouldHidePinnedHeaderRightBorder
-            }
-            getRowHeight={getRowHeight}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
-        />
-        {openPopupEditSiteProperties && (
-            <SitePropertiesDialog
-                open={openPopupEditSiteProperties}
-                spreadsheetApi={gridRef.current.api}
-                spreadsheetContext={gridContext}
-                closeDialog={(shouldClose) => {
-                    setOpenPopupEditSiteProperties(!shouldClose);
-                }}
-                editingData={editingData}
-                setEditingData={setEditingData}
-            ></SitePropertiesDialog>
-        )}
+            <CustomAGGrid
+                ref={gridRef}
+                getRowId={getRowId}
+                rowData={rowsToShow}
+                pinnedTopRowData={topPinnedData}
+                debounceVerticalScrollbar={true}
+                getRowStyle={getRowStyle}
+                columnDefs={columnData}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                undoRedoCellEditing={true}
+                onCellEditingStarted={handleCellEditingStarted}
+                onCellEditingStopped={handleCellEditingStopped}
+                onRowDataUpdated={handleRowDataUpdated}
+                onColumnMoved={handleColumnDrag}
+                suppressDragLeaveHidesColumns={true}
+                suppressColumnVirtualisation={true}
+                suppressClickEdit={!topPinnedData}
+                singleClickEdit={true}
+                context={gridContext}
+                onGridReady={handleGridReady}
+                shouldHidePinnedHeaderRightBorder={
+                    shouldHidePinnedHeaderRightBorder
+                }
+                getRowHeight={getRowHeight}
+                overlayNoRowsTemplate={message}
+                loadingOverlayComponent={loadingOverlayComponent}
+                loadingOverlayComponentParams={loadingOverlayComponentParams}
+                showOverlay={true}
+            />
+            {openPopupEditSiteProperties && (
+                <SitePropertiesDialog
+                    open={openPopupEditSiteProperties}
+                    spreadsheetApi={gridRef.current.api}
+                    spreadsheetContext={gridContext}
+                    closeDialog={(shouldClose) => {
+                        setOpenPopupEditSiteProperties(!shouldClose);
+                    }}
+                    editingData={editingData}
+                    setEditingData={setEditingData}
+                ></SitePropertiesDialog>
+            )}
         </>
     );
 };

@@ -429,9 +429,15 @@ const TableWrapper = (props) => {
         (editingData, groovyCr, context) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
+                    console.log('debug', 'sending modifySubstation')
                     const propertiesForBackend = formatPropertiesForBackend(
                         editingData.previousProperties ?? {},
                         editingData.properties ?? {}
+                    );
+                    console.log(
+                        'debug',
+                        'sending modifySubstation',
+                        propertiesForBackend
                     );
                     return modifySubstation(
                         props.studyUuid,
@@ -722,12 +728,15 @@ const TableWrapper = (props) => {
 
     const handleSubmitEditing = useCallback(
         (params) => {
-            if (Object.values(priorValuesBuffer).length === 0) {
-                rollbackEdit();
-            } else {
-                params.context.dynamicValidation = {};
-                validateEdit(params);
-            }
+            params.context.dynamicValidation = {};
+            validateEdit(params);
+            //FIXME why ayoub added this conditions
+            // if (Object.values(priorValuesBuffer).length === 0) {
+            //     rollbackEdit();
+            // } else {
+            //     params.context.dynamicValidation = {};
+            //     validateEdit(params);
+            // }
         },
         [priorValuesBuffer, rollbackEdit, validateEdit]
     );
