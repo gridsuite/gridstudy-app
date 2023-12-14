@@ -99,9 +99,9 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
         return (
             <Box
                 sx={mergeSx(
-                    styles.grid(theme),
+                    styles.grid,
                     shouldHidePinnedHeaderRightBorder && styles.noBorderRight,
-                    showOverlay && styles.overlayBackground(theme)
+                    showOverlay && styles.overlayBackground
                 )}
                 className={theme.aggrid}
             >

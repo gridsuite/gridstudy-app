@@ -31,7 +31,7 @@ const isEditable = (params) => {
 };
 
 const editableCellStyle = (params) => {
-    if (params.context.isEditing && params.node.rowPinned === 'top') {
+    if (isEditable(params)) {
         if (
             Object.keys(params.context.editErrors).includes(params.column.colId)
         ) {

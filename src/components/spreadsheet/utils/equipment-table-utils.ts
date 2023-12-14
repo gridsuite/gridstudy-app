@@ -5,10 +5,39 @@ import {
     computeSwitchedOnValue,
 } from 'components/utils/utils';
 import { EDIT_COLUMN } from './config-tables';
+import {
+    CellEditingStoppedEvent,
+    ColDef,
+    Column,
+    RefreshCellsParams,
+    GridApi,
+} from 'ag-grid-community';
 
-export const updateShuntCompensatorCells = (params: any) => {
+type DynamicValidation = Record<string, number | undefined>;
+
+export interface CrossValidationOptions {
+    optional?: boolean;
+    requiredOn?: {
+        dependencyColumn?: string;
+        columnValue?: string;
+    };
+    allowZero?: boolean;
+    minExpression?: number | string;
+    maxExpression?: number | string;
+}
+
+const flashCells = (params: CellEditingStoppedEvent, columns: string[]) => {
+    params.api.flashCells({
+        rowNodes: [params.node],
+        columns,
+    });
+};
+
+export const updateShuntCompensatorCells = (
+    params: CellEditingStoppedEvent
+) => {
     const rowNode = params.node;
-    const colId = params.column.colId;
+    const colId = params.column.getColId();
     const maxSusceptance = params.data.maxSusceptance;
     const type = params.data.type;
     const nominalVoltage = params.data.nominalVoltage;
@@ -24,10 +53,7 @@ export const updateShuntCompensatorCells = (params: any) => {
         ) {
             rowNode.setDataValue('maxSusceptance', -maxSusceptance);
             rowNode.setDataValue('switchedOnSusceptance', -maxSusceptance);
-            params.api.flashCells({
-                rowNodes: [rowNode],
-                columns: ['maxSusceptance', 'switchedOnSusceptance'],
-            });
+            flashCells(params, ['maxSusceptance', 'switchedOnSusceptance']);
         }
     } else if (colId === 'maxSusceptance') {
         if (Math.abs(maxSusceptance) !== Math.abs(params.oldValue)) {
@@ -43,10 +69,7 @@ export const updateShuntCompensatorCells = (params: any) => {
                     maxQAtNominalV
                 )
             );
-            params.api.flashCells({
-                rowNodes: [rowNode],
-                columns: ['maxQAtNominalV', 'switchedOnQAtNominalV'],
-            });
+            flashCells(params, ['maxQAtNominalV', 'switchedOnQAtNominalV']);
         }
         rowNode.setDataValue(
             'switchedOnSusceptance',
@@ -56,25 +79,16 @@ export const updateShuntCompensatorCells = (params: any) => {
                 maxSusceptance
             )
         );
-        params.api.flashCells({
-            rowNodes: [rowNode],
-            columns: ['switchedOnSusceptance'],
-        });
+        flashCells(params, ['switchedOnSusceptance']);
         if (maxSusceptance < 0 && type !== SHUNT_COMPENSATOR_TYPES.REACTOR.id) {
             rowNode.setDataValue('type', SHUNT_COMPENSATOR_TYPES.REACTOR.id);
-            params.api.flashCells({
-                rowNodes: [rowNode],
-                columns: ['type'],
-            });
+            flashCells(params, ['type']);
         } else if (
             maxSusceptance > 0 &&
             type !== SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
         ) {
             rowNode.setDataValue('type', SHUNT_COMPENSATOR_TYPES.CAPACITOR.id);
-            params.api.flashCells({
-                rowNodes: [rowNode],
-                columns: ['type'],
-            });
+            flashCells(params, ['type']);
         }
         params.context.lastEditedField = 'maxSusceptance';
     } else if (colId === 'maxQAtNominalV') {
@@ -105,14 +119,11 @@ export const updateShuntCompensatorCells = (params: any) => {
             )
         );
         params.context.lastEditedField = 'maxQAtNominalV';
-        params.api.flashCells({
-            rowNodes: [rowNode],
-            columns: [
-                'switchedOnQAtNominalV',
-                'maxSusceptance',
-                'switchedOnSusceptance',
-            ],
-        });
+        flashCells(params, [
+            'switchedOnQAtNominalV',
+            'maxSusceptance',
+            'switchedOnSusceptance',
+        ]);
     } else if (colId === 'sectionCount' || colId === 'maximumSectionCount') {
         rowNode.setDataValue(
             'switchedOnQAtNominalV',
@@ -130,10 +141,7 @@ export const updateShuntCompensatorCells = (params: any) => {
                 maxSusceptance
             )
         );
-        params.api.flashCells({
-            rowNodes: [rowNode],
-            columns: ['switchedOnQAtNominalV', 'switchedOnSusceptance'],
-        });
+        flashCells(params, ['switchedOnQAtNominalV', 'switchedOnSusceptance']);
     }
 };
 
@@ -166,20 +174,6 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
     }
     current[paths[i]] = value;
     return data;
-};
-
-export const buildObjectFromPath = (path: any, value: any) => {
-    const paths = path.split('.');
-    let obj = {};
-    let current: any = obj;
-    let i;
-
-    for (i = 0; i < paths.length - 1; ++i) {
-        current[paths[i]] = {};
-        current = current[paths[i]];
-    }
-    current[paths[i]] = value;
-    return obj;
 };
 
 const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
@@ -219,38 +213,35 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
 };
 
 export const checkValidationsAndRefreshCells = (
-    gridApi: any,
+    gridApi: GridApi,
     gridContext: any
 ) => {
     const updatedErrors = { ...gridContext.editErrors };
-    const columnsWithCrossValidation = gridApi
-        .getColumnDefs()
-        .filter((colDef: any) => colDef.editable);
-    columnsWithCrossValidation.forEach((colDef: any) => {
-        const fieldVal = deepFindValue(
-            gridContext.dynamicValidation,
-            colDef.field
-        );
+    const columnsWithCrossValidation =
+        gridApi.getColumnDefs()?.filter(({ editable }: ColDef) => editable) ??
+        [];
+    columnsWithCrossValidation.forEach((colDef: ColDef) => {
+        const { field = '' } = colDef;
+        const fieldVal = deepFindValue(gridContext.dynamicValidation, field);
         const isValid = isValueValid(fieldVal, colDef, gridContext);
-
         if (isValid) {
-            delete updatedErrors[colDef.field];
+            delete updatedErrors[field];
             gridContext.editErrors = updatedErrors;
         } else {
-            updatedErrors[colDef.field] = true;
+            updatedErrors[field] = true;
             gridContext.editErrors = updatedErrors;
         }
     });
     const rowNode = gridApi.getPinnedTopRow(0);
     if (rowNode) {
-        const refreshConfig = {
+        const mappedColumnsWithCrossValidation: Column[] = (
+            columnsWithCrossValidation || []
+        )
+            .map(({ field }: ColDef) => field as Column | undefined)
+            .filter((field): field is Column => typeof field !== 'undefined');
+        const refreshConfig: RefreshCellsParams = {
             rowNodes: [rowNode],
-            columns: [
-                ...columnsWithCrossValidation.map(
-                    (colDef: any) => colDef.field
-                ),
-                EDIT_COLUMN,
-            ],
+            columns: [...mappedColumnsWithCrossValidation, EDIT_COLUMN],
             force: true,
         };
         gridApi.refreshCells(refreshConfig);
@@ -258,21 +249,20 @@ export const checkValidationsAndRefreshCells = (
 };
 
 const checkCrossValidationRequiredOn = (
-    dynamicValidation: any,
-    colDef: any
+    dynamicValidation: DynamicValidation,
+    colDef: ColDef
 ) => {
+    const requiredOn = colDef?.crossValidation?.requiredOn ?? {};
     let dependencyValue = deepFindValue(
         dynamicValidation,
-        colDef.crossValidation.requiredOn.dependencyColumn
+        requiredOn?.dependencyColumn
     );
     if (typeof dependencyValue === 'boolean') {
         dependencyValue = dependencyValue ? 1 : 0;
     }
-    if ('columnValue' in colDef.crossValidation.requiredOn) {
+    if ('columnValue' in requiredOn) {
         // if the prop columnValue exist, then we compare its value with the current value
-        return (
-            dependencyValue !== colDef.crossValidation.requiredOn.columnValue
-        );
+        return dependencyValue !== requiredOn.columnValue;
     } else {
         // otherwise, we just check if there is a current value
         return dependencyValue === undefined;
