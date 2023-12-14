@@ -69,6 +69,7 @@ export const EquipmentTable = ({
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
             theme,
+            lastEditedField: undefined,
         };
     }, [network, theme, topPinnedData]);
     const getRowHeight = useCallback(

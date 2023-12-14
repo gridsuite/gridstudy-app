@@ -22,7 +22,7 @@ import {
 } from './equipment-table-utils';
 
 export const NumericalField = forwardRef(
-    ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
+    ({ defaultValue, gridContext, colDef, gridApi, rowData }, ref) => {
         const error = useMemo(() => {
             return Object.keys(gridContext.editErrors).includes(colDef.field);
         }, [colDef.field, gridContext.editErrors]);
@@ -37,15 +37,15 @@ export const NumericalField = forwardRef(
             if (!isNaN(minExpression)) {
                 return minExpression;
             }
-            return gridContext.dynamicValidation[minExpression];
-        }, [minExpression, gridContext.dynamicValidation]);
+            return rowData[minExpression];
+        }, [minExpression, rowData]);
 
         const maxValue = useMemo(() => {
             if (!isNaN(maxExpression)) {
                 return maxExpression;
             }
-            return gridContext.dynamicValidation[maxExpression];
-        }, [maxExpression, gridContext.dynamicValidation]);
+            return rowData[maxExpression];
+        }, [maxExpression, rowData]);
 
         const [value, setValue] = useState(defaultValue);
 
