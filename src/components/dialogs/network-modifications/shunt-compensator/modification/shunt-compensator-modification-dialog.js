@@ -68,8 +68,7 @@ const ShuntCompensatorModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
-    const [createShuntCompensator, setCreateShuntCompensatorInfos] =
-        useState(false);
+    const [idExists, setIdExists] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const formMethods = useForm({
@@ -160,7 +159,7 @@ const ShuntCompensatorModificationDialog = ({
                             setSelectedId(null);
                         }
                         if (error.status === 404) {
-                            setCreateShuntCompensatorInfos(true);
+                            setIdExists(true);
                         }
                         setLoading(false);
                     });
@@ -245,7 +244,7 @@ const ShuntCompensatorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                {!shuntCompensatorInfos && !createShuntCompensator && (
+                {!shuntCompensatorInfos && !idExists && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -260,7 +259,7 @@ const ShuntCompensatorModificationDialog = ({
                     !loading &&
                     (shuntCompensatorInfos ||
                         // The case for creating a Shunt Compensator with free text in the selector
-                        createShuntCompensator) && (
+                        idExists) && (
                         <ShuntCompensatorModificationForm
                             shuntCompensatorInfos={shuntCompensatorInfos}
                             equipmentId={selectedId}
