@@ -236,7 +236,6 @@ export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
             style={{ width: '100%' }}
             onChange={(event, newValue) => {
                 setValue(newValue);
-                // gridContext.dynamicValidation[colDef.field] = newValue;
             }}
             renderInput={(params) => (
                 <TextField
@@ -266,13 +265,13 @@ const validationSchema = yup
  * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
  */
 export const SitePropertiesEditor = forwardRef(
-    ({ gridContext, colDef, gridApi }, ref) => {
+    ({ gridContext, colDef, gridApi, rowData }, ref) => {
         const theme = useTheme();
         const [error, setError] = useState('');
         const intl = useIntl();
         const [open, setOpen] = useState(true);
-        const [rowData, setRowData] = useState(() => {
-            const data = {}; //spreadsheetContext.dynamicValidation;
+        const [localRowData, setRowData] = useState(() => {
+            const data = rowData; //spreadsheetContext.dynamicValidation;
             if (!data?.properties) {
                 return [];
             }
@@ -282,24 +281,31 @@ export const SitePropertiesEditor = forwardRef(
             });
         });
 
+        function arrayToObject(arr) {
+            return arr.reduce((obj, item) => {
+                obj[item.key] = item.value;
+                return obj;
+            }, {});
+        }
+
         useImperativeHandle(
             ref,
             () => {
                 return {
                     getValue: () => {
-                        return 'value';
+                        return arrayToObject(localRowData);
                     },
                     getField: () => {
                         return colDef.field;
                     },
                 };
             },
-            [colDef.field]
+            [colDef.field, localRowData]
         );
 
         const handleRemoveRow = useCallback(
             (index) => {
-                const newData = [...rowData];
+                const newData = [...localRowData];
                 newData.splice(index, 1);
                 // Update the id of the remaining rows
                 newData.forEach((item, i) => {
@@ -307,20 +313,20 @@ export const SitePropertiesEditor = forwardRef(
                 });
                 setRowData(newData);
             },
-            [rowData]
+            [localRowData]
         );
 
         const handleAddRow = () => {
-            const newId = rowData.length;
-            setRowData([...rowData, { id: newId, key: '', value: '' }]);
+            const newId = localRowData.length;
+            setRowData([...localRowData, { id: newId, key: '', value: '' }]);
         };
 
         const performValidation = () => {
             //validate rowData with yup and display error message and erros cells if any
             let hasError = false;
             try {
-                hasError = !validationSchema.isValidSync(rowData);
-                validationSchema.validateSync(rowData, {
+                hasError = !validationSchema.isValidSync(localRowData);
+                validationSchema.validateSync(localRowData, {
                     abortEarly: true,
                 });
             } catch (err) {
@@ -345,19 +351,20 @@ export const SitePropertiesEditor = forwardRef(
         };
 
         const handleNameChange = (index, value) => {
-            const newData = [...rowData];
+            const newData = [...localRowData];
             newData[index].key = value;
             setRowData(newData);
         };
 
         const handleValueChange = (index, value) => {
-            const newData = [...rowData];
+            const newData = [...localRowData];
             newData[index].value = value;
             setRowData(newData);
         };
 
         const handleCancelPopupSelectEditSiteProperties = () => {
             setOpen(false);
+            gridApi.stopEditing();
         };
 
         return (
@@ -385,7 +392,7 @@ export const SitePropertiesEditor = forwardRef(
                                         handleAddRow={handleAddRow}
                                     />
                                     <TableBody>
-                                        {rowData?.map((row, index) => {
+                                        {localRowData?.map((row, index) => {
                                             return (
                                                 <TableRow key={row.id}>
                                                     <TableCell>

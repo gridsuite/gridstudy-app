@@ -144,7 +144,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'Country',
                 field: 'countryName',
                 editable: isEditable,
-                //cellStyle: editableCellStyle,
+                cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
                 valueSetter: (params) => {
                     params.data.countryCode = params.newValue; // translate code to country ?
@@ -156,6 +156,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'Properties',
                 field: 'properties',
                 editable: isEditable,
+                cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter, // valueFormatter does not work here
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
@@ -166,6 +167,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 cellEditorPopup: true,
