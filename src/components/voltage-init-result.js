@@ -16,7 +16,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Stack, Typography } from '@mui/material';
+import { LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
@@ -32,6 +32,11 @@ import VoltageInitModificationDialog from './dialogs/network-modifications/volta
 import { FetchStatus } from '../services/utils';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { CsvExport } from './spreadsheet/export-csv';
+import { ComputationReportViewer } from './results/common/computation-report-viewer';
+import { REPORT_TYPES } from './utils/report-type';
+import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
+import { RunningStatus } from './utils/running-status';
+import { RESULTS_LOADING_DELAY } from './network/constants';
 
 const styles = {
     container: {
@@ -52,6 +57,7 @@ const styles = {
     buttonApplyModifications: {
         display: 'flex',
         position: 'relative',
+        marginLeft: '5px',
     },
     labelAppliedModifications: {
         display: 'flex',
@@ -73,14 +79,12 @@ const styles = {
     },
 };
 
-const VoltageInitResult = ({ result, status }) => {
+const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
 
     const [resultToShow, setResultToShow] = useState(result);
-
-    const [tabIndex, setTabIndex] = useState(0);
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
         !resultToShow || !resultToShow.modificationsGroupUuid
     );
@@ -92,6 +96,11 @@ const VoltageInitResult = ({ result, status }) => {
     const intl = useIntl();
 
     const viNotif = useSelector((state) => state.voltageInitNotif);
+
+    const openLoader = useOpenLoaderShortWait({
+        isLoading: status === RunningStatus.RUNNING,
+        delay: RESULTS_LOADING_DELAY,
+    });
 
     useEffect(() => {
         setDisableApplyModifications(
@@ -206,20 +215,22 @@ const VoltageInitResult = ({ result, status }) => {
                         gridRef={gridRef}
                         columns={columns}
                         tableName={tableName}
-                        disabled={rows.length === 0}
+                        disabled={!rows || rows.length === 0}
                         skipColumnHeaders={skipColumnHeaders}
                     />
                 </Box>
-                <Box sx={styles.grid}>
-                    <CustomAGGrid
-                        ref={gridRef}
-                        rowData={rows}
-                        headerHeight={headerHeight}
-                        defaultColDef={defaultColDef}
-                        columnDefs={columns}
-                        onRowDataUpdated={onRowDataUpdated}
-                    />
-                </Box>
+                {rows && (
+                    <Box sx={styles.grid}>
+                        <CustomAGGrid
+                            ref={gridRef}
+                            rowData={rows}
+                            headerHeight={headerHeight}
+                            defaultColDef={defaultColDef}
+                            columnDefs={columns}
+                            onRowDataUpdated={onRowDataUpdated}
+                        />
+                    </Box>
+                )}
             </Box>
         );
     };
@@ -283,6 +294,22 @@ const VoltageInitResult = ({ result, status }) => {
         );
     }
 
+    const renderReportViewer = () => {
+        return (
+            <>
+                <Box sx={{ height: '4px' }}>
+                    {openLoader && <LinearProgress />}
+                </Box>
+                {(status === RunningStatus.SUCCEED ||
+                    status === RunningStatus.FAILED) && (
+                    <ComputationReportViewer
+                        reportType={REPORT_TYPES.VOLTAGE_INIT}
+                    />
+                )}
+            </>
+        );
+    };
+
     function renderTabs() {
         return (
             <>
@@ -301,6 +328,13 @@ const VoltageInitResult = ({ result, status }) => {
                                 label={intl.formatMessage({
                                     id: 'ReactiveSlacks',
                                 })}
+                            />
+                            <Tab
+                                label={
+                                    <FormattedMessage
+                                        id={'ComputationResultsLogs'}
+                                    />
+                                }
                             />
                         </Tabs>
                     </Box>
@@ -344,6 +378,7 @@ const VoltageInitResult = ({ result, status }) => {
                         resultToShow &&
                         tabIndex === 1 &&
                         renderReactiveSlacksTable(resultToShow.reactiveSlacks)}
+                    {tabIndex === 2 && renderReportViewer()}
                 </div>
             </>
         );
