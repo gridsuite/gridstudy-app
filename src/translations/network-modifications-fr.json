@@ -37,5 +37,6 @@
     "network_modifications/TABULAR_MODIFICATION": "Modification tabulaire - {computedLabel}",
     "network_modifications/tabular/GENERATOR_MODIFICATION": "modifications de générateurs",
     "network_modifications/tabular/LOAD_MODIFICATION": "modifications de consommations",
-    "network_modifications/BY_FORMULA_MODIFICATION": "Modification par formule {computedLabel}"
+    "network_modifications/BY_FORMULA_MODIFICATION": "Modification par formule {computedLabel}",
+    "network_modifications/tabular/BATTERY_MODIFICATION": "modifications de batteries"
 }
