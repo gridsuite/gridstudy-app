@@ -77,7 +77,9 @@ export const ModificationListItem = ({
         finally, we uses the default value of equipmentId or empty string
     */
     const getComputedLabel = useCallback(() => {
-        const modificationMetadata = JSON.parse(modif.messageValues);
+        const modificationMetadata = modif?.messageValues
+            ? JSON.parse(modif.messageValues)
+            : {};
 
         switch (modif.messageType) {
             case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
@@ -136,7 +138,9 @@ export const ModificationListItem = ({
         if (!studyUuid || !currentNode || !modif) {
             return;
         }
-        const modificationValues = JSON.parse(modif.messageValues);
+        const modificationValues = modif?.messageValues
+            ? JSON.parse(modif.messageValues)
+            : {};
 
         switch (modif.messageType) {
             case MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type:
