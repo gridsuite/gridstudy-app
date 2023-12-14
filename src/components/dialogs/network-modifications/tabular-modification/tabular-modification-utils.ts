@@ -27,12 +27,19 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'maxActivePower',
         'reactivePowerSetpoint',
     ],
+    VOLTAGE_LEVEL: [
+        'equipmentId',
+        'nominalVoltage',
+        'lowVoltageLimit',
+        'highVoltageLimit',
+    ],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
     BATTERY: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+    VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
 };
 
 export interface Modification {
