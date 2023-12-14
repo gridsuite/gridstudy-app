@@ -261,9 +261,9 @@ export const SensitivityAnalysisParameters = ({
         return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
     }, [getValues]);
 
-    const isFormChanged = useCallback(
-        (isFormChanged) => {
-            isFormChanged && setAnalysisComputeComplexity(getResultCount());
+    const onFormChanged = useCallback(
+        (onFormChanged) => {
+            onFormChanged && setAnalysisComputeComplexity(getResultCount());
         },
         [setAnalysisComputeComplexity, getResultCount]
     );
@@ -282,7 +282,7 @@ export const SensitivityAnalysisParameters = ({
                             value && Math.abs(value)
                         );
                         setAnalysisComputeComplexity(getResultCount());
-                        isFormChanged(false);
+                        onFormChanged(false);
                     });
                 })
                 .catch((error) => {
@@ -299,7 +299,7 @@ export const SensitivityAnalysisParameters = ({
             formatFilteredParams,
             setValue,
             getResultCount,
-            isFormChanged,
+            onFormChanged,
         ]
     );
 
@@ -593,7 +593,7 @@ export const SensitivityAnalysisParameters = ({
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
                         }
-                        isFormChanged={isFormChanged}
+                        onFormChanged={onFormChanged}
                         onChangeParams={onChangeParams}
                     />
                 </Grid>
