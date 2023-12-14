@@ -312,3 +312,8 @@ export function getOptionalServices() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function getServersInfos() {
+    console.info('get backend servers informations');
+    return backendFetchJson(PREFIX_STUDY_QUERIES + '/v1/servers/infos');
+}

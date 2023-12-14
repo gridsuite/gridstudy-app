@@ -1,12 +1,13 @@
 {
     "name": "gridstudy-app",
     "version": "0.1.0",
+    "license": "MPL-2.0",
     "homepage": ".",
     "private": true,
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "0.41.0",
+        "@gridsuite/commons-ui": "^0.42.0",
         "@hookform/resolvers": "^3.0.0",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
@@ -17,8 +18,8 @@
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
         "@types/node": "^20.2.3",
         "@types/react": "^18.2.7",
-        "@types/react-dom": "^18.2.4",
         "@types/react-beautiful-dnd": "^13.1.0",
+        "@types/react-dom": "^18.2.4",
         "ag-grid-community": "^29.0.0",
         "ag-grid-react": "^29.0.0",
         "cheap-ruler": "^3.0.0",
@@ -90,9 +91,9 @@
         ]
     },
     "devDependencies": {
-        "http-proxy-middleware": "^2.0.0",
         "eslint-config-prettier": "^8.0.0",
         "eslint-plugin-prettier": "^4.0.0",
+        "http-proxy-middleware": "^2.0.0",
         "prettier": "^2.0.5"
     }
 }

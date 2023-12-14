@@ -38,6 +38,7 @@ interface DirectoryItemsInputProps {
     itemFilter?: any;
     titleId?: string;
     hideErrorMessage?: boolean;
+    disable?: boolean;
 }
 
 const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
@@ -48,6 +49,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
+    disable = false,
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -144,6 +146,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                             <IconButton
                                 sx={styles.addDirectoryElements}
                                 size={'small'}
+                                disabled={disable}
                                 onClick={() =>
                                     setDirectoryItemSelectorOpen(true)
                                 }
