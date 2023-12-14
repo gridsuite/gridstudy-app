@@ -7,7 +7,12 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { BooleanListField, NumericalField, SelectCountryField } from './equipment-table-editors';
+import {
+    BooleanListField,
+    NumericalField,
+    SelectCountryField,
+    SitePropertiesEditor,
+} from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
@@ -72,17 +77,6 @@ const propertiesGetter = (params) => {
             .join(' | ');
     } else {
         return null;
-    }
-};
-
-const handleGSubstationPropertiesCellClick = (event) => {
-    const { context: { isEditing, handleCellClick } = {} } = event || {};
-    if (
-        isEditing &&
-        event.node.rowIndex === 0 &&
-        event.node.rowPinned === 'top'
-    ) {
-        handleCellClick?.openPropertiesDialog();
     }
 };
 
@@ -152,7 +146,7 @@ export const TABLES_DEFINITIONS = {
                 //cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
                 valueSetter: (params) => {
-                    params.data.countryCode = params.newValue;// translate code to country ?
+                    params.data.countryCode = params.newValue; // translate code to country ?
                     params.data.countryName = params.newValue;
                     return params;
                 },
@@ -160,12 +154,20 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
+                editable: isEditable,
                 valueGetter: propertiesGetter, // valueFormatter does not work here
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
-                onCellClicked: handleGSubstationPropertiesCellClick,
-                editable: isEditable,
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                cellEditorPopup: true,
             },
         ],
     },

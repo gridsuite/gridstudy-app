@@ -14,13 +14,31 @@ import React, {
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { Autocomplete, TextField, Tooltip } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import {
+    Autocomplete,
+    Box,
+    Grid,
+    IconButton,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Tooltip,
+    useTheme,
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     checkValidationsAndRefreshCells,
     deepUpdateValue,
 } from './equipment-table-utils';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';
+import { SelectOptionsDialog } from 'utils/dialogs';
+import yup from 'components/utils/yup-config';
 
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
@@ -229,3 +247,268 @@ export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
         />
     );
 });
+
+const validationSchema = yup
+    .array()
+    .of(
+        yup.object().shape({
+            key: yup.string().required('FillAllFields'),
+            value: yup.string().required('FillAllFields'),
+        })
+    )
+    .test('unique-keys', 'DuplicatedProps', (values) => {
+        const keys = values.map((value) => value.key);
+        const uniqueKeys = new Set(keys);
+        return keys.length === uniqueKeys.size;
+    });
+
+/**
+ * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
+ */
+export const SitePropertiesEditor = forwardRef(
+    ({ gridContext, colDef, gridApi }, ref) => {
+        const theme = useTheme();
+        const [error, setError] = useState('');
+        const intl = useIntl();
+        const [open, setOpen] = useState(true);
+        const [rowData, setRowData] = useState(() => {
+            const data = {}; //spreadsheetContext.dynamicValidation;
+            if (!data?.properties) {
+                return [];
+            }
+            const keys = Object.keys(data.properties);
+            return keys.map((key, index) => {
+                return { id: index, key: key, value: data.properties[key] };
+            });
+        });
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        return 'value';
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field]
+        );
+
+        const handleRemoveRow = useCallback(
+            (index) => {
+                const newData = [...rowData];
+                newData.splice(index, 1);
+                // Update the id of the remaining rows
+                newData.forEach((item, i) => {
+                    item.id = i;
+                });
+                setRowData(newData);
+            },
+            [rowData]
+        );
+
+        const handleAddRow = () => {
+            const newId = rowData.length;
+            setRowData([...rowData, { id: newId, key: '', value: '' }]);
+        };
+
+        const performValidation = () => {
+            //validate rowData with yup and display error message and erros cells if any
+            let hasError = false;
+            try {
+                hasError = !validationSchema.isValidSync(rowData);
+                validationSchema.validateSync(rowData, {
+                    abortEarly: true,
+                });
+            } catch (err) {
+                setError(
+                    intl.formatMessage({
+                        id: err.errors[0],
+                    })
+                );
+            }
+            if (!hasError) {
+                setError('');
+                setOpen(false);
+                prepareDataAndSendRequest();
+            }
+
+            return !hasError;
+        };
+
+        const prepareDataAndSendRequest = () => {
+            gridApi.stopEditing();
+            // add properties to editingData
+        };
+
+        const handleNameChange = (index, value) => {
+            const newData = [...rowData];
+            newData[index].key = value;
+            setRowData(newData);
+        };
+
+        const handleValueChange = (index, value) => {
+            const newData = [...rowData];
+            newData[index].value = value;
+            setRowData(newData);
+        };
+
+        const handleCancelPopupSelectEditSiteProperties = () => {
+            setOpen(false);
+        };
+
+        return (
+            <SelectOptionsDialog
+                open={open}
+                onClose={handleCancelPopupSelectEditSiteProperties}
+                onClick={performValidation}
+                title={intl.formatMessage({
+                    id: 'editSiteProperties',
+                })}
+                style={undefined}
+                child={
+                    <Grid container spacing={2} style={{ width: '500px' }}>
+                        <Grid item xs={12}>
+                            <TableContainer
+                                sx={{
+                                    border: 'solid 0px rgba(0,0,0,0.1)',
+                                }}
+                            >
+                                <Table stickyHeader size="small">
+                                    <PropertiesEditorHeader
+                                        darkTheme={
+                                            theme.palette.mode === 'dark'
+                                        }
+                                        handleAddRow={handleAddRow}
+                                    />
+                                    <TableBody>
+                                        {rowData?.map((row, index) => {
+                                            return (
+                                                <TableRow key={row.id}>
+                                                    <TableCell>
+                                                        <TextField
+                                                            size="small"
+                                                            fullWidth
+                                                            value={row.key}
+                                                            onChange={(e) =>
+                                                                handleNameChange(
+                                                                    index,
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <TextField
+                                                            size="small"
+                                                            fullWidth
+                                                            value={row.value}
+                                                            onChange={(e) =>
+                                                                handleValueChange(
+                                                                    index,
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Box>
+                                                            <IconButton
+                                                                onClick={() => {
+                                                                    handleRemoveRow(
+                                                                        index
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <DeleteIcon
+                                                                    sx={{
+                                                                        color:
+                                                                            theme
+                                                                                .palette
+                                                                                .mode ===
+                                                                            'dark'
+                                                                                ? 'white'
+                                                                                : 'black',
+                                                                    }}
+                                                                />
+                                                            </IconButton>
+                                                        </Box>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
+                        <Grid item>
+                            <Box
+                                sx={{
+                                    color: 'red',
+                                }}
+                            >
+                                {error && <p>{error}</p>}
+                            </Box>
+                        </Grid>
+                    </Grid>
+                }
+            />
+        );
+    }
+);
+
+const PropertiesEditorHeader = ({ darkTheme, handleAddRow }) => {
+    const intl = useIntl();
+    const columnDefs = useMemo(() => {
+        return [
+            {
+                label: intl.formatMessage({ id: 'Key' }),
+                editable: true,
+            },
+            {
+                label: intl.formatMessage({ id: 'Value' }),
+                editable: true,
+            },
+        ];
+    }, [intl]);
+
+    return (
+        <TableHead>
+            <TableRow>
+                {columnDefs.map((column) => (
+                    <TableCell key={column.label}>
+                        <Box
+                            sx={{
+                                backgroundColor: column.color,
+                            }}
+                        >
+                            <FormattedMessage id={column.label} />
+                        </Box>
+                    </TableCell>
+                ))}
+                <TableCell>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'AddRows',
+                        })}
+                    >
+                        <Box>
+                            <IconButton color="primary" onClick={handleAddRow}>
+                                <AddCircleIcon
+                                    sx={{
+                                        color: darkTheme ? 'white' : 'black',
+                                    }}
+                                />
+                            </IconButton>
+                        </Box>
+                    </Tooltip>
+                </TableCell>
+            </TableRow>
+        </TableHead>
+    );
+};

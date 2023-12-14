@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import {
     Grid,
     IconButton,
@@ -47,6 +47,7 @@ const validationSchema = yup
 
 type SitePropertiesDialogProps = {
     open: boolean;
+    spreadsheetApi: any;
     spreadsheetContext: any;
     closeDialog: (status: boolean) => void;
     editingData: any;
@@ -58,6 +59,7 @@ type SitePropertiesDialogProps = {
  */
 const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
     open,
+    spreadsheetApi,
     spreadsheetContext,
     closeDialog,
     editingData,
@@ -127,12 +129,10 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
                 return obj;
             }, {});
         }
+        const node = spreadsheetApi.getPinnedTopRow(0);
+        node.setDataValue('properties', arrayToObject(rowData));
+        spreadsheetApi.stopEditing();
         // add properties to editingData
-        setEditingData({
-            ...editingData,
-            properties: arrayToObject(rowData),
-            previousProperties: spreadsheetContext.dynamicValidation.properties,
-        });
     };
 
     const handleNameChange = (index: number, value: string) => {

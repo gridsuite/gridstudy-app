@@ -48,7 +48,8 @@ import {
     modifyLoad,
     modifyShuntCompensator,
     modifyVoltageLevel,
-    requestNetworkChange, formatPropertiesForBackend
+    requestNetworkChange,
+    formatPropertiesForBackend,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
@@ -722,15 +723,12 @@ const TableWrapper = (props) => {
 
     const handleSubmitEditing = useCallback(
         (params) => {
-            params.context.dynamicValidation = {};
-            validateEdit(params);
-            //FIXME why ayoub added this conditions
-            // if (Object.values(priorValuesBuffer).length === 0) {
-            //     rollbackEdit();
-            // } else {
-            //     params.context.dynamicValidation = {};
-            //     validateEdit(params);
-            // }
+            if (Object.values(priorValuesBuffer).length === 0) {
+                rollbackEdit();
+            } else {
+                params.context.dynamicValidation = {};
+                validateEdit(params);
+            }
         },
         [priorValuesBuffer, rollbackEdit, validateEdit]
     );
@@ -897,8 +895,6 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
-                        editingData={editingData}
-                        setEditingData={setEditingData}
                     />
                 </Box>
             )}
