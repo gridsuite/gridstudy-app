@@ -641,6 +641,7 @@
     "createNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "pasteNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "removeNode": "Supprimer le nœud",
+    "unbuildNode": "Déréaliser le nœud",
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
@@ -652,6 +653,7 @@
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
+    "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
     "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer une consommation",
     "ModifyLoad": "Modifier une consommation",
@@ -1118,6 +1120,9 @@
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
+    "SimulatedCalculation": "calculs simulés",
+    "SimulatedCalculationMax": "500 000 max",
+
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
@@ -1352,5 +1357,8 @@
     "customAgGridFilter.lessThanOrEqual": "Inférieur ou égal",
     "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
     "customAgGridFilter.filterOoo": "Filtrer...",
-    "undefined" : "non défini"
+    "undefined" : "non défini",
+    "nominalVoltage": "Tension nominale (kV)",
+    "lowVoltageLimit": "Limite tension basse (kV)",
+    "highVoltageLimit": "Limite tension haute (kV)"
 }

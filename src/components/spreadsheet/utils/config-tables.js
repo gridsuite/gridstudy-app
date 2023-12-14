@@ -36,7 +36,7 @@ const isEditable = (params) => {
 };
 
 const editableCellStyle = (params) => {
-    if (params.context.isEditing && params.node.rowPinned === 'top') {
+    if (isEditable(params)) {
         if (
             Object.keys(params.context.editErrors).includes(params.column.colId)
         ) {
@@ -107,6 +107,7 @@ const generateEditableNumericColumnDefinition = (
                 gridContext: params.context,
                 gridApi: params.api,
                 colDef: params.colDef,
+                rowData: params.data,
             };
         },
         crossValidation: {
@@ -208,6 +209,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
             },
@@ -1179,6 +1181,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1202,6 +1205,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1230,6 +1234,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 fractionDigits: 1,
@@ -1256,6 +1261,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 crossValidation: {
@@ -1301,6 +1307,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 crossValidation: {
@@ -1455,6 +1462,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1475,6 +1483,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1542,6 +1551,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 filter: 'agNumberColumnFilter',
@@ -1563,6 +1573,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 filter: 'agNumberColumnFilter',
@@ -1605,6 +1616,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 filter: 'agNumberColumnFilter',
@@ -1639,6 +1651,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 filter: 'agNumberColumnFilter',
@@ -1828,6 +1841,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 valueGetter: (params) => params.data?.activePowerControl?.droop,
@@ -1862,6 +1876,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 crossValidation: {
@@ -1884,6 +1899,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 crossValidation: {
@@ -1906,6 +1922,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 crossValidation: {
@@ -1930,6 +1947,7 @@ export const TABLES_DEFINITIONS = {
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,

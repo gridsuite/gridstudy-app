@@ -709,7 +709,7 @@ const TableWrapper = (props) => {
                     updateShuntCompensatorCells(params);
                 }
                 addDataToBuffer(params.colDef.field, params.oldValue);
-                params.context.dynamicValidation = { ...params.data };
+                params.context.dynamicValidation = params.data;
                 checkValidationsAndRefreshCells(params.api, params.context);
             }
         },
@@ -718,7 +718,7 @@ const TableWrapper = (props) => {
 
     const handleCellEditingStarted = useCallback((params) => {
         // we initialize the dynamicValidation with the initial data
-        params.context.dynamicValidation = { ...params.data };
+        params.context.dynamicValidation = params.data;
     }, []);
 
     const handleSubmitEditing = useCallback(
