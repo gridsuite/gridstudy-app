@@ -1117,6 +1117,9 @@
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
+    "SimulatedCalculation": "calculs simulés",
+    "SimulatedCalculationMax": "500 000 max",
+
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
