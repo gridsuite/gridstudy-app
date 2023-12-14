@@ -14,6 +14,9 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
+    CONNECTIVITY,
+    VOLTAGE_LEVEL,
+    ID,
 } from 'components/utils/field-constants';
 import React, { useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../dialogUtils';
@@ -29,6 +32,7 @@ import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import { getNewVoltageLevelData } from 'components/dialogs/connectivity/connectivity-form-utils';
+import { useWatch } from 'react-hook-form';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -37,11 +41,14 @@ const LineAttachToVoltageLevelForm = ({
     lineToEdit,
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
-    onVoltageLevelChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+
+    const voltageLevelIdWatch = useWatch({
+        name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
+    });
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -131,9 +138,12 @@ const LineAttachToVoltageLevelForm = ({
             newBusOrBusbarSectionOptions={voltageLevelToEdit?.busbarSections}
             studyUuid={studyUuid}
             currentNode={currentNode}
-            onVoltageLevelChangeCallback={onVoltageLevelChange}
         />
     );
+
+    const isVoltageLevelEdit =
+        voltageLevelToEdit &&
+        voltageLevelToEdit.equipmentId === voltageLevelIdWatch;
 
     return (
         <>
@@ -151,11 +161,17 @@ const LineAttachToVoltageLevelForm = ({
                     <Button
                         onClick={openVoltageLevelDialog}
                         startIcon={
-                            voltageLevelToEdit ? <EditIcon /> : <AddIcon />
+                            isVoltageLevelEdit ? <EditIcon /> : <AddIcon />
                         }
                     >
                         <Typography align="left">
-                            <FormattedMessage id="NewVoltageLevel" />
+                            <FormattedMessage
+                                id={
+                                    isVoltageLevelEdit
+                                        ? 'EditNewVoltageLevel'
+                                        : 'NewVoltageLevel'
+                                }
+                            />
                         </Typography>
                     </Button>
                 )}
