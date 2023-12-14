@@ -104,7 +104,7 @@ const LineAttachToVoltageLevelDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (lineAttach) => {
@@ -160,8 +160,10 @@ const LineAttachToVoltageLevelDialog = ({
 
     const onSubmit = useCallback(
         (lineAttach) => {
-            const currentVoltageLevelId = lineAttach[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
-            const isNewVoltageLevel = newVoltageLevel?.equipmentId === currentVoltageLevelId;
+            const currentVoltageLevelId =
+                lineAttach[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
+            const isNewVoltageLevel =
+                newVoltageLevel?.equipmentId === currentVoltageLevelId;
             attachLine(
                 studyUuid,
                 currentNodeUuid,
