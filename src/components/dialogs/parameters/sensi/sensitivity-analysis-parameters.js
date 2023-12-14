@@ -272,7 +272,7 @@ export const SensitivityAnalysisParameters = ({
                     response.text().then((value) => {
                         setValue(
                             `${arrayFormName}[${index}].[${COUNT}]`,
-                            value && Number(value)
+                            value && Math.abs(value)
                         );
                         setAnalysisComputeComplexity(getResultCount());
                         hasFormChanged(false);
