@@ -14,12 +14,13 @@ import React, {
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { TextField, Tooltip } from '@mui/material';
-import { useIntl } from 'react-intl';
+import { Autocomplete, TextField, Tooltip } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     checkValidationsAndRefreshCells,
     deepUpdateValue,
 } from './equipment-table-utils';
+import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
@@ -190,3 +191,41 @@ export const BooleanListField = forwardRef(
         );
     }
 );
+
+export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
+    const [value, setValue] = useState(null);
+    const { translate, countryCodes } = LocalizedCountries();
+
+    useImperativeHandle(
+        ref,
+        () => {
+            return {
+                getValue: () => {
+                    return value;
+                },
+                getField: () => {
+                    return colDef.field;
+                },
+            };
+        },
+        [colDef.field, value]
+    );
+
+    return (
+        <Autocomplete
+            options={countryCodes}
+            getOptionLabel={(countryCode) => translate(countryCode)}
+            style={{ width: '100%' }}
+            onChange={(event, newValue) => {
+                setValue(newValue);
+                // gridContext.dynamicValidation[colDef.field] = newValue;
+            }}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label={<FormattedMessage id={'descLfAllCountries'} />}
+                />
+            )}
+        />
+    );
+});
