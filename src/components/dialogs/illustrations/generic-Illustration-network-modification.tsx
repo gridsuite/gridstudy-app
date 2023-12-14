@@ -52,18 +52,26 @@ const GenericIllustrationNetworkModification: React.FC<
          * @param cssProperty : String preceding and describing the property whose opacity must be changed
          * @param svgElt : element fetched from the svg that should be updated
          */
-        function updateOpacity(cssProperty: string, svgElt: HTMLElement | null) {
+        function updateOpacity(
+            cssProperty: string,
+            svgElt: HTMLElement | null
+        ) {
             if (!!svgElt) {
                 const eltCssText = svgElt.style.cssText;
                 const indexOpacity = eltCssText.indexOf(cssProperty);
                 if (indexOpacity !== -1) {
                     svgElt.style.cssText =
-                        eltCssText.substring(0, indexOpacity + cssProperty.length) +
+                        eltCssText.substring(
+                            0,
+                            indexOpacity + cssProperty.length
+                        ) +
                         (theme === LIGHT_THEME ? '0' : '1') +
-                        eltCssText.substring(indexOpacity + cssProperty.length + 1);
+                        eltCssText.substring(
+                            indexOpacity + cssProperty.length + 1
+                        );
                 } else {
                     svgElt.style.cssText =
-                    cssProperty + (theme === LIGHT_THEME ? '0' : '1');
+                        cssProperty + (theme === LIGHT_THEME ? '0' : '1');
                 }
             }
         }
@@ -71,7 +79,7 @@ const GenericIllustrationNetworkModification: React.FC<
             'fill-opacity: ',
             document.getElementById(backgroundElementId)
         );
-    }, [theme]);
+    }, [backgroundElementId, theme]);
 
     return (
         <AccordionIllustration
