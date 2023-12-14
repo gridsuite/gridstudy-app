@@ -57,6 +57,7 @@ const CreateNodeMenu = ({
     position,
     handleClose,
     handleBuildNode,
+    handleUnbuildNode,
     handleNodeCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
@@ -118,6 +119,11 @@ const CreateNodeMenu = ({
         setNodeAction(NodeActions.REMOVE_NODE);
     }
 
+    function unbuildNode() {
+        handleUnbuildNode(activeNode);
+        handleClose();
+    }
+
     function exportCaseOnNode() {
         handleExportCaseOnNode(activeNode);
         handleClose();
@@ -173,6 +179,14 @@ const CreateNodeMenu = ({
 
     function isNodeRemovingAllowed() {
         return !isAnyNodeBuilding && !mapDataLoading;
+    }
+
+    function isNodeUnbuildingAllowed() {
+        return (
+            !isAnyNodeBuilding &&
+            !mapDataLoading &&
+            activeNode?.data?.globalBuildStatus?.startsWith('BUILT')
+        );
     }
 
     function isNodeRestorationAllowed() {
@@ -283,6 +297,12 @@ const CreateNodeMenu = ({
                     disabled: !isNodePastingAllowed(),
                 },
             },
+        },
+        UNBUILD_NODE: {
+            onRoot: false,
+            action: () => unbuildNode(),
+            id: 'unbuildNode',
+            disabled: !isNodeUnbuildingAllowed(),
         },
         REMOVE_NODE: {
             onRoot: false,
