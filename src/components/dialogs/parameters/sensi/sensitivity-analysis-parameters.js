@@ -241,6 +241,13 @@ export const SensitivityAnalysisParameters = ({
         const getCount = (tab) =>
             values[tab]
                 .filter((entry) => entry[ACTIVATED])
+                .filter((entry) => entry[MONITORED_BRANCHES].length > 0)
+                .filter(
+                    (entry) =>
+                        entry[INJECTIONS]?.length > 0 ||
+                        entry[PSTS]?.length > 0 ||
+                        entry[HVDC_LINES]?.length > 0
+                )
                 .map((entry) => entry[COUNT])
                 .reduce((a, b) => a + b, 0);
 
@@ -254,9 +261,9 @@ export const SensitivityAnalysisParameters = ({
         return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
     }, [getValues]);
 
-    const hasFormChanged = useCallback(
-        (onFormChanged) => {
-            onFormChanged && setAnalysisComputeComplexity(getResultCount());
+    const isFormChanged = useCallback(
+        (isFormChanged) => {
+            isFormChanged && setAnalysisComputeComplexity(getResultCount());
         },
         [setAnalysisComputeComplexity, getResultCount]
     );
@@ -275,7 +282,7 @@ export const SensitivityAnalysisParameters = ({
                             value && Math.abs(value)
                         );
                         setAnalysisComputeComplexity(getResultCount());
-                        hasFormChanged(false);
+                        isFormChanged(false);
                     });
                 })
                 .catch((error) => {
@@ -292,7 +299,7 @@ export const SensitivityAnalysisParameters = ({
             formatFilteredParams,
             setValue,
             getResultCount,
-            hasFormChanged,
+            isFormChanged,
         ]
     );
 
@@ -586,7 +593,7 @@ export const SensitivityAnalysisParameters = ({
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
                         }
-                        onFormChanged={hasFormChanged}
+                        isFormChanged={isFormChanged}
                         onChangeParams={onChangeParams}
                     />
                 </Grid>

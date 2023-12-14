@@ -38,7 +38,7 @@ interface DirectoryItemsInputProps {
     itemFilter?: any;
     titleId?: string;
     hideErrorMessage?: boolean;
-    isRowChanged?: (a: boolean) => void;
+    onRowChanged?: (a: boolean) => void;
     disable?: boolean;
 }
 
@@ -50,7 +50,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
-    isRowChanged,
+    onRowChanged,
     disable = false,
 }) => {
     const { snackError } = useSnackMessage();
@@ -91,20 +91,20 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                     });
                 } else {
                     append(otherElementAttributes);
-                    isRowChanged && isRowChanged(true);
+                    onRowChanged && onRowChanged(true);
                 }
             });
             setDirectoryItemSelectorOpen(false);
         },
-        [append, getValues, snackError, name, isRowChanged]
+        [append, getValues, snackError, name, onRowChanged]
     );
 
     const removeElements = useCallback(
         (index: number) => {
             remove(index);
-            isRowChanged && isRowChanged(true);
+            onRowChanged && onRowChanged(true);
         },
-        [isRowChanged, remove]
+        [onRowChanged, remove]
     );
 
     return (
