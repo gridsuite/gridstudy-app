@@ -43,10 +43,8 @@ const SensitivityAnalysisResult = ({
     nOrNkIndex,
     sensiKind,
     filtersDef,
-    onSortChanged,
-    sortConfig,
-    updateFilter,
-    filterSelector,
+    sortProps,
+    filterProps,
     isLoading,
 }) => {
     const gridRef = useRef(null);
@@ -54,9 +52,14 @@ const SensitivityAnalysisResult = ({
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+
     const messages = useIntlResultStatusMessages(intl, true);
+
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
+            const { onSortChanged = () => {}, sortConfig } = sortProps || {};
+            const { updateFilter, filterSelector } = filterProps || {};
+
             const { colKey, sortWay } = sortConfig || {};
             const isSortActive = colKey === field;
 
@@ -72,9 +75,13 @@ const SensitivityAnalysisResult = ({
                 headerComponentParams: {
                     field,
                     displayName: intl.formatMessage({ id: labelId }),
-                    sortConfig,
-                    onSortChanged: (newSortValue) =>
-                        onSortChanged(field, newSortValue),
+                    isSortable: !!sortProps,
+                    sortParams: {
+                        sortConfig,
+                        onSortChanged: (newSortValue) =>
+                            onSortChanged(field, newSortValue),
+                    },
+                    isFilterable: !!filterProps && !!filterOptions.length, // Filter should have options
                     filterParams: {
                         filterSelector,
                         filterOptions,
@@ -89,14 +96,7 @@ const SensitivityAnalysisResult = ({
                 headerTooltip: intl.formatMessage({ id: labelId }),
             };
         },
-        [
-            sortConfig,
-            filtersDef,
-            intl,
-            updateFilter,
-            filterSelector,
-            onSortChanged,
-        ]
+        [filtersDef, intl, sortProps, filterProps]
     );
 
     const columnsDefs = useMemo(() => {
@@ -214,7 +214,6 @@ const SensitivityAnalysisResult = ({
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
-                onSortChanged={onSortChanged}
                 gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
@@ -233,7 +232,8 @@ SensitivityAnalysisResult.propTypes = {
     result: PropTypes.array,
     nOrNkIndex: PropTypes.number,
     sensiKind: PropTypes.string,
-    onSortChanged: PropTypes.func.isRequired,
+    sortProps: PropTypes.object,
+    filterProps: PropTypes.object,
     isLoading: PropTypes.bool,
 };
 

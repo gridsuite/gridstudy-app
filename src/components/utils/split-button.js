@@ -23,7 +23,7 @@ import LoopIcon from '@mui/icons-material/Loop';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
-import { RunningStatus } from './running-status';
+import RunningStatus from './running-status';
 import { mergeSx } from './functions';
 
 const styles = {

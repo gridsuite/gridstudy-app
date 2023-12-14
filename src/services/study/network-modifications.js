@@ -76,6 +76,26 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
+export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('uuids', modificationUuids);
+    urlSearchParams.append('onlyStashed', true);
+
+    const modificationDeleteUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications?' +
+        urlSearchParams.toString();
+
+    console.debug(modificationDeleteUrl);
+    return backendFetch(modificationDeleteUrl, {
+        method: 'DELETE',
+    });
+}
+
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     console.info('Creating groovy script (request network change)');
     const changeUrl =
