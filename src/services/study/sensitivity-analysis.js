@@ -153,7 +153,7 @@ export function getSensitivityAnalysisFactorsCount(
 
     const url =
         getStudyUrl(studyUuid) +
-        `/sensitivity-analysis/computation-count?${urlSearchParams}`;
+        `/sensitivity-analysis/factors-count?${urlSearchParams}`;
     console.debug(url);
     return backendFetch(url, {
         method: 'POST',
