@@ -262,6 +262,16 @@ export function getAvailableComponentLibraries() {
     return backendFetchJson(getAvailableComponentLibrariesUrl);
 }
 
+export function unbuildNode(studyUuid, currentNodeUuid) {
+    console.info(
+        'Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/unbuild';
+    console.debug(url);
+    return backendFetchText(url, { method: 'post' });
+}
+
 export function buildNode(studyUuid, currentNodeUuid) {
     console.info(
         'Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
