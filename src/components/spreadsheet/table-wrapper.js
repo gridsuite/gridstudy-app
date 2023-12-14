@@ -429,13 +429,16 @@ const TableWrapper = (props) => {
         (editingData, groovyCr, context) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
-                    const propertiesForBackend = formatPropertiesForBackend(editingData.previousProperties ?? {} , editingData.properties ?? {});
+                    const propertiesForBackend = formatPropertiesForBackend(
+                        editingData.previousProperties ?? {},
+                        editingData.properties ?? {}
+                    );
                     return modifySubstation(
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
                         editingData.name,
-                        editingData.countryName ?? editingData.countryCode,
+                        undefined, //editingData.countryName ?? editingData.countryCode,
                         false,
                         undefined,
                         propertiesForBackend

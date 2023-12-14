@@ -30,6 +30,7 @@
     "modifyAccessRights": "Modifier les droits d'accès",
     "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
     "edit": "Modifier",
+    "editSiteProperties": "Modifier les propriétés du site",
 
     "studyNameErrorMsg": "Le nom de l'étude ne doit pas être vide",
     "caseNameErrorMsg": "Veuillez sélectionner le nom de la situation",
@@ -418,6 +419,8 @@
     "Overload": "Surcharge",
 
     "ErrFetchViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes",
+    "Key": "Clé",
+    "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
     "true": "oui",

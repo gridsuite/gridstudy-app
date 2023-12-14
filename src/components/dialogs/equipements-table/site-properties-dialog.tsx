@@ -92,6 +92,13 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
         [rowData]
     );
 
+    console.debug(
+        'debug',
+        'dynamicValidation',
+        spreadsheetContext.dynamicValidation
+    );
+    console.debug('debug', 'editingData', editingData);
+
     const handleAddRow = () => {
         const newId = rowData.length;
         setRowData([...rowData, { id: newId, key: '', value: '' }]);
@@ -138,7 +145,11 @@ const SitePropertiesDialog: FunctionComponent<SitePropertiesDialogProps> = ({
             }, {});
         }
         // add properties to editingData
-        setEditingData({ ...editingData, properties: arrayToObject(rowData) , previousProperties: spreadsheetContext.dynamicValidation.properties});
+        setEditingData({
+            ...editingData,
+            properties: arrayToObject(rowData),
+            previousProperties: spreadsheetContext.dynamicValidation.properties,
+        });
     };
 
     const handleNameChange = (index: number, value: string) => {
