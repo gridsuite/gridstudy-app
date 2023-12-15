@@ -49,6 +49,7 @@ export default class LogReport {
         this.subReports = [];
         this.logs = [];
         this.parentReportId = parentReportId;
+        this.severity = this.initSeverity(jsonReporter);
         this.init(reportType, jsonReporter);
     }
 
@@ -99,15 +100,28 @@ export default class LogReport {
         );
     }
 
-    getHighestSeverity(currentSeverity = LogReportItem.SEVERITY.UNKNOWN) {
-        let reduceFct = (p, c) => (p.level < c.level ? c : p);
+    initSeverity(jsonReporter) {
+        let severity = LogReportItem.SEVERITY.UNKNOWN;
+        if (jsonReporter?.taskValues?.reporterSeverity?.type === 'SEVERITY') {
+            let reporterSeverity =
+                jsonReporter.taskValues.reporterSeverity.value;
+            Object.values(LogReportItem.SEVERITY).some((value) => {
+                if (reporterSeverity === value.name) {
+                    severity = value;
+                    return true;
+                }
+                return false;
+            });
+        }
+        return severity;
+    }
 
-        let highestSeverity = this.getLogs()
-            .map((r) => r.getSeverity())
-            .reduce(reduceFct, currentSeverity);
+    getHighestSeverity() {
+        let reduceFct = (p, c) => (p.level < c.level ? c : p);
+        let highestSeverity = this.severity;
 
         return this.getSubReports()
-            .map((r) => r.getHighestSeverity(highestSeverity))
+            .map((r) => r.getHighestSeverity())
             .reduce(reduceFct, highestSeverity);
     }
 }

@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer from './report-viewer/report-viewer';
+import ReportViewer, { PAGE_OPTIONS } from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -124,7 +124,8 @@ export const ReportViewerTab = ({
                 currentNode.id,
                 nodeOnlyReport,
                 LogReportItem.getDefaultSeverityList(),
-                REPORT_TYPES.NETWORK_MODIFICATION
+                REPORT_TYPES.NETWORK_MODIFICATION,
+                { page: 0, size: PAGE_OPTIONS[0] }
             )
                 .then((fetchedReport) => {
                     setReport(makeSingleReport(fetchedReport));
@@ -162,32 +163,40 @@ export const ReportViewerTab = ({
         fetchAndProcessReport,
     ]);
 
-    const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
+    const nodeReportPromise = (
+        nodeId,
+        reportId,
+        severityFilterList,
+        pageParams
+    ) => {
         return fetchNodeReport(
             studyId,
             nodeId,
             reportId,
             severityFilterList,
-            REPORT_TYPES.NETWORK_MODIFICATION
+            REPORT_TYPES.NETWORK_MODIFICATION,
+            pageParams
         );
     };
 
-    const globalReportPromise = (severityFilterList) => {
+    const globalReportPromise = (severityFilterList, pageParams) => {
         return fetchParentNodesReport(
             studyId,
             currentNode.id,
             false,
             severityFilterList,
-            REPORT_TYPES.NETWORK_MODIFICATION
+            REPORT_TYPES.NETWORK_MODIFICATION,
+            pageParams
         );
     };
 
-    const subReportPromise = (reportId, severityFilterList) => {
+    const subReportPromise = (reportId, severityFilterList, pageParams) => {
         return fetchSubReport(
             studyId,
             currentNode.id,
             reportId,
-            severityFilterList
+            severityFilterList,
+            pageParams
         );
     };
 

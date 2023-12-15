@@ -22,10 +22,14 @@ import ReportTreeViewContext from './report-tree-view-context';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import WaitingLoader from '../utils/waiting-loader';
 import LogReportItem from './log-report-item';
+import CustomTablePagination from '../utils/custom-table-pagination';
+import { Box } from '@mui/system';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const MAX_SUB_REPORTS = 500;
+
+export const PAGE_OPTIONS = [25, 100, 500, 1000];
 export const GLOBAL_NODE_TASK_KEY = 'Logs';
 
 const styles = {
@@ -34,6 +38,11 @@ const styles = {
     },
     treeItem: {
         whiteSpace: 'nowrap',
+    },
+    tableWithPage: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
     },
 };
 
@@ -56,6 +65,9 @@ export default function ReportViewer({
     const rootReport = useRef(null);
     const reportTreeData = useRef({});
     const treeView = useRef(null);
+
+    const [rowsPerPage, setRowsPerPage] = useState(PAGE_OPTIONS[0]);
+    const [page, setPage] = useState(0);
 
     /**
      * Build the tree view (left pane) creating all ReportItem from json data
@@ -110,7 +122,7 @@ export default function ReportViewer({
     };
 
     const getFetchPromise = useCallback(
-        (nodeId, severityList) => {
+        (nodeId, severityList, pageParams) => {
             if (
                 reportTreeData.current[nodeId].getType() ===
                 LogReportType.NodeReport
@@ -118,17 +130,19 @@ export default function ReportViewer({
                 return nodeReportPromise(
                     reportTreeData.current[nodeId].getKey(),
                     reportTreeData.current[nodeId].getId(),
-                    severityList
+                    severityList,
+                    pageParams
                 );
             } else if (
                 reportTreeData.current[nodeId].getType() ===
                 LogReportType.GlobalReport
             ) {
-                return globalReportPromise(severityList);
+                return globalReportPromise(severityList, pageParams);
             }
             return subReportPromise(
                 reportTreeData.current[nodeId].getId(),
-                severityList
+                severityList,
+                pageParams
             );
         },
         [nodeReportPromise, globalReportPromise, subReportPromise]
@@ -142,6 +156,7 @@ export default function ReportViewer({
 
     const refreshNode = useCallback(
         (nodeId, severityFilter) => {
+            const pageParams = { page: page, size: rowsPerPage };
             if (
                 reportTreeData.current[nodeId].getType() ===
                     LogReportType.NodeReport &&
@@ -163,7 +178,7 @@ export default function ReportViewer({
                 setWaitingLoadReport(true);
             }, 700);
 
-            Promise.resolve(getFetchPromise(nodeId, severityList))
+            Promise.resolve(getFetchPromise(nodeId, severityList, pageParams))
                 .then((fetchedData) => {
                     const logReporter = buildLogReport(makeReport(fetchedData));
                     setSelectedNode(nodeId);
@@ -181,7 +196,7 @@ export default function ReportViewer({
                     setWaitingLoadReport(false);
                 });
         },
-        [snackError, getFetchPromise, buildLogReport]
+        [snackError, getFetchPromise, buildLogReport, page, rowsPerPage]
     );
 
     useEffect(() => {
@@ -197,6 +212,12 @@ export default function ReportViewer({
         setLogs(rootReport.current.getAllLogs());
         setSelectedSeverity(LogReportItem.getDefaultSeverityFilter());
     }, [jsonReportTree, createReporterItem]);
+
+    // useEffect(() => {
+    //     if (selectedNode) {
+    //         refreshNode(selectedNode, selectedSeverity);
+    //     }
+    // }, [page, rowsPerPage, refreshNode, selectedNode, selectedSeverity]);
 
     const handleToggleNode = (event, nodeIds) => {
         event.persist();
@@ -250,6 +271,23 @@ export default function ReportViewer({
         setHighlightedReportId(data.reportId);
     };
 
+    const handleChangePage = useCallback(
+        (event, selectedPage) => {
+            setPage(selectedPage);
+            refreshNode(selectedNode, selectedSeverity);
+        },
+        [setPage, refreshNode, selectedNode, selectedSeverity]
+    );
+
+    const handleChangeRowsPerPage = useCallback(
+        (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+            refreshNode(selectedNode, selectedSeverity);
+        },
+        [setPage, refreshNode, selectedNode, selectedSeverity]
+    );
+
     return (
         rootReport.current && (
             <Grid container sx={{ height: 'calc(100vh - 160px)' }}>
@@ -291,12 +329,28 @@ export default function ReportViewer({
                         loading={waitingLoadReport}
                         message={'loadingReport'}
                     >
-                        <LogTable
-                            logs={logs}
-                            onRowClick={onRowClick}
-                            selectedSeverity={selectedSeverity}
-                            setSelectedSeverity={onSeverityChange}
-                        />
+                        <Box sx={styles.tableWithPage}>
+                            <Box sx={{ flexGrow: 1 }}>
+                                <LogTable
+                                    logs={logs}
+                                    onRowClick={onRowClick}
+                                    selectedSeverity={selectedSeverity}
+                                    setSelectedSeverity={onSeverityChange}
+                                />
+                            </Box>
+                            <Box>
+                                <CustomTablePagination
+                                    rowsPerPageOptions={PAGE_OPTIONS}
+                                    count={1500}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={
+                                        handleChangeRowsPerPage
+                                    }
+                                />
+                            </Box>
+                        </Box>
                     </WaitingLoader>
                 </Grid>
             </Grid>
