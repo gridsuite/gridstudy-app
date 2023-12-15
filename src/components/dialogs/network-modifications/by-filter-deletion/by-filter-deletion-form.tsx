@@ -52,7 +52,7 @@ const ByFilterDeletionForm = () => {
     const filtersField = useMemo(() => {
         return (
             <DirectoryItemsInput
-                key={equipmentTypeWatch}
+                key={equipmentTypeWatch} // force refresh on equipment type change
                 name={FILTERS}
                 elementType={elementType.FILTER}
                 titleId={'FiltersListsSelection'}
