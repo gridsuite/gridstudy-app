@@ -566,7 +566,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesResistance',
+                id: 'seriesResistance',
                 field: 'r',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -574,7 +574,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesReactance',
+                id: 'seriesReactance',
                 field: 'x',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -582,7 +582,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MagnetizingConductanceWithUnit',
+                id: 'magnetizingConductance',
                 field: 'g',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -591,7 +591,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MagnetizingSusceptanceWithUnit',
+                id: 'magnetizingSusceptance',
                 field: 'b',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -600,7 +600,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatedNominalPower',
+                id: 'ratedS',
                 field: 'ratedS',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

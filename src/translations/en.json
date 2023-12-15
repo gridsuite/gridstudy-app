@@ -139,8 +139,8 @@
     "ReactivePowerT3WSide1": "q1 (MVar)",
     "ReactivePowerT3WSide2": "q2 (MVar)",
     "ReactivePowerT3WSide3": "q3 (MVar)",
-    "SeriesResistance": "Series resistance (Ω)",
-    "SeriesReactance": "Series reactance (Ω)",
+    "seriesResistance": "Series resistance (Ω)",
+    "seriesReactance": "Series reactance (Ω)",
     "ShuntConductance1": "Shunt conductance 1 (μS)",
     "ShuntSusceptance1": "Shunt susceptance 1 (μS)",
     "ShuntConductance2": "Shunt conductance 2 (μS)",
@@ -1271,9 +1271,9 @@
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
 
-    "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
-    "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
-    "RatedNominalPower": "Rated nominal power (MVA)",
+    "magnetizingConductance": "Magnetizing conductance (μS)",
+    "magnetizingSusceptance": "Magnetizing susceptance (μS)",
+    "ratedS": "Rated nominal power (MVA)",
 
     "ShortcircuitInProgress": "Shortcircuit computation in progress...",
 
@@ -1337,5 +1337,7 @@
     "undefined" : "undefined",
     "nominalVoltage": "Nominal voltage (kV)",
     "lowVoltageLimit": "Low voltage limit (kV)",
-    "highVoltageLimit": "High voltage limit (kV)"
+    "highVoltageLimit": "High voltage limit (kV)",
+    "ratedVoltage1": "Rated voltage 1 (kV)",
+    "ratedVoltage2": "Rated voltage 2 (kV)"
 }

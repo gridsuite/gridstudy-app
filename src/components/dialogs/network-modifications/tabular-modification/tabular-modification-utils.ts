@@ -6,6 +6,16 @@
  */
 
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import {
+    EQUIPMENT_ID,
+    MAGNETIZING_CONDUCTANCE,
+    MAGNETIZING_SUSCEPTANCE,
+    RATED_S,
+    RATED_VOLTAGE_1,
+    RATED_VOLTAGE_2,
+    SERIES_REACTANCE,
+    SERIES_RESISTANCE
+} from "components/utils/field-constants";
 
 export interface TabularModificationFields {
     [key: string]: string[];
@@ -26,12 +36,24 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'lowVoltageLimit',
         'highVoltageLimit',
     ],
+    TWO_WINDINGS_TRANSFORMER: [
+        EQUIPMENT_ID,
+        SERIES_RESISTANCE,
+        SERIES_REACTANCE,
+        MAGNETIZING_CONDUCTANCE,
+        MAGNETIZING_SUSCEPTANCE,
+        RATED_VOLTAGE_1,
+        RATED_VOLTAGE_2,
+        RATED_S,
+    ],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+    TWO_WINDINGS_TRANSFORMER:
+        MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
 };
 
 export interface Modification {
