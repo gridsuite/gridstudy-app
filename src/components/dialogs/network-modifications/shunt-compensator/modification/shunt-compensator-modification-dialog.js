@@ -31,6 +31,7 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
 import {
+    EQUIPMENT_INFOS_OPERATION,
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
@@ -140,7 +141,8 @@ const ShuntCompensatorModificationDialog = ({
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
+                    EQUIPMENT_INFOS_OPERATION.MODIFICATION
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {

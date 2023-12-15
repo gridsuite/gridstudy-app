@@ -52,7 +52,8 @@ const LoadModificationForm = ({
                 EQUIPMENT_TYPES.LOAD,
                 EQUIPMENT_INFOS_TYPES.FORM.type,
                 equipmentId,
-                true
+                true,
+                null
             )
                 .then((value) => {
                     if (value) {

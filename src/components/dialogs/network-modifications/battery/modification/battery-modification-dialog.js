@@ -191,7 +191,8 @@ const BatteryModificationDialog = ({
                     EQUIPMENT_TYPES.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
+                    null
                 )
                     .then((value) => {
                         if (value) {

@@ -251,7 +251,8 @@ const GeneratorModificationDialog = ({
                     EQUIPMENT_TYPES.GENERATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
+                    null
                 )
                     .then((value) => {
                         if (value) {

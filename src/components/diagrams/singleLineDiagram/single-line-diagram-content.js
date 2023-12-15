@@ -334,7 +334,8 @@ function SingleLineDiagramContent(props) {
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.MAP.type,
                     equipmentId,
-                    false
+                    false,
+                    null
                 )
                     .then((hvdcInfos) => {
                         if (hvdcInfos?.hvdcType === 'LCC') {

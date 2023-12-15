@@ -288,7 +288,8 @@ const LineModificationDialog = ({
                     EQUIPMENT_TYPES.LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
+                    null
                 )
                     .then((line) => {
                         if (line) {
