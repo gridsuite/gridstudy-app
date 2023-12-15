@@ -8,7 +8,11 @@
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
-import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    REGULATION_TYPES,
+} from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -17,6 +21,7 @@ import {
     unitToKiloUnit,
     unitToMicroUnit,
 } from '../../../utils/rounding';
+import { useIntl } from 'react-intl';
 
 const generateTapPositions = (params) => {
     return params
@@ -55,6 +60,35 @@ const propertiesGetter = (params) => {
             .join(' | ');
     } else {
         return null;
+    }
+};
+const handleGeneratorsCellClick = (event) => {
+    const { context: { isEditing, handleCellClick } = {} } = event || {};
+    if (isEditing) {
+        handleCellClick?.openGeneratorDialog();
+    }
+};
+const RegulatingTerminalCellRenderer = (params) => {
+    const regulatingTerminalConnectableId =
+        params.data?.regulatingTerminalConnectableId;
+    if (
+        params.data?.regulatingTerminalVlId ||
+        regulatingTerminalConnectableId
+    ) {
+        return `${params.data.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
+    } else {
+        return null;
+    }
+};
+const RegulationTypeCellRenderer = (params) => {
+    const intl = useIntl();
+    if (
+        params.data?.regulatingTerminalVlId ||
+        params.data?.regulatingTerminalConnectableId
+    ) {
+        return intl.formatMessage({ id: REGULATION_TYPES.DISTANT.label });
+    } else {
+        return intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label });
     }
 };
 
@@ -1112,6 +1146,62 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerControl',
                 field: 'activePowerControl.activePowerControlOn',
                 cellRenderer: BooleanCellRenderer,
+                editable: true,
+                cellEditor: BooleanListField,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...(params.data.activePowerControl || {}),
+                        activePowerControlOn: params.newValue,
+                    };
+
+                    return params;
+                },
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.activePowerControl
+                                ?.activePowerControlOn != null
+                                ? +params.data?.activePowerControl
+                                      ?.activePowerControlOn
+                                : '',
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ActivePowerRegulationDroop',
+                field: 'activePowerControl.droop',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.activePowerControl?.droop,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) => params.data?.activePowerControl?.droop,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...(params.data.activePowerControl || {}),
+                        droop: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn:
+                            'activePowerControl.activePowerControlOn',
+                        columnValue: 1,
+                    },
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1262,8 +1352,41 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RegulatingTerminal',
-                field: 'regulatingTerminal',
+                id: 'ReactivePercentageVoltageRegulation',
+                field: 'coordinatedReactiveControl.qPercent',
+                getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                numeric: true,
+                fractionDigits: 1,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: isNaN(
+                            params.data?.coordinatedReactiveControl?.qPercent
+                        )
+                            ? 0
+                            : params.data?.coordinatedReactiveControl?.qPercent,
+
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    isNaN(params.data?.coordinatedReactiveControl?.qPercent)
+                        ? 0
+                        : params.data?.coordinatedReactiveControl?.qPercent,
+                valueSetter: (params) => {
+                    params.data.coordinatedReactiveControl = {
+                        ...params.data.coordinatedReactiveControl,
+                        qPercent: params.newValue,
+                    };
+                    return params;
+                },
+            },
+            {
+                id: 'VoltageLevel',
+                field: 'regulatingTerminalConnectableId',
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1273,6 +1396,27 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorShortCircuit
+                                ?.transientReactance || 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorShortCircuit?.transientReactance,
+                valueSetter: (params) => {
+                    params.data.generatorShortCircuit = {
+                        ...params.data.generatorShortCircuit,
+                        transientReactance: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'TransformerReactance',
@@ -1281,6 +1425,28 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorShortCircuit
+                                ?.stepUpTransformerReactance || 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorShortCircuit
+                        ?.stepUpTransformerReactance,
+                valueSetter: (params) => {
+                    params.data.generatorShortCircuit = {
+                        ...params.data.generatorShortCircuit,
+                        stepUpTransformerReactance: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'PlannedActivePowerSetPoint',
@@ -1289,6 +1455,27 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorStartup
+                                ?.plannedActivePowerSetPoint || 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.plannedActivePowerSetPoint,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        plannedActivePowerSetPoint: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'StartupCost',
@@ -1297,6 +1484,26 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorStartup?.marginalCost | 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.marginalCost | 0,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        marginalCost: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'PlannedOutageRate',
@@ -1305,6 +1512,29 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        maxExpression: 1,
+                        minExpression: 0,
+                        defaultValue:
+                            params.data?.generatorStartup?.plannedOutageRate ||
+                            0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.plannedOutageRate,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        plannedOutageRate: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'ForcedOutageRate',
@@ -1313,6 +1543,28 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        maxExpression: 1,
+                        minExpression: 0,
+                        defaultValue:
+                            params.data.generatorStartup?.forcedOutageRate || 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.forcedOutageRate,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        forcedOutageRate: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'Connected',
@@ -1320,6 +1572,16 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RegulationTypeText',
+                cellRenderer: RegulationTypeCellRenderer,
+                onCellClicked: handleGeneratorsCellClick,
+            },
+            {
+                id: 'RegulatingTerminalGenerator',
+                cellRenderer: RegulatingTerminalCellRenderer,
+                onCellClicked: handleGeneratorsCellClick,
             },
         ],
     },

@@ -738,12 +738,15 @@
     "MaximumActivePowerText": "Maximum active power",
     "RatedNominalPowerText": "Rated nominal power",
     "VoltageRegulationText": "Voltage regulation",
+    "EditVoltageRegulation": "Edit Regulating terminal",
     "ResetRegulationRule": "Reset regulation rules",
     "RegulationTypeText": "Regulation type",
     "Local": "Local",
     "Distant": "Remote",
     "VoltageText": "Voltage",
     "QPercentText": "Reactive percentage",
+    "ActivePowerRegulationDroop": "Active power regulation droop",
+    "ReactivePercentageVoltageRegulation": "Reactive percentage",
     "Limits": "Limits",
     "ActiveLimits": "Active limits",
     "ReactiveLimits": "Reactive limits",
@@ -917,7 +920,6 @@
 
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
-
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
     "TwoWindingsTransformerModificationError": "Error while modifying a 2 windings transformer",
