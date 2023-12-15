@@ -14,8 +14,8 @@ import {
     RATED_VOLTAGE_1,
     RATED_VOLTAGE_2,
     SERIES_REACTANCE,
-    SERIES_RESISTANCE
-} from "components/utils/field-constants";
+    SERIES_RESISTANCE,
+} from 'components/utils/field-constants';
 
 export interface TabularModificationFields {
     [key: string]: string[];
