@@ -81,7 +81,10 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertValueFromBackToFront(key, modif[key]);
+                    modification[key] = convertValueFromBackToFront(
+                        key,
+                        modif[key]
+                    );
                 });
                 return modification;
             });
@@ -100,7 +103,10 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    modification[key] = convertValueFromFrontToBack(key, row[key]);
+                    modification[key] = convertValueFromFrontToBack(
+                        key,
+                        row[key]
+                    );
                 });
                 return modification;
             });
