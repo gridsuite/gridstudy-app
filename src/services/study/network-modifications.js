@@ -1544,6 +1544,7 @@ export function deleteEquipment(
         }),
     });
 }
+
 export function byFilterDeleteEquipment(
     studyUuid,
     currentNodeUuid,
