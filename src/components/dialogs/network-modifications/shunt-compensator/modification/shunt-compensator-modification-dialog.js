@@ -144,12 +144,6 @@ const ShuntCompensatorModificationDialog = ({
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            if (!shuntCompensator.isLinear) {
-                                snackError({
-                                    headerId: 'ShuntCompensatorNonlinearError',
-                                });
-                                setSelectedId(null);
-                            }
                             setShuntCompensatorInfos(shuntCompensator);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
@@ -158,6 +152,12 @@ const ShuntCompensatorModificationDialog = ({
                     .catch((error) => {
                         setShuntCompensatorInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (error.status === 500) {
+                            snackError({
+                                headerId: 'ShuntCompensatorNonlinearError',
+                            });
+                            setSelectedId(null);
+                        }
                         if (error.status === 404) {
                             setIdExists(true);
                         }
@@ -244,10 +244,7 @@ const ShuntCompensatorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                {(selectedId === null ||
-                    (selectedId !== null &&
-                        !shuntCompensatorInfos?.isLinear &&
-                        !idExists)) && (
+                {!shuntCompensatorInfos && !idExists && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -260,7 +257,7 @@ const ShuntCompensatorModificationDialog = ({
                 )}
                 {selectedId !== null &&
                     !loading &&
-                    (shuntCompensatorInfos?.isLinear ||
+                    (shuntCompensatorInfos ||
                         // The case for creating a Shunt Compensator with free text in the selector
                         idExists) && (
                         <ShuntCompensatorModificationForm
