@@ -10,7 +10,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     BooleanListField,
     NumericalField,
-    StringField,
+    SitePropertiesEditor,
 } from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
@@ -106,20 +106,6 @@ const RegulatingTerminalCellGetter = (params) => {
         return `${params?.data?.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
     } else {
         return null;
-    }
-};
-
-const handleGeneratorsCellClick = (event) => {
-    const { context: { isEditing, handleCellClick } = {} } = event || {};
-    if (
-        isEditing &&
-        event.node.rowIndex === 0 &&
-        event.node.rowPinned === 'top' &&
-        (event.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
-            event.data?.regulatingTerminalVlId ||
-            event.data?.regulatingTerminalConnectableId)
-    ) {
-        handleCellClick?.openGeneratorDialog();
     }
 };
 
@@ -1426,22 +1412,23 @@ export const TABLES_DEFINITIONS = {
                     isEditableRegulatingTerminalCell(params)
                         ? editableCellStyle(params)
                         : {},
-                onCellClicked: handleGeneratorsCellClick,
-                cellEditor: StringField,
                 editable: (params) => isEditableRegulatingTerminalCell(params),
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn: 'RegulationTypeText',
                     },
                 },
+                cellEditor: SitePropertiesEditor,
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: RegulatingTerminalCellGetter,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
+                        rowData: params.data,
                     };
                 },
+                cellEditorPopup: true,
             },
         ],
     },

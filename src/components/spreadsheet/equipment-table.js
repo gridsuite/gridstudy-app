@@ -56,31 +56,25 @@ export const EquipmentTable = ({
         return !ALLOWED_KEYS.includes(params.event.key);
     };
 
-    const [popupEditRegulatingTerminal, setPopupEditRegulatingTerminal] =
-        useState(false);
+    
+ 
 
-    const onRegulatingTerminalPopupClose = () => {
-        setPopupEditRegulatingTerminal(false);
-    };
-    const openGeneratorPopup = () => {
-        setPopupEditRegulatingTerminal(true);
-    };
-    const handleSavePopupRegulatingTerminal = (d) => {
-        setPopupEditRegulatingTerminal(false);
+    // const handleSavePopupRegulatingTerminal = (d) => {
+    //   //  setPopupEditRegulatingTerminal(false);
 
-        const {
-            equipment: { type: equipmentType, id: equipmentId } = {},
-            voltageLevel: { id: voltageLevelId } = {},
-        } = d || {};
+    //     const {
+    //         equipment: { type: equipmentType, id: equipmentId } = {},
+    //         voltageLevel: { id: voltageLevelId } = {},
+    //     } = d || {};
 
-        setEditingData((prevEditingData) => ({
-            ...prevEditingData,
-            voltageRegulationType: REGULATION_TYPES.DISTANT.id,
-            regulatingTerminalConnectableType: equipmentType,
-            regulatingTerminalConnectableId: equipmentId,
-            regulatingTerminalVlId: voltageLevelId,
-        }));
-    };
+    //     setEditingData((prevEditingData) => ({
+    //         ...prevEditingData,
+    //         voltageRegulationType: REGULATION_TYPES.DISTANT.id,
+    //         regulatingTerminalConnectableType: equipmentType,
+    //         regulatingTerminalConnectableId: equipmentId,
+    //         regulatingTerminalVlId: voltageLevelId,
+    //     }));
+    // };
 
     const defaultColDef = useMemo(
         () => ({
@@ -101,16 +95,12 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: !!topPinnedData,
-            handleCellClick: {
-                //functions for handling cell click for Generator Spreadsheet
-                openGeneratorDialog: () => {
-                    openGeneratorPopup();
-                },
-            },
             theme,
             lastEditedField: undefined,
+            currentNode: currentNode,
+            studyUuid: studyUuid,
         };
-    }, [network, theme, topPinnedData]);
+    }, [currentNode, network, studyUuid, theme, topPinnedData]);
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -172,7 +162,7 @@ export const EquipmentTable = ({
                 loadingOverlayComponentParams={loadingOverlayComponentParams}
                 showOverlay={true}
             />
-            {popupEditRegulatingTerminal && (
+            {/* {popupEditRegulatingTerminal && (
                 <RegulatingTerminalModificationDialog
                     open={popupEditRegulatingTerminal}
                     onClose={onRegulatingTerminalPopupClose}
@@ -188,7 +178,7 @@ export const EquipmentTable = ({
                     data={editingData}
                     previousData={editingDataRef.current}
                 />
-            )}
+            )} */}
         </>
     );
 };

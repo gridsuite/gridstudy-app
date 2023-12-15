@@ -14,60 +14,93 @@ import React, {
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { TextField, Tooltip } from '@mui/material';
+import { TextField, Grid, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 import {
     checkValidationsAndRefreshCells,
     deepUpdateValue,
 } from './equipment-table-utils';
+import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
+import { REGULATION_TYPES } from 'components/network/constants';
 
-export const StringField = forwardRef(
-    ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
-        const error = useMemo(() => {
-            return Object.keys(gridContext.editErrors).includes(colDef.field);
-        }, [colDef.field, gridContext.editErrors]);
-
-        const value = defaultValue;
+export const SitePropertiesEditor = forwardRef(
+    ({ gridContext, colDef, gridApi, rowData }, ref) => {
+        const [openGeneratorPopup, setOpenGeneratorPopup] = useState(true);
 
         useImperativeHandle(
             ref,
-            () => ({
-                getValue: () => value,
-                getField: () => colDef.field,
-            }),
-            [colDef.field, value]
-        );
-
-        const validateEvent = useCallback(
-            (ev) => {
-                const newVal = ev.target.value;
-                gridContext.dynamicValidation[colDef.field] = newVal;
-                checkValidationsAndRefreshCells(gridApi, gridContext);
+            () => {
+                return {
+                    getValue: () => {
+                        const regulatingTerminalConnectableId =
+                            rowData?.regulatingTerminalConnectableId;
+                        const regulatingTerminalVlId =
+                            rowData?.regulatingTerminalVlId;
+                        if (
+                            regulatingTerminalVlId === ' ' ||
+                            regulatingTerminalConnectableId === ' '
+                        ) {
+                            return ' ';
+                        } else if (
+                            regulatingTerminalVlId ||
+                            regulatingTerminalConnectableId
+                        ) {
+                            return `${rowData?.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
+                        } else {
+                            return null;
+                        }
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
             },
-            [colDef.field, gridApi, gridContext]
+            [
+                colDef.field,
+                rowData?.regulatingTerminalConnectableId,
+                rowData?.regulatingTerminalConnectableType,
+                rowData?.regulatingTerminalVlId,
+            ]
         );
 
-        function renderStringText() {
-            return (
-                <TextField
-                    value={value}
-                    onChange={validateEvent}
-                    error={error}
-                    type={'text'}
-                    size={'small'}
-                    margin={'none'}
-                    autoFocus
-                    inputProps={{
-                        style: {
-                            textAlign: 'center',
-                            fontSize: 'small',
-                        },
-                    }}
-                />
-            );
-        }
+        const prepareDataAndSendRequest = () => {
+            gridApi.stopEditing();
+            // add properties to editingData
+        };
 
-        return <div style={{ width: 'inherit' }}>{renderStringText()}</div>;
+        const handleCancelRegulatingTerminalPopup = () => {
+            setOpenGeneratorPopup(false);
+            gridApi.stopEditing();
+        };
+
+        return (
+            <RegulatingTerminalModificationDialog
+                open={openGeneratorPopup}
+                onClose={handleCancelRegulatingTerminalPopup}
+                currentNode={gridContext.currentNode}
+                studyUuid={gridContext.studyUuid}
+                onModifyRegulatingTerminalGenerator={(
+                    updatedRegulatedTerminal
+                ) => {
+                    const {
+                        equipment: {
+                            type: equipmentType,
+                            id: equipmentId,
+                        } = {},
+                        voltageLevel: { id: voltageLevelId } = {},
+                    } = updatedRegulatedTerminal || {};
+
+                    rowData.voltageRegulationType = REGULATION_TYPES.DISTANT.id;
+                    rowData.regulatingTerminalConnectableType = equipmentType;
+                    rowData.regulatingTerminalConnectableId = equipmentId;
+                    rowData.regulatingTerminalVlId = voltageLevelId;
+                    setOpenGeneratorPopup(false);
+                    prepareDataAndSendRequest();
+                }}
+                data={rowData}
+                previousData={rowData}
+            />
+        );
     }
 );
 export const NumericalField = forwardRef(
