@@ -16,6 +16,8 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
 } from 'components/utils/field-constants';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
+import { toModificationOperation } from 'components/utils/utils';
 
 export interface TabularModificationFields {
     [key: string]: string[];
@@ -64,6 +66,36 @@ export const formatModification = (modification: Modification) => {
     //exclude type, date and uuid from modification object
     const { type, date, uuid, ...rest } = modification;
     return rest;
+};
+
+export const convertValueFromBackToFront = (
+    key: string,
+    value: { value: string | number }
+) => {
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case MAGNETIZING_CONDUCTANCE:
+        case MAGNETIZING_SUSCEPTANCE:
+            return unitToMicroUnit(value?.value);
+        default:
+            return value?.value;
+    }
+};
+
+export const convertValueFromFrontToBack = (
+    key: string,
+    value: string | number
+) => {
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case MAGNETIZING_CONDUCTANCE:
+        case MAGNETIZING_SUSCEPTANCE:
+            return toModificationOperation(microUnitToUnit(value));
+        default:
+            return toModificationOperation(value);
+    }
 };
 
 export const getEquipmentTypeFromModificationType = (type: string) => {

@@ -22,8 +22,9 @@ import {
     TABULAR_MODIFICATION_TYPES,
     formatModification,
     getEquipmentTypeFromModificationType,
+    convertValueFromBackToFront,
+    convertValueFromFrontToBack,
 } from './tabular-modification-utils';
-import { toModificationOperation } from 'components/utils/utils';
 import { useIntl } from 'react-intl';
 
 const formSchema = yup
@@ -80,12 +81,7 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    const field = modif[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = field;
-                    } else {
-                        modification[key] = field?.value;
-                    }
+                    modification[key] = convertValueFromBackToFront(key, modif[key]);
                 });
                 return modification;
             });
@@ -104,12 +100,7 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    const value = row[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = value;
-                    } else {
-                        modification[key] = toModificationOperation(value);
-                    }
+                    modification[key] = convertValueFromFrontToBack(key, row[key]);
                 });
                 return modification;
             });
