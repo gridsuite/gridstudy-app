@@ -101,13 +101,14 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: !!topPinnedData,
-            theme: theme,
             handleCellClick: {
                 //functions for handling cell click for Generator Spreadsheet
                 openGeneratorDialog: () => {
                     openGeneratorPopup();
                 },
             },
+            theme,
+            lastEditedField: undefined,
         };
     }, [network, theme, topPinnedData]);
     const getRowHeight = useCallback(
