@@ -1337,5 +1337,7 @@
     "undefined" : "undefined",
     "nominalVoltage": "Nominal voltage (kV)",
     "lowVoltageLimit": "Low voltage limit (kV)",
-    "highVoltageLimit": "High voltage limit (kV)"
+    "highVoltageLimit": "High voltage limit (kV)",
+    "UnitDeletion": "Unit",
+    "FilterDeletion": "By filter"
 }

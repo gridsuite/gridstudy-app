@@ -1544,6 +1544,39 @@ export function deleteEquipment(
         }),
     });
 }
+export function deleteFilterEquipment(
+    studyUuid,
+    currentNodeUuid,
+    equipmentType,
+    filters,
+    modificationUuid,
+    equipmentInfos
+) {
+    let deleteEquipmentUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (modificationUuid) {
+        deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating equipment filter deletion');
+    } else {
+        console.info('Creating equipment filter deletion');
+    }
+
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
+            filters: filters,
+            equipmentType: equipmentType,
+            equipmentInfos: equipmentInfos,
+        }),
+    });
+}
 
 export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
     console.info(

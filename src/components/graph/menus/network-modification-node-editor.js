@@ -76,6 +76,7 @@ import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
+import EquipmentFilterDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-filter-deletion-dialog';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -345,7 +346,18 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'EQUIPMENT_DELETION',
             label: 'DeleteContingencyList',
-            action: () => adapt(EquipmentDeletionDialog),
+            subItems: [
+                {
+                    id: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
+                    label: 'UnitDeletion',
+                    action: () => adapt(EquipmentDeletionDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
+                    label: 'FilterDeletion',
+                    action: () => adapt(EquipmentFilterDeletionDialog),
+                },
+            ],
         },
         {
             id: 'ATTACHING_SPLITTING_LINES',
