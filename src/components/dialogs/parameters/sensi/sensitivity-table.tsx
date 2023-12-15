@@ -20,6 +20,13 @@ import { useIntl } from 'react-intl';
 import { UseFieldArrayReturn, useFormContext } from 'react-hook-form';
 import TableRowComponent from './table-row';
 import { IColumnsDef } from './columns-definitions';
+import {
+    ACTIVATED,
+    HVDC_LINES,
+    INJECTIONS,
+    MONITORED_BRANCHES,
+    PSTS,
+} from '../../../utils/field-constants';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -31,6 +38,8 @@ interface SensitivityTableProps {
     createRows: (a: number) => void;
     disableAdd?: boolean;
     disableDelete?: boolean;
+    onFormChanged: (a: boolean) => void;
+    onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
@@ -40,6 +49,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     createRows,
     disableAdd,
     disableDelete,
+    onFormChanged,
+    onChangeParams,
 }) => {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -58,8 +69,25 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             if (index >= 0 && index < currentRowsValues.length) {
                 remove(index);
             }
+            onFormChanged(true);
         },
-        [arrayFormName, getValues, remove]
+        [arrayFormName, getValues, remove, onFormChanged]
+    );
+
+    const fetchCount = useCallback(
+        (arrayFormName: string, index: number) => {
+            let row = getValues(arrayFormName)[index];
+            if (
+                row[ACTIVATED] &&
+                row[MONITORED_BRANCHES].length &&
+                (row[INJECTIONS]?.length ||
+                    row[HVDC_LINES]?.length ||
+                    row[PSTS]?.length)
+            ) {
+                onChangeParams(row, arrayFormName, index);
+            }
+        },
+        [onChangeParams, getValues]
     );
 
     return (
@@ -104,6 +132,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 index={index}
                                 handleDeleteButton={handleDeleteButton}
                                 disableDelete={disableDelete}
+                                onFormChanged={onFormChanged}
+                                fetchCount={fetchCount}
                             />
                         )
                     )}

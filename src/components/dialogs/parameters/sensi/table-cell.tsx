@@ -18,7 +18,8 @@ import {
 function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
-    column: any
+    column: any,
+    onRowChanged: (a: boolean) => void
 ) {
     return (
         <TableCell
@@ -36,6 +37,7 @@ function EditableTableCell(
                     hideErrorMessage={true}
                     label={undefined}
                     itemFilter={undefined}
+                    onRowChanged={onRowChanged}
                 />
             )}
             {column.menuItems && (
@@ -48,9 +50,11 @@ function EditableTableCell(
                 />
             )}
             {column.checkboxItems && (
-                <SwitchInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                />
+                <span onChange={() => onRowChanged(true)}>
+                    <SwitchInput
+                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    />
+                </span>
             )}
             {column.floatItems && (
                 <FloatInput

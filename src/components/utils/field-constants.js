@@ -158,6 +158,8 @@ export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
 
+export const COUNT = 'count';
+
 export const ACTIVATED = 'activated';
 
 //generator
@@ -249,6 +251,7 @@ export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const MCS_SELECTED = 'connectedToHvdc';
+export const PROVIDER = 'provider';
 export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD =
     'flowFlowSensitivityValueThreshold';
 export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD =
