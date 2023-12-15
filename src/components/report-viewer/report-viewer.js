@@ -58,7 +58,6 @@ export default function ReportViewer({
     const rootReport = useRef(null);
     const reportTreeData = useRef({});
     const treeView = useRef(null);
-    const refReport = useRef(null);
 
     /**
      * Build the tree view (left pane) creating all ReportItem from json data
@@ -199,14 +198,11 @@ export default function ReportViewer({
         setExpandedNodes([rootId]);
         setLogs(rootReport.current.getAllLogs());
         setSelectedSeverity(LogReportItem.getDefaultSeverityFilter());
-
-        // Calculates the report's vertical position in the viewport to fix its height.
-        if (refReport.current) {
-            setReportVerticalPositionFromTop(
-                refReport.current.getBoundingClientRect()?.top
-            );
-        }
     }, [jsonReportTree, createReporterItem]);
+
+    const handleReportVerticalPositionFromTop = useCallback((node) => {
+        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
+    }, []);
 
     const handleToggleNode = (event, nodeIds) => {
         event.persist();
@@ -264,7 +260,7 @@ export default function ReportViewer({
         rootReport.current && (
             <Grid
                 container
-                ref={refReport}
+                ref={handleReportVerticalPositionFromTop}
                 sx={{
                     // We calculate the remaining height relative to the viewport and the top position of the report.
                     height:
