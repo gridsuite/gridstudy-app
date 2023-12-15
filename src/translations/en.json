@@ -637,6 +637,7 @@
     "createNetworkModificationNodeInNewBranch": "in a new branch",
     "pasteNetworkModificationNodeInNewBranch": "in a new branch",
     "removeNode": "Remove node",
+    "unbuildNode": "Unbuild node",
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
@@ -648,6 +649,7 @@
     "NodeDeleteError": "An error occured while deleting node",
     "NodeUpdateError": "An error occured while updating node",
     "NodeBuildingError": "An error occured while building node",
+    "NodeUnbuildingError": "An error occured while unbuilding node",
     "NetworkModifications": "Network modifications",
     "CreateLoad": "Create load",
     "ModifyLoad": "Modify load",
@@ -1114,6 +1116,8 @@
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
+    "SimulatedCalculation": "simulated calculations",
+    "SimulatedCalculationMax": "500 000 max",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
@@ -1330,5 +1334,8 @@
     "customAgGridFilter.lessThanOrEqual": "Less than or equal",
     "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",
     "customAgGridFilter.filterOoo": "Filter...",
-    "undefined" : "undefined"
+    "undefined" : "undefined",
+    "nominalVoltage": "Nominal voltage (kV)",
+    "lowVoltageLimit": "Low voltage limit (kV)",
+    "highVoltageLimit": "High voltage limit (kV)"
 }
