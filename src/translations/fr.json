@@ -1359,5 +1359,6 @@
     "lowVoltageLimit": "Limite tension basse (kV)",
     "highVoltageLimit": "Limite tension haute (kV)",
     "UnitDeletion": "Unitaire",
-    "FilterDeletion": "Par filtre"
+    "ByFilterDeletion": "Par filtre",
+    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre"
 }

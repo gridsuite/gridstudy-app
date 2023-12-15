@@ -23,9 +23,9 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { deleteFilterEquipment } from '../../../../services/study/network-modifications';
+import { byFilterDeleteEquipment } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
-import DeleteFilterEquipmentForm from './equipment-deletion-filter-form';
+import ByFilterDeletionForm from './by-filter-deletion-form';
 
 const formSchema = yup
     .object()
@@ -53,21 +53,19 @@ const emptyFormData = {
 };
 
 /**
- * Dialog to delete an equipment from its type and ID.
+ * Dialog to delete a list of equipment by filter.
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
- * @param defaultIdValue the default equipment id
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-const EquipmentFilterDeletionDialog = ({
+const ByFilterDeletionDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
-    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
     editDataFetchStatus,
     ...dialogProps
 }) => {
@@ -95,13 +93,12 @@ const EquipmentFilterDeletionDialog = ({
     useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
-        } else if (defaultIdValue) {
         }
-    }, [fromEditDataToFormValues, editData, defaultIdValue]);
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (formData) => {
-            deleteFilterEquipment(
+            byFilterDeleteEquipment(
                 studyUuid,
                 currentNodeUuid,
                 formData[TYPE],
@@ -137,15 +134,15 @@ const EquipmentFilterDeletionDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-equipment-deletion"
-                titleId="DeleteEquipment"
+                aria-labelledby="dialog-by-filter-equipment-deletion"
+                titleId="DeleteEquipmentByFilter"
                 open={open}
                 isDataFetching={
                     isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >
-                <DeleteFilterEquipmentForm
+                <ByFilterDeletionForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     editData={editData}
@@ -155,13 +152,12 @@ const EquipmentFilterDeletionDialog = ({
     );
 };
 
-EquipmentFilterDeletionDialog.propTypes = {
+ByFilterDeletionDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     editData: PropTypes.object,
     isUpdate: PropTypes.bool,
-    defaultIdValue: PropTypes.string,
     editDataFetchStatus: PropTypes.string,
 };
 
-export default EquipmentFilterDeletionDialog;
+export default ByFilterDeletionDialog;

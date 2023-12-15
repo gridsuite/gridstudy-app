@@ -76,7 +76,7 @@ import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
-import EquipmentFilterDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-filter-deletion-dialog';
+import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -354,8 +354,8 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-                    label: 'FilterDeletion',
-                    action: () => adapt(EquipmentFilterDeletionDialog),
+                    label: 'ByFilterDeletion',
+                    action: () => adapt(ByFilterDeletionDialog),
                 },
             ],
         },

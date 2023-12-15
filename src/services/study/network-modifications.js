@@ -1544,13 +1544,12 @@ export function deleteEquipment(
         }),
     });
 }
-export function deleteFilterEquipment(
+export function byFilterDeleteEquipment(
     studyUuid,
     currentNodeUuid,
     equipmentType,
     filters,
-    modificationUuid,
-    equipmentInfos
+    modificationUuid
 ) {
     let deleteEquipmentUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1558,9 +1557,9 @@ export function deleteFilterEquipment(
 
     if (modificationUuid) {
         deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating equipment filter deletion');
+        console.info('Updating by filter deletion');
     } else {
-        console.info('Creating equipment filter deletion');
+        console.info('Creating by filter deletion');
     }
 
     return backendFetch(deleteEquipmentUrl, {
@@ -1573,7 +1572,6 @@ export function deleteFilterEquipment(
             type: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
             filters: filters,
             equipmentType: equipmentType,
-            equipmentInfos: equipmentInfos,
         }),
     });
 }

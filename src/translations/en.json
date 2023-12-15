@@ -1339,5 +1339,6 @@
     "lowVoltageLimit": "Low voltage limit (kV)",
     "highVoltageLimit": "High voltage limit (kV)",
     "UnitDeletion": "Unit",
-    "FilterDeletion": "By filter"
+    "ByFilterDeletion": "By filter",
+    "DeleteEquipmentByFilter": "Delete equipments by filter"
 }
