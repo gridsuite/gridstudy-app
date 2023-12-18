@@ -118,15 +118,10 @@ export const SitePropertiesEditor = forwardRef(
             if (!hasError) {
                 setError('');
                 setOpen(false);
-                prepareDataAndSendRequest();
+                gridApi.stopEditing();
             }
 
             return !hasError;
-        };
-
-        const prepareDataAndSendRequest = () => {
-            gridApi.stopEditing();
-            // add properties to editingData
         };
 
         const handleNameChange = (index, value) => {

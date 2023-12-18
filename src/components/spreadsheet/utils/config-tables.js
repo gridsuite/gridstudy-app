@@ -147,7 +147,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
                 valueSetter: (params) => {
-                    params.data.countryCode = params.newValue; // translate code to country ?
+                    params.data.countryCode = params.newValue; // we keep the country code for the backend
                     params.data.countryName = params.newValue;
                     return params;
                 },
