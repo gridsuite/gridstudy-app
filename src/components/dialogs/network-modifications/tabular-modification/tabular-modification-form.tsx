@@ -58,10 +58,6 @@ const TabularModificationForm = () => {
             return intl.formatMessage({
                 id: 'TabularModificationGeneratorSkeletonComment',
             });
-        } else if (watchType === EQUIPMENT_TYPES.BATTERY) {
-            return intl.formatMessage({
-                id: 'TabularModificationBatterySkeletonComment',
-            });
         } else {
             return '';
         }

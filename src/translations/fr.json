@@ -699,7 +699,6 @@
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
     "TabularModificationGeneratorSkeletonComment" : "#,,,,true | false",
-    "TabularModificationBatterySkeletonComment" : "#,,,,,",
     "equipmentId": "ID",
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
