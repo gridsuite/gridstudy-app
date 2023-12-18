@@ -1117,6 +1117,9 @@
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
+    "SimulatedCalculation": "calculs simulés",
+    "SimulatedCalculationMax": "500 000 max",
+
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
@@ -1352,5 +1355,8 @@
     "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
     "customAgGridFilter.filterOoo": "Filtrer...",
     "undefined" : "non défini",
-    "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées"
+    "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
+    "nominalVoltage": "Tension nominale (kV)",
+    "lowVoltageLimit": "Limite tension basse (kV)",
+    "highVoltageLimit": "Limite tension haute (kV)"
 }

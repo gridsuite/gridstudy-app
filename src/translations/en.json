@@ -1116,6 +1116,8 @@
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
+    "SimulatedCalculation": "simulated calculations",
+    "SimulatedCalculationMax": "500 000 max",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
@@ -1333,5 +1335,8 @@
     "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",
     "customAgGridFilter.filterOoo": "Filter...",
     "undefined" : "undefined",
-    "modificationsAlreadyApplied": "The modifications have already been applied"
+    "modificationsAlreadyApplied": "The modifications have already been applied",
+    "nominalVoltage": "Nominal voltage (kV)",
+    "lowVoltageLimit": "Low voltage limit (kV)",
+    "highVoltageLimit": "High voltage limit (kV)"
 }
