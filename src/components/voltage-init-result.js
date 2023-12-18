@@ -24,6 +24,7 @@ import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
+    fetchVoltageInitResult,
     getVoltageInitModifications,
 } from '../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -103,10 +104,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     });
 
     useEffect(() => {
-        setDisableApplyModifications(
-            !resultToShow || !resultToShow.modificationsGroupUuid
-        );
-    }, [resultToShow, setDisableApplyModifications]);
+        fetchVoltageInitResult(studyUuid, currentNode.id).then((res) => {
+            setResultToShow(res);
+        });
+    }, [viNotif, disabledApplyModifications, studyUuid, currentNode.id]);
 
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
@@ -343,7 +344,11 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={disabledApplyModifications}
+                            disabled={
+                                !resultToShow ||
+                                !resultToShow.modificationsGroupUuid ||
+                                disabledApplyModifications
+                            }
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>
