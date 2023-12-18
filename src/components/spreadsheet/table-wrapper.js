@@ -431,7 +431,7 @@ const TableWrapper = (props) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
                     const propertiesForBackend = formatPropertiesForBackend(
-                        editingData.previousProperties ?? {},
+                        editingDataRef.current.properties ?? {},
                         editingData.properties ?? {}
                     );
                     return modifySubstation(

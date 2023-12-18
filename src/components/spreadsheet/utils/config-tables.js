@@ -11,8 +11,8 @@ import {
     BooleanListField,
     NumericalField,
     SelectCountryField,
-    SitePropertiesEditor,
 } from './equipment-table-editors';
+import { SitePropertiesEditor } from './equipement-table-popup-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
@@ -161,6 +161,10 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
                 cellEditor: SitePropertiesEditor,
                 cellEditorParams: (params) => {
                     return {
