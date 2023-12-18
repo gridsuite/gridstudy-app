@@ -68,6 +68,9 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
+            dataToModify: topPinnedData
+                ? structuredClone(topPinnedData[0])
+                : undefined,
             theme,
             lastEditedField: undefined,
         };

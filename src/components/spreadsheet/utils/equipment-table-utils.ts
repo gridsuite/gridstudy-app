@@ -177,8 +177,19 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
 };
 
 const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
-    if (fieldVal === undefined || fieldVal === null || isNaN(fieldVal)) {
-        if (colDef.crossValidation?.optional) {
+    if (
+        fieldVal === undefined ||
+        fieldVal === null ||
+        fieldVal === '' ||
+        (isNaN(fieldVal) && colDef.numeric)
+    ) {
+        let originalValue = deepFindValue(
+            gridContext.dataToModify,
+            colDef.field
+        );
+        if (originalValue !== undefined) {
+            return false;
+        } else if (colDef.crossValidation?.optional) {
             return true;
         } else if (colDef.crossValidation?.requiredOn) {
             const isConditionFulfiled = checkCrossValidationRequiredOn(
