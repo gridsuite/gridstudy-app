@@ -1387,6 +1387,7 @@
     "generateStagesSelection": "Générer paliers à simuler",
 
     "exportResult": "Exporter résultat",
+    "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
     "nominalVoltage": "Tension nominale (kV)",
     "lowVoltageLimit": "Limite tension basse (kV)",
     "highVoltageLimit": "Limite tension haute (kV)"

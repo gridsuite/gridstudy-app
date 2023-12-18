@@ -1366,6 +1366,7 @@
     "generateStagesSelection": "Generated stages to simulate",
     "exportResult": "Export result",
 
+    "modificationsAlreadyApplied": "The modifications have already been applied",
     "nominalVoltage": "Nominal voltage (kV)",
     "lowVoltageLimit": "Low voltage limit (kV)",
     "highVoltageLimit": "High voltage limit (kV)"
