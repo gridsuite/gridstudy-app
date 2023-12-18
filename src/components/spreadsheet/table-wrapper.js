@@ -150,15 +150,11 @@ const TableWrapper = (props) => {
 
     const [columnData, setColumnData] = useState([]);
 
-    const setEditingDataAndRef = (editingData) => {
-        setEditingData(editingData ? { ...editingData } : undefined);
-        editingDataRef.current = editingData;
-    };
-
     const rollbackEdit = useCallback(() => {
         resetBuffer();
-        setEditingDataAndRef();
-    }, [resetBuffer]);
+        setEditingData();
+        editingDataRef.current = editingData;
+    }, [resetBuffer, editingData]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -378,7 +374,7 @@ const TableWrapper = (props) => {
             if (event.finished && event.column) {
                 const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
                     reorderedTableDefinitionIndexes.indexOf(
-                        event.column.colDef?.id
+                        event.column.colDef.id
                     ),
                     1
                 );
@@ -408,7 +404,7 @@ const TableWrapper = (props) => {
 
                 const [reorderedColDef] = columnData.splice(
                     columnData.findIndex((obj) => {
-                        return obj.id === event.column.colDef?.id;
+                        return obj.id === event.column.colDef.id;
                     }),
                     1
                 );
@@ -681,12 +677,12 @@ const TableWrapper = (props) => {
             };
             Object.entries(priorValuesBuffer).forEach(([field, value]) => {
                 const column = gridRef.current.columnApi.getColumn(field);
-                const val = column.colDef?.valueGetter
-                    ? column.colDef?.valueGetter(wrappedEditedData)
+                const val = column.colDef.valueGetter
+                    ? column.colDef.valueGetter(wrappedEditedData)
                     : editingData[field];
 
                 groovyCr +=
-                    column.colDef?.changeCmd?.replace(/\{\}/g, val) + '\n';
+                    column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
             const editPromise = buildEditPromise(
                 editingData,
@@ -699,8 +695,9 @@ const TableWrapper = (props) => {
                         update: [editingData],
                     };
                     gridRef.current.api.applyTransaction(transaction);
-                    setEditingDataAndRef();
+                    setEditingData();
                     resetBuffer();
+                    editingDataRef.current = editingData;
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
@@ -728,32 +725,45 @@ const TableWrapper = (props) => {
         const regulationTypeText = params.data.RegulationTypeText;
 
         if (colId === 'RegulationTypeText') {
-            if (regulationTypeText === REGULATION_TYPES.DISTANT.id) {
-                // set temporary values that should be changed when opening popup
-                params.data.regulatingTerminalVlId =
-                    editingDataRef.current?.regulatingTerminalVlId ?? ' ';
-                params.data.regulatingTerminalConnectableId =
-                    editingDataRef.current?.regulatingTerminalConnectableId ??
-                    ' ';
-                params.data.regulatingTerminalConnectableType =
-                    editingDataRef.current?.regulatingTerminalConnectableType ??
-                    ' ';
-
-                rowNode.setDataValue(
-                    'RegulatingTerminalGenerator',
-                    editingDataRef.current?.regulatingTerminalVlId ?? ''
-                );
-            }
             if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
-                params.data.regulatingTerminalConnectableId = undefined;
-                params.data.regulatingTerminalConnectableType = undefined;
-                params.data.regulatingTerminalVlId = undefined;
+                rowNode.setDataValue('regulatingTerminalVlId', null);
+                rowNode.setDataValue('regulatingTerminalConnectableId', null);
+                rowNode.setDataValue('regulatingTerminalConnectableType', null);
                 rowNode.setDataValue('RegulatingTerminalGenerator', null);
             }
             params.api.flashCells({
                 rowNodes: [rowNode],
                 columns: ['RegulationTypeText', 'RegulatingTerminalGenerator'],
             });
+        } else if (colId === 'RegulatingTerminalGenerator') {
+            const RegulatingTerminalGenerator =
+                params.data.RegulatingTerminalGenerator;
+            if (RegulatingTerminalGenerator) {
+                rowNode.setDataValue(
+                    'regulatingTerminalVlId',
+                    params.context.dynamicValidation.regulatingTerminalVlId
+                );
+                rowNode.setDataValue(
+                    'regulatingTerminalConnectableId',
+                    params.context.dynamicValidation
+                        .regulatingTerminalConnectableId
+                );
+                rowNode.setDataValue(
+                    'regulatingTerminalConnectableType',
+                    params.context.dynamicValidation
+                        .regulatingTerminalConnectableType
+                );
+            } else {
+                rowNode.setDataValue('regulatingTerminalVlId', undefined);
+                rowNode.setDataValue(
+                    'regulatingTerminalConnectableId',
+                    undefined
+                );
+                rowNode.setDataValue(
+                    'regulatingTerminalConnectableType',
+                    undefined
+                );
+            }
         }
     }, []);
 
@@ -815,7 +825,6 @@ const TableWrapper = (props) => {
                         return {
                             component: EditingCellRenderer,
                             params: {
-                                setEditingData: setEditingDataAndRef,
                                 rollbackEdit: rollbackEdit,
                                 handleSubmitEditing: handleSubmitEditing,
                             },
@@ -828,7 +837,7 @@ const TableWrapper = (props) => {
                         return {
                             component: EditableCellRenderer,
                             params: {
-                                setEditingData: setEditingDataAndRef,
+                                setEditingData: setEditingData,
                                 equipmentType:
                                     TABLES_DEFINITION_INDEXES.get(tabIndex)
                                         .type,
@@ -880,6 +889,7 @@ const TableWrapper = (props) => {
 
     const topPinnedData = useMemo(() => {
         if (editingData) {
+            editingDataRef.current = { ...editingData };
             return [editingData];
         } else {
             return undefined;
@@ -960,9 +970,6 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
-                        editingData={editingData}
-                        setEditingData={setEditingData}
-                        editingDataRef={editingDataRef}
                     />
                 </Box>
             )}

@@ -177,7 +177,11 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
 };
 
 const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
-    if (fieldVal === undefined || fieldVal === null || isNaN(fieldVal)) {
+    if (
+        fieldVal === undefined ||
+        fieldVal === null ||
+        (isNaN(fieldVal) && colDef.numeric)
+    ) {
         if (colDef.crossValidation?.optional) {
             return true;
         } else if (colDef.crossValidation?.requiredOn) {
@@ -189,15 +193,6 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
                 return false;
             }
         } else if (colDef.numeric) {
-            return false;
-        }
-    }
-    if (colDef.field === 'RegulatingTerminalGenerator') {
-        if (
-            gridContext.dynamicValidation.regulatingTerminalVlId ===
-                undefined ||
-            gridContext.dynamicValidation.regulatingTerminalVlId === ' '
-        ) {
             return false;
         }
     }

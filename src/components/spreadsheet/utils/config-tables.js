@@ -9,8 +9,8 @@ import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     BooleanListField,
+    GeneratorRegulatingTerminalEditor,
     NumericalField,
-    SitePropertiesEditor,
 } from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
@@ -101,7 +101,7 @@ const RegulatingTerminalCellGetter = (params) => {
         regulatingTerminalVlId === ' ' ||
         regulatingTerminalConnectableId === ' '
     ) {
-        return ' ';
+        return null;
     } else if (regulatingTerminalVlId || regulatingTerminalConnectableId) {
         return `${params?.data?.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
     } else {
@@ -1389,10 +1389,11 @@ export const TABLES_DEFINITIONS = {
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 valueGetter: (params) =>
-                    params.data?.regulatingTerminalVlId ||
+                    params.data.RegulationTypeText ??
+                    (params.data?.regulatingTerminalVlId ||
                     params.data?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
-                        : REGULATION_TYPES.LOCAL.id,
+                        : REGULATION_TYPES.LOCAL.id),
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
                     return {
@@ -1416,9 +1417,10 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn: 'RegulationTypeText',
+                        columnValue: REGULATION_TYPES.DISTANT.id,
                     },
                 },
-                cellEditor: SitePropertiesEditor,
+                cellEditor: GeneratorRegulatingTerminalEditor,
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: RegulatingTerminalCellGetter,
@@ -1429,6 +1431,21 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 cellEditorPopup: true,
+            },
+            {
+                id: 'regulatingTerminalConnectableType',
+                field: 'regulatingTerminalConnectableType',
+                hide: true,
+            },
+            {
+                id: 'regulatingTerminalConnectableId',
+                field: 'regulatingTerminalConnectableId',
+                hide: true,
+            },
+            {
+                id: 'regulatingTerminalVlId',
+                field: 'regulatingTerminalVlId',
+                hide: true,
             },
         ],
     },
