@@ -1116,7 +1116,8 @@
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
-    "SimulatedCalculation": "simulated calculations",
+    "SimulatedCalculation": "Simulated calculations",
+    "SimulatedCalculationExceedsLimit": "Simulated calculations exceeds limit",
     "SimulatedCalculationMax": "500 000 max",
 
     "ConnectionName": "Connection name",

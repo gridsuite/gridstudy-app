@@ -52,7 +52,7 @@ import {
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
-import { LineSeparator } from '../../dialogUtils';
+import { LineSeparator, parseIntData } from '../../dialogUtils';
 import {
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
@@ -116,6 +116,7 @@ export const SensitivityAnalysisParameters = ({
     const { snackError } = useSnackMessage();
 
     const [popupConfirm, setPopupConfirm] = useState(false);
+
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
     const [providers, provider, updateProvider, resetProvider] =
@@ -238,8 +239,16 @@ export const SensitivityAnalysisParameters = ({
 
     const getResultCount = useCallback(() => {
         const values = getValues();
-        const getCount = (tab) =>
-            values[tab]
+        let totalResultCount = 0;
+        const tabsToCheck = [
+            'sensitivityInjectionsSet',
+            'sensitivityInjection',
+            'sensitivityHVDC',
+            'sensitivityPST',
+        ];
+
+        tabsToCheck.forEach((tab) => {
+            const count = values[tab]
                 .filter((entry) => entry[ACTIVATED])
                 .filter((entry) => entry[MONITORED_BRANCHES].length > 0)
                 .filter(
@@ -251,14 +260,9 @@ export const SensitivityAnalysisParameters = ({
                 .map((entry) => entry[COUNT])
                 .reduce((a, b) => a + b, 0);
 
-        const resultCountByTab = {
-            sensitivityInjectionsSet: getCount('sensitivityInjectionsSet'),
-            sensitivityInjection: getCount('sensitivityInjection'),
-            sensitivityHVDC: getCount('sensitivityHVDC'),
-            sensitivityPST: getCount('sensitivityPST'),
-        };
-
-        return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
+            totalResultCount += count;
+        });
+        return totalResultCount;
     }, [getValues]);
 
     const onFormChanged = useCallback(
@@ -279,7 +283,7 @@ export const SensitivityAnalysisParameters = ({
                     response.text().then((value) => {
                         setValue(
                             `${arrayFormName}[${index}].[${COUNT}]`,
-                            value && Math.abs(value)
+                            parseIntData(value, 0)
                         );
                         setAnalysisComputeComplexity(getResultCount());
                         onFormChanged(false);
@@ -581,9 +585,27 @@ export const SensitivityAnalysisParameters = ({
                     </Grid>
                     <Grid container justifyContent={'right'}>
                         <Grid item marginBottom="-50px">
-                            <Alert severity={isMaxReached() ? 'error' : 'info'}>
-                                {analysisComputeComplexity}{' '}
-                                <FormattedMessage id="SimulatedCalculation" />
+                            <Alert
+                                sx={{ width: '300px' }}
+                                severity={
+                                    analysisComputeComplexity > numberMax
+                                        ? 'error'
+                                        : 'info'
+                                }
+                            >
+                                {analysisComputeComplexity > 999999 ? (
+                                    <FormattedMessage id="SimulatedCalculationExceedsLimit" />
+                                ) : (
+                                    <>
+                                        {analysisComputeComplexity
+                                            .toString()
+                                            .replace(
+                                                /\B(?=(\d{3})+(?!\d))/g,
+                                                ' '
+                                            )}{' '}
+                                        <FormattedMessage id="SimulatedCalculation" />
+                                    </>
+                                )}
                             </Alert>
                             <FormattedMessage id="SimulatedCalculationMax" />
                         </Grid>

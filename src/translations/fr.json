@@ -1118,6 +1118,7 @@
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
     "SimulatedCalculation": "calculs simulés",
+    "SimulatedCalculationExceedsLimit": "Calculs simulés dépasse la limite",
     "SimulatedCalculationMax": "500 000 max",
 
 
