@@ -12,6 +12,7 @@ import {
     RefreshCellsParams,
     GridApi,
 } from 'ag-grid-community';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -31,6 +32,50 @@ const flashCells = (params: CellEditingStoppedEvent, columns: string[]) => {
         rowNodes: [params.node],
         columns,
     });
+};
+
+export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
+    const rowNode = params.node;
+    const colId = params.column.getColId();
+    const regulationTypeText = params.data.RegulationTypeText;
+
+    if (colId === 'RegulationTypeText') {
+        if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
+            rowNode.setDataValue('regulatingTerminalVlId', null);
+            rowNode.setDataValue('regulatingTerminalConnectableId', null);
+            rowNode.setDataValue('regulatingTerminalConnectableType', null);
+            rowNode.setDataValue('RegulatingTerminalGenerator', null);
+        }
+        params.api.flashCells({
+            rowNodes: [rowNode],
+            columns: ['RegulationTypeText', 'RegulatingTerminalGenerator'],
+        });
+    } else if (colId === 'RegulatingTerminalGenerator') {
+        const RegulatingTerminalGenerator =
+            params.data.RegulatingTerminalGenerator;
+        if (RegulatingTerminalGenerator) {
+            rowNode.setDataValue(
+                'regulatingTerminalVlId',
+                params.context.dynamicValidation.regulatingTerminalVlId
+            );
+            rowNode.setDataValue(
+                'regulatingTerminalConnectableId',
+                params.context.dynamicValidation.regulatingTerminalConnectableId
+            );
+            rowNode.setDataValue(
+                'regulatingTerminalConnectableType',
+                params.context.dynamicValidation
+                    .regulatingTerminalConnectableType
+            );
+        } else {
+            rowNode.setDataValue('regulatingTerminalVlId', undefined);
+            rowNode.setDataValue('regulatingTerminalConnectableId', undefined);
+            rowNode.setDataValue(
+                'regulatingTerminalConnectableType',
+                undefined
+            );
+        }
+    }
 };
 
 export const updateShuntCompensatorCells = (

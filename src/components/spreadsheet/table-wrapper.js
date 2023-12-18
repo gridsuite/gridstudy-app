@@ -53,6 +53,7 @@ import { Box } from '@mui/system';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
+    updateGeneratorCells,
     updateShuntCompensatorCells,
 } from './utils/equipment-table-utils';
 import { REGULATION_TYPES } from 'components/network/constants';
@@ -719,54 +720,6 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const updateGeneratorCells = useCallback((params) => {
-        const rowNode = params.node;
-        const colId = params.column.colId;
-        const regulationTypeText = params.data.RegulationTypeText;
-
-        if (colId === 'RegulationTypeText') {
-            if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
-                rowNode.setDataValue('regulatingTerminalVlId', null);
-                rowNode.setDataValue('regulatingTerminalConnectableId', null);
-                rowNode.setDataValue('regulatingTerminalConnectableType', null);
-                rowNode.setDataValue('RegulatingTerminalGenerator', null);
-            }
-            params.api.flashCells({
-                rowNodes: [rowNode],
-                columns: ['RegulationTypeText', 'RegulatingTerminalGenerator'],
-            });
-        } else if (colId === 'RegulatingTerminalGenerator') {
-            const RegulatingTerminalGenerator =
-                params.data.RegulatingTerminalGenerator;
-            if (RegulatingTerminalGenerator) {
-                rowNode.setDataValue(
-                    'regulatingTerminalVlId',
-                    params.context.dynamicValidation.regulatingTerminalVlId
-                );
-                rowNode.setDataValue(
-                    'regulatingTerminalConnectableId',
-                    params.context.dynamicValidation
-                        .regulatingTerminalConnectableId
-                );
-                rowNode.setDataValue(
-                    'regulatingTerminalConnectableType',
-                    params.context.dynamicValidation
-                        .regulatingTerminalConnectableType
-                );
-            } else {
-                rowNode.setDataValue('regulatingTerminalVlId', undefined);
-                rowNode.setDataValue(
-                    'regulatingTerminalConnectableId',
-                    undefined
-                );
-                rowNode.setDataValue(
-                    'regulatingTerminalConnectableType',
-                    undefined
-                );
-            }
-        }
-    }, []);
-
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
         (params) => {
@@ -787,7 +740,7 @@ const TableWrapper = (props) => {
                 checkValidationsAndRefreshCells(params.api, params.context);
             }
         },
-        [addDataToBuffer, updateGeneratorCells]
+        [addDataToBuffer]
     );
 
     const handleCellEditingStarted = useCallback((params) => {
