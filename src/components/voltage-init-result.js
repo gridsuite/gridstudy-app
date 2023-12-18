@@ -30,13 +30,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
-import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
-import { CsvExport } from './spreadsheet/export-csv';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
+import { RenderTableAndExportCSV } from './utils/renderTable-ExportCSV';
 
 const styles = {
     container: {
@@ -187,41 +186,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         ];
     }, []);
 
-    const renderTableAndExportCSV = (
-        gridRef,
-        columns,
-        tableName,
-        rows,
-        headerHeight,
-        skipColumnHeaders
-    ) => {
-        return (
-            <Box sx={styles.gridContainer}>
-                <Box sx={styles.csvExport}>
-                    <Box style={{ flexGrow: 1 }}></Box>
-                    <CsvExport
-                        gridRef={gridRef}
-                        columns={columns}
-                        tableName={tableName}
-                        disabled={!rows || rows.length === 0}
-                        skipColumnHeaders={skipColumnHeaders}
-                    />
-                </Box>
-                {rows && (
-                    <Box sx={styles.grid}>
-                        <CustomAGGrid
-                            ref={gridRef}
-                            rowData={rows}
-                            headerHeight={headerHeight}
-                            defaultColDef={defaultColDef}
-                            columnDefs={columns}
-                            onRowDataUpdated={onRowDataUpdated}
-                        />
-                    </Box>
-                )}
-            </Box>
-        );
-    };
     function renderIndicatorsTable(indicators) {
         const rows = indicators
             ? Object.entries(indicators).map((i) => {
@@ -247,14 +211,16 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Typography>
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
-                {renderTableAndExportCSV(
-                    gridRef,
-                    indicatorsColumnDefs,
-                    intl.formatMessage({ id: 'Indicators' }),
-                    rows,
-                    0,
-                    true
-                )}
+                <RenderTableAndExportCSV
+                    gridRef={gridRef}
+                    indicatorsColumnDefs={indicatorsColumnDefs}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'Indicators' })}
+                    rows={rows}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
+                    skipColumnHeaders={true}
+                />
             </>
         );
     }
@@ -274,11 +240,17 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     }, [intl]);
 
     function renderReactiveSlacksTable(reactiveSlacks) {
-        return renderTableAndExportCSV(
-            gridRef,
-            reactiveSlacksColumnDefs,
-            intl.formatMessage({ id: 'ReactiveSlacks' }),
-            reactiveSlacks
+        return (
+            <RenderTableAndExportCSV
+                gridRef={gridRef}
+                columns={reactiveSlacksColumnDefs}
+                defaultColDef={defaultColDef}
+                tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                rows={reactiveSlacks}
+                onRowDataUpdated={onRowDataUpdated}
+                headerHeight={0}
+                skipColumnHeaders={true}
+            />
         );
     }
 
