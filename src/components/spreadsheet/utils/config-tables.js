@@ -97,16 +97,17 @@ const RegulatingTerminalCellGetter = (params) => {
     const regulatingTerminalConnectableId =
         params?.data?.regulatingTerminalConnectableId;
     const regulatingTerminalVlId = params?.data?.regulatingTerminalVlId;
+    const regulatingTerminalConnectableType =
+        params?.data?.regulatingTerminalConnectableType;
     if (
         regulatingTerminalVlId === ' ' ||
         regulatingTerminalConnectableId === ' '
     ) {
         return null;
     } else if (regulatingTerminalVlId || regulatingTerminalConnectableId) {
-        return `${params?.data?.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
-    } else {
-        return null;
+        return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
     }
+    return null;
 };
 
 const generateEditableNumericColumnDefinition = (

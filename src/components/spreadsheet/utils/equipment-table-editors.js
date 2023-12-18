@@ -37,6 +37,9 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                         const regulatingTerminalVlId =
                             gridContext.dynamicValidation
                                 ?.regulatingTerminalVlId;
+                        const regulatingTerminalConnectableType =
+                            gridContext.dynamicValidation
+                                ?.regulatingTerminalConnectableType;
                         if (
                             regulatingTerminalVlId === ' ' ||
                             regulatingTerminalConnectableId === ' '
@@ -46,10 +49,9 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                             regulatingTerminalVlId ||
                             regulatingTerminalConnectableId
                         ) {
-                            return `${gridContext.dynamicValidation?.regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
-                        } else {
-                            return null;
+                            return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
                         }
+                        return null;
                     },
                     getField: () => {
                         return colDef.field;
@@ -65,6 +67,30 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
             ]
         );
 
+        const handleSaveRegulatingTerminalPopup = (
+            updatedRegulatedTerminal
+        ) => {
+            const {
+                equipment: { type: equipmentType, id: equipmentId } = {},
+                voltageLevel: { id: voltageLevelId } = {},
+            } = updatedRegulatedTerminal || {};
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'regulatingTerminalConnectableId',
+                equipmentId
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'regulatingTerminalConnectableType',
+                equipmentType
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'regulatingTerminalVlId',
+                voltageLevelId
+            );
+            setOpenGeneratorPopup(false);
+        };
         const handleCancelRegulatingTerminalPopup = () => {
             setOpenGeneratorPopup(false);
             gridApi.stopEditing();
@@ -79,29 +105,7 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                 onModifyRegulatingTerminalGenerator={(
                     updatedRegulatedTerminal
                 ) => {
-                    const {
-                        equipment: {
-                            type: equipmentType,
-                            id: equipmentId,
-                        } = {},
-                        voltageLevel: { id: voltageLevelId } = {},
-                    } = updatedRegulatedTerminal || {};
-                    gridContext.dynamicValidation = deepUpdateValue(
-                        gridContext.dynamicValidation,
-                        'regulatingTerminalConnectableId',
-                        equipmentId
-                    );
-                    gridContext.dynamicValidation = deepUpdateValue(
-                        gridContext.dynamicValidation,
-                        'regulatingTerminalConnectableType',
-                        equipmentType
-                    );
-                    gridContext.dynamicValidation = deepUpdateValue(
-                        gridContext.dynamicValidation,
-                        'regulatingTerminalVlId',
-                        voltageLevelId
-                    );
-                    setOpenGeneratorPopup(false);
+                    handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
                 }}
                 data={rowData}
                 previousData={gridContext.dataToModify}
