@@ -17,6 +17,7 @@ import {
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
 } from 'components/utils/field-constants';
+import { computeSwitchedOnValue } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 
 const characteristicsValidationSchema = (isModification) => ({
@@ -167,12 +168,4 @@ export const getCharacteristicsCreateFormDataFromSearchCopy = ({
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
     };
-};
-
-export const computeSwitchedOnValue = (
-    sectionCount,
-    maximumSectionCount,
-    linkedSwitchedOnValue
-) => {
-    return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
 };
