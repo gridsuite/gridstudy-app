@@ -38,8 +38,8 @@ interface SensitivityTableProps {
     createRows: (a: number) => void;
     disableAdd?: boolean;
     disableDelete?: boolean;
-    onFormChanged: (a: boolean) => void;
-    onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
+    onFormChanged?: (a: boolean) => void;
+    onChangeParams?: (a: Record<string, any>, b: string, c: number) => void;
 }
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
@@ -69,7 +69,9 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             if (index >= 0 && index < currentRowsValues.length) {
                 remove(index);
             }
-            onFormChanged(true);
+            if (onFormChanged) {
+                onFormChanged(true);
+            }
         },
         [arrayFormName, getValues, remove, onFormChanged]
     );
@@ -82,7 +84,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                 row[MONITORED_BRANCHES].length &&
                 (row[INJECTIONS]?.length ||
                     row[HVDC_LINES]?.length ||
-                    row[PSTS]?.length)
+                    row[PSTS]?.length) &&
+                onChangeParams
             ) {
                 onChangeParams(row, arrayFormName, index);
             }
