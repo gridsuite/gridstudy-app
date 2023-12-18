@@ -87,13 +87,9 @@ const VoltageLevelModificationDialog = ({
                 [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
                 [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    unitToKiloUnit(
-                        editData?.identifiableShortCircuit?.ipMin?.value
-                    ) ?? null,
+                    unitToKiloUnit(editData?.ipMin?.value) ?? null,
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    unitToKiloUnit(
-                        editData?.identifiableShortCircuit?.ipMax?.value
-                    ) ?? null,
+                    unitToKiloUnit(editData?.ipMax?.value) ?? null,
             });
         }
     }, [editData, reset]);
