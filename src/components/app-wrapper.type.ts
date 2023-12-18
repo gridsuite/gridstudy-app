@@ -6,25 +6,14 @@
  */
 
 import { Theme } from '@mui/material/styles';
+import { CrossValidationOptions } from './spreadsheet/utils/equipment-table-utils';
 
 // used to customize mui theme
 // https://mui.com/material-ui/customization/theming/#typescript
 declare module '@mui/material/styles' {
     interface Theme {
         aggrid: string;
-        selectedRow: {
-            background: string;
-        };
-        link: {
-            color: string;
-        };
-        overlay: {
-            background: string;
-        };
-    }
-
-    interface ThemeOptions {
-        aggrid: string;
+        aggridValueChangeHighlightBackgroundColor: string;
         selectedRow: {
             background: string;
         };
@@ -42,5 +31,6 @@ declare module 'ag-grid-community' {
     interface ColDef {
         numeric?: boolean;
         fractionDigits?: number;
+        crossValidation?: CrossValidationOptions;
     }
 }

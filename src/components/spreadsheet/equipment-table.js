@@ -20,10 +20,8 @@ export const EquipmentTable = ({
     columnData,
     gridRef,
     handleColumnDrag,
-    handleRowEditing,
-    handleCellEditing,
-    handleEditingStarted,
-    handleEditingStopped,
+    handleCellEditingStarted,
+    handleCellEditingStopped,
     handleGridReady,
     handleRowDataUpdated,
     fetched,
@@ -70,8 +68,10 @@ export const EquipmentTable = ({
             editErrors: {},
             dynamicValidation: {},
             isEditing: topPinnedData ? true : false,
+            theme,
+            lastEditedField: undefined,
         };
-    }, [network, topPinnedData]);
+    }, [network, theme, topPinnedData]);
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -113,16 +113,14 @@ export const EquipmentTable = ({
             defaultColDef={defaultColDef}
             enableCellTextSelection={true}
             undoRedoCellEditing={true}
-            editType={'fullRow'}
-            onCellValueChanged={handleCellEditing}
-            onRowValueChanged={handleRowEditing}
+            onCellEditingStarted={handleCellEditingStarted}
+            onCellEditingStopped={handleCellEditingStopped}
             onRowDataUpdated={handleRowDataUpdated}
-            onRowEditingStarted={handleEditingStarted}
-            onRowEditingStopped={handleEditingStopped}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
             suppressColumnVirtualisation={true}
-            suppressClickEdit={true}
+            suppressClickEdit={!topPinnedData}
+            singleClickEdit={true}
             context={gridContext}
             onGridReady={handleGridReady}
             shouldHidePinnedHeaderRightBorder={
