@@ -23,6 +23,10 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
+import {
+    SENSITIVITY_AT_NODE,
+    SUFFIX_TYPES,
+} from './sensitivity-analysis-content';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -37,12 +41,10 @@ function makeRows(resultRecord) {
 const SensitivityAnalysisResult = ({
     result,
     nOrNkIndex,
-    sensiToIndex,
+    sensiKind,
     filtersDef,
-    onSortChanged,
-    sortConfig,
-    updateFilter,
-    filterSelector,
+    sortProps,
+    filterProps,
     isLoading,
 }) => {
     const gridRef = useRef(null);
@@ -50,9 +52,14 @@ const SensitivityAnalysisResult = ({
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+
     const messages = useIntlResultStatusMessages(intl, true);
+
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
+            const { onSortChanged = () => {}, sortConfig } = sortProps || {};
+            const { updateFilter, filterSelector } = filterProps || {};
+
             const { colKey, sortWay } = sortConfig || {};
             const isSortActive = colKey === field;
 
@@ -68,9 +75,13 @@ const SensitivityAnalysisResult = ({
                 headerComponentParams: {
                     field,
                     displayName: intl.formatMessage({ id: labelId }),
-                    sortConfig,
-                    onSortChanged: (newSortValue) =>
-                        onSortChanged(field, newSortValue),
+                    isSortable: !!sortProps,
+                    sortParams: {
+                        sortConfig,
+                        onSortChanged: (newSortValue) =>
+                            onSortChanged(field, newSortValue),
+                    },
+                    isFilterable: !!filterProps && !!filterOptions.length, // Filter should have options
                     filterParams: {
                         filterSelector,
                         filterOptions,
@@ -85,14 +96,7 @@ const SensitivityAnalysisResult = ({
                 headerTooltip: intl.formatMessage({ id: labelId }),
             };
         },
-        [
-            sortConfig,
-            filtersDef,
-            intl,
-            updateFilter,
-            filterSelector,
-            onSortChanged,
-        ]
+        [filtersDef, intl, sortProps, filterProps]
     );
 
     const columnsDefs = useMemo(() => {
@@ -101,7 +105,10 @@ const SensitivityAnalysisResult = ({
         returnedTable.push(
             makeColumn({
                 field: 'funcId',
-                labelId: sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
+                labelId:
+                    sensiKind === SENSITIVITY_AT_NODE
+                        ? 'BusBarBus'
+                        : 'SupervisedBranches',
                 pinned: true,
                 maxWidth: 350,
             })
@@ -124,7 +131,7 @@ const SensitivityAnalysisResult = ({
             );
         }
 
-        const suffix1 = 'In' + ['kW', 'kA', 'kV'][sensiToIndex];
+        const suffix1 = 'In' + SUFFIX_TYPES[sensiKind];
         const suffix = suffix1 + (nOrNkIndex !== 1 ? '' : 'BeforeContingency');
 
         returnedTable.push(
@@ -160,7 +167,7 @@ const SensitivityAnalysisResult = ({
         }
 
         return returnedTable;
-    }, [makeColumn, nOrNkIndex, sensiToIndex]);
+    }, [makeColumn, nOrNkIndex, sensiKind]);
 
     const rows = useMemo(() => makeRows(result), [result]);
 
@@ -207,7 +214,6 @@ const SensitivityAnalysisResult = ({
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
-                onSortChanged={onSortChanged}
                 gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
@@ -219,14 +225,15 @@ const SensitivityAnalysisResult = ({
 SensitivityAnalysisResult.defaultProps = {
     result: null,
     nOrNkIndex: 0,
-    sensiToIndex: 0,
+    sensiKind: 0,
 };
 
 SensitivityAnalysisResult.propTypes = {
     result: PropTypes.array,
     nOrNkIndex: PropTypes.number,
-    sensiToIndex: PropTypes.number,
-    onSortChanged: PropTypes.func.isRequired,
+    sensiKind: PropTypes.string,
+    sortProps: PropTypes.object,
+    filterProps: PropTypes.object,
     isLoading: PropTypes.bool,
 };
 

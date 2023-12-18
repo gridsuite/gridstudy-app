@@ -6,7 +6,10 @@
  */
 
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import { mapEquipmentsCreated } from '../../redux/actions';
+import {
+    mapEquipmentsCreated,
+    setMapEquipementsInitialized,
+} from '../../redux/actions';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
@@ -41,7 +44,28 @@ export default class MapEquipments {
     intlRef = undefined;
 
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false)
+        const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            false
+        );
+        const fetchLinesMapInfosPromise = fetchLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            false
+        );
+        const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            false
+        );
+
+        this.dispatch(setMapEquipementsInitialized(false));
+
+        fetchSubstationsMapInfosPromise
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, undefined, val, undefined)
@@ -56,7 +80,8 @@ export default class MapEquipments {
                     });
                 }
             });
-        fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
+
+        fetchLinesMapInfosPromise
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, val, undefined, undefined)
@@ -71,7 +96,8 @@ export default class MapEquipments {
                     });
                 }
             });
-        fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
+
+        fetchHvdcLinesMapInfosPromise
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, undefined, undefined, val)
@@ -86,6 +112,14 @@ export default class MapEquipments {
                     });
                 }
             });
+
+        Promise.all([
+            fetchSubstationsMapInfosPromise,
+            fetchLinesMapInfosPromise,
+            fetchHvdcLinesMapInfosPromise,
+        ]).finally(() => {
+            this.dispatch(setMapEquipementsInitialized(true));
+        });
     }
 
     newMapEquipmentForUpdate() {

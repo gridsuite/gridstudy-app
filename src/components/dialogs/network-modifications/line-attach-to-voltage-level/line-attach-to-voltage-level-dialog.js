@@ -32,6 +32,7 @@ import {
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityData,
     getConnectivityWithoutPositionValidationSchema,
+    getNewVoltageLevelData,
 } from '../../connectivity/connectivity-form-utils';
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
@@ -107,7 +108,7 @@ const LineAttachToVoltageLevelDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (lineAttach) => {
-            reset({
+            let formData = {
                 [LINE1_ID]: lineAttach.newLine1Id,
                 [LINE1_NAME]: lineAttach.newLine1Name,
                 [LINE2_ID]: lineAttach.newLine2Id,
@@ -125,9 +126,20 @@ const LineAttachToVoltageLevelDialog = ({
                         lineAttach?.existingVoltageLevelId ??
                         lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
-            });
-            setAttachmentLine(lineAttach?.attachmentLine);
+            };
             const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
+            if (newVoltageLevel) {
+                formData = {
+                    ...formData,
+                    [CONNECTIVITY]: {
+                        ...formData[CONNECTIVITY],
+                        [VOLTAGE_LEVEL]:
+                            getNewVoltageLevelData(newVoltageLevel),
+                    },
+                };
+            }
+            reset(formData);
+            setAttachmentLine(lineAttach?.attachmentLine);
             if (newVoltageLevel) {
                 newVoltageLevel.busbarSections = buildNewBusbarSections(
                     newVoltageLevel?.equipmentId,

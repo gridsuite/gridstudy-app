@@ -20,7 +20,6 @@ import {
     PAGE_OPTIONS,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
-    securityAnalysisTableNmKFilterDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
@@ -28,6 +27,7 @@ import { Box, Button, useTheme } from '@mui/material';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
+import { BranchSide } from '../../utils/constants';
 
 const styles = {
     container: {
@@ -52,10 +52,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     paginationProps,
     sortProps,
     filterProps,
+    filterEnums,
 }) => {
     const { content } = result || {};
-    const { onSortChanged, sortConfig } = sortProps || {};
-    const { updateFilter, filterEnums, filterSelector } = filterProps || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
@@ -74,9 +73,15 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                                 // if we didnt find a line or transformer, it's a voltage level
                                 vlId = subjectId;
                             } else if (row.side) {
-                                if (side === 'ONE') {
+                                if (
+                                    side ===
+                                    intl.formatMessage({ id: BranchSide.ONE })
+                                ) {
                                     vlId = equipment.voltageLevelId1;
-                                } else if (side === 'TWO') {
+                                } else if (
+                                    side ===
+                                    intl.formatMessage({ id: BranchSide.TWO })
+                                ) {
                                     vlId = equipment.voltageLevelId2;
                                 } else {
                                     vlId = equipment.voltageLevelId3;
@@ -105,7 +110,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 }
             }
         },
-        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid]
+        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
     );
 
     const SubjectIdRenderer = useCallback(
@@ -127,41 +132,30 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [onClickNmKConstraint]
     );
 
-    const filtersDef = useMemo(
-        () => securityAnalysisTableNmKFilterDefinition(intl, filterEnums),
-        [filterEnums, intl]
-    );
-
     const columnDefs = useMemo(
         () =>
             isFromContingency
                 ? securityAnalysisTableNmKContingenciesColumnsDefinition(
                       intl,
-                      filtersDef,
-                      filterSelector,
-                      onSortChanged,
-                      updateFilter,
                       SubjectIdRenderer,
-                      sortConfig
+                      filterProps,
+                      sortProps,
+                      filterEnums
                   )
                 : securityAnalysisTableNmKConstraintsColumnsDefinition(
                       intl,
-                      filtersDef,
-                      filterSelector,
-                      onSortChanged,
-                      updateFilter,
                       SubjectIdRenderer,
-                      sortConfig
+                      filterProps,
+                      sortProps,
+                      filterEnums
                   ),
         [
             isFromContingency,
             intl,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
             SubjectIdRenderer,
-            sortConfig,
+            filterProps,
+            sortProps,
+            filterEnums,
         ]
     );
 
