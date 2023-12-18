@@ -1335,6 +1335,7 @@
     "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",
     "customAgGridFilter.filterOoo": "Filter...",
     "undefined" : "undefined",
+    "modificationsAlreadyApplied": "The modifications have already been applied",
     "nominalVoltage": "Nominal voltage (kV)",
     "lowVoltageLimit": "Low voltage limit (kV)",
     "highVoltageLimit": "High voltage limit (kV)"
