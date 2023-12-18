@@ -22,6 +22,7 @@ import {
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
     PARAM_DEVELOPER_MODE,
     PARAMS_LOADED,
 } from '../utils/config-params';
@@ -333,6 +334,15 @@ export function selectMapManualRefresh(mapManualRefresh) {
     return {
         type: MAP_MANUAL_REFRESH,
         [PARAM_MAP_MANUAL_REFRESH]: mapManualRefresh,
+    };
+}
+
+export const MAP_BASEMAP = 'MAP_BASEMAP';
+
+export function selectMapBaseMap(mapBaseMap) {
+    return {
+        type: MAP_BASEMAP,
+        [PARAM_MAP_BASEMAP]: mapBaseMap,
     };
 }
 

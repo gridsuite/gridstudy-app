@@ -14,6 +14,10 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
+    MAP_BASEMAP_MAPBOX,
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
 } from '../../../utils/config-params';
 import { CloseButton, useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
@@ -103,6 +107,18 @@ export const MapParameters = ({ hideParameters }) => {
                     param_name_id={PARAM_MAP_MANUAL_REFRESH}
                     label="MapManualRefresh"
                     marks={alertThresholdMarks}
+                />
+                <LineSeparator />
+                <ParamLine
+                    type={ParameterType.DropDown}
+                    param_name_id={PARAM_MAP_BASEMAP}
+                    labelTitle="MapBaseMap"
+                    labelValue="map-base-map-select-label"
+                    values={{
+                        [MAP_BASEMAP_MAPBOX]: 'Mapbox',
+                        [MAP_BASEMAP_CARTO]: 'Carto',
+                        [MAP_BASEMAP_CARTO_NOLABEL]: 'CartoNoLabel',
+                    }}
                 />
             </Grid>
             <Grid

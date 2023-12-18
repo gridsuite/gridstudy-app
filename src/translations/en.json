@@ -98,6 +98,10 @@
     "load": "load",
     "Load": "Load",
     "MapManualRefresh": "Manual update of geographical view",
+    "MapBaseMap": "Basemap",
+    "Mapbox": "Mapbox",
+    "Carto": "Carto",
+    "CartoNoLabel": "Carto without labels",
     "ManuallyRefreshGeoData": "Update map",
 
     "PageNotFound": "Page not found",

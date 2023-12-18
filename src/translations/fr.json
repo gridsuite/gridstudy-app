@@ -98,6 +98,10 @@
     "load": "transit",
     "Load": "Transit",
     "MapManualRefresh": "Mise à jour manuelle de l'image réseau géographique",
+    "MapBaseMap": "Fond de plan",
+    "Mapbox": "Mapbox",
+    "Carto": "Carto",
+    "CartoNoLabel": "Carto sans labels",
     "ManuallyRefreshGeoData": "Mettre à jour la carte",
 
     "PageNotFound": "Page introuvable",

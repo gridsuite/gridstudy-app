@@ -33,6 +33,7 @@ import {
     SET_PARAMS_LOADED,
     STUDY_UPDATED,
     MAP_MANUAL_REFRESH,
+    MAP_BASEMAP,
     SUBSTATION_LAYOUT,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
@@ -114,6 +115,8 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
+    MAP_BASEMAP_MAPBOX,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -153,6 +156,7 @@ const paramsInitialState = {
     [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_MAP_MANUAL_REFRESH]: false,
+    [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
     [PARAM_CENTER_LABEL]: false,
@@ -533,6 +537,10 @@ export const reducer = createReducer(initialState, {
 
     [MAP_MANUAL_REFRESH]: (state, action) => {
         state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
+    },
+
+    [MAP_BASEMAP]: (state, action) => {
+        state[PARAM_MAP_BASEMAP] = action[PARAM_MAP_BASEMAP];
     },
 
     [RESET_MAP_RELOADED]: (state) => {

@@ -15,6 +15,9 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import mapboxgl from 'mapbox-gl';
+import maplibregl from 'maplibre-gl';
 
 import { Map, NavigationControl, useControl } from 'react-map-gl';
 
@@ -30,7 +33,12 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { Button, useTheme } from '@mui/material';
-import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
+import {
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
+    MAP_BASEMAP_MAPBOX,
+    basemap_style_theme_key,
+} from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
@@ -77,6 +85,11 @@ const FALLBACK_MAPBOX_TOKEN =
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
 const LABEL_SIZE = 12;
+const INITIAL_CENTERED = {
+    lastCenteredSubstation: null,
+    centeredSubstationId: null,
+    centered: false,
+};
 
 const NetworkMap = (props) => {
     const [mapBoxToken, setMapBoxToken] = useState();
@@ -85,11 +98,7 @@ const NetworkMap = (props) => {
     const [showTooltip, setShowTooltip] = useState(true);
     const mapRef = useRef();
     const deckRef = useRef();
-    const [centered, setCentered] = useState({
-        lastCenteredSubstation: null,
-        centeredSubstationId: null,
-        centered: false,
-    });
+    const [centered, setCentered] = useState(INITIAL_CENTERED);
     const lastViewStateRef = useRef(null);
     const [tooltip, setTooltip] = useState({});
     const theme = useTheme();
@@ -472,15 +481,34 @@ const NetworkMap = (props) => {
         mapRef.current?.resize();
     }, [studyDisplayMode]);
 
+    const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
+    const mapLib =
+        basemap === MAP_BASEMAP_MAPBOX
+            ? mapBoxToken && {
+                  key: 'mapboxgl',
+                  mapLib: mapboxgl,
+                  mapboxAccessToken: mapBoxToken,
+              }
+            : {
+                  key: 'maplibregl',
+                  mapLib: maplibregl,
+              };
+    // because the mapLib prop of react-map-gl is not reactive, we need to
+    // unmount/mount the Map with 'key', so we need also to reset all state
+    // associated with uncontrolled state of the map
+    useEffect(() => {
+        setCentered(INITIAL_CENTERED);
+    }, [mapLib?.key]);
+
     return (
-        mapBoxToken && (
+        mapLib && (
             <Map
                 ref={mapRef}
+                {...mapLib}
                 onMove={onViewStateChange}
                 boxZoom={false}
-                mapStyle={theme.mapboxStyle}
+                mapStyle={theme[basemap_style_theme_key(basemap)]}
                 preventStyleDiffing={true}
-                mapboxAccessToken={mapBoxToken}
                 initialViewState={initialViewState}
                 cursor={cursorHandler()} //TODO needed for pointer on our features, but forces us to reeimplement grabbing/grab for panning. Can we avoid reimplementing?
                 onDrag={() => setDragging(true)}
