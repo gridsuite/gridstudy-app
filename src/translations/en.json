@@ -1041,8 +1041,9 @@
     "cutNetworkModificationSubtree": "Cut subtree",
     "cancelCutNetworkModificationSubtree": "Cancel cut subtree",
     "removeNetworkModificationSubtree": "Remove subtree",
-    "restoreNodes": "Restore nodes",
+    "restoreNodes": "Restore / Delete nodes",
     "restoreNodesText": "Please select nodes to restore",
+    "deleteNodesText": "Are you sure you want to permanently delete {numberToDelete} nodes or sub-trees ?",
 
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",

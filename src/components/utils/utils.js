@@ -191,6 +191,22 @@ export function calculateReactance(distance, linearReactance) {
     return Number(distance) * Number(linearReactance);
 }
 
+export const computeSwitchedOnValue = (
+    sectionCount,
+    maximumSectionCount,
+    linkedSwitchedOnValue
+) => {
+    return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
+};
+
+export const computeMaxQAtNominalV = (maxSucepctance, nominalVoltage) => {
+    return Math.abs(maxSucepctance * Math.pow(nominalVoltage, 2));
+};
+
+export const computeMaxSusceptance = (maxQAtNominalV, nominalVoltage) => {
+    return Math.abs(maxQAtNominalV / Math.pow(nominalVoltage, 2));
+};
+
 export function calculateSusceptance(distance, linearCapacity) {
     if (
         distance === undefined ||
