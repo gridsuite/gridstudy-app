@@ -49,7 +49,9 @@ export default function ReportViewer({
     const [logs, setLogs] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
-    const [selectedSeverity, setSelectedSeverity] = useState();
+    const [selectedSeverity, setSelectedSeverity] = useState(
+        LogReportItem.getDefaultSeverityFilter()
+    );
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] =
         useState(undefined);
 
