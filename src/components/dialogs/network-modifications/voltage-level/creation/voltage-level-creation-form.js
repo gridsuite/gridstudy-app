@@ -132,7 +132,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     );
 
     const sectionCountField = (
-        <IntegerInput name={SECTION_COUNT} label={'SectionCount'} />
+        <IntegerInput name={SECTION_COUNT} label={'voltageSectionCount'} />
     );
 
     const couplingOmnibusForm = <CouplingOmnibusForm />;
