@@ -113,6 +113,7 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
         );
     }
 );
+
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi, rowData }, ref) => {
         const error = useMemo(() => {

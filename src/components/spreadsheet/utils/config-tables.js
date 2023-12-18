@@ -1433,21 +1433,21 @@ export const TABLES_DEFINITIONS = {
                 },
                 cellEditorPopup: true,
             },
-            {
-                id: 'regulatingTerminalConnectableType',
-                field: 'regulatingTerminalConnectableType',
-                hide: true,
-            },
-            {
-                id: 'regulatingTerminalConnectableId',
-                field: 'regulatingTerminalConnectableId',
-                hide: true,
-            },
-            {
-                id: 'regulatingTerminalVlId',
-                field: 'regulatingTerminalVlId',
-                hide: true,
-            },
+            // {
+            //     id: 'regulatingTerminalConnectableType',
+            //     field: 'regulatingTerminalConnectableType',
+            //     hide: true,
+            // },
+            // {
+            //     id: 'regulatingTerminalConnectableId',
+            //     field: 'regulatingTerminalConnectableId',
+            //     hide: true,
+            // },
+            // {
+            //     id: 'regulatingTerminalVlId',
+            //     field: 'regulatingTerminalVlId',
+            //     hide: true,
+            // },
         ],
     },
     LOADS: {

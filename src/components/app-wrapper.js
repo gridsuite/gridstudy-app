@@ -72,14 +72,12 @@ let lightTheme = createTheme({
     },
     editableCell: {
         outline: 'solid 1px #1976D2',
-        background: '#FFF',
         border: 'solid 1px #BABFC7',
         borderRadius: '3px',
         boxShadow: '0 1px 20px 1px #BABFC766',
     },
     editableCellError: {
         outline: 'solid 1px red',
-        background: '#FFF',
         border: 'solid 1px #BABFC7',
         borderRadius: '3px',
         boxShadow: '0 1px 20px 1px #BABFC766',
@@ -123,14 +121,12 @@ let darkTheme = createTheme({
     },
     editableCell: {
         outline: 'solid 1px #90CAF9',
-        background: '#181D1F',
         border: 'solid 1px #68686E',
         borderRadius: '3px',
         boxShadow: '0 1px 20px 1px #000',
     },
     editableCellError: {
         outline: 'solid 1px red',
-        background: '#181D1F',
         border: 'solid 1px #68686E',
         borderRadius: '3px',
         boxShadow: '0 1px 20px 1px #000',

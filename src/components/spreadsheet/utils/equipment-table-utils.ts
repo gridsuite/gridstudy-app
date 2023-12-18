@@ -38,13 +38,30 @@ export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
     const rowNode = params.node;
     const colId = params.column.getColId();
     const regulationTypeText = params.data.RegulationTypeText;
-
+    const previousData = params.context.dataToModify;
     if (colId === 'RegulationTypeText') {
         if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
-            rowNode.setDataValue('regulatingTerminalVlId', null);
-            rowNode.setDataValue('regulatingTerminalConnectableId', null);
-            rowNode.setDataValue('regulatingTerminalConnectableType', null);
+            params.data.regulatingTerminalVlId = null;
+            params.data.regulatingTerminalConnectableId = null;
+            params.data.regulatingTerminalConnectableType = null;
             rowNode.setDataValue('RegulatingTerminalGenerator', null);
+        }
+        if (regulationTypeText === REGULATION_TYPES.DISTANT.id) {
+            params.data.regulatingTerminalVlId =
+                previousData.regulatingTerminalVlId ?? ' ';
+            params.data.regulatingTerminalConnectableId =
+                previousData.regulatingTerminalConnectableId ?? ' ';
+            params.data.regulatingTerminalConnectableType =
+                previousData.regulatingTerminalConnectableType ?? ' ';
+
+            const regulatingTerminalGenerator =
+                previousData.regulatingTerminalConnectableType
+                    ? `${previousData.regulatingTerminalConnectableType} (${previousData.regulatingTerminalConnectableId} )`
+                    : null;
+            rowNode.setDataValue(
+                'RegulatingTerminalGenerator',
+                regulatingTerminalGenerator
+            );
         }
         params.api.flashCells({
             rowNodes: [rowNode],
@@ -54,26 +71,16 @@ export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
         const RegulatingTerminalGenerator =
             params.data.RegulatingTerminalGenerator;
         if (RegulatingTerminalGenerator) {
-            rowNode.setDataValue(
-                'regulatingTerminalVlId',
-                params.context.dynamicValidation.regulatingTerminalVlId
-            );
-            rowNode.setDataValue(
-                'regulatingTerminalConnectableId',
-                params.context.dynamicValidation.regulatingTerminalConnectableId
-            );
-            rowNode.setDataValue(
-                'regulatingTerminalConnectableType',
-                params.context.dynamicValidation
-                    .regulatingTerminalConnectableType
-            );
+            params.data.regulatingTerminalVlId =
+                params.context.dynamicValidation.regulatingTerminalVlId;
+            params.data.regulatingTerminalConnectableId =
+                params.context.dynamicValidation.regulatingTerminalConnectableId;
+            params.data.regulatingTerminalConnectableType =
+                params.context.dynamicValidation.regulatingTerminalConnectableType;
         } else {
-            rowNode.setDataValue('regulatingTerminalVlId', undefined);
-            rowNode.setDataValue('regulatingTerminalConnectableId', undefined);
-            rowNode.setDataValue(
-                'regulatingTerminalConnectableType',
-                undefined
-            );
+            params.data.regulatingTerminalVlId = undefined;
+            params.data.regulatingTerminalConnectableId = undefined;
+            params.data.regulatingTerminalConnectableType = undefined;
         }
     }
 };
