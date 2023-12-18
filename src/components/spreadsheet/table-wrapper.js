@@ -45,10 +45,16 @@ import {
     modifyBattery,
     modifyGenerator,
     modifyLoad,
+    modifyShuntCompensator,
     modifyVoltageLevel,
     requestNetworkChange,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
+import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
+import {
+    checkValidationsAndRefreshCells,
+    updateShuntCompensatorCells,
+} from './utils/equipment-table-utils';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -139,36 +145,15 @@ const TableWrapper = (props) => {
         [lockedColumnsNames.size]
     );
 
-    //the following variable needs to be a ref because its usage in EditingCellRenderer sets and reads
-    //the value although it is not rerendered so storing it in a state wouldn't fill its purpose
-    const isValidatingData = useRef(false);
-
     const globalFilterRef = useRef();
 
     const [columnData, setColumnData] = useState([]);
 
-    const startEditing = useCallback(() => {
-        const topRow = gridRef.current?.api?.getPinnedTopRow(0);
-        if (topRow) {
-            gridRef.current.api?.startEditingCell({
-                rowIndex: topRow.rowIndex,
-                colKey: EDIT_COLUMN,
-                rowPinned: topRow.rowPinned,
-            });
-        }
-    }, [gridRef]);
-
     const rollbackEdit = useCallback(() => {
-        //system to undo last edits if they are invalidated
-        //we need to call undoCellEditing for each field edited, the method only undo the last change to an individual cell
-        Object.entries(priorValuesBuffer).forEach(() => {
-            gridRef.current.api.undoCellEditing();
-        });
         resetBuffer();
         setEditingData();
         editingDataRef.current = editingData;
-        isValidatingData.current = false;
-    }, [priorValuesBuffer, resetBuffer, editingData]);
+    }, [resetBuffer, editingData]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -225,83 +210,6 @@ const TableWrapper = (props) => {
         [fluxConvention, intl, lockedColumnsNames, props.loadFlowStatus]
     );
 
-    const addEditColumn = useCallback(
-        (columns) => {
-            columns.unshift({
-                field: EDIT_COLUMN,
-                locked: true,
-                pinned: 'left',
-                lockPosition: 'left',
-                sortable: false,
-                filter: false,
-                resizable: false,
-                width: 100,
-                headerName: '',
-                cellStyle: { border: 'none' },
-                cellRendererSelector: (params) => {
-                    if (params.node.rowPinned) {
-                        return {
-                            component: EditingCellRenderer,
-                            params: {
-                                setEditingData: setEditingData,
-                                startEditing: startEditing,
-                                isValidatingData: isValidatingData,
-                            },
-                        };
-                    } else if (editingData?.id === params.data.id) {
-                        return {
-                            component: ReferenceLineCellRenderer,
-                        };
-                    } else {
-                        return {
-                            component: EditableCellRenderer,
-                            params: {
-                                setEditingData: setEditingData,
-                                equipmentType:
-                                    TABLES_DEFINITION_INDEXES.get(tabIndex)
-                                        .type,
-                            },
-                        };
-                    }
-                },
-            });
-        },
-        [editingData?.id, startEditing, tabIndex]
-    );
-
-    const generateTableColumns = useCallback(
-        (tabIndex) => {
-            const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(
-                tabIndex
-            )
-                .columns.filter((c) => {
-                    return selectedColumnsNames.has(c.id);
-                })
-                .map((column) => enrichColumn(column));
-
-            function sortByIndex(a, b) {
-                return (
-                    reorderedTableDefinitionIndexes.indexOf(a.id) -
-                    reorderedTableDefinitionIndexes.indexOf(b.id)
-                );
-            }
-
-            generatedTableColumns.sort(sortByIndex);
-
-            if (isEditColumnVisible()) {
-                addEditColumn(generatedTableColumns);
-            }
-            return generatedTableColumns;
-        },
-        [
-            addEditColumn,
-            enrichColumn,
-            isEditColumnVisible,
-            reorderedTableDefinitionIndexes,
-            selectedColumnsNames,
-        ]
-    );
-
     const equipmentDefinition = useMemo(
         () => ({
             type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
@@ -329,10 +237,6 @@ const TableWrapper = (props) => {
 
         return equipments;
     }, [equipments, props.disabled]);
-
-    useEffect(() => {
-        setColumnData(generateTableColumns(tabIndex));
-    }, [generateTableColumns, tabIndex]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
     //is reinstanciated in order to notify components using it.
@@ -521,7 +425,7 @@ const TableWrapper = (props) => {
     }, []);
 
     const buildEditPromise = useCallback(
-        (editingData, groovyCr) => {
+        (editingData, groovyCr, context) => {
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
@@ -668,6 +572,45 @@ const TableWrapper = (props) => {
                             editingDataRef.current.activePowerControl?.droop
                         )
                     );
+                case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+                    return modifyShuntCompensator(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.maximumSectionCount,
+                            editingDataRef.current.maximumSectionCount
+                        ),
+                        getFieldValue(
+                            editingData.sectionCount,
+                            editingDataRef.current.sectionCount
+                        ),
+                        context.lastEditedField === 'maxSusceptance'
+                            ? getFieldValue(
+                                  editingData.maxSusceptance,
+                                  editingDataRef.current.maxSusceptance
+                              )
+                            : null,
+                        context.lastEditedField === 'maxQAtNominalV'
+                            ? getFieldValue(
+                                  editingData.maxQAtNominalV,
+                                  editingDataRef.current.maxQAtNominalV
+                              )
+                            : null,
+                        getFieldValue(
+                            editingData.type,
+                            editingDataRef.current.maxSusceptance > 0
+                                ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
+                                : SHUNT_COMPENSATOR_TYPES.REACTOR.id
+                        ),
+                        editingData.voltageLevelId,
+                        false,
+                        undefined
+                    );
                 default:
                     return requestNetworkChange(
                         props.studyUuid,
@@ -703,7 +646,11 @@ const TableWrapper = (props) => {
                     column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
-            const editPromise = buildEditPromise(editingData, groovyCr);
+            const editPromise = buildEditPromise(
+                editingData,
+                groovyCr,
+                params.context
+            );
             Promise.resolve(editPromise)
                 .then(() => {
                     const transaction = {
@@ -712,7 +659,6 @@ const TableWrapper = (props) => {
                     gridRef.current.api.applyTransaction(transaction);
                     setEditingData();
                     resetBuffer();
-                    isValidatingData.current = false;
                     editingDataRef.current = editingData;
                 })
                 .catch((promiseErrorMsg) => {
@@ -736,40 +682,119 @@ const TableWrapper = (props) => {
     );
 
     //this listener is called for each cell modified
-    const handleCellEditing = useCallback(
+    const handleCellEditingStopped = useCallback(
         (params) => {
-            addDataToBuffer(params.colDef.field, params.oldValue);
+            if (params.oldValue !== params.newValue) {
+                if (
+                    params.data.metadata.equipmentType ===
+                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR
+                ) {
+                    updateShuntCompensatorCells(params);
+                }
+                addDataToBuffer(params.colDef.field, params.oldValue);
+                params.context.dynamicValidation = params.data;
+                checkValidationsAndRefreshCells(params.api, params.context);
+            }
         },
         [addDataToBuffer]
     );
 
-    //this listener is called once all cells listener have been called
-    const handleRowEditing = useCallback(
+    const handleCellEditingStarted = useCallback((params) => {
+        // we initialize the dynamicValidation with the initial data
+        params.context.dynamicValidation = params.data;
+    }, []);
+
+    const handleSubmitEditing = useCallback(
         (params) => {
-            if (isValidatingData.current) {
+            if (Object.values(priorValuesBuffer).length === 0) {
+                rollbackEdit();
+            } else {
+                params.context.dynamicValidation = {};
                 validateEdit(params);
             }
         },
-        [validateEdit]
+        [priorValuesBuffer, rollbackEdit, validateEdit]
     );
 
-    const handleEditingStarted = useCallback((params) => {
-        // we initialize the dynamicValidation with the initial data
-        params.context.dynamicValidation = { ...params.data };
-    }, []);
-
-    const handleEditingStopped = useCallback(
-        (params) => {
-            if (
-                !isValidatingData.current ||
-                Object.values(priorValuesBuffer).length === 0
-            ) {
-                rollbackEdit();
-            }
-            params.context.dynamicValidation = {};
+    const addEditColumn = useCallback(
+        (columns) => {
+            columns.unshift({
+                field: EDIT_COLUMN,
+                locked: true,
+                pinned: 'left',
+                lockPosition: 'left',
+                sortable: false,
+                filter: false,
+                resizable: false,
+                width: 100,
+                headerName: '',
+                cellStyle: { border: 'none' },
+                cellRendererSelector: (params) => {
+                    if (params.node.rowPinned) {
+                        return {
+                            component: EditingCellRenderer,
+                            params: {
+                                rollbackEdit: rollbackEdit,
+                                handleSubmitEditing: handleSubmitEditing,
+                            },
+                        };
+                    } else if (editingData?.id === params.data.id) {
+                        return {
+                            component: ReferenceLineCellRenderer,
+                        };
+                    } else {
+                        return {
+                            component: EditableCellRenderer,
+                            params: {
+                                setEditingData: setEditingData,
+                                equipmentType:
+                                    TABLES_DEFINITION_INDEXES.get(tabIndex)
+                                        .type,
+                            },
+                        };
+                    }
+                },
+            });
         },
-        [priorValuesBuffer, rollbackEdit]
+        [editingData?.id, handleSubmitEditing, rollbackEdit, tabIndex]
     );
+
+    const generateTableColumns = useCallback(
+        (tabIndex) => {
+            const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(
+                tabIndex
+            )
+                .columns.filter((c) => {
+                    return selectedColumnsNames.has(c.id);
+                })
+                .map((column) => enrichColumn(column));
+
+            function sortByIndex(a, b) {
+                return (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) -
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                );
+            }
+
+            generatedTableColumns.sort(sortByIndex);
+
+            if (isEditColumnVisible()) {
+                addEditColumn(generatedTableColumns);
+            }
+            return generatedTableColumns;
+        },
+        [
+            addEditColumn,
+            enrichColumn,
+            isEditColumnVisible,
+            reorderedTableDefinitionIndexes,
+            selectedColumnsNames,
+        ]
+    );
+
+    useEffect(() => {
+        setColumnData(generateTableColumns(tabIndex));
+    }, [generateTableColumns, tabIndex]);
 
     const topPinnedData = useMemo(() => {
         if (editingData) {
@@ -846,10 +871,8 @@ const TableWrapper = (props) => {
                         fetched={equipments || errorMessage}
                         visible={props.visible}
                         handleColumnDrag={handleColumnDrag}
-                        handleRowEditing={handleRowEditing}
-                        handleCellEditing={handleCellEditing}
-                        handleEditingStarted={handleEditingStarted}
-                        handleEditingStopped={handleEditingStopped}
+                        handleCellEditingStarted={handleCellEditingStarted}
+                        handleCellEditingStopped={handleCellEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={
