@@ -1042,8 +1042,9 @@
     "cutNetworkModificationSubtree": "Couper le sous arbre",
     "cancelCutNetworkModificationSubtree": "Annuler couper le sous arbre",
     "removeNetworkModificationSubtree": "Supprimer le sous arbre",
-    "restoreNodes": "Restaurer des nœuds",
+    "restoreNodes": "Restaurer / Supprimer des nœuds",
     "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer",
+    "deleteNodesText": "Êtes-vous sûr(e) de vouloir supprimer définitivement {numberToDelete} nœuds ou sous-arbres ?",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
@@ -1117,6 +1118,9 @@
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
+    "SimulatedCalculation": "calculs simulés",
+    "SimulatedCalculationMax": "500 000 max",
+
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
@@ -1351,5 +1355,8 @@
     "customAgGridFilter.lessThanOrEqual": "Inférieur ou égal",
     "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
     "customAgGridFilter.filterOoo": "Filtrer...",
-    "undefined" : "non défini"
+    "undefined" : "non défini",
+    "nominalVoltage": "Tension nominale (kV)",
+    "lowVoltageLimit": "Limite tension basse (kV)",
+    "highVoltageLimit": "Limite tension haute (kV)"
 }

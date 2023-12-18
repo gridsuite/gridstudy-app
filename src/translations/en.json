@@ -1041,8 +1041,9 @@
     "cutNetworkModificationSubtree": "Cut subtree",
     "cancelCutNetworkModificationSubtree": "Cancel cut subtree",
     "removeNetworkModificationSubtree": "Remove subtree",
-    "restoreNodes": "Restore nodes",
+    "restoreNodes": "Restore / Delete nodes",
     "restoreNodesText": "Please select nodes to restore",
+    "deleteNodesText": "Are you sure you want to permanently delete {numberToDelete} nodes or sub-trees ?",
 
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",
@@ -1116,6 +1117,8 @@
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
+    "SimulatedCalculation": "simulated calculations",
+    "SimulatedCalculationMax": "500 000 max",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
@@ -1332,5 +1335,8 @@
     "customAgGridFilter.lessThanOrEqual": "Less than or equal",
     "customAgGridFilter.greaterThanOrEqual": "Greater than or equal",
     "customAgGridFilter.filterOoo": "Filter...",
-    "undefined" : "undefined"
+    "undefined" : "undefined",
+    "nominalVoltage": "Nominal voltage (kV)",
+    "lowVoltageLimit": "Low voltage limit (kV)",
+    "highVoltageLimit": "High voltage limit (kV)"
 }

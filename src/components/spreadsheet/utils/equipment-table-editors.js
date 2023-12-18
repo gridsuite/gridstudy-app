@@ -10,144 +10,44 @@ import React, {
     useState,
     forwardRef,
     useImperativeHandle,
-    useEffect,
+    useMemo,
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { EDIT_COLUMN } from './config-tables';
-
-const refreshEditingCell = (gridApi) => {
-    const rowNode = gridApi.getPinnedTopRow(0);
-    if (rowNode) {
-        const refreshConfig = {
-            rowNodes: [rowNode],
-            columns: [EDIT_COLUMN],
-            force: true,
-        };
-        gridApi.getCellEditorInstances().forEach((cellEditor) => {
-            if (cellEditor.refreshValidation) {
-                cellEditor.refreshValidation();
-            }
-        });
-        gridApi.refreshCells(refreshConfig);
-    }
-};
-
-const checkCrossValidationRequiredOn = (gridApi, colDef) => {
-    const dependencyEditor = gridApi
-        .getCellEditorInstances()
-        .filter((editor) =>
-            typeof editor.getField !== 'undefined'
-                ? editor.getField() ===
-                  colDef.crossValidation.requiredOn.dependencyColumn
-                : undefined
-        );
-    if (!dependencyEditor.length) {
-        return false;
-    }
-    if ('columnValue' in colDef.crossValidation.requiredOn) {
-        // if the prop columnValue exist, then we compare its value with the current value
-        return (
-            dependencyEditor[0].getValue() !==
-            colDef.crossValidation.requiredOn.columnValue
-        );
-    } else {
-        // otherwise, we just check if there is a current value
-        return dependencyEditor[0].getValue() === undefined;
-    }
-};
+import {
+    checkValidationsAndRefreshCells,
+    deepUpdateValue,
+} from './equipment-table-utils';
 
 export const NumericalField = forwardRef(
-    (
-        {
-            defaultValue,
-            optional,
-            minExpression,
-            maxExpression,
-            gridContext,
-            colDef,
-            gridApi,
-            allowZero = false,
-        },
-        ref
-    ) => {
-        const [error, setError] = useState(false);
+    ({ defaultValue, gridContext, colDef, gridApi, rowData }, ref) => {
+        const error = useMemo(() => {
+            return Object.keys(gridContext.editErrors).includes(colDef.field);
+        }, [colDef.field, gridContext.editErrors]);
+
         const intl = useIntl();
 
+        const minExpression = colDef.crossValidation?.minExpression;
+        const maxExpression = colDef.crossValidation?.maxExpression;
+
         //minExpression and maxExpression are either a reference to a variable or a static number
-        const getMin = useCallback(() => {
+        const minValue = useMemo(() => {
             if (!isNaN(minExpression)) {
                 return minExpression;
             }
-            return gridContext.dynamicValidation[minExpression];
-        }, [minExpression, gridContext.dynamicValidation]);
+            return rowData[minExpression];
+        }, [minExpression, rowData]);
 
-        const getMax = useCallback(() => {
+        const maxValue = useMemo(() => {
             if (!isNaN(maxExpression)) {
                 return maxExpression;
             }
-            return gridContext.dynamicValidation[maxExpression];
-        }, [maxExpression, gridContext.dynamicValidation]);
+            return rowData[maxExpression];
+        }, [maxExpression, rowData]);
 
-        const [minValue, setMinValue] = useState(getMin());
-        const [maxValue, setMaxValue] = useState(getMax());
         const [value, setValue] = useState(defaultValue);
-
-        useEffect(() => {
-            refreshEditingCell(gridApi);
-        }, [gridApi, value]);
-
-        const isValid = useCallback(
-            (val, minVal, maxVal, allowZero) => {
-                if (val === undefined || val === null || isNaN(val)) {
-                    if (optional) {
-                        return true;
-                    }
-                    if (colDef.crossValidation?.requiredOn) {
-                        const isConditionFulfiled =
-                            checkCrossValidationRequiredOn(gridApi, colDef);
-                        if (isConditionFulfiled) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-                if (allowZero && val === 0) {
-                    return true;
-                }
-                return (
-                    (minVal === undefined || val >= minVal) &&
-                    (maxVal === undefined || val <= maxVal)
-                );
-            },
-            [optional, colDef, gridApi]
-        );
-
-        const validateChange = useCallback(() => {
-            // the local state is not always up to date, for instance when we call setMinValue and setMaxValue right before this callback
-            const minValue = getMin();
-            const maxValue = getMax();
-            const updatedErrors = { ...gridContext.editErrors };
-            if (isValid(value, minValue, maxValue, allowZero)) {
-                setError(false);
-                delete updatedErrors[colDef.field];
-                gridContext.editErrors = updatedErrors;
-            } else {
-                setError(true);
-                updatedErrors[colDef.field] = true;
-                gridContext.editErrors = updatedErrors;
-            }
-        }, [
-            colDef.field,
-            gridContext,
-            getMin,
-            getMax,
-            value,
-            isValid,
-            allowZero,
-        ]);
 
         useImperativeHandle(
             ref,
@@ -159,14 +59,9 @@ export const NumericalField = forwardRef(
                     getField: () => {
                         return colDef.field;
                     },
-                    refreshValidation: () => {
-                        setMaxValue(getMax());
-                        setMinValue(getMin());
-                        validateChange();
-                    },
                 };
             },
-            [getMax, getMin, colDef.field, validateChange, value]
+            [colDef.field, value]
         );
 
         const validateEvent = useCallback(
@@ -176,9 +71,14 @@ export const NumericalField = forwardRef(
                     newVal = undefined;
                 }
                 setValue(newVal);
-                gridContext.dynamicValidation[colDef.field] = newVal;
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    newVal
+                );
+                checkValidationsAndRefreshCells(gridApi, gridContext);
             },
-            [colDef.field, gridContext.dynamicValidation]
+            [colDef.field, gridApi, gridContext]
         );
 
         function renderNumericText() {
@@ -190,6 +90,7 @@ export const NumericalField = forwardRef(
                     type={'number'}
                     size={'small'}
                     margin={'none'}
+                    autoFocus
                     inputProps={{
                         style: {
                             textAlign: 'center',
@@ -260,23 +161,15 @@ export const BooleanListField = forwardRef(
             (ev) => {
                 const val = ev.target.value;
                 setValue(val);
-                if (colDef.resetColumnsInError) {
-                    const updatedErrors = { ...gridContext.editErrors };
-
-                    colDef.resetColumnsInError.forEach((column) => {
-                        if (Boolean(val) === column.value) {
-                            delete updatedErrors[column.dependencyColumn];
-                        }
-                    });
-                    gridContext.editErrors = updatedErrors;
-                }
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    val
+                );
+                checkValidationsAndRefreshCells(gridApi, gridContext);
             },
-            [colDef.resetColumnsInError, gridContext]
+            [colDef.field, gridApi, gridContext]
         );
-
-        useEffect(() => {
-            refreshEditingCell(gridApi);
-        }, [gridApi, value]);
 
         return (
             <Select
@@ -285,6 +178,7 @@ export const BooleanListField = forwardRef(
                 size={'medium'}
                 margin={'none'}
                 style={{ width: '100%' }}
+                autoFocus
             >
                 <MenuItem value={1} key={colDef.field + '_1'}>
                     <em>{intl.formatMessage({ id: 'true' })}</em>

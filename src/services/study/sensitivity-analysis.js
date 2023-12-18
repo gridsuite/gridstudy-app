@@ -140,3 +140,27 @@ export function setSensitivityAnalysisParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
+export function getSensitivityAnalysisFactorsCount(
+    studyUuid,
+    isInjectionsSet,
+    newParams
+) {
+    console.info('get sensitivity analysis parameters computing count');
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(isInjectionsSet);
+    urlSearchParams.append('isInjectionsSet', jsoned);
+
+    const url =
+        getStudyUrl(studyUuid) +
+        `/sensitivity-analysis/factors-count?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}

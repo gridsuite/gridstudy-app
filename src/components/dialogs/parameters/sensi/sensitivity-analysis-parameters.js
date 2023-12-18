@@ -5,12 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    SelectInput,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { DropDown, LabelledButton, styles } from '../parameters';
+import { LabelledButton, styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -36,16 +40,21 @@ import {
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
     ACTIVATED,
+    PROVIDER,
+    SENSI_INJECTIONS_SET,
+    COUNT,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
     getSensitivityAnalysisParameters,
     setSensitivityAnalysisParameters,
+    getSensitivityAnalysisFactorsCount,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import { LineSeparator } from '../../dialogUtils';
 import {
+    getGenericRowNewParams,
     getSensiHvdcformatNewParams,
     getSensiHVDCsFormSchema,
     getSensiInjectionsformatNewParams,
@@ -59,6 +68,7 @@ import {
 } from './utils';
 import { SelectOptionsDialog } from '../../../../utils/dialogs';
 import DialogContentText from '@mui/material/DialogContentText';
+import Alert from '@mui/material/Alert';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -85,6 +95,7 @@ export const useGetSensitivityAnalysisParameters = () => {
 const formSchema = yup
     .object()
     .shape({
+        [PROVIDER]: yup.string().required(),
         [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
         [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
         [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
@@ -96,6 +107,7 @@ const formSchema = yup
     })
     .required();
 
+const numberMax = 500000;
 export const SensitivityAnalysisParameters = ({
     hideParameters,
     parametersBackend,
@@ -104,9 +116,14 @@ export const SensitivityAnalysisParameters = ({
     const { snackError } = useSnackMessage();
 
     const [popupConfirm, setPopupConfirm] = useState(false);
-
+    const [analysisComputeComplexity, setAnalysisComputeComplexity] =
+        useState(0);
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
+    const formattedProviders = Object.keys(providers).map((key) => ({
+        id: key,
+        label: providers[key],
+    }));
 
     const handlePopupConfirm = useCallback(() => {
         hideParameters();
@@ -117,17 +134,13 @@ export const SensitivityAnalysisParameters = ({
         setPopupConfirm(false);
     }, []);
 
-    const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
-    const updateProviderCallback = useCallback(handleUpdateProvider, [
-        updateProvider,
-    ]);
-
     const resetSensitivityParametersAndProvider = useCallback(() => {
         resetProvider();
     }, [resetProvider]);
 
     const emptyFormData = useMemo(() => {
         return {
+            [PROVIDER]: provider,
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,
@@ -137,13 +150,13 @@ export const SensitivityAnalysisParameters = ({
             [PARAMETER_SENSI_PST]: [],
             [PARAMETER_SENSI_NODES]: [],
         };
-    }, []);
+    }, [provider]);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit, formState } = formMethods;
+    const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
@@ -169,8 +182,8 @@ export const SensitivityAnalysisParameters = ({
             });
     }, [studyUuid, emptyFormData, setSensitivityAnalysisParams, snackError]);
 
-    const formatNewParams = useCallback((newParams) => {
-        return {
+    const formatNewParams = useCallback((newParams, withProvider = true) => {
+        let params = {
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                 newParams[FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD],
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
@@ -183,6 +196,16 @@ export const SensitivityAnalysisParameters = ({
             ...getSensiPstformatNewParams(newParams),
             ...getSensiNodesformatNewParams(newParams),
         };
+        return withProvider
+            ? params
+            : {
+                  [PROVIDER]: newParams[PROVIDER],
+                  ...params,
+              };
+    }, []);
+
+    const formatFilteredParams = useCallback((row) => {
+        return getGenericRowNewParams(row);
     }, []);
 
     const onSubmit = useCallback(
@@ -192,7 +215,10 @@ export const SensitivityAnalysisParameters = ({
                 formatNewParams(newParams)
             )
                 .then(() => {
-                    setSensitivityAnalysisParams(formatNewParams(newParams));
+                    setSensitivityAnalysisParams(
+                        formatNewParams(newParams, false)
+                    );
+                    updateProvider(newParams[PROVIDER]);
                 })
                 .catch((error) => {
                     snackError({
@@ -201,12 +227,108 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [setSensitivityAnalysisParams, snackError, studyUuid, formatNewParams]
+        [
+            setSensitivityAnalysisParams,
+            snackError,
+            studyUuid,
+            formatNewParams,
+            updateProvider,
+        ]
     );
+
+    const getResultCount = useCallback(() => {
+        const values = getValues();
+        const getCount = (tab) =>
+            values[tab]
+                .filter((entry) => entry[ACTIVATED])
+                .filter((entry) => entry[MONITORED_BRANCHES].length > 0)
+                .filter(
+                    (entry) =>
+                        entry[INJECTIONS]?.length > 0 ||
+                        entry[PSTS]?.length > 0 ||
+                        entry[HVDC_LINES]?.length > 0
+                )
+                .map((entry) => entry[COUNT])
+                .reduce((a, b) => a + b, 0);
+
+        const resultCountByTab = {
+            sensitivityInjectionsSet: getCount('sensitivityInjectionsSet'),
+            sensitivityInjection: getCount('sensitivityInjection'),
+            sensitivityHVDC: getCount('sensitivityHVDC'),
+            sensitivityPST: getCount('sensitivityPST'),
+        };
+
+        return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
+    }, [getValues]);
+
+    const onFormChanged = useCallback(
+        (onFormChanged) => {
+            onFormChanged && setAnalysisComputeComplexity(getResultCount());
+        },
+        [setAnalysisComputeComplexity, getResultCount]
+    );
+
+    const onChangeParams = useCallback(
+        (row, arrayFormName, index) => {
+            getSensitivityAnalysisFactorsCount(
+                studyUuid,
+                arrayFormName === SENSI_INJECTIONS_SET,
+                formatFilteredParams(row)
+            )
+                .then((response) => {
+                    response.text().then((value) => {
+                        setValue(
+                            `${arrayFormName}[${index}].[${COUNT}]`,
+                            value && Math.abs(value)
+                        );
+                        setAnalysisComputeComplexity(getResultCount());
+                        onFormChanged(false);
+                    });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId:
+                            'SensitivityAnalysisFilteredActiveParametersError',
+                    });
+                });
+        },
+        [
+            snackError,
+            studyUuid,
+            formatFilteredParams,
+            setValue,
+            getResultCount,
+            onFormChanged,
+        ]
+    );
+
+    const initRowsCount = useCallback(() => {
+        const handleEntries = (entries, parameter) => {
+            entries
+                .filter((entry) => entry[ACTIVATED] && !entry[COUNT])
+                .forEach((entry, index) =>
+                    onChangeParams(entry, parameter, index)
+                );
+        };
+
+        const values = getValues();
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTIONS_SET],
+            PARAMETER_SENSI_INJECTIONS_SET
+        );
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTION],
+            PARAMETER_SENSI_INJECTION
+        );
+        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
+        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
+    }, [onChangeParams, getValues]);
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
-            reset({
+            const values = {
+                [PROVIDER]: parameters[PROVIDER],
                 [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                     parameters.flowFlowSensitivityValueThreshold,
                 [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
@@ -244,6 +366,7 @@ export const SensitivityAnalysisParameters = ({
                                     };
                                 }),
                                 [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                                [COUNT]: 0,
                             };
                         }
                     ) ?? [],
@@ -278,6 +401,7 @@ export const SensitivityAnalysisParameters = ({
                                 }
                             ),
                             [ACTIVATED]: sensiInjections[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_HVDC]:
@@ -310,6 +434,7 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                             [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_PST]:
@@ -342,6 +467,7 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                             [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_NODES]:
@@ -373,9 +499,11 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                             [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
+                            [COUNT]: 0,
                         };
                     }) ?? [],
-            });
+            };
+            reset(values);
         },
         [reset]
     );
@@ -396,16 +524,19 @@ export const SensitivityAnalysisParameters = ({
             fromSensitivityAnalysisParamsDataToFormValues(
                 sensitivityAnalysisParams
             );
+            initRowsCount();
         }
     }, [
         fromSensitivityAnalysisParamsDataToFormValues,
         sensitivityAnalysisParams,
+        initRowsCount,
     ]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
         resetSensitivityParametersAndProvider();
         resetSensitivityAnalysisParameters();
+        setAnalysisComputeComplexity(0);
     }, [
         emptyFormData,
         reset,
@@ -413,16 +544,23 @@ export const SensitivityAnalysisParameters = ({
         resetSensitivityParametersAndProvider,
     ]);
 
+    const isMaxReached = () => Math.abs(analysisComputeComplexity) > numberMax;
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container spacing={1} paddingTop={1}>
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={providers}
-                        callback={updateProviderCallback}
-                    />
+                    <Grid item xs={8} sx={styles.parameterName}>
+                        <FormattedMessage id="Provider" />
+                    </Grid>
+                    <Grid item xs={4} sx={styles.controlItem}>
+                        <SelectInput
+                            name={PROVIDER}
+                            disableClearable
+                            size="small"
+                            options={Object.values(formattedProviders)}
+                        ></SelectInput>
+                    </Grid>
                 </Grid>
                 <Grid
                     container
@@ -441,11 +579,22 @@ export const SensitivityAnalysisParameters = ({
                     <Grid container paddingTop={1} paddingBottom={2}>
                         <LineSeparator />
                     </Grid>
+                    <Grid container justifyContent={'right'}>
+                        <Grid item marginBottom="-50px">
+                            <Alert severity={isMaxReached() ? 'error' : 'info'}>
+                                {analysisComputeComplexity}{' '}
+                                <FormattedMessage id="SimulatedCalculation" />
+                            </Alert>
+                            <FormattedMessage id="SimulatedCalculationMax" />
+                        </Grid>
+                    </Grid>
                     <SensitivityParametersSelector
                         reset={reset}
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
                         }
+                        onFormChanged={onFormChanged}
+                        onChangeParams={onChangeParams}
                     />
                 </Grid>
                 <DialogActions>
@@ -455,6 +604,7 @@ export const SensitivityAnalysisParameters = ({
                     <SubmitButton
                         onClick={handleSubmit(onSubmit)}
                         variant="outlined"
+                        disabled={isMaxReached()}
                     >
                         <FormattedMessage id="validate" />
                     </SubmitButton>
