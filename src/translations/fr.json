@@ -530,6 +530,7 @@
     "ConvertersMode": "Mode du convertisseur",
     "R": "Résistance",
     "ActivePowerSetpoint": "Consigne p active (MW)",
+    "TargetV": "Consigne tension (kV)",
     "TargetDeadband": "Consigne bande morte",
     "ConverterStationId1": "ID station conversion 1",
     "ConverterStationId2": "ID station conversion 2",

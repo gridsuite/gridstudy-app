@@ -1267,7 +1267,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'voltageSetpoint',
+                id: 'TargetV',
                 field: 'targetV',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

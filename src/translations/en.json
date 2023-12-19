@@ -530,6 +530,7 @@
     "ConvertersMode": "Converters mode",
     "R": "Resistance",
     "ActivePowerSetpoint": "Active power set point (MW)",
+    "TargetV": "Target V (kV)",
     "TargetDeadband": "Target deadband",
     "ConverterStationId1": "Converter Station Id 1",
     "ConverterStationId2": "Converter Station Id 2",
