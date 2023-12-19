@@ -703,6 +703,7 @@
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
     "activePowerSetpoint": "P consigne (MW)",
+    "reactivePowerSetpoint": "Q consigne (MVar)",
     "minActivePower": "P min (MW)",
     "voltageRegulationOn": "Réglage de tension",
     "ModificationsRequiredTabError": "Au moins une modification est requise",
@@ -1358,6 +1359,7 @@
     "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
     "customAgGridFilter.filterOoo": "Filtrer...",
     "undefined" : "non défini",
+    "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
     "nominalVoltage": "Tension nominale (kV)",
     "lowVoltageLimit": "Limite tension basse (kV)",
     "highVoltageLimit": "Limite tension haute (kV)"
