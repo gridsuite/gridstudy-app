@@ -76,6 +76,26 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
+export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('uuids', modificationUuids);
+    urlSearchParams.append('onlyStashed', true);
+
+    const modificationDeleteUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications?' +
+        urlSearchParams.toString();
+
+    console.debug(modificationDeleteUrl);
+    return backendFetch(modificationDeleteUrl, {
+        method: 'DELETE',
+    });
+}
+
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     console.info('Creating groovy script (request network change)');
     const changeUrl =
@@ -100,6 +120,19 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
     console.debug('%s with action: %s', changeBranchStatusUrl, action);
+
+    let energizedVoltageLevelId;
+    switch (action) {
+        case BRANCH_STATUS_ACTION.ENERGISE_END_ONE:
+            energizedVoltageLevelId = branch.voltageLevelId1;
+            break;
+        case BRANCH_STATUS_ACTION.ENERGISE_END_TWO:
+            energizedVoltageLevelId = branch.voltageLevelId2;
+            break;
+        default:
+            energizedVoltageLevelId = undefined;
+    }
+
     return backendFetch(changeBranchStatusUrl, {
         method: 'POST',
         headers: {
@@ -109,10 +142,7 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
         body: JSON.stringify({
             type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
             equipmentId: branch.id,
-            energizedVoltageLevelId:
-                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-                    ? branch.voltageLevelId1
-                    : branch.voltageLevelId2,
+            energizedVoltageLevelId: energizedVoltageLevelId,
             action: action,
         }),
     });

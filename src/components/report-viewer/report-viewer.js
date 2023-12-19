@@ -49,7 +49,11 @@ export default function ReportViewer({
     const [logs, setLogs] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
-    const [selectedSeverity, setSelectedSeverity] = useState();
+    const [selectedSeverity, setSelectedSeverity] = useState(
+        LogReportItem.getDefaultSeverityFilter()
+    );
+    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] =
+        useState(undefined);
 
     const { snackError } = useSnackMessage();
 
@@ -198,6 +202,10 @@ export default function ReportViewer({
         setSelectedSeverity(LogReportItem.getDefaultSeverityFilter());
     }, [jsonReportTree, createReporterItem]);
 
+    const handleReportVerticalPositionFromTop = useCallback((node) => {
+        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
+    }, []);
+
     const handleToggleNode = (event, nodeIds) => {
         event.persist();
         let iconClicked = event.target.closest('.MuiTreeItem-iconContainer');
@@ -252,14 +260,24 @@ export default function ReportViewer({
 
     return (
         rootReport.current && (
-            <Grid container sx={{ height: 'calc(100vh - 160px)' }}>
+            <Grid
+                container
+                ref={handleReportVerticalPositionFromTop}
+                sx={{
+                    // We calculate the remaining height relative to the viewport and the top position of the report.
+                    height:
+                        'calc(100vh - ' +
+                        (reportVerticalPositionFromTop || '160') + // The value 160 is fine, but leaves a gap below the report.
+                        'px)',
+                }}
+            >
                 <Grid
                     item
                     xs={12}
                     sm={3}
                     sx={{
                         height: '100%',
-                        overflow: 'scroll',
+                        overflow: 'auto',
                         borderRight: '1px solid rgba(81, 81, 81, 1)',
                     }}
                 >
