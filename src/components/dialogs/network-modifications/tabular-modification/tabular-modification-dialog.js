@@ -72,13 +72,11 @@ const TabularModificationDialog = ({
 
     const { reset } = formMethods;
 
-    const getValueFromEnum = useCallback(
-        (content, possibleValuesKeys) => {
-            const value = possibleValuesKeys.find(
-                (option) => intl.formatMessage({ id: option.label }) === content
-            );
-            return value.id;
-        },
+    const getEnumIdFromLabel = useCallback(
+        (label, enumValues) =>
+            enumValues.find(
+                (es) => intl.formatMessage({ id: es.label }) === label
+            )?.id,
         [intl]
     );
 
@@ -119,7 +117,7 @@ const TabularModificationDialog = ({
                         modification[key] = value;
                     } else if (key === 'loadType') {
                         modification[key] = toModificationOperation(
-                            getValueFromEnum(value, LOAD_TYPES)
+                            getEnumIdFromLabel(value, LOAD_TYPES) ?? value
                         );
                     } else {
                         modification[key] = toModificationOperation(value);
@@ -141,7 +139,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid, getValueFromEnum]
+        [currentNodeUuid, editData, snackError, studyUuid, getEnumIdFromLabel]
     );
 
     const clear = useCallback(() => {
