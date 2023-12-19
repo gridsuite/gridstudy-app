@@ -26,12 +26,22 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'lowVoltageLimit',
         'highVoltageLimit',
     ],
+    LINE: [
+        'equipmentId',
+        'seriesResistance',
+        'seriesReactance',
+        'shuntConductance1',
+        'shuntSusceptance1',
+        'shuntConductance2',
+        'shuntSusceptance2',
+    ],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+    LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
 };
 
 export interface Modification {

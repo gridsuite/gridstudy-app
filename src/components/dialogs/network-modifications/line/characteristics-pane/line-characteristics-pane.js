@@ -61,7 +61,7 @@ const LineCharacteristicsPane = ({
     const seriesResistanceField = (
         <FloatInput
             name={`${id}.${SERIES_RESISTANCE}`}
-            label="SeriesResistanceText"
+            label="seriesResistance"
             adornment={OhmAdornment}
             previousValue={lineToModify?.r}
             clearable={clearableFields}
@@ -71,7 +71,7 @@ const LineCharacteristicsPane = ({
     const seriesReactanceField = (
         <FloatInput
             name={`${id}.${SERIES_REACTANCE}`}
-            label="SeriesReactanceText"
+            label="seriesReactance"
             adornment={OhmAdornment}
             previousValue={lineToModify?.x}
             clearable={clearableFields}

@@ -68,8 +68,8 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'REACTIVE_POWER', label: 'ReactivePowerText' },
     ],
     [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
-        { id: 'SERIES_RESISTANCE', label: 'SeriesResistanceText' },
-        { id: 'SERIES_REACTANCE', label: 'SeriesReactanceText' },
+        { id: 'SERIES_RESISTANCE', label: 'seriesResistance' },
+        { id: 'SERIES_REACTANCE', label: 'seriesReactance' },
         { id: 'MAGNETIZING_CONDUCTANCE', label: 'MagnetizingConductance' },
         { id: 'MAGNETIZING_SUSCEPTANCE', label: 'MagnetizingSusceptance' },
         { id: 'RATED_VOLTAGE_1', label: 'RatedVoltage1' },

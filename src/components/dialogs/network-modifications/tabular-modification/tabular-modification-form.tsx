@@ -53,15 +53,24 @@ const TabularModificationForm = () => {
         });
     }, [intl, watchType]);
 
-    const explanationComment = useMemo(
-        () =>
-            watchType === EQUIPMENT_TYPES.GENERATOR
-                ? intl.formatMessage({
-                      id: 'TabularModificationGeneratorSkeletonComment',
-                  })
-                : '',
-        [intl, watchType]
-    );
+    const explanationComment = useMemo(() => {
+        switch (watchType) {
+            case EQUIPMENT_TYPES.GENERATOR:
+                return intl.formatMessage({
+                    id: 'TabularModificationGeneratorSkeletonComment',
+                });
+            case EQUIPMENT_TYPES.BATTERY:
+                return intl.formatMessage({
+                    id: 'TabularModificationBatterySkeletonComment',
+                });
+            case EQUIPMENT_TYPES.LINE:
+                return intl.formatMessage({
+                    id: 'TabularModificationLineSkeletonComment',
+                });
+            default:
+                return '';
+        }
+    }, [intl, watchType]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
