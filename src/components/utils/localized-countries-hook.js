@@ -40,5 +40,18 @@ export const LocalizedCountries = () => {
         return localizedCountriesModule.get(countryCode);
     };
 
-    return { translate, countryCodes };
+    const getCountryCode = (countryName) => {
+        const country = localizedCountriesModule
+            .array()
+            .find(
+                (country) =>
+                    country.label?.toUpperCase() === countryName?.toUpperCase()
+            );
+        if (country) {
+            return country.code;
+        }
+        return null;
+    };
+
+    return { translate, countryCodes, getCountryCode };
 };

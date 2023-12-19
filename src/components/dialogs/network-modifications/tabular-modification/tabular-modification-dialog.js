@@ -13,7 +13,12 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import {
+    EQUIPMENT_ID,
+    MODIFICATIONS_TABLE,
+    SUBSTATION_COUNTRY,
+    TYPE,
+} from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
@@ -25,6 +30,7 @@ import {
 } from './tabular-modification-utils';
 import { toModificationOperation } from 'components/utils/utils';
 import { useIntl } from 'react-intl';
+import { LocalizedCountries } from '../../../utils/localized-countries-hook';
 
 const formSchema = yup
     .object()
@@ -95,6 +101,7 @@ const TabularModificationDialog = ({
             });
         }
     }, [editData, reset, intl]);
+    const { getCountryCode } = LocalizedCountries();
 
     const onSubmit = useCallback(
         (formData) => {
@@ -103,13 +110,21 @@ const TabularModificationDialog = ({
                 const modification = {
                     type: modificationType,
                 };
-                Object.keys(row).forEach((key) => {
-                    const value = row[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = value;
-                    } else {
-                        modification[key] = toModificationOperation(value);
+                const formatDataToSend = (key, value) => {
+                    switch (key) {
+                        case EQUIPMENT_ID:
+                            return value;
+                        case SUBSTATION_COUNTRY:
+                            return toModificationOperation(
+                                getCountryCode(value)
+                            );
+                        default:
+                            return toModificationOperation(value);
                     }
+                };
+
+                Object.keys(row).forEach((key) => {
+                    modification[key] = formatDataToSend(key, row[key]);
                 });
                 return modification;
             });
@@ -127,7 +142,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid, getCountryCode]
     );
 
     const clear = useCallback(() => {
