@@ -31,17 +31,21 @@ import {
 } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community/dist/lib/main';
-import { richTypeEquals } from 'components/utils/utils';
-import { getIdOrValue } from '../../commons/utils';
 
 const TabularModificationForm = () => {
     const intl = useIntl();
 
     const { setValue, clearErrors, getValues } = useFormContext();
 
-    const richTypeLabel = (rt: { id: string; label: string } | string) => {
-        return intl.formatMessage({ id: getIdOrValue(rt) });
-    };
+    const getTypeLabel = useCallback(
+        (type: string) =>
+            type === EQUIPMENT_TYPES.SHUNT_COMPENSATOR
+                ? intl.formatMessage({
+                      id: 'linearShuntCompensators',
+                  })
+                : intl.formatMessage({ id: type }),
+        [intl]
+    );
 
     const watchType = useWatch({
         name: TYPE,
@@ -132,12 +136,11 @@ const TabularModificationForm = () => {
 
     const equipmentTypeField = (
         <AutocompleteInput
-            isOptionEqualToValue={richTypeEquals}
             name={TYPE}
             label="Type"
             options={typesOptions}
             onChangeCallback={handleChange}
-            getOptionLabel={richTypeLabel}
+            getOptionLabel={(option) => getTypeLabel(option as string)}
             size={'small'}
             formProps={{ variant: 'filled' }}
         />
@@ -159,18 +162,18 @@ const TabularModificationForm = () => {
 
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
-            const colunmDef: ColDef = {};
+            const columnDef: ColDef = {};
             if (field === 'equipmentId') {
-                colunmDef.pinned = true;
+                columnDef.pinned = true;
             }
-            colunmDef.field = field;
-            colunmDef.headerName = intl.formatMessage({ id: field });
+            columnDef.field = field;
+            columnDef.headerName = intl.formatMessage({ id: field });
             if (field === 'voltageRegulationOn') {
-                colunmDef.cellRenderer = BooleanNullableCellRenderer;
+                columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
-                colunmDef.cellRenderer = DefaultCellRenderer;
+                columnDef.cellRenderer = DefaultCellRenderer;
             }
-            return colunmDef;
+            return columnDef;
         });
     }, [intl, watchType]);
 
