@@ -894,7 +894,6 @@
     "VoltageLevel1": "Poste côté 1",
     "VoltageLevel2": "Poste côté 2",
     "NewVoltageLevel": "Créer poste",
-    "EditNewVoltageLevel": "Modifier poste",
     "AttachedVoltageLevelId": "Poste en piquage",
     "AttachmentPoint": "Point de piquage",
     "AttachmentPointId": "ID point de piquage",

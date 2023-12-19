@@ -41,8 +41,8 @@ const LineAttachToVoltageLevelForm = ({
     lineToEdit,
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
+    allVoltageLevelOptions,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
@@ -65,33 +65,6 @@ const LineAttachToVoltageLevelForm = ({
     const openVoltageLevelDialog = () => {
         setVoltageLevelDialogOpen(true);
     };
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNode?.id]);
-
-    const allVoltageLevelOptions = useMemo(() => {
-        if (!voltageLevelToEdit) {
-            return voltageLevelOptions;
-        } else {
-            const formattedVoltageLevel =
-                getNewVoltageLevelData(voltageLevelToEdit);
-            return [
-                formattedVoltageLevel,
-                ...voltageLevelOptions.filter(
-                    (vl) => vl.id !== formattedVoltageLevel.id
-                ),
-            ];
-        }
-    }, [voltageLevelToEdit, voltageLevelOptions]);
 
     const lineToAttachToForm = (
         <LineToAttachOrSplitForm
@@ -165,13 +138,7 @@ const LineAttachToVoltageLevelForm = ({
                         }
                     >
                         <Typography align="left">
-                            <FormattedMessage
-                                id={
-                                    isVoltageLevelEdit
-                                        ? 'EditNewVoltageLevel'
-                                        : 'NewVoltageLevel'
-                                }
-                            />
+                            <FormattedMessage id="NewVoltageLevel" />
                         </Typography>
                     </Button>
                 )}

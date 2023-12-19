@@ -895,7 +895,6 @@
     "VoltageLevel1": "Voltage level 1",
     "VoltageLevel2": "Voltage level 2",
     "NewVoltageLevel": "Create voltage level",
-    "EditNewVoltageLevel": "Modify voltage level",
     "AttachedVoltageLevelId": "Voltage level",
     "AttachmentPoint": "Attachment point",
     "AttachmentPointId": "Attachment point ID",
