@@ -10,15 +10,15 @@ import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
+    CONNECTIVITY,
+    ID,
     LINE1_ID,
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
-    CONNECTIVITY,
     VOLTAGE_LEVEL,
-    ID,
 } from 'components/utils/field-constants';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { gridItem, GridSection } from '../../dialogUtils';
 
 import { TextInput } from '@gridsuite/commons-ui';
@@ -30,8 +30,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
-import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
-import { getNewVoltageLevelData } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { useWatch } from 'react-hook-form';
 
 const LineAttachToVoltageLevelForm = ({
