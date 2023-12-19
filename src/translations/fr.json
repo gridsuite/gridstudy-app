@@ -703,6 +703,7 @@
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
     "activePowerSetpoint": "P consigne (MW)",
+    "reactivePowerSetpoint": "Q consigne (MVar)",
     "minActivePower": "P min (MW)",
     "voltageRegulationOn": "Réglage de tension",
     "ModificationsRequiredTabError": "Au moins une modification est requise",
