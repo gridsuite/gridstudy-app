@@ -163,18 +163,18 @@ const TabularModificationForm = () => {
 
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
-            const colunmDef: ColDef = {};
+            const columnDef: ColDef = {};
             if (field === 'equipmentId') {
-                colunmDef.pinned = true;
+                columnDef.pinned = true;
             }
-            colunmDef.field = field;
-            colunmDef.headerName = intl.formatMessage({ id: field });
+            columnDef.field = field;
+            columnDef.headerName = intl.formatMessage({ id: field });
             if (field === 'voltageRegulationOn') {
-                colunmDef.cellRenderer = BooleanNullableCellRenderer;
+                columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
-                colunmDef.cellRenderer = DefaultCellRenderer;
+                columnDef.cellRenderer = DefaultCellRenderer;
             }
-            return colunmDef;
+            return columnDef;
         });
     }, [intl, watchType]);
 
