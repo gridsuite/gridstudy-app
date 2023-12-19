@@ -94,22 +94,23 @@ const isEditableRegulatingTerminalCell = (params) => {
 };
 
 const RegulatingTerminalCellGetter = (params) => {
-    const regulatingTerminalConnectableId =
-        params?.data?.regulatingTerminalConnectableId;
-    const regulatingTerminalVlId = params?.data?.regulatingTerminalVlId;
-    const regulatingTerminalConnectableType =
-        params?.data?.regulatingTerminalConnectableType;
+    const {
+        regulatingTerminalConnectableId,
+        regulatingTerminalVlId,
+        regulatingTerminalConnectableType,
+    } = params?.data || {};
+
     if (
-        regulatingTerminalVlId === ' ' ||
-        regulatingTerminalConnectableId === ' '
+        regulatingTerminalVlId &&
+        regulatingTerminalConnectableId &&
+        regulatingTerminalConnectableType.trim() !== '' &&
+        regulatingTerminalConnectableId.trim() !== ''
     ) {
-        return null;
-    } else if (regulatingTerminalVlId || regulatingTerminalConnectableId) {
-        return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
+        return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId})`;
     }
+
     return null;
 };
-
 const generateEditableNumericColumnDefinition = (
     id,
     field,

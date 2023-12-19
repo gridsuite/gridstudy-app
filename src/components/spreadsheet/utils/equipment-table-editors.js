@@ -31,26 +31,21 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
             () => {
                 return {
                     getValue: () => {
-                        const regulatingTerminalConnectableId =
-                            gridContext.dynamicValidation
-                                ?.regulatingTerminalConnectableId;
-                        const regulatingTerminalVlId =
-                            gridContext.dynamicValidation
-                                ?.regulatingTerminalVlId;
-                        const regulatingTerminalConnectableType =
-                            gridContext.dynamicValidation
-                                ?.regulatingTerminalConnectableType;
+                        const {
+                            regulatingTerminalConnectableId,
+                            regulatingTerminalVlId,
+                            regulatingTerminalConnectableType,
+                        } = gridContext.dynamicValidation || {};
+
                         if (
-                            regulatingTerminalVlId === ' ' ||
-                            regulatingTerminalConnectableId === ' '
+                            (regulatingTerminalVlId ||
+                                regulatingTerminalConnectableId) &&
+                            regulatingTerminalVlId.trim() !== '' &&
+                            regulatingTerminalConnectableId.trim() !== ''
                         ) {
-                            return null;
-                        } else if (
-                            regulatingTerminalVlId ||
-                            regulatingTerminalConnectableId
-                        ) {
-                            return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId} )`;
+                            return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId})`;
                         }
+
                         return null;
                     },
                     getField: () => {
@@ -58,13 +53,7 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                     },
                 };
             },
-            [
-                colDef.field,
-                gridContext.dynamicValidation?.regulatingTerminalConnectableId,
-                gridContext.dynamicValidation
-                    ?.regulatingTerminalConnectableType,
-                gridContext.dynamicValidation?.regulatingTerminalVlId,
-            ]
+            [colDef.field, gridContext.dynamicValidation]
         );
 
         const handleSaveRegulatingTerminalPopup = (
