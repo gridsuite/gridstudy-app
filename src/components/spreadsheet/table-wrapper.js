@@ -35,7 +35,10 @@ import {
     ReferenceLineCellRenderer,
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
@@ -55,6 +58,7 @@ import {
     checkValidationsAndRefreshCells,
     updateShuntCompensatorCells,
 } from './utils/equipment-table-utils';
+import { fetchNetworkElementInfos } from 'services/study/network';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -132,6 +136,9 @@ const TableWrapper = (props) => {
     ] = useState([]);
 
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
+    const [lastModifiedEquipment, setLastModifiedEquipment] = useState();
 
     const [tabIndex, setTabIndex] = useState(0);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
@@ -660,6 +667,7 @@ const TableWrapper = (props) => {
                     setEditingData();
                     resetBuffer();
                     editingDataRef.current = editingData;
+                    setLastModifiedEquipment(editingData);
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
@@ -680,6 +688,53 @@ const TableWrapper = (props) => {
             tabIndex,
         ]
     );
+
+    // After the modification has been applied, we need to update the equipment data in the grid
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'UPDATE_FINISHED'
+            ) {
+                if (lastModifiedEquipment) {
+                    fetchNetworkElementInfos(
+                        props.studyUuid,
+                        props.currentNode.id,
+                        lastModifiedEquipment.metadata.equipmentType,
+                        EQUIPMENT_INFOS_TYPES.TAB.type,
+                        lastModifiedEquipment.id,
+                        true
+                    )
+                        .then((updatedEquipment) => {
+                            const transaction = {
+                                update: [updatedEquipment],
+                            };
+                            gridRef.current.api.applyTransaction(transaction);
+                            setLastModifiedEquipment();
+                            gridRef.current.api.refreshCells({
+                                force: true,
+                                rowNodes: [
+                                    gridRef.current.api.getRowNode(
+                                        updatedEquipment.id
+                                    ),
+                                ],
+                            });
+                        })
+                        .catch((error) => {
+                            console.error(
+                                'equipment data update failed',
+                                error
+                            );
+                        });
+                }
+            }
+        }
+    }, [
+        lastModifiedEquipment,
+        props.currentNode.id,
+        props.studyUuid,
+        studyUpdatedForce,
+    ]);
 
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
