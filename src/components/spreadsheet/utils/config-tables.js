@@ -314,7 +314,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesResistance',
+                id: 'seriesResistance',
                 field: 'r',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -322,7 +322,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesReactance',
+                id: 'seriesReactance',
                 field: 'x',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
