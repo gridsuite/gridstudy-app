@@ -1267,7 +1267,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetV',
+                id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1700,7 +1700,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'voltageSetpoint',
+                id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2177,7 +2177,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'voltageSetpoint',
+                id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

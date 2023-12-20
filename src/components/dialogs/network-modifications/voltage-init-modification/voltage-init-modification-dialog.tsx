@@ -183,7 +183,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                 pinned: true,
             },
             {
-                headerName: intl.formatMessage({ id: 'voltageSetpoint' }),
+                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
                 field: VOLTAGE_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
@@ -231,7 +231,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                 pinned: true,
             },
             {
-                headerName: intl.formatMessage({ id: 'voltageSetpoint' }),
+                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
                 field: VOLTAGE_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
@@ -255,7 +255,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                 pinned: true,
             },
             {
-                headerName: intl.formatMessage({ id: 'voltageSetpoint' }),
+                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
                 field: VOLTAGE_SET_POINT,
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
