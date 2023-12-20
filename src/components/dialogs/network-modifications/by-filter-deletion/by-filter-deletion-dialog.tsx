@@ -16,15 +16,19 @@ import {
 } from '../../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
-import React, { useCallback, useEffect } from 'react';
+import { FunctionComponent, useCallback, useEffect } from 'react';
 import ModificationDialog from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { byFilterDeleteEquipment } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import ByFilterDeletionForm from './by-filter-deletion-form';
+import {
+    ByFilterDeletionDialogProps,
+    EditData,
+    FormData,
+} from './by-filter-deletion.type';
 
 const formSchema = yup
     .object()
@@ -57,22 +61,26 @@ const emptyFormData = {
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
+ * @param onClose on modification dialog close
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-const ByFilterDeletionDialog = ({
+const ByFilterDeletionDialog: FunctionComponent<
+    ByFilterDeletionDialogProps
+> = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
     editDataFetchStatus,
+    onClose,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<FormData>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -80,9 +88,11 @@ const ByFilterDeletionDialog = ({
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (editData) => {
+        (editData: EditData) => {
             reset({
-                [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
+                [TYPE]: EQUIPMENT_TYPES[
+                    editData.equipmentType
+                ] as keyof typeof EQUIPMENT_TYPES,
                 [FILTERS]: editData.filters,
             });
         },
@@ -96,7 +106,7 @@ const ByFilterDeletionDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (formData) => {
+        (formData: FormData) => {
             byFilterDeleteEquipment(
                 studyUuid,
                 currentNodeUuid,
@@ -126,11 +136,17 @@ const ByFilterDeletionDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <FormProvider
+            {...{
+                validationSchema: formSchema,
+                ...formMethods,
+            }}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
                 onClear={clear}
+                onClose={onClose}
                 onSave={onSubmit}
                 aria-labelledby="dialog-by-filter-equipment-deletion"
                 titleId="DeleteEquipmentByFilter"
@@ -144,14 +160,6 @@ const ByFilterDeletionDialog = ({
             </ModificationDialog>
         </FormProvider>
     );
-};
-
-ByFilterDeletionDialog.propTypes = {
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    editData: PropTypes.object,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
 };
 
 export default ByFilterDeletionDialog;
