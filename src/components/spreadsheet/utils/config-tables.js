@@ -244,6 +244,7 @@ export const TABLES_DEFINITIONS = {
                 }),
                 crossValidation: {
                     optional: true,
+                    minExpression: 0,
                 },
             },
             {
@@ -285,6 +286,7 @@ export const TABLES_DEFINITIONS = {
                         requiredOn: {
                             dependencyColumn: 'identifiableShortCircuit.ipMin',
                         },
+                        minExpression: 0,
                     },
                 },
             },
