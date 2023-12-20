@@ -220,8 +220,7 @@ const SubstationModificationDialog = ({
                     EQUIPMENT_TYPES.SUBSTATION,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true,
-                    null
+                    true
                 )
                     .then((substation) => {
                         if (substation) {

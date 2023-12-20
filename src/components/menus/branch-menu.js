@@ -88,8 +88,7 @@ const withBranchMenu =
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
                 equipment.id,
-                false,
-                null
+                false
             ).then((value) => {
                 if (value) {
                     setBranch(value);

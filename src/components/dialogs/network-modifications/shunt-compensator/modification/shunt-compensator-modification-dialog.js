@@ -154,7 +154,7 @@ const ShuntCompensatorModificationDialog = ({
                     .catch((error) => {
                         setShuntCompensatorInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        if (error.status === 500) {
+                        if (error.status === 501) {
                             snackError({
                                 headerId: 'ShuntCompensatorNonlinearError',
                             });

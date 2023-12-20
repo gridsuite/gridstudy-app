@@ -57,8 +57,7 @@ const EquipmentPopover = ({
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.TOOLTIP.type,
                 equipmentId,
-                true,
-                null
+                true
             ).then((value) => {
                 setEquipmentInfo(value);
             });

@@ -109,8 +109,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                     EQUIPMENT_TYPES.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.LIST.type,
                     element.id,
-                    true,
-                    null
+                    true
                 ).then((vl) => vl.substationId);
             }
             substationIdPromise.then((substationId) => {

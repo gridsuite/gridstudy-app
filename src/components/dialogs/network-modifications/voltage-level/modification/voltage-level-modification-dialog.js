@@ -108,8 +108,7 @@ const VoltageLevelModificationDialog = ({
                     EQUIPMENT_TYPES.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true,
-                    null
+                    true
                 )
                     .then((voltageLevel) => {
                         if (voltageLevel) {

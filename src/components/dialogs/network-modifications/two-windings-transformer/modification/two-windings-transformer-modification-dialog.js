@@ -708,8 +708,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true,
-                    null
+                    true
                 )
                     .then((twt) => {
                         if (twt) {
