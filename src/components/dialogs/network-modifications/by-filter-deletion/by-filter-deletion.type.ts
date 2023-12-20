@@ -6,7 +6,7 @@
  */
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
-export interface Filter {
+interface Filter {
     id: string;
     name: string;
     specificMetadata: {
