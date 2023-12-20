@@ -694,39 +694,37 @@ const TableWrapper = (props) => {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'UPDATE_FINISHED'
+                    'UPDATE_FINISHED' &&
+                studyUpdatedForce.eventData.headers['parentNode'] ===
+                    props.currentNode.id &&
+                lastModifiedEquipment
             ) {
-                if (lastModifiedEquipment) {
-                    fetchNetworkElementInfos(
-                        props.studyUuid,
-                        props.currentNode.id,
-                        lastModifiedEquipment.metadata.equipmentType,
-                        EQUIPMENT_INFOS_TYPES.TAB.type,
-                        lastModifiedEquipment.id,
-                        true
-                    )
-                        .then((updatedEquipment) => {
-                            const transaction = {
-                                update: [updatedEquipment],
-                            };
-                            gridRef.current.api.applyTransaction(transaction);
-                            setLastModifiedEquipment();
-                            gridRef.current.api.refreshCells({
-                                force: true,
-                                rowNodes: [
-                                    gridRef.current.api.getRowNode(
-                                        updatedEquipment.id
-                                    ),
-                                ],
-                            });
-                        })
-                        .catch((error) => {
-                            console.error(
-                                'equipment data update failed',
-                                error
-                            );
+                fetchNetworkElementInfos(
+                    props.studyUuid,
+                    props.currentNode.id,
+                    lastModifiedEquipment.metadata.equipmentType,
+                    EQUIPMENT_INFOS_TYPES.TAB.type,
+                    lastModifiedEquipment.id,
+                    true
+                )
+                    .then((updatedEquipment) => {
+                        const transaction = {
+                            update: [updatedEquipment],
+                        };
+                        gridRef.current.api.applyTransaction(transaction);
+                        setLastModifiedEquipment();
+                        gridRef.current.api.refreshCells({
+                            force: true,
+                            rowNodes: [
+                                gridRef.current.api.getRowNode(
+                                    updatedEquipment.id
+                                ),
+                            ],
                         });
-                }
+                    })
+                    .catch((error) => {
+                        console.error('equipment data update failed', error);
+                    });
             }
         }
     }, [
