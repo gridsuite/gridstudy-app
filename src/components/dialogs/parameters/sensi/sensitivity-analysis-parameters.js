@@ -10,7 +10,14 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Grid, Button, DialogActions } from '@mui/material';
+import {
+    Grid,
+    Button,
+    DialogActions,
+    Box,
+    CircularProgress,
+    Typography,
+} from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -116,7 +123,7 @@ export const SensitivityAnalysisParameters = ({
     const { snackError } = useSnackMessage();
 
     const [popupConfirm, setPopupConfirm] = useState(false);
-
+    const [launchLoader, setLaunchLoader] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
     const [providers, provider, updateProvider, resetProvider] =
@@ -274,6 +281,7 @@ export const SensitivityAnalysisParameters = ({
 
     const onChangeParams = useCallback(
         (row, arrayFormName, index) => {
+            setLaunchLoader(true);
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
                 arrayFormName === SENSI_INJECTIONS_SET,
@@ -287,6 +295,7 @@ export const SensitivityAnalysisParameters = ({
                         );
                         setAnalysisComputeComplexity(getResultCount());
                         onFormChanged(false);
+                        setLaunchLoader(false);
                     });
                 })
                 .catch((error) => {
@@ -548,7 +557,48 @@ export const SensitivityAnalysisParameters = ({
         resetSensitivityParametersAndProvider,
     ]);
 
-    const isMaxReached = () => Math.abs(analysisComputeComplexity) > numberMax;
+    const renderComputingEventLoading = () => {
+        return (
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        sx={styles.circularProgress}
+                    />
+                </Box>
+                <Typography noWrap>
+                    <FormattedMessage id={'computing in progress'} />
+                </Typography>
+            </Box>
+        );
+    };
+
+    const renderComputingEvent = () => {
+        return (
+            <Alert severity={isMaxReached ? 'error' : 'info'}>
+                {analysisComputeComplexity > 999999 ? (
+                    <FormattedMessage id="SimulatedCalculationExceedsLimit" />
+                ) : (
+                    <>
+                        {analysisComputeComplexity
+                            .toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
+                        <FormattedMessage id="SimulatedCalculation" />
+                    </>
+                )}
+            </Alert>
+        );
+    };
+
+    const isMaxReached = useMemo(
+        () => analysisComputeComplexity > numberMax,
+        [analysisComputeComplexity]
+    );
+    const renderSimulatedComputing = () => {
+        return launchLoader
+            ? renderComputingEventLoading()
+            : renderComputingEvent();
+    };
 
     return (
         <>
@@ -585,28 +635,7 @@ export const SensitivityAnalysisParameters = ({
                     </Grid>
                     <Grid container justifyContent={'right'}>
                         <Grid item marginBottom="-50px">
-                            <Alert
-                                sx={{ width: '300px' }}
-                                severity={
-                                    analysisComputeComplexity > numberMax
-                                        ? 'error'
-                                        : 'info'
-                                }
-                            >
-                                {analysisComputeComplexity > 999999 ? (
-                                    <FormattedMessage id="SimulatedCalculationExceedsLimit" />
-                                ) : (
-                                    <>
-                                        {analysisComputeComplexity
-                                            .toString()
-                                            .replace(
-                                                /\B(?=(\d{3})+(?!\d))/g,
-                                                ' '
-                                            )}{' '}
-                                        <FormattedMessage id="SimulatedCalculation" />
-                                    </>
-                                )}
-                            </Alert>
+                            {renderSimulatedComputing()}
                             <FormattedMessage id="SimulatedCalculationMax" />
                         </Grid>
                     </Grid>
@@ -626,7 +655,7 @@ export const SensitivityAnalysisParameters = ({
                     <SubmitButton
                         onClick={handleSubmit(onSubmit)}
                         variant="outlined"
-                        disabled={isMaxReached()}
+                        disabled={launchLoader || isMaxReached}
                     >
                         <FormattedMessage id="validate" />
                     </SubmitButton>
