@@ -387,7 +387,7 @@
     "ShortCircuitAnalysis": "Analyse de court-circuit",
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",
-    "startSensitivityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibility",
+    "startSensitivityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité",
     "ShortCircuitAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
     "ShortCircuitAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de court-circuit",
     "ShortCircuitAnalysisTabOneBus": "Unitaire",
@@ -638,6 +638,7 @@
     "createNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "pasteNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "removeNode": "Supprimer le nœud",
+    "unbuildNode": "Déréaliser le nœud",
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
@@ -649,6 +650,7 @@
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
+    "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
     "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer une consommation",
     "ModifyLoad": "Modifier une consommation",
@@ -701,6 +703,7 @@
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
     "activePowerSetpoint": "P consigne (MW)",
+    "reactivePowerSetpoint": "Q consigne (MVar)",
     "minActivePower": "P min (MW)",
     "voltageRegulationOn": "Réglage de tension",
     "ModificationsRequiredTabError": "Au moins une modification est requise",
@@ -1040,8 +1043,9 @@
     "cutNetworkModificationSubtree": "Couper le sous arbre",
     "cancelCutNetworkModificationSubtree": "Annuler couper le sous arbre",
     "removeNetworkModificationSubtree": "Supprimer le sous arbre",
-    "restoreNodes": "Restaurer des nœuds",
+    "restoreNodes": "Restaurer / Supprimer des nœuds",
     "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer",
+    "deleteNodesText": "Êtes-vous sûr(e) de vouloir supprimer définitivement {numberToDelete} nœuds ou sous-arbres ?",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
@@ -1115,6 +1119,9 @@
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
+    "SimulatedCalculation": "calculs simulés",
+    "SimulatedCalculationMax": "500 000 max",
+
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
@@ -1349,5 +1356,9 @@
     "customAgGridFilter.lessThanOrEqual": "Inférieur ou égal",
     "customAgGridFilter.greaterThanOrEqual": "Supérieur ou égal",
     "customAgGridFilter.filterOoo": "Filtrer...",
-    "undefined" : "non défini"
+    "undefined" : "non défini",
+    "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
+    "nominalVoltage": "Tension nominale (kV)",
+    "lowVoltageLimit": "Limite tension basse (kV)",
+    "highVoltageLimit": "Limite tension haute (kV)"
 }

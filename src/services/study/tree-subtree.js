@@ -189,23 +189,50 @@ export function fetchStashedNodes(studyUuid) {
     return backendFetchJson(url);
 }
 
-export function restoreStashedNodes(studyUuid, nodeToRestoreId, anchorNodeId) {
+export function restoreStashedNodes(studyUuid, nodeToRestoreIds, anchorNodeId) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(
+        'ids',
+        nodeToRestoreIds.map((id) => encodeURIComponent(id))
+    );
+    urlSearchParams.append('anchorNodeId', encodeURIComponent(anchorNodeId));
+
     console.info(
-        'Restoring node %s under node %s of study : %s',
-        nodeToRestoreId,
-        nodeToRestoreId,
+        'Restoring nodes %s under nodes %s of study : %s',
+        nodeToRestoreIds,
+        nodeToRestoreIds,
         studyUuid
     );
     const url =
         getStudyUrl(studyUuid) +
-        '/tree/nodes/' +
-        encodeURIComponent(nodeToRestoreId) +
-        '/restore?anchorNodeId=' +
-        encodeURIComponent(anchorNodeId);
+        '/tree/nodes/restore?' +
+        urlSearchParams.toString();
 
     console.debug(url);
     return backendFetch(url, {
         method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function deleteStashedNodes(studyUuid, nodeToDeleteIds) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(
+        'ids',
+        nodeToDeleteIds.map((id) => encodeURIComponent(id))
+    );
+    urlSearchParams.append('deleteChildren', true);
+
+    console.info('Delete nodes %s of study : %s', nodeToDeleteIds, studyUuid);
+    const url =
+        getStudyUrl(studyUuid) + '/tree/nodes?' + urlSearchParams.toString();
+
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'delete',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
