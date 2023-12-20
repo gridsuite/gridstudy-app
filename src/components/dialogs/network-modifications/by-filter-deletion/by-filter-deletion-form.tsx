@@ -27,9 +27,12 @@ const ByFilterDeletionForm = () => {
 
     const { setValue } = useFormContext();
 
-    const richTypeLabel = (rt: { id: string; label: string } | string) => {
-        return intl.formatMessage({ id: getIdOrValue(rt) });
-    };
+    const richTypeLabel = useMemo(
+        () => (rt: { id: string; label: string } | string) => {
+            return intl.formatMessage({ id: getIdOrValue(rt) });
+        },
+        [intl]
+    );
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
@@ -63,18 +66,20 @@ const ByFilterDeletionForm = () => {
         );
     }, [equipmentTypeWatch]);
 
-    const equipmentTypeField = (
-        <AutocompleteInput
-            isOptionEqualToValue={richTypeEquals}
-            name={TYPE}
-            label="Type"
-            options={typesOptions}
-            onChangeCallback={handleEquipmentTypeChange}
-            getOptionLabel={richTypeLabel}
-            size={'small'}
-            formProps={{ variant: 'filled' }}
-        />
-    );
+    const equipmentTypeField = useMemo(() => {
+        return (
+            <AutocompleteInput
+                isOptionEqualToValue={richTypeEquals}
+                name={TYPE}
+                label="Type"
+                options={typesOptions}
+                onChangeCallback={handleEquipmentTypeChange}
+                getOptionLabel={richTypeLabel}
+                size={'small'}
+                formProps={{ variant: 'filled' }}
+            />
+        );
+    }, [handleEquipmentTypeChange, richTypeLabel, typesOptions]);
 
     return (
         <>

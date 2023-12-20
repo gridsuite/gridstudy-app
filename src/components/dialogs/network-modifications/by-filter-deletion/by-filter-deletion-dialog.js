@@ -9,7 +9,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     TYPE,
-    DELETION_SPECIFIC_DATA,
     FILTERS,
     ID,
     NAME,
@@ -103,8 +102,7 @@ const ByFilterDeletionDialog = ({
                 currentNodeUuid,
                 formData[TYPE],
                 formData[FILTERS],
-                editData?.uuid,
-                formData[DELETION_SPECIFIC_DATA]
+                editData?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -142,11 +140,7 @@ const ByFilterDeletionDialog = ({
                 }
                 {...dialogProps}
             >
-                <ByFilterDeletionForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    editData={editData}
-                />
+                <ByFilterDeletionForm />
             </ModificationDialog>
         </FormProvider>
     );
