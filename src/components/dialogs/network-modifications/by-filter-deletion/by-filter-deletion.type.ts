@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 interface Filter {
@@ -14,13 +15,13 @@ interface Filter {
     };
 }
 
-export interface EditData {
+export interface ByFilterDeletionEditData {
     uuid: string;
     equipmentType: keyof typeof EQUIPMENT_TYPES;
     filters: Filter[];
 }
 
-export interface FormData {
+export interface ByFilterDeletionFormData {
     type: keyof typeof EQUIPMENT_TYPES | null;
     filters: Filter[];
 }
@@ -28,7 +29,7 @@ export interface FormData {
 export interface ByFilterDeletionDialogProps {
     studyUuid: string;
     currentNode: { id: string };
-    editData: EditData;
+    editData: ByFilterDeletionEditData;
     isUpdate: boolean;
     editDataFetchStatus: string;
     onClose: () => void;

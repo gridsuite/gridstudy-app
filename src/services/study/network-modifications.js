@@ -1555,7 +1555,7 @@ export function deleteEquipment(
     });
 }
 
-export function byFilterDeleteEquipment(
+export function deleteEquipmentByFilter(
     studyUuid,
     currentNodeUuid,
     equipmentType,

@@ -21,13 +21,13 @@ import ModificationDialog from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { byFilterDeleteEquipment } from '../../../../services/study/network-modifications';
+import { deleteEquipmentByFilter } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import ByFilterDeletionForm from './by-filter-deletion-form';
 import {
     ByFilterDeletionDialogProps,
-    EditData,
-    FormData,
+    ByFilterDeletionEditData,
+    ByFilterDeletionFormData,
 } from './by-filter-deletion.type';
 
 const formSchema = yup
@@ -80,7 +80,7 @@ const ByFilterDeletionDialog: FunctionComponent<
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<FormData>({
+    const formMethods = useForm<ByFilterDeletionFormData>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -88,7 +88,7 @@ const ByFilterDeletionDialog: FunctionComponent<
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (editData: EditData) => {
+        (editData: ByFilterDeletionEditData) => {
             reset({
                 [TYPE]: EQUIPMENT_TYPES[
                     editData.equipmentType
@@ -106,8 +106,8 @@ const ByFilterDeletionDialog: FunctionComponent<
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (formData: FormData) => {
-            byFilterDeleteEquipment(
+        (formData: ByFilterDeletionFormData) => {
+            deleteEquipmentByFilter(
                 studyUuid,
                 currentNodeUuid,
                 formData[TYPE],
