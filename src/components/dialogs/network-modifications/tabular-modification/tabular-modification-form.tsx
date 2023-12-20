@@ -13,6 +13,7 @@ import {
     AutocompleteInput,
     ErrorInput,
     FieldErrorAlert,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
@@ -35,6 +36,8 @@ import { ColDef } from 'ag-grid-community/dist/lib/main';
 const TabularModificationForm = () => {
     const intl = useIntl();
 
+    const { snackWarning } = useSnackMessage();
+
     const { setValue, clearErrors, getValues } = useFormContext();
 
     const getTypeLabel = useCallback(
@@ -45,6 +48,29 @@ const TabularModificationForm = () => {
                   })
                 : intl.formatMessage({ id: type }),
         [intl]
+    );
+
+    const handleComplete = useCallback(
+        (results: Papa.ParseResult<any>) => {
+            clearErrors(MODIFICATIONS_TABLE);
+            setValue(MODIFICATIONS_TABLE, results.data, {
+                shouldDirty: true,
+            });
+            // For shunt compensators, display warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
+            if (
+                results.data.some(
+                    (modification) =>
+                        modification.maxSusceptance &&
+                        (modification.shuntCompensatorType ||
+                            modification.maxQAtNominalV)
+                )
+            ) {
+                snackWarning({
+                    messageId: 'TabularModificationShuntWarning',
+                });
+            }
+        },
+        [clearErrors, setValue, snackWarning]
     );
 
     const watchType = useWatch({
@@ -95,12 +121,7 @@ const TabularModificationForm = () => {
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 comments: '#',
-                complete: (results: Papa.ParseResult<object>) => {
-                    clearErrors(MODIFICATIONS_TABLE);
-                    setValue(MODIFICATIONS_TABLE, results.data, {
-                        shouldDirty: true,
-                    });
-                },
+                complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to modification field
                     const transformedHeader = TABULAR_MODIFICATION_FIELDS[
@@ -115,6 +136,7 @@ const TabularModificationForm = () => {
     }, [
         clearErrors,
         getValues,
+        handleComplete,
         intl,
         selectedFile,
         selectedFileError,

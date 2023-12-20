@@ -699,7 +699,8 @@
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
     "TabularModificationGeneratorSkeletonComment" : "#,,,,true | false",
-    "TabularModificationShuntSkeletonComment": "# \"For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input, the maximum susceptance will be ignored.\"",
+    "TabularModificationShuntSkeletonComment": "\"# For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input, the maximum susceptance will be ignored.\"",
+    "TabularModificationShuntWarning": "Both maximum reactive power (and/or type) and maximum susceptance have been submitted for the same shunt compensator. Maximum susceptance will thus be ignored.",
     "equipmentId": "ID",
     "activePower": "p (MW)",
     "maxActivePower": "Max P (MW)",
@@ -1341,5 +1342,6 @@
     "modificationsAlreadyApplied": "The modifications have already been applied",
     "nominalVoltage": "Nominal voltage (kV)",
     "lowVoltageLimit": "Low voltage limit (kV)",
-    "highVoltageLimit": "High voltage limit (kV)"
+    "highVoltageLimit": "High voltage limit (kV)",
+    "linearShuntCompensators": "Linear shunt compensators"
 }

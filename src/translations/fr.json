@@ -699,7 +699,8 @@
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
     "TabularModificationGeneratorSkeletonComment" : "#,,,,true | false",
-    "TabularModificationShuntSkeletonComment": "# \"Pour chaque MCS, il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit, la susceptance installée sera ignorée.\"",
+    "TabularModificationShuntSkeletonComment": "\"# Pour chaque MCS, il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit, la susceptance installée sera ignorée.\"",
+    "TabularModificationShuntWarning": "La modification tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
     "equipmentId": "ID",
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
@@ -1361,5 +1362,6 @@
     "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
     "nominalVoltage": "Tension nominale (kV)",
     "lowVoltageLimit": "Limite tension basse (kV)",
-    "highVoltageLimit": "Limite tension haute (kV)"
+    "highVoltageLimit": "Limite tension haute (kV)",
+    "linearShuntCompensators": "MCS linéaires"
 }
