@@ -1486,6 +1486,9 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
+                crossValidation: {
+                    optional: true,
+                },
             },
             {
                 id: 'TransformerReactance',
@@ -1517,6 +1520,9 @@ export const TABLES_DEFINITIONS = {
                         stepUpTransformerReactance: params.newValue,
                     };
                     return params;
+                },
+                crossValidation: {
+                    optional: true,
                 },
             },
             {
