@@ -8,16 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-    addLoadflowNotif,
-    addSANotif,
-    addSensiNotif,
-    addAllBusesShortCircuitNotif,
-    addDynamicSimulationNotif,
-    addVoltageInitNotif,
-    setComputingStatus,
-    setComputationRunning,
-} from '../redux/actions';
+import { setComputingStatus, setComputationRunning } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
@@ -88,8 +79,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
     const [showContingencyListSelector, setShowContingencyListSelector] =
         useState(false);
 
@@ -99,18 +88,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     ] = useState(false);
 
     const [computationStopped, setComputationStopped] = useState(false);
-
-    const [ranLoadflow, setRanLoadflow] = useState(false);
-
-    const [ranSA, setRanSA] = useState(false);
-
-    const [ranSensi, setRanSensi] = useState(false);
-
-    const [ranShortCircuit, setRanShortCircuit] = useState(false);
-
-    const [ranDynamicSimulation, setRanDynamicSimulation] = useState(false);
-
-    const [ranVoltageInit, setRanVoltageInit] = useState(false);
 
     const { snackError } = useSnackMessage();
 
@@ -142,7 +119,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         OptionalServicesNames.ShortCircuit
     );
 
-    
     const startComputationAsync = useCallback(
         (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId) => {
             if (fnBefore) {
@@ -232,8 +208,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 limitReductionParam / 100.0
                             );
                         },
-                        () => setRanLoadflow(true),
-                        () => setRanLoadflow(false),
+                        () => {},
+                        () => {}, //TODO (jamal) check if we need to do something here
                         'startLoadFlowError'
                     );
                 },
@@ -247,7 +223,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 messageId: 'SecurityAnalysis',
                 startComputation() {
                     setShowContingencyListSelector(true);
-                    setRanSA(true);
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.SECURITY_ANALYSIS, () =>
@@ -268,7 +243,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 currentNode?.id
                             );
                         },
-                        () => setRanSensi(true),
+                        null,
                         null,
                         'startSensitivityAnalysisError'
                     );
@@ -292,7 +267,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 currentNode?.id
                             );
                         },
-                        () => setRanShortCircuit(true),
+                        null,
                         null,
                         'startShortCircuitError'
                     );
@@ -315,7 +290,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 setShowDynamicSimulationParametersSelector(
                                     true
                                 );
-                                setRanDynamicSimulation(true);
                             } else {
                                 // start server side dynamic simulation directly
                                 return startDynamicSimulation(
@@ -347,7 +321,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                             setComputationStopped(false);
                             return startVoltageInit(studyUuid, currentNode?.id);
                         },
-                        () => setRanVoltageInit(true),
+                        null,
                         null,
                         'startVoltageInitError'
                     );
@@ -366,13 +340,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         studyUuid,
         limitReductionParam,
         currentNode?.id,
-        setRanLoadflow,
         setShowContingencyListSelector,
-        setRanSA,
-        setRanSensi,
-        setRanShortCircuit,
         setShowDynamicSimulationParametersSelector,
-        setRanDynamicSimulation,
     ]);
 
     // running status is refreshed more often, so we memoize it apart

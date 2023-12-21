@@ -24,7 +24,6 @@ import {
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
 import LogReportItem from './report-viewer/log-report-item';
-import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 import { REPORT_TYPES } from './utils/report-type';
 
 const styles = {
