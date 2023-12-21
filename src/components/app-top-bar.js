@@ -64,7 +64,7 @@ import {
 } from './utils/equipment-types';
 import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
-import { useComputationResultsCount } from '../hooks/use-computation-notification-count';
+import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 
 const styles = {
     currentNodeBox: {
