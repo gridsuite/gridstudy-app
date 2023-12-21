@@ -23,7 +23,6 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'voltageRegulationOn',
         'voltageSetpoint',
     ],
-    LOAD: ['equipmentId', 'activePower'],
     BATTERY: [
         'equipmentId',
         'minActivePower',
@@ -36,6 +35,12 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'nominalVoltage',
         'lowVoltageLimit',
         'highVoltageLimit',
+    ],
+    LOAD: [
+        'equipmentId',
+        'loadType',
+        'constantActivePower',
+        'constantReactivePower',
     ],
 };
 
@@ -61,6 +66,7 @@ export const getEquipmentTypeFromModificationType = (type: string) => {
         (key) => TABULAR_MODIFICATION_TYPES[key] === type
     );
 };
+
 export const styles = {
     grid: { height: 500, width: '100%' },
 };
