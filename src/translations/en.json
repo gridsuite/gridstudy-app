@@ -767,6 +767,7 @@
     "LowShortCircuitCurrentLimit": "Low short-circuit current limit",
     "HighShortCircuitCurrentLimit": "High short-circuit current limit",
     "ShortCircuitCurrentLimitNotNegative": "Short-circuit current limit must be non-negative",
+    "ShortCircuitCurrentLimitMinMaxError": "Low short-circuit current limit must be less or equal than high limit",
     "TransientReactance": "Transient reactance (Ω)",
     "TransientReactanceForm": "Transient reactance",
     "TransformerReactance": "Transformer reactance (Ω)",
