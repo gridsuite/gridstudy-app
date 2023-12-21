@@ -624,7 +624,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatedNominalPower',
+                id: 'ratedNominalPower',
                 field: 'ratedS',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1100,7 +1100,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'Type',
+                id: 'energySource',
                 field: 'energySource',
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editable: isEditable,
@@ -1280,7 +1280,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1326,7 +1326,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetV',
+                id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1625,7 +1625,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
             },
             {
-                id: 'LoadType',
+                id: 'loadType',
                 field: 'type',
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
@@ -1670,7 +1670,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantP',
+                id: 'constantActivePower',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1691,7 +1691,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantQ',
+                id: 'constantReactivePower',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2156,7 +2156,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2500,7 +2500,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantActivePower',
+                id: 'constantActivePower',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2508,7 +2508,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantReactivePower',
+                id: 'constantReactivePower',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
