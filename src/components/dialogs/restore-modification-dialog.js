@@ -38,6 +38,7 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(3),
+        paddingBottom: theme.spacing(1),
     }),
     list: (theme) => ({
         paddingTop: theme.spacing(0),
@@ -195,7 +196,11 @@ const RestoreModificationDialog = ({
                 >
                     <FormattedMessage id="DeleteRows" />
                 </Button>
-                <Button onClick={handleRestore} disabled={!selectedItems.size}>
+                <Button
+                    variant="outlined"
+                    onClick={handleRestore}
+                    disabled={!selectedItems.size}
+                >
                     <FormattedMessage id="restore" />
                 </Button>
             </DialogActions>
