@@ -77,21 +77,31 @@ const TabularModificationDialog = ({
     });
 
     const { reset } = formMethods;
+    const { getCountryCode, translate } = LocalizedCountries();
 
     useEffect(() => {
         if (editData) {
             const equipmentType = getEquipmentTypeFromModificationType(
                 editData?.modificationType
             );
+            const convertDataFromBackToFront = (key, value) => {
+                switch (key) {
+                    case EQUIPMENT_ID:
+                        return value;
+                    case SUBSTATION_COUNTRY:
+                        const getCountryName = (code) => translate(code);
+                        return getCountryName(value?.value);
+                    default:
+                        return value?.value;
+                }
+            };
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    const field = modif[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = field;
-                    } else {
-                        modification[key] = field?.value;
-                    }
+                    modification[key] = convertDataFromBackToFront(
+                        key,
+                        modif[key]
+                    );
                 });
                 return modification;
             });
@@ -100,8 +110,7 @@ const TabularModificationDialog = ({
                 [MODIFICATIONS_TABLE]: modifications,
             });
         }
-    }, [editData, reset, intl]);
-    const { getCountryCode } = LocalizedCountries();
+    }, [editData, reset, intl, translate]);
 
     const onSubmit = useCallback(
         (formData) => {
