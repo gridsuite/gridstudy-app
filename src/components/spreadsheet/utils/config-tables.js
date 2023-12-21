@@ -660,7 +660,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatedNominalPower',
+                id: 'ratedNominalPower',
                 field: 'ratedS',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1136,7 +1136,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'Type',
+                id: 'energySource',
                 field: 'energySource',
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editable: isEditable,
@@ -1316,7 +1316,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1362,7 +1362,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetV',
+                id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2236,7 +2236,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
