@@ -100,7 +100,7 @@ const GeneratorModificationForm = ({
     const energySourceField = (
         <SelectInput
             name={ENERGY_SOURCE}
-            label={'EnergySourceText'}
+            label={'energySource'}
             options={ENERGY_SOURCES}
             fullWidth
             size={'small'}
