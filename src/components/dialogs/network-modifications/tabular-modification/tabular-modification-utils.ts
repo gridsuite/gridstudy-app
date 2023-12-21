@@ -26,12 +26,15 @@ export interface TabularModificationFields {
 export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     GENERATOR: [
         'equipmentId',
+        'energySource',
         'minActivePower',
-        'activePowerSetpoint',
         'maxActivePower',
+        'activePowerSetpoint',
+        'ratedNominalPower',
+        'reactivePowerSetpoint',
         'voltageRegulationOn',
+        'voltageSetpoint',
     ],
-    LOAD: ['equipmentId', 'activePower'],
     BATTERY: [
         'equipmentId',
         'minActivePower',
@@ -44,6 +47,12 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'nominalVoltage',
         'lowVoltageLimit',
         'highVoltageLimit',
+    ],
+    LOAD: [
+        'equipmentId',
+        'loadType',
+        'constantActivePower',
+        'constantReactivePower',
     ],
     TWO_WINDINGS_TRANSFORMER: [
         EQUIPMENT_ID,
@@ -111,6 +120,7 @@ export const getEquipmentTypeFromModificationType = (type: string) => {
         (key) => TABULAR_MODIFICATION_TYPES[key] === type
     );
 };
+
 export const styles = {
     grid: { height: 500, width: '100%' },
 };
