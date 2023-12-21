@@ -746,6 +746,8 @@
     "VoltageText": "Voltage",
     "QPercentText": "Reactive percentage",
     "Limits": "Limits",
+    "ActivePowerRegulationDroop": "Active power regulation droop",
+    "ReactivePercentageVoltageRegulation": "Reactive percentage",
     "ActiveLimits": "Active limits",
     "ReactiveLimits": "Reactive limits",
     "ReactiveLimitsKindMinMax": "By range",

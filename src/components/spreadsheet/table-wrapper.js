@@ -513,13 +513,44 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
+                        getFieldValue(
+                            editingData?.coordinatedReactiveControl?.qPercent,
+                            editingDataRef.current?.coordinatedReactiveControl
+                                ?.qPercent
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup
+                                ?.plannedActivePowerSetPoint,
+                            editingDataRef.current?.generatorStartup
+                                ?.plannedActivePowerSetPoint
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup?.marginalCost,
+                            editingDataRef.current?.generatorStartup
+                                ?.marginalCost
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup?.plannedOutageRate,
+                            editingDataRef.current?.generatorStartup
+                                ?.plannedOutageRate
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup?.forcedOutageRate,
+                            editingDataRef.current?.generatorStartup
+                                ?.forcedOutageRate
+                        ),
+                        getFieldValue(
+                            editingData?.generatorShortCircuit
+                                ?.transientReactance,
+                            editingDataRef.current?.generatorShortCircuit
+                                ?.transientReactance
+                        ),
+                        getFieldValue(
+                            editingData?.generatorShortCircuit
+                                ?.stepUpTransformerReactance,
+                            editingDataRef.current?.generatorShortCircuit
+                                ?.stepUpTransformerReactance
+                        ),
                         getFieldValue(
                             editingData?.regulatingTerminalVlId ||
                                 editingData?.regulatingTerminalConnectableId
@@ -533,7 +564,18 @@ const TableWrapper = (props) => {
                         ),
                         regulatingTerminalConnectableIdFieldValue,
                         regulatingTerminalConnectableTypeFieldValue,
-                        regulatingTerminalVlIdFieldValue
+                        regulatingTerminalVlIdFieldValue,
+                        undefined,
+                        getFieldValue(
+                            editingData?.activePowerControl
+                                ?.activePowerControlOn,
+                            editingDataRef.current?.activePowerControl
+                                ?.activePowerControlOn
+                        ),
+                        getFieldValue(
+                            editingData?.activePowerControl?.droop,
+                            editingDataRef.current?.activePowerControl?.droop
+                        )
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -685,6 +727,7 @@ const TableWrapper = (props) => {
                 groovyCr +=
                     column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
+
             const editPromise = buildEditPromise(
                 editingData,
                 groovyCr,
