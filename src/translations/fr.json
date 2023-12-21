@@ -60,7 +60,7 @@
     "restore": "Restaurer",
     "close": "Fermer",
     "validate": "Valider",
-    
+
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
@@ -764,6 +764,7 @@
     "QmaxPmin": "QmaxPmin",
     "Pmax": "Pmax",
     "RegulatingTerminalGenerator": "Terminal distant réglé",
+    "EditVoltageRegulation": "Modification du terminal distant",
     "ShortCircuit": "Court-circuit",
     "LowShortCircuitCurrentLimit": "Limite ICC min",
     "HighShortCircuitCurrentLimit": "Limite ICC max",
@@ -901,7 +902,7 @@
     "AttachmentPoint": "Point de piquage",
     "AttachmentPointId": "ID point de piquage",
     "AttachmentPointName": "Nom point de piquage",
-    "AttachedLine": "Créer liaison de piquage",
+    "AttachedLine": "Liaison de piquage",
     "LineAttached": "Liaison de piquage",
     "AttachedLineId": "ID liaison de piquage",
     "ReplacingLines": "Liaisons de remplacement",
@@ -1363,5 +1364,8 @@
     "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
     "nominalVoltage": "Tension nominale (kV)",
     "lowVoltageLimit": "Limite tension basse (kV)",
-    "highVoltageLimit": "Limite tension haute (kV)"
+    "highVoltageLimit": "Limite tension haute (kV)",
+    "UnitDeletion": "Unitaire",
+    "ByFilterDeletion": "Par filtre",
+    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre"
 }

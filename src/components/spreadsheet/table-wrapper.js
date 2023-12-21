@@ -35,7 +35,10 @@ import {
     ReferenceLineCellRenderer,
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
@@ -53,8 +56,11 @@ import { Box } from '@mui/system';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
+    updateGeneratorCells,
     updateShuntCompensatorCells,
 } from './utils/equipment-table-utils';
+import { fetchNetworkElementInfos } from 'services/study/network';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -132,6 +138,9 @@ const TableWrapper = (props) => {
     ] = useState([]);
 
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
+    const [lastModifiedEquipment, setLastModifiedEquipment] = useState();
 
     const [tabIndex, setTabIndex] = useState(0);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
@@ -454,6 +463,23 @@ const TableWrapper = (props) => {
                         undefined
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
+                    const regulatingTerminalConnectableIdFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableId,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableId
+                        );
+                    const regulatingTerminalConnectableTypeFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableType,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableType
+                        );
+                    const regulatingTerminalVlIdFieldValue =
+                        regulatingTerminalConnectableIdFieldValue !== null ||
+                        regulatingTerminalConnectableTypeFieldValue !== null
+                            ? editingData.regulatingTerminalVlId
+                            : null;
                     return modifyGenerator(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -532,10 +558,20 @@ const TableWrapper = (props) => {
                             editingDataRef.current?.generatorShortCircuit
                                 ?.stepUpTransformerReactance
                         ),
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
+                        getFieldValue(
+                            editingData?.regulatingTerminalVlId ||
+                                editingData?.regulatingTerminalConnectableId
+                                ? REGULATION_TYPES.DISTANT.id
+                                : REGULATION_TYPES.LOCAL.id,
+                            editingDataRef.current?.regulatingTerminalVlId ||
+                                editingDataRef.current
+                                    ?.regulatingTerminalConnectableId
+                                ? REGULATION_TYPES.DISTANT.id
+                                : REGULATION_TYPES.LOCAL.id
+                        ),
+                        regulatingTerminalConnectableIdFieldValue,
+                        regulatingTerminalConnectableTypeFieldValue,
+                        regulatingTerminalVlIdFieldValue,
                         undefined,
                         getFieldValue(
                             editingData?.activePowerControl
@@ -713,6 +749,7 @@ const TableWrapper = (props) => {
                     setEditingData();
                     resetBuffer();
                     editingDataRef.current = editingData;
+                    setLastModifiedEquipment(editingData);
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
@@ -734,6 +771,51 @@ const TableWrapper = (props) => {
         ]
     );
 
+    // After the modification has been applied, we need to update the equipment data in the grid
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'UPDATE_FINISHED' &&
+                studyUpdatedForce.eventData.headers['parentNode'] ===
+                    props.currentNode.id &&
+                lastModifiedEquipment
+            ) {
+                fetchNetworkElementInfos(
+                    props.studyUuid,
+                    props.currentNode.id,
+                    lastModifiedEquipment.metadata.equipmentType,
+                    EQUIPMENT_INFOS_TYPES.TAB.type,
+                    lastModifiedEquipment.id,
+                    true
+                )
+                    .then((updatedEquipment) => {
+                        const transaction = {
+                            update: [updatedEquipment],
+                        };
+                        gridRef.current.api.applyTransaction(transaction);
+                        setLastModifiedEquipment();
+                        gridRef.current.api.refreshCells({
+                            force: true,
+                            rowNodes: [
+                                gridRef.current.api.getRowNode(
+                                    updatedEquipment.id
+                                ),
+                            ],
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('equipment data update failed', error);
+                    });
+            }
+        }
+    }, [
+        lastModifiedEquipment,
+        props.currentNode.id,
+        props.studyUuid,
+        studyUpdatedForce,
+    ]);
+
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
         (params) => {
@@ -743,6 +825,11 @@ const TableWrapper = (props) => {
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR
                 ) {
                     updateShuntCompensatorCells(params);
+                } else if (
+                    params.data.metadata?.equipmentType ===
+                    EQUIPMENT_TYPES.GENERATOR
+                ) {
+                    updateGeneratorCells(params);
                 }
                 addDataToBuffer(params.colDef.field, params.oldValue);
                 params.context.dynamicValidation = params.data;
@@ -917,6 +1004,7 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}

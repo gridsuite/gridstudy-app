@@ -765,6 +765,7 @@
     "QmaxPmin": "QmaxPmin",
     "Pmax": "Pmax",
     "RegulatingTerminalGenerator": "Regulated terminal",
+    "EditVoltageRegulation": "Edit Regulating terminal",
     "ShortCircuit": "Short-circuit",
     "LowShortCircuitCurrentLimit": "Low short-circuit current limit",
     "HighShortCircuitCurrentLimit": "High short-circuit current limit",
@@ -902,7 +903,7 @@
     "AttachmentPoint": "Attachment point",
     "AttachmentPointId": "Attachment point ID",
     "AttachmentPointName": "Attachment point name",
-    "AttachedLine": "Create attached line",
+    "AttachedLine": "Attached line",
     "LineAttached": "Attached line",
     "AttachedLineId": "Attached line ID",
     "ReplacingLines": "Replacing lines",
@@ -1343,5 +1344,8 @@
     "modificationsAlreadyApplied": "The modifications have already been applied",
     "nominalVoltage": "Nominal voltage (kV)",
     "lowVoltageLimit": "Low voltage limit (kV)",
-    "highVoltageLimit": "High voltage limit (kV)"
+    "highVoltageLimit": "High voltage limit (kV)",
+    "UnitDeletion": "Unit",
+    "ByFilterDeletion": "By filter",
+    "DeleteEquipmentByFilter": "Delete equipments by filter"
 }
