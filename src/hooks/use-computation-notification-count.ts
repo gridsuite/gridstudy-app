@@ -10,6 +10,11 @@ import ComputingType from 'components/computing-status/computing-type';
 import RunningStatus from 'components/utils/running-status';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 
+/**
+ * Custom hook that calculates the number of computation notifications.
+ * It checks the status of various computations and determines if a notification should be displayed.
+ * @returns The count of computation notifications.
+ */
 export const useComputationNotificationCount = () => {
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
@@ -48,14 +53,19 @@ export const useComputationNotificationCount = () => {
         (state: ReduxState) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
+    // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+    // we dont distinguish between technical errors and computation errors
+    // TODO FIX : separate technical errors from computation errors
+    // see running-status.ts for more details
+
     const loadflowNotif =
         isNodeBuilt(currentNode) &&
         (loadFlowStatus === RunningStatus.SUCCEED ||
-            loadFlowStatus === RunningStatus.FAILED);
+            loadFlowStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     const saNotif =
         isNodeBuilt(currentNode) &&
         (securityAnalysisStatus === RunningStatus.SUCCEED ||
-            securityAnalysisStatus === RunningStatus.FAILED);
+            securityAnalysisStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     const sensiNotif =
         isNodeBuilt(currentNode) &&
         sensitivityAnalysisStatus === RunningStatus.SUCCEED;
@@ -69,12 +79,12 @@ export const useComputationNotificationCount = () => {
     const voltageInitNotif =
         (isNodeBuilt(currentNode) &&
             voltageInitStatus === RunningStatus.SUCCEED) ||
-        voltageInitStatus === RunningStatus.FAILED;
+        voltageInitStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     const dynamicSimulationNotif =
         (isNodeBuilt(currentNode) &&
             dynamicSimulationStatus === RunningStatus.SUCCEED) ||
-        dynamicSimulationStatus === RunningStatus.FAILED;
+        dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
         loadflowNotif,
