@@ -30,10 +30,11 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
-    selectAll: {
+    selectAll: (theme) => ({
         display: 'flex',
         alignItems: 'center',
-    },
+        paddingBottom: theme.spacing(1),
+    }),
 };
 
 /**
@@ -191,6 +192,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                 <Button
                     onClick={handleRestore}
                     disabled={!selectedNodes.length || nodes.length === 0}
+                    variant="outlined"
                 >
                     <FormattedMessage id="restore" />
                 </Button>

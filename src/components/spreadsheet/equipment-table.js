@@ -19,6 +19,8 @@ export const EquipmentTable = ({
     topPinnedData,
     columnData,
     gridRef,
+    studyUuid,
+    currentNode,
     handleColumnDrag,
     handleCellEditingStarted,
     handleCellEditingStopped,
@@ -73,8 +75,13 @@ export const EquipmentTable = ({
                 : undefined,
             theme,
             lastEditedField: undefined,
+            dataToModify: topPinnedData
+                ? structuredClone(topPinnedData[0])
+                : {},
+            currentNode: currentNode,
+            studyUuid: studyUuid,
         };
-    }, [network, theme, topPinnedData]);
+    }, [currentNode, network, studyUuid, theme, topPinnedData]);
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
