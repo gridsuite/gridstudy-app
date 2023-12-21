@@ -142,56 +142,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         OptionalServicesNames.ShortCircuit
     );
 
-    useEffect(() => {
-        if (
-            ranLoadflow &&
-            studyUpdatedForce?.eventData?.headers?.updateType ===
-                'loadflowResult'
-        ) {
-            dispatch(addLoadflowNotif());
-        } else if (
-            ranSA &&
-            studyUpdatedForce?.eventData?.headers?.updateType ===
-                'securityAnalysisResult'
-        ) {
-            dispatch(addSANotif());
-        } else if (
-            ranSensi &&
-            studyUpdatedForce?.eventData?.headers?.updateType ===
-                'sensitivityAnalysisResult'
-        ) {
-            dispatch(addSensiNotif());
-        } else if (
-            ranShortCircuit &&
-            studyUpdatedForce?.eventData?.headers?.updateType ===
-                'shortCircuitAnalysisResult'
-        ) {
-            dispatch(addAllBusesShortCircuitNotif());
-        } else if (
-            ranDynamicSimulation &&
-            studyUpdatedForce?.eventData?.headers?.updateType ===
-                'dynamicSimulationResult'
-        ) {
-            dispatch(addDynamicSimulationNotif());
-        } else if (
-            ranVoltageInit &&
-            studyUpdatedForce?.eventData?.headers?.updateType ===
-                'voltageInitResult'
-        ) {
-            dispatch(addVoltageInitNotif());
-        }
-    }, [
-        dispatch,
-        studyUpdatedForce,
-        ranSA,
-        ranLoadflow,
-        ranSensi,
-        ranShortCircuit,
-        ranDynamicSimulation,
-        ranVoltageInit,
-        loadFlowStatus,
-    ]);
-
+    
     const startComputationAsync = useCallback(
         (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId) => {
             if (fnBefore) {

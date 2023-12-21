@@ -56,7 +56,6 @@ import {
 import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
-import { useComputationNotification } from '../hooks/use-computation-notification';
 
 const styles = {
     tabs: {
@@ -197,8 +196,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
-
-    useComputationNotification();
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 

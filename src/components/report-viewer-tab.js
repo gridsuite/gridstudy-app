@@ -57,8 +57,6 @@ export const ReportViewerTab = ({
         (state) => state.networkModificationTreeModel
     );
 
-    const notificationsCount = useComputationNotificationCount();
-
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const { snackError } = useSnackMessage();
@@ -153,14 +151,7 @@ export const ReportViewerTab = ({
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.
-    }, [
-        visible,
-        studyId,
-        currentNode,
-        disabled,
-        notificationsCount,
-        fetchAndProcessReport,
-    ]);
+    }, [visible, studyId, currentNode, disabled, fetchAndProcessReport]);
 
     const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
         return fetchNodeReport(
