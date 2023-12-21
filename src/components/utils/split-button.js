@@ -25,6 +25,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import RunningStatus from './running-status';
 import { mergeSx } from './functions';
+import { useSelector } from 'react-redux';
 
 const styles = {
     expand: (theme) => ({
@@ -132,7 +133,6 @@ const SplitButton = ({
     buttonDisabled = false,
     selectionDisabled = false,
     computationStopped,
-    isRunning = false,
     text,
     options,
     selectedIndex,
@@ -141,6 +141,7 @@ const SplitButton = ({
     onSelectionChange,
 }) => {
     const [open, setOpen] = React.useState(false);
+    const computationRunning = useSelector((state) => state.computationRunning);
 
     const anchorRef = React.useRef(null);
 
@@ -151,7 +152,7 @@ const SplitButton = ({
     };
 
     const handleMenuItemClick = (event, index) => {
-        if (isRunning) {
+        if (runningStatus === RunningStatus.RUNNING) {
             actionOnRunnable();
         } else {
             onSelectionChange(index);
@@ -202,7 +203,9 @@ const SplitButton = ({
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
     };
 
-    const disabledOption = isRunning && computationStopped;
+    const disabledOption =
+        computationRunning ||
+        (runningStatus === RunningStatus.RUNNING && computationStopped);
 
     return (
         <>
@@ -260,7 +263,8 @@ const SplitButton = ({
                                                 )
                                             }
                                         >
-                                            {isRunning && (
+                                            {runningStatus ===
+                                                RunningStatus.RUNNING && (
                                                 <ListItemIcon>
                                                     <StopIcon
                                                         fontSize="small"
@@ -293,7 +297,6 @@ SplitButton.propTypes = {
     selectionDisabled: PropTypes.bool,
     text: PropTypes.string,
     actionOnRunnable: PropTypes.func.isRequired,
-    isRunning: PropTypes.bool,
     computationStopped: PropTypes.bool,
 };
 

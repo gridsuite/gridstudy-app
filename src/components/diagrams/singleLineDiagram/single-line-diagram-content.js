@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    useCallback,
-    useState,
-    useLayoutEffect,
-    useRef,
-    useEffect,
-} from 'react';
+import { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
@@ -282,7 +276,6 @@ function SingleLineDiagramContent(props) {
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
                     });
-                    dispatch(setComputationRunning(false));
                     dispatch(
                         setComputingStatus(
                             ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
@@ -291,7 +284,9 @@ function SingleLineDiagramContent(props) {
                     );
                     resetOneBusShortcircuitAnalysisLoader();
                 })
-                .finally(closeBusMenu());
+                .finally(
+                    dispatch(setComputationRunning(false)) && closeBusMenu()
+                );
         },
         [
             dispatch,
@@ -496,14 +491,6 @@ function SingleLineDiagramContent(props) {
                 return <></>;
         }
     };
-
-    useEffect(() => {
-        dispatch(
-            setComputationRunning(
-                props.oneBusShortCircuitStatus === RunningStatus.RUNNING
-            )
-        );
-    }, [props.oneBusShortCircuitStatus, dispatch]);
 
     /**
      * DIAGRAM CONTENT BUILDING
