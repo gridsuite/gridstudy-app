@@ -13,9 +13,9 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 /**
  * Custom hook that calculates the number of computation notifications.
  * It checks the status of various computations and determines if a notification should be displayed.
- * @returns The count of computation notifications.
+ * @returns the number of computation results accessible.
  */
-export const useComputationNotificationCount = () => {
+export const useComputationResultsCount = () => {
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
@@ -58,41 +58,41 @@ export const useComputationNotificationCount = () => {
     // TODO FIX : separate technical errors from computation errors
     // see running-status.ts for more details
 
-    const loadflowNotif =
+    const loadflowResultPresent =
         isNodeBuilt(currentNode) &&
         (loadFlowStatus === RunningStatus.SUCCEED ||
             loadFlowStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
-    const saNotif =
+    const saResutPresent =
         isNodeBuilt(currentNode) &&
         (securityAnalysisStatus === RunningStatus.SUCCEED ||
             securityAnalysisStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
-    const sensiNotif =
+    const sensiResultPresent =
         isNodeBuilt(currentNode) &&
         sensitivityAnalysisStatus === RunningStatus.SUCCEED;
-    const allBusesshortCircuitNotif =
+    const allBusesshortCircuitResultPresent =
         isNodeBuilt(currentNode) &&
         allBusesShortCircuitStatus === RunningStatus.SUCCEED;
 
-    const oneBusShortCircuitNotif =
+    const oneBusShortCircuitResultPresent =
         isNodeBuilt(currentNode) &&
         oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED;
-    const voltageInitNotif =
+    const voltageInitResultPresent =
         (isNodeBuilt(currentNode) &&
             voltageInitStatus === RunningStatus.SUCCEED) ||
         voltageInitStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
-    const dynamicSimulationNotif =
+    const dynamicSimulationResultPresent =
         (isNodeBuilt(currentNode) &&
             dynamicSimulationStatus === RunningStatus.SUCCEED) ||
         dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
-        loadflowNotif,
-        saNotif,
-        sensiNotif,
-        allBusesshortCircuitNotif,
-        oneBusShortCircuitNotif,
-        voltageInitNotif,
-        dynamicSimulationNotif,
+        loadflowResultPresent,
+        saResutPresent,
+        sensiResultPresent,
+        allBusesshortCircuitResultPresent,
+        oneBusShortCircuitResultPresent,
+        voltageInitResultPresent,
+        dynamicSimulationResultPresent,
     ].filter(Boolean).length;
 };

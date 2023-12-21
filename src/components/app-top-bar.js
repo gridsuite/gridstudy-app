@@ -55,7 +55,7 @@ import {
 } from './utils/equipment-types';
 import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
-import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
+import { useComputationResultsCount } from '../hooks/use-computation-notification-count';
 
 const styles = {
     tabs: {
@@ -174,7 +174,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
-    const notificationsCount = useComputationNotificationCount();
+    const notificationsCount = useComputationResultsCount();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 

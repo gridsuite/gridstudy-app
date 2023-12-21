@@ -209,7 +209,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                             );
                         },
                         () => {},
-                        () => {}, //TODO (jamal) check if we need to do something here
+                        null,
                         'startLoadFlowError'
                     );
                 },
@@ -243,7 +243,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 currentNode?.id
                             );
                         },
-                        null,
+                        () => {},
                         null,
                         'startSensitivityAnalysisError'
                     );
@@ -267,7 +267,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 currentNode?.id
                             );
                         },
-                        null,
+                        () => {},
                         null,
                         'startShortCircuitError'
                     );
@@ -321,7 +321,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                             setComputationStopped(false);
                             return startVoltageInit(studyUuid, currentNode?.id);
                         },
-                        null,
+                        () => {},
                         null,
                         'startVoltageInitError'
                     );
