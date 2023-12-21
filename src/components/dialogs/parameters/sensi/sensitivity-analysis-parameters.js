@@ -567,7 +567,7 @@ export const SensitivityAnalysisParameters = ({
                     />
                 </Box>
                 <Typography noWrap>
-                    <FormattedMessage id={'computing in progress'} />
+                    <FormattedMessage id={'loadingComputing'} />
                 </Typography>
             </Box>
         );

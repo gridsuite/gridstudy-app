@@ -1119,6 +1119,7 @@
     "SimulatedCalculation": "Simulated calculations",
     "SimulatedCalculationExceedsLimit": "Simulated calculations exceeds limit",
     "SimulatedCalculationMax": "500 000 max",
+    "loadingComputing": "Computing in progress...",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",

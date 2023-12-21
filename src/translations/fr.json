@@ -1120,7 +1120,7 @@
     "SimulatedCalculation": "calculs simulés",
     "SimulatedCalculationExceedsLimit": "Calculs simulés dépasse la limite",
     "SimulatedCalculationMax": "500 000 max",
-
+    "loadingComputing": "Calcul en cours...",
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
