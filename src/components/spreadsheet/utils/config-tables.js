@@ -7,8 +7,16 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { BooleanListField, NumericalField } from './equipment-table-editors';
-import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import {
+    BooleanListField,
+    GeneratorRegulatingTerminalEditor,
+    NumericalField,
+} from './equipment-table-editors';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    REGULATION_TYPES,
+} from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -75,6 +83,34 @@ const propertiesGetter = (params) => {
     }
 };
 
+const isEditableRegulatingTerminalCell = (params) => {
+    return (
+        params.node.rowIndex === 0 &&
+        params.node.rowPinned === 'top' &&
+        (params.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
+            params.data?.regulatingTerminalVlId ||
+            params.data?.regulatingTerminalConnectableId)
+    );
+};
+
+const RegulatingTerminalCellGetter = (params) => {
+    const {
+        regulatingTerminalConnectableId,
+        regulatingTerminalVlId,
+        regulatingTerminalConnectableType,
+    } = params?.data || {};
+
+    if (
+        regulatingTerminalVlId &&
+        regulatingTerminalConnectableId &&
+        regulatingTerminalConnectableType.trim() !== '' &&
+        regulatingTerminalConnectableId.trim() !== ''
+    ) {
+        return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId})`;
+    }
+
+    return null;
+};
 const generateEditableNumericColumnDefinition = (
     id,
     field,
@@ -1390,11 +1426,6 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'VoltageLevel',
-                field: 'regulatingTerminalConnectableId',
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
                 id: 'TransientReactance',
                 field: 'generatorShortCircuit.transientReactance',
                 numeric: true,
@@ -1601,6 +1632,55 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RegulationTypeText',
+                field: 'RegulationTypeText',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: (params) =>
+                    params.data.RegulationTypeText ??
+                    (params.data?.regulatingTerminalVlId ||
+                    params.data?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id),
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(REGULATION_TYPES).map(
+                                (type) => type.id
+                            ),
+                        ],
+                    };
+                },
+            },
+            {
+                id: 'RegulatingTerminalGenerator',
+                field: 'RegulatingTerminalGenerator',
+                valueGetter: RegulatingTerminalCellGetter,
+                cellStyle: (params) =>
+                    isEditableRegulatingTerminalCell(params)
+                        ? editableCellStyle(params)
+                        : {},
+                editable: (params) => isEditableRegulatingTerminalCell(params),
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'RegulationTypeText',
+                        columnValue: REGULATION_TYPES.DISTANT.id,
+                    },
+                },
+                cellEditor: GeneratorRegulatingTerminalEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: RegulatingTerminalCellGetter,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
             },
         ],
     },

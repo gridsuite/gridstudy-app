@@ -765,6 +765,7 @@
     "QmaxPmin": "QmaxPmin",
     "Pmax": "Pmax",
     "RegulatingTerminalGenerator": "Regulated terminal",
+    "EditVoltageRegulation": "Edit Regulating terminal",
     "ShortCircuit": "Short-circuit",
     "LowShortCircuitCurrentLimit": "Low short-circuit current limit",
     "HighShortCircuitCurrentLimit": "High short-circuit current limit",
