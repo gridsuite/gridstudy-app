@@ -16,9 +16,9 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
  * @returns the number of computation results accessible.
  */
 export const useComputationResultsCount = () => {
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    // const currentNode = useSelector(
+    //     (state: ReduxState) => state.currentTreeNode
+    // );
 
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
@@ -59,31 +59,31 @@ export const useComputationResultsCount = () => {
     // see running-status.ts for more details
 
     const loadflowResultPresent =
-        isNodeBuilt(currentNode) &&
+        // isNodeBuilt(currentNode) &&
         (loadFlowStatus === RunningStatus.SUCCEED ||
             loadFlowStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     const saResutPresent =
-        isNodeBuilt(currentNode) &&
+        // isNodeBuilt(currentNode) &&
         (securityAnalysisStatus === RunningStatus.SUCCEED ||
             securityAnalysisStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     const sensiResultPresent =
-        isNodeBuilt(currentNode) &&
+        // isNodeBuilt(currentNode) &&
         sensitivityAnalysisStatus === RunningStatus.SUCCEED;
     const allBusesshortCircuitResultPresent =
-        isNodeBuilt(currentNode) &&
+        // isNodeBuilt(currentNode) &&
         allBusesShortCircuitStatus === RunningStatus.SUCCEED;
 
     const oneBusShortCircuitResultPresent =
-        isNodeBuilt(currentNode) &&
+        // isNodeBuilt(currentNode) &&
         oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED;
     const voltageInitResultPresent =
-        (isNodeBuilt(currentNode) &&
-            voltageInitStatus === RunningStatus.SUCCEED) ||
+        // (isNodeBuilt(currentNode) &&
+            voltageInitStatus === RunningStatus.SUCCEED ||
         voltageInitStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     const dynamicSimulationResultPresent =
-        (isNodeBuilt(currentNode) &&
-            dynamicSimulationStatus === RunningStatus.SUCCEED) ||
+        // (isNodeBuilt(currentNode) &&
+            dynamicSimulationStatus === RunningStatus.SUCCEED ||
         dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
