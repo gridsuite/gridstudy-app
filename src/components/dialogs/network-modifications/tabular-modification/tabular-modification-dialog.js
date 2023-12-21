@@ -160,8 +160,7 @@ const TabularModificationDialog = ({
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
-                fullWidth
-                maxWidth={'md'}
+                maxWidth={false}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-tabular-modification"
