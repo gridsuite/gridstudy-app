@@ -63,6 +63,9 @@ export const MODIFICATION_TYPES = {
     EQUIPMENT_DELETION: {
         type: 'EQUIPMENT_DELETION',
     },
+    BY_FILTER_DELETION: {
+        type: 'BY_FILTER_DELETION',
+    },
     LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
         type: 'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
     },

@@ -60,7 +60,7 @@
     "restore": "Restaurer",
     "close": "Fermer",
     "validate": "Valider",
-    
+
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
@@ -1364,5 +1364,8 @@
     "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
     "nominalVoltage": "Tension nominale (kV)",
     "lowVoltageLimit": "Limite tension basse (kV)",
-    "highVoltageLimit": "Limite tension haute (kV)"
+    "highVoltageLimit": "Limite tension haute (kV)",
+    "UnitDeletion": "Unitaire",
+    "ByFilterDeletion": "Par filtre",
+    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre"
 }
