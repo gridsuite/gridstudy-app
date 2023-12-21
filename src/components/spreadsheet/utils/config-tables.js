@@ -7,8 +7,16 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { BooleanListField, NumericalField } from './equipment-table-editors';
-import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import {
+    BooleanListField,
+    GeneratorRegulatingTerminalEditor,
+    NumericalField,
+} from './equipment-table-editors';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    REGULATION_TYPES,
+} from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -75,6 +83,34 @@ const propertiesGetter = (params) => {
     }
 };
 
+const isEditableRegulatingTerminalCell = (params) => {
+    return (
+        params.node.rowIndex === 0 &&
+        params.node.rowPinned === 'top' &&
+        (params.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
+            params.data?.regulatingTerminalVlId ||
+            params.data?.regulatingTerminalConnectableId)
+    );
+};
+
+const RegulatingTerminalCellGetter = (params) => {
+    const {
+        regulatingTerminalConnectableId,
+        regulatingTerminalVlId,
+        regulatingTerminalConnectableType,
+    } = params?.data || {};
+
+    if (
+        regulatingTerminalVlId &&
+        regulatingTerminalConnectableId &&
+        regulatingTerminalConnectableType.trim() !== '' &&
+        regulatingTerminalConnectableId.trim() !== ''
+    ) {
+        return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId})`;
+    }
+
+    return null;
+};
 const generateEditableNumericColumnDefinition = (
     id,
     field,
@@ -624,7 +660,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatedNominalPower',
+                id: 'ratedNominalPower',
                 field: 'ratedS',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1100,7 +1136,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'Type',
+                id: 'energySource',
                 field: 'energySource',
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editable: isEditable,
@@ -1138,6 +1174,65 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerControl',
                 field: 'activePowerControl.activePowerControlOn',
                 cellRenderer: BooleanCellRenderer,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: BooleanListField,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...(params.data.activePowerControl || {}),
+                        activePowerControlOn: params.newValue,
+                    };
+
+                    return params;
+                },
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.activePowerControl
+                                ?.activePowerControlOn != null
+                                ? +params.data?.activePowerControl
+                                      ?.activePowerControlOn
+                                : '',
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ActivePowerRegulationDroop',
+                field: 'activePowerControl.droop',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.activePowerControl?.droop,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueGetter: (params) => params.data?.activePowerControl?.droop,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...(params.data.activePowerControl || {}),
+                        droop: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn:
+                            'activePowerControl.activePowerControlOn',
+                        columnValue: 1,
+                    },
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1221,7 +1316,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1267,7 +1362,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetV',
+                id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1295,9 +1390,40 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RegulatingTerminal',
-                field: 'regulatingTerminal',
+                id: 'ReactivePercentageVoltageRegulation',
+                field: 'coordinatedReactiveControl.qPercent',
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                numeric: true,
+                fractionDigits: 1,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    const qPercent =
+                        params.data?.coordinatedReactiveControl?.qPercent;
+                    return {
+                        defaultValue: isNaN(qPercent) ? 0 : qPercent,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueGetter: (params) => {
+                    const qPercent =
+                        params.data?.coordinatedReactiveControl?.qPercent;
+                    return isNaN(qPercent) ? 0 : qPercent;
+                },
+                valueSetter: (params) => {
+                    params.data.coordinatedReactiveControl = {
+                        ...params.data.coordinatedReactiveControl,
+                        qPercent: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    optional: true,
+                },
             },
             {
                 id: 'TransientReactance',
@@ -1306,6 +1432,29 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorShortCircuit
+                                ?.transientReactance || 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorShortCircuit?.transientReactance,
+                valueSetter: (params) => {
+                    params.data.generatorShortCircuit = {
+                        ...params.data.generatorShortCircuit,
+                        transientReactance: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'TransformerReactance',
@@ -1314,6 +1463,30 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorShortCircuit
+                                ?.stepUpTransformerReactance || 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorShortCircuit
+                        ?.stepUpTransformerReactance,
+                valueSetter: (params) => {
+                    params.data.generatorShortCircuit = {
+                        ...params.data.generatorShortCircuit,
+                        stepUpTransformerReactance: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'PlannedActivePowerSetPoint',
@@ -1322,14 +1495,65 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorStartup
+                                ?.plannedActivePowerSetPoint,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.plannedActivePowerSetPoint,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        plannedActivePowerSetPoint: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    optional: true,
+                },
             },
             {
                 id: 'StartupCost',
                 field: 'generatorStartup.marginalCost',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorStartup?.marginalCost,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.marginalCost,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        marginalCost: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    optional: true,
+                },
             },
             {
                 id: 'PlannedOutageRate',
@@ -1338,6 +1562,34 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.generatorStartup?.plannedOutageRate ||
+                            0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                crossValidation: {
+                    optional: true,
+                    maxExpression: 1,
+                    minExpression: 0,
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.plannedOutageRate,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        plannedOutageRate: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'ForcedOutageRate',
@@ -1346,6 +1598,33 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data.generatorStartup?.forcedOutageRate,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                crossValidation: {
+                    optional: true,
+                    maxExpression: 1,
+                    minExpression: 0,
+                },
+                valueGetter: (params) =>
+                    params.data?.generatorStartup?.forcedOutageRate,
+                valueSetter: (params) => {
+                    params.data.generatorStartup = {
+                        ...params.data?.generatorStartup,
+                        forcedOutageRate: params.newValue,
+                    };
+                    return params;
+                },
             },
             {
                 id: 'Connected',
@@ -1353,6 +1632,55 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RegulationTypeText',
+                field: 'RegulationTypeText',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: (params) =>
+                    params.data.RegulationTypeText ??
+                    (params.data?.regulatingTerminalVlId ||
+                    params.data?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id),
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(REGULATION_TYPES).map(
+                                (type) => type.id
+                            ),
+                        ],
+                    };
+                },
+            },
+            {
+                id: 'RegulatingTerminalGenerator',
+                field: 'RegulatingTerminalGenerator',
+                valueGetter: RegulatingTerminalCellGetter,
+                cellStyle: (params) =>
+                    isEditableRegulatingTerminalCell(params)
+                        ? editableCellStyle(params)
+                        : {},
+                editable: (params) => isEditableRegulatingTerminalCell(params),
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'RegulationTypeText',
+                        columnValue: REGULATION_TYPES.DISTANT.id,
+                    },
+                },
+                cellEditor: GeneratorRegulatingTerminalEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: RegulatingTerminalCellGetter,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
             },
         ],
     },
@@ -1377,7 +1705,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
             },
             {
-                id: 'LoadType',
+                id: 'loadType',
                 field: 'type',
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
@@ -1422,7 +1750,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantP',
+                id: 'constantActivePower',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1443,7 +1771,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantQ',
+                id: 'constantReactivePower',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1908,7 +2236,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TargetQ',
+                id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2252,7 +2580,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantActivePower',
+                id: 'constantActivePower',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2260,7 +2588,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantReactivePower',
+                id: 'constantReactivePower',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

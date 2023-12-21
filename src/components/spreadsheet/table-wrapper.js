@@ -56,9 +56,11 @@ import { Box } from '@mui/system';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
+    updateGeneratorCells,
     updateShuntCompensatorCells,
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -461,6 +463,23 @@ const TableWrapper = (props) => {
                         undefined
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
+                    const regulatingTerminalConnectableIdFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableId,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableId
+                        );
+                    const regulatingTerminalConnectableTypeFieldValue =
+                        getFieldValue(
+                            editingData.regulatingTerminalConnectableType,
+                            editingDataRef.current
+                                ?.regulatingTerminalConnectableType
+                        );
+                    const regulatingTerminalVlIdFieldValue =
+                        regulatingTerminalConnectableIdFieldValue !== null ||
+                        regulatingTerminalConnectableTypeFieldValue !== null
+                            ? editingData.regulatingTerminalVlId
+                            : null;
                     return modifyGenerator(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -500,7 +519,70 @@ const TableWrapper = (props) => {
                         ),
                         undefined,
                         undefined,
-                        undefined
+                        undefined,
+                        getFieldValue(
+                            editingData?.coordinatedReactiveControl?.qPercent,
+                            editingDataRef.current?.coordinatedReactiveControl
+                                ?.qPercent
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup
+                                ?.plannedActivePowerSetPoint,
+                            editingDataRef.current?.generatorStartup
+                                ?.plannedActivePowerSetPoint
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup?.marginalCost,
+                            editingDataRef.current?.generatorStartup
+                                ?.marginalCost
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup?.plannedOutageRate,
+                            editingDataRef.current?.generatorStartup
+                                ?.plannedOutageRate
+                        ),
+                        getFieldValue(
+                            editingData?.generatorStartup?.forcedOutageRate,
+                            editingDataRef.current?.generatorStartup
+                                ?.forcedOutageRate
+                        ),
+                        getFieldValue(
+                            editingData?.generatorShortCircuit
+                                ?.transientReactance,
+                            editingDataRef.current?.generatorShortCircuit
+                                ?.transientReactance
+                        ),
+                        getFieldValue(
+                            editingData?.generatorShortCircuit
+                                ?.stepUpTransformerReactance,
+                            editingDataRef.current?.generatorShortCircuit
+                                ?.stepUpTransformerReactance
+                        ),
+                        getFieldValue(
+                            editingData?.regulatingTerminalVlId ||
+                                editingData?.regulatingTerminalConnectableId
+                                ? REGULATION_TYPES.DISTANT.id
+                                : REGULATION_TYPES.LOCAL.id,
+                            editingDataRef.current?.regulatingTerminalVlId ||
+                                editingDataRef.current
+                                    ?.regulatingTerminalConnectableId
+                                ? REGULATION_TYPES.DISTANT.id
+                                : REGULATION_TYPES.LOCAL.id
+                        ),
+                        regulatingTerminalConnectableIdFieldValue,
+                        regulatingTerminalConnectableTypeFieldValue,
+                        regulatingTerminalVlIdFieldValue,
+                        undefined,
+                        getFieldValue(
+                            editingData?.activePowerControl
+                                ?.activePowerControlOn,
+                            editingDataRef.current?.activePowerControl
+                                ?.activePowerControlOn
+                        ),
+                        getFieldValue(
+                            editingData?.activePowerControl?.droop,
+                            editingDataRef.current?.activePowerControl?.droop
+                        )
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -743,6 +825,11 @@ const TableWrapper = (props) => {
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR
                 ) {
                     updateShuntCompensatorCells(params);
+                } else if (
+                    params.data.metadata?.equipmentType ===
+                    EQUIPMENT_TYPES.GENERATOR
+                ) {
+                    updateGeneratorCells(params);
                 }
                 addDataToBuffer(params.colDef.field, params.oldValue);
                 params.context.dynamicValidation = params.data;
@@ -917,6 +1004,7 @@ const TableWrapper = (props) => {
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
+                        studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}
