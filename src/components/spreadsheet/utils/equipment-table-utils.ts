@@ -242,6 +242,8 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
             gridContext.dataToModify,
             colDef.field
         );
+        originalValue =
+            colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
         if (originalValue !== undefined) {
             return false;
         } else if (colDef.crossValidation?.optional) {
