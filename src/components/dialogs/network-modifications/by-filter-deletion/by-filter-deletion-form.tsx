@@ -41,7 +41,6 @@ const ByFilterDeletionForm = () => {
             EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
             EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
             EQUIPMENT_TYPES.BUS,
-            EQUIPMENT_TYPES.HVDC_LINE, // HVDC lines are not supported because of specific update related to HVDC LCC deletion.
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
             (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
