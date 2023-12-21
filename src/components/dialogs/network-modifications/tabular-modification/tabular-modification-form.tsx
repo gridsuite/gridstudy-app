@@ -141,7 +141,6 @@ const TabularModificationForm = () => {
     const defaultColDef = useMemo(
         () => ({
             flex: 1,
-            filter: true,
             sortable: true,
             resizable: false,
             lockPinned: true,
