@@ -60,11 +60,19 @@ export default class LogReportItem {
         },
     };
 
-    static getDefaultSeverityFilter() {
+    static getDefaultSeverityFilter(severityList) {
         const filterConfig = {};
-        Object.values(LogReportItem.SEVERITY).forEach((s) => {
-            filterConfig[s.name] = s.displayedByDefault;
-        });
+        if (!severityList) {
+            Object.values(LogReportItem.SEVERITY).forEach((s) => {
+                filterConfig[s.name] = s.displayedByDefault;
+            });
+        } else {
+            Object.values(LogReportItem.SEVERITY)
+                .filter((s) => severityList.includes(s.name))
+                .forEach((s) => {
+                    filterConfig[s.name] = s.displayedByDefault;
+                });
+        }
         return filterConfig;
     }
 
