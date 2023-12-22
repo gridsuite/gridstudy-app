@@ -47,6 +47,7 @@ const styles = {
         justifyContent: 'center',
         background: 'grey',
         opacity: '0.8',
+        position: 'relative',
         zIndex: 99,
         fontSize: 30,
     },
