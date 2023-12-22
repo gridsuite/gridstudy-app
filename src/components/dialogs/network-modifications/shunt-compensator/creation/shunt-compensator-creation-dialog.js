@@ -24,7 +24,10 @@ import {
     MAX_SUSCEPTANCE,
     MAX_Q_AT_NOMINAL_V,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import {
+    EQUIPMENT_INFOS_OPERATION,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -160,6 +163,7 @@ const ShuntCompensatorCreationDialog = ({
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
+        operation: EQUIPMENT_INFOS_OPERATION.CREATION,
     });
 
     useEffect(() => {
