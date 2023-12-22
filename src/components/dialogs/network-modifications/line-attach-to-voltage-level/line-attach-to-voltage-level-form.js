@@ -18,7 +18,7 @@ import {
     LINE2_NAME,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { gridItem, GridSection } from '../../dialogUtils';
 
 import { TextInput } from '@gridsuite/commons-ui';
@@ -30,7 +30,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { BUS_OR_BUSBAR_SECTION } from '../../../utils/field-constants';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -99,6 +100,15 @@ const LineAttachToVoltageLevelForm = ({
     const newLine2NameField = (
         <TextInput name={LINE2_NAME} label={'Line2Name'} />
     );
+
+    const { setValue } = useFormContext();
+
+    useEffect(() => {
+        if (voltageLevelIdWatch === voltageLevelToEdit.equipmentId) {
+            const busbarSection = voltageLevelToEdit?.busbarSections?.[0];
+            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, busbarSection);
+        }
+    }, [voltageLevelIdWatch, voltageLevelToEdit, setValue]);
 
     const connectivityForm = (
         <ConnectivityForm
