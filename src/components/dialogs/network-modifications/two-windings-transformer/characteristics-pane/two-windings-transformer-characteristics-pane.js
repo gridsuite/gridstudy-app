@@ -49,7 +49,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
     const seriesReactanceField = (
         <FloatInput
             name={`${id}.${SERIES_REACTANCE}`}
-            label="SeriesResistanceText"
+            label="SeriesReactanceText"
             adornment={OhmAdornment}
             previousValue={twtToModify?.x}
             clearable={isModification}
