@@ -103,11 +103,15 @@ const stylesLayout = {
 };
 const styles = {
     listTitleDisplay: (theme: Theme) => ({
-        marginTop: 1,
-        marginBottom: 1,
+        paddingTop: 1,
+        paddingBottom: 1,
         width: '100%',
         textAlign: 'center',
         fontSize: '1.1rem',
+        backgroundColor:
+            theme.palette.mode === 'light'
+                ? darken(theme.palette.background.paper, 0.1)
+                : theme.palette.background.paper,
     }),
     listDisplay: (theme: Theme) => ({
         ...stylesLayout.listDisplay,
@@ -371,10 +375,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             />
                             <Tab
                                 disabled={
-                                    !(
-                                        securityAnalysisAvailability ===
-                                        OptionalServicesStatus.Up
-                                    )
+                                    securityAnalysisAvailability !==
+                                    OptionalServicesStatus.Up
                                 }
                                 label={
                                     <FormattedMessage id="SecurityAnalysis" />
@@ -385,10 +387,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             />
                             <Tab
                                 disabled={
-                                    !(
-                                        sensitivityAnalysisAvailability ===
-                                        OptionalServicesStatus.Up
-                                    )
+                                    sensitivityAnalysisAvailability !==
+                                    OptionalServicesStatus.Up
                                 }
                                 label={
                                     <FormattedMessage id="SensitivityAnalysis" />
@@ -399,20 +399,16 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             />
                             <Tab
                                 disabled={
-                                    !(
-                                        shortCircuitAvailability ===
-                                        OptionalServicesStatus.Up
-                                    )
+                                    shortCircuitAvailability !==
+                                    OptionalServicesStatus.Up
                                 }
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
                             <Tab
                                 disabled={
-                                    !(
-                                        dynamicSimulationAvailability ===
-                                        OptionalServicesStatus.Up
-                                    )
+                                    dynamicSimulationAvailability !==
+                                    OptionalServicesStatus.Up
                                 }
                                 label={
                                     <FormattedMessage id="DynamicSimulation" />
@@ -423,10 +419,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             />
                             <Tab
                                 disabled={
-                                    !(
-                                        voltageInitAvailability ===
-                                        OptionalServicesStatus.Up
-                                    )
+                                    voltageInitAvailability !==
+                                    OptionalServicesStatus.Up
                                 }
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
