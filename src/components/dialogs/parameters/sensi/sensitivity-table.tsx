@@ -64,8 +64,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             const currentRowsValues = getValues(arrayFormName);
             if (index >= 0 && index < currentRowsValues.length) {
                 remove(index);
+                onFormChanged(true);
             }
-            onFormChanged(true);
         },
         [arrayFormName, getValues, remove, onFormChanged]
     );
@@ -81,6 +81,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                     row[PSTS]?.length)
             ) {
                 onChangeParams(row, arrayFormName, index);
+            } else {
+                onFormChanged(true);
             }
         },
         [onChangeParams, getValues]
@@ -124,7 +126,6 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 row={row}
                                 index={index}
                                 handleDeleteButton={handleDeleteButton}
-                                onFormChanged={onFormChanged}
                                 fetchCount={fetchCount}
                             />
                         )

@@ -253,7 +253,6 @@ export const SensitivityAnalysisParameters = ({
             'sensitivityHVDC',
             'sensitivityPST',
         ];
-
         tabsToCheck.forEach((tab) => {
             const count = values[tab]
                 .filter((entry) => entry[ACTIVATED])
@@ -272,11 +271,35 @@ export const SensitivityAnalysisParameters = ({
         return totalResultCount;
     }, [getValues]);
 
+    const onFormChangedComputing = useCallback(() => {
+        setLaunchLoader(true);
+        Promise.resolve(getResultCount())
+            .then((count) => {
+                setAnalysisComputeComplexity(count);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'SensitivityAnalysisComplexityError',
+                });
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setLaunchLoader(false);
+                }, 1000);
+            });
+    }, [
+        setAnalysisComputeComplexity,
+        getResultCount,
+        snackError,
+        setLaunchLoader,
+    ]);
+
     const onFormChanged = useCallback(
         (onFormChanged) => {
-            onFormChanged && setAnalysisComputeComplexity(getResultCount());
+            onFormChanged && onFormChangedComputing();
         },
-        [setAnalysisComputeComplexity, getResultCount]
+        [onFormChangedComputing]
     );
 
     const onChangeParams = useCallback(
@@ -294,7 +317,6 @@ export const SensitivityAnalysisParameters = ({
                             parseIntData(value, 0)
                         );
                         setAnalysisComputeComplexity(getResultCount());
-                        onFormChanged(false);
                         setLaunchLoader(false);
                     });
                 })
