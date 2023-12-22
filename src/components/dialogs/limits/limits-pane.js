@@ -70,7 +70,7 @@ const LimitsPane = ({
             },
         ].map((column) => ({
             ...column,
-            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+            label: intl.formatMessage({ id: column.label }),
         }));
     }, [intl]);
 
