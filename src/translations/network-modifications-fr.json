@@ -40,5 +40,6 @@
     "network_modifications/tabular/LOAD_MODIFICATION": "modifications de consommations",
     "network_modifications/BY_FORMULA_MODIFICATION": "Modification par formule {computedLabel}",
     "network_modifications/tabular/BATTERY_MODIFICATION": "modifications de batteries",
-    "network_modifications/tabular/VOLTAGE_LEVEL_MODIFICATION": "modifications de postes"
+    "network_modifications/tabular/VOLTAGE_LEVEL_MODIFICATION": "modifications de postes",
+    "network_modifications/tabular/TWO_WINDINGS_TRANSFORMER_MODIFICATION": "modifications de transformateurs à 2 enroulements"
 }
