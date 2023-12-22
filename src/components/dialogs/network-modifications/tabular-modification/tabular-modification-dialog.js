@@ -13,12 +13,7 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    EQUIPMENT_ID,
-    MODIFICATIONS_TABLE,
-    SUBSTATION_COUNTRY,
-    TYPE,
-} from 'components/utils/field-constants';
+import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
@@ -27,8 +22,9 @@ import {
     TABULAR_MODIFICATION_TYPES,
     formatModification,
     getEquipmentTypeFromModificationType,
+    convertValueFromBackToFront,
+    convertValueFromFrontToBack,
 } from './tabular-modification-utils';
-import { toModificationOperation } from 'components/utils/utils';
 import { useIntl } from 'react-intl';
 import { LocalizedCountries } from '../../../utils/localized-countries-hook';
 
@@ -84,21 +80,10 @@ const TabularModificationDialog = ({
             const equipmentType = getEquipmentTypeFromModificationType(
                 editData?.modificationType
             );
-            const convertDataFromBackToFront = (key, value) => {
-                switch (key) {
-                    case EQUIPMENT_ID:
-                        return value;
-                    case SUBSTATION_COUNTRY:
-                        const getCountryName = (code) => translate(code);
-                        return getCountryName(value?.value);
-                    default:
-                        return value?.value;
-                }
-            };
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertDataFromBackToFront(
+                    modification[key] = convertValueFromBackToFront(
                         key,
                         modif[key]
                     );
@@ -110,7 +95,7 @@ const TabularModificationDialog = ({
                 [MODIFICATIONS_TABLE]: modifications,
             });
         }
-    }, [editData, reset, intl, translate]);
+    }, [editData, reset, intl]);
 
     const onSubmit = useCallback(
         (formData) => {
@@ -119,21 +104,11 @@ const TabularModificationDialog = ({
                 const modification = {
                     type: modificationType,
                 };
-                const formatDataToSend = (key, value) => {
-                    switch (key) {
-                        case EQUIPMENT_ID:
-                            return value;
-                        case SUBSTATION_COUNTRY:
-                            return toModificationOperation(
-                                getCountryCode(value)
-                            );
-                        default:
-                            return toModificationOperation(value);
-                    }
-                };
-
                 Object.keys(row).forEach((key) => {
-                    modification[key] = formatDataToSend(key, row[key]);
+                    modification[key] = convertValueFromFrontToBack(
+                        key,
+                        row[key]
+                    );
                 });
                 return modification;
             });
@@ -151,7 +126,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid, getCountryCode]
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {
@@ -169,7 +144,8 @@ const TabularModificationDialog = ({
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
-                maxWidth={false}
+                fullWidth
+                maxWidth={'lg'}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-tabular-modification"

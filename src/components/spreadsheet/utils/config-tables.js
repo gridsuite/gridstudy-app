@@ -7,8 +7,16 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { BooleanListField, NumericalField } from './equipment-table-editors';
-import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
+import {
+    BooleanListField,
+    GeneratorRegulatingTerminalEditor,
+    NumericalField,
+} from './equipment-table-editors';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    REGULATION_TYPES,
+} from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -75,6 +83,34 @@ const propertiesGetter = (params) => {
     }
 };
 
+const isEditableRegulatingTerminalCell = (params) => {
+    return (
+        params.node.rowIndex === 0 &&
+        params.node.rowPinned === 'top' &&
+        (params.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
+            params.data?.regulatingTerminalVlId ||
+            params.data?.regulatingTerminalConnectableId)
+    );
+};
+
+const RegulatingTerminalCellGetter = (params) => {
+    const {
+        regulatingTerminalConnectableId,
+        regulatingTerminalVlId,
+        regulatingTerminalConnectableType,
+    } = params?.data || {};
+
+    if (
+        regulatingTerminalVlId &&
+        regulatingTerminalConnectableId &&
+        regulatingTerminalConnectableType.trim() !== '' &&
+        regulatingTerminalConnectableId.trim() !== ''
+    ) {
+        return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId})`;
+    }
+
+    return null;
+};
 const generateEditableNumericColumnDefinition = (
     id,
     field,
@@ -215,6 +251,19 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
+                numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: unitToKiloUnit(
+                            params.data?.identifiableShortCircuit?.ipMin
+                        ),
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
                 valueGetter: (params) =>
                     unitToKiloUnit(
                         params.data?.identifiableShortCircuit?.ipMin
@@ -229,6 +278,9 @@ export const TABLES_DEFINITIONS = {
                 ...(excludeFromGlobalFilter && {
                     getQuickFilterText: excludeFromGlobalFilter,
                 }),
+                crossValidation: {
+                    optional: true,
+                },
             },
             {
                 id: 'IpMax',
@@ -237,6 +289,19 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
+                numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: unitToKiloUnit(
+                            params.data?.identifiableShortCircuit?.ipMax
+                        ),
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
                 valueGetter: (params) =>
                     unitToKiloUnit(
                         params.data?.identifiableShortCircuit?.ipMax
@@ -254,7 +319,7 @@ export const TABLES_DEFINITIONS = {
                 ...{
                     crossValidation: {
                         requiredOn: {
-                            dependencyColumn: 'ipMin',
+                            dependencyColumn: 'identifiableShortCircuit.ipMin',
                         },
                     },
                 },
@@ -338,7 +403,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesResistance',
+                id: 'seriesResistance',
                 field: 'r',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -346,7 +411,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesReactance',
+                id: 'seriesReactance',
                 field: 'x',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -590,7 +655,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesResistance',
+                id: 'seriesResistance',
                 field: 'r',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -598,7 +663,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'SeriesReactance',
+                id: 'seriesReactance',
                 field: 'x',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -606,7 +671,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MagnetizingConductanceWithUnit',
+                id: 'magnetizingConductance',
                 field: 'g',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -615,7 +680,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MagnetizingSusceptanceWithUnit',
+                id: 'magnetizingSusceptance',
                 field: 'b',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1390,11 +1455,6 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'VoltageLevel',
-                field: 'regulatingTerminalConnectableId',
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
                 id: 'TransientReactance',
                 field: 'generatorShortCircuit.transientReactance',
                 numeric: true,
@@ -1423,6 +1483,9 @@ export const TABLES_DEFINITIONS = {
                         transientReactance: params.newValue,
                     };
                     return params;
+                },
+                crossValidation: {
+                    optional: true,
                 },
             },
             {
@@ -1455,6 +1518,9 @@ export const TABLES_DEFINITIONS = {
                         stepUpTransformerReactance: params.newValue,
                     };
                     return params;
+                },
+                crossValidation: {
+                    optional: true,
                 },
             },
             {
@@ -1602,6 +1668,55 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'RegulationTypeText',
+                field: 'RegulationTypeText',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: (params) =>
+                    params.data.RegulationTypeText ??
+                    (params.data?.regulatingTerminalVlId ||
+                    params.data?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id),
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(REGULATION_TYPES).map(
+                                (type) => type.id
+                            ),
+                        ],
+                    };
+                },
+            },
+            {
+                id: 'RegulatingTerminalGenerator',
+                field: 'RegulatingTerminalGenerator',
+                valueGetter: RegulatingTerminalCellGetter,
+                cellStyle: (params) =>
+                    isEditableRegulatingTerminalCell(params)
+                        ? editableCellStyle(params)
+                        : {},
+                editable: (params) => isEditableRegulatingTerminalCell(params),
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'RegulationTypeText',
+                        columnValue: REGULATION_TYPES.DISTANT.id,
+                    },
+                },
+                cellEditor: GeneratorRegulatingTerminalEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: RegulatingTerminalCellGetter,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+            },
         ],
     },
     LOADS: {
@@ -1625,7 +1740,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
             },
             {
-                id: 'LoadType',
+                id: 'loadType',
                 field: 'type',
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
@@ -1670,7 +1785,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantP',
+                id: 'constantActivePower',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1691,7 +1806,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantQ',
+                id: 'constantReactivePower',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2041,7 +2156,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl
-                                ?.activePowerControlOn | 0,
+                                ?.activePowerControlOn != null
+                                ? +params.data?.activePowerControl
+                                      ?.activePowerControlOn
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2500,7 +2618,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantActivePower',
+                id: 'constantActivePower',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2508,7 +2626,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConstantReactivePower',
+                id: 'constantReactivePower',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
