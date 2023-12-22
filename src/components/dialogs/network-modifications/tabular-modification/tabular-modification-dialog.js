@@ -13,7 +13,15 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import {
+    EQUIPMENT_ID,
+    MODIFICATIONS_TABLE,
+    SHUNT_CONDUCTANCE_1,
+    SHUNT_CONDUCTANCE_2,
+    SHUNT_SUSCEPTANCE_1,
+    SHUNT_SUSCEPTANCE_2,
+    TYPE,
+} from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
@@ -23,8 +31,10 @@ import {
     formatModification,
     getEquipmentTypeFromModificationType,
 } from './tabular-modification-utils';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { toModificationOperation } from 'components/utils/utils';
 import { useIntl } from 'react-intl';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 
 const formSchema = yup
     .object()
@@ -81,10 +91,16 @@ const TabularModificationDialog = ({
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
                     const field = modif[key];
-                    if (key === 'equipmentId') {
+                    if (key === EQUIPMENT_ID) {
                         modification[key] = field;
                     } else {
-                        modification[key] = field?.value;
+                        const convertedValue = convertValue(
+                            editData?.modificationType,
+                            key,
+                            field?.value,
+                            false
+                        );
+                        modification[key] = convertedValue;
                     }
                 });
                 return modification;
@@ -95,6 +111,29 @@ const TabularModificationDialog = ({
             });
         }
     }, [editData, reset, intl]);
+
+    const convertValue = (modificationType, key, value, ascension) => {
+        switch (modificationType) {
+            case MODIFICATION_TYPES.LINE_MODIFICATION.type: {
+                if (
+                    key === SHUNT_CONDUCTANCE_1 ||
+                    key === SHUNT_CONDUCTANCE_2 ||
+                    key === SHUNT_SUSCEPTANCE_1 ||
+                    key === SHUNT_SUSCEPTANCE_2
+                ) {
+                    if (ascension) {
+                        return microUnitToUnit(value);
+                    } else {
+                        return unitToMicroUnit(value);
+                    }
+                } else {
+                    return value;
+                }
+            }
+            default:
+                return value;
+        }
+    };
 
     const onSubmit = useCallback(
         (formData) => {
@@ -108,7 +147,14 @@ const TabularModificationDialog = ({
                     if (key === 'equipmentId') {
                         modification[key] = value;
                     } else {
-                        modification[key] = toModificationOperation(value);
+                        const convertedValue = convertValue(
+                            modificationType,
+                            key,
+                            value,
+                            true
+                        );
+                        modification[key] =
+                            toModificationOperation(convertedValue);
                     }
                 });
                 return modification;
@@ -146,7 +192,7 @@ const TabularModificationDialog = ({
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth={'md'}
+                maxWidth={'lg'}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-tabular-modification"
