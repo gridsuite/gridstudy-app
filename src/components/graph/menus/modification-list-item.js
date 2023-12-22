@@ -106,6 +106,10 @@ export const ModificationListItem = ({
                         'network_modifications/tabular/' +
                         modificationMetadata.tabularModificationType,
                 });
+            case MODIFICATION_TYPES.BY_FILTER_DELETION.type:
+                return intl.formatMessage({
+                    id: modificationMetadata.equipmentType,
+                });
             default:
                 return modificationMetadata.equipmentId || '';
         }

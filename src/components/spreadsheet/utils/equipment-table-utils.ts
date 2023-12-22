@@ -198,6 +198,9 @@ export const updateShuntCompensatorCells = (
 };
 
 const deepFindValue = (obj: any, path: any) => {
+    if (path === undefined) {
+        return undefined;
+    }
     let paths = path.split('.'),
         current = obj,
         i;
@@ -232,9 +235,18 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
     if (
         fieldVal === undefined ||
         fieldVal === null ||
+        fieldVal === '' ||
         (isNaN(fieldVal) && colDef.numeric)
     ) {
-        if (colDef.crossValidation?.optional) {
+        let originalValue = deepFindValue(
+            gridContext.dataToModify,
+            colDef.field
+        );
+        originalValue =
+            colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
+        if (originalValue !== undefined) {
+            return false;
+        } else if (colDef.crossValidation?.optional) {
             return true;
         } else if (colDef.crossValidation?.requiredOn) {
             const isConditionFulfiled = checkCrossValidationRequiredOn(
@@ -253,13 +265,13 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
     }
     const minExpression = colDef.crossValidation?.minExpression;
     const maxExpression = colDef.crossValidation?.maxExpression;
-    if (maxExpression || minExpression) {
+    if (maxExpression !== undefined || minExpression !== undefined) {
         const minVal = !isNaN(minExpression)
             ? minExpression
-            : gridContext.dynamicValidation[minExpression];
+            : deepFindValue(gridContext.dynamicValidation, minExpression);
         const maxVal = !isNaN(maxExpression)
             ? maxExpression
-            : gridContext.dynamicValidation[maxExpression];
+            : deepFindValue(gridContext.dynamicValidation, maxExpression);
         return (
             (minVal === undefined || fieldVal >= minVal) &&
             (maxVal === undefined || fieldVal <= maxVal)

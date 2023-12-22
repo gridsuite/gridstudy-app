@@ -60,7 +60,7 @@
     "restore": "Restaurer",
     "close": "Fermer",
     "validate": "Valider",
-    
+
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
@@ -715,7 +715,7 @@
     "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
     "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
-    "ShuntCompensatorMultiSectionsError": "La modification d'un moyen de compensation à plusieurs gradins n'est pas possible pour le moment",
+    "ShuntCompensatorNonlinearError": "La modification d'un moyen de compensation non linéaire n'est pas possible pour le moment",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
 
     "CreateBattery": "Créer une batterie",
@@ -1365,6 +1365,9 @@
     "nominalVoltage": "Tension nominale (kV)",
     "lowVoltageLimit": "Limite tension basse (kV)",
     "highVoltageLimit": "Limite tension haute (kV)",
+    "UnitDeletion": "Unitaire",
+    "ByFilterDeletion": "Par filtre",
+    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre",
     "ratedVoltage1": "Tension d'enroulement 1 (kV)",
     "ratedVoltage2": "Tension d'enroulement 2 (kV)"
 }
