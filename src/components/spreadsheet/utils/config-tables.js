@@ -251,6 +251,19 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
+                numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: unitToKiloUnit(
+                            params.data?.identifiableShortCircuit?.ipMin
+                        ),
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
                 valueGetter: (params) =>
                     unitToKiloUnit(
                         params.data?.identifiableShortCircuit?.ipMin
@@ -265,6 +278,9 @@ export const TABLES_DEFINITIONS = {
                 ...(excludeFromGlobalFilter && {
                     getQuickFilterText: excludeFromGlobalFilter,
                 }),
+                crossValidation: {
+                    optional: true,
+                },
             },
             {
                 id: 'IpMax',
@@ -273,6 +289,19 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
+                numeric: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: unitToKiloUnit(
+                            params.data?.identifiableShortCircuit?.ipMax
+                        ),
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
                 valueGetter: (params) =>
                     unitToKiloUnit(
                         params.data?.identifiableShortCircuit?.ipMax
@@ -290,7 +319,7 @@ export const TABLES_DEFINITIONS = {
                 ...{
                     crossValidation: {
                         requiredOn: {
-                            dependencyColumn: 'ipMin',
+                            dependencyColumn: 'identifiableShortCircuit.ipMin',
                         },
                     },
                 },
@@ -1455,6 +1484,9 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
+                crossValidation: {
+                    optional: true,
+                },
             },
             {
                 id: 'TransformerReactance',
@@ -1486,6 +1518,9 @@ export const TABLES_DEFINITIONS = {
                         stepUpTransformerReactance: params.newValue,
                     };
                     return params;
+                },
+                crossValidation: {
+                    optional: true,
                 },
             },
             {
@@ -2121,7 +2156,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl
-                                ?.activePowerControlOn | 0,
+                                ?.activePowerControlOn != null
+                                ? +params.data?.activePowerControl
+                                      ?.activePowerControlOn
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,

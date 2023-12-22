@@ -98,17 +98,20 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
+            filter: 'agNumberColumnFilter',
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            filter: 'agNumberColumnFilter',
         },
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'overload',
             numeric: true,
+            filter: 'agNumberColumnFilter',
             fractionDigits: 2,
         },
         {
@@ -165,12 +168,14 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
+            filter: 'agNumberColumnFilter',
         },
         {
             headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            filter: 'agNumberColumnFilter',
         },
     ];
 };
@@ -188,6 +193,7 @@ export const loadFlowResultColumnsDefinition = (
             field: 'connectedComponentNum',
             numeric: true,
             fractionDigits: 2,
+            filter: 'agNumberColumnFilter',
         },
         {
             headerName: intl.formatMessage({
@@ -196,6 +202,7 @@ export const loadFlowResultColumnsDefinition = (
             field: 'synchronousComponentNum',
             numeric: true,
             fractionDigits: 2,
+            filter: 'agNumberColumnFilter',
         },
         {
             headerName: intl.formatMessage({ id: 'status' }),
@@ -222,6 +229,7 @@ export const loadFlowResultColumnsDefinition = (
             numeric: true,
             fractionDigits: 2,
             cellRenderer: numberRenderer,
+            filter: 'agNumberColumnFilter',
         },
     ];
 };
