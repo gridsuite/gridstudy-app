@@ -307,6 +307,7 @@ export function StudyContainer({ view, onChangeTab }) {
             if (updateTypeHeader === 'dynamicSimulation_failed') {
                 snackError({
                     headerId: 'dynamicSimulationError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'voltageInit_failed') {
