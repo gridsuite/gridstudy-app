@@ -187,7 +187,6 @@ export const loadFlowResultColumnsDefinition = (
             }),
             field: 'connectedComponentNum',
             numeric: true,
-            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({
@@ -195,7 +194,6 @@ export const loadFlowResultColumnsDefinition = (
             }),
             field: 'synchronousComponentNum',
             numeric: true,
-            fractionDigits: 2,
         },
         {
             headerName: intl.formatMessage({ id: 'status' }),
