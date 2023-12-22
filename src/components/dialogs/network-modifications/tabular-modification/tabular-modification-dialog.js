@@ -30,6 +30,8 @@ import {
     TABULAR_MODIFICATION_TYPES,
     formatModification,
     getEquipmentTypeFromModificationType,
+    convertValueFromBackToFront,
+    convertValueFromFrontToBack,
 } from './tabular-modification-utils';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { toModificationOperation } from 'components/utils/utils';
@@ -90,18 +92,10 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    const field = modif[key];
-                    if (key === EQUIPMENT_ID) {
-                        modification[key] = field;
-                    } else {
-                        const convertedValue = convertValue(
-                            editData?.modificationType,
-                            key,
-                            field?.value,
-                            false
-                        );
-                        modification[key] = convertedValue;
-                    }
+                    modification[key] = convertValueFromBackToFront(
+                        key,
+                        modif[key]
+                    );
                 });
                 return modification;
             });
@@ -112,29 +106,6 @@ const TabularModificationDialog = ({
         }
     }, [editData, reset, intl]);
 
-    const convertValue = (modificationType, key, value, ascension) => {
-        switch (modificationType) {
-            case MODIFICATION_TYPES.LINE_MODIFICATION.type: {
-                if (
-                    key === SHUNT_CONDUCTANCE_1 ||
-                    key === SHUNT_CONDUCTANCE_2 ||
-                    key === SHUNT_SUSCEPTANCE_1 ||
-                    key === SHUNT_SUSCEPTANCE_2
-                ) {
-                    if (ascension) {
-                        return microUnitToUnit(value);
-                    } else {
-                        return unitToMicroUnit(value);
-                    }
-                } else {
-                    return value;
-                }
-            }
-            default:
-                return value;
-        }
-    };
-
     const onSubmit = useCallback(
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
@@ -143,19 +114,10 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    const value = row[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = value;
-                    } else {
-                        const convertedValue = convertValue(
-                            modificationType,
-                            key,
-                            value,
-                            true
-                        );
-                        modification[key] =
-                            toModificationOperation(convertedValue);
-                    }
+                    modification[key] = convertValueFromFrontToBack(
+                        key,
+                        row[key]
+                    );
                 });
                 return modification;
             });

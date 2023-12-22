@@ -20,6 +20,88 @@ import {
     checkValidationsAndRefreshCells,
     deepUpdateValue,
 } from './equipment-table-utils';
+import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
+
+export const GeneratorRegulatingTerminalEditor = forwardRef(
+    ({ gridContext, colDef, gridApi, rowData }, ref) => {
+        const [openGeneratorPopup, setOpenGeneratorPopup] = useState(true);
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        const {
+                            regulatingTerminalConnectableId,
+                            regulatingTerminalVlId,
+                            regulatingTerminalConnectableType,
+                        } = gridContext.dynamicValidation || {};
+
+                        if (
+                            (regulatingTerminalVlId ||
+                                regulatingTerminalConnectableId) &&
+                            regulatingTerminalVlId.trim() !== '' &&
+                            regulatingTerminalConnectableId.trim() !== ''
+                        ) {
+                            return `${regulatingTerminalConnectableType} (${regulatingTerminalConnectableId})`;
+                        }
+
+                        return null;
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field, gridContext.dynamicValidation]
+        );
+
+        const handleSaveRegulatingTerminalPopup = (
+            updatedRegulatedTerminal
+        ) => {
+            const {
+                equipment: { type: equipmentType, id: equipmentId } = {},
+                voltageLevel: { id: voltageLevelId } = {},
+            } = updatedRegulatedTerminal || {};
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'regulatingTerminalConnectableId',
+                equipmentId
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'regulatingTerminalConnectableType',
+                equipmentType
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'regulatingTerminalVlId',
+                voltageLevelId
+            );
+            setOpenGeneratorPopup(false);
+        };
+        const handleCancelRegulatingTerminalPopup = () => {
+            setOpenGeneratorPopup(false);
+            gridApi.stopEditing();
+        };
+
+        return (
+            <RegulatingTerminalModificationDialog
+                open={openGeneratorPopup}
+                onClose={handleCancelRegulatingTerminalPopup}
+                currentNode={gridContext.currentNode}
+                studyUuid={gridContext.studyUuid}
+                onModifyRegulatingTerminalGenerator={(
+                    updatedRegulatedTerminal
+                ) => {
+                    handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
+                }}
+                data={rowData}
+                previousData={gridContext.dataToModify}
+            />
+        );
+    }
+);
 
 export const NumericalField = forwardRef(
     ({ defaultValue, gridContext, colDef, gridApi, rowData }, ref) => {
