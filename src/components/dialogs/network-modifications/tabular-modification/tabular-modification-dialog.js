@@ -13,15 +13,7 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    EQUIPMENT_ID,
-    MODIFICATIONS_TABLE,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
-    TYPE,
-} from 'components/utils/field-constants';
+import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
@@ -33,10 +25,7 @@ import {
     convertValueFromBackToFront,
     convertValueFromFrontToBack,
 } from './tabular-modification-utils';
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
-import { toModificationOperation } from 'components/utils/utils';
 import { useIntl } from 'react-intl';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 
 const formSchema = yup
     .object()
