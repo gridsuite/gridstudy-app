@@ -90,11 +90,14 @@ export const formatModification = (modification: Modification) => {
 
 export const convertValueFromBackToFront = (
     key: string,
-    value: { value: string | number }
+    value: { value: string | number },
+    translate: (code: string | number) => string
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
+        case SUBSTATION_COUNTRY:
+            return translate(value?.value);
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
             return unitToMicroUnit(value?.value);
@@ -105,11 +108,14 @@ export const convertValueFromBackToFront = (
 
 export const convertValueFromFrontToBack = (
     key: string,
-    value: string | number
+    value: string | number,
+    getCountryCode: (code: string | number) => string
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
+        case SUBSTATION_COUNTRY:
+            return toModificationOperation(getCountryCode(value));
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
             return toModificationOperation(microUnitToUnit(value));
