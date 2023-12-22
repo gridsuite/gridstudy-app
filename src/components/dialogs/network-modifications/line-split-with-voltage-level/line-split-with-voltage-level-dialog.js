@@ -44,6 +44,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { divideLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -83,6 +84,8 @@ const LineSplitWithVoltageLevelDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
     const currentNodeUuid = currentNode?.id;
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
@@ -146,14 +149,18 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const onSubmit = useCallback(
         (lineSplit) => {
+            const currentVoltageLevelId =
+                lineSplit[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
+            const isNewVoltageLevel =
+                newVoltageLevel?.equipmentId === currentVoltageLevelId;
             divideLine(
                 studyUuid,
                 currentNodeUuid,
                 editData?.uuid,
                 lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID],
                 parseFloat(lineSplit[SLIDER_PERCENTAGE]),
-                newVoltageLevel,
-                lineSplit[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                isNewVoltageLevel ? newVoltageLevel : null,
+                currentVoltageLevelId,
                 lineSplit[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 lineSplit[LINE1_ID],
                 sanitizeString(lineSplit[LINE1_NAME]),
@@ -172,6 +179,18 @@ const LineSplitWithVoltageLevelDialog = ({
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
+
+    useEffect(() => {
+        if (studyUuid && currentNode?.id) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                    );
+                }
+            );
+        }
+    }, [studyUuid, currentNode?.id]);
 
     const onVoltageLevelCreationDo = useCallback(
         ({
@@ -211,6 +230,23 @@ const LineSplitWithVoltageLevelDialog = ({
                     preparedVoltageLevel.sectionCount,
                     preparedVoltageLevel.busbarCount
                 );
+                // we keep the old voltage level id, so it can be removed for from voltage level options
+                const oldVoltageLevelId = newVoltageLevel?.equipmentId;
+
+                const formattedVoltageLevel =
+                    getNewVoltageLevelData(preparedVoltageLevel);
+
+                // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
+                const newVoltageLevelOptions = voltageLevelOptions
+                    .filter((vl) => vl.id !== formattedVoltageLevel.id)
+                    .filter(
+                        (vl) =>
+                            formattedVoltageLevel.id !== oldVoltageLevelId &&
+                            vl.id !== oldVoltageLevelId
+                    );
+                newVoltageLevelOptions.push(formattedVoltageLevel);
+
+                setVoltageLevelOptions(newVoltageLevelOptions);
                 setNewVoltageLevel(preparedVoltageLevel);
                 setValue(
                     `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
@@ -224,7 +260,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 );
             });
         },
-        [setValue]
+        [setValue, newVoltageLevel, voltageLevelOptions]
     );
 
     const onVoltageLevelChange = useCallback(() => {
@@ -268,6 +304,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     onVoltageLevelCreationDo={onVoltageLevelCreationDo}
                     voltageLevelToEdit={newVoltageLevel}
                     onVoltageLevelChange={onVoltageLevelChange}
+                    allVoltageLevelOptions={voltageLevelOptions}
                 />
             </ModificationDialog>
         </FormProvider>
