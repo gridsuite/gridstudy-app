@@ -768,7 +768,7 @@
     "ShortCircuit": "Court-circuit",
     "LowShortCircuitCurrentLimit": "Limite ICC min",
     "HighShortCircuitCurrentLimit": "Limite ICC max",
-    "ShortCircuitCurrentLimitNotNegative": "Une Limite ICC doit être non négative",
+    "ShortCircuitCurrentLimitNotNegative": "Une limite ICC doit être non négative",
     "ShortCircuitCurrentLimitMinMaxError": "La limite ICC min doit être inférieure ou égale à la limite ICC max",
     "TransientReactance": "Réactance transitoire (Ω)",
     "TransientReactanceForm": "Réactance transitoire",
