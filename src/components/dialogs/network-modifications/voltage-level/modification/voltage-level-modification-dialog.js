@@ -52,7 +52,16 @@ const formSchema = yup.object().shape({
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
-        .min(0, 'ShortCircuitCurrentLimitNotNegative'),
+        .min(0, 'ShortCircuitCurrentLimitNotNegative')
+        .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
+            is: (highShortCircuitCurrentLimit) =>
+                highShortCircuitCurrentLimit != null,
+            then: (schema) =>
+                schema.max(
+                    yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
+                    'ShortCircuitCurrentLimitMinMaxError'
+                ),
+        }),
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
