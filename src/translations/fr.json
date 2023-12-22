@@ -1335,8 +1335,6 @@
     "PhaseRegulatingValue": "valeur de réglage de déphaseur",
     "RatioTargetV": "Tension de sonsigne du régleur",
     "GeneratorTargetV": "Consigne tension",
-    "ReactivePercentageVoltageRegulation": "Cœfficient de participation au réglage de tension",
-    "ActivePowerRegulationDroop": "Cœfficient de participation à la compensation",
 
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
     "ShortCircuitPredefinedParameters": "Paramètres prédéfinis",
