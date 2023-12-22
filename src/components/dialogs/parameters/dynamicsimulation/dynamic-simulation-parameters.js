@@ -236,23 +236,36 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid container key="dsParameters" sx={styles.scrollableGrid}>
-                {providers && provider && (
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={Object.entries(providers).reduce(
-                            (obj, [key, value]) => {
-                                obj[key] = `DynamicSimulationProvider${value}`;
-                                return obj;
-                            },
-                            {}
-                        )}
-                        callback={handleUpdateProvider}
-                    />
-                )}
+            <Grid
+                container
+                key="dsParameters"
+                sx={styles.scrollableGrid}
+                marginTop={-2}
+            >
+                <Grid xl={6} container>
+                    {providers && provider && (
+                        <DropDown
+                            value={provider}
+                            label="Provider"
+                            values={Object.entries(providers).reduce(
+                                (obj, [key, value]) => {
+                                    obj[
+                                        key
+                                    ] = `DynamicSimulationProvider${value}`;
+                                    return obj;
+                                },
+                                {}
+                            )}
+                            callback={handleUpdateProvider}
+                        />
+                    )}
+                </Grid>
 
-                <Grid container paddingTop={1}>
+                <Grid
+                    container
+                    paddingTop={1}
+                    xl={tabValue === TAB_VALUES.CURVE ? 12 : 6.01}
+                >
                     <LineSeparator />
                 </Grid>
 
@@ -352,7 +365,10 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
             </Grid>
             <Grid
                 container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
             >
                 <LabelledButton
                     callback={handleResetParametersAndProvider}

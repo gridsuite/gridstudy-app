@@ -300,6 +300,7 @@ export const VoltageInitParameters = ({
                     container
                     key="voltageInitParameters"
                     sx={styles.scrollableGrid}
+                    marginTop={-2}
                 >
                     <Grid item width="100%">
                         <Tabs
@@ -362,7 +363,7 @@ export const VoltageInitParameters = ({
                         </Grid>
                     </Grid>
                 </Grid>
-                <DialogActions>
+                <DialogActions sx={styles.controlParametersItem}>
                     <Button onClick={() => setOpenSelectParameterDialog(true)}>
                         <FormattedMessage id="loadParameters" />
                     </Button>

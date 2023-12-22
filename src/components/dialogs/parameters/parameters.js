@@ -93,6 +93,10 @@ export const styles = {
         justifyContent: 'flex-end',
         flexGrow: 1,
     },
+    controlParametersItem: {
+        justifyContent: 'flex-start',
+        flexGrow: 1,
+    },
     button: (theme) => ({
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),

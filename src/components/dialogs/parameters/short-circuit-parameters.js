@@ -238,7 +238,10 @@ export const ShortCircuitParameters = ({
             </Grid>
             <Grid
                 container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
             >
                 <SubmitButton onClick={handleSubmit(onSubmit)}>
                     <FormattedMessage id="validate" />

@@ -301,7 +301,10 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
             <LineSeparator />
             <Grid
                 container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
             >
                 <LabelledButton
                     callback={resetSAParametersAndProvider}

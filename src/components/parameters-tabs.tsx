@@ -105,8 +105,8 @@ const styles = {
     listTitleDisplay: (theme: Theme) => ({
         paddingTop: 1,
         paddingBottom: 1,
+        paddingLeft: theme.spacing(2),
         width: '100%',
-        textAlign: 'center',
         fontSize: '1.1rem',
         backgroundColor:
             theme.palette.mode === 'light'
@@ -136,7 +136,10 @@ const styles = {
             theme.palette.mode === 'light'
                 ? theme.palette.background.paper
                 : lighten(theme.palette.background.paper, 0.2),
-        padding: 8,
+        paddingTop: 6,
+        paddingBottom: 6,
+        paddingLeft: 8,
+        paddingRight: 8,
     }),
 };
 
@@ -405,18 +408,20 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
-                            <Tab
-                                disabled={
-                                    dynamicSimulationAvailability !==
-                                    OptionalServicesStatus.Up
-                                }
-                                label={
-                                    <FormattedMessage id="DynamicSimulation" />
-                                }
-                                value={
-                                    TAB_VALUES.dynamicSimulationParamsTabValue
-                                }
-                            />
+                            {enableDeveloperMode && (
+                                <Tab
+                                    disabled={
+                                        dynamicSimulationAvailability !==
+                                        OptionalServicesStatus.Up
+                                    }
+                                    label={
+                                        <FormattedMessage id="DynamicSimulation" />
+                                    }
+                                    value={
+                                        TAB_VALUES.dynamicSimulationParamsTabValue
+                                    }
+                                />
+                            )}
                             <Tab
                                 disabled={
                                     voltageInitAvailability !==

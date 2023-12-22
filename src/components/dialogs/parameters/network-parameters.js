@@ -45,45 +45,51 @@ export const NetworkParameters = () => {
 
     return (
         <>
-            <Grid
-                container
-                spacing={1}
-                key={'networkParameters'}
-                sx={styles.scrollableGrid}
-            >
-                <ParamLine
-                    type={ParameterType.DropDown}
-                    param_name_id={PARAM_FLUX_CONVENTION}
-                    labelTitle="FluxConvention"
-                    labelValue="flux-convention-select-label"
-                    values={{
-                        [FluxConventions.IIDM]: 'FluxConvention.iidm',
-                        [FluxConventions.TARGET]: 'FluxConvention.target',
-                    }}
-                />
-                <LineSeparator />
-                <Grid item container xs={12}>
+            <Grid xl={6}>
+                <Grid
+                    container
+                    spacing={1}
+                    key={'networkParameters'}
+                    sx={styles.scrollableGrid}
+                    marginTop={-3}
+                >
                     <ParamLine
-                        type={ParameterType.Switch}
-                        param_name_id={PARAM_DEVELOPER_MODE}
-                        label="EnableDeveloperMode"
+                        type={ParameterType.DropDown}
+                        param_name_id={PARAM_FLUX_CONVENTION}
+                        labelTitle="FluxConvention"
+                        labelValue="flux-convention-select-label"
+                        values={{
+                            [FluxConventions.IIDM]: 'FluxConvention.iidm',
+                            [FluxConventions.TARGET]: 'FluxConvention.target',
+                        }}
                     />
-                    {enableDeveloperMode && (
-                        <Alert severity={'warning'}>
-                            <FormattedMessage id="DeveloperModeWarningMsg" />
-                        </Alert>
-                    )}
+                    <LineSeparator />
+                    <Grid item container xs={12}>
+                        <ParamLine
+                            type={ParameterType.Switch}
+                            param_name_id={PARAM_DEVELOPER_MODE}
+                            label="EnableDeveloperMode"
+                        />
+                        {enableDeveloperMode && (
+                            <Alert severity={'warning'}>
+                                <FormattedMessage id="DeveloperModeWarningMsg" />
+                            </Alert>
+                        )}
+                    </Grid>
                 </Grid>
-            </Grid>
-            <LineSeparator />
-            <Grid
-                container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-            >
-                <LabelledButton
-                    callback={resetNetworkParameters}
-                    label="resetToDefault"
-                />
+                <LineSeparator />
+                <Grid
+                    container
+                    sx={mergeSx(
+                        styles.controlParametersItem,
+                        styles.marginTopButton
+                    )}
+                >
+                    <LabelledButton
+                        callback={resetNetworkParameters}
+                        label="resetToDefault"
+                    />
+                </Grid>
             </Grid>
         </>
     );

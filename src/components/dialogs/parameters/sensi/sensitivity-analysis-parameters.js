@@ -580,7 +580,7 @@ export const SensitivityAnalysisParameters = ({
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid container spacing={1} paddingTop={1}>
+                <Grid container>
                     <Grid item xs={8} sx={styles.parameterName}>
                         <FormattedMessage id="Provider" />
                     </Grid>
@@ -627,7 +627,7 @@ export const SensitivityAnalysisParameters = ({
                         onChangeParams={onChangeParams}
                     />
                 </Grid>
-                <DialogActions>
+                <DialogActions sx={styles.controlParametersItem}>
                     <Button onClick={clear}>
                         <FormattedMessage id="resetToDefault" />
                     </Button>
