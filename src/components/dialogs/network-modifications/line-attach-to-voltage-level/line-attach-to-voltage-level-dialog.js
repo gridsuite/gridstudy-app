@@ -47,6 +47,7 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { attachLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
+import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -356,6 +357,7 @@ const LineAttachToVoltageLevelDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
+                subtitle={<LineAttachToVoltageLevelIllustration />}
                 open={open}
                 isDataFetching={
                     isUpdate && editDataFetchStatus === FetchStatus.RUNNING

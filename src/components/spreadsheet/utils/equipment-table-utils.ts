@@ -12,6 +12,7 @@ import {
     RefreshCellsParams,
     GridApi,
 } from 'ag-grid-community';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -31,6 +32,57 @@ const flashCells = (params: CellEditingStoppedEvent, columns: string[]) => {
         rowNodes: [params.node],
         columns,
     });
+};
+
+export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
+    const rowNode = params.node;
+    const colId = params.column.getColId();
+    const regulationTypeText = params.data.RegulationTypeText;
+    const previousData = params.context.dataToModify;
+    if (colId === 'RegulationTypeText') {
+        if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
+            params.data.regulatingTerminalVlId = null;
+            params.data.regulatingTerminalConnectableId = null;
+            params.data.regulatingTerminalConnectableType = null;
+            rowNode.setDataValue('RegulatingTerminalGenerator', null);
+        }
+        if (regulationTypeText === REGULATION_TYPES.DISTANT.id) {
+            params.data.regulatingTerminalVlId =
+                previousData.regulatingTerminalVlId ?? ' ';
+            params.data.regulatingTerminalConnectableId =
+                previousData.regulatingTerminalConnectableId ?? ' ';
+            params.data.regulatingTerminalConnectableType =
+                previousData.regulatingTerminalConnectableType ?? ' ';
+
+            const regulatingTerminalGenerator =
+                previousData.regulatingTerminalConnectableType
+                    ? `${previousData.regulatingTerminalConnectableType} (${previousData.regulatingTerminalConnectableId} )`
+                    : null;
+            rowNode.setDataValue(
+                'RegulatingTerminalGenerator',
+                regulatingTerminalGenerator
+            );
+        }
+        params.api.flashCells({
+            rowNodes: [rowNode],
+            columns: ['RegulationTypeText', 'RegulatingTerminalGenerator'],
+        });
+    } else if (colId === 'RegulatingTerminalGenerator') {
+        const RegulatingTerminalGenerator =
+            params.data.RegulatingTerminalGenerator;
+        if (RegulatingTerminalGenerator) {
+            params.data.regulatingTerminalVlId =
+                params.context.dynamicValidation.regulatingTerminalVlId;
+            params.data.regulatingTerminalConnectableId =
+                params.context.dynamicValidation.regulatingTerminalConnectableId;
+            params.data.regulatingTerminalConnectableType =
+                params.context.dynamicValidation.regulatingTerminalConnectableType;
+        } else {
+            params.data.regulatingTerminalVlId = undefined;
+            params.data.regulatingTerminalConnectableId = undefined;
+            params.data.regulatingTerminalConnectableType = undefined;
+        }
+    }
 };
 
 export const updateShuntCompensatorCells = (
@@ -146,6 +198,9 @@ export const updateShuntCompensatorCells = (
 };
 
 const deepFindValue = (obj: any, path: any) => {
+    if (path === undefined) {
+        return undefined;
+    }
     let paths = path.split('.'),
         current = obj,
         i;
@@ -177,8 +232,21 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
 };
 
 const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
-    if (fieldVal === undefined || fieldVal === null || isNaN(fieldVal)) {
-        if (colDef.crossValidation?.optional) {
+    if (
+        fieldVal === undefined ||
+        fieldVal === null ||
+        fieldVal === '' ||
+        (isNaN(fieldVal) && colDef.numeric)
+    ) {
+        let originalValue = deepFindValue(
+            gridContext.dataToModify,
+            colDef.field
+        );
+        originalValue =
+            colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
+        if (originalValue !== undefined) {
+            return false;
+        } else if (colDef.crossValidation?.optional) {
             return true;
         } else if (colDef.crossValidation?.requiredOn) {
             const isConditionFulfiled = checkCrossValidationRequiredOn(
@@ -197,13 +265,13 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
     }
     const minExpression = colDef.crossValidation?.minExpression;
     const maxExpression = colDef.crossValidation?.maxExpression;
-    if (maxExpression || minExpression) {
+    if (maxExpression !== undefined || minExpression !== undefined) {
         const minVal = !isNaN(minExpression)
             ? minExpression
-            : gridContext.dynamicValidation[minExpression];
+            : deepFindValue(gridContext.dynamicValidation, minExpression);
         const maxVal = !isNaN(maxExpression)
             ? maxExpression
-            : gridContext.dynamicValidation[maxExpression];
+            : deepFindValue(gridContext.dynamicValidation, maxExpression);
         return (
             (minVal === undefined || fieldVal >= minVal) &&
             (maxVal === undefined || fieldVal <= maxVal)
