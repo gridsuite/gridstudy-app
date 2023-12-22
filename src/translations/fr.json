@@ -140,8 +140,8 @@
     "ReactivePowerT3WSide1": "q1 (MVar)",
     "ReactivePowerT3WSide2": "q2 (MVar)",
     "ReactivePowerT3WSide3": "q3 (MVar)",
-    "SeriesResistance": "Résistance série (Ω)",
-    "SeriesReactance": "Réactance série (Ω)",
+    "seriesResistance": "Résistance série (Ω)",
+    "seriesReactance": "Réactance série (Ω)",
     "ShuntConductance1": "Conductance parallèle 1 (μS)",
     "ShuntSusceptance1": "Susceptance parallèle 1 (μS)",
     "ShuntConductance2": "Conductance parallèle 2 (μS)",
@@ -715,7 +715,7 @@
     "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
     "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
-    "ShuntCompensatorMultiSectionsError": "La modification d'un moyen de compensation à plusieurs gradins n'est pas possible pour le moment",
+    "ShuntCompensatorNonlinearError": "La modification d'un moyen de compensation non linéaire n'est pas possible pour le moment",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
 
     "CreateBattery": "Créer une batterie",
@@ -1298,8 +1298,8 @@
     "side1RectifierSide2Inverter": "Flux (1->2)",
     "side1InverterSide2Rectifier": "Flux (2->1)",
 
-    "MagnetizingConductanceWithUnit": "Conductance magnétisante (μS)",
-    "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
+    "magnetizingConductance": "Conductance magnétisante (μS)",
+    "magnetizingSusceptance": "Susceptance magnétisante (μS)",
     "ratedNominalPower": "Puissance nominale (MVA)",
 
     "ShortcircuitInProgress": "Calcul de court-circuit en cours...",
@@ -1367,5 +1367,7 @@
     "highVoltageLimit": "Limite tension haute (kV)",
     "UnitDeletion": "Unitaire",
     "ByFilterDeletion": "Par filtre",
-    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre"
+    "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre",
+    "ratedVoltage1": "Tension d'enroulement 1 (kV)",
+    "ratedVoltage2": "Tension d'enroulement 2 (kV)"
 }

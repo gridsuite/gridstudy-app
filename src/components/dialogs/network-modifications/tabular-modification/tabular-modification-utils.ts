@@ -6,6 +6,18 @@
  */
 
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import {
+    EQUIPMENT_ID,
+    MAGNETIZING_CONDUCTANCE,
+    MAGNETIZING_SUSCEPTANCE,
+    RATED_S,
+    RATED_VOLTAGE_1,
+    RATED_VOLTAGE_2,
+    SERIES_REACTANCE,
+    SERIES_RESISTANCE,
+} from 'components/utils/field-constants';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
+import { toModificationOperation } from 'components/utils/utils';
 
 export interface TabularModificationFields {
     [key: string]: string[];
@@ -42,6 +54,16 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'constantActivePower',
         'constantReactivePower',
     ],
+    TWO_WINDINGS_TRANSFORMER: [
+        EQUIPMENT_ID,
+        SERIES_RESISTANCE,
+        SERIES_REACTANCE,
+        MAGNETIZING_CONDUCTANCE,
+        MAGNETIZING_SUSCEPTANCE,
+        RATED_VOLTAGE_1,
+        RATED_VOLTAGE_2,
+        RATED_S,
+    ],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
@@ -49,6 +71,8 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
     BATTERY: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+    TWO_WINDINGS_TRANSFORMER:
+        MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
 };
 
 export interface Modification {
@@ -59,6 +83,36 @@ export const formatModification = (modification: Modification) => {
     //exclude type, date and uuid from modification object
     const { type, date, uuid, ...rest } = modification;
     return rest;
+};
+
+export const convertValueFromBackToFront = (
+    key: string,
+    value: { value: string | number }
+) => {
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case MAGNETIZING_CONDUCTANCE:
+        case MAGNETIZING_SUSCEPTANCE:
+            return unitToMicroUnit(value?.value);
+        default:
+            return value?.value;
+    }
+};
+
+export const convertValueFromFrontToBack = (
+    key: string,
+    value: string | number
+) => {
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case MAGNETIZING_CONDUCTANCE:
+        case MAGNETIZING_SUSCEPTANCE:
+            return toModificationOperation(microUnitToUnit(value));
+        default:
+            return toModificationOperation(value);
+    }
 };
 
 export const getEquipmentTypeFromModificationType = (type: string) => {
