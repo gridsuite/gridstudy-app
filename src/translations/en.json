@@ -1348,7 +1348,6 @@
     "UnitDeletion": "Unit",
     "ByFilterDeletion": "By filter",
     "DeleteEquipmentByFilter": "Delete equipments by filter",
-    "highVoltageLimit": "High voltage limit (kV)",
     "ratedVoltage1": "Rated voltage 1 (kV)",
     "ratedVoltage2": "Rated voltage 2 (kV)"
 }
