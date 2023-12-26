@@ -35,7 +35,7 @@ import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
-import { RenderTableAndExportCSV } from './utils/renderTable-ExportCSV';
+import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 
 const styles = {
     container: {
@@ -211,9 +211,9 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Typography>
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
-                <RenderTableAndExportCSV
+                <RenderTableAndExportCsv
                     gridRef={gridRef}
-                    indicatorsColumnDefs={indicatorsColumnDefs}
+                    columns={indicatorsColumnDefs}
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
@@ -241,7 +241,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
 
     function renderReactiveSlacksTable(reactiveSlacks) {
         return (
-            <RenderTableAndExportCSV
+            <RenderTableAndExportCsv
                 gridRef={gridRef}
                 columns={reactiveSlacksColumnDefs}
                 defaultColDef={defaultColDef}

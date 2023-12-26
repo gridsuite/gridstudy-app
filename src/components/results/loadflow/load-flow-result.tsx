@@ -54,7 +54,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { REPORT_TYPES } from '../../utils/report-type';
-import { RenderTableAndExportCSV } from '../../utils/renderTable-ExportCSV';
+import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -263,7 +263,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderCurrentTab && <LinearProgress />}
                 </Box>
-                <RenderTableAndExportCSV
+                <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={loadFlowCurrentViolationsColumns}
                     defaultColDef={defaultColDef}
@@ -277,7 +277,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     enableCellTextSelection={true}
-                    skipColumnHeaders={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -323,7 +323,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderVoltageTab && <LinearProgress />}
                 </Box>
-                <RenderTableAndExportCSV
+                <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={loadFlowVoltageViolationsColumns}
                     defaultColDef={defaultColDef}
@@ -337,7 +337,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     enableCellTextSelection={true}
-                    skipColumnHeaders={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -357,7 +357,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderStatusTab && <LinearProgress />}
                 </Box>
-                <RenderTableAndExportCSV
+                <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={loadFlowResultColumns}
                     defaultColDef={defaultColDef}
@@ -371,7 +371,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
                     enableCellTextSelection={true}
-                    skipColumnHeaders={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );

@@ -8,7 +8,13 @@
 import { Box } from '@mui/system';
 import { CsvExport } from '../spreadsheet/export-csv';
 import { CustomAGGrid } from '../custom-aggrid/custom-aggrid';
-import React from 'react';
+import React, { FunctionComponent, Ref } from 'react';
+import {
+    ColDef,
+    RowDataUpdatedEvent,
+    RowStyle,
+} from 'ag-grid-community/dist/lib/main';
+import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 
 const styles = {
     gridContainer: {
@@ -25,7 +31,24 @@ const styles = {
     },
 };
 
-export const RenderTableAndExportCSV = ({
+interface RenderTableAndExportCsvProps {
+    gridRef: Ref<any> | undefined;
+    columns: any[];
+    defaultColDef: ColDef<any>;
+    tableName: string;
+    rows: any[];
+    onRowDataUpdated: (event: RowDataUpdatedEvent<any, any>) => void;
+    headerHeight: number;
+    onGridReady: ((event: GridReadyEvent<any, any>) => void) | undefined;
+    getRowStyle: (params: RowClassParams<any, any>) => RowStyle | undefined;
+    enableCellTextSelection: boolean;
+    overlayNoRowsTemplate: string | undefined;
+    skipColumnHeaders: boolean;
+}
+
+export const RenderTableAndExportCsv: FunctionComponent<
+    RenderTableAndExportCsvProps
+> = ({
     gridRef,
     columns,
     defaultColDef,
@@ -37,7 +60,7 @@ export const RenderTableAndExportCSV = ({
     getRowStyle,
     enableCellTextSelection,
     overlayNoRowsTemplate,
-    skipColumnHeaders,
+    skipColumnHeaders = false,
 }) => {
     return (
         <Box sx={styles.gridContainer}>
