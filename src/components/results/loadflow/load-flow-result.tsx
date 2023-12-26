@@ -45,7 +45,6 @@ import {
     getRows,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { fetchLimitViolations } from '../../../services/study';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Box } from '@mui/system';
