@@ -96,6 +96,7 @@ export const styles = {
     controlParametersItem: {
         justifyContent: 'flex-start',
         flexGrow: 1,
+        height: 'fit-content',
     },
     button: (theme) => ({
         marginBottom: theme.spacing(2),

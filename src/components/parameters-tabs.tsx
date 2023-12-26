@@ -137,7 +137,7 @@ const styles = {
                 ? theme.palette.background.paper
                 : lighten(theme.palette.background.paper, 0.2),
         paddingTop: 6,
-        paddingBottom: 3,
+        paddingBottom: 2,
         paddingLeft: 8,
         paddingRight: 8,
     }),

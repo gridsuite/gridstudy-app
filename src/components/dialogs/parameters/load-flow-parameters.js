@@ -532,8 +532,13 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <>
-            <Grid container xl={6}>
+        <Grid
+            container
+            justifyContent="space-between"
+            sx={{ height: '100%' }}
+            xl={6}
+        >
+            <Grid item>
                 <Grid
                     container
                     spacing={1}
@@ -576,23 +581,24 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         onSpecificParamChange={onSpecificParamChange}
                     />
                 </Grid>
-                <Grid
-                    container
-                    sx={mergeSx(
-                        styles.controlParametersItem,
-                        styles.marginTopButton
-                    )}
-                >
-                    <LabelledButton
-                        callback={resetLfParametersAndLfProvider}
-                        label="resetToDefault"
-                    />
-                    <LabelledButton
-                        callback={resetLfParameters}
-                        label="resetProviderValuesToDefault"
-                    />
-                </Grid>
             </Grid>
-        </>
+            <Grid
+                container
+                item
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
+            >
+                <LabelledButton
+                    callback={resetLfParametersAndLfProvider}
+                    label="resetToDefault"
+                />
+                <LabelledButton
+                    callback={resetLfParameters}
+                    label="resetProviderValuesToDefault"
+                />
+            </Grid>
+        </Grid>
     );
 };
