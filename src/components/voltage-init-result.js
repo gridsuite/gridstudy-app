@@ -235,6 +235,48 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             </Box>
         );
     };
+
+    function renderTotalReactiveSlacks(reactiveSlacks) {
+        const totalInjection = resultToShow.reactiveSlacks
+            ? resultToShow.reactiveSlacks
+                  .filter((reactiveSlack) => reactiveSlack.slack < 0)
+                  .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
+            : 0;
+        const totalConsumption = resultToShow.reactiveSlacks
+            ? resultToShow.reactiveSlacks
+                  .filter((reactiveSlack) => reactiveSlack.slack > 0)
+                  .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
+            : 0;
+        return (
+            <>
+                <Stack
+                    direction={'row'}
+                    gap={1}
+                    marginBottom={-4.5}
+                    marginTop={1.5}
+                    marginLeft={2}
+                >
+                    <>
+                        <Typography style={{ fontWeight: 'bold' }}>
+                            <FormattedMessage id="TotalInjection" />
+                        </Typography>
+                        <Typography style={{ marginLeft: '10px' }}>
+                            {totalInjection}
+                        </Typography>
+
+                        <Typography
+                            style={{ marginLeft: '5em', fontWeight: 'bold' }}
+                        >
+                            <FormattedMessage id="TotalConsumption" />
+                        </Typography>
+                        <Typography style={{ marginLeft: '10px' }}>
+                            {totalConsumption}
+                        </Typography>
+                    </>
+                </Stack>
+            </>
+        );
+    }
     function renderIndicatorsTable(indicators) {
         const rows = indicators
             ? Object.entries(indicators).map((i) => {
@@ -287,11 +329,16 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     }, [intl]);
 
     function renderReactiveSlacksTable(reactiveSlacks) {
-        return renderTableAndExportCSV(
-            gridRef,
-            reactiveSlacksColumnDefs,
-            intl.formatMessage({ id: 'ReactiveSlacks' }),
-            reactiveSlacks
+        return (
+            <>
+                {renderTotalReactiveSlacks(reactiveSlacks)}
+                {renderTableAndExportCSV(
+                    gridRef,
+                    reactiveSlacksColumnDefs,
+                    intl.formatMessage({ id: 'ReactiveSlacks' }),
+                    reactiveSlacks
+                )}
+            </>
         );
     }
 
