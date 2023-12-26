@@ -93,6 +93,10 @@ const TabularModificationForm = () => {
                 return intl.formatMessage({
                     id: 'TabularModificationShuntSkeletonComment',
                 });
+            case EQUIPMENT_TYPES.LOAD:
+                return intl.formatMessage({
+                    id: 'TabularModificationLoadSkeletonComment',
+                });
             default:
                 return '';
         }
@@ -172,7 +176,6 @@ const TabularModificationForm = () => {
     const defaultColDef = useMemo(
         () => ({
             flex: 1,
-            filter: true,
             sortable: true,
             resizable: false,
             lockPinned: true,
