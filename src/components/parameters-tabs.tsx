@@ -136,6 +136,7 @@ const styles = {
             theme.palette.mode === 'light'
                 ? theme.palette.background.paper
                 : lighten(theme.palette.background.paper, 0.2),
+        height: '100%',
         paddingTop: 6,
         paddingBottom: 2,
         paddingLeft: 8,

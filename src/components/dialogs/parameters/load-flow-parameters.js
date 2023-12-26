@@ -538,7 +538,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             sx={{ height: '100%' }}
             xl={6}
         >
-            <Grid item>
+            <Grid item sx={{ height: '100%' }}>
                 <Grid
                     container
                     spacing={1}

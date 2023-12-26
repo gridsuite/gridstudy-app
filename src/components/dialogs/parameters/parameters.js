@@ -97,6 +97,7 @@ export const styles = {
         justifyContent: 'flex-start',
         flexGrow: 1,
         height: 'fit-content',
+        paddingBottom: 2,
     },
     button: (theme) => ({
         marginBottom: theme.spacing(2),
@@ -135,7 +136,7 @@ export const styles = {
     scrollableGrid: (theme) => ({
         overflowY: 'auto',
         overflowX: 'hidden',
-        maxHeight: '60vh',
+        maxHeight: '85%',
         paddingRight: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(1),
