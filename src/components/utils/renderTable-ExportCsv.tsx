@@ -15,19 +15,12 @@ import {
     RowStyle,
 } from 'ag-grid-community/dist/lib/main';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { Grid } from '@mui/material';
 
 const styles = {
-    gridContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
     csvExport: {
         display: 'flex',
-        alignItems: 'baseline',
-    },
-    grid: {
-        flexGrow: '1',
+        alignItems: 'center',
     },
 };
 
@@ -63,7 +56,7 @@ export const RenderTableAndExportCsv: FunctionComponent<
     skipColumnHeaders = false,
 }) => {
     return (
-        <Box sx={styles.gridContainer}>
+        <Grid>
             <Box sx={styles.csvExport}>
                 <Box style={{ flexGrow: 1 }}></Box>
                 <CsvExport
@@ -75,7 +68,7 @@ export const RenderTableAndExportCsv: FunctionComponent<
                 />
             </Box>
             {rows && (
-                <Box sx={styles.grid}>
+                <Grid>
                     <CustomAGGrid
                         ref={gridRef}
                         rowData={rows}
@@ -88,8 +81,8 @@ export const RenderTableAndExportCsv: FunctionComponent<
                         overlayNoRowsTemplate={overlayNoRowsTemplate}
                         enableCellTextSelection={enableCellTextSelection}
                     />
-                </Box>
+                </Grid>
             )}
-        </Box>
+        </Grid>
     );
 };
