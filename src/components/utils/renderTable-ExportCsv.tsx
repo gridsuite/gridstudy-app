@@ -21,19 +21,20 @@ const styles = {
     csvExport: {
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'right',
     },
 };
 
 interface RenderTableAndExportCsvProps {
     gridRef: Ref<any> | undefined;
     columns: any[];
-    defaultColDef: ColDef<any>;
+    defaultColDef: ColDef;
     tableName: string;
     rows: any[];
-    onRowDataUpdated: (event: RowDataUpdatedEvent<any, any>) => void;
+    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     headerHeight: number;
-    onGridReady: ((event: GridReadyEvent<any, any>) => void) | undefined;
-    getRowStyle: (params: RowClassParams<any, any>) => RowStyle | undefined;
+    onGridReady: ((event: GridReadyEvent) => void) | undefined;
+    getRowStyle: (params: RowClassParams) => RowStyle | undefined;
     enableCellTextSelection: boolean;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
@@ -58,7 +59,6 @@ export const RenderTableAndExportCsv: FunctionComponent<
     return (
         <Grid>
             <Box sx={styles.csvExport}>
-                <Box style={{ flexGrow: 1 }}></Box>
                 <CsvExport
                     gridRef={gridRef}
                     columns={columns}
