@@ -97,7 +97,7 @@ export const styles = {
         justifyContent: 'flex-start',
         flexGrow: 1,
         height: 'fit-content',
-        paddingBottom: 2,
+        paddingBottom: 4,
     },
     button: (theme) => ({
         marginBottom: theme.spacing(2),

@@ -233,7 +233,7 @@ export const ShortCircuitParameters = ({
                 <LineSeparator />
             </Grid>
 
-            <Grid>
+            <Grid sx={styles.scrollableGrid}>
                 <ShortCircuitFields resetAll={resetAll} />
             </Grid>
             <Grid

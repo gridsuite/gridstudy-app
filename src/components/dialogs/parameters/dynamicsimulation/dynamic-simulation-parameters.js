@@ -367,7 +367,8 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                 container
                 sx={mergeSx(
                     styles.controlParametersItem,
-                    styles.marginTopButton
+                    styles.marginTopButton,
+                    { paddingTop: 4 }
                 )}
             >
                 <LabelledButton

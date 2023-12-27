@@ -47,6 +47,7 @@ import {
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import { mergeSx } from 'components/utils/functions';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -296,87 +297,101 @@ export const VoltageInitParameters = ({
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid
-                    container
-                    key="voltageInitParameters"
-                    sx={styles.scrollableGrid}
-                    marginTop={-2}
-                >
-                    <Grid item width="100%">
-                        <Tabs
-                            value={tabValue}
-                            variant="scrollable"
-                            onChange={handleTabChange}
-                            TabIndicatorProps={{
-                                sx: getTabIndicatorStyle(
-                                    tabIndexesWithError,
-                                    tabValue
-                                ),
-                            }}
-                        >
-                            <Tab
-                                label={<FormattedMessage id="VoltageLimits" />}
-                                value={TAB_VALUES.voltageLimitsParamsTabValue}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TAB_VALUES.voltageLimitsParamsTabValue
-                                )}
-                            />
-                            <Tab
-                                label={
-                                    <FormattedMessage id="EquipmentSelection" />
-                                }
-                                value={
-                                    TAB_VALUES.equipmentSelectionParamsTabValue
-                                }
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TAB_VALUES.equipmentSelectionParamsTabValue
-                                )}
-                            />
-                        </Tabs>
-                        <Grid container>
-                            <TabPanel
+                <Grid sx={{ height: '100%' }}>
+                    <Grid
+                        container
+                        key="voltageInitParameters"
+                        sx={styles.scrollableGrid}
+                        marginTop={-2}
+                    >
+                        <Grid item width="100%">
+                            <Tabs
                                 value={tabValue}
-                                index={TAB_VALUES.voltageLimitsParamsTabValue}
+                                variant="scrollable"
+                                onChange={handleTabChange}
+                                TabIndicatorProps={{
+                                    sx: getTabIndicatorStyle(
+                                        tabIndexesWithError,
+                                        tabValue
+                                    ),
+                                }}
                             >
-                                <VoltageLimitsParameters
-                                    reset={reset}
-                                    useVoltageInitParameters={
-                                        useVoltageInitParameters
+                                <Tab
+                                    label={
+                                        <FormattedMessage id="VoltageLimits" />
                                     }
-                                />
-                            </TabPanel>
-                            <TabPanel
-                                value={tabValue}
-                                index={
-                                    TAB_VALUES.equipmentSelectionParamsTabValue
-                                }
-                            >
-                                <EquipmentSelectionParameters
-                                    reset={reset}
-                                    useVoltageInitParameters={
-                                        useVoltageInitParameters
+                                    value={
+                                        TAB_VALUES.voltageLimitsParamsTabValue
                                     }
+                                    sx={getTabStyle(
+                                        tabIndexesWithError,
+                                        TAB_VALUES.voltageLimitsParamsTabValue
+                                    )}
                                 />
-                            </TabPanel>
+                                <Tab
+                                    label={
+                                        <FormattedMessage id="EquipmentSelection" />
+                                    }
+                                    value={
+                                        TAB_VALUES.equipmentSelectionParamsTabValue
+                                    }
+                                    sx={getTabStyle(
+                                        tabIndexesWithError,
+                                        TAB_VALUES.equipmentSelectionParamsTabValue
+                                    )}
+                                />
+                            </Tabs>
+                            <Grid container>
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
+                                        TAB_VALUES.voltageLimitsParamsTabValue
+                                    }
+                                >
+                                    <VoltageLimitsParameters
+                                        reset={reset}
+                                        useVoltageInitParameters={
+                                            useVoltageInitParameters
+                                        }
+                                    />
+                                </TabPanel>
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
+                                        TAB_VALUES.equipmentSelectionParamsTabValue
+                                    }
+                                >
+                                    <EquipmentSelectionParameters
+                                        reset={reset}
+                                        useVoltageInitParameters={
+                                            useVoltageInitParameters
+                                        }
+                                    />
+                                </TabPanel>
+                            </Grid>
                         </Grid>
                     </Grid>
+                    <DialogActions
+                        sx={mergeSx(styles.controlParametersItem, {
+                            paddingTop: 4,
+                        })}
+                    >
+                        <Button
+                            onClick={() => setOpenSelectParameterDialog(true)}
+                        >
+                            <FormattedMessage id="loadParameters" />
+                        </Button>
+                        <Button onClick={handleOpenSaveDialog}>
+                            <FormattedMessage id="save" />
+                        </Button>
+                        <Button onClick={clear}>
+                            <FormattedMessage id="resetToDefault" />
+                        </Button>
+                        <SubmitButton
+                            onClick={handleSubmit(onSubmit, onValidationError)}
+                        />
+                    </DialogActions>
                 </Grid>
-                <DialogActions sx={styles.controlParametersItem}>
-                    <Button onClick={() => setOpenSelectParameterDialog(true)}>
-                        <FormattedMessage id="loadParameters" />
-                    </Button>
-                    <Button onClick={handleOpenSaveDialog}>
-                        <FormattedMessage id="save" />
-                    </Button>
-                    <Button onClick={clear}>
-                        <FormattedMessage id="resetToDefault" />
-                    </Button>
-                    <SubmitButton
-                        onClick={handleSubmit(onSubmit, onValidationError)}
-                    />
-                </DialogActions>
             </FormProvider>
 
             {openCreateParameterDialog && (

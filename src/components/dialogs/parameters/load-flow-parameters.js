@@ -538,56 +538,55 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             sx={{ height: '100%' }}
             xl={6}
         >
-            <Grid item sx={{ height: '100%' }}>
-                <Grid
-                    container
-                    spacing={1}
-                    sx={{ paddingLeft: 0, paddingRight: 2 }}
-                >
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={LoadFlowProviders}
-                        callback={updateLfProviderCallback}
+            <Grid
+                container
+                spacing={1}
+                sx={{ paddingLeft: 0, paddingRight: 2, height: 'fit-content' }}
+            >
+                <DropDown
+                    value={provider}
+                    label="Provider"
+                    values={LoadFlowProviders}
+                    callback={updateLfProviderCallback}
+                />
+            </Grid>
+            <Grid container sx={styles.scrollableGrid} key="lfParameters">
+                <LineSeparator />
+                <Grid container spacing={1} paddingTop={1}>
+                    <ParamLine
+                        type={ParameterType.Slider}
+                        param_name_id={PARAM_LIMIT_REDUCTION}
+                        label="LimitReduction"
+                        marks={alertThresholdMarks}
+                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
                     />
-                </Grid>
-                <Grid container sx={styles.scrollableGrid} key="lfParameters">
                     <LineSeparator />
-                    <Grid container spacing={1} paddingTop={1}>
-                        <ParamLine
-                            type={ParameterType.Slider}
-                            param_name_id={PARAM_LIMIT_REDUCTION}
-                            label="LimitReduction"
-                            marks={alertThresholdMarks}
-                            minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
-                        />
-                        <LineSeparator />
-                    </Grid>
-                    <BasicLoadFlowParameters
-                        lfParams={params || {}}
-                        commitLFParameter={updateParameters}
-                    />
-                    <AdvancedLoadFlowParameters
-                        lfParams={params || {}}
-                        commitLFParameter={updateParameters}
-                    />
-                    <SpecificLoadFlowParameters
-                        disabled={!specificParamsDescriptions?.[provider]}
-                        subText={provider}
-                        specificParamsDescription={
-                            specificParamsDescrWithoutNanVals[provider]
-                        }
-                        specificCurrentParams={specificCurrentParams[provider]}
-                        onSpecificParamChange={onSpecificParamChange}
-                    />
                 </Grid>
+                <BasicLoadFlowParameters
+                    lfParams={params || {}}
+                    commitLFParameter={updateParameters}
+                />
+                <AdvancedLoadFlowParameters
+                    lfParams={params || {}}
+                    commitLFParameter={updateParameters}
+                />
+                <SpecificLoadFlowParameters
+                    disabled={!specificParamsDescriptions?.[provider]}
+                    subText={provider}
+                    specificParamsDescription={
+                        specificParamsDescrWithoutNanVals[provider]
+                    }
+                    specificCurrentParams={specificCurrentParams[provider]}
+                    onSpecificParamChange={onSpecificParamChange}
+                />
             </Grid>
             <Grid
                 container
                 item
                 sx={mergeSx(
                     styles.controlParametersItem,
-                    styles.marginTopButton
+                    styles.marginTopButton,
+                    { paddingTop: 4 }
                 )}
             >
                 <LabelledButton
