@@ -126,7 +126,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     yup
                         .number()
                         .nullable()
-                        .min(0, 'TargetDeadbandGreaterThanZero'),
+                        .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
             }),
         [LOW_TAP_POSITION]: yup
             .number()
@@ -257,7 +257,7 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterThanZero'),
+            .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
         [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup.number().nullable(),
