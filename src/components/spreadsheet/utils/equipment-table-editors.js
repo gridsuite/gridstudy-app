@@ -22,6 +22,7 @@ import {
 } from './equipment-table-utils';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
+import { getTapChangerRegulationTerminalGeneratorValue } from 'components/utils/utils';
 
 export const GeneratorRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }, ref) => {
@@ -98,6 +99,158 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                     handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
                 }}
                 data={rowData}
+                previousData={gridContext.dataToModify}
+            />
+        );
+    }
+);
+
+export const TWTRatioRegulatingTerminalEditor = forwardRef(
+    ({ gridContext, colDef, gridApi, rowData }, ref) => {
+        const [openTWTRegulatingTerminalPopup, setOpenTWTRegulatingTerminalPopup] = useState(true);
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        return getTapChangerRegulationTerminalGeneratorValue(gridContext.dynamicValidation?.ratioTapChanger || {});
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field, gridContext.dynamicValidation]
+        );
+
+        const handleSaveRegulatingTerminalPopup = (
+            updatedRegulatedTerminal
+        ) => {
+            const {
+                equipment: { type: equipmentType, id: equipmentId } = {},
+                voltageLevel: { id: voltageLevelId } = {},
+            } = updatedRegulatedTerminal || {};
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'ratioTapChanger.regulatingTerminalConnectableId',
+                equipmentId
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'ratioTapChanger.regulatingTerminalConnectableType',
+                equipmentType
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'ratioTapChanger.regulatingTerminalVlId',
+                voltageLevelId
+            );
+            setOpenTWTRegulatingTerminalPopup(false);
+        };
+        const handleCancelRegulatingTerminalPopup = () => {
+            setOpenTWTRegulatingTerminalPopup(false);
+            gridApi.stopEditing();
+        };
+
+        const getRatioTapChangerValue = () => {
+            const ratioTapChanger = {
+                ...rowData?.ratioTapChanger,
+                regulatingTerminalConnectableId: rowData?.ratioTapChanger?.regulatingTerminalConnectableId || '',
+                regulatingTerminalConnectableType: rowData?.ratioTapChanger?.regulatingTerminalConnectableType || '',
+                regulatingTerminalVlId: rowData?.ratioTapChanger?.regulatingTerminalVlId || '',
+            }
+            return ratioTapChanger;
+        }
+
+        return (
+            <RegulatingTerminalModificationDialog
+                open={openTWTRegulatingTerminalPopup}
+                onClose={handleCancelRegulatingTerminalPopup}
+                currentNode={gridContext.currentNode}
+                studyUuid={gridContext.studyUuid}
+                onModifyRegulatingTerminalGenerator={(
+                    updatedRegulatedTerminal
+                ) => {
+                    handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
+                }}
+                data={getRatioTapChangerValue()}
+                previousData={gridContext.dataToModify}
+            />
+        );
+    }
+);
+
+export const TWTPhaseRegulatingTerminalEditor = forwardRef(
+    ({ gridContext, colDef, gridApi, rowData }, ref) => {
+        const [openTWTRegulatingTerminalPopup, setOpenTWTRegulatingTerminalPopup] = useState(true);
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        return getTapChangerRegulationTerminalGeneratorValue(gridContext.dynamicValidation.phaseTapChanger || {});
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field, gridContext.dynamicValidation]
+        );
+
+        const handleSaveRegulatingTerminalPopup = (
+            updatedRegulatedTerminal
+        ) => {
+            const {
+                equipment: { type: equipmentType, id: equipmentId } = {},
+                voltageLevel: { id: voltageLevelId } = {},
+            } = updatedRegulatedTerminal || {};
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'phaseTapChanger.regulatingTerminalConnectableId',
+                equipmentId
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'phaseTapChanger.regulatingTerminalConnectableType',
+                equipmentType
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                'phaseTapChanger.regulatingTerminalVlId',
+                voltageLevelId
+            );
+            setOpenTWTRegulatingTerminalPopup(false);
+        };
+        const handleCancelRegulatingTerminalPopup = () => {
+            setOpenTWTRegulatingTerminalPopup(false);
+            gridApi.stopEditing();
+        };
+
+        const getPhaseTapChangerValue = () => {
+            const phaseTapChanger = {
+                ...rowData?.phaseTapChanger,
+                regulatingTerminalConnectableId: rowData?.phaseTapChanger?.regulatingTerminalConnectableId || '',
+                regulatingTerminalConnectableType: rowData?.phaseTapChanger?.regulatingTerminalConnectableType || '',
+                regulatingTerminalVlId: rowData?.phaseTapChanger?.regulatingTerminalVlId || '',
+            }
+            return phaseTapChanger;
+        }
+
+        return (
+            <RegulatingTerminalModificationDialog
+                open={openTWTRegulatingTerminalPopup}
+                onClose={handleCancelRegulatingTerminalPopup}
+                currentNode={gridContext.currentNode}
+                studyUuid={gridContext.studyUuid}
+                onModifyRegulatingTerminalGenerator={(
+                    updatedRegulatedTerminal
+                ) => {
+                    handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
+                }}
+                data={getPhaseTapChangerValue()}
                 previousData={gridContext.dataToModify}
             />
         );

@@ -3,6 +3,7 @@ import {
     computeMaxQAtNominalV,
     computeMaxSusceptance,
     computeSwitchedOnValue,
+    getTapChangerRegulationTerminalGeneratorValue,
 } from 'components/utils/utils';
 import { EDIT_COLUMN } from './config-tables';
 import {
@@ -75,6 +76,95 @@ export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
             params.data.regulatingTerminalConnectableId = undefined;
             params.data.regulatingTerminalConnectableType = undefined;
         }
+    }
+};
+
+export const updateTwtCells = (params: CellEditingStoppedEvent) => {
+    const rowNode = params.node;
+    const colId = params.column.getColId();
+    const ratioRegulationTypeText =
+        params.data?.ratioTapChanger?.regulationType;
+    const phaseRegulationTypeText =
+        params.data?.phaseTapChanger?.regulationType;
+    const previousData = params.context.dataToModify;
+    switch (colId) {
+        case 'ratioTapChanger.regulationType':
+            if (ratioRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
+                // This solve the problem of required on RatioRegulatingTerminalGenerator when we set regulationType to distant
+                const regulatingTerminalGenerator =
+                    getTapChangerRegulationTerminalGeneratorValue(
+                        previousData?.ratioTapChanger
+                    );
+                rowNode.setDataValue(
+                    'RatioRegulatingTerminalGenerator',
+                    regulatingTerminalGenerator
+                );
+            }
+            params.api.flashCells({
+                rowNodes: [rowNode],
+                columns: [
+                    'ratioTapChanger.regulationType',
+                    'RatioRegulatingTerminalGenerator',
+                ],
+            });
+            break;
+
+        case 'phaseTapChanger.regulationType':
+            if (phaseRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
+                // This solve the problem of required on RatioRegulatingTerminalGenerator when we set regulationType to distant
+                const regulatingTerminalGenerator =
+                    getTapChangerRegulationTerminalGeneratorValue(
+                        previousData?.phaseTapChanger
+                    );
+                rowNode.setDataValue(
+                    'PhaseRegulatingTerminalGenerator',
+                    regulatingTerminalGenerator
+                );
+            }
+            params.api.flashCells({
+                rowNodes: [rowNode],
+                columns: [
+                    'phaseTapChanger.regulationType',
+                    'PhaseRegulatingTerminalGenerator',
+                ],
+            });
+            break;
+
+        case 'RatioRegulatingTerminalGenerator':
+            const RatioRegulatingTerminalGenerator =
+                params.data.RatioRegulatingTerminalGenerator;
+            if (RatioRegulatingTerminalGenerator) {
+                params.data.ratioTapChanger.regulatingTerminalVlId =
+                    params.context.dynamicValidation.ratioTapChanger.regulatingTerminalVlId;
+                params.data.ratioTapChanger.regulatingTerminalConnectableId =
+                    params.context.dynamicValidation.ratioTapChanger.regulatingTerminalConnectableId;
+                params.data.ratioTapChanger.regulatingTerminalConnectableType =
+                    params.context.dynamicValidation.ratioTapChanger.regulatingTerminalConnectableType;
+            } else {
+                params.data.regulatingTerminalVlId = undefined;
+                params.data.regulatingTerminalConnectableId = undefined;
+                params.data.regulatingTerminalConnectableType = undefined;
+            }
+            break;
+
+        case 'PhaseRegulatingTerminalGenerator':
+            const PhaseRegulatingTerminalGenerator =
+                params.data.PhaseRegulatingTerminalGenerator;
+            if (PhaseRegulatingTerminalGenerator) {
+                params.data.phaseTapChanger.regulatingTerminalVlId =
+                    params.context.dynamicValidation.phaseTapChanger.regulatingTerminalVlId;
+                params.data.phaseTapChanger.regulatingTerminalConnectableId =
+                    params.context.dynamicValidation.phaseTapChanger.regulatingTerminalConnectableId;
+                params.data.phaseTapChanger.regulatingTerminalConnectableType =
+                    params.context.dynamicValidation.phaseTapChanger.regulatingTerminalConnectableType;
+            } else {
+                params.data.regulatingTerminalVlId = undefined;
+                params.data.regulatingTerminalConnectableId = undefined;
+                params.data.regulatingTerminalConnectableType = undefined;
+            }
+            break;
+        default:
+            break;
     }
 };
 

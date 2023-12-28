@@ -167,6 +167,16 @@ export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
     }
 };
 
+export const getTapChangerRegulationTerminalGeneratorValue = (tapChanger) => {
+    let regulatingTerminalGeneratorValue =
+        tapChanger?.regulatingTerminalConnectableId ?? '';
+    if (tapChanger?.regulatingTerminalVlId) {
+        regulatingTerminalGeneratorValue +=
+            ' ( ' + tapChanger?.regulatingTerminalVlId + ' )';
+    }
+    return regulatingTerminalGeneratorValue;
+};
+
 export function calculateResistance(distance, linearResistance) {
     if (
         distance === undefined ||
