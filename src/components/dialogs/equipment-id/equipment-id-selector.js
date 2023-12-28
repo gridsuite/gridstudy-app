@@ -38,6 +38,7 @@ export const EquipmentIdSelector = ({
     readOnly = false,
     fillerHeight,
     fillerMessageId = 'idSelector.idNeeded',
+    loading = false,
     ...props
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -104,7 +105,7 @@ export const EquipmentIdSelector = ({
                 {gridItem(equipmentIdField, 4)}
             </Grid>
             <FormFiller lineHeight={fillerHeight}>
-                {fillerMessageId && !selectedValue && (
+                {fillerMessageId && (!loading || !selectedValue) && (
                     <Box sx={styles.message}>
                         <FormattedMessage id={fillerMessageId} />
                     </Box>
@@ -112,7 +113,9 @@ export const EquipmentIdSelector = ({
                 <CircularProgress
                     // We keep the circular progress rendered but hidden to prevent an incomplete
                     // rendering when we set the choosen ID in the parent component.
-                    sx={!selectedValue ? styles.hidden : undefined}
+                    // TODO: Enhance the loader to support all modification forms,
+                    // ensuring it accounts for the full details of the equipment, not just the ID
+                    sx={!loading || !selectedValue ? styles.hidden : undefined}
                 />
             </FormFiller>
         </>
