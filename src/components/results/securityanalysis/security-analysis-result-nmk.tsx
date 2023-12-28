@@ -18,6 +18,7 @@ import {
     flattenNmKResultsContingencies,
     handlePostSortRows,
     PAGE_OPTIONS,
+    RESULT_TYPE,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
@@ -28,6 +29,7 @@ import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { BranchSide } from '../../utils/constants';
+import { downloadSecurityAnalysisResultCsv } from 'services/study/security-analysis';
 
 const styles = {
     container: {
@@ -188,6 +190,19 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [isFromContingency, theme.selectedRow.background]
     );
 
+    const exportResultCsv = useCallback(() => {
+        downloadSecurityAnalysisResultCsv(
+            studyUuid,
+            nodeUuid,
+            {
+                resultType: isFromContingency
+                    ? RESULT_TYPE.NMK_CONTINGENCIES
+                    : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
+            },
+            'nmk-results.csv'
+        );
+    }, [isFromContingency, studyUuid, nodeUuid]);
+
     const agGridProps = {
         postSortRows: handlePostSortRows,
         getRowStyle,
@@ -202,6 +217,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
                     agGridProps={agGridProps}
+                    exportCsv={exportResultCsv}
                 />
             </Box>
             <Box>
