@@ -9,6 +9,7 @@ import React, {
     useCallback,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 
@@ -44,7 +45,6 @@ import {
     getRows,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { fetchLimitViolations } from '../../../services/study';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Box } from '@mui/system';
@@ -54,6 +54,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { REPORT_TYPES } from '../../utils/report-type';
+import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -97,7 +98,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         useState(false);
     const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] =
         useState(false);
-
+    const gridRef = useRef();
     //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
     const openLoaderCurrentTab = useOpenLoaderShortWait({
         isLoading:
@@ -144,6 +145,12 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         }),
         []
     );
+
+    const onRowDataUpdated = useCallback((params: any) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
 
     const loadFlowCurrentViolationsColumns = useMemo(() => {
         return loadFlowCurrentViolationsColumnsDefinition(intl);
@@ -256,14 +263,21 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderCurrentTab && <LinearProgress />}
                 </Box>
-                <CustomAGGrid
-                    rowData={rowsToShow}
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={loadFlowCurrentViolationsColumns}
                     defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    columnDefs={loadFlowCurrentViolationsColumns}
+                    tableName={intl.formatMessage({
+                        id: 'LoadFlowResultsCurrentViolations',
+                    })}
+                    rows={rowsToShow}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
+                    enableCellTextSelection={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -309,14 +323,21 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderVoltageTab && <LinearProgress />}
                 </Box>
-                <CustomAGGrid
-                    rowData={rowsToShow}
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={loadFlowVoltageViolationsColumns}
                     defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    columnDefs={loadFlowVoltageViolationsColumns}
+                    tableName={intl.formatMessage({
+                        id: 'LoadFlowResultsCurrentViolations',
+                    })}
+                    rows={rowsToShow}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
+                    enableCellTextSelection={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -336,14 +357,21 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 <Box sx={{ height: '4px' }}>
                     {openLoaderStatusTab && <LinearProgress />}
                 </Box>
-                <CustomAGGrid
-                    rowData={rowsToShow}
-                    columnDefs={loadFlowResultColumns}
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={loadFlowResultColumns}
                     defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
+                    tableName={intl.formatMessage({
+                        id: 'LoadFlowResultsStatus',
+                    })}
+                    rows={rowsToShow}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
+                    enableCellTextSelection={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
