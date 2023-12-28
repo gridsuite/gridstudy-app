@@ -11,6 +11,7 @@ import {
     PREFIX_STUDY_QUERIES,
 } from './index';
 import {
+    backendDownloadFileAsStream,
     backendFetch,
     backendFetchJson,
     backendFetchText,
@@ -92,6 +93,30 @@ export function fetchSecurityAnalysisResult(
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
 }
+
+export function downloadSecurityAnalysisResultCsv(
+    studyUuid,
+    currentNodeUuid,
+    queryParams,
+    fileName
+) {
+    console.info(
+        `Fetching security analysis csv on ${studyUuid} and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/security-analysis/result/csv`;
+
+    const { resultType } = queryParams || {};
+
+    const params = new URLSearchParams({ resultType });
+
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendDownloadFileAsStream(urlWithParams, fileName);
+}
+
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         `Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`

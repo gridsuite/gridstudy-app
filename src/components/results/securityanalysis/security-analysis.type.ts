@@ -14,6 +14,8 @@ import {
     FilterPropsType,
     FilterSelectorType,
 } from '../../../hooks/use-aggrid-row-filter';
+import { UUID } from 'crypto';
+import { RESULT_TYPE } from './security-analysis-result-utils';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -136,8 +138,8 @@ export interface SecurityAnalysisNmkResult {
 
 // Components props interfaces
 export interface SecurityAnalysisTabProps {
-    studyUuid: string;
-    nodeUuid: string;
+    studyUuid: UUID;
+    nodeUuid: UUID;
     openVoltageLevelDiagram: (id: string) => void;
 }
 
@@ -147,6 +149,8 @@ export interface SecurityAnalysisResultNProps {
     sortProps: SortPropsType;
     filterProps: FilterPropsType;
     filterEnums: FilterEnumsType;
+    studyUuid: UUID;
+    nodeUuid: UUID;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -175,4 +179,5 @@ export interface SecurityAnalysisResultProps {
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
+    exportCsv?: () => void;
 }

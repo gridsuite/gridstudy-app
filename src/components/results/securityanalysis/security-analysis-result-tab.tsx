@@ -283,6 +283,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             filterSelector,
                         }}
                         filterEnums={filterEnums}
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (

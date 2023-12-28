@@ -19,10 +19,11 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
+import { Button } from '@mui/material';
 
 export const SecurityAnalysisTable: FunctionComponent<
     SecurityAnalysisResultProps
-> = ({ rows, columnDefs, isLoadingResult, agGridProps }) => {
+> = ({ rows, columnDefs, isLoadingResult, agGridProps, exportCsv }) => {
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
@@ -56,13 +57,16 @@ export const SecurityAnalysisTable: FunctionComponent<
     );
 
     return (
-        <CustomAGGrid
-            rowData={rowsToShow}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            onGridReady={onGridReady}
-            overlayNoRowsTemplate={overlayNoRowsTemplate}
-            {...agGridProps}
-        />
+        <>
+            <Button onClick={exportCsv}>TEST</Button>
+            <CustomAGGrid
+                rowData={rowsToShow}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
+                overlayNoRowsTemplate={overlayNoRowsTemplate}
+                {...agGridProps}
+            />
+        </>
     );
 };

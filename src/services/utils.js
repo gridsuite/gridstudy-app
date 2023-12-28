@@ -108,6 +108,51 @@ export const backendFetchJson = (url, init, token) => {
     );
 };
 
+export const backendDownloadFileAsStream = (url, fileName) => {
+    backendFetch(url)
+        .then((response) => {
+            // buffer to fill with all data from server
+            let fileBuffer = new Int8Array();
+            // response.body is a readableStream
+            const reader = response.body?.getReader();
+
+            // function to retrieve the next chunk from the stream
+            const handleChunk = ({ done, value }) => {
+                // done is true when stream is done reading
+                if (done) {
+                    downloadCsvFile(fileBuffer, fileName);
+                    return;
+                }
+
+                // concat already loaded data with the loaded chunk
+                fileBuffer = Int8Array.from([...fileBuffer, ...value]);
+
+                // retreive next chunk
+                reader?.read().then((response) => {
+                    handleChunk(response);
+                });
+            };
+
+            //retreive first chunk
+            reader?.read().then((response) => {
+                handleChunk(response);
+            });
+        })
+        .catch((err) => handleError(err));
+};
+
+export const downloadCsvFile = (blob, filename) => {
+    const href = window.URL.createObjectURL(
+        new Blob([blob], { type: 'application/csv' })
+    );
+    const link = document.createElement('a');
+    link.href = href;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
 function fetchEnv() {
     return fetch('env.json').then((res) => res.json());
 }

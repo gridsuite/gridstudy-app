@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     PreContingencyResult,
     SecurityAnalysisNTableRow,
@@ -15,13 +15,23 @@ import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import {
     MAX_INT32,
+    RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
+import { downloadSecurityAnalysisResultCsv } from 'services/study/security-analysis';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
-> = ({ result, isLoadingResult, sortProps, filterProps, filterEnums }) => {
+> = ({
+    result,
+    isLoadingResult,
+    sortProps,
+    filterProps,
+    filterEnums,
+    studyUuid,
+    nodeUuid,
+}) => {
     const intl: IntlShape = useIntl();
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
@@ -47,6 +57,15 @@ export const SecurityAnalysisResultN: FunctionComponent<
             : [];
     }, [intl, result]);
 
+    const exportResultCsv = useCallback(() => {
+        downloadSecurityAnalysisResultCsv(
+            studyUuid,
+            nodeUuid,
+            { resultType: RESULT_TYPE.N },
+            'n-results.csv'
+        );
+    }, [studyUuid, nodeUuid]);
+
     const columnDefs = useMemo(
         () =>
             securityAnalysisTableNColumnsDefinition(
@@ -63,6 +82,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
             rows={rows}
             columnDefs={columnDefs}
             isLoadingResult={isLoadingResult}
+            exportCsv={exportResultCsv}
         />
     );
 };
