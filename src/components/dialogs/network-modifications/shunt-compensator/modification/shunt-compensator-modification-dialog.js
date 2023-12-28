@@ -31,6 +31,7 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
 import {
+    EQUIPMENT_INFOS_OPERATION,
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
@@ -68,6 +69,8 @@ const ShuntCompensatorModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
+    const [idExists, setIdExists] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -131,29 +134,42 @@ const ShuntCompensatorModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
+                setLoading(true);
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
+                    EQUIPMENT_INFOS_OPERATION.MODIFICATION
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
                             setShuntCompensatorInfos(shuntCompensator);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
+                        setLoading(false);
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         setShuntCompensatorInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (error.status === 501) {
+                            snackError({
+                                headerId: 'ShuntCompensatorNonlinearError',
+                            });
+                            setSelectedId(null);
+                        }
+                        if (error.status === 404) {
+                            setIdExists(true);
+                        }
+                        setLoading(false);
                     });
             } else {
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNode, studyUuid]
+        [currentNode?.id, snackError, studyUuid]
     );
 
     useEffect(() => {
@@ -230,7 +246,7 @@ const ShuntCompensatorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                {selectedId == null && (
+                {!shuntCompensatorInfos && !idExists && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -238,14 +254,19 @@ const ShuntCompensatorModificationDialog = ({
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
                         fillerHeight={5}
+                        loading={loading}
                     />
                 )}
-                {selectedId !== null && (
-                    <ShuntCompensatorModificationForm
-                        shuntCompensatorInfos={shuntCompensatorInfos}
-                        equipmentId={selectedId}
-                    />
-                )}
+                {selectedId !== null &&
+                    !loading &&
+                    (shuntCompensatorInfos ||
+                        // The case for creating a Shunt Compensator with free text in the selector
+                        idExists) && (
+                        <ShuntCompensatorModificationForm
+                            shuntCompensatorInfos={shuntCompensatorInfos}
+                            equipmentId={selectedId}
+                        />
+                    )}
             </ModificationDialog>
         </FormProvider>
     );
