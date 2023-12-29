@@ -19,6 +19,7 @@ import {
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
+    SUBSTATION_COUNTRY,
 } from 'components/utils/field-constants';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import { toModificationOperation } from 'components/utils/utils';
@@ -85,6 +86,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         RATED_VOLTAGE_2,
         RATED_S,
     ],
+    SUBSTATION: [EQUIPMENT_ID, SUBSTATION_COUNTRY],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
@@ -96,6 +98,7 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
     TWO_WINDINGS_TRANSFORMER:
         MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+    SUBSTATION: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
 };
 
 export interface Modification {
@@ -110,11 +113,14 @@ export const formatModification = (modification: Modification) => {
 
 export const convertValueFromBackToFront = (
     key: string,
-    value: { value: string | number }
+    value: { value: string | number },
+    translate: (code: string | number) => string
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
+        case SUBSTATION_COUNTRY:
+            return translate(value?.value);
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
         case SHUNT_CONDUCTANCE_1:
@@ -129,11 +135,14 @@ export const convertValueFromBackToFront = (
 
 export const convertValueFromFrontToBack = (
     key: string,
-    value: string | number
+    value: string | number,
+    getCountryCode: (code: string | number) => string
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
+        case SUBSTATION_COUNTRY:
+            return toModificationOperation(getCountryCode(value));
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
         case SHUNT_CONDUCTANCE_1:

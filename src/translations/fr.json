@@ -1370,5 +1370,6 @@
     "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre",
     "ratedVoltage1": "Tension d'enroulement 1 (kV)",
     "ratedVoltage2": "Tension d'enroulement 2 (kV)",
-    "linearShuntCompensators": "MCS linéaires"
+    "linearShuntCompensators": "MCS linéaires",
+    "substationCountry": "Pays"
 }
