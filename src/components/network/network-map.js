@@ -448,7 +448,7 @@ const NetworkMap = (props) => {
         longitude: props.initialPosition[0],
         latitude: props.initialPosition[1],
         zoom: props.initialZoom,
-        maxZoom: 12,
+        maxZoom: 14,
         pitch: 0,
         bearing: 0,
     };

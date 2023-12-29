@@ -15,6 +15,10 @@ import {
     RATED_VOLTAGE_2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
+    SHUNT_CONDUCTANCE_1,
+    SHUNT_CONDUCTANCE_2,
+    SHUNT_SUSCEPTANCE_1,
+    SHUNT_SUSCEPTANCE_2,
 } from 'components/utils/field-constants';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import { toModificationOperation } from 'components/utils/utils';
@@ -48,6 +52,15 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'lowVoltageLimit',
         'highVoltageLimit',
     ],
+    LINE: [
+        EQUIPMENT_ID,
+        SERIES_RESISTANCE,
+        SERIES_REACTANCE,
+        SHUNT_CONDUCTANCE_1,
+        SHUNT_CONDUCTANCE_2,
+        SHUNT_SUSCEPTANCE_1,
+        SHUNT_SUSCEPTANCE_2,
+    ],
     LOAD: [
         'equipmentId',
         'loadType',
@@ -71,6 +84,7 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
     BATTERY: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+    LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
     TWO_WINDINGS_TRANSFORMER:
         MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
 };
@@ -94,6 +108,10 @@ export const convertValueFromBackToFront = (
             return value;
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
+        case SHUNT_CONDUCTANCE_1:
+        case SHUNT_CONDUCTANCE_2:
+        case SHUNT_SUSCEPTANCE_1:
+        case SHUNT_SUSCEPTANCE_2:
             return unitToMicroUnit(value?.value);
         default:
             return value?.value;
@@ -109,6 +127,10 @@ export const convertValueFromFrontToBack = (
             return value;
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
+        case SHUNT_CONDUCTANCE_1:
+        case SHUNT_CONDUCTANCE_2:
+        case SHUNT_SUSCEPTANCE_1:
+        case SHUNT_SUSCEPTANCE_2:
             return toModificationOperation(microUnitToUnit(value));
         default:
             return toModificationOperation(value);
