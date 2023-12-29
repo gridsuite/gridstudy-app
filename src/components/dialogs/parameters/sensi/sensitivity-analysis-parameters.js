@@ -124,6 +124,7 @@ export const SensitivityAnalysisParameters = ({
 
     const [popupConfirm, setPopupConfirm] = useState(false);
     const [launchLoader, setLaunchLoader] = useState(false);
+    const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
     const [providers, provider, updateProvider, resetProvider] =
@@ -218,6 +219,7 @@ export const SensitivityAnalysisParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
+            setIsSubmitAction(true);
             setSensitivityAnalysisParameters(
                 studyUuid,
                 formatNewParams(newParams)
@@ -271,35 +273,17 @@ export const SensitivityAnalysisParameters = ({
         return totalResultCount;
     }, [getValues]);
 
-    const onFormChangedComputing = useCallback(() => {
-        setLaunchLoader(true);
-        Promise.resolve(getResultCount())
-            .then((count) => {
-                setAnalysisComputeComplexity(count);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'SensitivityAnalysisComplexityError',
-                });
-            })
-            .finally(() => {
+    const onFormChanged = useCallback(
+        (onFormChanged) => {
+            if (onFormChanged) {
+                setLaunchLoader(true);
+                setAnalysisComputeComplexity(getResultCount());
                 setTimeout(() => {
                     setLaunchLoader(false);
                 }, 1000);
-            });
-    }, [
-        setAnalysisComputeComplexity,
-        getResultCount,
-        snackError,
-        setLaunchLoader,
-    ]);
-
-    const onFormChanged = useCallback(
-        (onFormChanged) => {
-            onFormChanged && onFormChangedComputing();
+            }
         },
-        [onFormChangedComputing]
+        [getResultCount]
     );
 
     const onChangeParams = useCallback(
@@ -328,14 +312,7 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [
-            snackError,
-            studyUuid,
-            formatFilteredParams,
-            setValue,
-            getResultCount,
-            onFormChanged,
-        ]
+        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
     );
 
     const initRowsCount = useCallback(() => {
@@ -559,12 +536,13 @@ export const SensitivityAnalysisParameters = ({
             fromSensitivityAnalysisParamsDataToFormValues(
                 sensitivityAnalysisParams
             );
-            initRowsCount();
+            !isSubmitAction && initRowsCount();
         }
     }, [
         fromSensitivityAnalysisParamsDataToFormValues,
         sensitivityAnalysisParams,
         initRowsCount,
+        isSubmitAction,
     ]);
 
     const clear = useCallback(() => {
@@ -616,11 +594,6 @@ export const SensitivityAnalysisParameters = ({
         () => analysisComputeComplexity > numberMax,
         [analysisComputeComplexity]
     );
-    const renderSimulatedComputing = () => {
-        return launchLoader
-            ? renderComputingEventLoading()
-            : renderComputingEvent();
-    };
 
     return (
         <>
@@ -657,7 +630,9 @@ export const SensitivityAnalysisParameters = ({
                     </Grid>
                     <Grid container justifyContent={'right'}>
                         <Grid item marginBottom="-50px">
-                            {renderSimulatedComputing()}
+                            {launchLoader
+                                ? renderComputingEventLoading()
+                                : renderComputingEvent()}
                             <FormattedMessage id="SimulatedCalculationMax" />
                         </Grid>
                     </Grid>
