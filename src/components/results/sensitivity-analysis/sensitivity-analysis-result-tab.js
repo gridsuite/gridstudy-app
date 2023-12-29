@@ -7,13 +7,14 @@
 
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
+import { Box, IconButton, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     COMPUTATION_RESULTS_LOGS,
     DATA_KEY_TO_FILTER_KEY,
+    FUNCTION_TYPES,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
@@ -26,6 +27,17 @@ import { RunningStatus } from '../../utils/running-status';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import React, { useCallback } from 'react';
+import {
+    exportSensitivityResultsAsCsv,
+    exportSensitivityResultsAsCsv2,
+    exportSensitivityResultsAsCsv3,
+} from '../../../services/study/sensitivity-analysis';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { saveAs } from 'file-saver';
+import Grid from '@mui/material/Grid';
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -33,6 +45,8 @@ export const SensitivityResultTabs = [
 ];
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
+    const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKind, setSensiKind] = useState(SENSITIVITY_IN_DELTA_MW);
     const [page, setPage] = useState(0);
@@ -82,12 +96,103 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         SENSITIVITY_AT_NODE,
     ];
 
+    const exportResultsAsCsv = useCallback(() => {
+        const selector = {
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
+            functionType: FUNCTION_TYPES[sensiKind],
+        };
+
+        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, selector)
+            .then((response) => {
+                response.blob().then((blob) => {
+                    console.log('response : ', response);
+                    saveAs(blob, 'sensitivity_results.csv');
+                });
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'SensitivityAnalysisResultsError',
+                    }),
+                });
+            });
+    }, [intl, nOrNkIndex, nodeUuid, sensiKind, snackError, studyUuid]);
+
+    const exportResultsAsCsv2 = useCallback(() => {
+        const selector = {
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
+            functionType: FUNCTION_TYPES[sensiKind],
+        };
+
+        exportSensitivityResultsAsCsv2(studyUuid, nodeUuid, selector)
+            .then((response) => {
+                console.log('response : ', response);
+                response.blob().then((blob) => {
+                    saveAs(blob, 'sensitivity_results.csv');
+                });
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'SensitivityAnalysisResultsError',
+                    }),
+                });
+            });
+    }, [intl, nOrNkIndex, nodeUuid, sensiKind, snackError, studyUuid]);
+
+    const exportResultsAsCsv3 = useCallback(() => {
+        const selector = {
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
+            functionType: FUNCTION_TYPES[sensiKind],
+        };
+
+        exportSensitivityResultsAsCsv3(studyUuid, nodeUuid, selector)
+            .then((response) => {
+                console.log('response : ', response);
+                response.blob().then((blob) => {
+                    saveAs(blob, 'sensitivity_results.csv');
+                });
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'SensitivityAnalysisResultsError',
+                    }),
+                });
+            });
+    }, [intl, nOrNkIndex, nodeUuid, sensiKind, snackError, studyUuid]);
+
     return (
         <>
-            <SensitivityAnalysisTabs
-                sensiKind={sensiKind}
-                setSensiKind={handleSensiKindChange}
-            />
+            <Grid container justifyContent="space-between">
+                <Grid item>
+                    <SensitivityAnalysisTabs
+                        sensiKind={sensiKind}
+                        setSensiKind={handleSensiKindChange}
+                    />
+                </Grid>
+                <Grid container item alignSelf={'center'}>
+                    <Grid item>
+                        <span>
+                            <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                        </span>
+                        <span>
+                            <IconButton
+                                aria-label="exportCSVButton"
+                                onClick={exportResultsAsCsv3}
+                                disabled={
+                                    sensiKind === COMPUTATION_RESULTS_LOGS
+                                }
+                            >
+                                <GetAppIcon />
+                            </IconButton>
+                        </span>
+                    </Grid>
+                </Grid>
+            </Grid>
             {sensiResultKind.includes(sensiKind) && (
                 <>
                     <Tabs

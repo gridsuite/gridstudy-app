@@ -164,3 +164,87 @@ export function getSensitivityAnalysisFactorsCount(
         body: JSON.stringify(newParams),
     });
 }
+
+export function exportSensitivityResultsAsCsv(
+    studyUuid,
+    currentNodeUuid,
+    selector
+) {
+    console.info(
+      `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
+    );
+
+    // Add params to Url
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
+    const url = `${getStudyUrlWithNodeUuid(
+      studyUuid,
+      currentNodeUuid
+    )}/sensitivity-analysis/result/csv?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/octet-stream',
+            'Content-Type': 'application/octet-stream',
+        },
+    });
+}
+
+export function exportSensitivityResultsAsCsv2(
+  studyUuid,
+  currentNodeUuid,
+  selector
+) {
+    console.info(
+      `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
+    );
+
+    // Add params to Url
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
+    const url = `${getStudyUrlWithNodeUuid(
+      studyUuid,
+      currentNodeUuid
+    )}/sensitivity-analysis/result/csv-bytes?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/octet-stream',
+            'Content-Type': 'application/octet-stream',
+        },
+    });
+}
+
+export function exportSensitivityResultsAsCsv3(
+  studyUuid,
+  currentNodeUuid,
+  selector
+) {
+    console.info(
+      `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
+    );
+
+    // Add params to Url
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
+    const url = `${getStudyUrlWithNodeUuid(
+      studyUuid,
+      currentNodeUuid
+    )}/sensitivity-analysis/result/csv-StreamingResponseBody?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/octet-stream',
+            'Content-Type': 'application/octet-stream',
+        },
+    });
+}
