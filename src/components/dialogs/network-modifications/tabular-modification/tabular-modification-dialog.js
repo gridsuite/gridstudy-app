@@ -25,7 +25,7 @@ import {
     convertValueFromBackToFront,
     convertValueFromFrontToBack,
 } from './tabular-modification-utils';
-import { useIntl } from 'react-intl';
+import { LocalizedCountries } from '../../../utils/localized-countries-hook';
 
 const formSchema = yup
     .object()
@@ -62,8 +62,6 @@ const TabularModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
 
-    const intl = useIntl();
-
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
@@ -71,7 +69,8 @@ const TabularModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, setValue } = formMethods;
+    const { getCountryCode, translate } = LocalizedCountries();
 
     useEffect(() => {
         if (editData) {
@@ -83,17 +82,17 @@ const TabularModificationDialog = ({
                 Object.keys(formatModification(modif)).forEach((key) => {
                     modification[key] = convertValueFromBackToFront(
                         key,
-                        modif[key]
+                        modif[key],
+                        translate
                     );
                 });
                 return modification;
             });
-            reset({
-                [TYPE]: equipmentType,
-                [MODIFICATIONS_TABLE]: modifications,
-            });
+            // reset is replaced by setValue since the reset with translate causes an infinite triggering of useEffect
+            setValue(TYPE, equipmentType);
+            setValue(MODIFICATIONS_TABLE, modifications);
         }
-    }, [editData, reset, intl]);
+    }, [editData, setValue, translate]);
 
     const onSubmit = useCallback(
         (formData) => {
@@ -105,7 +104,8 @@ const TabularModificationDialog = ({
                 Object.keys(row).forEach((key) => {
                     modification[key] = convertValueFromFrontToBack(
                         key,
-                        row[key]
+                        row[key],
+                        getCountryCode
                     );
                 });
                 return modification;
@@ -124,7 +124,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid, getCountryCode]
     );
 
     const clear = useCallback(() => {
