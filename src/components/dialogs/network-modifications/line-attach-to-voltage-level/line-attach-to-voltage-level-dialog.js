@@ -314,13 +314,16 @@ const LineAttachToVoltageLevelDialog = ({
                     getNewVoltageLevelData(preparedVoltageLevel);
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
-                const newVoltageLevelOptions = voltageLevelOptions
-                    .filter((vl) => vl.id !== formattedVoltageLevel.id)
-                    .filter(
-                        (vl) =>
-                            formattedVoltageLevel.id !== oldVoltageLevelId &&
-                            vl.id !== oldVoltageLevelId
-                    );
+                const newVoltageLevelOptions =
+                    formattedVoltageLevel.id === oldVoltageLevelId
+                        ? voltageLevelOptions.filter(
+                              (vl) => vl.id !== formattedVoltageLevel.id
+                          )
+                        : voltageLevelOptions.filter(
+                              (vl) =>
+                                  vl.id !== formattedVoltageLevel.id &&
+                                  vl.id !== oldVoltageLevelId
+                          );
                 newVoltageLevelOptions.push(formattedVoltageLevel);
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
