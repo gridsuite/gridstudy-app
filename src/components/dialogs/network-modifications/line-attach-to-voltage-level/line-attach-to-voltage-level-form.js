@@ -18,7 +18,7 @@ import {
     LINE2_NAME,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../dialogUtils';
 
 import { TextInput } from '@gridsuite/commons-ui';
@@ -30,8 +30,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { BUS_OR_BUSBAR_SECTION } from '../../../utils/field-constants';
+import { useWatch } from 'react-hook-form';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -101,14 +100,11 @@ const LineAttachToVoltageLevelForm = ({
         <TextInput name={LINE2_NAME} label={'Line2Name'} />
     );
 
-    const { setValue } = useFormContext();
-
-    useEffect(() => {
-        if (voltageLevelIdWatch === voltageLevelToEdit.equipmentId) {
-            const busbarSection = voltageLevelToEdit?.busbarSections?.[0];
-            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, busbarSection);
+    const busbarSectionOptions = useMemo(() => {
+        if (voltageLevelIdWatch === voltageLevelToEdit?.equipmentId) {
+            return voltageLevelToEdit.busbarSections;
         }
-    }, [voltageLevelIdWatch, voltageLevelToEdit, setValue]);
+    }, [voltageLevelIdWatch, voltageLevelToEdit]);
 
     const connectivityForm = (
         <ConnectivityForm
@@ -116,7 +112,7 @@ const LineAttachToVoltageLevelForm = ({
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={voltageLevelToEdit?.busbarSections}
+            newBusOrBusbarSectionOptions={busbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
         />
@@ -183,7 +179,9 @@ const LineAttachToVoltageLevelForm = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={voltageLevelToEdit}
+                    editData={
+                        isVoltageLevelEdit ? voltageLevelToEdit : undefined
+                    }
                 />
             )}
             {lineDialogOpen && (

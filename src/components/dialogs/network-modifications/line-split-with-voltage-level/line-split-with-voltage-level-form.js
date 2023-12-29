@@ -12,7 +12,7 @@ import {
     LINE2_ID,
     LINE2_NAME,
 } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../dialogUtils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,12 +23,11 @@ import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import {
-    BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
     ID,
     VOLTAGE_LEVEL,
 } from '../../../utils/field-constants';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
@@ -71,26 +70,23 @@ const LineSplitWithVoltageLevelForm = ({
         <TextInput name={LINE2_NAME} label={'Line2Name'} />
     );
 
+    const busbarSectionOptions = useMemo(() => {
+        if (voltageLevelIdWatch === voltageLevelToEdit?.equipmentId) {
+            return voltageLevelToEdit.busbarSections;
+        }
+    }, [voltageLevelIdWatch, voltageLevelToEdit]);
+
     const connectivityForm = (
         <ConnectivityForm
             label={'VoltageLevelToSplitAt'}
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={voltageLevelToEdit?.busbarSections}
+            newBusOrBusbarSectionOptions={busbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
         />
     );
-
-    const { setValue } = useFormContext();
-
-    useEffect(() => {
-        if (voltageLevelIdWatch === voltageLevelToEdit.equipmentId) {
-            const busbarSection = voltageLevelToEdit?.busbarSections?.[0];
-            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`, busbarSection);
-        }
-    }, [voltageLevelIdWatch, voltageLevelToEdit, setValue]);
 
     const isVoltageLevelEdit =
         voltageLevelToEdit &&
@@ -133,7 +129,9 @@ const LineSplitWithVoltageLevelForm = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={voltageLevelToEdit}
+                    editData={
+                        isVoltageLevelEdit ? voltageLevelToEdit : undefined
+                    }
                 />
             )}
         </>
