@@ -4,6 +4,8 @@ declare module '@gridsuite/commons-ui' {
     import { RadioGroupProps, SxProps, TextFieldProps } from '@mui/material';
     import { CaseImportParameters } from 'services/network-conversion';
 
+    export const DARK_THEME: String, LIGHT_THEME: String;
+
     interface SnackInputs {
         messageTxt?: string;
         messageId?: string;
@@ -51,7 +53,7 @@ declare module '@gridsuite/commons-ui' {
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
-        getOptionLabel?: (rt: string | { id: string; label: string }) => string;
+        getOptionLabel?: (rt: string | { id: string; label: string }) => string | null;
         formProps?: Omit<
             TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
@@ -189,6 +191,6 @@ declare module '@gridsuite/commons-ui' {
         label?: string;
         formProps?: Omit<CheckboxInputProps, 'disabled'>;
     }
-  
+
     export const CheckboxInput: FunctionComponent<CheckboxInputProps>;
 }

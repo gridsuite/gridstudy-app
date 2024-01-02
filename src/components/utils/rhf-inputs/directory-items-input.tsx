@@ -38,6 +38,8 @@ interface DirectoryItemsInputProps {
     itemFilter?: any;
     titleId?: string;
     hideErrorMessage?: boolean;
+    onRowChanged?: (a: boolean) => void;
+    disable?: boolean;
 }
 
 const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
@@ -48,6 +50,8 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
+    onRowChanged,
+    disable = false,
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -87,11 +91,20 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                     });
                 } else {
                     append(otherElementAttributes);
+                    onRowChanged && onRowChanged(true);
                 }
             });
             setDirectoryItemSelectorOpen(false);
         },
-        [append, getValues, snackError, name]
+        [append, getValues, snackError, name, onRowChanged]
+    );
+
+    const removeElements = useCallback(
+        (index: number) => {
+            remove(index);
+            onRowChanged && onRowChanged(true);
+        },
+        [onRowChanged, remove]
     );
 
     return (
@@ -121,7 +134,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                             <Chip
                                 key={item.id}
                                 size="small"
-                                onDelete={() => remove(index)}
+                                onDelete={() => removeElements(index)}
                                 label={
                                     <OverflowableText
                                         text={
@@ -144,6 +157,7 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                             <IconButton
                                 sx={styles.addDirectoryElements}
                                 size={'small'}
+                                disabled={disable}
                                 onClick={() =>
                                     setDirectoryItemSelectorOpen(true)
                                 }

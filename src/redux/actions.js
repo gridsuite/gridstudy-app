@@ -124,13 +124,15 @@ export const NETWORK_MODIFICATION_TREE_NODE_MOVED =
 export function networkModificationTreeNodeMoved(
     networkModificationTreeNode,
     parentNodeId,
-    insertMode
+    insertMode,
+    referenceNodeId
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_MOVED,
-        networkModificationTreeNode: networkModificationTreeNode,
-        parentNodeId: parentNodeId,
-        insertMode: insertMode,
+        networkModificationTreeNode,
+        parentNodeId,
+        insertMode,
+        referenceNodeId,
     };
 }
 
@@ -339,6 +341,15 @@ export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
 export function resetMapReloaded() {
     return {
         type: RESET_MAP_RELOADED,
+    };
+}
+
+export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
+
+export function setMapEquipementsInitialized(newValue) {
+    return {
+        type: MAP_EQUIPMENTS_INITIALIZED,
+        newValue,
     };
 }
 

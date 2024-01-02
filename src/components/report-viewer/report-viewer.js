@@ -31,7 +31,6 @@ export const GLOBAL_NODE_TASK_KEY = 'Logs';
 const styles = {
     treeView: {
         height: '100%',
-        overflow: 'scroll',
     },
     treeItem: {
         whiteSpace: 'nowrap',
@@ -50,7 +49,11 @@ export default function ReportViewer({
     const [logs, setLogs] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
-    const [selectedSeverity, setSelectedSeverity] = useState();
+    const [selectedSeverity, setSelectedSeverity] = useState(
+        LogReportItem.getDefaultSeverityFilter()
+    );
+    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] =
+        useState(undefined);
 
     const { snackError } = useSnackMessage();
 
@@ -199,6 +202,10 @@ export default function ReportViewer({
         setSelectedSeverity(LogReportItem.getDefaultSeverityFilter());
     }, [jsonReportTree, createReporterItem]);
 
+    const handleReportVerticalPositionFromTop = useCallback((node) => {
+        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
+    }, []);
+
     const handleToggleNode = (event, nodeIds) => {
         event.persist();
         let iconClicked = event.target.closest('.MuiTreeItem-iconContainer');
@@ -253,13 +260,24 @@ export default function ReportViewer({
 
     return (
         rootReport.current && (
-            <Grid container style={{ height: '100%' }}>
+            <Grid
+                container
+                ref={handleReportVerticalPositionFromTop}
+                sx={{
+                    // We calculate the remaining height relative to the viewport and the top position of the report.
+                    height:
+                        'calc(100vh - ' +
+                        (reportVerticalPositionFromTop || '160') + // The value 160 is fine, but leaves a gap below the report.
+                        'px)',
+                }}
+            >
                 <Grid
                     item
                     xs={12}
                     sm={3}
-                    style={{
-                        height: '95%',
+                    sx={{
+                        height: '100%',
+                        overflow: 'auto',
                         borderRight: '1px solid rgba(81, 81, 81, 1)',
                     }}
                 >
@@ -286,7 +304,7 @@ export default function ReportViewer({
                         </TreeView>
                     </ReportTreeViewContext.Provider>
                 </Grid>
-                <Grid item xs={12} sm={9} style={{ height: '95%' }}>
+                <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     <WaitingLoader
                         loading={waitingLoadReport}
                         message={'loadingReport'}
