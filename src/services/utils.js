@@ -149,7 +149,11 @@ export function fetchVersion() {
     console.info(`Fetching global metadata...`);
     return fetchEnv()
         .then((env) => fetch(env.appsMetadataServerUrl + '/version.json'))
-        .then((response) => response.json());
+        .then((response) => response.json())
+        .catch((reason) => {
+            console.error('Error while fetching the version : ' + reason);
+            return reason;
+        });
 }
 
 export const fetchDefaultParametersValues = () => {

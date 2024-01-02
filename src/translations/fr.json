@@ -142,10 +142,10 @@
     "ReactivePowerT3WSide3": "q3 (MVar)",
     "seriesResistance": "Résistance série (Ω)",
     "seriesReactance": "Réactance série (Ω)",
-    "ShuntConductance1": "Conductance parallèle 1 (μS)",
-    "ShuntSusceptance1": "Susceptance parallèle 1 (μS)",
-    "ShuntConductance2": "Conductance parallèle 2 (μS)",
-    "ShuntSusceptance2": "Susceptance parallèle 2 (μS)",
+    "shuntConductance1": "Conductance parallèle 1 (μS)",
+    "shuntSusceptance1": "Susceptance parallèle 1 (μS)",
+    "shuntConductance2": "Conductance parallèle 2 (μS)",
+    "shuntSusceptance2": "Susceptance parallèle 2 (μS)",
     "ActivePowerControl": "En compensation",
     "DroopColumnName": "Participation (%)",
     "reactivePowerSetpoint": "Q consigne (MVar)",
@@ -836,7 +836,8 @@
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
     "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Linéaire)",
-    "SectionCountBetweenZeroAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 0 et le nombre de gradins",
+    "MaximumSectionCountMinimumOne": "Le nombre de gradins doit être supérieur ou égal à 1",
+    "SectionCountBetweenOneAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 1 et le nombre de gradins",
     "MaximumSectionCount": "Nombre de gradins",
     "ShuntSectionCount": "Gradin courant",
     "SwitchedOnMaxQAtNominalV": "Q enclenchée à tension nominale",
@@ -1371,5 +1372,6 @@
     "ByFilterDeletion": "Par filtre",
     "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre",
     "ratedVoltage1": "Tension d'enroulement 1 (kV)",
-    "ratedVoltage2": "Tension d'enroulement 2 (kV)"
+    "ratedVoltage2": "Tension d'enroulement 2 (kV)",
+    "substationCountry": "Pays"
 }

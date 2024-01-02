@@ -419,7 +419,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ShuntConductance1',
+                id: 'shuntConductance1',
                 field: 'g1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -428,7 +428,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ShuntConductance2',
+                id: 'shuntConductance2',
                 field: 'g2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -437,7 +437,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ShuntSusceptance1',
+                id: 'shuntSusceptance1',
                 field: 'b1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -446,7 +446,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ShuntSusceptance2',
+                id: 'shuntSusceptance2',
                 field: 'b2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1895,7 +1895,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
-                    minExpression: 0,
+                    minExpression: 1,
                 },
             },
             {
@@ -1917,7 +1917,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
-                    minExpression: 0,
+                    minExpression: 1,
                     maxExpression: 'maximumSectionCount',
                 },
             },
