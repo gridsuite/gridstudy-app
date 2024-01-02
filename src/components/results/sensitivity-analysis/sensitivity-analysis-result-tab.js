@@ -28,11 +28,7 @@ import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import React, { useCallback } from 'react';
-import {
-    exportSensitivityResultsAsCsv,
-    exportSensitivityResultsAsCsv2,
-    exportSensitivityResultsAsCsv3,
-} from '../../../services/study/sensitivity-analysis';
+import { exportSensitivityResultsAsCsv3 } from '../../../services/study/sensitivity-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { saveAs } from 'file-saver';
@@ -102,52 +98,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, selector)
-            .then((response) => {
-                response.blob().then((blob) => {
-                    console.log('response : ', response);
-                    saveAs(blob, 'sensitivity_results.csv');
-                });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'SensitivityAnalysisResultsError',
-                    }),
-                });
-            });
-    }, [intl, nOrNkIndex, nodeUuid, sensiKind, snackError, studyUuid]);
-
-    const exportResultsAsCsv2 = useCallback(() => {
-        const selector = {
-            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
-            functionType: FUNCTION_TYPES[sensiKind],
-        };
-
-        exportSensitivityResultsAsCsv2(studyUuid, nodeUuid, selector)
-            .then((response) => {
-                console.log('response : ', response);
-                response.blob().then((blob) => {
-                    saveAs(blob, 'sensitivity_results.csv');
-                });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'SensitivityAnalysisResultsError',
-                    }),
-                });
-            });
-    }, [intl, nOrNkIndex, nodeUuid, sensiKind, snackError, studyUuid]);
-
-    const exportResultsAsCsv3 = useCallback(() => {
-        const selector = {
-            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
-            functionType: FUNCTION_TYPES[sensiKind],
-        };
-
         exportSensitivityResultsAsCsv3(studyUuid, nodeUuid, selector)
             .then((response) => {
                 console.log('response : ', response);
@@ -182,7 +132,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         <span>
                             <IconButton
                                 aria-label="exportCSVButton"
-                                onClick={exportResultsAsCsv3}
+                                onClick={exportResultsAsCsv}
                                 disabled={
                                     sensiKind === COMPUTATION_RESULTS_LOGS
                                 }
