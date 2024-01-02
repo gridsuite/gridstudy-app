@@ -53,6 +53,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             elementType={elementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
+            disable={!equipmentTypeWatch}
         />
     );
 
@@ -79,6 +80,15 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         />
     );
 
+    const inputTransform = (value: { id: string; label: string } | string) => {
+        const newVal = value ?? null;
+        return (
+            OPERATOR_OPTIONS.find(
+                (option) => option?.id === getIdOrValue(value)
+            ) || newVal
+        );
+    };
+
     const operatorField = (
         <AutocompleteInput
             name={`${name}.${index}.${OPERATOR}`}
@@ -86,11 +96,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             readOnly
             label={'Operator'}
             size={'small'}
-            inputTransform={(value) =>
-                OPERATOR_OPTIONS.find(
-                    (option) => option?.id === getIdOrValue(value)
-                ) || value
-            }
+            inputTransform={inputTransform}
             outputTransform={getIdOrValue}
             getOptionLabel={getLabelOrValue}
         />

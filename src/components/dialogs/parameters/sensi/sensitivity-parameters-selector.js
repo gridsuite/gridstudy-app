@@ -25,7 +25,7 @@ import {
 import SensitivityTable from './sensitivity-table';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
-const SensitivityParametersSelector = () => {
+const SensitivityParametersSelector = ({ onFormChanged, onChangeParams }) => {
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -142,6 +142,8 @@ const SensitivityParametersSelector = () => {
                                         }
                                         createRows={rowDataInjectionsSet}
                                         tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -158,6 +160,8 @@ const SensitivityParametersSelector = () => {
                                         }
                                         createRows={rowDataInjections}
                                         tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -174,6 +178,8 @@ const SensitivityParametersSelector = () => {
                                         }
                                         createRows={rowDataHvdc}
                                         tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -190,6 +196,8 @@ const SensitivityParametersSelector = () => {
                                         }
                                         createRows={rowDataPst}
                                         tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
                                     />
                                 </TabPanel>
                             </>
@@ -203,6 +211,8 @@ const SensitivityParametersSelector = () => {
                                 useFieldArrayOutput={useFieldArrayOutputNodes}
                                 createRows={rowDataNodes}
                                 tableHeight={367}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
                             />
                         )}
                     </TabPanel>

@@ -61,19 +61,13 @@ const styles = {
             },
         },
     },
-    mapCtrlBottomLeft: (theme) => ({
-        '& .mapboxgl-ctrl-bottom-left': {
-            transition: theme.transitions.create('left', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-        },
+    mapBelowDiagrams: {
         position: 'absolute',
         top: 0,
         bottom: 0,
         left: 0,
         right: 0,
-    }),
+    },
     table: {
         display: 'flex',
         flexDirection: 'column',
@@ -198,7 +192,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                         : '100%',
                             }}
                         >
-                            <Box sx={styles.mapCtrlBottomLeft}>
+                            <Box sx={styles.mapBelowDiagrams}>
                                 {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
                                 <NetworkMapTab
                                     /* TODO do we move redux param to container */
@@ -280,17 +274,27 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             >
                 {renderTableView()}
             </TabPanelLazy>
-            <TabPanelLazy
-                key={`results-${currentNode?.id}`}
-                selected={props.view === StudyView.RESULTS}
+
+            <Box
+                sx={{
+                    height: '100%',
+                    flexDirection: 'column',
+                    display: props.view === StudyView.RESULTS ? 'flex' : 'none',
+                }}
             >
-                <ResultViewTab
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
-                    disabled={disabled}
-                />
-            </TabPanelLazy>
+                <TabPanelLazy
+                    key={`results-${currentNode?.id}`}
+                    selected={props.view === StudyView.RESULTS}
+                >
+                    <ResultViewTab
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
+                        disabled={disabled}
+                    />
+                </TabPanelLazy>
+            </Box>
+
             <div
                 className="singlestretch-child"
                 style={{
