@@ -834,7 +834,8 @@
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
     "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Linéaire)",
-    "SectionCountBetweenZeroAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 0 et le nombre de gradins",
+    "MaximumSectionCountMinimumOne": "Le nombre de gradins doit être supérieur ou égal à 1",
+    "SectionCountBetweenOneAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 1 et le nombre de gradins",
     "MaximumSectionCount": "Nombre de gradins",
     "ShuntSectionCount": "Gradin courant",
     "SwitchedOnMaxQAtNominalV": "Q enclenchée à tension nominale",
@@ -1369,5 +1370,6 @@
     "ByFilterDeletion": "Par filtre",
     "DeleteEquipmentByFilter": "Supprimer des ouvrages par filtre",
     "ratedVoltage1": "Tension d'enroulement 1 (kV)",
-    "ratedVoltage2": "Tension d'enroulement 2 (kV)"
+    "ratedVoltage2": "Tension d'enroulement 2 (kV)",
+    "substationCountry": "Pays"
 }
