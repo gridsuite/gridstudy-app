@@ -77,6 +77,16 @@ const styles = {
     grid: {
         flexGrow: '1',
     },
+    typography: {
+        fontWeight: 'bold',
+    },
+    secondTypography: {
+        marginLeft: '5em',
+        fontWeight: 'bold',
+    },
+    totalTypography: {
+        marginLeft: '10px',
+    },
 };
 
 const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
@@ -200,16 +210,29 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     }, []);
 
     function renderTotalReactiveSlacks(reactiveSlacks) {
-        const totalInjection = resultToShow.reactiveSlacks
-            ? resultToShow.reactiveSlacks
-                  .filter((reactiveSlack) => reactiveSlack.slack < 0)
-                  .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
-            : 0;
-        const totalConsumption = resultToShow.reactiveSlacks
-            ? resultToShow.reactiveSlacks
-                  .filter((reactiveSlack) => reactiveSlack.slack > 0)
-                  .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
-            : 0;
+        const calculateTotal = (reactiveSlacks, isPositive) => {
+            return reactiveSlacks
+                ? reactiveSlacks
+                      .filter((reactiveSlack) =>
+                          isPositive
+                              ? reactiveSlack.slack > 0
+                              : reactiveSlack.slack < 0
+                      )
+                      .reduce(
+                          (sum, reactiveSlack) => sum + reactiveSlack.slack,
+                          0
+                      )
+                : 0;
+        };
+
+        const totalInjection = calculateTotal(
+            resultToShow.reactiveSlacks,
+            false
+        );
+        const totalConsumption = calculateTotal(
+            resultToShow.reactiveSlacks,
+            true
+        );
         return (
             <>
                 <Stack
@@ -220,20 +243,18 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     marginLeft={2}
                 >
                     <>
-                        <Typography style={{ fontWeight: 'bold' }}>
+                        <Typography sx={styles.typography}>
                             <FormattedMessage id="TotalInjection" />
                         </Typography>
-                        <Typography style={{ marginLeft: '10px' }}>
-                            {totalInjection}
+                        <Typography sx={styles.totalTypography}>
+                            {totalInjection.toFixed(2)}
                         </Typography>
 
-                        <Typography
-                            style={{ marginLeft: '5em', fontWeight: 'bold' }}
-                        >
+                        <Typography sx={styles.secondTypography}>
                             <FormattedMessage id="TotalConsumption" />
                         </Typography>
-                        <Typography style={{ marginLeft: '10px' }}>
-                            {totalConsumption}
+                        <Typography sx={styles.totalTypography}>
+                            {totalConsumption.toFixed(2)}
                         </Typography>
                     </>
                 </Stack>
