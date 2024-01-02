@@ -1349,5 +1349,6 @@
     "ByFilterDeletion": "By filter",
     "DeleteEquipmentByFilter": "Delete equipments by filter",
     "ratedVoltage1": "Rated voltage 1 (kV)",
-    "ratedVoltage2": "Rated voltage 2 (kV)"
+    "ratedVoltage2": "Rated voltage 2 (kV)",
+    "substationCountry": "Country"
 }
