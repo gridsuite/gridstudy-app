@@ -1895,7 +1895,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
-                    minExpression: 0,
+                    minExpression: 1,
                 },
             },
             {
@@ -1917,7 +1917,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
-                    minExpression: 0,
+                    minExpression: 1,
                     maxExpression: 'maximumSectionCount',
                 },
             },
