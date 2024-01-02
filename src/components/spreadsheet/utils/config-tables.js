@@ -1961,7 +1961,7 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: EnumCellRenderer,
                 cellRendererParams: () => {
                     return {
-                        enumValues: SHUNT_COMPENSATOR_TYPES,
+                        enumValues: SHUNT_COMPENSATOR_TYPES, 
                     };
                 },
                 valueGetter: (params) =>
