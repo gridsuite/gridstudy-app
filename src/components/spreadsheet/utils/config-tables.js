@@ -5,7 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
+import {
+    BooleanCellRenderer,
+    EnumCellRenderer,
+    PropertiesCellRenderer,
+} from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     BooleanListField,
@@ -1926,12 +1930,18 @@ export const TABLES_DEFINITIONS = {
                 field: 'type',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
+                cellRenderer: (props) =>
+                    EnumCellRenderer({
+                        ...props,
+                        enumValues: SHUNT_COMPENSATOR_TYPES,
+                    }),
                 valueGetter: (params) =>
                     params?.data?.maxSusceptance > 0
                         ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
                         : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
+                    //
                     return {
                         values: [
                             ...Object.values(SHUNT_COMPENSATOR_TYPES).map(
