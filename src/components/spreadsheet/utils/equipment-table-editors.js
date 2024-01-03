@@ -371,3 +371,61 @@ export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
         />
     );
 });
+
+export const EnumListField = forwardRef(
+    ({ defaultValue, gridContext, colDef, gridApi, enumValue }, ref) => {
+        const intl = useIntl();
+        const [value, setValue] = useState(defaultValue);
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        return value;
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field, value]
+        );
+
+        const validateChange = useCallback(
+            (ev) => {
+                const val = ev.target.value;
+                setValue(val);
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    val
+                );
+                checkValidationsAndRefreshCells(gridApi, gridContext);
+            },
+            [colDef.field, gridApi, gridContext]
+        );
+
+        return (
+            <Select
+                value={value}
+                onChange={validateChange}
+                size={'medium'}
+                margin={'none'}
+                style={{ width: '100%' }}
+                autoFocus
+            >
+                {Object.keys(enumValue).map((key) => (
+                    <MenuItem
+                        value={enumValue[key].id}
+                        key={`${colDef.field}_${key}`}
+                    >
+                        <em>
+                            {intl.formatMessage({ id: enumValue[key].label })}
+                        </em>
+                    </MenuItem>
+                ))}
+            </Select>
+        );
+    }
+);
