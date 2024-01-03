@@ -305,6 +305,7 @@ export const SensitivityAnalysisParameters = ({
                     });
                 })
                 .catch((error) => {
+                    setLaunchLoader(false);
                     snackError({
                         messageTxt: error.message,
                         headerId:
