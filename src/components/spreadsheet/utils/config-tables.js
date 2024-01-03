@@ -13,6 +13,7 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     BooleanListField,
+    EnumListField,
     GeneratorRegulatingTerminalEditor,
     NumericalField,
 } from './equipment-table-editors';
@@ -1930,24 +1931,24 @@ export const TABLES_DEFINITIONS = {
                 field: 'type',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                cellRenderer: (props) =>
-                    EnumCellRenderer({
-                        ...props,
+                cellRenderer: EnumCellRenderer,
+                cellRendererParams: () => {
+                    return {
                         enumValues: SHUNT_COMPENSATOR_TYPES,
-                    }),
+                    };
+                },
                 valueGetter: (params) =>
                     params?.data?.maxSusceptance > 0
                         ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
                         : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    //
+                cellEditor: EnumListField,
+                cellEditorParams: (params) => {
                     return {
-                        values: [
-                            ...Object.values(SHUNT_COMPENSATOR_TYPES).map(
-                                (shuntType) => shuntType.id
-                            ),
-                        ],
+                        defaultValue: params.value,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        enumValue: SHUNT_COMPENSATOR_TYPES,
                     };
                 },
             },

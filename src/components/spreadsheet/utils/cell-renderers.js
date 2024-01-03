@@ -88,7 +88,6 @@ export const BooleanCellRenderer = (props) => {
 };
 
 export const EnumCellRenderer = (props) => {
-    console.log(props, Object.values(props.enumValues));
     const valueId =
         Object.values(props.enumValues).find(
             (value) => value.id === props.value
