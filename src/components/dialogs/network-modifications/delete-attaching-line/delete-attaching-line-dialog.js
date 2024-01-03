@@ -25,6 +25,7 @@ import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';
 
 const emptyFormData = {
     [ATTACHED_LINE_ID]: null,
@@ -130,6 +131,7 @@ const DeleteAttachingLineDialog = ({
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
+                subtitle={<DeleteAttachingLineIllustration />}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-delete-attaching-line"
