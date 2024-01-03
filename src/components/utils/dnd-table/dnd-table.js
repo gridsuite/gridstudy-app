@@ -37,7 +37,15 @@ import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
 
 export const MAX_ROWS_NUMBER = 100;
-
+const styles = {
+    columnsStyle: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        margin: 1,
+        textTransform: 'none',
+    },
+};
 export const addSelectedFieldToRows = (rows) => {
     return rows?.map((row) => {
         return { ...row, [SELECTED]: false };
@@ -330,14 +338,7 @@ const DndTable = ({
                     </TableCell>
                     {columnsDefinition.map((column) => (
                         <TableCell key={column.dataKey}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    margin: 1,
-                                }}
-                            >
+                            <Box sx={styles.columnsStyle}>
                                 {column.label}
                                 {column.extra}
                             </Box>

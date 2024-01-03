@@ -120,6 +120,19 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
     console.debug('%s with action: %s', changeBranchStatusUrl, action);
+
+    let energizedVoltageLevelId;
+    switch (action) {
+        case BRANCH_STATUS_ACTION.ENERGISE_END_ONE:
+            energizedVoltageLevelId = branch.voltageLevelId1;
+            break;
+        case BRANCH_STATUS_ACTION.ENERGISE_END_TWO:
+            energizedVoltageLevelId = branch.voltageLevelId2;
+            break;
+        default:
+            energizedVoltageLevelId = undefined;
+    }
+
     return backendFetch(changeBranchStatusUrl, {
         method: 'POST',
         headers: {
@@ -129,10 +142,7 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
         body: JSON.stringify({
             type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
             equipmentId: branch.id,
-            energizedVoltageLevelId:
-                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-                    ? branch.voltageLevelId1
-                    : branch.voltageLevelId2,
+            energizedVoltageLevelId: energizedVoltageLevelId,
             action: action,
         }),
     });
@@ -395,8 +405,8 @@ export function createLoad(
     id,
     name,
     loadType,
-    activePower,
-    reactivePower,
+    constantActivePower,
+    constantReactivePower,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
@@ -428,8 +438,8 @@ export function createLoad(
             equipmentId: id,
             equipmentName: name,
             loadType: loadType,
-            activePower: activePower,
-            reactivePower: reactivePower,
+            activePower: constantActivePower,
+            reactivePower: constantReactivePower,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
@@ -475,8 +485,8 @@ export function modifyLoad(
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
-            activePower: toModificationOperation(activePower),
-            reactivePower: toModificationOperation(reactivePower),
+            constantActivePower: toModificationOperation(activePower),
+            constantReactivePower: toModificationOperation(reactivePower),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         }),
@@ -1601,6 +1611,38 @@ export function deleteEquipment(
             equipmentId: equipmentId,
             equipmentType: equipmentType,
             equipmentInfos: equipmentInfos,
+        }),
+    });
+}
+
+export function deleteEquipmentByFilter(
+    studyUuid,
+    currentNodeUuid,
+    equipmentType,
+    filters,
+    modificationUuid
+) {
+    let deleteEquipmentUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (modificationUuid) {
+        deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating by filter deletion');
+    } else {
+        console.info('Creating by filter deletion');
+    }
+
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
+            filters: filters,
+            equipmentType: equipmentType,
         }),
     });
 }

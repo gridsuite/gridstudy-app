@@ -53,15 +53,20 @@ const TabularModificationForm = () => {
         });
     }, [intl, watchType]);
 
-    const explanationComment = useMemo(
-        () =>
-            watchType === EQUIPMENT_TYPES.GENERATOR
-                ? intl.formatMessage({
-                      id: 'TabularModificationGeneratorSkeletonComment',
-                  })
-                : '',
-        [intl, watchType]
-    );
+    const explanationComment = useMemo(() => {
+        switch (watchType) {
+            case EQUIPMENT_TYPES.GENERATOR:
+                return intl.formatMessage({
+                    id: 'TabularModificationGeneratorSkeletonComment',
+                });
+            case EQUIPMENT_TYPES.LOAD:
+                return intl.formatMessage({
+                    id: 'TabularModificationLoadSkeletonComment',
+                });
+            default:
+                return '';
+        }
+    }, [intl, watchType]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -101,6 +106,7 @@ const TabularModificationForm = () => {
                     );
                     return transformedHeader ?? header;
                 },
+                transform: (value) => value.trim(),
             });
         }
     }, [
@@ -141,7 +147,6 @@ const TabularModificationForm = () => {
     const defaultColDef = useMemo(
         () => ({
             flex: 1,
-            filter: true,
             sortable: true,
             resizable: false,
             lockPinned: true,
@@ -154,18 +159,18 @@ const TabularModificationForm = () => {
 
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
-            const colunmDef: ColDef = {};
+            const columnDef: ColDef = {};
             if (field === 'equipmentId') {
-                colunmDef.pinned = true;
+                columnDef.pinned = true;
             }
-            colunmDef.field = field;
-            colunmDef.headerName = intl.formatMessage({ id: field });
+            columnDef.field = field;
+            columnDef.headerName = intl.formatMessage({ id: field });
             if (field === 'voltageRegulationOn') {
-                colunmDef.cellRenderer = BooleanNullableCellRenderer;
+                columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
-                colunmDef.cellRenderer = DefaultCellRenderer;
+                columnDef.cellRenderer = DefaultCellRenderer;
             }
-            return colunmDef;
+            return columnDef;
         });
     }, [intl, watchType]);
 
