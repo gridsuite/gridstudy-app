@@ -31,6 +31,7 @@ import {
     FieldType,
     OperatorType,
 } from '../../../../filter/expert/expert-filter.type';
+import VirtualizedCheckboxAutocomplete from '../common/virtualized-checkbox-autocomplete';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -333,14 +334,13 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
-                        <CheckboxSelect
-                            value={selectedVoltageLevelIds}
+                        <VirtualizedCheckboxAutocomplete
                             options={voltageLevelIds}
                             getOptionLabel={(value) =>
                                 mapEquipments.getVoltageLevel(value)?.name ??
                                 value
                             }
-                            onChange={handleVoltageLevelChange}
+                            //onChange={handleVoltageLevelChange}
                         />
                     </Grid>
                 </Grid>

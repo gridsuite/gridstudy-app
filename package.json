@@ -19,6 +19,8 @@
         "@types/react": "^18.2.7",
         "@types/react-dom": "^18.2.4",
         "@types/react-beautiful-dnd": "^13.1.0",
+        "@types/react-window": "^1.8.5",
+        "@types/lodash": "^4.14.202",
         "ag-grid-community": "^29.0.0",
         "ag-grid-react": "^29.0.0",
         "cheap-ruler": "^3.0.0",
@@ -55,6 +57,7 @@
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
+        "lodash": "^4.14.202",
         "typeface-roboto": "^1.0.0",
         "typescript": "^5.0.4",
         "yup": "^1.0.0"
