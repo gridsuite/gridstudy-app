@@ -225,14 +225,8 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 : 0;
         };
 
-        const totalInjection = calculateTotal(
-            resultToShow.reactiveSlacks,
-            false
-        );
-        const totalConsumption = calculateTotal(
-            resultToShow.reactiveSlacks,
-            true
-        );
+        const totalInjection = calculateTotal(reactiveSlacks, false);
+        const totalConsumption = calculateTotal(reactiveSlacks, true);
         return (
             <>
                 <Stack
