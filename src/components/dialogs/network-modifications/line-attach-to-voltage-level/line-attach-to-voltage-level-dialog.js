@@ -201,6 +201,18 @@ const LineAttachToVoltageLevelDialog = ({
         ]
     );
 
+    useEffect(() => {
+        if (studyUuid && currentNode?.id) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                    );
+                }
+            );
+        }
+    }, [studyUuid, currentNode?.id]);
+
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
@@ -255,18 +267,6 @@ const LineAttachToVoltageLevelDialog = ({
         },
         [setValue]
     );
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNode?.id]);
 
     const onVoltageLevelCreationDo = useCallback(
         ({

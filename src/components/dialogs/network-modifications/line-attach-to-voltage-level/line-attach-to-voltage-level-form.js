@@ -119,8 +119,7 @@ const LineAttachToVoltageLevelForm = ({
     );
 
     const isVoltageLevelEdit =
-        voltageLevelToEdit &&
-        voltageLevelToEdit.equipmentId === voltageLevelIdWatch;
+        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     return (
         <>
@@ -179,9 +178,7 @@ const LineAttachToVoltageLevelForm = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={
-                        isVoltageLevelEdit ? voltageLevelToEdit : undefined
-                    }
+                    editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
                 />
             )}
             {lineDialogOpen && (

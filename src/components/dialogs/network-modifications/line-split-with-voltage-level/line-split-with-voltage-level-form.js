@@ -89,8 +89,7 @@ const LineSplitWithVoltageLevelForm = ({
     );
 
     const isVoltageLevelEdit =
-        voltageLevelToEdit &&
-        voltageLevelToEdit.equipmentId === voltageLevelIdWatch;
+        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     return (
         <>
@@ -129,9 +128,7 @@ const LineSplitWithVoltageLevelForm = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={
-                        isVoltageLevelEdit ? voltageLevelToEdit : undefined
-                    }
+                    editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
                 />
             )}
         </>
