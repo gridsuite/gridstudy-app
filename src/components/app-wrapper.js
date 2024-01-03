@@ -56,6 +56,23 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
 let lightTheme = createTheme({
+    components: {
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+    },
+
     palette: {
         mode: 'light',
     },
@@ -70,6 +87,19 @@ let lightTheme = createTheme({
     selectedRow: {
         background: '#8E9C9B',
     },
+    editableCell: {
+        outline: 'solid 1px #1976D2',
+        border: 'solid 1px #BABFC7',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #BABFC766',
+    },
+    editableCellError: {
+        outline: 'solid 1px red',
+        border: 'solid 1px #BABFC7',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #BABFC766',
+    },
+    aggridValueChangeHighlightBackgroundColor: '#C8E6C9 !important',
     tooltipTable: {
         background: '#e6e6e6',
     },
@@ -92,6 +122,22 @@ lightTheme = createTheme(lightTheme, {
 });
 
 let darkTheme = createTheme({
+    components: {
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+    },
     palette: {
         mode: 'dark',
     },
@@ -105,6 +151,18 @@ let darkTheme = createTheme({
     },
     selectedRow: {
         background: '#545C5B',
+    },
+    editableCell: {
+        outline: 'solid 1px #90CAF9',
+        border: 'solid 1px #68686E',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #000',
+    },
+    editableCellError: {
+        outline: 'solid 1px red',
+        border: 'solid 1px #68686E',
+        borderRadius: '3px',
+        boxShadow: '0 1px 20px 1px #000',
     },
     tooltipTable: {
         background: '#121212',
