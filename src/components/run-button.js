@@ -64,14 +64,15 @@ const RunButton = ({
         if (selectedRunnable === ComputingType.LOADFLOW) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
-        } else if (selectedRunnable === ComputingType.SECURITY_ANALYSIS) {
-            // We can run only 1 analysis at a time
-            return getRunningStatus() === RunningStatus.RUNNING;
         } else if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
             // Load flow button's status must be "SUCCEED"
-            return getStatus(ComputingType.LOADFLOW) !== RunningStatus.SUCCEED;
+            return (
+                getRunningStatus() === RunningStatus.RUNNING ||
+                getStatus(ComputingType.LOADFLOW) !== RunningStatus.SUCCEED
+            );
         } else {
-            return false;
+            // We can run only 1 computation at a time
+            return getRunningStatus() === RunningStatus.RUNNING;
         }
     }
 

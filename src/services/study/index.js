@@ -315,5 +315,10 @@ export function getOptionalServices() {
 
 export function getServersInfos() {
     console.info('get backend servers informations');
-    return backendFetchJson(PREFIX_STUDY_QUERIES + '/v1/servers/infos');
+    return backendFetchJson(
+        PREFIX_STUDY_QUERIES + '/v1/servers/about?view=study'
+    ).catch((reason) => {
+        console.error('Error while fetching the servers infos : ' + reason);
+        return reason;
+    });
 }

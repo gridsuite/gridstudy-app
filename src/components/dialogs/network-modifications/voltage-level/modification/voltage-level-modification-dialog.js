@@ -49,8 +49,23 @@ const formSchema = yup.object().shape({
     [NOMINAL_VOLTAGE]: yup.number().nullable(),
     [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
     [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+        .number()
+        .nullable()
+        .min(0, 'ShortCircuitCurrentLimitNotNegative')
+        .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
+            is: (highShortCircuitCurrentLimit) =>
+                highShortCircuitCurrentLimit != null,
+            then: (schema) =>
+                schema.max(
+                    yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
+                    'ShortCircuitCurrentLimitMinMaxError'
+                ),
+        }),
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+        .number()
+        .nullable()
+        .min(0, 'ShortCircuitCurrentLimitNotNegative'),
 });
 
 const VoltageLevelModificationDialog = ({

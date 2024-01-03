@@ -22,9 +22,10 @@ import {
     TABULAR_MODIFICATION_TYPES,
     formatModification,
     getEquipmentTypeFromModificationType,
+    convertValueFromBackToFront,
+    convertValueFromFrontToBack,
 } from './tabular-modification-utils';
-import { toModificationOperation } from 'components/utils/utils';
-import { useIntl } from 'react-intl';
+import { LocalizedCountries } from '../../../utils/localized-countries-hook';
 
 const formSchema = yup
     .object()
@@ -61,8 +62,6 @@ const TabularModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
 
-    const intl = useIntl();
-
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
@@ -70,7 +69,8 @@ const TabularModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, setValue } = formMethods;
+    const { getCountryCode, translate } = LocalizedCountries();
 
     useEffect(() => {
         if (editData) {
@@ -80,21 +80,19 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    const field = modif[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = field;
-                    } else {
-                        modification[key] = field?.value;
-                    }
+                    modification[key] = convertValueFromBackToFront(
+                        key,
+                        modif[key],
+                        translate
+                    );
                 });
                 return modification;
             });
-            reset({
-                [TYPE]: equipmentType,
-                [MODIFICATIONS_TABLE]: modifications,
-            });
+            // reset is replaced by setValue since the reset with translate causes an infinite triggering of useEffect
+            setValue(TYPE, equipmentType);
+            setValue(MODIFICATIONS_TABLE, modifications);
         }
-    }, [editData, reset, intl]);
+    }, [editData, setValue, translate]);
 
     const onSubmit = useCallback(
         (formData) => {
@@ -104,12 +102,11 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    const value = row[key];
-                    if (key === 'equipmentId') {
-                        modification[key] = value;
-                    } else {
-                        modification[key] = toModificationOperation(value);
-                    }
+                    modification[key] = convertValueFromFrontToBack(
+                        key,
+                        row[key],
+                        getCountryCode
+                    );
                 });
                 return modification;
             });
@@ -127,7 +124,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid, getCountryCode]
     );
 
     const clear = useCallback(() => {
@@ -145,7 +142,8 @@ const TabularModificationDialog = ({
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
-                maxWidth={false}
+                fullWidth
+                maxWidth={'lg'}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-tabular-modification"
