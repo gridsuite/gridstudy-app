@@ -109,36 +109,34 @@ export const backendFetchJson = (url, init, token) => {
 };
 
 export const backendDownloadFileAsStream = (url, fileName) => {
-    backendFetch(url)
-        .then((response) => {
-            // buffer to fill with all data from server
-            let fileBuffer = new Int8Array();
-            // response.body is a readableStream
-            const reader = response.body?.getReader();
+    window.showSaveFilePicker({ suggestedName: fileName }).then((newHandle) =>
+        backendFetch(url).then((response) => {
+            newHandle.createWritable().then((writableStream) => {
+                // response.body is a readableStream
+                const reader = response.body?.getReader();
 
-            // function to retrieve the next chunk from the stream
-            const handleChunk = ({ done, value }) => {
-                // done is true when stream is done reading
-                if (done) {
-                    downloadCsvFile(fileBuffer, fileName);
-                    return;
-                }
+                // function to retrieve the next chunk from the stream
+                const handleChunk = ({ done, value }) => {
+                    // done is true when stream is done reading
+                    if (done) {
+                        writableStream.close();
+                        return;
+                    }
+                    writableStream.write(value);
 
-                // concat already loaded data with the loaded chunk
-                fileBuffer = Int8Array.from([...fileBuffer, ...value]);
+                    // retreive next chunk
+                    reader?.read().then((response) => {
+                        handleChunk(response);
+                    });
+                };
 
-                // retreive next chunk
+                //retreive first chunk
                 reader?.read().then((response) => {
                     handleChunk(response);
                 });
-            };
-
-            //retreive first chunk
-            reader?.read().then((response) => {
-                handleChunk(response);
             });
         })
-        .catch((err) => handleError(err));
+    );
 };
 
 export const downloadCsvFile = (blob, filename) => {
