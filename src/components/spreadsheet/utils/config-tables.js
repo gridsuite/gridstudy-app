@@ -12,7 +12,7 @@ import {
     GeneratorRegulatingTerminalEditor,
     NumericalField,
     SelectCountryField,
-    BooleanListField
+    BooleanListField,
 } from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
