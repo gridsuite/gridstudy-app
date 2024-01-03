@@ -44,7 +44,10 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
             },
         ].map((column) => ({
             ...column,
-            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+            label: intl
+                .formatMessage({ id: column.label })
+                .toLowerCase()
+                .replace(/^\w/, (c) => c.toUpperCase()),
         }));
     }, [intl]);
 

@@ -24,19 +24,19 @@ import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
+    fetchVoltageInitResult,
     getVoltageInitModifications,
 } from '../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
-import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
-import { CsvExport } from './spreadsheet/export-csv';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
+import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 
 const styles = {
     container: {
@@ -59,7 +59,12 @@ const styles = {
         position: 'relative',
         marginLeft: '5px',
     },
-
+    labelAppliedModifications: {
+        display: 'flex',
+        position: 'relative',
+        marginTop: '12px',
+        marginLeft: '20px',
+    },
     gridContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -79,8 +84,9 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
 
+    const [resultToShow, setResultToShow] = useState(result);
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
-        !result
+        !resultToShow || !resultToShow.modificationsGroupUuid
     );
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] =
@@ -97,8 +103,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     });
 
     useEffect(() => {
-        setDisableApplyModifications(!result);
-    }, [result, setDisableApplyModifications]);
+        fetchVoltageInitResult(studyUuid, currentNode.id).then((res) => {
+            setResultToShow(res);
+        });
+    }, [viNotif, disabledApplyModifications, studyUuid, currentNode.id]);
 
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
@@ -125,6 +133,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         cloneVoltageInitModifications(studyUuid, currentNode.id)
             .then(() => {
                 setApplyingModifications(false);
+                setResultToShow({
+                    ...resultToShow,
+                    modificationsGroupUuid: null,
+                });
             })
             .catch((errmsg) => {
                 snackError({
@@ -187,41 +199,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         ];
     }, []);
 
-    const renderTableAndExportCSV = (
-        gridRef,
-        columns,
-        tableName,
-        rows,
-        headerHeight,
-        skipColumnHeaders
-    ) => {
-        return (
-            <Box sx={styles.gridContainer}>
-                <Box sx={styles.csvExport}>
-                    <Box style={{ flexGrow: 1 }}></Box>
-                    <CsvExport
-                        gridRef={gridRef}
-                        columns={columns}
-                        tableName={tableName}
-                        disabled={!rows || rows.length === 0}
-                        skipColumnHeaders={skipColumnHeaders}
-                    />
-                </Box>
-                {rows && (
-                    <Box sx={styles.grid}>
-                        <CustomAGGrid
-                            ref={gridRef}
-                            rowData={rows}
-                            headerHeight={headerHeight}
-                            defaultColDef={defaultColDef}
-                            columnDefs={columns}
-                            onRowDataUpdated={onRowDataUpdated}
-                        />
-                    </Box>
-                )}
-            </Box>
-        );
-    };
     function renderIndicatorsTable(indicators) {
         const rows = indicators
             ? Object.entries(indicators).map((i) => {
@@ -247,14 +224,16 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Typography>
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
-                {renderTableAndExportCSV(
-                    gridRef,
-                    indicatorsColumnDefs,
-                    intl.formatMessage({ id: 'Indicators' }),
-                    rows,
-                    0,
-                    true
-                )}
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={indicatorsColumnDefs}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'Indicators' })}
+                    rows={rows}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
+                    skipColumnHeaders={true}
+                />
             </>
         );
     }
@@ -274,11 +253,17 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     }, [intl]);
 
     function renderReactiveSlacksTable(reactiveSlacks) {
-        return renderTableAndExportCSV(
-            gridRef,
-            reactiveSlacksColumnDefs,
-            intl.formatMessage({ id: 'ReactiveSlacks' }),
-            reactiveSlacks
+        return (
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={reactiveSlacksColumnDefs}
+                defaultColDef={defaultColDef}
+                tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                rows={reactiveSlacks}
+                onRowDataUpdated={onRowDataUpdated}
+                headerHeight={0}
+                skipColumnHeaders={true}
+            />
         );
     }
 
@@ -331,12 +316,22 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={disabledApplyModifications}
+                            disabled={
+                                !resultToShow ||
+                                !resultToShow.modificationsGroupUuid ||
+                                disabledApplyModifications
+                            }
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>
                         {previewModificationsDialogOpen &&
                             renderPreviewModificationsDialog()}
+                        {resultToShow &&
+                            !resultToShow.modificationsGroupUuid && (
+                                <div style={styles.labelAppliedModifications}>
+                                    <FormattedMessage id="modificationsAlreadyApplied" />
+                                </div>
+                            )}
                         {applyingModifications && (
                             <div
                                 style={{
@@ -353,13 +348,13 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 </Box>
                 <div style={{ flexGrow: 1 }}>
                     {viNotif &&
-                        result &&
+                        resultToShow &&
                         tabIndex === 0 &&
-                        renderIndicatorsTable(result.indicators)}
+                        renderIndicatorsTable(resultToShow.indicators)}
                     {viNotif &&
-                        result &&
+                        resultToShow &&
                         tabIndex === 1 &&
-                        renderReactiveSlacksTable(result.reactiveSlacks)}
+                        renderReactiveSlacksTable(resultToShow.reactiveSlacks)}
                     {tabIndex === 2 && renderReportViewer()}
                 </div>
             </>

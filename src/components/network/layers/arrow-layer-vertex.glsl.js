@@ -129,16 +129,6 @@ mat3 calculateRotation(vec3 commonPosition1, vec3 commonPosition2) {
 }
 
 /**
- * Adjustment factor for low zoom levels
- * Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts. We don't have access to this method from here. 
- * Just to call it from project_size_all_zoom_levels().
- */
-float project_size_at_latitude(float lat) {
-  float y = clamp(lat, -89.9, 89.9);
-  return 1.0 / cos(radians(y));
-}
-
-/**
  * Forked version of project_size() from deck.gl deck.gl/modules/core/src/shaderlib/project/project.glsl.ts
  * Converts the size from the world space (meters) to the common space.
  * When the zoom level is lower than 12 (zoomed out), we use the arrow latitude to calculate the projection. 
