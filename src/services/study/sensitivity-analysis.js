@@ -166,12 +166,12 @@ export function getSensitivityAnalysisFactorsCount(
 }
 
 export function exportSensitivityResultsAsCsv3(
-  studyUuid,
-  currentNodeUuid,
-  selector
+    studyUuid,
+    currentNodeUuid,
+    selector
 ) {
     console.info(
-      `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
+        `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
     );
 
     // Add params to Url
@@ -180,8 +180,8 @@ export function exportSensitivityResultsAsCsv3(
     urlSearchParams.append('selector', jsoned);
 
     const url = `${getStudyUrlWithNodeUuid(
-      studyUuid,
-      currentNodeUuid
+        studyUuid,
+        currentNodeUuid
     )}/sensitivity-analysis/result/csv-StreamingResponseBody?${urlSearchParams}`;
     console.debug(url);
     return backendFetch(url, {

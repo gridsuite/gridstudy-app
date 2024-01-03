@@ -28,12 +28,11 @@
         "dagre": "^0.8.5",
         "deck.gl": "^8.9.18",
         "eventemitter3": "^5.0.0",
-        "file-saver": "^2.0.5",
         "geolib": "^3.2.1",
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",
-        "mapbox-gl": "^3.0.0",
         "mjolnir.js": "^2.4.0",
+        "mapbox-gl": "^3.0.0",
         "mui-nested-menu": "^3.0.0",
         "notistack": "^3.0.0",
         "plotly.js-basic-dist-min": "^2.17.0",
@@ -60,7 +59,8 @@
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
         "typescript": "^5.0.4",
-        "yup": "^1.0.0"
+        "yup": "^1.0.0",
+        "file-system-access": "^1.0.4"
     },
     "scripts": {
         "start": "react-scripts start",

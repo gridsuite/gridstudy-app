@@ -31,7 +31,6 @@ import React, { useCallback } from 'react';
 import { exportSensitivityResultsAsCsv3 } from '../../../services/study/sensitivity-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { saveAs } from 'file-saver';
 import Grid from '@mui/material/Grid';
 import GetAppIcon from '@mui/icons-material/GetApp';
 
@@ -101,9 +100,36 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         exportSensitivityResultsAsCsv3(studyUuid, nodeUuid, selector)
             .then((response) => {
                 console.log('response : ', response);
-                response.blob().then((blob) => {
-                    saveAs(blob, 'sensitivity_results.csv');
-                });
+                window
+                    .showSaveFilePicker({
+                        suggestedName: 'sensitivity_results.csv',
+                    })
+                    .then((newHandle) =>
+                        newHandle.createWritable().then((writableStream) => {
+                            // response.body is a readableStream
+                            const reader = response.body?.getReader();
+
+                            // function to retrieve the next chunk from the stream
+                            const handleChunk = ({ done, value }) => {
+                                // done is true when stream is done reading
+                                if (done) {
+                                    writableStream.close();
+                                    return;
+                                }
+                                writableStream.write(value);
+
+                                // retrieve next chunk
+                                reader?.read().then((response) => {
+                                    handleChunk(response);
+                                });
+                            };
+
+                            //retrieve first chunk
+                            reader?.read().then((response) => {
+                                handleChunk(response);
+                            });
+                        })
+                    );
             })
             .catch((error) => {
                 snackError({
