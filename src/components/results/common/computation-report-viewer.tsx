@@ -9,9 +9,7 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import {
     fetchNodeReport,
     fetchParentNodesReport,
-    fetchReportSeverity,
     fetchSubReport,
-    fetchSubReportSeverity,
 } from '../../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import ReportViewer from '../../report-viewer/report-viewer';
@@ -109,23 +107,6 @@ export const ComputationReportViewer: FunctionComponent<
         );
     };
 
-    const subReportSeveritiesPromise = (reportId: string) => {
-        fetchSubReportSeverity(
-            studyUuid.toString(),
-            currentNode.id.toString(),
-            reportId
-        );
-    };
-
-    const reportSeveritiesPromise = (reportId: string) => {
-        return fetchReportSeverity(
-            studyUuid.toString(),
-            currentNode.id.toString(),
-            reportId,
-            reportType
-        );
-    };
-
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
             {report && (
@@ -133,8 +114,6 @@ export const ComputationReportViewer: FunctionComponent<
                     jsonReportTree={report}
                     subReportPromise={subReportPromise}
                     nodeReportPromise={nodeReportPromise}
-                    subReportSeveritiesPromise={subReportSeveritiesPromise}
-                    reportSeveritiesPromise={reportSeveritiesPromise}
                 />
             )}
         </WaitingLoader>

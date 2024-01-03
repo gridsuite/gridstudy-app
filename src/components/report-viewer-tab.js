@@ -19,9 +19,7 @@ import { useSelector } from 'react-redux';
 import {
     fetchNodeReport,
     fetchParentNodesReport,
-    fetchReportSeverity,
     fetchSubReport,
-    fetchSubReportSeverity,
 } from '../services/study';
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
@@ -193,19 +191,6 @@ export const ReportViewerTab = ({
         );
     };
 
-    const subReportSeveritiesPromise = (reportId) => {
-        return fetchSubReportSeverity(studyId, currentNode.id, reportId);
-    };
-
-    const reportSeveritiesPromise = (nodeId, reportId) => {
-        return fetchReportSeverity(
-            studyId,
-            nodeId,
-            reportId,
-            REPORT_TYPES.NETWORK_MODIFICATION
-        );
-    };
-
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
             <Paper className={'singlestretch-child'}>
@@ -238,8 +223,6 @@ export const ReportViewerTab = ({
                         subReportPromise={subReportPromise}
                         nodeReportPromise={nodeReportPromise}
                         globalReportPromise={globalReportPromise}
-                        subReportSeveritiesPromise={subReportSeveritiesPromise}
-                        reportSeveritiesPromise={reportSeveritiesPromise}
                     />
                 )}
             </Paper>

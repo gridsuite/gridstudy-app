@@ -49,6 +49,8 @@ export default class LogReport {
         this.subReports = [];
         this.logs = [];
         this.parentReportId = parentReportId;
+        this.severityList = [];
+        this.allSeverityList = [];
         this.init(reportType, jsonReporter);
     }
 
@@ -80,6 +82,14 @@ export default class LogReport {
         return this.logs;
     }
 
+    getSeverityList() {
+        return this.severityList;
+    }
+
+    getAllSeverityList() {
+        return this.allSeverityList;
+    }
+
     getAllLogs() {
         return this.getLogs().concat(
             this.getSubReports().flatMap((r) => r.getAllLogs())
@@ -97,6 +107,11 @@ export default class LogReport {
         jsonReporter.reports.map((value) =>
             this.logs.push(new LogReportItem(value, this.uniqueId))
         );
+        jsonReporter.taskValues?.severityList?.value
+            .split(/[[,\]]/)
+            .filter((e) => e.length)
+            .forEach((el) => this.severityList.push(el));
+        this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
     }
 
     getHighestSeverity(currentSeverity = LogReportItem.SEVERITY.UNKNOWN) {
@@ -109,5 +124,19 @@ export default class LogReport {
         return this.getSubReports()
             .map((r) => r.getHighestSeverity(highestSeverity))
             .reduce(reduceFct, highestSeverity);
+    }
+
+    initAllSeverityList() {
+        let logSeverityList = this.getSeverityList();
+
+        this.getSubReports()
+            .map((e) => e.initAllSeverityList())
+            .forEach((e) => {
+                logSeverityList = logSeverityList.concat(e);
+            });
+
+        logSeverityList = [...new Set(logSeverityList)];
+
+        return logSeverityList;
     }
 }

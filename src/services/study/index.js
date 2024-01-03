@@ -144,36 +144,6 @@ export function fetchSubReport(
     return backendFetchJson(url);
 }
 
-export function fetchReportSeverity(studyUuid, nodeUuid, reportId, reportType) {
-    console.info(
-        'get report for node : ' +
-            nodeUuid +
-            ' in study ' +
-            studyUuid +
-            ' for ' +
-            reportType
-    );
-
-    let url =
-        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/report/severity-levels?reportId=' +
-        reportId +
-        '&reportType=' +
-        reportType.toString();
-
-    return backendFetchJson(url);
-}
-
-export function fetchSubReportSeverity(studyUuid, nodeUuid, reportId) {
-    console.info('get subReport level with Id : ' + reportId);
-
-    let url =
-        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/subreport/severity-levels?reportId=' +
-        reportId;
-    return backendFetchJson(url);
-}
-
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) =>

@@ -41,8 +41,6 @@ export default function ReportViewer({
     jsonReportTree,
     subReportPromise,
     nodeReportPromise,
-    subReportSeveritiesPromise,
-    reportSeveritiesPromise,
     globalReportPromise = undefined,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
@@ -140,24 +138,6 @@ export default function ReportViewer({
         [nodeReportPromise, globalReportPromise, subReportPromise]
     );
 
-    const getSeverityPromise = useCallback(
-        (nodeId) => {
-            if (
-                reportTreeData.current[nodeId].getType() ===
-                LogReportType.NodeReport
-            ) {
-                return reportSeveritiesPromise(
-                    reportTreeData.current[nodeId].getKey(),
-                    reportTreeData.current[nodeId].getId()
-                );
-            }
-            return subReportSeveritiesPromise(
-                reportTreeData.current[nodeId].getId()
-            );
-        },
-        [reportSeveritiesPromise, subReportSeveritiesPromise]
-    );
-
     const buildLogReport = useCallback((jsonData) => {
         return jsonData.taskKey === GLOBAL_NODE_TASK_KEY
             ? new LogReport(LogReportType.GlobalReport, jsonData)
@@ -205,7 +185,7 @@ export default function ReportViewer({
                     setWaitingLoadReport(false);
                 });
         },
-        [getFetchPromise, buildLogReport, snackError]
+        [snackError, getFetchPromise, buildLogReport]
     );
 
     useEffect(() => {
@@ -219,12 +199,12 @@ export default function ReportViewer({
         setSelectedNode(rootId);
         setExpandedNodes([rootId]);
         setLogs(rootReport.current.getAllLogs());
-        Promise.resolve(getSeverityPromise(rootId)).then((response) => {
-            setSelectedSeverity(
-                LogReportItem.getDefaultSeverityFilter(response)
-            );
-        });
-    }, [jsonReportTree, createReporterItem, getSeverityPromise]);
+        setSelectedSeverity(
+            LogReportItem.getDefaultSeverityFilter(
+                rootReport.current.getAllSeverityList()
+            )
+        );
+    }, [jsonReportTree, createReporterItem]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
@@ -244,12 +224,11 @@ export default function ReportViewer({
 
     const selectNode = (nodeId) => {
         if (selectedNode !== nodeId) {
-            Promise.resolve(getSeverityPromise(nodeId)).then((fetchedData) => {
-                const updatedSeverityList =
-                    LogReportItem.getDefaultSeverityFilter(fetchedData);
-                setSelectedSeverity(updatedSeverityList);
-                refreshNode(nodeId, updatedSeverityList);
-            });
+            const updatedSeverityList = LogReportItem.getDefaultSeverityFilter(
+                reportTreeData.current[nodeId].getAllSeverityList()
+            );
+            setSelectedSeverity(updatedSeverityList);
+            refreshNode(nodeId, updatedSeverityList);
         }
     };
 
