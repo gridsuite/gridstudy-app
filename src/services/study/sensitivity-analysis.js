@@ -150,17 +150,17 @@ export function getSensitivityAnalysisFactorsCount(
     const urlSearchParams = new URLSearchParams();
     const jsoned = JSON.stringify(isInjectionsSet);
     urlSearchParams.append('isInjectionsSet', jsoned);
+    Object.keys(newParams)
+        .filter((key) => newParams[key])
+        .forEach((key) =>
+            urlSearchParams.append(`ids[${key}]`, newParams[key])
+        );
 
     const url =
         getStudyUrl(studyUuid) +
         `/sensitivity-analysis/factors-count?${urlSearchParams}`;
     console.debug(url);
     return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newParams),
+        method: 'GET',
     });
 }
