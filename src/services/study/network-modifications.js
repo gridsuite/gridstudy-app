@@ -1093,16 +1093,12 @@ export function createSubstation(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
 
-    const asObj = !properties?.length
-        ? undefined
-        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
-
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
         equipmentId: substationId,
         equipmentName: substationName,
         substationCountry: substationCountry === '' ? null : substationCountry,
-        properties: asObj,
+        properties,
     });
 
     if (isUpdate) {
