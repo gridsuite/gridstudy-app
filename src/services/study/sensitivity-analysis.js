@@ -165,7 +165,7 @@ export function getSensitivityAnalysisFactorsCount(
     });
 }
 
-export function exportSensitivityResultsAsCsv3(
+export function exportSensitivityResultsAsCsv(
     studyUuid,
     currentNodeUuid,
     selector

@@ -28,7 +28,7 @@ import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import React, { useCallback } from 'react';
-import { exportSensitivityResultsAsCsv3 } from '../../../services/study/sensitivity-analysis';
+import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
@@ -97,7 +97,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        exportSensitivityResultsAsCsv3(studyUuid, nodeUuid, selector)
+        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, selector)
             .then((response) => {
                 console.log('response : ', response);
                 window
@@ -150,23 +150,21 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         setSensiKind={handleSensiKindChange}
                     />
                 </Grid>
-                <Grid container item alignSelf={'center'}>
-                    <Grid item>
+                <Grid item>
                         <span>
                             <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
                         </span>
-                        <span>
+                    <span>
                             <IconButton
-                                aria-label="exportCSVButton"
-                                onClick={exportResultsAsCsv}
-                                disabled={
-                                    sensiKind === COMPUTATION_RESULTS_LOGS
-                                }
+                              aria-label="exportCSVButton"
+                              onClick={exportResultsAsCsv}
+                              disabled={
+                                sensiKind === COMPUTATION_RESULTS_LOGS
+                              }
                             >
                                 <GetAppIcon />
                             </IconButton>
                         </span>
-                    </Grid>
                 </Grid>
             </Grid>
             {sensiResultKind.includes(sensiKind) && (
