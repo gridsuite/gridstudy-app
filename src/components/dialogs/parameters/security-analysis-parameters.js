@@ -248,57 +248,59 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
 
     return (
         <>
-            <Grid container spacing={1} padding={1}>
+            <Grid sx={{ height: '100%' }}>
+                <Grid container spacing={1} padding={1}>
+                    <Grid
+                        container
+                        spacing={1}
+                        sx={{ padding: 0, paddingBottom: 2 }}
+                    >
+                        <DropDown
+                            value={provider}
+                            label="Provider"
+                            values={securityAnalysisProvider}
+                            callback={updateProviderCallback}
+                        />
+                    </Grid>
+                    <Grid container spacing={1} paddingBottom={1}>
+                        <Grid item xs={8} sx={styles.text}>
+                            <Typography>
+                                {intl.formatMessage({
+                                    id: 'securityAnalysis.violationsHiding',
+                                })}
+                            </Typography>
+                            <Tooltip
+                                sx={styles.tooltip}
+                                title={
+                                    <FormattedMessage
+                                        id={
+                                            'securityAnalysis.toolTip.violationsHiding'
+                                        }
+                                    />
+                                }
+                                placement="left-start"
+                            >
+                                <InfoIcon />
+                            </Tooltip>
+                        </Grid>
+                    </Grid>
+
+                    {fieldsToShow?.map((item) => {
+                        return (
+                            <Grid item xs={16} key={item.label}>
+                                <SecurityAnalysisFields {...item} />
+                            </Grid>
+                        );
+                    })}
+                </Grid>
                 <Grid
                     container
+                    key="secuAnalysisProvider"
+                    sx={styles.scrollableGrid}
                     spacing={1}
-                    sx={{ padding: 0, paddingBottom: 2 }}
-                >
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={securityAnalysisProvider}
-                        callback={updateProviderCallback}
-                    />
-                </Grid>
-                <Grid container spacing={1} paddingBottom={1}>
-                    <Grid item xs={8} sx={styles.text}>
-                        <Typography>
-                            {intl.formatMessage({
-                                id: 'securityAnalysis.violationsHiding',
-                            })}
-                        </Typography>
-                        <Tooltip
-                            sx={styles.tooltip}
-                            title={
-                                <FormattedMessage
-                                    id={
-                                        'securityAnalysis.toolTip.violationsHiding'
-                                    }
-                                />
-                            }
-                            placement="left-start"
-                        >
-                            <InfoIcon />
-                        </Tooltip>
-                    </Grid>
-                </Grid>
-
-                {fieldsToShow?.map((item) => {
-                    return (
-                        <Grid item xs={16} key={item.label}>
-                            <SecurityAnalysisFields {...item} />
-                        </Grid>
-                    );
-                })}
+                ></Grid>
+                <LineSeparator />
             </Grid>
-            <Grid
-                container
-                key="secuAnalysisProvider"
-                sx={styles.scrollableGrid}
-                spacing={1}
-            ></Grid>
-            <LineSeparator />
             <Grid
                 container
                 sx={mergeSx(

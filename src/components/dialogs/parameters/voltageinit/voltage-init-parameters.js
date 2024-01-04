@@ -371,27 +371,27 @@ export const VoltageInitParameters = ({
                             </Grid>
                         </Grid>
                     </Grid>
-                    <DialogActions
-                        sx={mergeSx(styles.controlParametersItem, {
-                            paddingTop: 4,
-                        })}
-                    >
-                        <Button
-                            onClick={() => setOpenSelectParameterDialog(true)}
-                        >
-                            <FormattedMessage id="loadParameters" />
-                        </Button>
-                        <Button onClick={handleOpenSaveDialog}>
-                            <FormattedMessage id="save" />
-                        </Button>
-                        <Button onClick={clear}>
-                            <FormattedMessage id="resetToDefault" />
-                        </Button>
-                        <SubmitButton
-                            onClick={handleSubmit(onSubmit, onValidationError)}
-                        />
-                    </DialogActions>
                 </Grid>
+                <DialogActions
+                    sx={mergeSx(styles.controlParametersItem, {
+                        paddingTop: 4,
+                        paddingLeft: 0,
+                    })}
+                >
+                    <Button onClick={() => setOpenSelectParameterDialog(true)}>
+                        <FormattedMessage id="loadParameters" />
+                    </Button>
+                    <Button onClick={handleOpenSaveDialog}>
+                        <FormattedMessage id="save" />
+                    </Button>
+                    <Button onClick={clear}>
+                        <FormattedMessage id="resetToDefault" />
+                    </Button>
+                    <SubmitButton
+                        variant="outlined"
+                        onClick={handleSubmit(onSubmit, onValidationError)}
+                    />
+                </DialogActions>
             </FormProvider>
 
             {openCreateParameterDialog && (

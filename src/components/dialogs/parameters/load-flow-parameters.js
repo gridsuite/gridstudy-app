@@ -532,53 +532,54 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <Grid
-            container
-            justifyContent="space-between"
-            sx={{ height: '100%' }}
-            xl={6}
-        >
-            <Grid
-                container
-                spacing={1}
-                sx={{ paddingLeft: 0, paddingRight: 2, height: 'fit-content' }}
-            >
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={LoadFlowProviders}
-                    callback={updateLfProviderCallback}
-                />
-            </Grid>
-            <Grid container sx={styles.scrollableGrid} key="lfParameters">
-                <LineSeparator />
-                <Grid container spacing={1} paddingTop={1}>
-                    <ParamLine
-                        type={ParameterType.Slider}
-                        param_name_id={PARAM_LIMIT_REDUCTION}
-                        label="LimitReduction"
-                        marks={alertThresholdMarks}
-                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+        <>
+            <Grid sx={{ height: '100%' }} xl={6}>
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{
+                        paddingLeft: 0,
+                        paddingRight: 2,
+                        height: 'fit-content',
+                    }}
+                >
+                    <DropDown
+                        value={provider}
+                        label="Provider"
+                        values={LoadFlowProviders}
+                        callback={updateLfProviderCallback}
                     />
-                    <LineSeparator />
                 </Grid>
-                <BasicLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                />
-                <AdvancedLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                />
-                <SpecificLoadFlowParameters
-                    disabled={!specificParamsDescriptions?.[provider]}
-                    subText={provider}
-                    specificParamsDescription={
-                        specificParamsDescrWithoutNanVals[provider]
-                    }
-                    specificCurrentParams={specificCurrentParams[provider]}
-                    onSpecificParamChange={onSpecificParamChange}
-                />
+                <Grid container sx={styles.scrollableGrid} key="lfParameters">
+                    <LineSeparator />
+                    <Grid container spacing={1} paddingTop={1}>
+                        <ParamLine
+                            type={ParameterType.Slider}
+                            param_name_id={PARAM_LIMIT_REDUCTION}
+                            label="LimitReduction"
+                            marks={alertThresholdMarks}
+                            minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                        />
+                        <LineSeparator />
+                    </Grid>
+                    <BasicLoadFlowParameters
+                        lfParams={params || {}}
+                        commitLFParameter={updateParameters}
+                    />
+                    <AdvancedLoadFlowParameters
+                        lfParams={params || {}}
+                        commitLFParameter={updateParameters}
+                    />
+                    <SpecificLoadFlowParameters
+                        disabled={!specificParamsDescriptions?.[provider]}
+                        subText={provider}
+                        specificParamsDescription={
+                            specificParamsDescrWithoutNanVals[provider]
+                        }
+                        specificCurrentParams={specificCurrentParams[provider]}
+                        onSpecificParamChange={onSpecificParamChange}
+                    />
+                </Grid>
             </Grid>
             <Grid
                 container
@@ -598,6 +599,6 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     label="resetProviderValuesToDefault"
                 />
             </Grid>
-        </Grid>
+        </>
     );
 };

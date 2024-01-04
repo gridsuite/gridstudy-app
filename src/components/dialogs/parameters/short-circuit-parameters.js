@@ -229,12 +229,14 @@ export const ShortCircuitParameters = ({
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid container paddingTop={1} paddingBottom={1}>
-                <LineSeparator />
-            </Grid>
+            <Grid sx={{ height: '100%' }}>
+                <Grid container paddingTop={1} paddingBottom={1}>
+                    <LineSeparator />
+                </Grid>
 
-            <Grid sx={styles.scrollableGrid}>
-                <ShortCircuitFields resetAll={resetAll} />
+                <Grid sx={styles.scrollableGrid}>
+                    <ShortCircuitFields resetAll={resetAll} />
+                </Grid>
             </Grid>
             <Grid
                 container
@@ -243,7 +245,10 @@ export const ShortCircuitParameters = ({
                     styles.marginTopButton
                 )}
             >
-                <SubmitButton onClick={handleSubmit(onSubmit)}>
+                <SubmitButton
+                    variant="outlined"
+                    onClick={handleSubmit(onSubmit)}
+                >
                     <FormattedMessage id="validate" />
                 </SubmitButton>
             </Grid>

@@ -45,7 +45,7 @@ export const NetworkParameters = () => {
 
     return (
         <>
-            <Grid xl={6}>
+            <Grid xl={6} sx={{ height: '100%' }}>
                 <Grid
                     container
                     spacing={1}
@@ -78,18 +78,18 @@ export const NetworkParameters = () => {
                     </Grid>
                 </Grid>
                 <LineSeparator />
-                <Grid
-                    container
-                    sx={mergeSx(
-                        styles.controlParametersItem,
-                        styles.marginTopButton
-                    )}
-                >
-                    <LabelledButton
-                        callback={resetNetworkParameters}
-                        label="resetToDefault"
-                    />
-                </Grid>
+            </Grid>
+            <Grid
+                container
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
+            >
+                <LabelledButton
+                    callback={resetNetworkParameters}
+                    label="resetToDefault"
+                />
             </Grid>
         </>
     );
