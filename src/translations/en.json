@@ -1126,8 +1126,10 @@
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
-    "SimulatedCalculation": "simulated calculations",
+    "SimulatedCalculation": "Simulated calculations",
+    "SimulatedCalculationExceedsLimit": "Simulated calculations exceeds limit",
     "SimulatedCalculationMax": "500 000 max",
+    "loadingComputing": "Computing in progress...",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
