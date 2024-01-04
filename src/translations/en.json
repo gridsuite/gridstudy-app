@@ -165,6 +165,8 @@
     "VoltageInit": "Voltage profile initialization",
     "Indicators": "Indicators",
     "ReactiveSlacks": "Reactive slacks",
+    "TotalInjection": "Total injection",
+    "TotalConsumption": "Total consumption",
     "Slack": "Slack (MVar)",
     "BusId": "Bus ID",
     "VoltageInitStatus": "STATUS",
