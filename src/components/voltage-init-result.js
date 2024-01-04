@@ -77,6 +77,16 @@ const styles = {
     grid: {
         flexGrow: '1',
     },
+    typography: {
+        fontWeight: 'bold',
+    },
+    secondTypography: {
+        marginLeft: '5em',
+        fontWeight: 'bold',
+    },
+    totalTypography: {
+        marginLeft: '10px',
+    },
 };
 
 const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
@@ -199,6 +209,53 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         ];
     }, []);
 
+    function renderTotalReactiveSlacks(reactiveSlacks) {
+        const calculateTotal = (reactiveSlacks, isPositive) => {
+            return reactiveSlacks
+                ? reactiveSlacks
+                      .filter((reactiveSlack) =>
+                          isPositive
+                              ? reactiveSlack.slack > 0
+                              : reactiveSlack.slack < 0
+                      )
+                      .reduce(
+                          (sum, reactiveSlack) => sum + reactiveSlack.slack,
+                          0
+                      )
+                : 0;
+        };
+
+        const totalInjection = calculateTotal(reactiveSlacks, false);
+        const totalConsumption = calculateTotal(reactiveSlacks, true);
+        return (
+            <>
+                <Stack
+                    direction={'row'}
+                    gap={1}
+                    marginBottom={-4.5}
+                    marginTop={1.5}
+                    marginLeft={2}
+                >
+                    <>
+                        <Typography sx={styles.typography}>
+                            <FormattedMessage id="TotalInjection" />
+                        </Typography>
+                        <Typography sx={styles.totalTypography}>
+                            {totalInjection.toFixed(2)}
+                        </Typography>
+
+                        <Typography sx={styles.secondTypography}>
+                            <FormattedMessage id="TotalConsumption" />
+                        </Typography>
+                        <Typography sx={styles.totalTypography}>
+                            {totalConsumption.toFixed(2)}
+                        </Typography>
+                    </>
+                </Stack>
+            </>
+        );
+    }
+
     function renderIndicatorsTable(indicators) {
         const rows = indicators
             ? Object.entries(indicators).map((i) => {
@@ -254,16 +311,20 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
 
     function renderReactiveSlacksTable(reactiveSlacks) {
         return (
-            <RenderTableAndExportCsv
-                gridRef={gridRef}
-                columns={reactiveSlacksColumnDefs}
-                defaultColDef={defaultColDef}
-                tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
-                rows={reactiveSlacks}
-                onRowDataUpdated={onRowDataUpdated}
-                headerHeight={0}
-                skipColumnHeaders={true}
-            />
+            <>
+                {renderTotalReactiveSlacks(reactiveSlacks)}
+
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={reactiveSlacksColumnDefs}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                    rows={reactiveSlacks}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
+                    skipColumnHeaders={true}
+                />
+            </>
         );
     }
 
