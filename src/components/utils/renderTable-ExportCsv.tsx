@@ -25,6 +25,7 @@ const styles = {
     csvExport: {
         display: 'flex',
         alignItems: 'baseline',
+        marginTop: '-45px',
     },
     grid: {
         flexGrow: '1',
@@ -38,7 +39,6 @@ interface RenderTableAndExportCsvProps {
     tableName: string;
     rows: any[];
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
-    headerHeight: number;
     onGridReady: ((event: GridReadyEvent) => void) | undefined;
     getRowStyle: (params: RowClassParams) => RowStyle | undefined;
     enableCellTextSelection: boolean;
@@ -55,13 +55,13 @@ export const RenderTableAndExportCsv: FunctionComponent<
     tableName,
     rows,
     onRowDataUpdated,
-    headerHeight,
     onGridReady,
     getRowStyle,
     enableCellTextSelection,
     overlayNoRowsTemplate,
     skipColumnHeaders = false,
 }) => {
+    const isRowsEmpty = !rows || rows.length === 0;
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
@@ -70,7 +70,7 @@ export const RenderTableAndExportCsv: FunctionComponent<
                     gridRef={gridRef}
                     columns={columns}
                     tableName={tableName}
-                    disabled={!rows || rows.length === 0}
+                    disabled={!rows || isRowsEmpty}
                     skipColumnHeaders={skipColumnHeaders}
                 />
             </Box>
@@ -79,7 +79,6 @@ export const RenderTableAndExportCsv: FunctionComponent<
                     <CustomAGGrid
                         ref={gridRef}
                         rowData={rows}
-                        headerHeight={headerHeight}
                         defaultColDef={defaultColDef}
                         columnDefs={columns}
                         onRowDataUpdated={onRowDataUpdated}
