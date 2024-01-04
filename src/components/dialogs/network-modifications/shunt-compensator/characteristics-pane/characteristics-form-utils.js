@@ -17,6 +17,7 @@ import {
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
 } from 'components/utils/field-constants';
+import { computeSwitchedOnValue } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 
 const characteristicsValidationSchema = (isModification) => ({
@@ -65,14 +66,17 @@ const getCharacteristicsCreateFormValidationSchema = () => {
                     CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
                 then: (schema) => schema.required(),
             }),
-        [MAXIMUM_SECTION_COUNT]: yup.number().required(),
+        [MAXIMUM_SECTION_COUNT]: yup
+            .number()
+            .required()
+            .min(1, 'MaximumSectionCountMinimumOne'),
         [SECTION_COUNT]: yup
             .number()
             .required()
-            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount')
+            .min(1, 'SectionCountBetweenOneAndMaximumSectionCount')
             .max(
                 yup.ref(MAXIMUM_SECTION_COUNT),
-                'SectionCountBetweenZeroAndMaximumSectionCount'
+                'SectionCountBetweenOneAndMaximumSectionCount'
             ),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().notRequired(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().notRequired(),
@@ -86,11 +90,14 @@ const getCharacteristicsModificationFormValidationSchema = () => {
             .nullable()
             .min(0, 'ShuntCompensatorErrorQAtNominalVoltageLessThanZero'),
         [MAX_SUSCEPTANCE]: yup.number().nullable(),
-        [MAXIMUM_SECTION_COUNT]: yup.number().nullable(),
+        [MAXIMUM_SECTION_COUNT]: yup
+            .number()
+            .min(1, 'MaximumSectionCountMinimumOne')
+            .nullable(),
         [SECTION_COUNT]: yup
             .number()
             .nullable()
-            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount'),
+            .min(1, 'SectionCountBetweenOneAndMaximumSectionCount'),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };
@@ -167,12 +174,4 @@ export const getCharacteristicsCreateFormDataFromSearchCopy = ({
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
     };
-};
-
-export const computeSwitchedOnValue = (
-    sectionCount,
-    maximumSectionCount,
-    linkedSwitchedOnValue
-) => {
-    return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
 };
