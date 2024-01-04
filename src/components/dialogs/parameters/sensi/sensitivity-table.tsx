@@ -22,6 +22,7 @@ import TableRowComponent from './table-row';
 import { IColumnsDef } from './columns-definitions';
 import {
     ACTIVATED,
+    COUNT,
     HVDC_LINES,
     INJECTIONS,
     MONITORED_BRANCHES,
@@ -59,31 +60,50 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
         append(createRows(1));
     }, [append, createRows, currentRows.length]);
 
+    const fetchCount = useCallback(
+        (arrayFormName: string, index: number) => {
+            const row = getValues(arrayFormName)[index];
+            const isActivated = row[ACTIVATED];
+            const hasMonitoredBranches = row[MONITORED_BRANCHES]?.length > 0;
+            const hasInjections =
+                row[INJECTIONS]?.length > 0 ||
+                row[HVDC_LINES]?.length > 0 ||
+                row[PSTS]?.length > 0;
+            if (isActivated && hasMonitoredBranches && hasInjections) {
+                onChangeParams(row, arrayFormName, index);
+            } else if (
+                isActivated &&
+                row.count === 0 &&
+                (!hasMonitoredBranches || !hasInjections)
+            ) {
+                onFormChanged(false);
+            } else {
+                if (!hasMonitoredBranches && !hasInjections) {
+                    onFormChanged(false);
+                } else {
+                    onFormChanged(true);
+                }
+            }
+        },
+        [onChangeParams, onFormChanged, getValues]
+    );
+
     const handleDeleteButton = useCallback(
         (index: number) => {
             const currentRowsValues = getValues(arrayFormName);
+            let isFormChanged = false;
             if (index >= 0 && index < currentRowsValues.length) {
+                if (
+                    currentRowsValues[index][COUNT] &&
+                    currentRowsValues[index][ACTIVATED]
+                ) {
+                    isFormChanged = true;
+                }
                 remove(index);
-            }
-            onFormChanged(true);
-        },
-        [arrayFormName, getValues, remove, onFormChanged]
-    );
-
-    const fetchCount = useCallback(
-        (arrayFormName: string, index: number) => {
-            let row = getValues(arrayFormName)[index];
-            if (
-                row[ACTIVATED] &&
-                row[MONITORED_BRANCHES].length &&
-                (row[INJECTIONS]?.length ||
-                    row[HVDC_LINES]?.length ||
-                    row[PSTS]?.length)
-            ) {
-                onChangeParams(row, arrayFormName, index);
+                onFormChanged(isFormChanged);
             }
         },
-        [onChangeParams, getValues]
+        [arrayFormName, getValues, onFormChanged, remove]
     );
 
     return (
@@ -124,7 +144,6 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 row={row}
                                 index={index}
                                 handleDeleteButton={handleDeleteButton}
-                                onFormChanged={onFormChanged}
                                 fetchCount={fetchCount}
                             />
                         )

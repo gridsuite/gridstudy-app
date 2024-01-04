@@ -165,6 +165,8 @@
     "VoltageInit": "Initialisation du plan de tension",
     "Indicators": "Indicateurs",
     "ReactiveSlacks": "Investissements réactifs",
+    "TotalInjection": "Somme injection",
+    "TotalConsumption": "Somme soutirage",
     "Slack": "Investissement (MVar)",
     "BusId": "ID Nœud",
     "VoltageInitStatus": "STATUT",
@@ -1128,8 +1130,9 @@
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
     "SimulatedCalculation": "calculs simulés",
+    "SimulatedCalculationExceedsLimit": "Calculs simulés dépasse la limite",
     "SimulatedCalculationMax": "500 000 max",
-
+    "loadingComputing": "Calcul en cours...",
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",

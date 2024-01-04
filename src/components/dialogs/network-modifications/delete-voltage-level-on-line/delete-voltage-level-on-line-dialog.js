@@ -24,6 +24,7 @@ import ModificationDialog from '../../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 import { deleteVoltageLevelOnLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import DeleteVoltageLevelOnLineIllustration from './delete-voltage-level-on-line-illustration';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
@@ -129,6 +130,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
+                subtitle={<DeleteVoltageLevelOnLineIllustration />}
                 open={open}
                 isDataFetching={
                     isUpdate && editDataFetchStatus === FetchStatus.RUNNING
