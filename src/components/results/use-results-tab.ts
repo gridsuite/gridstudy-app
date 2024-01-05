@@ -11,11 +11,6 @@ import { useSelector } from 'react-redux';
 import { ComputingStatus, ReduxState } from 'redux/reducer.type';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 
-export enum ResultsTabsLevel {
-    ROOT = 0,
-    ONE = 1,
-}
-
 export enum ResultsTabsRootLevel {
     LOADFLOW = 0,
     SECURITY_ANALYSIS = 1,
@@ -29,10 +24,9 @@ export enum ResultsTabsRootLevel {
 type ResultsTabsLevelOne = ShortCircuitAnalysisResultTabs;
 
 export type ResultTabIndexRedirection =
-    | [ResultsTabsRootLevel, ResultsTabsLevelOne]
+    | ResultsTabsRootLevel
+    | ResultsTabsLevelOne
     | null;
-
-export const DEFAULT_TAB_REDIRECTION = [ResultsTabsRootLevel.LOADFLOW, null];
 
 /**
  * handles redirection to specific tab
@@ -44,20 +38,13 @@ export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
     redirectionLock: Boolean,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>,
-    tabLevel: ResultsTabsLevel,
     view: string
 ) => {
     useEffect(() => {
         if (view !== StudyView.RESULTS && !redirectionLock) {
-            setTabIndex(resultTabIndexRedirection?.[tabLevel] as number);
+            setTabIndex(resultTabIndexRedirection as number);
         }
-    }, [
-        tabLevel,
-        resultTabIndexRedirection,
-        setTabIndex,
-        view,
-        redirectionLock,
-    ]);
+    }, [resultTabIndexRedirection, setTabIndex, view, redirectionLock]);
 };
 
 export const useResultsTabRedirectionLock = (): [

@@ -16,7 +16,6 @@ import React, {
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     ResultTabIndexRedirection,
-    ResultsTabsLevel,
     useResultsTab,
     useResultsTabRedirectionLock,
 } from '../use-results-tab';
@@ -32,7 +31,7 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { computingTypeToTabRedirection } from 'hooks/use-last-launched-computation';
+import { computingTypeToShortcircuitTabRedirection } from 'hooks/use-last-launched-computation';
 
 interface ShortCircuitAnalysisResultTabProps {
     view: string;
@@ -44,16 +43,12 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
 > = ({ view, lastLaunchedComputation }) => {
     const resultTabIndexRedirection = useMemo(
         () =>
-            computingTypeToTabRedirection(
-                lastLaunchedComputation ??
-                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
-            ),
+            computingTypeToShortcircuitTabRedirection(lastLaunchedComputation),
         [lastLaunchedComputation]
     );
 
     const [tabIndex, setTabIndex] = useState<number>(
-        resultTabIndexRedirection?.[ResultsTabsLevel.ONE] ??
-            ShortCircuitAnalysisResultTabs.ALL_BUSES
+        resultTabIndexRedirection as number
     );
 
     const [redirectionLock, setRedirectionLock] =
@@ -74,7 +69,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         resultTabIndexRedirection as ResultTabIndexRedirection,
         redirectionLock,
         setTabIndex,
-        ResultsTabsLevel.ONE,
         view
     );
 

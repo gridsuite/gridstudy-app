@@ -23,7 +23,6 @@ import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simu
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
 import {
-    ResultsTabsLevel,
     ResultTabIndexRedirection,
     useResultsTab,
     useResultsTabRedirectionLock,
@@ -39,8 +38,8 @@ import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { Box } from '@mui/system';
-import { computingTypeToTabRedirection } from 'hooks/use-last-launched-computation';
 import ComputingType from './computing-status/computing-type';
+import { computingTypeToRootTabRedirection } from 'hooks/use-last-launched-computation';
 
 const styles = {
     table: {
@@ -246,7 +245,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const resultTabIndexRedirection = useMemo(
         () =>
-            computingTypeToTabRedirection(
+            computingTypeToRootTabRedirection(
                 lastLaunchedComputation ?? ComputingType.LOADFLOW,
                 services
             ),
@@ -254,14 +253,13 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     );
 
     const [tabIndex, setTabIndex] = useState<number>(
-        resultTabIndexRedirection?.[ResultsTabsLevel.ROOT] as number
+        resultTabIndexRedirection as number
     );
 
     useResultsTab(
         resultTabIndexRedirection as ResultTabIndexRedirection,
         redirectionLock,
         setTabIndex,
-        ResultsTabsLevel.ROOT,
         view
     );
 
