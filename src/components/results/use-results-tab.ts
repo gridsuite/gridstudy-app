@@ -35,18 +35,22 @@ export type ResultTabIndexRedirection =
  */
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
-    redirectionLock: Boolean,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>,
     view: string
-) => {
+): Dispatch<SetStateAction<Boolean>> => {
+    const [redirectionLock, setRedirectionLock] =
+        useResultsTabRedirectionLock();
+
     useEffect(() => {
         if (view !== StudyView.RESULTS && !redirectionLock) {
             setTabIndex(resultTabIndexRedirection as number);
         }
     }, [resultTabIndexRedirection, setTabIndex, view, redirectionLock]);
+
+    return setRedirectionLock;
 };
 
-export const useResultsTabRedirectionLock = (): [
+const useResultsTabRedirectionLock = (): [
     Boolean,
     Dispatch<SetStateAction<Boolean>>
 ] => {

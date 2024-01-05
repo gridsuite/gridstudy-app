@@ -14,11 +14,7 @@ import React, {
     useState,
 } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
-import {
-    ResultTabIndexRedirection,
-    useResultsTab,
-    useResultsTabRedirectionLock,
-} from '../use-results-tab';
+import { ResultTabIndexRedirection, useResultsTab } from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
@@ -51,9 +47,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         resultTabIndexRedirection as number
     );
 
-    const [redirectionLock, setRedirectionLock] =
-        useResultsTabRedirectionLock();
-
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const AllBusesShortCircuitStatus = useSelector(
@@ -65,9 +58,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    useResultsTab(
+    const setRedirectionLock = useResultsTab(
         resultTabIndexRedirection as ResultTabIndexRedirection,
-        redirectionLock,
         setTabIndex,
         view
     );

@@ -25,7 +25,6 @@ import { VoltageInitResultTab } from './voltage-init-result-tab';
 import {
     ResultTabIndexRedirection,
     useResultsTab,
-    useResultsTabRedirectionLock,
 } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import {
@@ -92,9 +91,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
-    const [redirectionLock, setRedirectionLock] =
-        useResultsTabRedirectionLock();
 
     const securityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SecurityAnalysis
@@ -256,9 +252,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         resultTabIndexRedirection as number
     );
 
-    useResultsTab(
+    const setRedirectionLock = useResultsTab(
         resultTabIndexRedirection as ResultTabIndexRedirection,
-        redirectionLock,
         setTabIndex,
         view
     );
@@ -303,6 +298,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     value={tabIndex}
                     variant="scrollable"
                     onChange={handleChangeTab}
+                    TabIndicatorProps={{}}
                 >
                     {services.map((service) => renderTab(service))}
                 </Tabs>
