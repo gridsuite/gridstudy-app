@@ -206,8 +206,8 @@ const SplitButton = ({
     };
 
     const disabledOption =
-        computationStarting ||
-        (runningStatus === RunningStatus.RUNNING && computationStopped);
+        computationStarting || // disable if fetch starting a computation is pending
+        (runningStatus === RunningStatus.RUNNING && computationStopped); // disable if already stopped once
 
     return (
         <>
