@@ -9,6 +9,7 @@ import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import React, {
     FunctionComponent,
     useCallback,
+    useEffect,
     useMemo,
     useState,
 } from 'react';
@@ -17,6 +18,7 @@ import {
     ResultTabIndexRedirection,
     ResultsTabsLevel,
     useResultsTab,
+    useResultsTabRedirectionLock,
 } from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -30,17 +32,33 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { computingTypeToTabRedirection } from 'hooks/use-last-launched-computation';
 
 interface ShortCircuitAnalysisResultTabProps {
-    resultTabIndexRedirection: ResultTabIndexRedirection;
+    view: string;
+    lastLaunchedComputation: ComputingType | undefined;
 }
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
-> = ({ resultTabIndexRedirection }) => {
-    const [tabIndex, setTabIndex] = useState(
-        resultTabIndexRedirection?.[ResultsTabsLevel.ONE] ?? 0
+> = ({ view, lastLaunchedComputation }) => {
+    const resultTabIndexRedirection = useMemo(
+        () =>
+            computingTypeToTabRedirection(
+                lastLaunchedComputation ??
+                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+            ),
+        [lastLaunchedComputation]
     );
+
+    const [tabIndex, setTabIndex] = useState<number>(
+        resultTabIndexRedirection?.[ResultsTabsLevel.ONE] ??
+            ShortCircuitAnalysisResultTabs.ALL_BUSES
+    );
+
+    const [redirectionLock, setRedirectionLock] =
+        useResultsTabRedirectionLock();
+
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const AllBusesShortCircuitStatus = useSelector(
@@ -52,13 +70,20 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    useResultsTab(resultTabIndexRedirection, setTabIndex, ResultsTabsLevel.ONE);
+    useResultsTab(
+        resultTabIndexRedirection as ResultTabIndexRedirection,
+        redirectionLock,
+        setTabIndex,
+        ResultsTabsLevel.ONE,
+        view
+    );
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
             setTabIndex(newIndex);
+            setRedirectionLock(true);
         },
-        [setTabIndex]
+        [setTabIndex, setRedirectionLock]
     );
 
     const RESULTS_TAB_INDEX = 0;
@@ -70,6 +95,10 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         },
         [setResultOrLogIndex]
     );
+
+    useEffect(() => {
+        setResultOrLogIndex(RESULTS_TAB_INDEX);
+    }, [resultTabIndexRedirection]);
 
     const shortCircuitTabResultStatusSucceedOrFailed = useMemo(() => {
         return (

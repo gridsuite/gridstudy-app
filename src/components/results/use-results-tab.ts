@@ -5,7 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect } from 'react';
+import { StudyView } from 'components/study-pane';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { ComputingStatus, ReduxState } from 'redux/reducer.type';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 
 export enum ResultsTabsLevel {
@@ -29,6 +32,8 @@ export type ResultTabIndexRedirection =
     | [ResultsTabsRootLevel, ResultsTabsLevelOne]
     | null;
 
+export const DEFAULT_TAB_REDIRECTION = [ResultsTabsRootLevel.LOADFLOW, null];
+
 /**
  * handles redirection to specific tab
  * @param resultTabIndexRedirection array holding the desired tabs to be redirected to [2, 1] would redirect to tab number 2, subtab number 1
@@ -37,11 +42,37 @@ export type ResultTabIndexRedirection =
  */
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
-    setTabIndex: (index: number) => void,
-    tabLevel: ResultsTabsLevel
+    redirectionLock: Boolean,
+    setTabIndex: React.Dispatch<React.SetStateAction<number>>,
+    tabLevel: ResultsTabsLevel,
+    view: string
 ) => {
     useEffect(() => {
-        resultTabIndexRedirection?.[tabLevel] &&
-            setTabIndex(resultTabIndexRedirection[tabLevel]);
-    }, [tabLevel, resultTabIndexRedirection, setTabIndex]);
+        if (view !== StudyView.RESULTS && !redirectionLock) {
+            setTabIndex(resultTabIndexRedirection?.[tabLevel] as number);
+        }
+    }, [
+        tabLevel,
+        resultTabIndexRedirection,
+        setTabIndex,
+        view,
+        redirectionLock,
+    ]);
+};
+
+export const useResultsTabRedirectionLock = (): [
+    Boolean,
+    Dispatch<SetStateAction<Boolean>>
+] => {
+    const computationStatus: ComputingStatus = useSelector(
+        (state: ReduxState) => state.computingStatus
+    );
+    const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
+
+    //we ought to release the redirection lock if the user launch a new computation
+    useEffect(() => {
+        setRedirectionLock(false);
+    }, [computationStatus]);
+
+    return [redirectionLock, setRedirectionLock];
 };
