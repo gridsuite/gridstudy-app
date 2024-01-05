@@ -43,7 +43,7 @@ export const useResultsTab = (
 
     useEffect(() => {
         if (view !== StudyView.RESULTS && !redirectionLock) {
-            setTabIndex(resultTabIndexRedirection as number);
+            setTabIndex(resultTabIndexRedirection);
         }
     }, [resultTabIndexRedirection, setTabIndex, view, redirectionLock]);
 
