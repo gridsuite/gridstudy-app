@@ -104,7 +104,7 @@ export const ModificationListItem = ({
                 return intl.formatMessage({
                     id:
                         'network_modifications/tabular/' +
-                        modificationMetadata.tabularModificationType,
+                        modificationMetadata.tabularEquipmentType,
                 });
             case MODIFICATION_TYPES.BY_FILTER_DELETION.type:
                 return intl.formatMessage({

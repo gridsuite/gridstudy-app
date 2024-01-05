@@ -1048,7 +1048,7 @@ export function modifyTwoWindingsTransformer(
 export function createTabulareModification(
     studyUuid,
     currentNodeUuid,
-    modificationType,
+    equipmentType,
     modifications,
     isUpdate,
     modificationUuid
@@ -1073,7 +1073,7 @@ export function createTabulareModification(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
-            modificationType: modificationType,
+            equipmentType: equipmentType,
             modifications: modifications,
         }),
     });

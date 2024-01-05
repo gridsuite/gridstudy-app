@@ -21,7 +21,6 @@ import TabularModificationForm from './tabular-modification-form';
 import {
     TABULAR_MODIFICATION_TYPES,
     formatModification,
-    getEquipmentTypeFromModificationType,
     convertValueFromBackToFront,
     convertValueFromFrontToBack,
 } from './tabular-modification-utils';
@@ -74,9 +73,6 @@ const TabularModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const equipmentType = getEquipmentTypeFromModificationType(
-                editData?.modificationType
-            );
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
@@ -89,7 +85,7 @@ const TabularModificationDialog = ({
                 return modification;
             });
             // reset is replaced by setValue since the reset with translate causes an infinite triggering of useEffect
-            setValue(TYPE, equipmentType);
+            setValue(TYPE, editData?.equipmentType);
             setValue(MODIFICATIONS_TABLE, modifications);
         }
     }, [editData, setValue, translate]);
@@ -113,7 +109,7 @@ const TabularModificationDialog = ({
             createTabulareModification(
                 studyUuid,
                 currentNodeUuid,
-                modificationType,
+                formData[TYPE],
                 modifications,
                 !!editData,
                 editData?.uuid

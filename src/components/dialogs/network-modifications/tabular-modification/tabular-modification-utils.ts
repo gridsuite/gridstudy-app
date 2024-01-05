@@ -146,12 +146,6 @@ export const convertValueFromFrontToBack = (
     }
 };
 
-export const getEquipmentTypeFromModificationType = (type: string) => {
-    return Object.keys(TABULAR_MODIFICATION_TYPES).find(
-        (key) => TABULAR_MODIFICATION_TYPES[key] === type
-    );
-};
-
 export const styles = {
     grid: { height: 500, width: '100%' },
 };

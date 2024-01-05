@@ -36,12 +36,12 @@
     "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}",
     "network_modifications/VOLTAGE_INIT_MODIFICATION": "Initialisation du plan de tension {computedLabel}",
     "network_modifications/TABULAR_MODIFICATION": "Modification tabulaire - {computedLabel}",
-    "network_modifications/tabular/GENERATOR_MODIFICATION": "modifications de générateurs",
-    "network_modifications/tabular/LOAD_MODIFICATION": "modifications de consommations",
-    "network_modifications/BY_FORMULA_MODIFICATION": "Modification par formule {computedLabel}",    
-    "network_modifications/tabular/LINE_MODIFICATION": "modifications de lignes",
-    "network_modifications/tabular/BATTERY_MODIFICATION": "modifications de batteries",
-    "network_modifications/tabular/TWO_WINDINGS_TRANSFORMER_MODIFICATION": "modifications de transformateurs à 2 enroulements",
-    "network_modifications/tabular/VOLTAGE_LEVEL_MODIFICATION": "modifications de postes",
-    "network_modifications/tabular/SUBSTATION_MODIFICATION": "modifications de sites"
+    "network_modifications/tabular/GENERATOR": "modifications de générateurs",
+    "network_modifications/tabular/LOAD": "modifications de consommations",
+    "network_modifications/tabular/LINE": "modifications de lignes",
+    "network_modifications/tabular/BATTERY": "modifications de batteries",
+    "network_modifications/tabular/TWO_WINDINGS_TRANSFORMER": "modifications de transformateurs à 2 enroulements",
+    "network_modifications/tabular/VOLTAGE_LEVEL": "modifications de postes",
+    "network_modifications/tabular/SUBSTATION": "modifications de sites",
+    "network_modifications/BY_FORMULA_MODIFICATION": "Modification par formule {computedLabel}"
 }
