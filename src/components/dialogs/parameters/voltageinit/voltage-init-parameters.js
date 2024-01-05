@@ -301,8 +301,7 @@ export const VoltageInitParameters = ({
                     <Grid
                         container
                         key="voltageInitParameters"
-                        sx={styles.scrollableGrid}
-                        marginTop={-2}
+                        sx={mergeSx(styles.scrollableGrid, { paddingTop: 0 })}
                     >
                         <Grid item width="100%">
                             <Tabs
