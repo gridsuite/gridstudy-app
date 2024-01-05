@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { store } from '../redux/store';
+import * as streamsaver from 'streamsaver';
 
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
@@ -109,31 +110,27 @@ export const backendFetchJson = (url, init, token) => {
 };
 
 export const backendDownloadFileAsStream = (url, fileName) => {
+    // backendFetch(url).then((response) => {
+    //     streamsaver.mitm = 'http://localhost:3001/mitm.html';
+    //     const fileStream = streamsaver.createWriteStream(fileName);
+    //     const readableStream = response.body;
+
+    //     readableStream
+    //         .pipeTo(fileStream)
+    //         .then(() => console.log('DOWNLOAD DONE'))
+    //         .catch(() => console.error('DOWNLOAD ERROR'));
+    // });
+
     window.showSaveFilePicker({ suggestedName: fileName }).then((newHandle) =>
         backendFetch(url).then((response) => {
             newHandle.createWritable().then((writableStream) => {
                 // response.body is a readableStream
-                const reader = response.body?.getReader();
+                const readableStream = response.body;
 
-                // function to retrieve the next chunk from the stream
-                const handleChunk = ({ done, value }) => {
-                    // done is true when stream is done reading
-                    if (done) {
-                        writableStream.close();
-                        return;
-                    }
-                    writableStream.write(value);
-
-                    // retreive next chunk
-                    reader?.read().then((response) => {
-                        handleChunk(response);
-                    });
-                };
-
-                //retreive first chunk
-                reader?.read().then((response) => {
-                    handleChunk(response);
-                });
+                readableStream
+                    .pipeTo(writableStream)
+                    .then(() => console.log('DOWNLOAD DONE'))
+                    .catch(() => console.error('DOWNLOAD ERROR'));
             });
         })
     );
