@@ -16,7 +16,7 @@ import {
     addDynamicSimulationNotif,
     addVoltageInitNotif,
     setComputingStatus,
-    setComputationRunning,
+    setComputationStarting,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -198,7 +198,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 fnBefore();
             }
             setComputationStopped(false);
-            dispatch(setComputationRunning(true));
+            dispatch(setComputationStarting(true));
             dispatch(setComputingStatus(computingType, RunningStatus.RUNNING));
             fnStart()
                 .then(fnThen)
@@ -216,7 +216,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         });
                     }
                 })
-                .finally(() => dispatch(setComputationRunning(false)));
+                .finally(() => dispatch(setComputationStarting(false)));
         },
         [dispatch, snackError]
     );

@@ -141,7 +141,9 @@ const SplitButton = ({
     onSelectionChange,
 }) => {
     const [open, setOpen] = React.useState(false);
-    const computationRunning = useSelector((state) => state.computationRunning);
+    const computationStarting = useSelector(
+        (state) => state.computationStarting
+    );
 
     const anchorRef = React.useRef(null);
 
@@ -204,7 +206,7 @@ const SplitButton = ({
     };
 
     const disabledOption =
-        computationRunning ||
+        computationStarting ||
         (runningStatus === RunningStatus.RUNNING && computationStopped);
 
     return (

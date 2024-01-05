@@ -82,7 +82,7 @@ const PositionDiagramPane = ({
                     diagramTitle={voltageLevelId?.id ?? ''}
                     svgUrl={svgUrl}
                     svgType={DiagramType.VOLTAGE_LEVEL}
-                    isComputationRunning={false}
+                    isComputationStarting={false}
                 />
             )}
         </Dialog>

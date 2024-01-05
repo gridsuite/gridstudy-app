@@ -44,7 +44,7 @@ import {
     updateSwitchState,
 } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { setComputationRunning, setComputingStatus } from 'redux/actions';
+import { setComputationStarting, setComputingStatus } from 'redux/actions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useDispatch } from 'react-redux';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
@@ -90,7 +90,9 @@ function SingleLineDiagramContent(props) {
     const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
-    const computationRunning = useSelector((state) => state.computationRunning);
+    const computationStarting = useSelector(
+        (state) => state.computationStarting
+    );
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
@@ -269,7 +271,7 @@ function SingleLineDiagramContent(props) {
                 )
             );
             displayOneBusShortcircuitAnalysisLoader();
-            dispatch(setComputationRunning(true));
+            dispatch(setComputationStarting(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
                 .catch((error) => {
                     snackError({
@@ -285,7 +287,7 @@ function SingleLineDiagramContent(props) {
                     resetOneBusShortcircuitAnalysisLoader();
                 })
                 .finally(
-                    dispatch(setComputationRunning(false)) && closeBusMenu()
+                    dispatch(setComputationStarting(false)) && closeBusMenu()
                 );
         },
         [
@@ -499,7 +501,7 @@ function SingleLineDiagramContent(props) {
     useLayoutEffect(() => {
         if (props.svg) {
             const isReadyForInteraction =
-                !computationRunning &&
+                !computationStarting &&
                 !isAnyNodeBuilding &&
                 !modificationInProgress &&
                 !props.loadingState;
@@ -609,7 +611,7 @@ function SingleLineDiagramContent(props) {
         handleNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
-        computationRunning,
+        computationStarting,
     ]);
 
     // When the loading is finished, we always reset these two states
@@ -699,7 +701,7 @@ function SingleLineDiagramContent(props) {
 
 SingleLineDiagramContent.propTypes = {
     loadFlowStatus: PropTypes.any,
-    isComputationRunning: PropTypes.bool,
+    isComputationStarting: PropTypes.bool,
     showInSpreadsheet: PropTypes.func,
     studyUuid: PropTypes.string,
     svgType: PropTypes.string,
