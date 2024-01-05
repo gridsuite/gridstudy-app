@@ -49,10 +49,6 @@ const RunButton = ({
         }
     }
 
-    function isRunning() {
-        return getRunningStatus() === RunningStatus.RUNNING;
-    }
-
     useEffect(() => {
         if (!activeRunnables.includes(selectedRunnable)) {
             // a computation may become unavailable when developer mode is disabled, then switch on first one
@@ -93,7 +89,6 @@ const RunButton = ({
             selectionDisabled={disabled}
             text={runnablesText[selectedRunnable] || ''}
             actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
-            isRunning={isRunning()}
             computationStopped={computationStopped}
         />
     );
