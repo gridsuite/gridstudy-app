@@ -19,9 +19,6 @@ export interface ReduxState {
     computingStatus: ComputingStatus;
     optionalServices: IOptionalService[];
     limitReduction: string;
-    loadflowNotif: boolean;
-    saNotif: boolean;
-    sensiNotif: boolean;
     voltageInitNotif: boolean;
     dynamicSimulationNotif: boolean;
     user: User;
