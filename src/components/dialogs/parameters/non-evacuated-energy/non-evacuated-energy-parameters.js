@@ -495,6 +495,9 @@ export const NonEvacuatedEnergyParameters = ({
         resetNonEvacuatedEnergyParameters,
     ]);
 
+    const onFormChanged = (onFormChanged) => {};
+    const onChangeParams = (row, arrayFormName, index) => {};
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
@@ -523,7 +526,10 @@ export const NonEvacuatedEnergyParameters = ({
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
-                    <NonEvacuatedEnergyParametersSelector />
+                    <NonEvacuatedEnergyParametersSelector
+                        onFormChanged={onFormChanged}
+                        onChangeParams={onChangeParams}
+                    />
                 </Grid>
                 <DialogActions>
                     <Button onClick={clear}>

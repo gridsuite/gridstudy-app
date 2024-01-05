@@ -25,7 +25,10 @@ import {
 import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
 
-const NonEvacuatedEnergyParametersSelector = () => {
+const NonEvacuatedEnergyParametersSelector = ({
+    onFormChanged,
+    onChangeParams,
+}) => {
     const intl = useIntl();
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.GenerationStages);
@@ -113,6 +116,8 @@ const NonEvacuatedEnergyParametersSelector = () => {
                                 tableHeight={367}
                                 disableAdd={true}
                                 disableDelete={true}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
                             />
                         )}
 
@@ -129,6 +134,8 @@ const NonEvacuatedEnergyParametersSelector = () => {
                                 tableHeight={367}
                                 disableAdd={true}
                                 disableDelete={true}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
                             />
                         )}
 
@@ -147,6 +154,8 @@ const NonEvacuatedEnergyParametersSelector = () => {
                                 }
                                 createRows={rowDataGeneratorsCappings}
                                 tableHeight={367}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
                             />
                         )}
 
@@ -161,6 +170,8 @@ const NonEvacuatedEnergyParametersSelector = () => {
                                 }
                                 createRows={rowDataMonitoredBranches}
                                 tableHeight={367}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
                             />
                         )}
 
@@ -175,6 +186,8 @@ const NonEvacuatedEnergyParametersSelector = () => {
                                 }
                                 createRows={rowDataContingencies}
                                 tableHeight={367}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
                             />
                         )}
                     </TabPanel>
