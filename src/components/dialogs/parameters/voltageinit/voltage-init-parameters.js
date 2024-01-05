@@ -297,100 +297,113 @@ export const VoltageInitParameters = ({
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid sx={{ height: '100%' }}>
+                <Grid
+                    container
+                    sx={{ height: '100%' }}
+                    direction="column"
+                    justifyContent="space-between"
+                >
                     <Grid
+                        xs
+                        item
                         container
                         key="voltageInitParameters"
-                        sx={mergeSx(styles.scrollableGrid, { paddingTop: 0 })}
+                        sx={mergeSx(styles.scrollableGrid, {
+                            paddingTop: 0,
+                            width: '100%',
+                        })}
                     >
-                        <Grid item width="100%">
-                            <Tabs
+                        <Tabs
+                            value={tabValue}
+                            variant="scrollable"
+                            onChange={handleTabChange}
+                            TabIndicatorProps={{
+                                sx: getTabIndicatorStyle(
+                                    tabIndexesWithError,
+                                    tabValue
+                                ),
+                            }}
+                        >
+                            <Tab
+                                label={<FormattedMessage id="VoltageLimits" />}
+                                value={TAB_VALUES.voltageLimitsParamsTabValue}
+                                sx={getTabStyle(
+                                    tabIndexesWithError,
+                                    TAB_VALUES.voltageLimitsParamsTabValue
+                                )}
+                            />
+                            <Tab
+                                label={
+                                    <FormattedMessage id="EquipmentSelection" />
+                                }
+                                value={
+                                    TAB_VALUES.equipmentSelectionParamsTabValue
+                                }
+                                sx={getTabStyle(
+                                    tabIndexesWithError,
+                                    TAB_VALUES.equipmentSelectionParamsTabValue
+                                )}
+                            />
+                        </Tabs>
+                        <Grid container>
+                            <TabPanel
                                 value={tabValue}
-                                variant="scrollable"
-                                onChange={handleTabChange}
-                                TabIndicatorProps={{
-                                    sx: getTabIndicatorStyle(
-                                        tabIndexesWithError,
-                                        tabValue
-                                    ),
-                                }}
+                                index={TAB_VALUES.voltageLimitsParamsTabValue}
                             >
-                                <Tab
-                                    label={
-                                        <FormattedMessage id="VoltageLimits" />
+                                <VoltageLimitsParameters
+                                    reset={reset}
+                                    useVoltageInitParameters={
+                                        useVoltageInitParameters
                                     }
-                                    value={
-                                        TAB_VALUES.voltageLimitsParamsTabValue
-                                    }
-                                    sx={getTabStyle(
-                                        tabIndexesWithError,
-                                        TAB_VALUES.voltageLimitsParamsTabValue
-                                    )}
                                 />
-                                <Tab
-                                    label={
-                                        <FormattedMessage id="EquipmentSelection" />
+                            </TabPanel>
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.equipmentSelectionParamsTabValue
+                                }
+                            >
+                                <EquipmentSelectionParameters
+                                    reset={reset}
+                                    useVoltageInitParameters={
+                                        useVoltageInitParameters
                                     }
-                                    value={
-                                        TAB_VALUES.equipmentSelectionParamsTabValue
-                                    }
-                                    sx={getTabStyle(
-                                        tabIndexesWithError,
-                                        TAB_VALUES.equipmentSelectionParamsTabValue
-                                    )}
                                 />
-                            </Tabs>
-                            <Grid container>
-                                <TabPanel
-                                    value={tabValue}
-                                    index={
-                                        TAB_VALUES.voltageLimitsParamsTabValue
-                                    }
-                                >
-                                    <VoltageLimitsParameters
-                                        reset={reset}
-                                        useVoltageInitParameters={
-                                            useVoltageInitParameters
-                                        }
-                                    />
-                                </TabPanel>
-                                <TabPanel
-                                    value={tabValue}
-                                    index={
-                                        TAB_VALUES.equipmentSelectionParamsTabValue
-                                    }
-                                >
-                                    <EquipmentSelectionParameters
-                                        reset={reset}
-                                        useVoltageInitParameters={
-                                            useVoltageInitParameters
-                                        }
-                                    />
-                                </TabPanel>
-                            </Grid>
+                            </TabPanel>
                         </Grid>
                     </Grid>
+
+                    <Grid item container>
+                        <DialogActions
+                            sx={mergeSx(styles.controlParametersItem, {
+                                paddingTop: 4,
+                                paddingBottom: 2,
+                                paddingLeft: 0,
+                            })}
+                        >
+                            <Button
+                                onClick={() =>
+                                    setOpenSelectParameterDialog(true)
+                                }
+                            >
+                                <FormattedMessage id="loadParameters" />
+                            </Button>
+                            <Button onClick={handleOpenSaveDialog}>
+                                <FormattedMessage id="save" />
+                            </Button>
+                            <Button onClick={clear}>
+                                <FormattedMessage id="resetToDefault" />
+                            </Button>
+                            <SubmitButton
+                                variant="outlined"
+                                onClick={handleSubmit(
+                                    onSubmit,
+                                    onValidationError
+                                )}
+                            />
+                        </DialogActions>
+                    </Grid>
                 </Grid>
-                <DialogActions
-                    sx={mergeSx(styles.controlParametersItem, {
-                        paddingTop: 4,
-                        paddingLeft: 0,
-                    })}
-                >
-                    <Button onClick={() => setOpenSelectParameterDialog(true)}>
-                        <FormattedMessage id="loadParameters" />
-                    </Button>
-                    <Button onClick={handleOpenSaveDialog}>
-                        <FormattedMessage id="save" />
-                    </Button>
-                    <Button onClick={clear}>
-                        <FormattedMessage id="resetToDefault" />
-                    </Button>
-                    <SubmitButton
-                        variant="outlined"
-                        onClick={handleSubmit(onSubmit, onValidationError)}
-                    />
-                </DialogActions>
             </FormProvider>
 
             {openCreateParameterDialog && (

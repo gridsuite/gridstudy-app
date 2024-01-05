@@ -581,71 +581,64 @@ export const SensitivityAnalysisParameters = ({
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid container sx={{ height: '100%' }} direction={'column'}>
+                <Grid
+                    container
+                    sx={{ height: '100%' }}
+                    direction="column"
+                    justifyContent="space-between"
+                >
                     <Grid item xs>
-                        <Box>
-                            <Grid container>
-                                <Grid item xs={8} sx={styles.parameterName}>
-                                    <FormattedMessage id="Provider" />
-                                </Grid>
-                                <Grid item xs={4} sx={styles.controlItem}>
-                                    <SelectInput
-                                        name={PROVIDER}
-                                        disableClearable
-                                        size="small"
-                                        options={Object.values(
-                                            formattedProviders
-                                        )}
-                                    />
-                                </Grid>
+                        <Grid container>
+                            <Grid item xs={8} sx={styles.parameterName}>
+                                <FormattedMessage id="Provider" />
                             </Grid>
+                            <Grid item xs={4} sx={styles.controlItem}>
+                                <SelectInput
+                                    name={PROVIDER}
+                                    disableClearable
+                                    size="small"
+                                    options={Object.values(formattedProviders)}
+                                />
+                            </Grid>
+                        </Grid>
 
-                            <Grid
-                                container
-                                sx={styles.scrollableGrid}
-                                key="sensitivityAnalysisParameters"
-                            >
-                                <Grid
-                                    container
-                                    paddingTop={1}
-                                    paddingBottom={1}
-                                >
-                                    <LineSeparator />
-                                </Grid>
-                                <SensitivityAnalysisFields
-                                    reset={reset}
-                                    useSensitivityAnalysisParameters={
-                                        useSensitivityAnalysisParameters
-                                    }
-                                />
-                                <Grid
-                                    container
-                                    paddingTop={1}
-                                    paddingBottom={2}
-                                >
-                                    <LineSeparator />
-                                </Grid>
-                                <Grid container justifyContent={'right'}>
-                                    <Grid item marginBottom="-50px">
-                                        {launchLoader
-                                            ? renderComputingEventLoading()
-                                            : renderComputingEvent()}
-                                        <FormattedMessage id="SimulatedCalculationMax" />
-                                    </Grid>
-                                </Grid>
-                                <SensitivityParametersSelector
-                                    reset={reset}
-                                    useSensitivityAnalysisParameters={
-                                        useSensitivityAnalysisParameters
-                                    }
-                                    onFormChanged={onFormChanged}
-                                    onChangeParams={onChangeParams}
-                                />
+                        <Grid
+                            container
+                            sx={styles.scrollableGrid}
+                            key="sensitivityAnalysisParameters"
+                        >
+                            <Grid container paddingTop={1} paddingBottom={1}>
+                                <LineSeparator />
                             </Grid>
-                        </Box>
+                            <SensitivityAnalysisFields
+                                reset={reset}
+                                useSensitivityAnalysisParameters={
+                                    useSensitivityAnalysisParameters
+                                }
+                            />
+                            <Grid container paddingTop={1} paddingBottom={2}>
+                                <LineSeparator />
+                            </Grid>
+                            <Grid container justifyContent={'right'}>
+                                <Grid item marginBottom="-50px">
+                                    {launchLoader
+                                        ? renderComputingEventLoading()
+                                        : renderComputingEvent()}
+                                    <FormattedMessage id="SimulatedCalculationMax" />
+                                </Grid>
+                            </Grid>
+                            <SensitivityParametersSelector
+                                reset={reset}
+                                useSensitivityAnalysisParameters={
+                                    useSensitivityAnalysisParameters
+                                }
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
+                            />
+                        </Grid>
                     </Grid>
 
-                    <Grid item>
+                    <Grid item container>
                         <DialogActions
                             sx={mergeSx(styles.controlParametersItem, {
                                 paddingLeft: 0,

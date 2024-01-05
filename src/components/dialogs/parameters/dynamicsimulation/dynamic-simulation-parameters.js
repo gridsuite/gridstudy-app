@@ -239,10 +239,16 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
             <Grid sx={{ height: '100%' }}>
                 <Grid
                     key="dsParameters"
-                    sx={mergeSx(styles.scrollableGrid, { height: '100%' })}
-                    marginTop={-2}
+                    sx={mergeSx(styles.scrollableGrid, {
+                        height: '100%',
+                        paddingTop: 0,
+                    })}
                 >
-                    <Grid xl={6} container sx={{ height: 'fit-content' }}>
+                    <Grid
+                        xl={tabValue === TAB_VALUES.CURVE ? 12 : 6.01}
+                        container
+                        sx={{ height: 'fit-content' }}
+                    >
                         {providers && provider && (
                             <DropDown
                                 value={provider}
