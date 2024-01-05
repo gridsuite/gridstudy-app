@@ -248,6 +248,22 @@ export const styles = {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     }),
+    circularProgress: (theme) => ({
+        marginRight: theme.spacing(2),
+        color: theme.palette.primary.contrastText,
+    }),
+    icon: (theme) => ({
+        width: theme.spacing(3),
+    }),
+    modificationsTitle: (theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        margin: theme.spacing(0),
+        padding: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+        overflow: 'hidden',
+    }),
 };
 
 export const TabPanel = (props) => {
