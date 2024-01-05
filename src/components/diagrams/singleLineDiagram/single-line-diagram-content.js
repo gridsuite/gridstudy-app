@@ -286,16 +286,13 @@ function SingleLineDiagramContent(props) {
                     );
                     resetOneBusShortcircuitAnalysisLoader();
                 })
-                .finally(
-                    dispatch(setComputationStarting(false)) && closeBusMenu()
-                );
+                .finally(() => dispatch(setComputationStarting(false)));
         },
         [
             dispatch,
             displayOneBusShortcircuitAnalysisLoader,
             studyUuid,
             currentNode?.id,
-            closeBusMenu,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
         ]
@@ -313,7 +310,7 @@ function SingleLineDiagramContent(props) {
                     }
                     busId={busMenu.busId}
                     position={busMenu.position}
-                    closeBusMenu={closeBusMenu}
+                    onClose={closeBusMenu}
                 />
             )
         );
