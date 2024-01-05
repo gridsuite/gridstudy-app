@@ -98,7 +98,7 @@ import {
     SET_OPTIONAL_SERVICES,
     SET_STUDY_INDEXATION_STATUS,
     STUDY_INDEXATION_STATUS,
-    SET_COMPUTATION_RUNNING,
+    SET_COMPUTATION_STARTING,
     MAP_DATA_LOADING,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
@@ -249,7 +249,7 @@ const initialState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
-    computationRunning: false,
+    computationStarting: false,
     optionalServices: defaultOptionalServicesState,
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
@@ -1088,8 +1088,8 @@ export const reducer = createReducer(initialState, {
     [SET_COMPUTING_STATUS]: (state, action) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     },
-    [SET_COMPUTATION_RUNNING]: (state, action) => {
-        state.computationRunning = action.computationRunning;
+    [SET_COMPUTATION_STARTING]: (state, action) => {
+        state.computationStarting = action.computationStarting;
     },
 
     [SET_OPTIONAL_SERVICES]: (state, action) => {
