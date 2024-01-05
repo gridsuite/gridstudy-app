@@ -35,7 +35,7 @@ import { computingTypeToShortcircuitTabRedirection } from 'hooks/use-last-launch
 
 interface ShortCircuitAnalysisResultTabProps {
     view: string;
-    lastLaunchedComputation: ComputingType | undefined;
+    lastLaunchedComputation: ComputingType;
 }
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<

@@ -60,7 +60,7 @@ interface IResultViewTabProps {
     currentNode: CurrentTreeNode;
     openVoltageLevelDiagram: (voltageLevelId: string) => void;
     disabled: boolean;
-    lastLaunchedComputation: ComputingType | undefined;
+    lastLaunchedComputation: ComputingType;
     view: string;
 }
 

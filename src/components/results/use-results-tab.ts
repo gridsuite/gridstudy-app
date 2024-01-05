@@ -25,8 +25,7 @@ type ResultsTabsLevelOne = ShortCircuitAnalysisResultTabs;
 
 export type ResultTabIndexRedirection =
     | ResultsTabsRootLevel
-    | ResultsTabsLevelOne
-    | null;
+    | ResultsTabsLevelOne;
 
 /**
  * handles redirection to specific tab
