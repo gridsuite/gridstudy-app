@@ -37,15 +37,13 @@ interface ShortCircuitAnalysisResultTabProps {
 export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
 > = ({ view, lastLaunchedComputation }) => {
-    const resultTabIndexRedirection = useMemo(
+    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
             computingTypeToShortcircuitTabRedirection(lastLaunchedComputation),
         [lastLaunchedComputation]
     );
 
-    const [tabIndex, setTabIndex] = useState<number>(
-        resultTabIndexRedirection as number
-    );
+    const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
 
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
@@ -59,7 +57,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     );
 
     const setRedirectionLock = useResultsTab(
-        resultTabIndexRedirection as ResultTabIndexRedirection,
+        resultTabIndexRedirection,
         setTabIndex,
         view
     );

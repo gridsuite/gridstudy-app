@@ -239,7 +239,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderLoadFlowResult,
     ]);
 
-    const resultTabIndexRedirection = useMemo(
+    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
             computingTypeToRootTabRedirection(
                 lastLaunchedComputation ?? ComputingType.LOADFLOW,
@@ -248,12 +248,10 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         [lastLaunchedComputation, services]
     );
 
-    const [tabIndex, setTabIndex] = useState<number>(
-        resultTabIndexRedirection as number
-    );
+    const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
 
     const setRedirectionLock = useResultsTab(
-        resultTabIndexRedirection as ResultTabIndexRedirection,
+        resultTabIndexRedirection,
         setTabIndex,
         view
     );
