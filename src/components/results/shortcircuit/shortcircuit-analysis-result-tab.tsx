@@ -80,10 +80,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         [setResultOrLogIndex]
     );
 
-    useEffect(() => {
-        setResultOrLogIndex(RESULTS_TAB_INDEX);
-    }, [resultTabIndexRedirection]);
-
     const shortCircuitTabResultStatusSucceedOrFailed = useMemo(() => {
         return (
             (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES &&
