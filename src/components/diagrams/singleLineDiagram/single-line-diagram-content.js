@@ -701,7 +701,6 @@ function SingleLineDiagramContent(props) {
 
 SingleLineDiagramContent.propTypes = {
     loadFlowStatus: PropTypes.any,
-    isComputationStarting: PropTypes.bool,
     showInSpreadsheet: PropTypes.func,
     studyUuid: PropTypes.string,
     svgType: PropTypes.string,

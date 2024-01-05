@@ -12,7 +12,6 @@ import { useIntl } from 'react-intl';
 import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
-import { useSelector } from 'react-redux';
 
 const RunButton = ({
     runnables,
