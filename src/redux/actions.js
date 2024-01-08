@@ -626,12 +626,12 @@ export function setComputingStatus(computingType, runningStatus) {
     };
 }
 
-export const SET_COMPUTATION_RUNNING = 'SET_COMPUTATION_RUNNING';
+export const SET_COMPUTATION_STARTING = 'SET_COMPUTATION_STARTING';
 
-export function setComputationRunning(computationRunning) {
+export function setComputationStarting(computationStarting) {
     return {
-        type: SET_COMPUTATION_RUNNING,
-        computationRunning: computationRunning,
+        type: SET_COMPUTATION_STARTING,
+        computationStarting: computationStarting,
     };
 }
 

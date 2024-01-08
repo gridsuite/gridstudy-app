@@ -10,7 +10,14 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Grid, Button, DialogActions } from '@mui/material';
+import {
+    Grid,
+    Button,
+    DialogActions,
+    Box,
+    CircularProgress,
+    Typography,
+} from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -52,7 +59,7 @@ import {
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
-import { LineSeparator } from '../../dialogUtils';
+import { LineSeparator, parseIntData } from '../../dialogUtils';
 import {
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
@@ -116,6 +123,8 @@ export const SensitivityAnalysisParameters = ({
     const { snackError } = useSnackMessage();
 
     const [popupConfirm, setPopupConfirm] = useState(false);
+    const [launchLoader, setLaunchLoader] = useState(false);
+    const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
     const [providers, provider, updateProvider, resetProvider] =
@@ -210,6 +219,7 @@ export const SensitivityAnalysisParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
+            setIsSubmitAction(true);
             setSensitivityAnalysisParameters(
                 studyUuid,
                 formatNewParams(newParams)
@@ -238,8 +248,15 @@ export const SensitivityAnalysisParameters = ({
 
     const getResultCount = useCallback(() => {
         const values = getValues();
-        const getCount = (tab) =>
-            values[tab]
+        let totalResultCount = 0;
+        const tabsToCheck = [
+            'sensitivityInjectionsSet',
+            'sensitivityInjection',
+            'sensitivityHVDC',
+            'sensitivityPST',
+        ];
+        tabsToCheck.forEach((tab) => {
+            const count = values[tab]
                 .filter((entry) => entry[ACTIVATED])
                 .filter((entry) => entry[MONITORED_BRANCHES].length > 0)
                 .filter(
@@ -251,25 +268,27 @@ export const SensitivityAnalysisParameters = ({
                 .map((entry) => entry[COUNT])
                 .reduce((a, b) => a + b, 0);
 
-        const resultCountByTab = {
-            sensitivityInjectionsSet: getCount('sensitivityInjectionsSet'),
-            sensitivityInjection: getCount('sensitivityInjection'),
-            sensitivityHVDC: getCount('sensitivityHVDC'),
-            sensitivityPST: getCount('sensitivityPST'),
-        };
-
-        return Object.values(resultCountByTab).reduce((a, b) => a + b, 0);
+            totalResultCount += count;
+        });
+        return totalResultCount;
     }, [getValues]);
 
     const onFormChanged = useCallback(
         (onFormChanged) => {
-            onFormChanged && setAnalysisComputeComplexity(getResultCount());
+            if (onFormChanged) {
+                setLaunchLoader(true);
+                setAnalysisComputeComplexity(getResultCount());
+                setTimeout(() => {
+                    setLaunchLoader(false);
+                }, 1000);
+            }
         },
-        [setAnalysisComputeComplexity, getResultCount]
+        [getResultCount]
     );
 
     const onChangeParams = useCallback(
         (row, arrayFormName, index) => {
+            setLaunchLoader(true);
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
                 arrayFormName === SENSI_INJECTIONS_SET,
@@ -279,13 +298,14 @@ export const SensitivityAnalysisParameters = ({
                     response.text().then((value) => {
                         setValue(
                             `${arrayFormName}[${index}].[${COUNT}]`,
-                            value && Math.abs(value)
+                            parseIntData(value, 0)
                         );
                         setAnalysisComputeComplexity(getResultCount());
-                        onFormChanged(false);
+                        setLaunchLoader(false);
                     });
                 })
                 .catch((error) => {
+                    setLaunchLoader(false);
                     snackError({
                         messageTxt: error.message,
                         headerId:
@@ -293,14 +313,7 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [
-            snackError,
-            studyUuid,
-            formatFilteredParams,
-            setValue,
-            getResultCount,
-            onFormChanged,
-        ]
+        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
     );
 
     const initRowsCount = useCallback(() => {
@@ -524,12 +537,13 @@ export const SensitivityAnalysisParameters = ({
             fromSensitivityAnalysisParamsDataToFormValues(
                 sensitivityAnalysisParams
             );
-            initRowsCount();
+            !isSubmitAction && initRowsCount();
         }
     }, [
         fromSensitivityAnalysisParamsDataToFormValues,
         sensitivityAnalysisParams,
         initRowsCount,
+        isSubmitAction,
     ]);
 
     const clear = useCallback(() => {
@@ -544,7 +558,43 @@ export const SensitivityAnalysisParameters = ({
         resetSensitivityParametersAndProvider,
     ]);
 
-    const isMaxReached = () => Math.abs(analysisComputeComplexity) > numberMax;
+    const renderComputingEventLoading = () => {
+        return (
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        sx={styles.circularProgress}
+                    />
+                </Box>
+                <Typography noWrap>
+                    <FormattedMessage id={'loadingComputing'} />
+                </Typography>
+            </Box>
+        );
+    };
+
+    const renderComputingEvent = () => {
+        return (
+            <Alert severity={isMaxReached ? 'error' : 'info'}>
+                {analysisComputeComplexity > 999999 ? (
+                    <FormattedMessage id="SimulatedCalculationExceedsLimit" />
+                ) : (
+                    <>
+                        {analysisComputeComplexity
+                            .toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
+                        <FormattedMessage id="SimulatedCalculation" />
+                    </>
+                )}
+            </Alert>
+        );
+    };
+
+    const isMaxReached = useMemo(
+        () => analysisComputeComplexity > numberMax,
+        [analysisComputeComplexity]
+    );
 
     return (
         <>
@@ -581,10 +631,9 @@ export const SensitivityAnalysisParameters = ({
                     </Grid>
                     <Grid container justifyContent={'right'}>
                         <Grid item marginBottom="-50px">
-                            <Alert severity={isMaxReached() ? 'error' : 'info'}>
-                                {analysisComputeComplexity}{' '}
-                                <FormattedMessage id="SimulatedCalculation" />
-                            </Alert>
+                            {launchLoader
+                                ? renderComputingEventLoading()
+                                : renderComputingEvent()}
                             <FormattedMessage id="SimulatedCalculationMax" />
                         </Grid>
                     </Grid>
@@ -604,7 +653,7 @@ export const SensitivityAnalysisParameters = ({
                     <SubmitButton
                         onClick={handleSubmit(onSubmit)}
                         variant="outlined"
-                        disabled={isMaxReached()}
+                        disabled={launchLoader || isMaxReached}
                     >
                         <FormattedMessage id="validate" />
                     </SubmitButton>

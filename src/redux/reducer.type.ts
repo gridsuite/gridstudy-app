@@ -17,6 +17,7 @@ export interface ReduxState {
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
+    computationStarting: boolean;
     optionalServices: IOptionalService[];
     limitReduction: string;
     voltageInitNotif: boolean;
