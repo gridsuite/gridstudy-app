@@ -111,6 +111,7 @@ const STUDY_VIEWS = [
     StudyView.SPREADSHEET,
     StudyView.RESULTS,
     StudyView.LOGS,
+    StudyView.PARAMETERS,
 ];
 
 const App = () => {

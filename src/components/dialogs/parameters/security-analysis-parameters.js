@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { CloseButton, DropDown, LabelledButton, styles } from './parameters';
+import { DropDown, LabelledButton, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
@@ -160,10 +160,7 @@ const SecurityAnalysisFields = ({
     );
 };
 
-export const SecurityAnalysisParameters = ({
-    hideParameters,
-    parametersBackend,
-}) => {
+export const SecurityAnalysisParameters = ({ parametersBackend }) => {
     const [
         providers,
         provider,
@@ -251,59 +248,65 @@ export const SecurityAnalysisParameters = ({
 
     return (
         <>
-            <Grid container spacing={1} padding={1}>
+            <Grid sx={{ height: '100%' }}>
+                <Grid container spacing={1} padding={1}>
+                    <Grid
+                        container
+                        spacing={1}
+                        sx={{ padding: 0, paddingBottom: 2 }}
+                    >
+                        <DropDown
+                            value={provider}
+                            label="Provider"
+                            values={securityAnalysisProvider}
+                            callback={updateProviderCallback}
+                        />
+                    </Grid>
+                    <Grid container spacing={1} paddingBottom={1}>
+                        <Grid item xs={8} sx={styles.text}>
+                            <Typography>
+                                {intl.formatMessage({
+                                    id: 'securityAnalysis.violationsHiding',
+                                })}
+                            </Typography>
+                            <Tooltip
+                                sx={styles.tooltip}
+                                title={
+                                    <FormattedMessage
+                                        id={
+                                            'securityAnalysis.toolTip.violationsHiding'
+                                        }
+                                    />
+                                }
+                                placement="left-start"
+                            >
+                                <InfoIcon />
+                            </Tooltip>
+                        </Grid>
+                    </Grid>
+
+                    {fieldsToShow?.map((item) => {
+                        return (
+                            <Grid item xs={16} key={item.label}>
+                                <SecurityAnalysisFields {...item} />
+                            </Grid>
+                        );
+                    })}
+                </Grid>
                 <Grid
                     container
+                    key="secuAnalysisProvider"
+                    sx={styles.scrollableGrid}
                     spacing={1}
-                    sx={{ padding: 0, paddingBottom: 2 }}
-                >
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={securityAnalysisProvider}
-                        callback={updateProviderCallback}
-                    />
-                </Grid>
-                <Grid container spacing={1} paddingBottom={1}>
-                    <Grid item xs={8} sx={styles.text}>
-                        <Typography>
-                            {intl.formatMessage({
-                                id: 'securityAnalysis.violationsHiding',
-                            })}
-                        </Typography>
-                        <Tooltip
-                            sx={styles.tooltip}
-                            title={
-                                <FormattedMessage
-                                    id={
-                                        'securityAnalysis.toolTip.violationsHiding'
-                                    }
-                                />
-                            }
-                            placement="left-start"
-                        >
-                            <InfoIcon />
-                        </Tooltip>
-                    </Grid>
-                </Grid>
-
-                {fieldsToShow?.map((item) => {
-                    return (
-                        <SecurityAnalysisFields key={item.label} {...item} />
-                    );
-                })}
+                ></Grid>
+                <LineSeparator />
             </Grid>
             <Grid
                 container
-                key="secuAnalysisProvider"
-                sx={styles.scrollableGrid}
-                spacing={1}
-            ></Grid>
-            <LineSeparator />
-            <Grid
-                container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
             >
                 <LabelledButton
                     callback={resetSAParametersAndProvider}
@@ -313,7 +316,6 @@ export const SecurityAnalysisParameters = ({
                     label="resetProviderValuesToDefault"
                     callback={resetSAParameters}
                 />
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

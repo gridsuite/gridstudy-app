@@ -8,7 +8,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
-import { CloseButton, styles } from './parameters';
+import { styles } from './parameters';
 import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LineSeparator } from '../dialogUtils';
@@ -103,8 +103,8 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
     };
 };
 export const ShortCircuitParameters = ({
-    hideParameters,
     useShortCircuitParameters,
+    setHaveDirtyFields,
 }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -139,7 +139,7 @@ export const ShortCircuitParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, handleSubmit } = formMethods;
+    const { reset, setValue, handleSubmit, formState } = formMethods;
 
     // submit the new parameters
     const onSubmit = useCallback(
@@ -223,24 +223,34 @@ export const ShortCircuitParameters = ({
         [setValue]
     );
 
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid container paddingTop={1} paddingBottom={1}>
-                <LineSeparator />
-            </Grid>
+            <Grid sx={{ height: '100%' }}>
+                <Grid container paddingTop={1} paddingBottom={1}>
+                    <LineSeparator />
+                </Grid>
 
-            <Grid>
-                <ShortCircuitFields resetAll={resetAll} />
+                <Grid sx={styles.scrollableGrid}>
+                    <ShortCircuitFields resetAll={resetAll} />
+                </Grid>
             </Grid>
             <Grid
                 container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
             >
-                <SubmitButton onClick={handleSubmit(onSubmit)}>
+                <SubmitButton
+                    variant="outlined"
+                    onClick={handleSubmit(onSubmit)}
+                >
                     <FormattedMessage id="validate" />
                 </SubmitButton>
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </FormProvider>
     );
