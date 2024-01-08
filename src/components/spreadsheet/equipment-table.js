@@ -73,7 +73,7 @@ export const EquipmentTable = ({
             theme,
             lastEditedField: undefined,
             dataToModify: topPinnedData
-                ? structuredClone(topPinnedData[0])
+                ? JSON.parse(JSON.stringify(topPinnedData[0]))
                 : {},
             currentNode: currentNode,
             studyUuid: studyUuid,
