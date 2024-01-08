@@ -218,7 +218,7 @@ const deepFindValue = (obj: any, path: any) => {
 
 export const deepUpdateValue = (obj: any, path: any, value: any) => {
     let paths = path.split('.'),
-        current = structuredClone(obj),
+        current = JSON.parse(JSON.stringify(obj)),
         data = current,
         i;
 
