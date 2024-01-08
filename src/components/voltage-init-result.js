@@ -105,8 +105,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
 
     const intl = useIntl();
 
-    const viNotif = useSelector((state) => state.voltageInitNotif);
-
     const openLoader = useOpenLoaderShortWait({
         isLoading: status === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
@@ -116,7 +114,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         fetchVoltageInitResult(studyUuid, currentNode.id).then((res) => {
             setResultToShow(res);
         });
-    }, [viNotif, disabledApplyModifications, studyUuid, currentNode.id]);
+    }, [disabledApplyModifications, studyUuid, currentNode.id]);
 
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
