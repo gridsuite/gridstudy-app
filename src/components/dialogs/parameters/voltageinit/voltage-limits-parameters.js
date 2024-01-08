@@ -153,7 +153,11 @@ const VoltageLimitsParameters = () => {
 
     return (
         <Grid container>
-            <Typography component="span" variant="h6">
+            <Typography
+                component="span"
+                variant="h6"
+                sx={{ alignSelf: 'center', marginRight: 2 }}
+            >
                 <FormattedMessage id="AdjustExistingLimits" />
             </Typography>
             <Alert

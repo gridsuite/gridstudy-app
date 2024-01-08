@@ -59,7 +59,7 @@ interface IStagesSelection {
     }>;
 }
 
-interface IGeneratorsLimit {
+interface IGeneratorsCappings {
     [SENSITIVITY_THRESHOLD]: number;
     [GENERATORS_CAPPINGS]: Array<{
         [GENERATORS_CAPPINGS_KIND]: string;
@@ -188,7 +188,7 @@ export const getGenerationStagesSelectionParams = (
     };
 };
 
-export const getGeneratorsLimitFormSchema = () => ({
+export const getGeneratorsCappingsFormSchema = () => ({
     [SENSITIVITY_THRESHOLD]: yup
         .number()
         .min(0, 'Value must be greater or equal than 0')
@@ -215,9 +215,9 @@ export const getGeneratorsLimitFormSchema = () => ({
     ),
 });
 
-export const getGeneratorsLimitParams = (
+export const getGeneratorsCappingsParams = (
     sensitivityThreshold: number,
-    params: IGeneratorsLimit
+    params: IGeneratorsCappings
 ) => {
     return {
         [SENSITIVITY_THRESHOLD]: sensitivityThreshold,

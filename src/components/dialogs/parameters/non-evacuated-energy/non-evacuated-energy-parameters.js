@@ -14,7 +14,7 @@ import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { LabelledButton, styles } from '../parameters';
+import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -61,15 +61,14 @@ import {
     getGenerationStagesDefinitionFormSchema,
     getGenerationStagesSelectionParams,
     getGenerationStagesSelectionFormSchema,
-    getGeneratorsLimitParams,
-    getGeneratorsLimitFormSchema,
+    getGeneratorsCappingsParams,
+    getGeneratorsCappingsFormSchema,
     getMonitoredBranchesParams,
     getMonitoredBranchesFormSchema,
     getContingenciesParams,
     getContingenciesFormSchema,
 } from './utils';
-import { SelectOptionsDialog } from '../../../../utils/dialogs';
-import DialogContentText from '@mui/material/DialogContentText';
+import { mergeSx } from 'components/utils/functions';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -99,32 +98,20 @@ const formSchema = yup
         [PROVIDER]: yup.string().required(),
         ...getGenerationStagesDefinitionFormSchema(),
         ...getGenerationStagesSelectionFormSchema(),
-        ...getGeneratorsLimitFormSchema(),
+        ...getGeneratorsCappingsFormSchema(),
         ...getMonitoredBranchesFormSchema(),
         ...getContingenciesFormSchema(),
     })
     .required();
 
 export const NonEvacuatedEnergyParameters = ({
-    hideParameters,
     parametersBackend,
     useNonEvacuatedEnergyParameters,
 }) => {
     const { snackError } = useSnackMessage();
 
-    const [popupConfirm, setPopupConfirm] = useState(false);
-
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
-
-    const handlePopupConfirm = useCallback(() => {
-        hideParameters();
-        setPopupConfirm(false);
-    }, [hideParameters]);
-
-    const handleClosePopupConfirm = useCallback(() => {
-        setPopupConfirm(false);
-    }, []);
 
     const emptyFormData = useMemo(() => {
         return {
@@ -188,8 +175,7 @@ export const NonEvacuatedEnergyParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit, formState, setValue, getValues, watch } =
-        formMethods;
+    const { reset, handleSubmit, setValue, getValues, watch } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] =
@@ -219,7 +205,7 @@ export const NonEvacuatedEnergyParameters = ({
         let params = {
             ...getGenerationStagesDefinitionParams(newParams),
             ...getGenerationStagesSelectionParams(newParams),
-            [GENERATORS_LIMIT]: getGeneratorsLimitParams(
+            [GENERATORS_LIMIT]: getGeneratorsCappingsParams(
                 newParams[SENSITIVITY_THRESHOLD],
                 newParams
             ),
@@ -445,17 +431,6 @@ export const NonEvacuatedEnergyParameters = ({
         );
     }, [setValue, getValues, combineStagesDefinition]);
 
-    const handleClose = useCallback(() => {
-        if (
-            formState.dirtyFields &&
-            Object.keys(formState.dirtyFields).length === 0
-        ) {
-            hideParameters();
-        } else {
-            setPopupConfirm(true);
-        }
-    }, [hideParameters, formState.dirtyFields]);
-
     useEffect(() => {
         let params =
             nonEvacuatedEnergyParams[STAGES_DEFINITION] &&
@@ -495,8 +470,8 @@ export const NonEvacuatedEnergyParameters = ({
         resetNonEvacuatedEnergyParameters,
     ]);
 
-    const onFormChanged = (onFormChanged) => {};
-    const onChangeParams = (row, arrayFormName, index) => {};
+    const onFormChanged = () => {};
+    const onChangeParams = () => {};
 
     return (
         <>
@@ -531,29 +506,26 @@ export const NonEvacuatedEnergyParameters = ({
                         onChangeParams={onChangeParams}
                     />
                 </Grid>
-                <DialogActions>
-                    <Button onClick={clear}>
-                        <FormattedMessage id="resetToDefault" />
-                    </Button>
-                    <Button variant="outlined">
-                        <SubmitButton onClick={handleSubmit(onSubmit)}>
+
+                <Grid item container>
+                    <DialogActions
+                        sx={mergeSx(styles.controlParametersItem, {
+                            paddingLeft: 0,
+                            paddingBottom: 2,
+                        })}
+                    >
+                        <Button onClick={clear}>
+                            <FormattedMessage id="resetToDefault" />
+                        </Button>
+                        <SubmitButton
+                            onClick={handleSubmit(onSubmit)}
+                            variant="outlined"
+                        >
                             <FormattedMessage id="validate" />
                         </SubmitButton>
-                    </Button>
-                    <LabelledButton callback={handleClose} label="cancel" />
-                </DialogActions>
+                    </DialogActions>
+                </Grid>
             </FormProvider>
-
-            <SelectOptionsDialog
-                open={popupConfirm}
-                onClose={handleClosePopupConfirm}
-                onClick={handlePopupConfirm}
-                child={
-                    <DialogContentText>
-                        <FormattedMessage id="genericConfirmQuestion" />
-                    </DialogContentText>
-                }
-            />
         </>
     );
 };

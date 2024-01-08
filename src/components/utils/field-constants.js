@@ -334,9 +334,9 @@ export const MONITORED_BRANCHES_IST_N_1 = 'istNm1';
 export const MONITORED_BRANCHES_LIMIT_NAME_N_1 = 'limitNameNm1';
 export const MONITORED_BRANCHES_COEFF_N_1 = 'nm1Coefficient';
 
-export const GENERATORS_CAPPINGS = 'generatorsLimit';
+export const GENERATORS_CAPPINGS = 'generatorsCappings';
 export const STAGES_SELECTION = 'stagesSelection';
 export const STAGES_DEFINITION = 'stagesDefinition';
 export const STAGES_DEFINITION_GENERATORS = 'generators';
 export const PMAX_PERCENTS = 'pMaxPercents';
-export const GENERATORS_LIMIT = 'generatorsLimit';
+export const GENERATORS_LIMIT = 'generatorsCappings';
