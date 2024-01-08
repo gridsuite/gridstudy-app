@@ -702,7 +702,7 @@
     "TabularModificationError": "Error while creating tabular modification",
     "TabularModificationGeneratorSkeletonComment" : "#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false",
     "TabularModificationLoadSkeletonComment": "#,AUXILIARY | FICTITIOUS,,",
-    "TabularModificationShuntSkeletonComment": "\"# For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input, the maximum susceptance will be ignored.\"",
+    "TabularModificationShuntSkeletonComment": "#,\"For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input, the maximum susceptance will be ignored.\"",
     "TabularModificationShuntWarning": "Both maximum reactive power (and/or type) and maximum susceptance have been submitted for the same shunt compensator. Maximum susceptance will thus be ignored.",
     "equipmentId": "ID",
     "activePower": "p (MW)",
