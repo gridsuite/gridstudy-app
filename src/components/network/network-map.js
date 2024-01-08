@@ -504,9 +504,10 @@ const NetworkMap = (props) => {
         mapLib && (
             <Map
                 ref={mapRef}
+                style={{ zIndex: 0 }}
                 {...mapLib}
                 onMove={onViewStateChange}
-                boxZoom={false}
+                doubleClickZoom={false}
                 mapStyle={theme[basemap_style_theme_key(basemap)]}
                 preventStyleDiffing={true}
                 initialViewState={initialViewState}
@@ -545,7 +546,6 @@ const NetworkMap = (props) => {
                     pickingRadius={PICKING_RADIUS}
                 />
                 {showTooltip && renderTooltip()}
-                <NavigationControl />
                 {/* visualizePitch true makes the compass reset the pitch when clicked in addition to visualizing it */}
                 <NavigationControl visualizePitch={true} />
             </Map>

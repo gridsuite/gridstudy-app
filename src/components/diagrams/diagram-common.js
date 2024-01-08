@@ -117,8 +117,6 @@ export const styles = {
         },
     },
     paperBorders: (theme) => ({
-        position: 'relative',
-        zIndex: 10, // now needs to be at least 2 for the sld to be above our deckgl lines and substations. TODO duplicated on many elements, improve our stacking context handling ?
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
         borderRight: '1px solid ' + theme.palette.action.hover,
