@@ -18,7 +18,7 @@ export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis-non-evacuated-energy/run';
+        '/non-evacuated-energy/run';
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
@@ -31,7 +31,7 @@ export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
         currentNodeUuid
-    )}/sensitivity-analysis-non-evacuated-energy/stop`;
+    )}/non-evacuated-energy/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
@@ -43,7 +43,7 @@ export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid) {
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
         currentNodeUuid
-    )}/sensitivity-analysis-non-evacuated-energy/status`;
+    )}/non-evacuated-energy/status`;
     console.debug(url);
     return backendFetchText(url);
 }
@@ -56,25 +56,21 @@ export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid) {
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
         currentNodeUuid
-    )}/sensitivity-analysis-non-evacuated-energy/result`;
+    )}/non-evacuated-energy/result`;
     console.debug(url);
     return backendFetchJson(url);
 }
 
 export function getNonEvacuatedEnergyParameters(studyUuid) {
     console.info('get sensitivity analysis non evacuated energy parameters');
-    const url =
-        getStudyUrl(studyUuid) +
-        '/sensitivity-analysis-non-evacuated-energy/parameters';
+    const url = getStudyUrl(studyUuid) + '/non-evacuated-energy/parameters';
     console.debug(url);
     return backendFetchJson(url);
 }
 
 export function setNonEvacuatedEnergyParameters(studyUuid, newParams) {
     console.info('set sensitivity analysis non evacuated energy parameters');
-    const url =
-        getStudyUrl(studyUuid) +
-        '/sensitivity-analysis-non-evacuated-energy/parameters';
+    const url = getStudyUrl(studyUuid) + '/non-evacuated-energy/parameters';
     console.debug(url);
     return backendFetch(url, {
         method: 'POST',
