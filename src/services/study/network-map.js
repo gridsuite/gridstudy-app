@@ -133,7 +133,7 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
 
     const fetchCountriesUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/countries';
+        '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
 }

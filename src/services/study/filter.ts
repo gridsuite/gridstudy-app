@@ -21,7 +21,7 @@ export function evaluateFilter(
 
     const evaluateFilterUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/filters/evaluate';
+        '/filters/evaluate?inUpstreamBuiltParentNode=true';
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'post',
