@@ -29,7 +29,8 @@ import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { BranchSide } from '../../utils/constants';
-import { downloadSecurityAnalysisResultCsv } from 'services/study/security-analysis';
+import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
+import { downloadZipFile } from 'services/utils';
 
 const styles = {
     container: {
@@ -191,16 +192,11 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     );
 
     const exportResultCsv = useCallback(() => {
-        downloadSecurityAnalysisResultCsv(
-            studyUuid,
-            nodeUuid,
-            {
-                resultType: isFromContingency
-                    ? RESULT_TYPE.NMK_CONTINGENCIES
-                    : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
-            },
-            'nmk-results.csv'
-        );
+        downloadSecurityAnalysisResultZippedCsv(studyUuid, nodeUuid, {
+            resultType: isFromContingency
+                ? RESULT_TYPE.NMK_CONTINGENCIES
+                : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
+        }).then((response) => downloadZipFile(response, 'nmk-results.zip'));
     }, [isFromContingency, studyUuid, nodeUuid]);
 
     const agGridProps = {

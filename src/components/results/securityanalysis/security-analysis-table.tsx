@@ -58,7 +58,7 @@ export const SecurityAnalysisTable: FunctionComponent<
 
     return (
         <>
-            <Button onClick={exportCsv}>TEST</Button>
+            <Button onClick={exportCsv}>Télécharger CSV</Button>
             <CustomAGGrid
                 rowData={rowsToShow}
                 columnDefs={columnDefs}

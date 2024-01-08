@@ -109,37 +109,25 @@ export const backendFetchJson = (url, init, token) => {
     );
 };
 
-export const backendDownloadFileAsStream = (url, fileName) => {
-    // backendFetch(url).then((response) => {
-    //     streamsaver.mitm = 'http://localhost:3001/mitm.html';
-    //     const fileStream = streamsaver.createWriteStream(fileName);
-    //     const readableStream = response.body;
-
-    //     readableStream
-    //         .pipeTo(fileStream)
-    //         .then(() => console.log('DOWNLOAD DONE'))
-    //         .catch(() => console.error('DOWNLOAD ERROR'));
-    // });
-
-    window.showSaveFilePicker({ suggestedName: fileName }).then((newHandle) =>
-        backendFetch(url).then((response) => {
-            newHandle.createWritable().then((writableStream) => {
-                // response.body is a readableStream
-                const readableStream = response.body;
-
-                readableStream
-                    .pipeTo(writableStream)
-                    .then(() => console.log('DOWNLOAD DONE'))
-                    .catch(() => console.error('DOWNLOAD ERROR'));
-            });
-        })
-    );
+export const backendFetchFile = (url, init, token) => {
+    const initCopy = prepareRequest(init, token);
+    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.blob());
 };
 
-export const downloadCsvFile = (blob, filename) => {
-    const href = window.URL.createObjectURL(
-        new Blob([blob], { type: 'application/csv' })
-    );
+const FILE_TYPE = {
+    ZIP: 'ZIP',
+};
+export const downloadZipFile = (blob, fileName) => {
+    downloadFile(blob, fileName, FILE_TYPE.ZIP);
+};
+
+const downloadFile = (blob, filename, type) => {
+    let contentType;
+    if (type === FILE_TYPE.ZIP) {
+        contentType = 'application/octet-stream';
+    }
+    console.log('BLOB', blob);
+    const href = window.URL.createObjectURL(new Blob([blob], { contentType }));
     const link = document.createElement('a');
     link.href = href;
     link.setAttribute('download', filename);

@@ -13,8 +13,10 @@ import {
 import {
     backendDownloadFileAsStream,
     backendFetch,
+    backendFetchFile,
     backendFetchJson,
     backendFetchText,
+    downloadZipFile,
     getRequestParamFromList,
 } from '../utils';
 import { getSortValue } from '../../hooks/use-aggrid-sort';
@@ -94,11 +96,10 @@ export function fetchSecurityAnalysisResult(
     return backendFetchJson(urlWithParams);
 }
 
-export function downloadSecurityAnalysisResultCsv(
+export function downloadSecurityAnalysisResultZippedCsv(
     studyUuid,
     currentNodeUuid,
-    queryParams,
-    fileName
+    queryParams
 ) {
     console.info(
         `Fetching security analysis csv on ${studyUuid} and node ${currentNodeUuid} ...`
@@ -114,7 +115,7 @@ export function downloadSecurityAnalysisResultCsv(
 
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
-    return backendDownloadFileAsStream(urlWithParams, fileName);
+    return backendFetchFile(urlWithParams);
 }
 
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {

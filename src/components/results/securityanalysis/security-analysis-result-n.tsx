@@ -19,7 +19,8 @@ import {
     securityAnalysisTableNColumnsDefinition,
 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
-import { downloadSecurityAnalysisResultCsv } from 'services/study/security-analysis';
+import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
+import { downloadZipFile } from 'services/utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
@@ -58,12 +59,9 @@ export const SecurityAnalysisResultN: FunctionComponent<
     }, [intl, result]);
 
     const exportResultCsv = useCallback(() => {
-        downloadSecurityAnalysisResultCsv(
-            studyUuid,
-            nodeUuid,
-            { resultType: RESULT_TYPE.N },
-            'n-results.csv'
-        );
+        downloadSecurityAnalysisResultZippedCsv(studyUuid, nodeUuid, {
+            resultType: RESULT_TYPE.N,
+        }).then((fileBlob) => downloadZipFile(fileBlob, 'n-results.zip'));
     }, [studyUuid, nodeUuid]);
 
     const columnDefs = useMemo(
