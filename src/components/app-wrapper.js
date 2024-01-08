@@ -181,10 +181,11 @@ let darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
-    cartonolabelStyle:
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
+        'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
-    cartoStyle:
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
         'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
     aggrid: 'ag-theme-alpine-dark',
     overlay: {
