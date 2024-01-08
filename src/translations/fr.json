@@ -749,6 +749,8 @@
     "VoltageText": "Tension",
     "QPercentText": "Cœfficient de participation",
     "Limits": "Limites",
+    "ActivePowerRegulationDroop": "Cœfficient de participation à la compensation",
+    "ReactivePercentageVoltageRegulation": "Cœfficient de participation au réglage de tension",
     "ActiveLimits": "Limites en actif",
     "ReactiveLimits": "Limites en réactif",
     "ReactiveLimitsKindMinMax": "Par plage",
