@@ -119,13 +119,13 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 id: 'actualOverloadDuration',
             }),
             field: 'actualOverloadDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
+            valueGetter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.actualOverloadDuration),
         },
         {
             headerName: intl.formatMessage({ id: 'upComingOverloadDuration' }),
             field: 'upComingOverloadDuration',
-            valueFormatter: (value: ValueFormatterParams) => {
+            valueGetter: (value: ValueFormatterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });
                 } else if (
