@@ -50,6 +50,7 @@ export default class LogReport {
         this.logs = [];
         this.parentReportId = parentReportId;
         this.severityList = [];
+        // Represent all the different severities of this report and it's subreports
         this.allSeverityList = [];
         this.init(reportType, jsonReporter);
     }
