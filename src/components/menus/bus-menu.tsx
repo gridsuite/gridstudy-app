@@ -34,7 +34,7 @@ interface BusMenuProps {
         dialogTitle: string
     ) => void;
     position: [number, number];
-    closeBusMenu: () => void;
+    onClose: () => void;
 }
 
 const styles = {
@@ -56,7 +56,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     handleRunShortcircuitAnalysis,
     handleOpenDynamicSimulationEventDialog,
     position,
-    closeBusMenu,
+    onClose,
 }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -73,15 +73,19 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         [currentNode, isAnyNodeBuilding]
     );
 
+    const computationStarting = useSelector(
+        (state: ReduxState) => state.computationStarting
+    );
+
     const oneBusShortcircuitAnalysisState = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    const handleClickRunShortcircuitAnalysis = useCallback(
-        () => handleRunShortcircuitAnalysis(busId),
-        [busId, handleRunShortcircuitAnalysis]
-    );
+    const handleClickRunShortcircuitAnalysis = useCallback(() => {
+        onClose();
+        handleRunShortcircuitAnalysis(busId);
+    }, [busId, onClose, handleRunShortcircuitAnalysis]);
 
     return (
         <Menu
@@ -92,13 +96,14 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 top: position[1],
                 left: position[0],
             }}
-            onClose={closeBusMenu}
+            onClose={onClose}
         >
             <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
                 disabled={
+                    computationStarting ||
                     oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
                     !isNodeEditable
                 }
