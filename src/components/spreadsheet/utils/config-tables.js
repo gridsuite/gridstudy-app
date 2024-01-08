@@ -201,7 +201,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: SitePropertiesEditor,
                 cellEditorParams: (params) => {
                     return {
-                        gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                         rowData: params.data,

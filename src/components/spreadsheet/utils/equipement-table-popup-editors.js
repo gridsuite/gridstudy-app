@@ -1,4 +1,11 @@
-import React, {
+/**
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {
     useCallback,
     useState,
     forwardRef,
@@ -47,25 +54,25 @@ function arrayToObject(arr) {
     }, {});
 }
 
-/**
- * @author Jamal KHEYYAD <jamal.kheyyad at rte-international.com>
- */
+function initializeLocalRowData(rowData) {
+    if (!rowData?.properties) {
+        return [];
+    }
+    const keys = Object.keys(rowData.properties);
+    return keys.map((key, index) => {
+        return { id: index, key: key, value: rowData.properties[key] };
+    });
+}
+
 export const SitePropertiesEditor = forwardRef(
-    ({ gridContext, colDef, gridApi, rowData }, ref) => {
+    ({ colDef, gridApi, rowData }, ref) => {
         const theme = useTheme();
         const [error, setError] = useState('');
         const intl = useIntl();
         const [open, setOpen] = useState(true);
-        const [localRowData, setRowData] = useState(() => {
-            const data = rowData;
-            if (!data?.properties) {
-                return [];
-            }
-            const keys = Object.keys(data.properties);
-            return keys.map((key, index) => {
-                return { id: index, key: key, value: data.properties[key] };
-            });
-        });
+        const [localRowData, setRowData] = useState(() =>
+            initializeLocalRowData(rowData)
+        );
 
         useImperativeHandle(
             ref,
@@ -101,7 +108,7 @@ export const SitePropertiesEditor = forwardRef(
         };
 
         const performValidation = () => {
-            //validate rowData with yup and display error message and erros cells if any
+            //validate rowData with yup and display error message and errors cells if any
             let hasError = false;
             try {
                 hasError = !validationSchema.isValidSync(localRowData);
