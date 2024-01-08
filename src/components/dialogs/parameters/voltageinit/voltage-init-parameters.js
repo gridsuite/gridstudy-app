@@ -10,7 +10,7 @@ import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles, TabPanel, CloseButton } from '../parameters';
+import { styles, TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { SubmitButton } from '@gridsuite/commons-ui';
@@ -47,6 +47,7 @@ import {
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import { mergeSx } from 'components/utils/functions';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -151,8 +152,8 @@ const formSchema = yup.object().shape({
 });
 
 export const VoltageInitParameters = ({
-    hideParameters,
     useVoltageInitParameters,
+    setHaveDirtyFields,
 }) => {
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
@@ -179,7 +180,7 @@ export const VoltageInitParameters = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, handleSubmit, getValues, trigger } = formMethods;
+    const { reset, handleSubmit, getValues, trigger, formState } = formMethods;
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -289,15 +290,29 @@ export const VoltageInitParameters = ({
         });
     }, [trigger]);
 
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid
                     container
-                    key="voltageInitParameters"
-                    sx={styles.scrollableGrid}
+                    sx={{ height: '100%' }}
+                    direction="column"
+                    justifyContent="space-between"
                 >
-                    <Grid item maxWidth="md" width="100%">
+                    <Grid
+                        xs
+                        item
+                        container
+                        key="voltageInitParameters"
+                        sx={mergeSx(styles.scrollableGrid, {
+                            paddingTop: 0,
+                            width: '100%',
+                        })}
+                    >
                         <Tabs
                             value={tabValue}
                             variant="scrollable"
@@ -356,7 +371,16 @@ export const VoltageInitParameters = ({
                                 />
                             </TabPanel>
                         </Grid>
-                        <DialogActions>
+                    </Grid>
+
+                    <Grid item container>
+                        <DialogActions
+                            sx={mergeSx(styles.controlParametersItem, {
+                                paddingTop: 4,
+                                paddingBottom: 2,
+                                paddingLeft: 0,
+                            })}
+                        >
                             <Button
                                 onClick={() =>
                                     setOpenSelectParameterDialog(true)
@@ -371,12 +395,12 @@ export const VoltageInitParameters = ({
                                 <FormattedMessage id="resetToDefault" />
                             </Button>
                             <SubmitButton
+                                variant="outlined"
                                 onClick={handleSubmit(
                                     onSubmit,
                                     onValidationError
                                 )}
                             />
-                            <CloseButton hideParameters={hideParameters} />
                         </DialogActions>
                     </Grid>
                 </Grid>
