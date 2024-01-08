@@ -91,45 +91,25 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         SENSITIVITY_AT_NODE,
     ];
 
+    const [csvHeaders, setCsvHeaders] = useState([]);
     const exportResultsAsCsv = useCallback(() => {
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, selector)
+        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, selector, csvHeaders)
             .then((response) => {
-                console.log('response : ', response);
-                window
-                    .showSaveFilePicker({
-                        suggestedName: 'sensitivity_results.csv',
-                    })
-                    .then((newHandle) =>
-                        newHandle.createWritable().then((writableStream) => {
-                            // response.body is a readableStream
-                            const reader = response.body?.getReader();
-
-                            // function to retrieve the next chunk from the stream
-                            const handleChunk = ({ done, value }) => {
-                                // done is true when stream is done reading
-                                if (done) {
-                                    writableStream.close();
-                                    return;
-                                }
-                                writableStream.write(value);
-
-                                // retrieve next chunk
-                                reader?.read().then((response) => {
-                                    handleChunk(response);
-                                });
-                            };
-
-                            //retrieve first chunk
-                            reader?.read().then((response) => {
-                                handleChunk(response);
-                            });
-                        })
-                    );
+                response.blob().then((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'sensitivity_results.csv');
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
             })
             .catch((error) => {
                 snackError({
@@ -139,7 +119,15 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     }),
                 });
             });
-    }, [intl, nOrNkIndex, nodeUuid, sensiKind, snackError, studyUuid]);
+    }, [
+        intl,
+        nOrNkIndex,
+        nodeUuid,
+        sensiKind,
+        snackError,
+        studyUuid,
+        csvHeaders,
+    ]);
 
     return (
         <>
@@ -151,20 +139,18 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     />
                 </Grid>
                 <Grid item>
-                        <span>
-                            <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                        </span>
                     <span>
-                            <IconButton
-                              aria-label="exportCSVButton"
-                              onClick={exportResultsAsCsv}
-                              disabled={
-                                sensiKind === COMPUTATION_RESULTS_LOGS
-                              }
-                            >
-                                <GetAppIcon />
-                            </IconButton>
-                        </span>
+                        <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                    </span>
+                    <span>
+                        <IconButton
+                            aria-label="exportCSVButton"
+                            onClick={exportResultsAsCsv}
+                            disabled={sensiKind === COMPUTATION_RESULTS_LOGS}
+                        >
+                            <GetAppIcon />
+                        </IconButton>
+                    </span>
                 </Grid>
             </Grid>
             {sensiResultKind.includes(sensiKind) && (
@@ -192,6 +178,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             updateFilter,
                             filterSelector,
                         }}
+                        setCsvHeaders={setCsvHeaders}
                     />
                 </>
             )}

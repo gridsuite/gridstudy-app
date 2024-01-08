@@ -7,7 +7,7 @@
 
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
@@ -46,6 +46,7 @@ const SensitivityAnalysisResult = ({
     sortProps,
     filterProps,
     isLoading,
+    setCsvHeaders,
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
@@ -168,6 +169,13 @@ const SensitivityAnalysisResult = ({
 
         return returnedTable;
     }, [makeColumn, nOrNkIndex, sensiKind]);
+
+    useEffect(() => {
+        console.log('columnsDefs : ', columnsDefs);
+        setCsvHeaders(
+            columnsDefs.map((col) => col?.headerComponentParams?.displayName)
+        );
+    }, [columnsDefs, setCsvHeaders]);
 
     const rows = useMemo(() => makeRows(result), [result]);
 

@@ -168,27 +168,27 @@ export function getSensitivityAnalysisFactorsCount(
 export function exportSensitivityResultsAsCsv(
     studyUuid,
     currentNodeUuid,
-    selector
+    resultSelector,
+    headers
 ) {
     console.info(
         `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
     );
 
-    // Add params to Url
-    const urlSearchParams = new URLSearchParams();
-    const jsoned = JSON.stringify(selector);
-    urlSearchParams.append('selector', jsoned);
-
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
         currentNodeUuid
-    )}/sensitivity-analysis/result/csv-StreamingResponseBody?${urlSearchParams}`;
+    )}/sensitivity-analysis/result/csv`;
     console.debug(url);
     return backendFetch(url, {
-        method: 'GET',
+        method: 'POST',
         headers: {
             Accept: 'application/octet-stream',
             'Content-Type': 'application/octet-stream',
+        },
+        body: {
+            selector: JSON.stringify(resultSelector),
+            csvHeaders: headers,
         },
     });
 }
