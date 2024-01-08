@@ -9,7 +9,6 @@ import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import React, {
     FunctionComponent,
     useCallback,
-    useEffect,
     useMemo,
     useState,
 } from 'react';
