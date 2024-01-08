@@ -15,6 +15,7 @@ import {
     ColDef,
     ICellRendererParams,
     ValueFormatterParams,
+    ValueGetterParams,
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import {
@@ -119,13 +120,13 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 id: 'actualOverloadDuration',
             }),
             field: 'actualOverloadDuration',
-            valueGetter: (value: ValueFormatterParams) =>
+            valueGetter: (value: ValueGetterParams) =>
                 convertDuration(value.data.actualOverloadDuration),
         },
         {
             headerName: intl.formatMessage({ id: 'upComingOverloadDuration' }),
             field: 'upComingOverloadDuration',
-            valueGetter: (value: ValueFormatterParams) => {
+            valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });
                 } else if (
