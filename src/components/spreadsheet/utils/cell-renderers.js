@@ -105,8 +105,8 @@ export const formatCell = (props) => {
     let tooltipValue = undefined;
     if (props.colDef.valueGetter) {
         value = props?.context?.network
-          ? props.colDef.valueGetter(props, props.context.network)
-          : props.colDef.valueGetter(props);
+            ? props.colDef.valueGetter(props, props.context.network)
+            : props.colDef.valueGetter(props);
     }
     if (props.colDef.normed) {
         value = props.colDef.normed(props.fluxConvention, value);
