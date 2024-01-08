@@ -62,6 +62,23 @@ import {
 } from '../utils/config-params';
 
 let lightTheme = createTheme({
+    components: {
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+    },
+
     palette: {
         mode: 'light',
     },
@@ -116,6 +133,22 @@ lightTheme = createTheme(lightTheme, {
 });
 
 let darkTheme = createTheme({
+    components: {
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+    },
     palette: {
         mode: 'dark',
     },

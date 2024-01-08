@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    useCallback,
-    useState,
-    useLayoutEffect,
-    useRef,
-    useEffect,
-} from 'react';
+import { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
@@ -50,7 +44,7 @@ import {
     updateSwitchState,
 } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { setComputationRunning, setComputingStatus } from 'redux/actions';
+import { setComputationStarting, setComputingStatus } from 'redux/actions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useDispatch } from 'react-redux';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
@@ -96,7 +90,9 @@ function SingleLineDiagramContent(props) {
     const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
-    const computationRunning = useSelector((state) => state.computationRunning);
+    const computationStarting = useSelector(
+        (state) => state.computationStarting
+    );
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
@@ -275,14 +271,13 @@ function SingleLineDiagramContent(props) {
                 )
             );
             displayOneBusShortcircuitAnalysisLoader();
-            dispatch(setComputationRunning(true));
+            dispatch(setComputationStarting(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
                     });
-                    dispatch(setComputationRunning(false));
                     dispatch(
                         setComputingStatus(
                             ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
@@ -291,14 +286,13 @@ function SingleLineDiagramContent(props) {
                     );
                     resetOneBusShortcircuitAnalysisLoader();
                 })
-                .finally(closeBusMenu());
+                .finally(() => dispatch(setComputationStarting(false)));
         },
         [
             dispatch,
             displayOneBusShortcircuitAnalysisLoader,
             studyUuid,
             currentNode?.id,
-            closeBusMenu,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
         ]
@@ -316,7 +310,7 @@ function SingleLineDiagramContent(props) {
                     }
                     busId={busMenu.busId}
                     position={busMenu.position}
-                    closeBusMenu={closeBusMenu}
+                    onClose={closeBusMenu}
                 />
             )
         );
@@ -497,14 +491,6 @@ function SingleLineDiagramContent(props) {
         }
     };
 
-    useEffect(() => {
-        dispatch(
-            setComputationRunning(
-                props.oneBusShortCircuitStatus === RunningStatus.RUNNING
-            )
-        );
-    }, [props.oneBusShortCircuitStatus, dispatch]);
-
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -512,7 +498,7 @@ function SingleLineDiagramContent(props) {
     useLayoutEffect(() => {
         if (props.svg) {
             const isReadyForInteraction =
-                !computationRunning &&
+                !computationStarting &&
                 !isAnyNodeBuilding &&
                 !modificationInProgress &&
                 !props.loadingState;
@@ -622,7 +608,7 @@ function SingleLineDiagramContent(props) {
         handleNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
-        computationRunning,
+        computationStarting,
     ]);
 
     // When the loading is finished, we always reset these two states
@@ -712,7 +698,6 @@ function SingleLineDiagramContent(props) {
 
 SingleLineDiagramContent.propTypes = {
     loadFlowStatus: PropTypes.any,
-    isComputationRunning: PropTypes.bool,
     showInSpreadsheet: PropTypes.func,
     studyUuid: PropTypes.string,
     svgType: PropTypes.string,

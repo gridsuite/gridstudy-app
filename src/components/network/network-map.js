@@ -457,7 +457,7 @@ const NetworkMap = (props) => {
         longitude: props.initialPosition[0],
         latitude: props.initialPosition[1],
         zoom: props.initialZoom,
-        maxZoom: 12,
+        maxZoom: 14,
         pitch: 0,
         bearing: 0,
     };
@@ -546,6 +546,8 @@ const NetworkMap = (props) => {
                 />
                 {showTooltip && renderTooltip()}
                 <NavigationControl />
+                {/* visualizePitch true makes the compass reset the pitch when clicked in addition to visualizing it */}
+                <NavigationControl visualizePitch={true} />
             </Map>
         )
     );
