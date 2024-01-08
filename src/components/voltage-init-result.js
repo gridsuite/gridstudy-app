@@ -406,12 +406,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Box>
                 </Box>
                 <div style={{ flexGrow: 1 }}>
-                    {viNotif &&
-                        resultToShow &&
+                    {resultToShow &&
                         tabIndex === 0 &&
                         renderIndicatorsTable(resultToShow.indicators)}
-                    {viNotif &&
-                        resultToShow &&
+                    {resultToShow &&
                         tabIndex === 1 &&
                         renderReactiveSlacksTable(resultToShow.reactiveSlacks)}
                     {tabIndex === 2 && renderReportViewer()}

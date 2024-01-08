@@ -18,7 +18,6 @@ export interface ReduxState {
     computationStarting: boolean;
     optionalServices: IOptionalService[];
     limitReduction: string;
-    dynamicSimulationNotif: boolean;
     user: User;
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
     notificationIdList: UUID[];
