@@ -11,12 +11,10 @@ import {
     PREFIX_STUDY_QUERIES,
 } from './index';
 import {
-    backendDownloadFileAsStream,
     backendFetch,
     backendFetchFile,
     backendFetchJson,
     backendFetchText,
-    downloadZipFile,
     getRequestParamFromList,
 } from '../utils';
 import { getSortValue } from '../../hooks/use-aggrid-sort';

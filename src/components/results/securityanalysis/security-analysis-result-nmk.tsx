@@ -196,7 +196,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             resultType: isFromContingency
                 ? RESULT_TYPE.NMK_CONTINGENCIES
                 : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
-        }).then((response) => downloadZipFile(response, 'nmk-results.zip'));
+        }).then((fileBlob) => downloadZipFile(fileBlob, 'nmk-results.zip'));
     }, [isFromContingency, studyUuid, nodeUuid]);
 
     const agGridProps = {
