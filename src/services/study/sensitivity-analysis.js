@@ -183,12 +183,11 @@ export function exportSensitivityResultsAsCsv(
     return backendFetch(url, {
         method: 'POST',
         headers: {
-            Accept: 'application/octet-stream',
-            'Content-Type': 'application/octet-stream',
+            'Content-Type': 'application/json',
         },
-        body: {
+        body: JSON.stringify({
             selector: JSON.stringify(resultSelector),
             csvHeaders: headers,
-        },
+        }),
     });
 }

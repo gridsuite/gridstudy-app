@@ -92,19 +92,26 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     ];
 
     const [csvHeaders, setCsvHeaders] = useState([]);
+
+    const handleCsvHeadersChange = useCallback((headersCsv) => {
+        //console.log('headers : ', headers);
+        setCsvHeaders(headersCsv);
+    }, []);
+
     const exportResultsAsCsv = useCallback(() => {
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
+        console.log('csvHeaders : ', csvHeaders);
         exportSensitivityResultsAsCsv(studyUuid, nodeUuid, selector, csvHeaders)
             .then((response) => {
                 response.blob().then((blob) => {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'sensitivity_results.csv');
+                    link.setAttribute('download', 'sensitivity_results.zip');
                     link.style.display = 'none';
                     document.body.appendChild(link);
                     link.click();
@@ -178,7 +185,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             updateFilter,
                             filterSelector,
                         }}
-                        setCsvHeaders={setCsvHeaders}
+                        handleCsvHeadersChange={handleCsvHeadersChange}
                     />
                 </>
             )}

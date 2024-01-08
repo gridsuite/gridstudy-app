@@ -46,7 +46,7 @@ const SensitivityAnalysisResult = ({
     sortProps,
     filterProps,
     isLoading,
-    setCsvHeaders,
+    handleCsvHeadersChange,
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
@@ -167,11 +167,8 @@ const SensitivityAnalysisResult = ({
             );
         }
 
-        setCsvHeaders(
-            returnedTable.map((col) => col?.headerComponentParams?.displayName)
-        );
         return returnedTable;
-    }, [makeColumn, nOrNkIndex, sensiKind, setCsvHeaders]);
+    }, [makeColumn, nOrNkIndex, sensiKind]);
 
     const rows = useMemo(() => makeRows(result), [result]);
 
@@ -190,11 +187,18 @@ const SensitivityAnalysisResult = ({
         suppressMultiSort: true,
     };
 
-    const onGridReady = useCallback((params) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
+    const onGridReady = useCallback(
+        (params) => {
+            if (params.api) {
+                params.api.sizeColumnsToFit();
+                const csvHeaders = params.api.columnModel.columnDefs.map(
+                    (c) => c.headerComponentParams.displayName
+                );
+                handleCsvHeadersChange(csvHeaders);
+            }
+        },
+        [handleCsvHeadersChange]
+    );
     const message = getNoRowsMessage(
         messages,
         rows,
