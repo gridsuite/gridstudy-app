@@ -299,7 +299,10 @@ export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
             getOptionLabel={(countryCode) => translate(countryCode)}
             style={{ width: '100%' }}
             onChange={(event, newValue) => {
-                setValue(newValue);
+                setValue({
+                    countryName: event.target.childNodes[0].data,
+                    countryCode: newValue,
+                });
             }}
             renderInput={(params) => (
                 <TextField
