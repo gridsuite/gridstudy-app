@@ -165,6 +165,8 @@
     "VoltageInit": "Voltage profile initialization",
     "Indicators": "Indicators",
     "ReactiveSlacks": "Reactive slacks",
+    "TotalInjection": "Total injection",
+    "TotalConsumption": "Total consumption",
     "Slack": "Slack (MVar)",
     "BusId": "Bus ID",
     "VoltageInitStatus": "STATUS",
@@ -835,7 +837,8 @@
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
     "ModifyShuntCompensator": "Modify shunt compensator (Linear)",
-    "SectionCountBetweenZeroAndMaximumSectionCount": "Section count must be greater or equal to 0 and lesser or equal to Maximum section count",
+    "MaximumSectionCountMinimumOne": "Maximum section count must be greater or equal to 1",
+    "SectionCountBetweenOneAndMaximumSectionCount": "Section count must be greater or equal to 1 and lesser or equal to Maximum section count",
     "MaximumSectionCount": "Maximum number of sections",
     "ShuntSectionCount": "Current number of sections",
     "SwitchedOnMaxQAtNominalV": "Switch-on Q at nominal voltage",
@@ -1124,8 +1127,10 @@
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
-    "SimulatedCalculation": "simulated calculations",
+    "SimulatedCalculation": "Simulated calculations",
+    "SimulatedCalculationExceedsLimit": "Simulated calculations exceeds limit",
     "SimulatedCalculationMax": "500 000 max",
+    "loadingComputing": "Computing in progress...",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
@@ -1349,5 +1354,6 @@
     "ByFilterDeletion": "By filter",
     "DeleteEquipmentByFilter": "Delete equipments by filter",
     "ratedVoltage1": "Rated voltage 1 (kV)",
-    "ratedVoltage2": "Rated voltage 2 (kV)"
+    "ratedVoltage2": "Rated voltage 2 (kV)",
+    "substationCountry": "Country"
 }

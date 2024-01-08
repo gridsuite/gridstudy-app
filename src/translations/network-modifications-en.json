@@ -42,5 +42,6 @@
     "network_modifications/tabular/LINE_MODIFICATION": "line modifications",
     "network_modifications/tabular/BATTERY_MODIFICATION": "battery modifications",
     "network_modifications/tabular/VOLTAGE_LEVEL_MODIFICATION": "voltage level modifications",
-    "network_modifications/tabular/TWO_WINDINGS_TRANSFORMER_MODIFICATION": "two windings transformer modifications"
+    "network_modifications/tabular/TWO_WINDINGS_TRANSFORMER_MODIFICATION": "two windings transformer modifications",
+    "network_modifications/tabular/SUBSTATION_MODIFICATION": "substation modifications"
 }

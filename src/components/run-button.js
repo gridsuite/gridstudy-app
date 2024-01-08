@@ -49,10 +49,6 @@ const RunButton = ({
         }
     }
 
-    function isRunning() {
-        return getRunningStatus() === RunningStatus.RUNNING;
-    }
-
     useEffect(() => {
         if (!activeRunnables.includes(selectedRunnable)) {
             // a computation may become unavailable when developer mode is disabled, then switch on first one
@@ -68,14 +64,15 @@ const RunButton = ({
         if (selectedRunnable === ComputingType.LOADFLOW) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
-        } else if (selectedRunnable === ComputingType.SECURITY_ANALYSIS) {
-            // We can run only 1 analysis at a time
-            return getRunningStatus() === RunningStatus.RUNNING;
         } else if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
             // Load flow button's status must be "SUCCEED"
-            return getStatus(ComputingType.LOADFLOW) !== RunningStatus.SUCCEED;
+            return (
+                getRunningStatus() === RunningStatus.RUNNING ||
+                getStatus(ComputingType.LOADFLOW) !== RunningStatus.SUCCEED
+            );
         } else {
-            return false;
+            // We can run only 1 computation at a time
+            return getRunningStatus() === RunningStatus.RUNNING;
         }
     }
 
@@ -92,7 +89,6 @@ const RunButton = ({
             selectionDisabled={disabled}
             text={runnablesText[selectedRunnable] || ''}
             actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
-            isRunning={isRunning()}
             computationStopped={computationStopped}
         />
     );
