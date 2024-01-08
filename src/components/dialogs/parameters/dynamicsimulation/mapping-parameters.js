@@ -49,7 +49,11 @@ const MappingParameters = ({ mapping, path }) => {
         },
     };
 
-    return <Grid container>{makeComponents(defParams, path)}</Grid>;
+    return (
+        <Grid xl={6} container>
+            {makeComponents(defParams, path)}
+        </Grid>
+    );
 };
 
 export default MappingParameters;

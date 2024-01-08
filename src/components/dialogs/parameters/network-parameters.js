@@ -11,12 +11,7 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FLUX_CONVENTION,
 } from '../../../utils/config-params';
-import {
-    CloseButton,
-    LabelledButton,
-    useParameterState,
-    styles,
-} from './parameters';
+import { LabelledButton, useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
 import { fetchDefaultParametersValues } from '../../../services/utils';
@@ -28,7 +23,7 @@ export const FluxConventions = {
     TARGET: 'target',
 };
 
-export const NetworkParameters = ({ hideParameters }) => {
+export const NetworkParameters = () => {
     const [, handleChangeFluxConvention] = useParameterState(
         PARAM_FLUX_CONVENTION
     );
@@ -50,47 +45,51 @@ export const NetworkParameters = ({ hideParameters }) => {
 
     return (
         <>
-            <Grid
-                container
-                spacing={1}
-                key={'networkParameters'}
-                sx={styles.scrollableGrid}
-            >
-                <ParamLine
-                    type={ParameterType.DropDown}
-                    param_name_id={PARAM_FLUX_CONVENTION}
-                    labelTitle="FluxConvention"
-                    labelValue="flux-convention-select-label"
-                    values={{
-                        [FluxConventions.IIDM]: 'FluxConvention.iidm',
-                        [FluxConventions.TARGET]: 'FluxConvention.target',
-                    }}
-                />
-                <LineSeparator />
-                <Grid item container xs={12}>
+            <Grid xl={6} sx={{ height: '100%' }}>
+                <Grid
+                    container
+                    spacing={1}
+                    key={'networkParameters'}
+                    sx={styles.scrollableGrid}
+                    marginTop={-3}
+                >
                     <ParamLine
-                        type={ParameterType.Switch}
-                        param_name_id={PARAM_DEVELOPER_MODE}
-                        label="EnableDeveloperMode"
+                        type={ParameterType.DropDown}
+                        param_name_id={PARAM_FLUX_CONVENTION}
+                        labelTitle="FluxConvention"
+                        labelValue="flux-convention-select-label"
+                        values={{
+                            [FluxConventions.IIDM]: 'FluxConvention.iidm',
+                            [FluxConventions.TARGET]: 'FluxConvention.target',
+                        }}
                     />
-                    {enableDeveloperMode && (
-                        <Alert severity={'warning'}>
-                            <FormattedMessage id="DeveloperModeWarningMsg" />
-                        </Alert>
-                    )}
+                    <LineSeparator />
+                    <Grid item container xs={12}>
+                        <ParamLine
+                            type={ParameterType.Switch}
+                            param_name_id={PARAM_DEVELOPER_MODE}
+                            label="EnableDeveloperMode"
+                        />
+                        {enableDeveloperMode && (
+                            <Alert severity={'warning'}>
+                                <FormattedMessage id="DeveloperModeWarningMsg" />
+                            </Alert>
+                        )}
+                    </Grid>
                 </Grid>
+                <LineSeparator />
             </Grid>
-            <LineSeparator />
             <Grid
                 container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton
+                )}
             >
                 <LabelledButton
                     callback={resetNetworkParameters}
                     label="resetToDefault"
                 />
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );
