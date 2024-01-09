@@ -49,6 +49,7 @@ export default class LogReport {
         this.subReports = [];
         this.logs = [];
         this.parentReportId = parentReportId;
+        // The different severities for this report (not including the subreports)
         this.severityList = [];
         // Represent all the different severities of this report and it's subreports
         this.allSeverityList = [];
@@ -108,6 +109,7 @@ export default class LogReport {
         jsonReporter.reports.map((value) =>
             this.logs.push(new LogReportItem(value, this.uniqueId))
         );
+        // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
         jsonReporter.taskValues?.severityList?.value
             .split(/[[,\]]/)
             .filter((e) => e.length)
@@ -134,10 +136,8 @@ export default class LogReport {
         this.getSubReports()
             .map((e) => e.initAllSeverityList())
             .forEach((e) => {
-                logSeverityList = logSeverityList.concat(e);
+                logSeverityList = [...new Set([...logSeverityList, ...e])];
             });
-
-        logSeverityList = [...new Set(logSeverityList)];
 
         return logSeverityList;
     }
