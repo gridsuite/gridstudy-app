@@ -180,8 +180,8 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
                 valueSetter: (params) => {
-                    params.data.countryCode = params.newValue.countryCode;
-                    params.data.countryName = params.newValue.countryName;
+                    params.data.countryCode = params?.newValue?.countryCode;
+                    params.data.countryName = params?.newValue?.countryName;
                     return params;
                 },
             },

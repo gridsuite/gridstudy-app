@@ -300,7 +300,7 @@ export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
             style={{ width: '100%' }}
             onChange={(event, newValue) => {
                 setValue({
-                    countryName: event.target.childNodes[0].data || '',
+                    countryName: event?.target?.childNodes[0]?.data || '',
                     countryCode: newValue,
                 });
             }}
