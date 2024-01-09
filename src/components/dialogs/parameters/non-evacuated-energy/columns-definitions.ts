@@ -72,7 +72,7 @@ export const COLUMNS_DEFINITIONS_STAGES = [
         initialValue: 100,
         editable: true,
         floatItems: true,
-        width: '10%',
+        width: '13%',
     },
     {
         label: 'PercentMaxP2',
@@ -80,7 +80,7 @@ export const COLUMNS_DEFINITIONS_STAGES = [
         initialValue: 100,
         editable: true,
         floatItems: true,
-        width: '10%',
+        width: '13%',
     },
     {
         label: 'PercentMaxP3',
@@ -88,7 +88,7 @@ export const COLUMNS_DEFINITIONS_STAGES = [
         initialValue: 100,
         editable: true,
         floatItems: true,
-        width: '10%',
+        width: '13%',
     },
 ];
 
@@ -168,7 +168,7 @@ export const COLUMNS_DEFINITIONS_MONITORED_BRANCHES = [
         initialValue: '',
         editable: true,
         textItems: true,
-        width: '10%',
+        width: '13%',
     },
     {
         label: 'coeffN',
@@ -176,7 +176,7 @@ export const COLUMNS_DEFINITIONS_MONITORED_BRANCHES = [
         initialValue: 100,
         editable: true,
         floatItems: true,
-        width: '10%',
+        width: '13%',
     },
     {
         label: 'istNm1',
@@ -192,7 +192,7 @@ export const COLUMNS_DEFINITIONS_MONITORED_BRANCHES = [
         initialValue: '',
         editable: true,
         textItems: true,
-        width: '10%',
+        width: '13%',
     },
     {
         label: 'coeffNm1',
@@ -200,7 +200,7 @@ export const COLUMNS_DEFINITIONS_MONITORED_BRANCHES = [
         initialValue: 100,
         editable: true,
         floatItems: true,
-        width: '10%',
+        width: '13%',
     },
     {
         label: 'Active',
