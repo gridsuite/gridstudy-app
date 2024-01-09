@@ -288,7 +288,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
@@ -321,7 +320,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
