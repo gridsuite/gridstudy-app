@@ -232,7 +232,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
@@ -269,7 +269,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
