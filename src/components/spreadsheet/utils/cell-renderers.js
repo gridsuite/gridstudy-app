@@ -17,6 +17,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { Box } from '@mui/system';
 import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import { FormattedMessage } from 'react-intl';
 
 const styles = {
     editCell: {
@@ -82,6 +83,18 @@ export const BooleanCellRenderer = (props) => {
                     disableRipple={true}
                 />
             )}
+        </div>
+    );
+};
+
+export const EnumCellRenderer = (props) => {
+    const valueId =
+        Object.values(props.enumValues).find(
+            (value) => value.id === props.value
+        )?.label ?? 'Unknown';
+    return (
+        <div>
+            <FormattedMessage id={valueId} />
         </div>
     );
 };
