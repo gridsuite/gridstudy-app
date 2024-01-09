@@ -111,6 +111,7 @@ export default class LogReport {
         jsonReporter.taskValues?.severityList?.value
             .split(/[[,\]]/)
             .filter((e) => e.length)
+            .map((es) => es.trim())
             .forEach((el) => this.severityList.push(el));
         this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
     }
