@@ -53,6 +53,14 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'lowVoltageLimit',
         'highVoltageLimit',
     ],
+    SHUNT_COMPENSATOR: [
+        'equipmentId',
+        'maximumSectionCount',
+        'sectionCount',
+        'shuntCompensatorType',
+        'maxQAtNominalV',
+        'maxSusceptance',
+    ],
     LINE: [
         EQUIPMENT_ID,
         SERIES_RESISTANCE,
@@ -86,6 +94,7 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
     BATTERY: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+    SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
     LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
     TWO_WINDINGS_TRANSFORMER:
         MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
