@@ -863,7 +863,7 @@
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarCount": "Nb de barres",
-    "voltageSectionCount": "Nb de sections",
+    "numberOfSections": "Nb de sections",
     "BusBarSectionID": "ID",
     "SwitchesBetweenSections": "OCs entre sections",
     "Coupling_Omnibus": "Couplage / omnibus",

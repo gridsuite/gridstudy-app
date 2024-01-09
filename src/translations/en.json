@@ -864,7 +864,7 @@
     "Substation": "Substation",
     "BusBarSections": "Bus bar sections",
     "BusBarCount": "Busbar Count",
-    "voltageSectionCount": "Section Count",
+    "numberOfSections": "Section Count",
     "BusBarSectionID": "ID",
     "SwitchesBetweenSections": "Switches between sections",
     "Coupling_Omnibus": "Coupler",
