@@ -45,9 +45,9 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'DROOP', label: 'Droop' },
     ],
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
-        { id: 'MAXIMUM_SECTION_COUNT', label: 'MaximumSectionCount' },
-        { id: 'SECTION_COUNT', label: 'ShuntSectionCount' },
-        { id: 'MAXIMUM_SUSCEPTANCE', label: 'MaxShuntSusceptance' },
+        { id: 'MAXIMUM_SECTION_COUNT', label: 'maximumSectionCount' },
+        { id: 'SECTION_COUNT', label: 'sectionCount' },
+        { id: 'MAXIMUM_SUSCEPTANCE', label: 'maxSusceptance' },
         { id: 'MAXIMUM_Q_AT_NOMINAL_VOLTAGE', label: 'maxQAtNominalV' },
     ],
     [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [

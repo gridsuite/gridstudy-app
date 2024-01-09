@@ -92,7 +92,7 @@ export const CharacteristicsForm = ({
     const maximumSectionCountField = (
         <IntegerInput
             name={MAXIMUM_SECTION_COUNT}
-            label={'MaximumSectionCount'}
+            label={'maximumSectionCount'}
             previousValue={previousValues?.maximumSectionCount}
             clearable={isModification}
         />
@@ -101,7 +101,7 @@ export const CharacteristicsForm = ({
     const sectionCountField = (
         <IntegerInput
             name={SECTION_COUNT}
-            label={'ShuntSectionCount'}
+            label={'sectionCount'}
             previousValue={previousValues?.sectionCount}
             clearable={isModification}
         />
@@ -157,7 +157,7 @@ export const CharacteristicsForm = ({
     const maxSusceptanceField = (
         <FloatInput
             name={MAX_SUSCEPTANCE}
-            label={'MaxShuntSusceptance'}
+            label={'maxSusceptance'}
             adornment={SusceptanceAdornment}
             previousValue={previousMaxSusceptance}
             clearable={isModification}
