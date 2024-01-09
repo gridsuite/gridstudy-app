@@ -87,7 +87,7 @@ import {
     fetchDefaultNonEvacuatedEnergyProvider,
     fetchNonEvacuatedEnergyProvider,
     updateNonEvacuatedEnergyProvider,
-} from '../services/study/non-evacuated-energy';
+} from 'services/study/non-evacuated-energy';
 import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
