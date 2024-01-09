@@ -14,12 +14,28 @@ import {
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
 import { GridReadyEvent } from 'ag-grid-community';
-import { IntlShape, useIntl } from 'react-intl';
+import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
-import { Button } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
+import GetAppIcon from '@mui/icons-material/GetApp';
+
+const styles = {
+    gridContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+    },
+    grid: {
+        flexGrow: '1',
+    },
+};
 
 export const SecurityAnalysisTable: FunctionComponent<
     SecurityAnalysisResultProps
@@ -57,16 +73,32 @@ export const SecurityAnalysisTable: FunctionComponent<
     );
 
     return (
-        <>
-            <Button onClick={exportCsv}>Télécharger CSV</Button>
-            <CustomAGGrid
-                rowData={rowsToShow}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                onGridReady={onGridReady}
-                overlayNoRowsTemplate={overlayNoRowsTemplate}
-                {...agGridProps}
-            />
-        </>
+        <Box sx={styles.gridContainer}>
+            <Box sx={styles.csvExport}>
+                <Box style={{ flexGrow: 1 }}></Box>
+                <Box>
+                    <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                </Box>
+                <Box>
+                    <IconButton
+                        disabled={!rowsToShow || rowsToShow.length === 0}
+                        aria-label="exportCSVButton"
+                        onClick={exportCsv}
+                    >
+                        <GetAppIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+            <Box sx={styles.grid}>
+                <CustomAGGrid
+                    rowData={rowsToShow}
+                    columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
+                    overlayNoRowsTemplate={overlayNoRowsTemplate}
+                    {...agGridProps}
+                />
+            </Box>
+        </Box>
     );
 };

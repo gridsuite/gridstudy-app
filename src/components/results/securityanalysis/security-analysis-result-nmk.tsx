@@ -56,6 +56,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
+    enumValueTranslations,
 }) => {
     const { content } = result || {};
 
@@ -191,13 +192,97 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [isFromContingency, theme.selectedRow.background]
     );
 
+    const nmkContingenciesResultsCsvHeaders = useMemo(
+        () => [
+            intl.formatMessage({
+                id: 'ContingencyId',
+            }),
+            intl.formatMessage({
+                id: 'ComputationStatus',
+            }),
+            intl.formatMessage({
+                id: 'Constraint',
+            }),
+            intl.formatMessage({
+                id: 'ViolationType',
+            }),
+            intl.formatMessage({
+                id: 'LimitName',
+            }),
+            intl.formatMessage({
+                id: 'Limit',
+            }),
+            intl.formatMessage({
+                id: 'CalculatedValue',
+            }),
+            intl.formatMessage({ id: 'Loading' }),
+            intl.formatMessage({ id: 'Overload' }),
+            intl.formatMessage({ id: 'LimitSide' }),
+        ],
+        [intl]
+    );
+
+    const nmkConstraintsResultsCsvHeaders = useMemo(
+        () => [
+            intl.formatMessage({
+                id: 'Constraint',
+            }),
+            intl.formatMessage({
+                id: 'ContingencyId',
+            }),
+            intl.formatMessage({
+                id: 'ComputationStatus',
+            }),
+            intl.formatMessage({
+                id: 'ViolationType',
+            }),
+            intl.formatMessage({
+                id: 'LimitName',
+            }),
+            intl.formatMessage({
+                id: 'Limit',
+            }),
+            intl.formatMessage({
+                id: 'CalculatedValue',
+            }),
+            intl.formatMessage({ id: 'Loading' }),
+            intl.formatMessage({ id: 'Overload' }),
+            intl.formatMessage({ id: 'LimitSide' }),
+        ],
+        [intl]
+    );
+
+    const csvHeaders = useMemo(
+        () =>
+            isFromContingency
+                ? nmkContingenciesResultsCsvHeaders
+                : nmkConstraintsResultsCsvHeaders,
+        [
+            isFromContingency,
+            nmkContingenciesResultsCsvHeaders,
+            nmkConstraintsResultsCsvHeaders,
+        ]
+    );
+
     const exportResultCsv = useCallback(() => {
-        downloadSecurityAnalysisResultZippedCsv(studyUuid, nodeUuid, {
-            resultType: isFromContingency
-                ? RESULT_TYPE.NMK_CONTINGENCIES
-                : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
-        }).then((fileBlob) => downloadZipFile(fileBlob, 'nmk-results.zip'));
-    }, [isFromContingency, studyUuid, nodeUuid]);
+        downloadSecurityAnalysisResultZippedCsv(
+            studyUuid,
+            nodeUuid,
+            {
+                resultType: isFromContingency
+                    ? RESULT_TYPE.NMK_CONTINGENCIES
+                    : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
+            },
+            csvHeaders,
+            enumValueTranslations
+        ).then((fileBlob) => downloadZipFile(fileBlob, 'nmk-results.zip'));
+    }, [
+        csvHeaders,
+        enumValueTranslations,
+        isFromContingency,
+        studyUuid,
+        nodeUuid,
+    ]);
 
     const agGridProps = {
         postSortRows: handlePostSortRows,

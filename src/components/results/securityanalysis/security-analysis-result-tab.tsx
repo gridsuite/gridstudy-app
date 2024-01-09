@@ -14,7 +14,7 @@ import React, {
     useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { ReduxState } from '../../../redux/reducer.type';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
@@ -80,6 +80,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [hasFilter, setHasFilter] = useState<boolean>(false);
+
+    const intl = useIntl();
 
     const N_RESULTS_TAB_INDEX = 0;
     const NMK_RESULTS_TAB_INDEX = 1;
@@ -227,6 +229,30 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         delay: RESULTS_LOADING_DELAY,
     });
 
+    const enumValueTranslations = useMemo(() => {
+        const returnedValue: Record<string, string> = {};
+        const enumValuesToTranslate = [
+            'CURRENT',
+            'HIGH_VOLTAGE',
+            'LOW_VOLTAGE',
+            'ACTIVE_POWER',
+            'APPARENT_POWER',
+            'MAX_ITERATION_REACHED',
+            'OTHER',
+            'SOLVER_FAILED',
+            'CONVERGED',
+            'FAILED',
+            'ONE',
+            'TWO',
+        ];
+
+        enumValuesToTranslate.forEach((value) => {
+            returnedValue[value] = intl.formatMessage({ id: value });
+        });
+
+        return returnedValue;
+    }, [intl]);
+
     return (
         <>
             <Box sx={styles.container}>
@@ -285,6 +311,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         filterEnums={filterEnums}
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
+                        enumValueTranslations={enumValueTranslations}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (
@@ -313,6 +340,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             filterSelector,
                         }}
                         filterEnums={filterEnums}
+                        enumValueTranslations={enumValueTranslations}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&

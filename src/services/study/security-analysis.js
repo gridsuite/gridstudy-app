@@ -97,10 +97,12 @@ export function fetchSecurityAnalysisResult(
 export function downloadSecurityAnalysisResultZippedCsv(
     studyUuid,
     currentNodeUuid,
-    queryParams
+    queryParams,
+    headers,
+    enumValueTranslations
 ) {
     console.info(
-        `Fetching security analysis csv on ${studyUuid} and node ${currentNodeUuid} ...`
+        `Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
@@ -113,7 +115,17 @@ export function downloadSecurityAnalysisResultZippedCsv(
 
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
-    return backendFetchFile(urlWithParams);
+    return backendFetchFile(urlWithParams, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            headers,
+            enumValueTranslations: enumValueTranslations,
+        }),
+    });
 }
 
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {

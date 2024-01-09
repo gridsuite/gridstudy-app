@@ -151,6 +151,7 @@ export interface SecurityAnalysisResultNProps {
     filterEnums: FilterEnumsType;
     studyUuid: UUID;
     nodeUuid: UUID;
+    enumValueTranslations?: Record<string, string>;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -164,6 +165,7 @@ export interface SecurityAnalysisResultNmkProps {
     sortProps: SortPropsType;
     filterProps: FilterPropsType;
     filterEnums: FilterEnumsType;
+    enumValueTranslations?: Record<string, string>;
 }
 
 export interface SecurityAnalysisNTableRow {

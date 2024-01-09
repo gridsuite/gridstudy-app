@@ -32,6 +32,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
     filterEnums,
     studyUuid,
     nodeUuid,
+    enumValueTranslations,
 }) => {
     const intl: IntlShape = useIntl();
     const rows = useMemo(() => {
@@ -58,11 +59,45 @@ export const SecurityAnalysisResultN: FunctionComponent<
             : [];
     }, [intl, result]);
 
+    const csvHeaders = useMemo(
+        () => [
+            intl.formatMessage({
+                id: 'Equipment',
+            }),
+            intl.formatMessage({
+                id: 'ViolationType',
+            }),
+            intl.formatMessage({
+                id: 'LimitName',
+            }),
+            intl.formatMessage({
+                id: 'Limit',
+            }),
+            intl.formatMessage({
+                id: 'CalculatedValue',
+            }),
+            intl.formatMessage({
+                id: 'Loading',
+            }),
+            intl.formatMessage({
+                id: 'Overload',
+            }),
+            intl.formatMessage({ id: 'LimitSide' }),
+        ],
+        [intl]
+    );
+
     const exportResultCsv = useCallback(() => {
-        downloadSecurityAnalysisResultZippedCsv(studyUuid, nodeUuid, {
-            resultType: RESULT_TYPE.N,
-        }).then((fileBlob) => downloadZipFile(fileBlob, 'n-results.zip'));
-    }, [studyUuid, nodeUuid]);
+        downloadSecurityAnalysisResultZippedCsv(
+            studyUuid,
+            nodeUuid,
+            {
+                resultType: RESULT_TYPE.N,
+            },
+            csvHeaders,
+            enumValueTranslations
+        ).then((fileBlob) => downloadZipFile(fileBlob, 'n-results.zip'));
+    }, [enumValueTranslations, csvHeaders, studyUuid, nodeUuid]);
 
     const columnDefs = useMemo(
         () =>

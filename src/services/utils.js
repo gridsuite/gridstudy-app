@@ -125,7 +125,6 @@ const downloadFile = (blob, filename, type) => {
     if (type === FILE_TYPE.ZIP) {
         contentType = 'application/octet-stream';
     }
-    console.log('BLOB', blob);
     const href = window.URL.createObjectURL(new Blob([blob], { contentType }));
     const link = document.createElement('a');
     link.href = href;
