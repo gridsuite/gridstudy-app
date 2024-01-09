@@ -42,19 +42,19 @@ const validationSchema = yup
         })
     )
     .test('unique-keys', 'DuplicatedProps', (values) => {
-        const keys = values.map((value) => value.key);
+        const keys = values?.map((value) => value.key);
         const uniqueKeys = new Set(keys);
-        return keys.length === uniqueKeys.size;
+        return keys?.length === uniqueKeys.size;
     });
 
-function arrayToObject(arr) {
+function arrayToObject(arr: any[]) {
     return arr.reduce((obj, item) => {
         obj[item.key] = item.value;
         return obj;
     }, {});
 }
 
-function initializeLocalRowData(rowData) {
+function initializeLocalRowData(rowData: any) {
     if (!rowData?.properties) {
         return [];
     }
@@ -65,7 +65,7 @@ function initializeLocalRowData(rowData) {
 }
 
 export const SitePropertiesEditor = forwardRef(
-    ({ colDef, gridApi, rowData }, ref) => {
+    ({ colDef, gridApi, rowData } : any, ref) => {
         const theme = useTheme();
         const [error, setError] = useState('');
         const intl = useIntl();
@@ -90,7 +90,7 @@ export const SitePropertiesEditor = forwardRef(
         );
 
         const handleRemoveRow = useCallback(
-            (index) => {
+            (index: number) => {
                 const newData = [...localRowData];
                 newData.splice(index, 1);
                 // Update the id of the remaining rows
@@ -115,7 +115,7 @@ export const SitePropertiesEditor = forwardRef(
                 validationSchema.validateSync(localRowData, {
                     abortEarly: true,
                 });
-            } catch (err) {
+            } catch (err: any) {
                 setError(
                     intl.formatMessage({
                         id: err.errors[0],
@@ -131,13 +131,13 @@ export const SitePropertiesEditor = forwardRef(
             return !hasError;
         };
 
-        const handleNameChange = (index, value) => {
+        const handleNameChange = (index: number, value: any) => {
             const newData = [...localRowData];
             newData[index].key = value;
             setRowData(newData);
         };
 
-        const handleValueChange = (index, value) => {
+        const handleValueChange = (index: number, value: any) => {
             const newData = [...localRowData];
             newData[index].value = value;
             setRowData(newData);
@@ -250,7 +250,7 @@ export const SitePropertiesEditor = forwardRef(
     }
 );
 
-const PropertiesEditorHeader = ({ darkTheme, handleAddRow }) => {
+const PropertiesEditorHeader = ({ darkTheme, handleAddRow } : any) => {
     const intl = useIntl();
     const columnDefs = useMemo(() => {
         return [
@@ -271,9 +271,9 @@ const PropertiesEditorHeader = ({ darkTheme, handleAddRow }) => {
                 {columnDefs.map((column) => (
                     <TableCell key={column.label}>
                         <Box
-                            sx={{
-                                backgroundColor: column.color,
-                            }}
+                            // sx={{
+                            //     backgroundColor: column.color,
+                            // }}
                         >
                             <FormattedMessage id={column.label} />
                         </Box>
