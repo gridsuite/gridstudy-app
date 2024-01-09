@@ -208,7 +208,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 limitReductionParam / 100.0
                             ),
                         () => {},
-                        () => {},
+                        () => null,
                         'startLoadFlowError'
                     );
                 },
@@ -313,7 +313,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         ComputingType.VOLTAGE_INIT,
                         null,
                         () => {
-                            setComputationStopped(false);
                             return startVoltageInit(studyUuid, currentNode?.id);
                         },
                         () => {},
