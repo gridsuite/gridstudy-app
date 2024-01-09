@@ -11,11 +11,13 @@ import {
     PropertiesCellRenderer,
 } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { SitePropertiesEditor } from './equipement-table-popup-editors';
 import {
-    BooleanListField,
     EnumListField,
     GeneratorRegulatingTerminalEditor,
     NumericalField,
+    SelectCountryField,
+    BooleanListField,
 } from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
@@ -173,18 +175,43 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
             },
             {
                 id: 'Country',
                 field: 'countryName',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: SelectCountryField,
+                valueSetter: (params) => {
+                    params.data.countryCode = params?.newValue?.countryCode;
+                    params.data.countryName = params?.newValue?.countryName;
+                    return params;
+                },
             },
             {
                 id: 'Properties',
                 field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter, // valueFormatter does not work here
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
             },
         ],
     },
