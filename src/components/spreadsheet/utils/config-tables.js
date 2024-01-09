@@ -1877,7 +1877,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaximumSectionCount',
+                id: 'maximumSectionCount',
                 field: 'maximumSectionCount',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1899,7 +1899,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'ShuntSectionCount',
+                id: 'sectionCount',
                 field: 'sectionCount',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1977,7 +1977,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxShuntSusceptance',
+                id: 'maxSusceptance',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 field: 'maxSusceptance',
