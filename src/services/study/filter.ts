@@ -8,7 +8,14 @@
 import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
-import { ExpertFilter } from '../../components/dialogs/filter/expert/expert-filter.type';
+import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
+
+interface ExpertFilter {
+    id?: UUID;
+    type: 'EXPERT';
+    equipmentType: string; // TODO must be EquipmentType enum
+    rules: RuleGroupTypeExport;
+}
 
 export function evaluateFilter(
     studyUuid: UUID,
