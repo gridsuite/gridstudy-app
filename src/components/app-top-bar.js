@@ -224,7 +224,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
-
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
