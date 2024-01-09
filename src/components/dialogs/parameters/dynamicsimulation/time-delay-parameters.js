@@ -44,7 +44,11 @@ const defParams = {
 };
 
 const TimeDelayParameters = ({ path }) => {
-    return <Grid container>{makeComponents(defParams, path)}</Grid>;
+    return (
+        <Grid xl={6} container>
+            {makeComponents(defParams, path)}
+        </Grid>
+    );
 };
 
 export default TimeDelayParameters;
