@@ -840,7 +840,7 @@
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
     "ModifyShuntCompensator": "Modify shunt compensator (Linear)",
     "MaximumSectionCountMinimumOne": "Maximum section count must be greater or equal to 1",
-    "SectionCountBetweenOneAndMaximumSectionCount": "Section count must be greater or equal to 1 and lesser or equal to Maximum section count",
+    "SectionCountBetweenZeroAndMaximumSectionCount": "Section count must be greater or equal to 0 and lesser or equal to Maximum section count",
     "maximumSectionCount": "Maximum number of sections",
     "sectionCount": "Current number of sections",
     "SwitchedOnMaxQAtNominalV": "Switch-on Q at nominal voltage",
