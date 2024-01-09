@@ -12,6 +12,7 @@ import {
     RefreshCellsParams,
     GridApi,
 } from 'ag-grid-community';
+import { REGULATION_TYPES } from 'components/network/constants';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -26,24 +27,87 @@ export interface CrossValidationOptions {
     maxExpression?: number | string;
 }
 
-const flashCells = (params: CellEditingStoppedEvent, columns: string[]) => {
-    params.api.flashCells({
-        rowNodes: [params.node],
-        columns,
-    });
+export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
+    const rowNode = params.node;
+    const colId = params.column.getColId();
+    const regulationTypeText = params.data.RegulationTypeText;
+    const previousData = params.context.dataToModify;
+    if (colId === 'RegulationTypeText') {
+        if (regulationTypeText === REGULATION_TYPES.LOCAL.id) {
+            params.data.regulatingTerminalVlId = null;
+            params.data.regulatingTerminalConnectableId = null;
+            params.data.regulatingTerminalConnectableType = null;
+            rowNode.setDataValue('RegulatingTerminalGenerator', null);
+        }
+        if (regulationTypeText === REGULATION_TYPES.DISTANT.id) {
+            params.data.regulatingTerminalVlId =
+                previousData.regulatingTerminalVlId ?? ' ';
+            params.data.regulatingTerminalConnectableId =
+                previousData.regulatingTerminalConnectableId ?? ' ';
+            params.data.regulatingTerminalConnectableType =
+                previousData.regulatingTerminalConnectableType ?? ' ';
+
+            const regulatingTerminalGenerator =
+                previousData.regulatingTerminalConnectableType
+                    ? `${previousData.regulatingTerminalConnectableType} (${previousData.regulatingTerminalConnectableId} )`
+                    : null;
+            rowNode.setDataValue(
+                'RegulatingTerminalGenerator',
+                regulatingTerminalGenerator
+            );
+        }
+        params.api.flashCells({
+            rowNodes: [rowNode],
+            columns: ['RegulationTypeText', 'RegulatingTerminalGenerator'],
+        });
+    } else if (colId === 'RegulatingTerminalGenerator') {
+        const RegulatingTerminalGenerator =
+            params.data.RegulatingTerminalGenerator;
+        if (RegulatingTerminalGenerator) {
+            params.data.regulatingTerminalVlId =
+                params.context.dynamicValidation.regulatingTerminalVlId;
+            params.data.regulatingTerminalConnectableId =
+                params.context.dynamicValidation.regulatingTerminalConnectableId;
+            params.data.regulatingTerminalConnectableType =
+                params.context.dynamicValidation.regulatingTerminalConnectableType;
+        } else {
+            params.data.regulatingTerminalVlId = undefined;
+            params.data.regulatingTerminalConnectableId = undefined;
+            params.data.regulatingTerminalConnectableType = undefined;
+        }
+    }
 };
 
 export const updateShuntCompensatorCells = (
     params: CellEditingStoppedEvent
 ) => {
-    const rowNode = params.node;
     const colId = params.column.getColId();
     const maxSusceptance = params.data.maxSusceptance;
-    const type = params.data.type;
+    let type = params.data.type;
+    if (type === undefined) {
+        type =
+            maxSusceptance < 0
+                ? SHUNT_COMPENSATOR_TYPES.REACTOR.id
+                : SHUNT_COMPENSATOR_TYPES.CAPACITOR.id;
+    }
     const nominalVoltage = params.data.nominalVoltage;
     const maxQAtNominalV = params.data.maxQAtNominalV;
     const maximumSectionCount = params.data.maximumSectionCount;
     const sectionCount = params.data.sectionCount;
+    const columnState = params.columnApi.getColumnState();
+    const updateValue = (colId: string, value: any) => {
+        if (
+            columnState.find(({ colId: columnId }: any) => columnId === colId)
+        ) {
+            params.node.setDataValue(colId, value);
+            params.api.flashCells({
+                rowNodes: [params.node],
+                columns: [colId],
+            });
+        } else {
+            params.data[colId] = value;
+        }
+    };
     if (colId === 'type') {
         if (
             (type === SHUNT_COMPENSATOR_TYPES.REACTOR.id &&
@@ -51,17 +115,16 @@ export const updateShuntCompensatorCells = (
             (type === SHUNT_COMPENSATOR_TYPES.CAPACITOR.id &&
                 maxSusceptance < 0)
         ) {
-            rowNode.setDataValue('maxSusceptance', -maxSusceptance);
-            rowNode.setDataValue('switchedOnSusceptance', -maxSusceptance);
-            flashCells(params, ['maxSusceptance', 'switchedOnSusceptance']);
+            updateValue('maxSusceptance', -maxSusceptance);
+            updateValue('switchedOnSusceptance', -maxSusceptance);
         }
     } else if (colId === 'maxSusceptance') {
         if (Math.abs(maxSusceptance) !== Math.abs(params.oldValue)) {
-            rowNode.setDataValue(
+            updateValue(
                 'maxQAtNominalV',
                 computeMaxQAtNominalV(maxSusceptance, nominalVoltage)
             );
-            rowNode.setDataValue(
+            updateValue(
                 'switchedOnQAtNominalV',
                 computeSwitchedOnValue(
                     sectionCount,
@@ -69,9 +132,8 @@ export const updateShuntCompensatorCells = (
                     maxQAtNominalV
                 )
             );
-            flashCells(params, ['maxQAtNominalV', 'switchedOnQAtNominalV']);
         }
-        rowNode.setDataValue(
+        updateValue(
             'switchedOnSusceptance',
             computeSwitchedOnValue(
                 sectionCount,
@@ -79,20 +141,17 @@ export const updateShuntCompensatorCells = (
                 maxSusceptance
             )
         );
-        flashCells(params, ['switchedOnSusceptance']);
         if (maxSusceptance < 0 && type !== SHUNT_COMPENSATOR_TYPES.REACTOR.id) {
-            rowNode.setDataValue('type', SHUNT_COMPENSATOR_TYPES.REACTOR.id);
-            flashCells(params, ['type']);
+            updateValue('type', SHUNT_COMPENSATOR_TYPES.REACTOR.id);
         } else if (
             maxSusceptance > 0 &&
             type !== SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
         ) {
-            rowNode.setDataValue('type', SHUNT_COMPENSATOR_TYPES.CAPACITOR.id);
-            flashCells(params, ['type']);
+            updateValue('type', SHUNT_COMPENSATOR_TYPES.CAPACITOR.id);
         }
         params.context.lastEditedField = 'maxSusceptance';
     } else if (colId === 'maxQAtNominalV') {
-        rowNode.setDataValue(
+        updateValue(
             'switchedOnQAtNominalV',
             computeSwitchedOnValue(
                 sectionCount,
@@ -104,13 +163,13 @@ export const updateShuntCompensatorCells = (
             maxQAtNominalV,
             nominalVoltage
         );
-        rowNode.setDataValue(
+        updateValue(
             'maxSusceptance',
             type === SHUNT_COMPENSATOR_TYPES.REACTOR.id
                 ? -maxSusceptance
                 : maxSusceptance
         );
-        rowNode.setDataValue(
+        updateValue(
             'switchedOnSusceptance',
             computeSwitchedOnValue(
                 sectionCount,
@@ -119,13 +178,8 @@ export const updateShuntCompensatorCells = (
             )
         );
         params.context.lastEditedField = 'maxQAtNominalV';
-        flashCells(params, [
-            'switchedOnQAtNominalV',
-            'maxSusceptance',
-            'switchedOnSusceptance',
-        ]);
     } else if (colId === 'sectionCount' || colId === 'maximumSectionCount') {
-        rowNode.setDataValue(
+        updateValue(
             'switchedOnQAtNominalV',
             computeSwitchedOnValue(
                 sectionCount,
@@ -133,7 +187,7 @@ export const updateShuntCompensatorCells = (
                 maxQAtNominalV
             )
         );
-        rowNode.setDataValue(
+        updateValue(
             'switchedOnSusceptance',
             computeSwitchedOnValue(
                 sectionCount,
@@ -141,11 +195,13 @@ export const updateShuntCompensatorCells = (
                 maxSusceptance
             )
         );
-        flashCells(params, ['switchedOnQAtNominalV', 'switchedOnSusceptance']);
     }
 };
 
 const deepFindValue = (obj: any, path: any) => {
+    if (path === undefined) {
+        return undefined;
+    }
     let paths = path.split('.'),
         current = obj,
         i;
@@ -162,7 +218,7 @@ const deepFindValue = (obj: any, path: any) => {
 
 export const deepUpdateValue = (obj: any, path: any, value: any) => {
     let paths = path.split('.'),
-        current = structuredClone(obj),
+        current = JSON.parse(JSON.stringify(obj)),
         data = current,
         i;
 
@@ -177,8 +233,21 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
 };
 
 const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
-    if (fieldVal === undefined || fieldVal === null || isNaN(fieldVal)) {
-        if (colDef.crossValidation?.optional) {
+    if (
+        fieldVal === undefined ||
+        fieldVal === null ||
+        fieldVal === '' ||
+        (isNaN(fieldVal) && colDef.numeric)
+    ) {
+        let originalValue = deepFindValue(
+            gridContext.dataToModify,
+            colDef.field
+        );
+        originalValue =
+            colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
+        if (originalValue !== undefined) {
+            return false;
+        } else if (colDef.crossValidation?.optional) {
             return true;
         } else if (colDef.crossValidation?.requiredOn) {
             const isConditionFulfiled = checkCrossValidationRequiredOn(
@@ -197,13 +266,13 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
     }
     const minExpression = colDef.crossValidation?.minExpression;
     const maxExpression = colDef.crossValidation?.maxExpression;
-    if (maxExpression || minExpression) {
+    if (maxExpression !== undefined || minExpression !== undefined) {
         const minVal = !isNaN(minExpression)
             ? minExpression
-            : gridContext.dynamicValidation[minExpression];
+            : deepFindValue(gridContext.dynamicValidation, minExpression);
         const maxVal = !isNaN(maxExpression)
             ? maxExpression
-            : gridContext.dynamicValidation[maxExpression];
+            : deepFindValue(gridContext.dynamicValidation, maxExpression);
         return (
             (minVal === undefined || fieldVal >= minVal) &&
             (maxVal === undefined || fieldVal <= maxVal)

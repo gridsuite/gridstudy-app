@@ -74,7 +74,10 @@ const VoltageLimitsParameters = () => {
             },
         ].map((column) => ({
             ...column,
-            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+            label: intl
+                .formatMessage({ id: column.label })
+                .toLowerCase()
+                .replace(/^\w/, (c) => c.toUpperCase()),
         }));
     }, [VoltageLevelFilterTooltip, intl]);
 
@@ -111,7 +114,10 @@ const VoltageLimitsParameters = () => {
             },
         ].map((column) => ({
             ...column,
-            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+            label: intl
+                .formatMessage({ id: column.label })
+                .toLowerCase()
+                .replace(/^\w/, (c) => c.toUpperCase()),
         }));
     }, [VoltageLevelFilterTooltip, intl]);
 
@@ -147,7 +153,11 @@ const VoltageLimitsParameters = () => {
 
     return (
         <Grid container>
-            <Typography component="span" variant="h6">
+            <Typography
+                component="span"
+                variant="h6"
+                sx={{ alignSelf: 'center', marginRight: 2 }}
+            >
                 <FormattedMessage id="AdjustExistingLimits" />
             </Typography>
             <Alert

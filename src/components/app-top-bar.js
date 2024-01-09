@@ -7,21 +7,33 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
+    ElementSearchDialog,
+    EquipmentItem,
     equipmentStyles,
     LIGHT_THEME,
     logout,
-    EquipmentItem,
+    OverflowableText,
     TagRenderer,
     TopBar,
-    OverflowableText,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
-import Tabs from '@mui/material/Tabs';
 import { StudyView } from './study-pane';
-import { Badge, Box } from '@mui/material';
+import {
+    Badge,
+    Box,
+    Button,
+    IconButton,
+    Tab,
+    Tabs,
+    Tooltip,
+} from '@mui/material';
+import {
+    GpsFixed as GpsFixedIcon,
+    Search,
+    Timeline as TimelineIcon,
+} from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Tab from '@mui/material/Tab';
 import {
     PARAM_LANGUAGE,
     PARAM_THEME,
@@ -36,16 +48,13 @@ import {
     STUDY_DISPLAY_MODE,
     STUDY_INDEXATION_STATUS,
 } from '../redux/actions';
-import IconButton from '@mui/material/IconButton';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import TimelineIcon from '@mui/icons-material/Timeline';
 import {
     DiagramType,
-    useDiagram,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
+    useDiagram,
 } from './diagrams/diagram-common';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
-import Parameters, { useParameterState } from './dialogs/parameters/parameters';
+import { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { getServersInfos } from '../services/study';
 import { fetchNetworkElementInfos } from '../services/study/network';
@@ -57,22 +66,36 @@ import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 import { useComputationNotification } from '../hooks/use-computation-notification';
+import { Settings } from '@mui/icons-material';
 
 const styles = {
-    tabs: {
-        flexGrow: 1,
+    currentNodeBox: {
+        width: '15%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: '#123456',
     },
-    label: (theme) => ({
+    currentNodeLabel: (theme) => ({
         color: theme.palette.primary.main,
         margin: theme.spacing(1.5),
         fontWeight: 'bold',
     }),
+    boxContent: { display: 'flex', width: '100%' },
+    tabs: {},
+    searchButton: {
+        marginTop: 'auto',
+        marginBottom: 'auto',
+        marginLeft: 1,
+        marginRight: 1,
+    },
     runButtonContainer: {
+        marginTop: 'auto',
+        marginBottom: 'auto',
         marginRight: '10%',
-        marginTop: '4px',
+        marginLeft: 'auto',
         flexShrink: 0,
     },
-    boxContent: { display: 'flex', width: '100%' },
 };
 
 const STUDY_VIEWS = [
@@ -80,6 +103,7 @@ const STUDY_VIEWS = [
     StudyView.SPREADSHEET,
     StudyView.RESULTS,
     StudyView.LOGS,
+    StudyView.PARAMETERS,
 ];
 
 const CustomSuffixRenderer = ({ props, element }) => {
@@ -161,50 +185,47 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 </IconButton>
             </>
         );
+    } else {
+        return (
+            <TagRenderer
+                styles={equipmentStyles}
+                props={props}
+                element={element}
+            />
+        );
     }
-
-    return (
-        <TagRenderer styles={equipmentStyles} props={props} element={element} />
-    );
 };
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
-
     const intl = useIntl();
+    const { openDiagramView } = useDiagram();
+
+    const theme = useSelector((state) => state[PARAM_THEME]);
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const studyIndexationStatus = useSelector(
+        (state) => state.studyIndexationStatus
+    );
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
-    const notificationsCount = useComputationNotificationCount();
-
-    const theme = useSelector((state) => state[PARAM_THEME]);
-
-    const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
-
     const [languageLocal, handleChangeLanguage] =
         useParameterState(PARAM_LANGUAGE);
-
     const [useNameLocal, handleChangeUseName] =
         useParameterState(PARAM_USE_NAME);
 
-    const studyUuid = useSelector((state) => state.studyUuid);
+    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
-    const [isParametersOpen, setParametersOpen] = useState(false);
-
-    const { openDiagramView } = useDiagram();
+    const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
     useComputationNotification();
 
-    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-
-    const studyIndexationStatus = useSelector(
-        (state) => state.studyIndexationStatus
-    );
+    const notificationsCount = useComputationNotificationCount();
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -230,26 +251,39 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         }
     }, [user]);
 
+    useEffect(() => {
+        if (user) {
+            const openSearch = (e) => {
+                if (
+                    e.ctrlKey &&
+                    e.shiftKey &&
+                    (e.key === 'F' || e.key === 'f')
+                ) {
+                    e.preventDefault();
+                    setDialogSearchOpen(true);
+                }
+            };
+            document.addEventListener('keydown', openSearch);
+            return () => document.removeEventListener('keydown', openSearch);
+        }
+    }, [user]);
+
     function getDisableReason() {
         if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
             return intl.formatMessage({
                 id: 'UnsupportedView',
             });
-        }
-
-        if (!isNodeBuilt(currentNode)) {
+        } else if (!isNodeBuilt(currentNode)) {
             return intl.formatMessage({
                 id: 'InvalidNode',
             });
-        }
-
-        if (studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED) {
+        } else if (studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED) {
             return intl.formatMessage({
                 id: 'waitingStudyIndexation',
             });
+        } else {
+            return '';
         }
-
-        return '';
     }
 
     return (
@@ -264,95 +298,38 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <GridStudyLogoDark />
                     )
                 }
-                onParametersClick={() => setParametersOpen(true)}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}
                 appVersion={AppPackage.version}
                 appLicense={AppPackage.license}
-                getGlobalVersion={(setGlobalVersion) =>
-                    fetchVersion()
-                        .then((res) => setGlobalVersion(res.deployVersion))
-                        .catch((reason) => {
-                            console.error(
-                                'Error while fetching the version : ' + reason
-                            );
-                            setGlobalVersion(null);
-                        })
+                globalVersionPromise={() =>
+                    fetchVersion().then((res) => res?.deployVersion)
                 }
-                getAdditionalModules={(setServers) =>
-                    getServersInfos()
-                        .then((res) =>
-                            setServers(
-                                Object.entries(res).map(([name, infos]) => ({
-                                    name:
-                                        infos?.build?.name ||
-                                        infos?.build?.artifact ||
-                                        name,
-                                    type: 'server',
-                                    version: infos?.build?.version,
-                                    gitTag:
-                                        infos?.git?.tags ||
-                                        infos?.git?.commit?.id[
-                                            'describe-short'
-                                        ],
-                                }))
-                            )
-                        )
-                        .catch((reason) => {
-                            console.error(
-                                'Error while fetching the servers infos : ' +
-                                    reason
-                            );
-                            setServers(null);
-                        })
-                }
+                additionalModulesPromise={getServersInfos}
                 theme={themeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
-                withElementsSearch={true}
-                searchingLabel={intl.formatMessage({
-                    id: 'equipment_search/label',
-                })}
-                onSearchTermChange={searchMatchingEquipments}
-                onSelectionChange={showVoltageLevelDiagram}
-                elementsFound={equipmentsFound}
-                renderElement={(props) => (
-                    <EquipmentItem
-                        styles={equipmentStyles}
-                        {...props}
-                        key={'ei' + props.element.key}
-                        suffixRenderer={CustomSuffixRenderer}
-                    />
-                )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
-                searchTermDisabled={getDisableReason() !== ''}
-                searchTermDisableReason={getDisableReason()}
             >
                 {/* Add current Node name between Logo and Tabs */}
-                <Box
-                    width="15%"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    borderColor={'#123456'}
-                >
-                    {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
-                    {currentNode && user && (
+                {user && currentNode && (
+                    <Box sx={styles.currentNodeBox}>
+                        {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
                         <OverflowableText
-                            sx={styles.label}
+                            sx={styles.currentNodeLabel}
                             text={
                                 currentNode?.data?.label === 'Root'
                                     ? intl.formatMessage({ id: 'root' })
                                     : currentNode?.data?.label
                             }
                         />
-                    )}
-                </Box>
-                <Box sx={styles.boxContent}>
-                    {studyUuid && (
+                    </Box>
+                )}
+                {user && studyUuid && (
+                    <Box sx={styles.boxContent}>
                         <Tabs
                             value={tabIndex}
                             variant="scrollable"
@@ -364,6 +341,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         >
                             {STUDY_VIEWS.map((tabName) => {
                                 let label;
+                                let style;
                                 if (
                                     tabName === StudyView.RESULTS &&
                                     notificationsCount > 0
@@ -376,14 +354,36 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                             <FormattedMessage id={tabName} />
                                         </Badge>
                                     );
+                                } else if (tabName === StudyView.PARAMETERS) {
+                                    label = <Settings />;
+                                    style = { minWidth: 'initial' };
                                 } else {
                                     label = <FormattedMessage id={tabName} />;
                                 }
-                                return <Tab key={tabName} label={label} />;
+                                return (
+                                    <Tab
+                                        sx={style}
+                                        key={tabName}
+                                        label={label}
+                                    />
+                                );
                             })}
                         </Tabs>
-                    )}
-                    {studyUuid && (
+                        <Box sx={styles.searchButton}>
+                            <Tooltip
+                                title={
+                                    <FormattedMessage id="equipment_search/label" />
+                                }
+                            >
+                                <Button
+                                    color="inherit"
+                                    size="large"
+                                    onClick={() => setDialogSearchOpen(true)}
+                                >
+                                    <Search />
+                                </Button>
+                            </Tooltip>
+                        </Box>
                         <Box sx={styles.runButtonContainer}>
                             <RunButtonContainer
                                 studyUuid={studyUuid}
@@ -394,16 +394,36 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                 }
                             />
                         </Box>
-                    )}
-                </Box>
+                    </Box>
+                )}
             </TopBar>
 
             {studyUuid && (
-                <Parameters
-                    isParametersOpen={isParametersOpen}
-                    hideParameters={() => setParametersOpen(false)}
-                    user={user}
-                />
+                <>
+                    <ElementSearchDialog
+                        open={isDialogSearchOpen}
+                        onClose={() => setDialogSearchOpen(false)}
+                        searchingLabel={intl.formatMessage({
+                            id: 'equipment_search/label',
+                        })}
+                        onSearchTermChange={searchMatchingEquipments}
+                        onSelectionChange={(element) => {
+                            setDialogSearchOpen(false);
+                            showVoltageLevelDiagram(element);
+                        }}
+                        elementsFound={equipmentsFound}
+                        renderElement={(props) => (
+                            <EquipmentItem
+                                styles={equipmentStyles}
+                                {...props}
+                                key={'ei-' + props.element.key}
+                                suffixRenderer={CustomSuffixRenderer}
+                            />
+                        )}
+                        searchTermDisabled={getDisableReason() !== ''}
+                        searchTermDisableReason={getDisableReason()}
+                    />
+                </>
             )}
         </>
     );

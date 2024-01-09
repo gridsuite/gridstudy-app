@@ -31,13 +31,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
-import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
-import { CsvExport } from './spreadsheet/export-csv';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
+import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 
 const styles = {
     container: {
@@ -77,6 +76,16 @@ const styles = {
     },
     grid: {
         flexGrow: '1',
+    },
+    typography: {
+        fontWeight: 'bold',
+    },
+    secondTypography: {
+        marginLeft: '5em',
+        fontWeight: 'bold',
+    },
+    totalTypography: {
+        marginLeft: '10px',
     },
 };
 
@@ -200,41 +209,53 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         ];
     }, []);
 
-    const renderTableAndExportCSV = (
-        gridRef,
-        columns,
-        tableName,
-        rows,
-        headerHeight,
-        skipColumnHeaders
-    ) => {
+    function renderTotalReactiveSlacks(reactiveSlacks) {
+        const calculateTotal = (reactiveSlacks, isPositive) => {
+            return reactiveSlacks
+                ? reactiveSlacks
+                      .filter((reactiveSlack) =>
+                          isPositive
+                              ? reactiveSlack.slack > 0
+                              : reactiveSlack.slack < 0
+                      )
+                      .reduce(
+                          (sum, reactiveSlack) => sum + reactiveSlack.slack,
+                          0
+                      )
+                : 0;
+        };
+
+        const totalInjection = calculateTotal(reactiveSlacks, false);
+        const totalConsumption = calculateTotal(reactiveSlacks, true);
         return (
-            <Box sx={styles.gridContainer}>
-                <Box sx={styles.csvExport}>
-                    <Box style={{ flexGrow: 1 }}></Box>
-                    <CsvExport
-                        gridRef={gridRef}
-                        columns={columns}
-                        tableName={tableName}
-                        disabled={!rows || rows.length === 0}
-                        skipColumnHeaders={skipColumnHeaders}
-                    />
-                </Box>
-                {rows && (
-                    <Box sx={styles.grid}>
-                        <CustomAGGrid
-                            ref={gridRef}
-                            rowData={rows}
-                            headerHeight={headerHeight}
-                            defaultColDef={defaultColDef}
-                            columnDefs={columns}
-                            onRowDataUpdated={onRowDataUpdated}
-                        />
-                    </Box>
-                )}
-            </Box>
+            <>
+                <Stack
+                    direction={'row'}
+                    gap={1}
+                    marginBottom={-4.5}
+                    marginTop={1.5}
+                    marginLeft={2}
+                >
+                    <>
+                        <Typography sx={styles.typography}>
+                            <FormattedMessage id="TotalInjection" />
+                        </Typography>
+                        <Typography sx={styles.totalTypography}>
+                            {totalInjection.toFixed(2)}
+                        </Typography>
+
+                        <Typography sx={styles.secondTypography}>
+                            <FormattedMessage id="TotalConsumption" />
+                        </Typography>
+                        <Typography sx={styles.totalTypography}>
+                            {totalConsumption.toFixed(2)}
+                        </Typography>
+                    </>
+                </Stack>
+            </>
         );
-    };
+    }
+
     function renderIndicatorsTable(indicators) {
         const rows = indicators
             ? Object.entries(indicators).map((i) => {
@@ -260,14 +281,16 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Typography>
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
-                {renderTableAndExportCSV(
-                    gridRef,
-                    indicatorsColumnDefs,
-                    intl.formatMessage({ id: 'Indicators' }),
-                    rows,
-                    0,
-                    true
-                )}
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={indicatorsColumnDefs}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'Indicators' })}
+                    rows={rows}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
+                    skipColumnHeaders={true}
+                />
             </>
         );
     }
@@ -287,11 +310,21 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     }, [intl]);
 
     function renderReactiveSlacksTable(reactiveSlacks) {
-        return renderTableAndExportCSV(
-            gridRef,
-            reactiveSlacksColumnDefs,
-            intl.formatMessage({ id: 'ReactiveSlacks' }),
-            reactiveSlacks
+        return (
+            <>
+                {renderTotalReactiveSlacks(reactiveSlacks)}
+
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={reactiveSlacksColumnDefs}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                    rows={reactiveSlacks}
+                    onRowDataUpdated={onRowDataUpdated}
+                    headerHeight={0}
+                    skipColumnHeaders={true}
+                />
+            </>
         );
     }
 
