@@ -100,11 +100,14 @@ const LineAttachToVoltageLevelForm = ({
         <TextInput name={LINE2_NAME} label={'Line2Name'} />
     );
 
+    const isVoltageLevelEdit =
+        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
+
     const busbarSectionOptions = useMemo(() => {
-        if (voltageLevelIdWatch === voltageLevelToEdit?.equipmentId) {
+        if (isVoltageLevelEdit) {
             return voltageLevelToEdit.busbarSections;
         }
-    }, [voltageLevelIdWatch, voltageLevelToEdit]);
+    }, [isVoltageLevelEdit, voltageLevelToEdit]);
 
     const connectivityForm = (
         <ConnectivityForm
@@ -117,9 +120,6 @@ const LineAttachToVoltageLevelForm = ({
             currentNode={currentNode}
         />
     );
-
-    const isVoltageLevelEdit =
-        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     return (
         <>

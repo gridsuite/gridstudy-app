@@ -48,6 +48,7 @@ import { attachLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';
+import { getNewVoltageLevelOptions } from '../../../utils/utils';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -314,17 +315,11 @@ const LineAttachToVoltageLevelDialog = ({
                     getNewVoltageLevelData(preparedVoltageLevel);
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
-                const newVoltageLevelOptions =
-                    formattedVoltageLevel.id === oldVoltageLevelId
-                        ? voltageLevelOptions.filter(
-                              (vl) => vl.id !== formattedVoltageLevel.id
-                          )
-                        : voltageLevelOptions.filter(
-                              (vl) =>
-                                  vl.id !== formattedVoltageLevel.id &&
-                                  vl.id !== oldVoltageLevelId
-                          );
-                newVoltageLevelOptions.push(formattedVoltageLevel);
+                const newVoltageLevelOptions = getNewVoltageLevelOptions(
+                    formattedVoltageLevel,
+                    oldVoltageLevelId,
+                    voltageLevelOptions
+                );
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
 

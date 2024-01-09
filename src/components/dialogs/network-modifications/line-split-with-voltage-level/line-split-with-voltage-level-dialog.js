@@ -45,6 +45,7 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { divideLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
+import { getNewVoltageLevelOptions } from '../../../utils/utils';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -237,17 +238,11 @@ const LineSplitWithVoltageLevelDialog = ({
                     getNewVoltageLevelData(preparedVoltageLevel);
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
-                const newVoltageLevelOptions =
-                    formattedVoltageLevel.id === oldVoltageLevelId
-                        ? voltageLevelOptions.filter(
-                              (vl) => vl.id !== formattedVoltageLevel.id
-                          )
-                        : voltageLevelOptions.filter(
-                              (vl) =>
-                                  vl.id !== formattedVoltageLevel.id &&
-                                  vl.id !== oldVoltageLevelId
-                          );
-                newVoltageLevelOptions.push(formattedVoltageLevel);
+                const newVoltageLevelOptions = getNewVoltageLevelOptions(
+                    formattedVoltageLevel,
+                    oldVoltageLevelId,
+                    voltageLevelOptions
+                );
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
                 setNewVoltageLevel(preparedVoltageLevel);
