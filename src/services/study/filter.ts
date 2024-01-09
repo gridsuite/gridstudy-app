@@ -17,7 +17,7 @@ interface ExpertFilter {
     rules: RuleGroupTypeExport;
 }
 
-export function evaluateFilter(
+export function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
