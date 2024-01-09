@@ -54,7 +54,7 @@ import {
     useDiagram,
 } from './diagrams/diagram-common';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
-import Parameters, { useParameterState } from './dialogs/parameters/parameters';
+import { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { getServersInfos } from '../services/study';
 import { fetchNetworkElementInfos } from '../services/study/network';
@@ -65,6 +65,7 @@ import {
 import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
+import { Settings } from '@mui/icons-material';
 
 const styles = {
     currentNodeBox: {
@@ -101,6 +102,7 @@ const STUDY_VIEWS = [
     StudyView.SPREADSHEET,
     StudyView.RESULTS,
     StudyView.LOGS,
+    StudyView.PARAMETERS,
 ];
 
 const CustomSuffixRenderer = ({ props, element }) => {
@@ -195,41 +197,51 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
-
     const intl = useIntl();
+    const { openDiagramView } = useDiagram();
+
+    const theme = useSelector((state) => state[PARAM_THEME]);
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const studyIndexationStatus = useSelector(
+        (state) => state.studyIndexationStatus
+    );
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
+<<<<<<< HEAD
     const notificationsCount = useComputationResultsCount();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
+=======
+>>>>>>> main
     const [languageLocal, handleChangeLanguage] =
         useParameterState(PARAM_LANGUAGE);
-
     const [useNameLocal, handleChangeUseName] =
         useParameterState(PARAM_USE_NAME);
 
-    const studyUuid = useSelector((state) => state.studyUuid);
-
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
-    const [isParametersOpen, setParametersOpen] = useState(false);
-
-    const { openDiagramView } = useDiagram();
+    const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
+<<<<<<< HEAD
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
     const studyIndexationStatus = useSelector(
         (state) => state.studyIndexationStatus
     );
+=======
+    useComputationNotification();
+
+    const notificationsCount = useComputationNotificationCount();
+>>>>>>> main
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -302,7 +314,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <GridStudyLogoDark />
                     )
                 }
-                onParametersClick={() => setParametersOpen(true)}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
@@ -346,6 +357,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         >
                             {STUDY_VIEWS.map((tabName) => {
                                 let label;
+                                let style;
                                 if (
                                     tabName === StudyView.RESULTS &&
                                     notificationsCount > 0
@@ -358,10 +370,19 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                             <FormattedMessage id={tabName} />
                                         </Badge>
                                     );
+                                } else if (tabName === StudyView.PARAMETERS) {
+                                    label = <Settings />;
+                                    style = { minWidth: 'initial' };
                                 } else {
                                     label = <FormattedMessage id={tabName} />;
                                 }
-                                return <Tab key={tabName} label={label} />;
+                                return (
+                                    <Tab
+                                        sx={style}
+                                        key={tabName}
+                                        label={label}
+                                    />
+                                );
                             })}
                         </Tabs>
                         <Box sx={styles.searchButton}>
@@ -417,11 +438,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         )}
                         searchTermDisabled={getDisableReason() !== ''}
                         searchTermDisableReason={getDisableReason()}
-                    />
-                    <Parameters
-                        isParametersOpen={isParametersOpen}
-                        hideParameters={() => setParametersOpen(false)}
-                        user={user}
                     />
                 </>
             )}
