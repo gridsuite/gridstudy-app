@@ -166,7 +166,11 @@ const defParams = {
 };
 
 const NetworkParameters = ({ path }) => {
-    return <Grid container>{makeComponents(defParams, path)}</Grid>;
+    return (
+        <Grid sx={{ height: '100%' }} xl={6} container>
+            {makeComponents(defParams, path)}
+        </Grid>
+    );
 };
 
 export default NetworkParameters;

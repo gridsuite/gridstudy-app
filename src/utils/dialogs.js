@@ -50,6 +50,7 @@ SelectOptionsDialog.propTypes = {
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     child: PropTypes.element.isRequired,
+    style: PropTypes.oneOfType(PropTypes.object, PropTypes.func),
 };
 
 export { SelectOptionsDialog };
