@@ -208,7 +208,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 limitReductionParam / 100.0
                             ),
                         () => {},
-                        () => null,
+                        null,
                         'startLoadFlowError'
                     );
                 },
