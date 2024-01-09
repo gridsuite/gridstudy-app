@@ -65,6 +65,7 @@ import {
 import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
+
 import { Settings } from '@mui/icons-material';
 
 const styles = {
@@ -210,15 +211,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
-<<<<<<< HEAD
     const notificationsCount = useComputationResultsCount();
-
-    const theme = useSelector((state) => state[PARAM_THEME]);
-
-    const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
-
-=======
->>>>>>> main
     const [languageLocal, handleChangeLanguage] =
         useParameterState(PARAM_LANGUAGE);
     const [useNameLocal, handleChangeUseName] =
@@ -231,17 +224,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
-<<<<<<< HEAD
-    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-
-    const studyIndexationStatus = useSelector(
-        (state) => state.studyIndexationStatus
-    );
-=======
-    useComputationNotification();
-
-    const notificationsCount = useComputationNotificationCount();
->>>>>>> main
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
