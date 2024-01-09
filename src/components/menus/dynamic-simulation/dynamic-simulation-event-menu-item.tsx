@@ -51,11 +51,9 @@ const DynamicSimulationEventMenuItem = (
                 handleOpenDynamicSimulationEventDialog(
                     equipmentId,
                     equipmentType,
-                    intl.formatMessage({
-                        id: `${getEventType(equipmentType)}${
-                            EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
-                        }`,
-                    })
+                    `${getEventType(equipmentType)}${
+                        EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
+                    }`
                 )
             }
             disabled={disabled}
