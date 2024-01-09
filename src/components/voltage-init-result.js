@@ -406,10 +406,14 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Box>
                 </Box>
                 <div style={{ flexGrow: 1 }}>
-                    {resultToShow &&
+                    {(status === RunningStatus.SUCCEED ||
+                        status === RunningStatus.FAILED) &&
+                        resultToShow &&
                         tabIndex === 0 &&
                         renderIndicatorsTable(resultToShow.indicators)}
-                    {resultToShow &&
+                    {(status === RunningStatus.SUCCEED ||
+                        status === RunningStatus.FAILED) &&
+                        resultToShow &&
                         tabIndex === 1 &&
                         renderReactiveSlacksTable(resultToShow.reactiveSlacks)}
                     {tabIndex === 2 && renderReportViewer()}
