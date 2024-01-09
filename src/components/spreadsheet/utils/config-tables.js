@@ -32,6 +32,7 @@ import {
     unitToKiloUnit,
     unitToMicroUnit,
 } from '../../../utils/rounding';
+import { EmunFilter } from './custom-filter-renderer';
 
 const generateTapPositions = (params) => {
     return params
@@ -1977,6 +1978,10 @@ export const TABLES_DEFINITIONS = {
                         colDef: params.colDef,
                         enumValue: SHUNT_COMPENSATOR_TYPES,
                     };
+                },
+                filter: EmunFilter,
+                fitlerParams: {
+                    enumValues: SHUNT_COMPENSATOR_TYPES,
                 },
             },
             {
