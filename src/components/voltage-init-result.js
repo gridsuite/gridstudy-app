@@ -111,16 +111,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     });
 
     useEffect(() => {
-        if (
-            status !== RunningStatus.SUCCEED &&
-            status !== RunningStatus.FAILED
-        ) {
-            return;
-        }
         fetchVoltageInitResult(studyUuid, currentNode.id).then((res) => {
             setResultToShow(res);
         });
-    }, [status, disabledApplyModifications, studyUuid, currentNode.id]);
+    }, [disabledApplyModifications, studyUuid, currentNode.id]);
 
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
