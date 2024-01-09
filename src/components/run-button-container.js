@@ -312,9 +312,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.VOLTAGE_INIT,
                         null,
-                        () => {
-                            return startVoltageInit(studyUuid, currentNode?.id);
-                        },
+                        () => startVoltageInit(studyUuid, currentNode?.id),
                         () => {},
                         null,
                         'startVoltageInitError'
