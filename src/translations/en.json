@@ -30,6 +30,7 @@
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
     "edit": "Edit",
+    "editSiteProperties": "Edit site properties",
 
     "studyNameErrorMsg": "Study name should not be empty",
     "caseNameErrorMsg": "Please select the case name",
@@ -420,7 +421,8 @@
     "LimitAcceptableDuration": "Duration",
     "Overload": "Overload",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
-
+    "Key": "Key",
+    "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
     "true": "true",
@@ -840,7 +842,7 @@
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
     "ModifyShuntCompensator": "Modify shunt compensator (Linear)",
     "MaximumSectionCountMinimumOne": "Maximum section count must be greater or equal to 1",
-    "SectionCountBetweenOneAndMaximumSectionCount": "Section count must be greater or equal to 1 and lesser or equal to Maximum section count",
+    "SectionCountBetweenZeroAndMaximumSectionCount": "Section count must be greater or equal to 0 and lesser or equal to Maximum section count",
     "maximumSectionCount": "Maximum number of sections",
     "sectionCount": "Current number of sections",
     "SwitchedOnMaxQAtNominalV": "Switch-on Q at nominal voltage",
@@ -856,6 +858,8 @@
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
     "DuplicatedProps": "Duplicated properties: each property must be unique",
+    "DuplicateProperty": "Duplicate property",
+    "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
     "SubstationModificationError": "Error while modifying substation",
 
