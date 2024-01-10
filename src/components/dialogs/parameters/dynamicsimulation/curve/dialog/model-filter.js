@@ -17,13 +17,13 @@ import React, {
 } from 'react';
 import { Grid, Typography, useTheme } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
-import { CURVE_EQUIPMENTS } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { Box } from '@mui/system';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
 const modelsToVariablesTree = (models) => {
     return models.reduce(
@@ -102,151 +102,159 @@ const styles = {
     }),
 };
 
-const ModelFilter = forwardRef(({ equipment = CURVE_EQUIPMENTS.LOAD }, ref) => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
+const ModelFilter = forwardRef(
+    ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
+        const studyUuid = useSelector((state) => state.studyUuid);
+        const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const theme = useTheme();
+        const theme = useTheme();
 
-    const [allModels, setAllModels] = useState([]);
-    const [allVariables, setAllVariables] = useState({}); // a variables tree
+        const [allModels, setAllModels] = useState([]);
+        const [allVariables, setAllVariables] = useState({}); // a variables tree
 
-    const variablesRef = useRef();
+        const variablesRef = useRef();
 
-    // --- models CheckboxSelect --- //
-    const associatedModels = useMemo(() => {
-        const associatedModels = allModels?.filter(
-            (model) => model.equipmentType === equipment.type
+        // --- models CheckboxSelect --- //
+        const associatedModels = useMemo(() => {
+            const associatedModels = allModels?.filter(
+                (model) => model.equipmentType === equipmentType
+            );
+            // convert array to object
+            return associatedModels
+                ? associatedModels.reduce(
+                      (obj, model) => ({
+                          ...obj,
+                          [model.name]: model.name,
+                      }),
+                      {}
+                  )
+                : {};
+        }, [equipmentType, allModels]);
+        const initialSelectedModels = useMemo(
+            () => Object.keys(associatedModels) ?? [],
+            [associatedModels]
         );
-        // convert array to object
-        return associatedModels
-            ? associatedModels.reduce(
-                  (obj, model) => ({
-                      ...obj,
-                      [model.name]: model.name,
-                  }),
-                  {}
-              )
-            : {};
-    }, [equipment.type, allModels]);
-    const initialSelectedModels = useMemo(
-        () => Object.keys(associatedModels) ?? [],
-        [associatedModels]
-    );
 
-    const [selectedModels, setSelectedModels] = useState([]);
-    const handleModelChange = useCallback((selectedModels) => {
-        setSelectedModels(selectedModels);
-    }, []);
+        const [selectedModels, setSelectedModels] = useState([]);
+        const handleModelChange = useCallback((selectedModels) => {
+            setSelectedModels(selectedModels);
+        }, []);
 
-    useEffect(() => {
-        setSelectedModels(initialSelectedModels);
-    }, [initialSelectedModels]);
+        useEffect(() => {
+            setSelectedModels(initialSelectedModels);
+        }, [initialSelectedModels]);
 
-    // --- variables array CheckboxTreeview --- //
-    const variables = useMemo(
-        () => variablesTreeToVariablesArray(allVariables),
-        [allVariables]
-    );
-
-    const filteredVariables = useMemo(
-        () =>
-            variables.filter((elem) =>
-                selectedModels.some((model) => {
-                    return elem.id.includes(associatedModels[model]);
-                })
-            ),
-        [variables, selectedModels, associatedModels]
-    );
-
-    // fetch all associated models and variables for current node and study
-    useEffect(() => {
-        fetchDynamicSimulationModels(studyUuid, currentNode.id).then(
-            (models) => {
-                setAllModels(
-                    models.map((model) => ({
-                        name: model.modelName,
-                        equipmentType: model.equipmentType,
-                    }))
-                );
-
-                // transform models to variables tree representation
-                const variablesTree = modelsToVariablesTree(models);
-                setAllVariables(variablesTree);
-            }
+        // --- variables array CheckboxTreeview --- //
+        const variables = useMemo(
+            () => variablesTreeToVariablesArray(allVariables),
+            [allVariables]
         );
-    }, [studyUuid, currentNode.id]);
 
-    // expose some api for the component by using ref
-    useImperativeHandle(
-        ref,
-        () => ({
-            api: {
-                getSelectedVariables: () => {
-                    return variablesRef.current.api
-                        .getSelectedItems()
-                        .filter((item) => item.variableId) // filter to keep only variable item
-                        .filter(
-                            (item, index, arr) =>
-                                arr.findIndex(
-                                    (elem) =>
-                                        elem.variableId === item.variableId
-                                ) === index
-                        ); // remove duplicated by variableId
+        const filteredVariables = useMemo(
+            () =>
+                variables.filter((elem) =>
+                    selectedModels.some((model) => {
+                        return elem.id.includes(associatedModels[model]);
+                    })
+                ),
+            [variables, selectedModels, associatedModels]
+        );
+
+        // fetch all associated models and variables for current node and study
+        useEffect(() => {
+            fetchDynamicSimulationModels(studyUuid, currentNode.id).then(
+                (models) => {
+                    setAllModels(
+                        models.map((model) => ({
+                            name: model.modelName,
+                            equipmentType: model.equipmentType,
+                        }))
+                    );
+
+                    // transform models to variables tree representation
+                    const variablesTree = modelsToVariablesTree(models);
+                    setAllVariables(variablesTree);
+                }
+            );
+        }, [studyUuid, currentNode.id]);
+
+        // expose some api for the component by using ref
+        useImperativeHandle(
+            ref,
+            () => ({
+                api: {
+                    getSelectedVariables: () => {
+                        return variablesRef.current.api
+                            .getSelectedItems()
+                            .filter((item) => item.variableId) // filter to keep only variable item
+                            .filter(
+                                (item, index, arr) =>
+                                    arr.findIndex(
+                                        (elem) =>
+                                            elem.variableId === item.variableId
+                                    ) === index
+                            ); // remove duplicated by variableId
+                    },
                 },
-            },
-        }),
-        []
-    );
+            }),
+            []
+        );
 
-    return (
-        <>
-            {/* Models used in a mapping */}
-            <Grid item container sx={{ width: '100%' }}>
-                <Grid item xs={6}>
-                    <Typography>
-                        <FormattedMessage
-                            id={'DynamicSimulationCurveModel'}
-                        ></FormattedMessage>
-                    </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                    <CheckboxSelect
-                        options={initialSelectedModels}
-                        getOptionLabel={(value) => associatedModels[value]}
-                        value={initialSelectedModels}
-                        onChange={handleModelChange}
-                    />
-                </Grid>
-            </Grid>
-            {/* Variables which found in models used in a mapping */}
-            <Grid item xs sx={{ width: '100%' }} container direction={'column'}>
-                <Grid>
-                    <Typography
-                        sx={{ marginBottom: theme.spacing(1) }}
-                        variant="subtitle1"
-                    >
-                        <FormattedMessage
-                            id={'DynamicSimulationCurveVariable'}
-                        ></FormattedMessage>
-                    </Typography>
-                </Grid>
-                <Grid xs>
-                    <Box sx={styles.grid}>
-                        <CheckboxTreeview
-                            ref={variablesRef}
-                            data={filteredVariables}
-                            checkAll
-                            sx={{
-                                maxHeight: '440px',
-                                maxWidth: '50px',
-                            }}
+        return (
+            <>
+                {/* Models used in a mapping */}
+                <Grid item container sx={{ width: '100%' }}>
+                    <Grid item xs={6}>
+                        <Typography>
+                            <FormattedMessage
+                                id={'DynamicSimulationCurveModel'}
+                            ></FormattedMessage>
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <CheckboxSelect
+                            options={initialSelectedModels}
+                            getOptionLabel={(value) => associatedModels[value]}
+                            value={initialSelectedModels}
+                            onChange={handleModelChange}
                         />
-                    </Box>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </>
-    );
-});
+                {/* Variables which found in models used in a mapping */}
+                <Grid
+                    item
+                    xs
+                    sx={{ width: '100%' }}
+                    container
+                    direction={'column'}
+                >
+                    <Grid>
+                        <Typography
+                            sx={{ marginBottom: theme.spacing(1) }}
+                            variant="subtitle1"
+                        >
+                            <FormattedMessage
+                                id={'DynamicSimulationCurveVariable'}
+                            ></FormattedMessage>
+                        </Typography>
+                    </Grid>
+                    <Grid xs>
+                        <Box sx={styles.grid}>
+                            <CheckboxTreeview
+                                ref={variablesRef}
+                                data={filteredVariables}
+                                checkAll
+                                sx={{
+                                    maxHeight: '440px',
+                                    maxWidth: '50px',
+                                }}
+                            />
+                        </Box>
+                    </Grid>
+                </Grid>
+            </>
+        );
+    }
+);
 
 export default ModelFilter;

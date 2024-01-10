@@ -45,12 +45,14 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifySubstation,
     modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyShuntCompensator,
     modifyVoltageLevel,
     requestNetworkChange,
+    formatPropertiesForBackend,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
@@ -436,6 +438,21 @@ const TableWrapper = (props) => {
     const buildEditPromise = useCallback(
         (editingData, groovyCr, context) => {
             switch (editingData?.metadata.equipmentType) {
+                case EQUIPMENT_TYPES.SUBSTATION:
+                    const propertiesForBackend = formatPropertiesForBackend(
+                        editingDataRef.current.properties ?? {},
+                        editingData.properties ?? {}
+                    );
+                    return modifySubstation(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.countryCode,
+                        false,
+                        undefined,
+                        propertiesForBackend
+                    );
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
                         props.studyUuid,
