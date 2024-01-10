@@ -109,13 +109,22 @@ export default class LogReport {
         jsonReporter.reports.map((value) =>
             this.logs.push(new LogReportItem(value, this.uniqueId))
         );
-        // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
-        jsonReporter.taskValues?.severityList?.value
-            .split(/[[,\]]/)
-            .filter((e) => e.length)
-            .map((es) => es.trim())
-            .forEach((el) => this.severityList.push(el));
-        this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
+
+        if (this.logs.length) {
+            if (!jsonReporter.taskValues?.severityList?.value) {
+                Object.values(LogReportItem.SEVERITY)
+                    .map((s) => s.name)
+                    .forEach((el) => this.severityList.push(el));
+            } else {
+                // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
+                jsonReporter.taskValues?.severityList?.value
+                    .split(/[[,\]]/)
+                    .filter((e) => e.length)
+                    .map((es) => es.trim())
+                    .forEach((el) => this.severityList.push(el));
+            }
+            this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
+        }
     }
 
     getHighestSeverity(currentSeverity = LogReportItem.SEVERITY.UNKNOWN) {
