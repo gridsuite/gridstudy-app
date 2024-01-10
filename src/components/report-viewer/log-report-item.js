@@ -62,11 +62,7 @@ export default class LogReportItem {
 
     static getDefaultSeverityFilter(severityList) {
         const filterConfig = {};
-        if (!severityList || !severityList.length) {
-            Object.values(LogReportItem.SEVERITY).forEach((s) => {
-                filterConfig[s.name] = s.displayedByDefault;
-            });
-        } else {
+        if (severityList?.length) {
             Object.values(LogReportItem.SEVERITY)
                 .filter((s) => severityList.includes(s.name))
                 .forEach((s) => {

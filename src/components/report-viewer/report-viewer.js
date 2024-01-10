@@ -146,20 +146,19 @@ export default function ReportViewer({
 
     const refreshNode = useCallback(
         (nodeId, severityFilter) => {
-            if (
-                reportTreeData.current[nodeId].getType() ===
-                    LogReportType.NodeReport &&
-                !reportTreeData.current[nodeId].getId()
-            ) {
-                // can happen where no logs / no direct access => cannot fetch data
-                return;
-            }
-
             let severityList = [];
             for (const [severity, selected] of Object.entries(severityFilter)) {
                 if (selected) {
                     severityList.push(severity);
                 }
+            }
+
+            if (severityList.length === 0) {
+                // no severity => there is no log to fetch, no need to request the back-end
+                setSelectedNode(nodeId);
+                setLogs([]);
+                setHighlightedReportId(null);
+                return;
             }
 
             // use a timout to avoid having a loader in case of fast promise return (avoid blink)
