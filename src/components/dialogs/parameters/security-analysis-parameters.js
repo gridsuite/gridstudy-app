@@ -254,6 +254,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                         container
                         spacing={1}
                         sx={{ padding: 0, paddingBottom: 2 }}
+                        xl={6}
                     >
                         <DropDown
                             value={provider}

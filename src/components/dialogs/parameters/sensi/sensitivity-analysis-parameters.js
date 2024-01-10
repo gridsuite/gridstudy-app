@@ -584,14 +584,13 @@ export const SensitivityAnalysisParameters = ({
                 <Grid
                     container
                     sx={{ height: '100%' }}
-                    direction="column"
                     justifyContent="space-between"
                 >
                     <Grid item container>
-                        <Grid item xs={8} sx={styles.parameterName}>
+                        <Grid item xs={8} xl={2} sx={styles.parameterName}>
                             <FormattedMessage id="Provider" />
                         </Grid>
-                        <Grid item xs={4} sx={styles.controlItem}>
+                        <Grid item xs={4} xl={2} sx={styles.controlItem}>
                             <SelectInput
                                 name={PROVIDER}
                                 disableClearable
@@ -623,7 +622,7 @@ export const SensitivityAnalysisParameters = ({
                             <LineSeparator />
                         </Grid>
                         <Grid container justifyContent={'right'}>
-                            <Grid item marginBottom="-50px">
+                            <Grid item marginBottom={-9}>
                                 {launchLoader
                                     ? renderComputingEventLoading()
                                     : renderComputingEvent()}

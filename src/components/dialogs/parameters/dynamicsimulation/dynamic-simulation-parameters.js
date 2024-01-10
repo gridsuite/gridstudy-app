@@ -244,11 +244,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                         paddingTop: 0,
                     })}
                 >
-                    <Grid
-                        xl={tabValue === TAB_VALUES.CURVE ? 12 : 6.01}
-                        container
-                        sx={{ height: 'fit-content' }}
-                    >
+                    <Grid xl={6} container sx={{ height: 'fit-content' }}>
                         {providers && provider && (
                             <DropDown
                                 value={provider}
