@@ -30,6 +30,7 @@
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
     "edit": "Edit",
+    "editSiteProperties": "Edit site properties",
 
     "studyNameErrorMsg": "Study name should not be empty",
     "caseNameErrorMsg": "Please select the case name",
@@ -419,7 +420,8 @@
     "LimitAcceptableDuration": "Duration",
     "Overload": "Overload",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
-
+    "Key": "Key",
+    "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
     "true": "true",
@@ -855,6 +857,8 @@
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
     "DuplicatedProps": "Duplicated properties: each property must be unique",
+    "DuplicateProperty": "Duplicate property",
+    "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
     "SubstationModificationError": "Error while modifying substation",
 
