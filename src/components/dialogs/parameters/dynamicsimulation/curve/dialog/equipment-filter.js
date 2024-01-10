@@ -310,7 +310,7 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                     <Grid item xs={6}>
                         <Select
-                            labelId={'DynamicSimulationCurveEquipementType'}
+                            labelId={'DynamicSimulationCurveEquipmentType'}
                             value={equipmentType}
                             onChange={handleEquipmentTypeChange}
                             size="small"
