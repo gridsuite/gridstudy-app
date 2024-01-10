@@ -21,22 +21,23 @@ import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
+import { fetchAllCountries } from '../../../../../../services/study/network-map';
+import { evaluateJsonFilter } from '../../../../../../services/study/filter';
+import {
+    CombinatorType,
+    DataType,
+    FieldType,
+    OperatorType,
+} from '../../../../filter/expert/expert-filter.type';
 
-export const CURVE_EQUIPMENTS = {
-    [EQUIPMENT_TYPES.GENERATOR]: {
-        type: EQUIPMENT_TYPES.GENERATOR,
-        fetchers: EQUIPMENT_FETCHERS.GENERATOR,
-    },
-    [EQUIPMENT_TYPES.LOAD]: {
-        type: EQUIPMENT_TYPES.LOAD,
-        fetchers: EQUIPMENT_FETCHERS.LOAD,
-    },
-};
+export const CURVE_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.GENERATOR,
+    EQUIPMENT_TYPES.LOAD,
+];
 
-const TENSION_UNIT = 'kV';
+const NOMINAL_VOLTAGE_UNIT = 'kV';
 
 const styles = {
     grid: {
@@ -46,43 +47,41 @@ const styles = {
 };
 
 const EquipmentFilter = forwardRef(
-    ({ equipment: initialEquipment, onChangeEquipment }, ref) => {
+    ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
-        const [substationsFiltersReady, setSubstationsFiltersReady] =
-            useState(false);
-        const [voltageLevelsFiltersReady, setVoltageLevelsFiltersReady] =
-            useState(false);
+        const [countriesFilterReady, setCountriesFilterReady] = useState(false);
 
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
+        const mapEquipments = useSelector((state) => state.mapEquipments);
 
         const intl = useIntl();
         const theme = useTheme();
         const equipmentsRef = useRef();
 
         // --- Equipment types --- //
-        const [equipment, setEquipment] = useState(initialEquipment);
+        const [equipmentType, setEquipmentType] =
+            useState(initialEquipmentType);
 
         const handleEquipmentTypeChange = useCallback(
             (event) => {
-                const selectedEquipment = event.target.value;
-                setEquipment(selectedEquipment);
-                onChangeEquipment(selectedEquipment);
+                const selectedEquipmentType = event.target.value;
+                setEquipmentType(selectedEquipmentType);
+                onChangeEquipmentType(selectedEquipmentType);
             },
-            [onChangeEquipment]
+            [onChangeEquipmentType]
         );
 
-        // --- Voltage levels (id metadata), tension (nominalV metadata) => lookup in Voltage levels --- //
+        // --- Voltage levels, nominal voltages => lookup in mapEquipments which is loaded at booting up application --- //
+        const voltageLevels = mapEquipments.getVoltageLevels();
+        const voltageLevelIds = useMemo(
+            () => voltageLevels.map((elem) => elem.id),
+            [voltageLevels]
+        );
         const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
             []
         );
-        const [voltageLevels, setVoltageLevels] = useState({});
-        const voltageLevelIds = useMemo(
-            () => Object.keys(voltageLevels),
-            [voltageLevels]
-        );
-
         const handleVoltageLevelChange = useCallback(
             (selectedVoltageLevelIds) => {
                 setSelectedVoltageLevelIds(selectedVoltageLevelIds);
@@ -90,209 +89,130 @@ const EquipmentFilter = forwardRef(
             []
         );
 
-        const [selectedTensionIds, setSelectedTensionIds] = useState([]);
-        const [tensions, setTensions] = useState({});
-        const tensionIds = useMemo(() => Object.keys(tensions), [tensions]);
+        const nominalVoltages = mapEquipments.getNominalVoltages();
+        const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
+            []
+        );
 
-        const handleTensionChange = useCallback((selectedTensionIds) => {
-            setSelectedTensionIds(selectedTensionIds);
+        const handleNominalVoltageChange = useCallback((selectedTensionIds) => {
+            setSelectedNominalVoltages(selectedTensionIds);
         }, []);
 
-        // load VoltageLevels from backend
-        useEffect(() => {
-            Promise.all(
-                EQUIPMENT_FETCHERS.VOLTAGE_LEVEL.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
-            )
-                .then((vals) => {
-                    // convert array to voltageLevels object
-                    const voltageLevelsObj = vals
-                        .flat()
-                        .reduce(
-                            (obj, curr) => ({ ...obj, [curr.id]: curr.name }),
-                            {}
-                        );
-
-                    // convert array to tensions object
-                    const tensionObj = vals.flat().reduce(
-                        (obj, curr) => ({
-                            ...obj,
-                            [`${curr.nominalVoltage}`]: curr.nominalVoltage,
-                        }),
-                        {}
-                    );
-
-                    // update voltage level states
-                    setVoltageLevels(voltageLevelsObj);
-                    setSelectedVoltageLevelIds(Object.keys(voltageLevelsObj));
-
-                    // update tension states
-                    setTensions(tensionObj);
-                    setSelectedTensionIds(Object.keys(tensionObj));
-
-                    // update loading state
-                    setSubstationsFiltersReady(true);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'DynamicSimulationFetchVoltageLevelError',
-                    });
-                });
-        }, [currentNode.id, studyUuid, snackError]);
-
-        // --- country (countryCode metadata) => lookup in substation --- //
-        const [selectedCountries, setSelectedCountries] = useState([]);
+        // --- country (i.e. countryCode) => fetch from network-map-server --- //
         const [countries, setCountries] = useState([]);
+        const [selectedCountries, setSelectedCountries] = useState([]);
         const handleCountryChange = useCallback((selectedCountries) => {
             setSelectedCountries(selectedCountries);
         }, []);
 
-        // load substation from backend to infer countries
+        // load countries
         useEffect(() => {
-            Promise.all(
-                EQUIPMENT_FETCHERS.SUBSTATION.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
-            )
-                .then((vals) => {
-                    // get countries codes
-                    let countries = [
-                        ...vals.flat().reduce((set, substation) => {
-                            substation.countryCode &&
-                                set.add(substation.countryCode);
-                            return set;
-                        }, new Set()),
-                    ];
-
+            fetchAllCountries(studyUuid, currentNode.id)
+                .then((countryCodes) => {
                     // update countries states
-                    setSelectedCountries(countries);
-                    setCountries(countries);
+                    setCountries(countryCodes);
 
                     // update loading state
-                    setVoltageLevelsFiltersReady(true);
+                    setCountriesFilterReady(true);
                 })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'DynamicSimulationFetchSubstationError',
+                        headerId: 'DynamicSimulationFetchCountryError',
                     });
                 });
         }, [currentNode.id, studyUuid, snackError]);
 
         // fetching and filtering equipments by filters
-        const loadFilteredEquipments = useCallback(() => {
-            // get all substations which include also voltage levels
-            return Promise.all(
-                EQUIPMENT_FETCHERS.SUBSTATION.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
-            )
-                .then((vals) => {
-                    const substations = vals.flat();
-                    const voltageLevels = substations.reduce(
-                        (arr, substation) =>
-                            substation.voltageLevels
-                                ? [...arr, ...substation.voltageLevels]
-                                : arr,
-                        []
-                    );
+        const filteringEquipmentsAsync = useCallback(() => {
+            const buildExpertRules = (
+                voltageLevelIds,
+                countries,
+                nominalVoltages
+            ) => {
+                const rules = [];
 
-                    // filtering substations by country and region
-                    const filteredSubstationIds = substations
-                        .filter((substation) => {
-                            let matched = true; // by default whatever substation is taken into account
-                            if (selectedCountries.length) {
-                                matched &= selectedCountries.includes(
-                                    substation.countryCode
-                                );
-                            }
-                            return matched;
-                        })
-                        .map((substation) => substation.id);
+                // create rule IN for voltageLevelIds
+                if (voltageLevelIds && voltageLevelIds.length > 0) {
+                    const voltageLevelIdsRule = {
+                        field: FieldType.VOLTAGE_LEVEL_ID,
+                        operator: OperatorType.IN,
+                        values: voltageLevelIds,
+                        dataType: DataType.STRING,
+                    };
+                    rules.push(voltageLevelIdsRule);
+                }
 
-                    // get equipments by type and substation ids
-                    return Promise.all(
-                        equipment.fetchers.map((fetchPromise) =>
-                            fetchPromise(
-                                studyUuid,
-                                currentNode.id,
-                                filteredSubstationIds
-                            )
-                        )
-                    )
-                        .then((vals) => {
-                            const equipments = vals.flat();
+                // create rule IN for countries
+                if (countries && countries.length > 0) {
+                    const countriesRule = {
+                        field: FieldType.COUNTRY,
+                        operator: OperatorType.IN,
+                        values: countries,
+                        dataType: DataType.ENUM,
+                    };
+                    rules.push(countriesRule);
+                }
 
-                            // filter equipment by voltageLevel ids and tension
-                            const filteredEquipments = equipments.filter(
-                                (equipment) => {
-                                    let matched = true; // by default whatever equipment is taken into account
+                // create rule IN for nominalVoltages
+                if (nominalVoltages && nominalVoltages.length > 0) {
+                    const nominalVoltagesRule = {
+                        field: FieldType.NOMINAL_VOLTAGE,
+                        operator: OperatorType.IN,
+                        values: nominalVoltages,
+                        dataType: DataType.NUMBER,
+                    };
+                    rules.push(nominalVoltagesRule);
+                }
 
-                                    if (selectedVoltageLevelIds.length) {
-                                        matched &=
-                                            selectedVoltageLevelIds.includes(
-                                                equipment.voltageLevelId
-                                            );
-                                    }
+                return {
+                    combinator: CombinatorType.AND,
+                    dataType: DataType.COMBINATOR,
+                    rules,
+                };
+            };
 
-                                    if (selectedTensionIds.length) {
-                                        matched &= selectedTensionIds.includes(
-                                            `${
-                                                voltageLevels.find(
-                                                    (elem) =>
-                                                        elem.id ===
-                                                        equipment.voltageLevelId
-                                                )?.nominalVoltage
-                                            }`
-                                        );
-                                    }
-                                    return matched;
-                                }
-                            );
-                            return filteredEquipments;
-                        })
-                        .catch((error) => {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId:
-                                    'DynamicSimulationFetchEquipmentError',
-                            });
-                        });
+            const expertFilter = {
+                type: 'EXPERT',
+                equipmentType: equipmentType,
+                rules: buildExpertRules(
+                    selectedVoltageLevelIds,
+                    selectedCountries,
+                    selectedNominalVoltages
+                ),
+            };
+
+            // evaluate by filter-server
+            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter)
+                .then((equipments) => {
+                    // take only ids when return
+                    return equipments.map(({ id }) => ({ id }));
                 })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'DynamicSimulationFetchSubstationError',
+                        headerId: 'DynamicSimulationFetchEquipmentError',
                     });
                 });
         }, [
             studyUuid,
             currentNode.id,
-            selectedCountries,
-            selectedTensionIds,
-            selectedVoltageLevelIds,
-            equipment.fetchers,
+            equipmentType,
             snackError,
+            selectedVoltageLevelIds,
+            selectedCountries,
+            selectedNominalVoltages,
         ]);
 
         useEffect(() => {
-            if (
-                gridReady &&
-                voltageLevelsFiltersReady &&
-                substationsFiltersReady
-            ) {
-                loadFilteredEquipments().then((equipments) => {
+            if (gridReady && countriesFilterReady) {
+                equipmentsRef.current.api.showLoadingOverlay();
+                filteringEquipmentsAsync().then((equipments) => {
                     setEquipmentRowData(equipments);
+                    equipmentsRef.current.api.hideOverlay();
                 });
             }
-        }, [
-            loadFilteredEquipments,
-            gridReady,
-            voltageLevelsFiltersReady,
-            substationsFiltersReady,
-        ]);
+        }, [filteringEquipmentsAsync, gridReady, countriesFilterReady]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
@@ -346,6 +266,16 @@ const EquipmentFilter = forwardRef(
             []
         );
 
+        // config overlay when fetching from back
+        const loadingOverlayComponent = (props) => {
+            return <>{props.loadingMessage}</>;
+        };
+        const loadingOverlayComponentParams = useMemo(() => {
+            return {
+                loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
+            };
+        }, [intl]);
+
         return (
             <>
                 {/* Equipment type */}
@@ -360,18 +290,16 @@ const EquipmentFilter = forwardRef(
                     <Grid item xs={6}>
                         <Select
                             labelId={'DynamicSimulationCurveEquipementType'}
-                            value={equipment}
+                            value={equipmentType}
                             onChange={handleEquipmentTypeChange}
                             size="small"
                             sx={{ width: '100%' }}
                         >
-                            {Object.entries(CURVE_EQUIPMENTS).map(
-                                ([key, value]) => (
-                                    <MenuItem key={key} value={value}>
-                                        {intl.formatMessage({ id: value.type })}
-                                    </MenuItem>
-                                )
-                            )}
+                            {CURVE_EQUIPMENT_TYPES.map((type) => (
+                                <MenuItem key={type} value={type}>
+                                    {intl.formatMessage({ id: type })}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </Grid>
                 </Grid>
@@ -389,7 +317,8 @@ const EquipmentFilter = forwardRef(
                             value={selectedVoltageLevelIds}
                             options={voltageLevelIds}
                             getOptionLabel={(value) =>
-                                voltageLevels[value] ?? value
+                                mapEquipments.getVoltageLevel(value)?.name ??
+                                value
                             }
                             onChange={handleVoltageLevelChange}
                         />
@@ -423,12 +352,12 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                     <Grid item xs={6}>
                         <CheckboxSelect
-                            options={tensionIds}
+                            options={nominalVoltages}
                             getOptionLabel={(value) =>
-                                `${tensions[value]} ${TENSION_UNIT}`
+                                `${value} ${NOMINAL_VOLTAGE_UNIT}`
                             }
-                            value={selectedTensionIds}
-                            onChange={handleTensionChange}
+                            value={selectedNominalVoltages}
+                            onChange={handleNominalVoltageChange}
                         />
                     </Grid>
                 </Grid>
@@ -465,7 +394,13 @@ const EquipmentFilter = forwardRef(
                                 onSelectionChanged={
                                     handleEquipmentSelectionChanged
                                 }
-                            ></CustomAGGrid>
+                                loadingOverlayComponent={
+                                    loadingOverlayComponent
+                                }
+                                loadingOverlayComponentParams={
+                                    loadingOverlayComponentParams
+                                }
+                            />
                         </Box>
                     </Grid>
                 </Grid>
