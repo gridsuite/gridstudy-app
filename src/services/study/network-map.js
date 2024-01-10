@@ -125,3 +125,15 @@ export function fetchLineOrTransformer(
     console.debug(fetchEquipmentInfosUrl);
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
+
+export function fetchAllCountries(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const fetchCountriesUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/countries?inUpstreamBuiltParentNode=true';
+    console.debug(fetchCountriesUrl);
+    return backendFetchJson(fetchCountriesUrl);
+}
