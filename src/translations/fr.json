@@ -1314,6 +1314,7 @@
     "magnetizingConductance": "Conductance magnétisante (μS)",
     "magnetizingSusceptance": "Susceptance magnétisante (μS)",
     "ratedNominalPower": "Puissance nominale (MVA)",
+    "ratedS": "Puissance nominale (MVA)",
 
     "ShortcircuitInProgress": "Calcul de court-circuit en cours...",
 
