@@ -272,7 +272,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     })}
                     rows={rowsToShow}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
@@ -332,7 +331,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     })}
                     rows={rowsToShow}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
@@ -366,7 +364,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     })}
                     rows={rowsToShow}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}

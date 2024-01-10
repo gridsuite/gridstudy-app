@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'crypto';
 
 // TODO this file is duplicated from the gridexplore-app => to be merged when merging two projects
 export enum OperatorType {
@@ -63,12 +62,4 @@ export interface RuleGroupTypeExport {
     combinator: CombinatorType;
     dataType: DataType;
     rules: (RuleTypeExport | RuleGroupTypeExport)[];
-}
-
-export interface ExpertFilter {
-    id?: UUID;
-    type: 'EXPERT';
-    equipmentType: string; // TODO must be EquipmentType enum
-    rules: RuleGroupTypeExport;
-    topologyKind?: string; // TODO must be TopologyKind enum
 }

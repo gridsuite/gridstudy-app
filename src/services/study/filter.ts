@@ -8,9 +8,16 @@
 import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
-import { ExpertFilter } from '../../components/dialogs/filter/expert/expert-filter.type';
+import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 
-export function evaluateFilter(
+interface ExpertFilter {
+    id?: UUID;
+    type: 'EXPERT';
+    equipmentType: string; // TODO must be EquipmentType enum
+    rules: RuleGroupTypeExport;
+}
+
+export function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
@@ -21,7 +28,7 @@ export function evaluateFilter(
 
     const evaluateFilterUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/filters/evaluate';
+        '/filters/evaluate?inUpstreamBuiltParentNode=true';
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'post',

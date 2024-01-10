@@ -24,7 +24,7 @@ import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
-import { evaluateFilter } from '../../../../../../services/study/filter';
+import { evaluateJsonFilter } from '../../../../../../services/study/filter';
 import {
     CombinatorType,
     DataType,
@@ -204,7 +204,8 @@ const EquipmentFilter = forwardRef(
                 ),
             };
 
-            return evaluateFilter(studyUuid, currentNode.id, expertFilter)
+            // evaluate by filter-server
+            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter)
                 .then((equipments) => {
                     return equipments;
                 })

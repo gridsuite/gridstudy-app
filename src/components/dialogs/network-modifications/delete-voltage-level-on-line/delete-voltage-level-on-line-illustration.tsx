@@ -19,8 +19,8 @@ const replacedTexts = [
         tradId: 'VoltageLevel2',
     },
     {
-        eltId: 'delete-voltage-level-on-line-attachment-point1-left-txt',
-        tradId: 'AttachmentPoint',
+        eltId: 'delete-voltage-level-to-split-at-left-txt',
+        tradId: 'VoltageLevelToSplitAt',
     },
     {
         eltId: 'delete-voltage-level-on-line-line1-left-txt',
