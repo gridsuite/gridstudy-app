@@ -32,6 +32,7 @@ import {
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
     FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
@@ -116,6 +117,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         };
+
+        const numericFilterParams = {
+            filterDataType: FILTER_DATA_TYPES.NUMBER,
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        };
+
         const autoCompleteFilterParams = {
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterEnums,
@@ -149,6 +156,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -163,6 +172,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -170,6 +181,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
@@ -177,6 +190,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
@@ -184,6 +199,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
@@ -191,6 +208,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterParams: numericFilterParams,
             }),
             {
                 field: 'linkedElementId',

@@ -73,10 +73,10 @@ const getCharacteristicsCreateFormValidationSchema = () => {
         [SECTION_COUNT]: yup
             .number()
             .required()
-            .min(1, 'SectionCountBetweenOneAndMaximumSectionCount')
+            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount')
             .max(
                 yup.ref(MAXIMUM_SECTION_COUNT),
-                'SectionCountBetweenOneAndMaximumSectionCount'
+                'SectionCountBetweenZeroAndMaximumSectionCount'
             ),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().notRequired(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().notRequired(),
@@ -97,7 +97,7 @@ const getCharacteristicsModificationFormValidationSchema = () => {
         [SECTION_COUNT]: yup
             .number()
             .nullable()
-            .min(1, 'SectionCountBetweenOneAndMaximumSectionCount'),
+            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount'),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };
