@@ -6,7 +6,7 @@
  */
 
 import { Grid, Typography, useTheme } from '@mui/material';
-import EquipmentFilter, { CURVE_EQUIPMENTS } from './equipment-filter';
+import EquipmentFilter from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, {
@@ -16,6 +16,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
 const CurveSelector = forwardRef((props, ref) => {
     const theme = useTheme();
@@ -23,10 +24,12 @@ const CurveSelector = forwardRef((props, ref) => {
     const equipmentFilterRef = useRef();
     const modelFilterRef = useRef();
 
-    const [equipment, setEquipment] = useState(CURVE_EQUIPMENTS.GENERATOR);
+    const [equipmentType, setEquipmentType] = useState(
+        EQUIPMENT_TYPES.GENERATOR
+    );
 
-    const handleChangeEquipment = useCallback((newEquipment) => {
-        setEquipment(newEquipment);
+    const handleChangeEquipmentType = useCallback((newEquipmentType) => {
+        setEquipmentType(newEquipmentType);
     }, []);
 
     // expose some api for the component by using ref
@@ -66,8 +69,8 @@ const CurveSelector = forwardRef((props, ref) => {
                 </Typography>
                 <EquipmentFilter
                     ref={equipmentFilterRef}
-                    equipment={equipment}
-                    onChangeEquipment={handleChangeEquipment}
+                    equipmentType={equipmentType}
+                    onChangeEquipmentType={handleChangeEquipmentType}
                 />
             </Grid>
             <Grid
@@ -87,7 +90,10 @@ const CurveSelector = forwardRef((props, ref) => {
                         id={'DynamicSimulationCurveCurveFilter'}
                     ></FormattedMessage>
                 </Typography>
-                <ModelFilter ref={modelFilterRef} equipment={equipment} />
+                <ModelFilter
+                    ref={modelFilterRef}
+                    equipmentType={equipmentType}
+                />
             </Grid>
         </>
     );
