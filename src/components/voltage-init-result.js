@@ -357,11 +357,13 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                         </Button>
                         {previewModificationsDialogOpen &&
                             renderPreviewModificationsDialog()}
-                        {result && !result.modificationsGroupUuid && (
-                            <Box sx={{ paddingLeft: 2 }}>
-                                <FormattedMessage id="modificationsAlreadyApplied" />
-                            </Box>
-                        )}
+                        {result &&
+                            !result.modificationsGroupUuid &&
+                            status === RunningStatus.SUCCEED && (
+                                <Box sx={{ paddingLeft: 2 }}>
+                                    <FormattedMessage id="modificationsAlreadyApplied" />
+                                </Box>
+                            )}
                         {applyingModifications && (
                             <CircularProgress
                                 sx={{ paddingLeft: 2 }}
