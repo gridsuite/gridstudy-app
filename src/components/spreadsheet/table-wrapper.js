@@ -231,12 +231,6 @@ const TableWrapper = (props) => {
                 ? 'left'
                 : undefined;
 
-            //if the column have children it means it is a group column so we need to recursively enrich its children
-            if (column.children) {
-                column.children = column.children.map((child) =>
-                    enrichColumn(child)
-                );
-            }
             return column;
         },
         [fluxConvention, intl, lockedColumnsNames, props.loadFlowStatus]

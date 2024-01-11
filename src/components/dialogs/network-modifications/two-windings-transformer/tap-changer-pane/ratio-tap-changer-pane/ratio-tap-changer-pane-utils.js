@@ -412,7 +412,8 @@ export const getComputedTapSideId = (twt) => {
         return null;
     }
     if (ratioTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
-        return ratioTapChangerValues?.regulatingTerminalVlId === twt?.voltageLevelId1
+        return ratioTapChangerValues?.regulatingTerminalVlId ===
+            twt?.voltageLevelId1
             ? SIDE.SIDE1.id
             : SIDE.SIDE2.id;
     } else {

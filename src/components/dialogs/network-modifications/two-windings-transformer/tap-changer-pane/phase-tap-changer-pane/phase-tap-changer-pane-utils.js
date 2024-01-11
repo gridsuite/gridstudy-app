@@ -350,7 +350,8 @@ export const getPhaseTapRegulationSideId = (twt) => {
         return null;
     }
     if (phaseTapChengerValues?.regulatingTerminalConnectableId === twt?.id) {
-        return phaseTapChengerValues?.regulatingTerminalVlId === twt?.voltageLevelId1
+        return phaseTapChengerValues?.regulatingTerminalVlId ===
+            twt?.voltageLevelId1
             ? SIDE.SIDE1.id
             : SIDE.SIDE2.id;
     } else {
@@ -362,17 +363,15 @@ export const getComputedPhaseRegulationType = (twt) => {
     if (!twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
         return null;
     }
-    if (
-        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !==
-        twt?.id
-    ) {
+    if (twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !== twt?.id) {
         return REGULATION_TYPES.DISTANT;
     } else {
         return REGULATION_TYPES.LOCAL;
     }
-}
+};
 
 export const getComputedPreviousPhaseRegulationType = (previousValues) => {
-    const previousRegulationType = getComputedPhaseRegulationType(previousValues);
+    const previousRegulationType =
+        getComputedPhaseRegulationType(previousValues);
     return previousRegulationType?.id || null;
 };

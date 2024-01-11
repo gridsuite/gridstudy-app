@@ -107,14 +107,19 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
 
 export const TWTRatioRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }, ref) => {
-        const [openTWTRegulatingTerminalPopup, setOpenTWTRegulatingTerminalPopup] = useState(true);
+        const [
+            openTWTRegulatingTerminalPopup,
+            setOpenTWTRegulatingTerminalPopup,
+        ] = useState(true);
 
         useImperativeHandle(
             ref,
             () => {
                 return {
                     getValue: () => {
-                        return getTapChangerRegulationTerminalGeneratorValue(gridContext.dynamicValidation?.ratioTapChanger || {});
+                        return getTapChangerRegulationTerminalGeneratorValue(
+                            gridContext.dynamicValidation?.ratioTapChanger || {}
+                        );
                     },
                     getField: () => {
                         return colDef.field;
@@ -156,12 +161,17 @@ export const TWTRatioRegulatingTerminalEditor = forwardRef(
         const getRatioTapChangerValue = () => {
             const ratioTapChanger = {
                 ...rowData?.ratioTapChanger,
-                regulatingTerminalConnectableId: rowData?.ratioTapChanger?.regulatingTerminalConnectableId || '',
-                regulatingTerminalConnectableType: rowData?.ratioTapChanger?.regulatingTerminalConnectableType || '',
-                regulatingTerminalVlId: rowData?.ratioTapChanger?.regulatingTerminalVlId || '',
-            }
+                regulatingTerminalConnectableId:
+                    rowData?.ratioTapChanger?.regulatingTerminalConnectableId ||
+                    '',
+                regulatingTerminalConnectableType:
+                    rowData?.ratioTapChanger
+                        ?.regulatingTerminalConnectableType || '',
+                regulatingTerminalVlId:
+                    rowData?.ratioTapChanger?.regulatingTerminalVlId || '',
+            };
             return ratioTapChanger;
-        }
+        };
 
         return (
             <RegulatingTerminalModificationDialog
@@ -183,14 +193,19 @@ export const TWTRatioRegulatingTerminalEditor = forwardRef(
 
 export const TWTPhaseRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }, ref) => {
-        const [openTWTRegulatingTerminalPopup, setOpenTWTRegulatingTerminalPopup] = useState(true);
+        const [
+            openTWTRegulatingTerminalPopup,
+            setOpenTWTRegulatingTerminalPopup,
+        ] = useState(true);
 
         useImperativeHandle(
             ref,
             () => {
                 return {
                     getValue: () => {
-                        return getTapChangerRegulationTerminalGeneratorValue(gridContext.dynamicValidation.phaseTapChanger || {});
+                        return getTapChangerRegulationTerminalGeneratorValue(
+                            gridContext.dynamicValidation.phaseTapChanger || {}
+                        );
                     },
                     getField: () => {
                         return colDef.field;
@@ -232,12 +247,17 @@ export const TWTPhaseRegulatingTerminalEditor = forwardRef(
         const getPhaseTapChangerValue = () => {
             const phaseTapChanger = {
                 ...rowData?.phaseTapChanger,
-                regulatingTerminalConnectableId: rowData?.phaseTapChanger?.regulatingTerminalConnectableId || '',
-                regulatingTerminalConnectableType: rowData?.phaseTapChanger?.regulatingTerminalConnectableType || '',
-                regulatingTerminalVlId: rowData?.phaseTapChanger?.regulatingTerminalVlId || '',
-            }
+                regulatingTerminalConnectableId:
+                    rowData?.phaseTapChanger?.regulatingTerminalConnectableId ||
+                    '',
+                regulatingTerminalConnectableType:
+                    rowData?.phaseTapChanger
+                        ?.regulatingTerminalConnectableType || '',
+                regulatingTerminalVlId:
+                    rowData?.phaseTapChanger?.regulatingTerminalVlId || '',
+            };
             return phaseTapChanger;
-        }
+        };
 
         return (
             <RegulatingTerminalModificationDialog
