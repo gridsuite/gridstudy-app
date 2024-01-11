@@ -110,22 +110,20 @@ export default class LogReport {
             this.logs.push(new LogReportItem(value, this.uniqueId))
         );
 
-        if (this.logs.length) {
-            // the local severity list is set to the default list, when it is not set
-            // and there are some local logs (compatibility code when we added the
-            // severity list as a task value: to be able to read existing logs).
-            if (!jsonReporter.taskValues?.severityList?.value) {
-                Object.values(LogReportItem.SEVERITY)
-                    .map((s) => s.name)
-                    .forEach((el) => this.severityList.push(el));
-            } else {
-                // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
-                jsonReporter.taskValues?.severityList?.value
-                    .split(/[[,\]]/)
-                    .filter((e) => e.length)
-                    .map((es) => es.trim())
-                    .forEach((el) => this.severityList.push(el));
-            }
+        if (jsonReporter.taskValues?.severityList?.value) {
+            // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
+            jsonReporter.taskValues?.severityList?.value
+                .split(/[[,\]]/)
+                .filter((e) => e.length)
+                .map((es) => es.trim())
+                .forEach((el) => this.severityList.push(el));
+        } else if (this.logs.length) {
+            // abnormal case when severity list is not set by the back while there
+            // are some local logs: this can happen after we added the severity list as a task value
+            // and if we are reading former existing logs => compatibility code.
+            Object.values(LogReportItem.SEVERITY)
+                .map((s) => s.name)
+                .forEach((el) => this.severityList.push(el));
         }
         this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
     }
