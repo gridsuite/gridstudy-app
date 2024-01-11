@@ -17,10 +17,6 @@ import { useCallback, useState } from 'react';
 import { ComputingType } from 'components/computing-status/computing-type';
 
 export const ShortCircuitAnalysisAllBusesResult = () => {
-    const allBusesShortCircuitNotif = useSelector(
-        (state: ReduxState) => state.allBusesShortCircuitNotif
-    );
-
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
@@ -41,7 +37,6 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
             analysisStatus={allBusesShortCircuitAnalysisStatus}
             result={result}
             updateResult={updateResult}
-            shortCircuitNotif={allBusesShortCircuitNotif}
             customTablePaginationProps={{
                 labelRowsPerPageId:
                     'muiTablePaginationLabelRowsPerPageAllBusesSCA',
