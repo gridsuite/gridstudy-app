@@ -243,3 +243,23 @@ export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
         }, [])
     );
 };
+
+export function getNewVoltageLevelOptions(
+    formattedVoltageLevel,
+    oldVoltageLevelId,
+    voltageLevelOptions
+) {
+    const newVoltageLevelOptions =
+        formattedVoltageLevel.id === oldVoltageLevelId
+            ? voltageLevelOptions.filter(
+                  (vl) => vl.id !== formattedVoltageLevel.id
+              )
+            : voltageLevelOptions.filter(
+                  (vl) =>
+                      vl.id !== formattedVoltageLevel.id &&
+                      vl.id !== oldVoltageLevelId
+              );
+    newVoltageLevelOptions.push(formattedVoltageLevel);
+
+    return newVoltageLevelOptions;
+}
