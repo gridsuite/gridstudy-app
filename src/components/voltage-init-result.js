@@ -204,7 +204,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
@@ -241,7 +241,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
@@ -260,7 +260,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
@@ -293,7 +292,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
@@ -373,10 +371,14 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Box>
                 </Box>
                 <div style={{ flexGrow: 1 }}>
-                    {result &&
+                    {(status === RunningStatus.SUCCEED ||
+                        status === RunningStatus.FAILED) &&
+                        result &&
                         tabIndex === 0 &&
                         renderIndicatorsTable(result.indicators)}
-                    {result &&
+                    {(status === RunningStatus.SUCCEED ||
+                        status === RunningStatus.FAILED) &&
+                        result &&
                         tabIndex === 1 &&
                         renderReactiveSlacksTable(result.reactiveSlacks)}
                     {tabIndex === 2 && renderReportViewer()}
