@@ -63,6 +63,7 @@ import VoltageInitModificationDialog from 'components/dialogs/network-modificati
 import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
 
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
@@ -340,6 +341,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                     label: 'BY_FORMULA',
                     action: () => adapt(ByFormulaDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
+                    label: 'VSC',
+                    action: () => adapt(VscModificationDialog),
                 },
             ],
         },

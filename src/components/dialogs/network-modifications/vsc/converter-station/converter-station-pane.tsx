@@ -31,12 +31,17 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { TextField } from '@mui/material';
+import { ConverterStationElementInfos, ConverterStationInterfaceEditData } from './converter-station-utils';
+import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 
 interface VscConverterStationPaneProps {
     id: string;
     stationLabel: string;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
+    isModification: boolean;
+    previousValues?: ConverterStationElementInfos | null;
 }
 
 const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
@@ -44,6 +49,8 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     stationLabel,
     currentNode,
     studyUuid,
+    isModification,
+    previousValues,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
@@ -74,7 +81,22 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     }, [studyUuid, currentNodeUuid]);
 
-    const generatorIdField = (
+    console.log('debug', 'ConverterStationPane', previousValues);
+    const previousDataany = previousValues as any;
+
+    const generatorIdField = isModification ? ( // TODO: fix this add isModification
+        <TextField
+            size="small"
+            fullWidth
+            label={'ID'}
+            // name={`${id}.${CONVERTER_STATION_ID}`}
+            value={previousDataany?.id}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+        />
+    ) : (
         <TextInput
             name={`${id}.${CONVERTER_STATION_ID}`}
             label={'converterStationId'}
@@ -85,10 +107,13 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
             label={'converterStationName'}
+            previousValue={previousValues?.name || undefined}
         />
     );
 
-    const connectivityForm = (
+    //FIXME (jamal) to reactivate
+    const connectivityForm = isModification ? null
+    : (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
             voltageLevelOptions={voltageLevelOptions}
@@ -103,6 +128,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${LOSS_FACTOR}`}
             label={'lossFactorLabel'}
             adornment={percentageTextField}
+            previousValue={previousValues?.lossFactor}
         />
     );
 
@@ -111,10 +137,19 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${REACTIVE_POWER}`}
             adornment={ReactivePowerAdornment}
             label={'ReactivePowerText'}
+            previousValue={previousValues?.reactivePower}
         />
     );
 
-    const voltageRegulation = (
+    const voltageRegulation = isModification ? (
+        <CheckboxNullableInput
+            name={`${id}.${VOLTAGE_REGULATION_ON}`}
+            label={'VoltageRegulationText'}
+            previousValue={previousValues?.voltageRegulationOn}
+            id={undefined}
+            formProps={undefined}
+        />
+    ) : (
         <SwitchInput
             name={`${id}.${VOLTAGE_REGULATION_ON}`}
             label={'VoltageRegulationText'}
@@ -126,6 +161,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${VOLTAGE}`}
             adornment={VoltageAdornment}
             label={'VoltageText'}
+            previousValue={previousValues?.voltage || undefined}
         />
     );
 

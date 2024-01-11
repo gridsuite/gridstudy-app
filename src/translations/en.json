@@ -876,6 +876,7 @@
     "DuplicateProperty": "Duplicate property",
     "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
+    "ModifyVsc": "Modify VSC",
     "SubstationModificationError": "Error while modifying substation",
 
     "CreateVoltageLevel": "Create a voltage level",

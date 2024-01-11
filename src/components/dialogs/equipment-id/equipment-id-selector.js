@@ -34,7 +34,6 @@ export const EquipmentIdSelector = ({
     defaultValue,
     setSelectedId,
     equipmentType,
-    formProps,
     readOnly = false,
     fillerHeight,
     fillerMessageId = 'idSelector.idNeeded',

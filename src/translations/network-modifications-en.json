@@ -27,6 +27,7 @@
     "network_modifications/SHUNT_COMPENSATOR_MODIFICATION": "Modifying shunt compensator {computedLabel}",
     "network_modifications/GENERATOR_SCALING": "Generator scaling {computedLabel}",
     "network_modifications/VSC_CREATION": "Creating vsc {computedLabel}",
+    "network_modifications/VSC_MODIFICATION": "Modifying vsc {computedLabel}",
     "network_modifications/GROOVY_SCRIPT": "Modification by script",
     "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Open {computedLabel}} other {Close {computedLabel}}}} other {Equipment modification {computedLabel}}}",
     "network_modifications/creatingModification": "Creating modification ...",

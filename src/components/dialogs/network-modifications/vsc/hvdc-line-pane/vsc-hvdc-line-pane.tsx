@@ -29,12 +29,20 @@ import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import React, { FunctionComponent, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { VscModificationInfo } from 'services/network-modification-types';
+import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 
 interface VscHvdcLinePaneProps {
     id: string;
+    isEquipementModification?: boolean;
+    previousValues?: VscModificationInfo | null;
 }
 
-const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
+const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
+    id,
+    isEquipementModification = false,
+    previousValues,
+}) => {
     const { trigger } = useFormContext();
 
     const angleDroopWatch = useWatch({
@@ -53,6 +61,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${DC_NOMINAL_VOLTAGE}`}
             adornment={VoltageAdornment}
             label={'dcNominalVoltageLabel'}
+            previousValue={previousValues?.dcNominalVoltage}
         />
     );
 
@@ -61,6 +70,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${DC_RESISTANCE}`}
             adornment={OhmAdornment}
             label={'dcResistanceLabel'}
+            previousValue={previousValues?.dcResistance}
         />
     );
 
@@ -69,6 +79,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${MAXIMUM_ACTIVE_POWER}`}
             adornment={ActivePowerAdornment}
             label={'MaximumActivePowerText'}
+            previousValue={previousValues?.maximumActivePower}
         />
     );
 
@@ -77,6 +88,9 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${OPERATOR_ACTIVE_POWER_LIMIT_SIDE1}`}
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide1Label'}
+            previousValue={
+                previousValues?.operatorActivePowerLimitFromSide1ToSide2
+            }
         />
     );
 
@@ -85,6 +99,9 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${OPERATOR_ACTIVE_POWER_LIMIT_SIDE2}`}
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide2Label'}
+            previousValue={
+                previousValues?.operatorActivePowerLimitFromSide2ToSide1
+            }
         />
     );
 
@@ -95,6 +112,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             options={Object.values(VSC_CONVERTER_MODE)}
             size={'small'}
             disableClearable
+            previousValue={previousValues?.convertersMode}
         />
     );
 
@@ -103,10 +121,20 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${ACTIVE_POWER}`}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={previousValues?.activePower}
         />
     );
 
-    const AngleDroopActivePowerControl = (
+    const AngleDroopActivePowerControl = isEquipementModification ? (
+        <CheckboxNullableInput
+            name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
+            label={'angleDroopActivePowerControlLabel'}
+            previousValue={previousValues?.angleDroopActivePowerControl}
+            id={'angleDroopActivePowerControl'}
+            formProps={undefined}
+            //FIXME (jamal) set the previos value
+        />
+    ) : (
         <SwitchInput
             name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
             label={'angleDroopActivePowerControlLabel'}
@@ -118,11 +146,16 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${P0}`}
             label={'p0Label'}
             adornment={ActivePowerAdornment}
+            previousValue={previousValues?.p0}
         />
     );
 
     const droopField = (
-        <FloatInput name={`${id}.${DROOP}`} label={'droopLabel'} />
+        <FloatInput
+            name={`${id}.${DROOP}`}
+            label={'droopLabel'}
+            previousValue={previousValues?.droop}
+        />
     );
 
     return (
