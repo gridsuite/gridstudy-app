@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="svg85"
+   version="1.1"
+   fill="none"
+   viewBox="0 0 1423 364">
+  <g
+     id="CREA - Piquage en coupure - BLK">
+    <path
+       d="M 1454.1292,0.72493728 H 44.138047 c -3.35725,0 -6.07884,3.33327002 -6.07884,7.44508002 V 357.27994 c 0,4.112 2.72159,7.445 6.07884,7.445 H 1454.1292 c 3.36,0 6.08,-3.333 6.08,-7.445 V 8.1700173 c 0,-4.11181 -2.72,-7.44508002 -6.08,-7.44508002 z"
+       id="line-split-illu-background"
+       style="fill:#272727" />
+    <g
+       id="Group 4">
+      <g
+         id="Group 2">
+        <path
+           stroke-width="5.2"
+           stroke="#FFCC80"
+           d="M716.135 157.765C732.652 157.765 746.042 145.101 746.042 129.481C746.042 113.86 732.652 101.196 716.135 101.196C699.618 101.196 686.229 113.86 686.229 129.481C686.229 145.101 699.618 157.765 716.135 157.765Z"
+           id="path7084" />
+        <path
+           fill="#FFCC80"
+           d="M704.327 126.761L704.06 132.57L717.545 132.57L712.872 137.242L717.411 141.282L729.427 129.792L717.945 117.796L712.872 121.963L717.411 126.509L704.327 126.761Z"
+           id="path9570" />
+      </g>
+      <g
+         id="Group 1">
+        <path
+           fill="#A5D6A7"
+           d="M131.718 137.198C137.322 137.198 141.865 132.902 141.865 127.602C141.865 122.302 137.322 118.005 131.718 118.005C126.114 118.005 121.571 122.302 121.571 127.602C121.571 132.902 126.114 137.198 131.718 137.198Z"
+           id="path3740-0-8" />
+        <path
+           fill="#A5D6A7"
+           d="M586.751 137.178C592.355 137.178 596.898 132.881 596.898 127.581C596.898 122.281 592.355 117.985 586.751 117.985C581.147 117.985 576.604 122.281 576.604 127.581C576.604 132.881 581.147 137.178 586.751 137.178Z"
+           id="path3740-0-5" />
+        <path
+           fill="#90CAF9"
+           d="M356.993 137.726C362.597 137.726 367.14 133.43 367.14 128.13C367.14 122.83 362.597 118.533 356.993 118.533C351.389 118.533 346.846 122.83 346.846 128.13C346.846 133.43 351.389 137.726 356.993 137.726Z"
+           id="path3740-0-0" />
+        <path
+           fill="#90CAF9"
+           d="M329.524 123H157.983H150.177V132H157.983H329.524H337.33V123H329.524Z"
+           id="lineBefore-6" />
+        <g
+           id="path7047-6">
+          <path
+             fill="#9DCC9F"
+             id="path10"
+             d="M356.476 114.052V50.6018Z" />
+          <path
+             stroke="#90CAF9"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path12"
+             d="M356.476 114.052V50.6018" />
+        </g>
+        <g
+           id="path7047-8">
+          <path
+             fill="#9DCC9F"
+             id="path15"
+             d="M586.75 115.052V51.6018Z" />
+          <path
+             stroke="#9DCC9F"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path17"
+             d="M586.75 115.052V51.6018" />
+        </g>
+        <g
+           id="path7047-5">
+          <path
+             fill="#9DCC9F"
+             id="path20"
+             d="M131.741 114.909V51.4589Z" />
+          <path
+             stroke="#9DCC9F"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path22"
+             d="M131.741 114.909V51.4589" />
+        </g>
+        <path
+           d="M558.795 123H383.378H375.395V132H383.378H558.795H566.778V123H558.795Z"
+           id="lineBefore-6-4"
+           fill="#90CAF9" />
+        <g
+           id="path7047-2">
+          <path
+             fill="#9DCC9F"
+             id="path26"
+             d="M437.197 310H370.108Z" />
+          <path
+             stroke="#9DCC9F"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path28"
+             d="M437.197 310H370.108" />
+        </g>
+        <path
+           fill="#90CAF9"
+           d="M352.133 147.419V200.581V203H361.649V200.581V147.419V145H352.133V147.419Z"
+           id="lineBefore" />
+        <path
+           fill="#90CAF9"
+           d="M352.133 241.211V289.789V292H361.649V289.789V241.211V239H352.133V241.211Z"
+           id="lineBefore_2" />
+        <path
+           fill="#A5D6A7"
+           d="M356.993 319.193C362.597 319.193 367.14 314.896 367.14 309.596C367.14 304.296 362.597 300 356.993 300C351.389 300 346.846 304.296 346.846 309.596C346.846 314.896 351.389 319.193 356.993 319.193Z"
+           id="path3740-0" />
+        <text
+           letter-spacing="0em"
+           id="text103"
+           y="155.94301"
+           x="307.86771"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9;"
+           xml:space="preserve"><tspan
+             y="155.94301"
+             x="241.40408"
+             id="lines-attach-illu-line1-left-txt"
+             style="text-align:center;text-anchor:middle;">Liaison origine</tspan></text>
+        <text
+           y="1.0252161"
+           x="168.02957"
+           letter-spacing="0em"
+           font-size="18.6667"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+           xml:space="preserve"
+           id="text4625-2-3-9"><tspan
+             style="text-align:center;text-anchor:middle"
+             y="226.40523"
+             x="361.42368"
+             id="lines-attach-illu-attached-line-txt">Liaison de piquage</tspan></text>
+        <text
+           y="-1.0252161"
+           x="167.17133"
+           letter-spacing="0em"
+           font-weight="bold"
+           font-size="18.6667"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+           xml:space="preserve"
+           id="text177"><tspan
+             style="text-align:center;text-anchor:middle"
+             y="314.3548"
+             x="531.82123"
+             id="lines-attach-illu-attached-voltage-level-left-txt">Poste en piquage</tspan></text>
+        <text
+           y="6.1512971"
+           x="150.15378"
+           letter-spacing="0em"
+           font-weight="bold"
+           font-size="18.6667"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+           xml:space="preserve"
+           id="text4625-3-2"><tspan
+             style="text-align:center;text-anchor:middle"
+             y="45.5816"
+             x="585.7796"
+             id="lines-attach-illu-voltage-level2-left-txt">Poste extrémité</tspan></text>
+        <text
+           letter-spacing="0em"
+           font-size="18.6667"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+           xml:space="preserve"
+           id="text4625-2-3-9_2"
+           x="151.13872"
+           y="-2.5372806"><tspan
+             y="155.2937"
+             x="471.47879"
+             id="lines-attach-illu-line2-left-txt"
+             style="text-align:center;text-anchor:middle">Liaison extrémité</tspan></text>
+        <text
+           y="4.6134725"
+           x="162.60309"
+           letter-spacing="0em"
+           font-weight="bold"
+           font-size="18.6667"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+           xml:space="preserve"
+           id="text4625-9-6"><tspan
+             style="text-align:center;text-anchor:middle"
+             y="43.669277"
+             x="360.0802"
+             id="lines-attach-illu-attachment-point-txt">Point de piquage</tspan></text>
+        <text
+           y="4.6134725"
+           x="125.50965"
+           letter-spacing="0em"
+           font-weight="bold"
+           font-size="18.6667"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+           xml:space="preserve"
+           id="text4625-9"><tspan
+             style="text-align:center;text-anchor:middle"
+             y="43.789173"
+             x="132.2406"
+             id="lines-attach-illu-voltage-level1-left-txt">Poste origine</tspan></text>
+        <path
+           stroke="#FFCC80"
+           stroke-width="5"
+           stroke-miterlimit="2.3662"
+           d="M627.017 311C638.001 311 667.438 309.171 714.501 302.012C832.441 284.071 1030.83 244.864 1059.72 183C1063.4 175.131 1061.5 160 1061.06 154.5"
+           id="Vector 1" />
+        <path
+           fill="#FFCC80"
+           d="M1064.62 157.238L1069.56 161.657L1073.83 157.364L1061.68 146L1049 156.859L1053.41 161.657L1058.21 157.364L1061.42 154.301L1064.62 157.238Z"
+           id="Vector" />
+      </g>
+      <g
+         id="Group 1_2">
+        <path
+           fill="#A5D6A7"
+           d="M834.865 137.198C840.469 137.198 845.012 132.902 845.012 127.602C845.012 122.302 840.469 118.005 834.865 118.005C829.261 118.005 824.718 122.302 824.718 127.602C824.718 132.902 829.261 137.198 834.865 137.198Z"
+           id="path3740-0-8_2" />
+        <path
+           fill="#A5D6A7"
+           d="M1289.9 137.178C1295.5 137.178 1300.04 132.881 1300.04 127.581C1300.04 122.281 1295.5 117.985 1289.9 117.985C1284.29 117.985 1279.75 122.281 1279.75 127.581C1279.75 132.881 1284.29 137.178 1289.9 137.178Z"
+           id="path3740-0-5_2" />
+        <path
+           fill="#FFCC80"
+           d="M1060.14 137.726C1065.74 137.726 1070.29 133.43 1070.29 128.13C1070.29 122.83 1065.74 118.533 1060.14 118.533C1054.54 118.533 1049.99 122.83 1049.99 128.13C1049.99 133.43 1054.54 137.726 1060.14 137.726Z"
+           id="path3740-0-0_2" />
+        <path
+           fill="#90CAF9"
+           d="M1032.67 123H861.13H853.323V132H861.13H1032.67H1040.48V123H1032.67Z"
+           id="lineBefore-6_2" />
+        <g
+           id="path7047-6_2">
+          <path
+             id="path56"
+             fill="#9DCC9F"
+             d="M1059.62 114.052V50.6018Z" />
+          <path
+             id="path58"
+             stroke-dasharray="3.86 3.86"
+             stroke-width="3.85668"
+             stroke="#FFCC80"
+             d="M1059.62 114.052V50.6018" />
+        </g>
+        <g
+           id="path7047-8_2">
+          <path
+             id="path61"
+             fill="#9DCC9F"
+             d="M1289.9 115.052V51.6018Z" />
+          <path
+             id="path63"
+             stroke-dasharray="3.86 3.86"
+             stroke-width="3.85668"
+             stroke="#9DCC9F"
+             d="M1289.9 115.052V51.6018" />
+        </g>
+        <g
+           id="path7047-5_2">
+          <path
+             id="path66"
+             fill="#9DCC9F"
+             d="M834.887 114.909V51.4589Z" />
+          <path
+             id="path68"
+             stroke-dasharray="3.86 3.86"
+             stroke-width="3.85668"
+             stroke="#9DCC9F"
+             d="M834.887 114.909V51.4589" />
+        </g>
+        <path
+           fill="#90CAF9"
+           d="M1261.94 123H1086.52H1078.54V132H1086.52H1261.94H1269.92V123H1261.94Z"
+           id="lineBefore-6-4_2" />
+        <text
+           y="1.5378242"
+           x="151.69159"
+           letter-spacing="0em"
+           font-weight="bold"
+           font-size="18.6667"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+           xml:space="preserve"
+           id="text4625-3-2_2"><tspan
+             style="text-align:center;text-anchor:middle"
+             y="40.968124"
+             x="1290.4595"
+             id="lines-attach-illu-voltage-level2-right-txt">Poste extrémité</tspan></text>
+        <text
+           letter-spacing="0em"
+           font-size="18.6667"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+           xml:space="preserve"
+           id="text4625-2-3-9_3"
+           x="150.41379"
+           y="-1.4498745"><tspan
+             y="156.38112"
+             x="1173.9038"
+             id="lines-attach-illu-line2-right-txt"
+             style="text-align:center;text-anchor:middle">Liaison extrémité</tspan></text>
+        <text
+           letter-spacing="0em"
+           font-weight="bold"
+           font-size="18.6667"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#ffcc80"
+           xml:space="preserve"
+           id="text4625-9-6_2"
+           x="164.19392"
+           y="0.72493732"><tspan
+             y="39.780636"
+             x="1060.2742"
+             id="lines-attach-illu-voltage-level-to-split-at-right-txt"
+             style="text-align:center;text-anchor:middle">Poste en coupure</tspan></text>
+        <text
+           letter-spacing="0em"
+           font-size="18.6667"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+           xml:space="preserve"
+           id="text1382_2"
+           x="121.92136"
+           y="-0.3624686"><tspan
+             y="157.01753"
+             x="942.24768"
+             id="lines-attach-illu-line1-right-txt"
+             style="text-align:center;text-anchor:middle">Liaison origine</tspan></text>
+        <text
+           y="5.1260805"
+           x="124.99704"
+           letter-spacing="0em"
+           font-weight="bold"
+           font-size="18.6667"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+           xml:space="preserve"
+           id="text4625-9_2"><tspan
+             style="text-align:center;text-anchor:middle"
+             y="44.301781"
+             x="834.87488"
+             id="lines-attach-illu-voltage-level1-right-txt">Poste origine</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>
