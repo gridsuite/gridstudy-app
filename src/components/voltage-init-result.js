@@ -118,7 +118,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
         cloneVoltageInitModifications(studyUuid, currentNode.id)
-            .then(() => {})
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
