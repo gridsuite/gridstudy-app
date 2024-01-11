@@ -92,29 +92,20 @@ const TabularModificationForm = () => {
         if (csvTranslatedColumns) {
             // First comment line contains header translation
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
-        }
-        let specificCommentMessageId = undefined;
-        switch (watchType) {
-            case EQUIPMENT_TYPES.GENERATOR:
-                specificCommentMessageId =
-                    'TabularModificationGeneratorSkeletonComment';
-                break;
-            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-                specificCommentMessageId =
-                    'TabularModificationShuntSkeletonComment';
-                break;
-            case EQUIPMENT_TYPES.LOAD:
-                specificCommentMessageId =
-                    'TabularModificationLoadSkeletonComment';
-                break;
-        }
-        if (specificCommentMessageId) {
+
             // Optionally a second comment line
-            commentData.push([
-                intl.formatMessage({
-                    id: specificCommentMessageId,
-                }),
-            ]);
+            if (
+                watchType === EQUIPMENT_TYPES.GENERATOR ||
+                watchType === EQUIPMENT_TYPES.LOAD ||
+                watchType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR ||
+                watchType === EQUIPMENT_TYPES.SUBSTATION
+            ) {
+                commentData.push([
+                    intl.formatMessage({
+                        id: 'TabularModificationSkeletonComment/' + watchType,
+                    }),
+                ]);
+            }
         }
         return commentData;
     }, [intl, watchType, csvTranslatedColumns]);
