@@ -111,6 +111,9 @@ export default class LogReport {
         );
 
         if (this.logs.length) {
+            // the local severity list is set to the default list, when it is not set
+            // and there are some local logs (compatibility code when we added the
+            // severity list as a task value: to be able to read existing logs).
             if (!jsonReporter.taskValues?.severityList?.value) {
                 Object.values(LogReportItem.SEVERITY)
                     .map((s) => s.name)
@@ -123,8 +126,8 @@ export default class LogReport {
                     .map((es) => es.trim())
                     .forEach((el) => this.severityList.push(el));
             }
-            this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
         }
+        this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
     }
 
     getHighestSeverity(currentSeverity = LogReportItem.SEVERITY.UNKNOWN) {
