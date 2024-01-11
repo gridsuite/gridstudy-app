@@ -23,9 +23,6 @@ import { RunningStatus } from 'components/utils/running-status';
 export const ShortCircuitAnalysisOneBusResult = () => {
     const { snackError } = useSnackMessage();
 
-    const oneBusShortCircuitNotif = useSelector(
-        (state: ReduxState) => state.oneBusShortCircuitNotif
-    );
     const oneBusShortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
@@ -41,10 +38,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     useEffect(() => {
-        if (
-            !oneBusShortCircuitNotif ||
-            oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED
-        ) {
+        if (oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
 
@@ -65,13 +59,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             }
             setFaultResult(result?.faults[0]);
         });
-    }, [
-        snackError,
-        studyUuid,
-        currentNode,
-        oneBusShortCircuitNotif,
-        oneBusShortCircuitAnalysisStatus,
-    ]);
+    }, [snackError, studyUuid, currentNode, oneBusShortCircuitAnalysisStatus]);
 
     useEffect(() => {
         if (!faultResult || !feederResults) {
@@ -100,7 +88,6 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             analysisStatus={oneBusShortCircuitAnalysisStatus}
             result={result}
             updateResult={updateResult}
-            shortCircuitNotif={oneBusShortCircuitNotif}
             customTablePaginationProps={{
                 labelRowsPerPageId:
                     'muiTablePaginationLabelRowsPerPageOneBusSCA',
