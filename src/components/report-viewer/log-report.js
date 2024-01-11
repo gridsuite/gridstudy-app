@@ -128,15 +128,13 @@ export default class LogReport {
         this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
     }
 
-    getHighestSeverity(currentSeverity = LogReportItem.SEVERITY.UNKNOWN) {
-        let reduceFct = (p, c) => (p.level < c.level ? c : p);
-
-        let highestSeverity = this.getLogs()
-            .map((r) => r.getSeverity())
-            .reduce(reduceFct, currentSeverity);
-
-        return this.getSubReports()
-            .map((r) => r.getHighestSeverity(highestSeverity))
+    getHighestSeverity() {
+        // We have a un-ordered list of existing severities, like ['INFO', 'ERROR', 'DEBUG'].
+        // Lets find out the highest level corresponding SEVERITY object, like SEVERITY.ERROR:
+        let reduceFct = (p, c) => (c.level > p.level ? c : p);
+        let highestSeverity = LogReportItem.SEVERITY.UNKNOWN;
+        return Object.values(LogReportItem.SEVERITY)
+            .filter((s) => this.allSeverityList.includes(s.name))
             .reduce(reduceFct, highestSeverity);
     }
 
