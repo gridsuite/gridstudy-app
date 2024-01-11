@@ -49,7 +49,6 @@ interface IShortCircuitAnalysisGlobalResultProps {
     analysisStatus: RunningStatus;
     result: SCAFaultResult[];
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
-    shortCircuitNotif: boolean;
     customTablePaginationProps: any;
 }
 
@@ -60,7 +59,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     analysisStatus,
     result,
     updateResult,
-    shortCircuitNotif,
     customTablePaginationProps,
 }) => {
     const intl = useIntl();
@@ -121,7 +119,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     // Effects
     useEffect(() => {
-        if (!shortCircuitNotif || analysisStatus !== RunningStatus.SUCCEED) {
+        if (analysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
 
@@ -179,7 +177,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         studyUuid,
         currentNode?.id,
         intl,
-        shortCircuitNotif,
         filterSelector,
         sortConfig,
         fromFrontColumnToBackKeys,

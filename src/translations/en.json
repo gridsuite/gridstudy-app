@@ -190,8 +190,8 @@
     "AdjustExistingLimitsInfo": "Please enter a positive number in order to increase an existing voltage limit and a negative number in order to decrease an existing voltage limit (new limit = existing limit + user input).",
     "SetDefaultLimits" : "Default values to fill missing limits",
 
-    "SelectAll": "Select all",
-    "UnselectAll": "Unselect all",
+    "SelectAll": "All",
+    "UnselectAll": "None",
 
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
@@ -323,8 +323,7 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
-    "DynamicSimulationFetchVoltageLevelError": "An error occurred while fetching voltage levels",
-    "DynamicSimulationFetchSubstationError": "An error occurred while fetching substations",
+    "DynamicSimulationFetchCountryError": "An error occurred while fetching countries",
     "DynamicSimulationFetchEquipmentError": "An error occurred while fetching equipments",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",

@@ -12,7 +12,7 @@ import {
     LINE2_ID,
     LINE2_NAME,
 } from 'components/utils/field-constants';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../dialogUtils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,18 +22,25 @@ import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
-import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
-import { getNewVoltageLevelData } from 'components/dialogs/connectivity/connectivity-form-utils';
+import {
+    CONNECTIVITY,
+    ID,
+    VOLTAGE_LEVEL,
+} from '../../../utils/field-constants';
+import { useWatch } from 'react-hook-form';
 
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
     currentNode,
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
-    onVoltageLevelChange,
+    allVoltageLevelOptions,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+
+    const voltageLevelIdWatch = useWatch({
+        name: `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
+    });
 
     const onVoltageLevelDialogClose = () => {
         setVoltageLevelDialogOpen(false);
@@ -42,33 +49,6 @@ const LineSplitWithVoltageLevelForm = ({
     const openVoltageLevelDialog = () => {
         setVoltageLevelDialogOpen(true);
     };
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode.id).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNode?.id]);
-
-    const allVoltageLevelOptions = useMemo(() => {
-        if (!voltageLevelToEdit) {
-            return voltageLevelOptions;
-        } else {
-            const formattedVoltageLevel =
-                getNewVoltageLevelData(voltageLevelToEdit);
-            return [
-                formattedVoltageLevel,
-                ...voltageLevelOptions.filter(
-                    (vl) => vl.id !== formattedVoltageLevel.id
-                ),
-            ];
-        }
-    }, [voltageLevelToEdit, voltageLevelOptions]);
 
     const lineToSplitForm = (
         <LineToAttachOrSplitForm
@@ -90,16 +70,24 @@ const LineSplitWithVoltageLevelForm = ({
         <TextInput name={LINE2_NAME} label={'Line2Name'} />
     );
 
+    const isVoltageLevelEdit =
+        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
+
+    const busbarSectionOptions = useMemo(() => {
+        if (isVoltageLevelEdit) {
+            return voltageLevelToEdit.busbarSections;
+        }
+    }, [isVoltageLevelEdit, voltageLevelToEdit]);
+
     const connectivityForm = (
         <ConnectivityForm
             label={'VoltageLevelToSplitAt'}
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={voltageLevelToEdit?.busbarSections}
+            newBusOrBusbarSectionOptions={busbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
-            onVoltageLevelChangeCallback={onVoltageLevelChange}
         />
     );
 
@@ -114,7 +102,7 @@ const LineSplitWithVoltageLevelForm = ({
                     <Button
                         onClick={openVoltageLevelDialog}
                         startIcon={
-                            voltageLevelToEdit ? <EditIcon /> : <AddIcon />
+                            isVoltageLevelEdit ? <EditIcon /> : <AddIcon />
                         }
                     >
                         <Typography align="left">
@@ -140,7 +128,7 @@ const LineSplitWithVoltageLevelForm = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
-                    editData={voltageLevelToEdit}
+                    editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
                 />
             )}
         </>

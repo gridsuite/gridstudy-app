@@ -24,7 +24,6 @@ import {
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
 import LogReportItem from './report-viewer/log-report-item';
-import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 import { REPORT_TYPES } from './utils/report-type';
 
 const styles = {
@@ -56,8 +55,6 @@ export const ReportViewerTab = ({
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
-
-    const notificationsCount = useComputationNotificationCount();
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
@@ -153,14 +150,7 @@ export const ReportViewerTab = ({
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.
-    }, [
-        visible,
-        studyId,
-        currentNode,
-        disabled,
-        notificationsCount,
-        fetchAndProcessReport,
-    ]);
+    }, [visible, studyId, currentNode, disabled, fetchAndProcessReport]);
 
     const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
         return fetchNodeReport(
