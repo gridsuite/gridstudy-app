@@ -110,8 +110,8 @@ const LoadCreationDialog = ({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
                 [LOAD_TYPE]: load.loadType,
-                [ACTIVE_POWER]: load.activePower,
-                [REACTIVE_POWER]: load.reactivePower,
+                [ACTIVE_POWER]: load.p0,
+                [REACTIVE_POWER]: load.q0,
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     busbarSectionId: load.busOrBusbarSectionId,
