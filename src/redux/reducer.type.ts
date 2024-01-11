@@ -12,19 +12,12 @@ import { IOptionalService } from '../components/utils/optional-services';
 
 export interface ReduxState {
     studyUpdated: StudyUpdated;
-    allBusesShortCircuitNotif: boolean;
-    oneBusShortCircuitNotif: boolean;
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
     limitReduction: string;
-    loadflowNotif: boolean;
-    saNotif: boolean;
-    sensiNotif: boolean;
-    voltageInitNotif: boolean;
-    dynamicSimulationNotif: boolean;
     user: User;
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
     notificationIdList: UUID[];
