@@ -280,7 +280,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'SectionCount',
+                    id: 'numberOfSections',
                 }),
                 field: SECTION_COUNT,
                 cellRenderer: DefaultCellRenderer,

@@ -1118,6 +1118,66 @@ export function createSubstation(
     });
 }
 
+/**
+ * Formats the properties of an array of properties so it can be consumed by the backend.
+ * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean} | null>} - The modified properties.
+ */
+export function formatPropertiesForBackend(previousProperties, newProperties) {
+    if (JSON.stringify(previousProperties) === JSON.stringify(newProperties)) {
+        // return null so the backend does not update the properties
+        return null;
+    }
+
+    //take each attribute of previousProperties and convert it to and array of { 'name': aa, 'value': yy }
+    const previousPropertiesArray = Object.entries(previousProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+    const newPropertiesArray = Object.entries(newProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+
+    const propertiesModifications = [];
+    previousPropertiesArray.forEach((previousPropertiePair) => {
+        const updatedProperty = newPropertiesArray.find(
+            (updatedObj) => updatedObj.name === previousPropertiePair.name
+        );
+
+        if (!updatedProperty) {
+            // The property has been deleted (does not exist in the new properties array)
+            propertiesModifications.push({
+                ...previousPropertiePair,
+                previousValue: previousPropertiePair.value,
+                value: null,
+                deletionMark: true,
+            });
+        } else if (updatedProperty.value !== previousPropertiePair.value) {
+            // the property exist in both the previous and the new properties array but has been modified
+            propertiesModifications.push({
+                ...updatedProperty,
+                added: false,
+                deletionMark: false,
+                previousValue: previousPropertiePair.value,
+            });
+        }
+    });
+
+    newPropertiesArray.forEach((newPropertie) => {
+        // The property has been added
+        const previousPropertie = previousPropertiesArray.find(
+            (oldObj) => oldObj.name === newPropertie.name
+        );
+        //the propertie is new ( does not exist in the previous properties array)
+        if (!previousPropertie) {
+            propertiesModifications.push({
+                ...newPropertie,
+                added: true,
+                deletionMark: false,
+            });
+        }
+    });
+    return propertiesModifications;
+}
+
 export function modifySubstation(
     studyUuid,
     currentNodeUuid,
