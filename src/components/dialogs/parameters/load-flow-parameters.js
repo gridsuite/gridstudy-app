@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Autocomplete, Chip, Grid, TextField } from '@mui/material';
 import {
-    CloseButton,
     DropDown,
     LabelledButton,
     SwitchWithLabel,
@@ -419,7 +418,7 @@ const SpecificLoadFlowParameters = ({
     );
 };
 
-export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
+export const LoadFlowParameters = ({ parametersBackend }) => {
     const [
         providers,
         provider,
@@ -534,52 +533,62 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
     // only specifics parameters are dependents of simulator type
     return (
         <>
-            <Grid
-                container
-                spacing={1}
-                sx={{ paddingLeft: 0, paddingRight: 2 }}
-            >
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={LoadFlowProviders}
-                    callback={updateLfProviderCallback}
-                />
-            </Grid>
-            <Grid container sx={styles.scrollableGrid} key="lfParameters">
-                <LineSeparator />
-                <Grid container spacing={1} paddingTop={1}>
-                    <ParamLine
-                        type={ParameterType.Slider}
-                        param_name_id={PARAM_LIMIT_REDUCTION}
-                        label="LimitReduction"
-                        marks={alertThresholdMarks}
-                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+            <Grid sx={{ height: '100%' }} xl={6}>
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{
+                        paddingLeft: 0,
+                        paddingRight: 2,
+                        height: 'fit-content',
+                    }}
+                >
+                    <DropDown
+                        value={provider}
+                        label="Provider"
+                        values={LoadFlowProviders}
+                        callback={updateLfProviderCallback}
                     />
-                    <LineSeparator />
                 </Grid>
-                <BasicLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                />
-                <AdvancedLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                />
-                <SpecificLoadFlowParameters
-                    disabled={!specificParamsDescriptions?.[provider]}
-                    subText={provider}
-                    specificParamsDescription={
-                        specificParamsDescrWithoutNanVals[provider]
-                    }
-                    specificCurrentParams={specificCurrentParams[provider]}
-                    onSpecificParamChange={onSpecificParamChange}
-                />
+                <Grid container sx={styles.scrollableGrid} key="lfParameters">
+                    <LineSeparator />
+                    <Grid container spacing={1} paddingTop={1}>
+                        <ParamLine
+                            type={ParameterType.Slider}
+                            param_name_id={PARAM_LIMIT_REDUCTION}
+                            label="LimitReduction"
+                            marks={alertThresholdMarks}
+                            minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                        />
+                        <LineSeparator />
+                    </Grid>
+                    <BasicLoadFlowParameters
+                        lfParams={params || {}}
+                        commitLFParameter={updateParameters}
+                    />
+                    <AdvancedLoadFlowParameters
+                        lfParams={params || {}}
+                        commitLFParameter={updateParameters}
+                    />
+                    <SpecificLoadFlowParameters
+                        disabled={!specificParamsDescriptions?.[provider]}
+                        subText={provider}
+                        specificParamsDescription={
+                            specificParamsDescrWithoutNanVals[provider]
+                        }
+                        specificCurrentParams={specificCurrentParams[provider]}
+                        onSpecificParamChange={onSpecificParamChange}
+                    />
+                </Grid>
             </Grid>
             <Grid
                 container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
+                item
+                sx={mergeSx(
+                    styles.controlParametersItem,
+                    styles.marginTopButton,
+                    { paddingTop: 4 }
+                )}
             >
                 <LabelledButton
                     callback={resetLfParametersAndLfProvider}
@@ -589,7 +598,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     callback={resetLfParameters}
                     label="resetProviderValuesToDefault"
                 />
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );
