@@ -38,7 +38,7 @@ interface SensitivityTableProps {
     tableHeight: number;
     createRows: (a: number) => void;
     disableAdd?: boolean;
-    disableDelete?: boolean;
+    disableDelete: boolean;
     onFormChanged: (a: boolean) => void;
     onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
@@ -49,7 +49,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     tableHeight,
     createRows,
     disableAdd,
-    disableDelete,
+    disableDelete = false,
     onFormChanged,
     onChangeParams,
 }) => {

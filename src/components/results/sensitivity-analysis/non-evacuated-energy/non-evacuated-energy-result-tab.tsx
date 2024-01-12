@@ -57,7 +57,7 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<
             state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
-    const [nonEvacuatedEnergyResult, isWaiting] = useNodeData(
+    const [nonEvacuatedEnergyResult] = useNodeData(
         studyUuid,
         nodeUuid,
         fetchNonEvacuatedEnergyResult,
@@ -95,11 +95,8 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<
             <Box sx={styles.resultContainer}>
                 {tabIndex === RESULTS_TAB_INDEX && (
                     <NonEvacuatedEnergyResult
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
                         result={nonEvacuatedEnergyResult}
                         status={nonEvacuatedEnergyStatus}
-                        isWaiting={isWaiting}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&

@@ -20,7 +20,7 @@ interface TableRowComponentProps {
     row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
-    disableDelete?: boolean;
+    disableDelete: boolean;
     fetchCount: (a: string, b: number) => void;
 }
 
@@ -30,7 +30,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     row,
     index,
     handleDeleteButton,
-    disableDelete,
+    disableDelete = false,
     fetchCount,
 }) => {
     const [isHover, setIsHover] = useState(false);

@@ -12,9 +12,7 @@ export interface NonEvacuatedEnergyTabProps {
     studyUuid: UUID;
     nodeUuid: UUID | undefined;
 }
-export interface NonEvacuatedEnergyResultProps
-    extends NonEvacuatedEnergyTabProps {
+export interface NonEvacuatedEnergyResultProps {
     result: object;
     status: RunningStatus;
-    isWaiting: boolean;
 }

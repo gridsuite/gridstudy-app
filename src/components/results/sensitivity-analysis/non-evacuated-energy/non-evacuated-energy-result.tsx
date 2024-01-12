@@ -22,7 +22,7 @@ const styles = {
 
 export const NonEvacuatedEnergyResult: FunctionComponent<
     NonEvacuatedEnergyResultProps
-> = ({ result, status, studyUuid, nodeUuid, isWaiting }) => {
+> = ({ result, status }) => {
     const exportResult = useCallback(() => {
         const fileSaver = require('file-saver');
         const blob = new Blob([JSON.stringify(result, null, 2)], {
