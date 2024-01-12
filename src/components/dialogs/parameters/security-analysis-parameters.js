@@ -288,7 +288,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
 
                     {fieldsToShow?.map((item) => {
                         return (
-                            <Grid item xs={16} key={item.label}>
+                            <Grid item xs={16} xl={6.25} key={item.label}>
                                 <SecurityAnalysisFields {...item} />
                             </Grid>
                         );
