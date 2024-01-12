@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { Grid } from '@mui/material';
 
 import { SENSITIVITY_THRESHOLD } from '../../../utils/field-constants';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput } from '@gridsuite/commons-ui';
 
-const GeneratorsCappingsThreshold: FunctionComponent = () => {
+const GeneratorsCappingsThreshold = () => {
     return (
         <Grid container>
             <Grid

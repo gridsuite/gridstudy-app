@@ -14,7 +14,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     console.info(
-        `Running sensitivity analysis non evacuated energy on ${studyUuid} and node ${currentNodeUuid} ...`
+        `Running non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -26,7 +26,7 @@ export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
 
 export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     console.info(
-        `Stopping sensitivity analysis non evacuated energy on ${studyUuid} and node ${currentNodeUuid} ...`
+        `Stopping non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
@@ -38,7 +38,7 @@ export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
 
 export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching sensitivity analysis non evacuated energy status on ${studyUuid} and node ${currentNodeUuid} ...`
+        `Fetching non evacuated energy analysis status on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
@@ -50,7 +50,7 @@ export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid) {
 
 export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching sensitivity analysis non evacuated energy result on ${studyUuid} and node ${currentNodeUuid}  ...`
+        `Fetching non evacuated energy analysis result on ${studyUuid} and node ${currentNodeUuid}  ...`
     );
 
     const url = `${getStudyUrlWithNodeUuid(
@@ -62,14 +62,14 @@ export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid) {
 }
 
 export function getNonEvacuatedEnergyParameters(studyUuid) {
-    console.info('get sensitivity analysis non evacuated energy parameters');
+    console.info('get non evacuated energy analysis parameters');
     const url = getStudyUrl(studyUuid) + '/non-evacuated-energy/parameters';
     console.debug(url);
     return backendFetchJson(url);
 }
 
 export function setNonEvacuatedEnergyParameters(studyUuid, newParams) {
-    console.info('set sensitivity analysis non evacuated energy parameters');
+    console.info('set non evacuated energy analysis parameters');
     const url = getStudyUrl(studyUuid) + '/non-evacuated-energy/parameters';
     console.debug(url);
     return backendFetch(url, {
@@ -90,9 +90,7 @@ export function fetchNonEvacuatedEnergyProvider(studyUuid) {
 }
 
 export function fetchDefaultNonEvacuatedEnergyProvider() {
-    console.info(
-        'fetch default sensitivity analysis non evacuated energy provider'
-    );
+    console.info('fetch default non evacuated energy analysis provider');
     const url = `${PREFIX_STUDY_QUERIES}/v1/non-evacuated-energy-default-provider`;
     console.debug(url);
     return backendFetchText(url);

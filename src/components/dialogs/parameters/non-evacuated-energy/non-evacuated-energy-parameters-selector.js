@@ -113,7 +113,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                                     useFieldArrayOutputGenerationStages
                                 }
                                 createRows={rowDataGenerationStages}
-                                tableHeight={367}
+                                tableHeight={295}
                                 disableAdd={true}
                                 disableDelete={true}
                                 onFormChanged={onFormChanged}

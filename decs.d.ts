@@ -53,7 +53,9 @@ declare module '@gridsuite/commons-ui' {
         previousValue?: string;
         allowNewValue?: boolean;
         onChangeCallback?: () => void;
-        getOptionLabel?: (rt: string | { id: string; label: string }) => string | null;
+        getOptionLabel?: (
+            rt: string | { id: string; label: string }
+        ) => string | null;
         formProps?: Omit<
             TextFieldProps,
             'value' | 'onChange' | 'inputRef' | 'inputProps' | 'InputProps'
@@ -183,9 +185,6 @@ declare module '@gridsuite/commons-ui' {
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
 
-    export const DARK_THEME: string;
-    export const LIGHT_THEME: string;
-  
     interface CheckboxInputProps {
         name: string;
         label?: string;
@@ -193,7 +192,4 @@ declare module '@gridsuite/commons-ui' {
     }
 
     export const CheckboxInput: FunctionComponent<CheckboxInputProps>;
-
-    export const DARK_THEME: string;
-    export const LIGHT_THEME: string;
 }
