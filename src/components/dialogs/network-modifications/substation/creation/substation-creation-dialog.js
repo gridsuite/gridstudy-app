@@ -29,21 +29,22 @@ import {
     emptyProperties,
     getPropertiesFromEquipment,
     getPropertiesFromModification,
-    propertiesSchema, toModificationProperties
-} from '../../common/property-utils';
+    propertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
-    ...emptyProperties
+    ...emptyProperties,
 };
 const formSchema = yup
     .object()
     .shape({
-    [EQUIPMENT_ID]: yup.string().required(),
-    [EQUIPMENT_NAME]: yup.string(),
-    [COUNTRY]: yup.string().nullable(),
+        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_NAME]: yup.string(),
+        [COUNTRY]: yup.string().nullable(),
     })
     .concat(propertiesSchema);
 

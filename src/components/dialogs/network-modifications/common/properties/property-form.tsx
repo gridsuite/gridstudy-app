@@ -15,17 +15,26 @@ import {
 } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { TextInput } from '@gridsuite/commons-ui';
-import { PredefinedProperties, fetchPredefinedProperties } from './property-utils';
-import { gridItem, italicFontTextField } from '../../dialogUtils';
+import {
+    PredefinedProperties,
+    fetchPredefinedProperties,
+} from './property-utils';
+import { gridItem, italicFontTextField } from '../../../dialogUtils';
 
 type PropertyFormProps = {
-    name: string
-    index: string
-    networkElementType: string
-}
+    name: string;
+    index: string;
+    networkElementType: string;
+};
 
-const PropertyForm = ({ name, index, networkElementType }: PropertyFormProps) => {
-    const [predefinedProperties, setPredefinedProperties] = useState({} as PredefinedProperties);
+const PropertyForm = ({
+    name,
+    index,
+    networkElementType,
+}: PropertyFormProps) => {
+    const [predefinedProperties, setPredefinedProperties] = useState(
+        {} as PredefinedProperties
+    );
     const watchPropertyName = useWatch({ name: `${name}.${index}.${NAME}` });
     const watchPropertyPreviousValue = useWatch({
         name: `${name}.${index}.${PREVIOUS_VALUE}`,
@@ -51,7 +60,7 @@ const PropertyForm = ({ name, index, networkElementType }: PropertyFormProps) =>
                 setPredefinedProperties(res);
             }
         });
-    }, []);
+    }, [networkElementType]);
 
     const nameField = (
         <AutocompleteInput

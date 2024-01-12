@@ -14,43 +14,45 @@ import {
     VALUE,
     ADDED,
 } from 'components/utils/field-constants';
-import { fetchAppsAndUrls } from '../../../../services/utils';
+import { fetchAppsAndUrls } from '../../../../../services/utils';
 import { InferType } from 'yup';
 
 export type Property = {
-    name: string | null
-    value: string | null
-    previousValue?: string | null
-    deletionMark?: boolean
-    added?: boolean
-}
+    name: string | null;
+    value: string | null;
+    previousValue?: string | null;
+    deletionMark?: boolean;
+    added?: boolean;
+};
 
 export type PredefinedProperties = {
-    [propertyName: string]: string[]
-}
+    [propertyName: string]: string[];
+};
 
-type Properties = InferType<typeof propertiesSchema>
+type Properties = InferType<typeof propertiesSchema>;
 
 interface Metadata {
-    name: string
-    url: string
-    appColor: string
-    hiddenInAppsMenu: boolean
-    resources: unknown
+    name: string;
+    url: string;
+    appColor: string;
+    hiddenInAppsMenu: boolean;
+    resources: unknown;
 }
 
 interface StudyMetadata extends Metadata {
-    name: "Study"
-    predefinedEquipmentProperties : {
-        [networkElementType: string]: PredefinedProperties
-    }
+    name: 'Study';
+    predefinedEquipmentProperties: {
+        [networkElementType: string]: PredefinedProperties;
+    };
 }
 
 const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
-    return metadata.name === "Study";
-}
+    return metadata.name === 'Study';
+};
 
-export const fetchPredefinedProperties = (networkElementType: string): Promise<PredefinedProperties | undefined> => {
+export const fetchPredefinedProperties = (
+    networkElementType: string
+): Promise<PredefinedProperties | undefined> => {
     return fetchAppsAndUrls().then((res: [Metadata]) => {
         const studyMetadata = res.filter(isStudyMetadata);
         if (!studyMetadata) {
@@ -59,13 +61,15 @@ export const fetchPredefinedProperties = (networkElementType: string): Promise<P
             );
         }
 
-        return studyMetadata[0].predefinedEquipmentProperties?.[networkElementType]; // There should be only one study metadata
+        return studyMetadata[0].predefinedEquipmentProperties?.[
+            networkElementType
+        ]; // There should be only one study metadata
     });
 };
 
 export const emptyProperties: Properties = {
-    [ADDITIONAL_PROPERTIES]: null
-}
+    [ADDITIONAL_PROPERTIES]: null,
+};
 
 export const initializedProperty = (): Property => {
     return {
@@ -77,41 +81,47 @@ export const initializedProperty = (): Property => {
     };
 };
 
-export const getPropertiesFromModification = (properties: Property[] | undefined): Properties => {
+export const getPropertiesFromModification = (
+    properties: Property[] | undefined
+): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: properties
             ? properties.map((p) => {
-                return {
-                    [NAME]: p[NAME],
-                    [VALUE]: p[VALUE],
-                    [PREVIOUS_VALUE]: null,
-                    [ADDED]: p[ADDED],
-                    [DELETION_MARK]: p[DELETION_MARK],
-                } as Property;
-            })
-            : null
+                  return {
+                      [NAME]: p[NAME],
+                      [VALUE]: p[VALUE],
+                      [PREVIOUS_VALUE]: null,
+                      [ADDED]: p[ADDED],
+                      [DELETION_MARK]: p[DELETION_MARK],
+                  } as Property;
+              })
+            : null,
     };
-}
+};
 
-export const getPropertiesFromEquipment = (equipmentInfos: { properties: Record<string, string> | undefined }): Properties => {
+export const getPropertiesFromEquipment = (equipmentInfos: {
+    properties: Record<string, string> | undefined;
+}): Properties => {
     return {
-        [ADDITIONAL_PROPERTIES]:
-            equipmentInfos.properties
+        [ADDITIONAL_PROPERTIES]: equipmentInfos.properties
             ? Object.entries(equipmentInfos.properties).map(([name, value]) => {
-                return {
-                    [NAME]: name,
-                    [VALUE]: null,
-                    [PREVIOUS_VALUE]: value,
-                    [DELETION_MARK]: false,
-                    [ADDED]: false,
-                } satisfies Property;
-            })
-            : null
+                  return {
+                      [NAME]: name,
+                      [VALUE]: null,
+                      [PREVIOUS_VALUE]: value,
+                      [DELETION_MARK]: false,
+                      [ADDED]: false,
+                  } satisfies Property;
+              })
+            : null,
     };
-}
+};
 
-export const concatProperties = (modificationProperties: Property[], equipmentProperties: Property[]): Property[] => {
-    const newModificationProperties= new Map<string, Property>();
+export const concatProperties = (
+    modificationProperties: Property[],
+    equipmentProperties: Property[]
+): Property[] => {
+    const newModificationProperties = new Map<string, Property>();
     for (const property of modificationProperties) {
         if (property.name !== null) {
             newModificationProperties.set(property.name, property);
@@ -122,13 +132,15 @@ export const concatProperties = (modificationProperties: Property[], equipmentPr
             let propertyToAdd;
             // If the property is present in the modification and in the equipment
             if (newModificationProperties.has(property.name)) {
-                const modProperty = newModificationProperties.get(property.name)!;
+                const modProperty = newModificationProperties.get(
+                    property.name
+                )!;
                 propertyToAdd = {
                     ...modProperty,
-                    previousValue: property.value // We set previous value of the modification to the equipment value
+                    previousValue: property.value, // We set previous value of the modification to the equipment value
                 };
             } else {
-                propertyToAdd = property
+                propertyToAdd = property;
             }
             newModificationProperties.set(property.name, propertyToAdd);
         }
@@ -137,8 +149,10 @@ export const concatProperties = (modificationProperties: Property[], equipmentPr
 };
 
 export const toModificationProperties = (properties: Properties) => {
-    return properties[ADDITIONAL_PROPERTIES]?.filter((p: Property) => p.value !== null || p[DELETION_MARK]);
-}
+    return properties[ADDITIONAL_PROPERTIES]?.filter(
+        (p: Property) => p.value !== null || p[DELETION_MARK]
+    );
+};
 
 export const propertiesSchema = yup.object({
     [ADDITIONAL_PROPERTIES]: yup

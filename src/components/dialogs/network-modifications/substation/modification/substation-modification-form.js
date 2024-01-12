@@ -6,81 +6,17 @@
  */
 
 import Grid from '@mui/material/Grid';
-import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
-import React, { useCallback } from 'react';
+import { filledTextField, gridItem } from '../../../dialogUtils';
+import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
-import {
-    ADDITIONAL_PROPERTIES,
-    COUNTRY,
-    DELETION_MARK,
-    EQUIPMENT_NAME,
-    PREVIOUS_VALUE,
-    ADDED,
-} from 'components/utils/field-constants';
+import { COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
-import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
-import PropertyForm from '../../common/property-form';
-import { initializedProperty } from '../../common/property-utils';
-import { useFormContext, useWatch } from 'react-hook-form';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField } from '@mui/material';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
-    const watchProps = useWatch({
-        name: ADDITIONAL_PROPERTIES,
-    });
-    const { getValues, setValue } = useFormContext();
     const { translate } = LocalizedCountries();
-
-    const getDeletionMark = useCallback(
-        (idx) => {
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
-            if (properties && typeof properties[idx] !== 'undefined') {
-                return watchProps && properties[idx][DELETION_MARK];
-            }
-            return false;
-        },
-        [getValues, watchProps]
-    );
-
-    const deleteCallback = useCallback(
-        (idx) => {
-            let marked = false;
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
-            if (properties && typeof properties[idx] !== 'undefined') {
-                marked = properties[idx][DELETION_MARK];
-            } else {
-                return false;
-            }
-
-            let canRemoveLine = true;
-            if (marked) {
-                // just unmark
-                setValue(
-                    `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                    false,
-                    { shouldDirty: true }
-                );
-                canRemoveLine = false;
-            } else {
-                // we can mark as deleted only prop having a previous value, not added in current modification
-                if (
-                    properties[idx][PREVIOUS_VALUE] &&
-                    properties[idx][ADDED] === false
-                ) {
-                    setValue(
-                        `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                        true,
-                        { shouldDirty: true }
-                    );
-                    canRemoveLine = false;
-                }
-            }
-            // otherwise just delete the line
-            return canRemoveLine;
-        },
-        [getValues, setValue]
-    );
 
     const substationIdField = (
         <TextField
@@ -116,19 +52,6 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
         />
     );
 
-    const additionalProps = (
-        <ExpandableInput
-            name={ADDITIONAL_PROPERTIES}
-            Field={PropertyForm}
-            fieldProps={{networkElementType: "substation"}}
-            addButtonLabel={'AddProperty'}
-            initialValue={initializedProperty()}
-            getDeletionMark={getDeletionMark}
-            deleteCallback={deleteCallback}
-            watchProps={watchProps}
-        />
-    );
-
     return (
         <>
             <Grid container spacing={2}>
@@ -136,10 +59,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
                 {gridItem(substationNameField, 4)}
                 {gridItem(substationCountryField, 4)}
             </Grid>
-            <Grid container>
-                <GridSection title={'AdditionalInformations'} />
-                {additionalProps}
-            </Grid>
+            <PropertiesForm isModification={true} />
         </>
     );
 };

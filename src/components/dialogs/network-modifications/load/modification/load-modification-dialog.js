@@ -10,10 +10,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
-    ACTIVE_POWER, ADDITIONAL_PROPERTIES,
+    ACTIVE_POWER,
+    ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER
+    REACTIVE_POWER,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -23,7 +24,10 @@ import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -31,8 +35,9 @@ import {
     emptyProperties,
     getPropertiesFromEquipment,
     getPropertiesFromModification,
-    propertiesSchema, toModificationProperties
-} from '../../common/property-utils';
+    propertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 
 const emptyFormData = {
@@ -40,7 +45,7 @@ const emptyFormData = {
     [LOAD_TYPE]: null,
     [ACTIVE_POWER]: null,
     [REACTIVE_POWER]: null,
-    ...emptyProperties
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -96,7 +101,7 @@ const LoadModificationDialog = ({
                 [LOAD_TYPE]: load.loadType?.value ?? null,
                 [ACTIVE_POWER]: load.activePower?.value ?? null,
                 [REACTIVE_POWER]: load.reactivePower?.value ?? null,
-                ...getPropertiesFromModification(load.properties)
+                ...getPropertiesFromModification(load.properties),
             });
         },
         [reset]
@@ -116,7 +121,10 @@ const LoadModificationDialog = ({
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
             );
-            return concatProperties(modificationProperties, equipmentProperties[ADDITIONAL_PROPERTIES]);
+            return concatProperties(
+                modificationProperties,
+                equipmentProperties[ADDITIONAL_PROPERTIES]
+            );
         },
         [getValues]
     );

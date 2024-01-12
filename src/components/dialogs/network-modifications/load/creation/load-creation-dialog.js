@@ -41,8 +41,9 @@ import {
     emptyProperties,
     getPropertiesFromEquipment,
     getPropertiesFromModification,
-    propertiesSchema, toModificationProperties
-} from '../../common/property-utils';
+    propertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 /**
  * Dialog to create a load in the network
@@ -60,7 +61,7 @@ const emptyFormData = {
     [ACTIVE_POWER]: null,
     [REACTIVE_POWER]: null,
     ...getConnectivityWithPositionEmptyFormData(),
-    ...emptyProperties
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -109,7 +110,7 @@ const LoadCreationDialog = ({
                 connectionName: load.connectablePosition.connectionName,
                 // connected is not copied on purpose: we use the default value (true) in all cases
             }),
-            ...getPropertiesFromEquipment(load)
+            ...getPropertiesFromEquipment(load),
         });
     };
 
@@ -129,7 +130,7 @@ const LoadCreationDialog = ({
                     connectionPosition: load.connectionPosition,
                     connected: load.connected,
                 }),
-                ...getPropertiesFromModification(load.properties)
+                ...getPropertiesFromModification(load.properties),
             });
         },
         [reset]

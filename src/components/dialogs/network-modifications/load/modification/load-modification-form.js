@@ -7,10 +7,10 @@
 
 import { TextInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER, ADDED, ADDITIONAL_PROPERTIES, DELETION_MARK,
+    ACTIVE_POWER,
     EQUIPMENT_NAME,
-    LOAD_TYPE, PREVIOUS_VALUE,
-    REACTIVE_POWER
+    LOAD_TYPE,
+    REACTIVE_POWER,
 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -23,79 +23,13 @@ import { SelectInput } from '@gridsuite/commons-ui';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { useIntl } from 'react-intl';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
 import { TextField } from '@mui/material';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
-import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
-import PropertyForm from '../../common/property-form';
-import { concatProperties, getPropertiesFromEquipment, initializedProperty } from '../../common/property-utils';
-import { useFormContext, useWatch } from 'react-hook-form';
+import PropertiesForm from '../../common/properties/properties-form';
 
-const LoadModificationForm = ({
-    loadToModify,
-    equipmentId,
-}) => {
+const LoadModificationForm = ({ loadToModify, equipmentId }) => {
     const intl = useIntl();
-    const { getValues, setValue } = useFormContext();
-    const watchProps = useWatch({
-        name: ADDITIONAL_PROPERTIES,
-    });
-
-    const getDeletionMark = useCallback(
-        (idx) => {
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
-            if (properties && typeof properties[idx] !== 'undefined') {
-                return watchProps && properties[idx][DELETION_MARK];
-            }
-            return false;
-        },
-        [getValues, watchProps]
-    );
-
-    const deleteCallback = useCallback(
-        (idx) => {
-            let marked = false;
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
-            if (properties && typeof properties[idx] !== 'undefined') {
-                marked = properties[idx][DELETION_MARK];
-            } else {
-                return false;
-            }
-
-            let canRemoveLine = true;
-            if (marked) {
-                // just unmark
-                setValue(
-                    `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                    false,
-                    { shouldDirty: true }
-                );
-                canRemoveLine = false;
-            } else {
-                // we can mark as deleted only prop having a previous value, not added in current modification
-                if (
-                    properties[idx][PREVIOUS_VALUE] &&
-                    properties[idx][ADDED] === false
-                ) {
-                    setValue(
-                        `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                        true,
-                        { shouldDirty: true }
-                    );
-                    canRemoveLine = false;
-                }
-            }
-            // otherwise just delete the line
-            return canRemoveLine;
-        },
-        [getValues, setValue]
-    );
 
     const loadIdField = (
         <TextField
@@ -159,19 +93,6 @@ const LoadModificationForm = ({
         />
     );
 
-    const additionalProps = (
-        <ExpandableInput
-            name={ADDITIONAL_PROPERTIES}
-            Field={PropertyForm}
-            fieldProps={{networkElementType: "load"}}
-            addButtonLabel={'AddProperty'}
-            initialValue={initializedProperty()}
-            getDeletionMark={getDeletionMark}
-            deleteCallback={deleteCallback}
-            watchProps={watchProps}
-        />
-    );
-
     return (
         <>
             <Grid container spacing={2}>
@@ -184,10 +105,7 @@ const LoadModificationForm = ({
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
-            <Grid container>
-                <GridSection title={'AdditionalInformations'} />
-                {additionalProps}
-            </Grid>
+            <PropertiesForm isModification={true} />
         </>
     );
 };

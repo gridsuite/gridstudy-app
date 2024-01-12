@@ -33,13 +33,14 @@ import {
     emptyProperties,
     getPropertiesFromEquipment,
     getPropertiesFromModification,
-    propertiesSchema, toModificationProperties
-} from '../../common/property-utils';
+    propertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
-    ...emptyProperties
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -106,7 +107,10 @@ const SubstationModificationDialog = ({
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
             );
-            return concatProperties(modificationProperties, equipmentProperties[ADDITIONAL_PROPERTIES]);
+            return concatProperties(
+                modificationProperties,
+                equipmentProperties[ADDITIONAL_PROPERTIES]
+            );
         },
         [getValues]
     );

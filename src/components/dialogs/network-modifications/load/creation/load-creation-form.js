@@ -7,11 +7,11 @@
 
 import Grid from '@mui/material/Grid';
 import {
-    ACTIVE_POWER, ADDITIONAL_PROPERTIES,
+    ACTIVE_POWER,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER
+    REACTIVE_POWER,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import {
@@ -28,9 +28,7 @@ import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
-import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
-import PropertyForm from '../../common/property-form';
-import { initializedProperty } from '../../common/property-utils';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -100,16 +98,6 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    const additionalProps = (
-        <ExpandableInput
-            name={ADDITIONAL_PROPERTIES}
-            Field={PropertyForm}
-            fieldProps={{networkElementType: "load"}}
-            addButtonLabel={'AddProperty'}
-            initialValue={initializedProperty()}
-        />
-    );
-
     return (
         <>
             <Grid container spacing={2}>
@@ -126,10 +114,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
-            <Grid container>
-                <GridSection title={'AdditionalInformations'} />
-                {additionalProps}
-            </Grid>
+            <PropertiesForm />
         </>
     );
 };
