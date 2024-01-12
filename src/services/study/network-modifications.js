@@ -447,7 +447,7 @@ export function createLoad(
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
-            properties
+            properties,
         }),
     });
 }
@@ -492,7 +492,7 @@ export function modifyLoad(
             constantReactivePower: toModificationOperation(reactivePower),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-            properties
+            properties,
         }),
     });
 }
