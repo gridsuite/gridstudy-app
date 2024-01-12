@@ -14,12 +14,7 @@ import yup from 'components/utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
-    DELETION_MARK,
     EQUIPMENT_NAME,
-    NAME,
-    PREVIOUS_VALUE,
-    VALUE,
-    ADDED,
 } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
 import { sanitizeString } from '../../../dialogUtils';
@@ -33,61 +28,27 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifySubstation } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-
-const checkUniquePropertiesNames = (properties) => {
-    const validValues = properties.filter((v) => v?.name);
-    return validValues.length === new Set(validValues.map((v) => v.name)).size;
-};
+import {
+    concatProperties,
+    emptyProperties,
+    getPropertiesFromEquipment,
+    getPropertiesFromModification,
+    propertiesSchema, toModificationProperties
+} from '../../common/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
-    [ADDITIONAL_PROPERTIES]: null,
+    ...emptyProperties
 };
 
-const formSchema = yup.object().shape({
-    [EQUIPMENT_NAME]: yup.string(),
-    [COUNTRY]: yup.string().nullable(),
-    [ADDITIONAL_PROPERTIES]: yup
-        .array()
-        .nullable()
-        .of(
-            yup.object().shape({
-                [NAME]: yup.string().nullable().required(),
-                [VALUE]: yup
-                    .string()
-                    .nullable()
-                    .when([PREVIOUS_VALUE, DELETION_MARK], {
-                        is: (previousValue, deletionMark) =>
-                            previousValue === null && deletionMark === false,
-                        then: (schema) => schema.required(),
-                    }),
-                [PREVIOUS_VALUE]: yup.string().nullable(),
-                [DELETION_MARK]: yup.boolean(),
-                [ADDED]: yup.boolean(),
-            })
-        )
-        .test('checkUniqueProperties', 'DuplicatedProps', (values) => {
-            if (values) {
-                return checkUniquePropertiesNames(values);
-            }
-            return true;
-        }),
-});
-
-const getPropertiesFromModification = (properties) => {
-    return properties
-        ? properties.map((p) => {
-              return {
-                  [NAME]: p[NAME],
-                  [VALUE]: p[VALUE],
-                  [PREVIOUS_VALUE]: null,
-                  [ADDED]: p[ADDED],
-                  [DELETION_MARK]: p[DELETION_MARK],
-              };
-          })
-        : null;
-};
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        [COUNTRY]: yup.string().nullable(),
+    })
+    .concat(propertiesSchema);
 
 /**
  * Dialog to modify a substation in the network
@@ -128,9 +89,7 @@ const SubstationModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
                 [COUNTRY]: editData.substationCountry?.value ?? null,
-                [ADDITIONAL_PROPERTIES]: getPropertiesFromModification(
-                    editData.properties
-                ),
+                ...getPropertiesFromModification(editData.properties),
             });
         }
     }, [reset, editData]);
@@ -139,70 +98,15 @@ const SubstationModificationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
-    const createPropertyValuesFromExistingEquipement = (propKey, propValue) => {
-        return {
-            [NAME]: propKey,
-            [VALUE]: null,
-            [PREVIOUS_VALUE]: propValue,
-            [DELETION_MARK]: false,
-            [ADDED]: false,
-        };
-    };
-
-    const getAdditionalProperties = useCallback(
-        (equipmentInfos) => {
-            let newModificationProperties = [];
-
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
             // comes from existing eqpt in network, ex: Object { p1: "v1", p2: "v2" }
-            const equipmentProperties = equipmentInfos?.properties;
+            const equipmentProperties = getPropertiesFromEquipment(equipment);
             // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
             );
-
-            // Get every prop stored in the modification. if also present in the network, add its previous value.
-            // Then add every prop found in the network (but not already in the modification)
-
-            let equipmentPropertiesNames = [];
-            let modificationPropertiesNames = [];
-            if (equipmentProperties) {
-                equipmentPropertiesNames = Object.keys(equipmentProperties);
-            }
-            if (modificationProperties) {
-                modificationPropertiesNames = modificationProperties.map(
-                    (obj) => obj[NAME]
-                );
-
-                modificationProperties.forEach(function (property) {
-                    const previousValue = equipmentPropertiesNames.includes(
-                        property[NAME]
-                    )
-                        ? equipmentProperties[property[NAME]]
-                        : null;
-                    newModificationProperties.push({
-                        ...property,
-                        [PREVIOUS_VALUE]: previousValue,
-                    });
-                });
-            }
-
-            if (equipmentProperties) {
-                for (const [propKey, propValue] of Object.entries(
-                    equipmentProperties
-                )) {
-                    if (
-                        modificationPropertiesNames.includes(propKey) === false
-                    ) {
-                        newModificationProperties.push(
-                            createPropertyValuesFromExistingEquipement(
-                                propKey,
-                                propValue
-                            )
-                        );
-                    }
-                }
-            }
-            return newModificationProperties;
+            return concatProperties(modificationProperties, equipmentProperties[ADDITIONAL_PROPERTIES]);
         },
         [getValues]
     );
@@ -228,7 +132,7 @@ const SubstationModificationDialog = ({
                             reset((formValues) => ({
                                 ...formValues,
                                 [ADDITIONAL_PROPERTIES]:
-                                    getAdditionalProperties(substation),
+                                    getConcatenatedProperties(substation),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -242,7 +146,7 @@ const SubstationModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getAdditionalProperties, editData]
+        [studyUuid, currentNodeUuid, reset, getConcatenatedProperties, editData]
     );
 
     useEffect(() => {
@@ -261,9 +165,7 @@ const SubstationModificationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData?.uuid,
-                substation[ADDITIONAL_PROPERTIES]?.filter(
-                    (p) => p[VALUE] != null || p[DELETION_MARK]
-                )
+                toModificationProperties(substation)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -283,6 +185,7 @@ const SubstationModificationDialog = ({
                     dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
+
     return (
         <FormProvider
             validationSchema={formSchema}

@@ -17,8 +17,8 @@ import {
 } from 'components/utils/field-constants';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
 import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
-import PropertyForm from '../property/property-form';
-import { getPropertyInitialValues } from '../property/property-utils';
+import PropertyForm from '../../common/property-form'
+import { initializedProperty } from '../../common/property-utils';
 
 const SubstationCreationForm = () => {
     const substationIdField = (
@@ -50,8 +50,9 @@ const SubstationCreationForm = () => {
         <ExpandableInput
             name={ADDITIONAL_PROPERTIES}
             Field={PropertyForm}
+            fieldProps={{networkElementType: "substation"}}
             addButtonLabel={'AddProperty'}
-            initialValue={getPropertyInitialValues()}
+            initialValue={initializedProperty()}
         />
     );
 

@@ -10,10 +10,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
-    ACTIVE_POWER,
+    ACTIVE_POWER, ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    REACTIVE_POWER
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -23,15 +23,24 @@ import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    concatProperties,
+    emptyProperties,
+    getPropertiesFromEquipment,
+    getPropertiesFromModification,
+    propertiesSchema, toModificationProperties
+} from '../../common/property-utils';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
     [ACTIVE_POWER]: null,
     [REACTIVE_POWER]: null,
+    ...emptyProperties
 };
 
 const formSchema = yup
@@ -42,6 +51,7 @@ const formSchema = yup
         [ACTIVE_POWER]: yup.number().nullable(),
         [REACTIVE_POWER]: yup.number().nullable(),
     })
+    .concat(propertiesSchema)
     .required();
 
 /**
@@ -66,6 +76,7 @@ const LoadModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
+    const [loadToModify, setLoadToModify] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const formMethods = useForm({
@@ -73,7 +84,7 @@ const LoadModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
@@ -85,6 +96,7 @@ const LoadModificationDialog = ({
                 [LOAD_TYPE]: load.loadType?.value ?? null,
                 [ACTIVE_POWER]: load.activePower?.value ?? null,
                 [REACTIVE_POWER]: load.reactivePower?.value ?? null,
+                ...getPropertiesFromModification(load.properties)
             });
         },
         [reset]
@@ -95,6 +107,63 @@ const LoadModificationDialog = ({
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
+
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            // comes from existing eqpt in network, ex: Object { p1: "v1", p2: "v2" }
+            const equipmentProperties = getPropertiesFromEquipment(equipment);
+            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return concatProperties(modificationProperties, equipmentProperties[ADDITIONAL_PROPERTIES]);
+        },
+        [getValues]
+    );
+
+    const onEquipmentIdChange = useCallback(
+        (equipmentId) => {
+            if (!equipmentId) {
+                setLoadToModify(null);
+                reset(emptyFormData, { keepDefaultValues: true });
+            } else {
+                setDataFetchStatus(FetchStatus.RUNNING);
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    EQUIPMENT_TYPES.LOAD,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    equipmentId,
+                    true
+                )
+                    .then((load) => {
+                        if (load) {
+                            setLoadToModify(load);
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getConcatenatedProperties(load),
+                            }));
+                        }
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                    })
+                    .catch(() => {
+                        setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setLoadToModify(null);
+                            reset(emptyFormData);
+                        }
+                    });
+            }
+        },
+        [studyUuid, currentNodeUuid, reset, getConcatenatedProperties, editData]
+    );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
         (load) => {
@@ -109,7 +178,8 @@ const LoadModificationDialog = ({
                 undefined,
                 undefined,
                 !!editData,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                toModificationProperties(load)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -168,9 +238,7 @@ const LoadModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <LoadModificationForm
-                        currentNode={currentNode}
-                        studyUuid={studyUuid}
-                        setDataFetchStatus={setDataFetchStatus}
+                        loadToModify={loadToModify}
                         equipmentId={selectedId}
                     />
                 )}

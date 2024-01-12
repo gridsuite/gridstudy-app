@@ -7,10 +7,10 @@
 
 import { TextInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER,
+    ACTIVE_POWER, ADDED, ADDITIONAL_PROPERTIES, DELETION_MARK,
     EQUIPMENT_NAME,
-    LOAD_TYPE,
-    REACTIVE_POWER,
+    LOAD_TYPE, PREVIOUS_VALUE,
+    REACTIVE_POWER
 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -23,7 +23,7 @@ import { SelectInput } from '@gridsuite/commons-ui';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
     EQUIPMENT_INFOS_TYPES,
@@ -32,43 +32,70 @@ import {
 import { TextField } from '@mui/material';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
+import PropertyForm from '../../common/property-form';
+import { concatProperties, getPropertiesFromEquipment, initializedProperty } from '../../common/property-utils';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 const LoadModificationForm = ({
-    currentNode,
-    studyUuid,
-    setDataFetchStatus,
+    loadToModify,
     equipmentId,
 }) => {
-    const currentNodeUuid = currentNode?.id;
-    const [loadInfos, setLoadInfos] = useState(null);
     const intl = useIntl();
+    const { getValues, setValue } = useFormContext();
+    const watchProps = useWatch({
+        name: ADDITIONAL_PROPERTIES,
+    });
 
-    useEffect(() => {
-        if (equipmentId) {
-            setDataFetchStatus(FetchStatus.RUNNING);
-            fetchNetworkElementInfos(
-                studyUuid,
-                currentNodeUuid,
-                EQUIPMENT_TYPES.LOAD,
-                EQUIPMENT_INFOS_TYPES.FORM.type,
-                equipmentId,
-                true
-            )
-                .then((value) => {
-                    if (value) {
-                        setLoadInfos(value);
-                        setDataFetchStatus(FetchStatus.SUCCEED);
-                    } else {
-                        setDataFetchStatus(FetchStatus.FAILED);
-                    }
-                })
-                .catch(() => {
-                    setDataFetchStatus(FetchStatus.FAILED);
-                });
-        } else {
-            setLoadInfos(null);
-        }
-    }, [studyUuid, currentNodeUuid, equipmentId, setDataFetchStatus]);
+    const getDeletionMark = useCallback(
+        (idx) => {
+            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            if (properties && typeof properties[idx] !== 'undefined') {
+                return watchProps && properties[idx][DELETION_MARK];
+            }
+            return false;
+        },
+        [getValues, watchProps]
+    );
+
+    const deleteCallback = useCallback(
+        (idx) => {
+            let marked = false;
+            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            if (properties && typeof properties[idx] !== 'undefined') {
+                marked = properties[idx][DELETION_MARK];
+            } else {
+                return false;
+            }
+
+            let canRemoveLine = true;
+            if (marked) {
+                // just unmark
+                setValue(
+                    `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
+                    false,
+                    { shouldDirty: true }
+                );
+                canRemoveLine = false;
+            } else {
+                // we can mark as deleted only prop having a previous value, not added in current modification
+                if (
+                    properties[idx][PREVIOUS_VALUE] &&
+                    properties[idx][ADDED] === false
+                ) {
+                    setValue(
+                        `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
+                        true,
+                        { shouldDirty: true }
+                    );
+                    canRemoveLine = false;
+                }
+            }
+            // otherwise just delete the line
+            return canRemoveLine;
+        },
+        [getValues, setValue]
+    );
 
     const loadIdField = (
         <TextField
@@ -89,7 +116,7 @@ const LoadModificationForm = ({
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={loadInfos?.name}
+            previousValue={loadToModify?.name}
             clearable
         />
     );
@@ -103,9 +130,9 @@ const LoadModificationForm = ({
             size={'small'}
             formProps={filledTextField}
             previousValue={
-                loadInfos?.type && loadInfos.type !== 'UNDEFINED'
+                loadToModify?.type && loadToModify.type !== 'UNDEFINED'
                     ? intl.formatMessage({
-                          id: getLoadTypeLabel(loadInfos?.type),
+                          id: getLoadTypeLabel(loadToModify?.type),
                       })
                     : undefined
             }
@@ -117,7 +144,7 @@ const LoadModificationForm = ({
             name={ACTIVE_POWER}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={loadInfos?.p0}
+            previousValue={loadToModify?.p0}
             clearable
         />
     );
@@ -127,8 +154,21 @@ const LoadModificationForm = ({
             name={REACTIVE_POWER}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-            previousValue={loadInfos?.q0}
+            previousValue={loadToModify?.q0}
             clearable
+        />
+    );
+
+    const additionalProps = (
+        <ExpandableInput
+            name={ADDITIONAL_PROPERTIES}
+            Field={PropertyForm}
+            fieldProps={{networkElementType: "load"}}
+            addButtonLabel={'AddProperty'}
+            initialValue={initializedProperty()}
+            getDeletionMark={getDeletionMark}
+            deleteCallback={deleteCallback}
+            watchProps={watchProps}
         />
     );
 
@@ -143,6 +183,10 @@ const LoadModificationForm = ({
             <Grid container spacing={2}>
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
+            </Grid>
+            <Grid container>
+                <GridSection title={'AdditionalInformations'} />
+                {additionalProps}
             </Grid>
         </>
     );
