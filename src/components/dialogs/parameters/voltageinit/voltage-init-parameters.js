@@ -298,6 +298,11 @@ export const VoltageInitParameters = ({
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid
+                    xl={
+                        tabValue === TAB_VALUES.voltageLimitsParamsTabValue
+                            ? 12
+                            : 6
+                    }
                     container
                     sx={{ height: '100%' }}
                     direction="column"
@@ -311,6 +316,7 @@ export const VoltageInitParameters = ({
                         sx={mergeSx(styles.scrollableGrid, {
                             paddingTop: 0,
                             width: '100%',
+                            display: 'unset',
                         })}
                     >
                         <Tabs

@@ -105,8 +105,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
 
     const intl = useIntl();
 
-    const viNotif = useSelector((state) => state.voltageInitNotif);
-
     const openLoader = useOpenLoaderShortWait({
         isLoading: status === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
@@ -116,7 +114,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         fetchVoltageInitResult(studyUuid, currentNode.id).then((res) => {
             setResultToShow(res);
         });
-    }, [viNotif, disabledApplyModifications, studyUuid, currentNode.id]);
+    }, [disabledApplyModifications, studyUuid, currentNode.id]);
 
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
@@ -232,7 +230,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
@@ -269,7 +267,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
@@ -288,7 +286,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
@@ -321,7 +318,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
@@ -408,11 +404,13 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     </Box>
                 </Box>
                 <div style={{ flexGrow: 1 }}>
-                    {viNotif &&
+                    {(status === RunningStatus.SUCCEED ||
+                        status === RunningStatus.FAILED) &&
                         resultToShow &&
                         tabIndex === 0 &&
                         renderIndicatorsTable(resultToShow.indicators)}
-                    {viNotif &&
+                    {(status === RunningStatus.SUCCEED ||
+                        status === RunningStatus.FAILED) &&
                         resultToShow &&
                         tabIndex === 1 &&
                         renderReactiveSlacksTable(resultToShow.reactiveSlacks)}
