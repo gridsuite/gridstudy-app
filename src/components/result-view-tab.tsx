@@ -213,8 +213,9 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'NonEvacuatedEnergyAnalysis',
                 displayed:
+                    enableDeveloperMode &&
                     nonEvacuatedEnergyUnavailability ===
-                    OptionalServicesStatus.Up,
+                        OptionalServicesStatus.Up,
                 renderResult: renderNonEvacuatedEnergyResult,
             },
             {

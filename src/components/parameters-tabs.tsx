@@ -440,18 +440,20 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                     TAB_VALUES.sensitivityAnalysisParamsTabValue
                                 }
                             />
-                            <Tab
-                                disabled={
-                                    nonEvacuatedEnergyAvailability !==
-                                    OptionalServicesStatus.Up
-                                }
-                                label={
-                                    <FormattedMessage id="NonEvacuatedEnergyAnalysis" />
-                                }
-                                value={
-                                    TAB_VALUES.nonEvacuatedEnergyParamsTabValue
-                                }
-                            />
+                            {enableDeveloperMode && (
+                                <Tab
+                                    disabled={
+                                        nonEvacuatedEnergyAvailability !==
+                                        OptionalServicesStatus.Up
+                                    }
+                                    label={
+                                        <FormattedMessage id="NonEvacuatedEnergyAnalysis" />
+                                    }
+                                    value={
+                                        TAB_VALUES.nonEvacuatedEnergyParamsTabValue
+                                    }
+                                />
+                            )}
                             <Tab
                                 disabled={
                                     shortCircuitAvailability !==
