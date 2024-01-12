@@ -50,7 +50,7 @@ const SubstationCreationForm = () => {
                 {gridItem(substationNameField, 4)}
                 {gridItem(substationCountryField, 4)}
             </Grid>
-            <PropertiesForm />
+            <PropertiesForm networkElementType={'substation'} />
         </>
     );
 };

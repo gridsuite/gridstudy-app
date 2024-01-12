@@ -1,6 +1,6 @@
 import { GridSection } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
 import {
     ADDED,
@@ -9,14 +9,37 @@ import {
     PREVIOUS_VALUE,
 } from '../../../../utils/field-constants';
 import PropertyForm from './property-form';
-import { initializedProperty } from './property-utils';
+import {
+    fetchPredefinedProperties,
+    initializedProperty,
+    PredefinedProperties,
+} from './property-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-const PropertiesForm = (isModification: boolean = false) => {
+type PropertiesFormProps = {
+    networkElementType: string;
+    isModification?: boolean;
+};
+
+const PropertiesForm = ({
+    networkElementType,
+    isModification = false,
+}: PropertiesFormProps) => {
     const watchProps = useWatch({
         name: ADDITIONAL_PROPERTIES,
     });
     const { getValues, setValue } = useFormContext();
+    const [predefinedProperties, setPredefinedProperties] = useState(
+        {} as PredefinedProperties
+    );
+
+    useEffect(() => {
+        fetchPredefinedProperties(networkElementType).then((res) => {
+            if (res) {
+                setPredefinedProperties(res);
+            }
+        });
+    }, [networkElementType]);
 
     const getDeletionMark = useCallback(
         (idx: number) => {
@@ -80,7 +103,7 @@ const PropertiesForm = (isModification: boolean = false) => {
         <ExpandableInput
             name={ADDITIONAL_PROPERTIES}
             Field={PropertyForm}
-            fieldProps={{ networkElementType: 'load' }}
+            fieldProps={{ predefinedProperties }}
             addButtonLabel={'AddProperty'}
             initialValue={initializedProperty()}
             {...modificationProperties}

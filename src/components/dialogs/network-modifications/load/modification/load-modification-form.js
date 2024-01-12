@@ -105,7 +105,7 @@ const LoadModificationForm = ({ loadToModify, equipmentId }) => {
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
-            <PropertiesForm isModification={true} />
+            <PropertiesForm networkElementType={'load'} isModification={true} />
         </>
     );
 };

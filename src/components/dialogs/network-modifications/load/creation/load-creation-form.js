@@ -114,7 +114,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
-            <PropertiesForm />
+            <PropertiesForm networkElementType={'load'} />
         </>
     );
 };
