@@ -83,8 +83,8 @@ const LoadModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
                 [LOAD_TYPE]: load.loadType?.value ?? null,
-                [ACTIVE_POWER]: load.activePower?.value ?? null,
-                [REACTIVE_POWER]: load.reactivePower?.value ?? null,
+                [ACTIVE_POWER]: load.p0?.value ?? null,
+                [REACTIVE_POWER]: load.q0?.value ?? null,
             });
         },
         [reset]
