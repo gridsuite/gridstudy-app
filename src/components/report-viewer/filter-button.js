@@ -54,7 +54,6 @@ export const FilterButton = ({ selectedItems, setSelectedItems }) => {
             [event.target.name]: !selectedItems[event.target.name],
         };
         setSelectedItems(newFilter);
-        handleClose();
     };
 
     const areSomeSeveritiesUnchecked = useMemo(() => {
