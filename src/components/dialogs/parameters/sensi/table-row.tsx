@@ -20,6 +20,7 @@ interface TableRowComponentProps {
     row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
+    disableDelete: boolean;
     fetchCount: (a: string, b: number) => void;
 }
 
@@ -29,6 +30,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     row,
     index,
     handleDeleteButton,
+    disableDelete = false,
     fetchCount,
 }) => {
     const [isHover, setIsHover] = useState(false);
@@ -54,19 +56,23 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
                     handleRowChanged
                 )
             )}
-            <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
-                {isHover && (
-                    <Tooltip
-                        title={intl.formatMessage({
-                            id: 'DeleteRows',
-                        })}
-                    >
-                        <IconButton onClick={() => handleDeleteButton(index)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                )}
-            </TableCell>
+            {!disableDelete && (
+                <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
+                    {isHover && (
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'DeleteRows',
+                            })}
+                        >
+                            <IconButton
+                                onClick={() => handleDeleteButton(index)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </TableCell>
+            )}
         </TableRow>
     );
 };

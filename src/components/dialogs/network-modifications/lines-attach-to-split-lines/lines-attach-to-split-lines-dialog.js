@@ -39,6 +39,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import LineAttachToSplitLinesIllustration from './lines-attach-to-split-lines-illustration';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
@@ -156,6 +157,7 @@ const LinesAttachToSplitLinesDialog = ({
                 onSave={onSubmit}
                 maxWidth={'md'}
                 titleId="LinesAttachToSplitLines"
+                subtitle={<LineAttachToSplitLinesIllustration />}
                 aria-labelledby="dialog-attach-lines-to-split-lines"
                 open={open}
                 isDataFetching={

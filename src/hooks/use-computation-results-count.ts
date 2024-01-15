@@ -29,6 +29,11 @@ export const useComputationResultsCount = () => {
             state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
+    const nonEvacuateEnergyAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+    );
+
     const oneBusallBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
@@ -61,6 +66,8 @@ export const useComputationResultsCount = () => {
         securityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     const sensiResultPresent =
         sensitivityAnalysisStatus === RunningStatus.SUCCEED;
+    const nonEvacuatedEnergyResultPresent =
+        nonEvacuateEnergyAnalysisStatus === RunningStatus.SUCCEED;
     const allBusesshortCircuitResultPresent =
         allBusesShortCircuitStatus === RunningStatus.SUCCEED;
 
@@ -78,6 +85,7 @@ export const useComputationResultsCount = () => {
         loadflowResultPresent,
         saResutPresent,
         sensiResultPresent,
+        nonEvacuatedEnergyResultPresent,
         allBusesshortCircuitResultPresent,
         oneBusShortCircuitResultPresent,
         voltageInitResultPresent,
