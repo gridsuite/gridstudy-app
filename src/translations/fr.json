@@ -427,6 +427,8 @@
     "ComputationStatus": "Statut",
     "true": "oui",
     "false": "non",
+    "yes": "Oui",
+    "no": "Non",
     "Loading": "Charge (%)",
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
@@ -551,7 +553,8 @@
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
-    "genericConfirmQuestion": "Êtes-vous sûr(e) de vouloir annuler ?",
+    "genericConfirmQuestion": "Les modifications que vous avez réalisées n'ont pas été enregistrées. Voulez-vous quitter l'onglet ?",
+
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
