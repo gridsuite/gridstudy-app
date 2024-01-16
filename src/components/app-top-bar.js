@@ -64,8 +64,8 @@ import {
 } from './utils/equipment-types';
 import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
-import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
-import { useComputationNotification } from '../hooks/use-computation-notification';
+import { useComputationResultsCount } from '../hooks/use-computation-results-count';
+
 import { Settings } from '@mui/icons-material';
 
 const styles = {
@@ -211,6 +211,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
+    const notificationsCount = useComputationResultsCount();
     const [languageLocal, handleChangeLanguage] =
         useParameterState(PARAM_LANGUAGE);
     const [useNameLocal, handleChangeUseName] =
@@ -222,10 +223,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
-
-    useComputationNotification();
-
-    const notificationsCount = useComputationNotificationCount();
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
