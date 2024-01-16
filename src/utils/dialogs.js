@@ -21,6 +21,8 @@ const SelectOptionsDialog = ({
     title,
     child,
     style,
+    cancelKey,
+    validateKey,
 }) => {
     const handleClose = () => {
         onClose();
@@ -34,10 +36,10 @@ const SelectOptionsDialog = ({
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>
-                    <FormattedMessage id="cancel" />
+                    <FormattedMessage id={cancelKey || 'cancel'} />
                 </Button>
                 <Button onClick={onClick} variant="outlined">
-                    <FormattedMessage id="validate" />
+                    <FormattedMessage id={validateKey || 'validate'} />
                 </Button>
             </DialogActions>
         </Dialog>
@@ -51,6 +53,8 @@ SelectOptionsDialog.propTypes = {
     title: PropTypes.string.isRequired,
     child: PropTypes.element.isRequired,
     style: PropTypes.oneOfType(PropTypes.object, PropTypes.func),
+    cancelKey: PropTypes.string,
+    validateKey: PropTypes.string,
 };
 
 export { SelectOptionsDialog };

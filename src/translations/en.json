@@ -426,6 +426,8 @@
     "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
+    "yes": "Yes",
+    "no": "No",
     "Loading": "Load (%)",
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
@@ -550,7 +552,7 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
-    "genericConfirmQuestion": "Are you sure that you want to abort?",
+    "genericConfirmQuestion": "Current modifications are not saved. Are you sure you want to leave ?",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
