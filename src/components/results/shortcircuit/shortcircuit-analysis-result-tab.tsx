@@ -13,7 +13,11 @@ import React, {
     useState,
 } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
-import { ResultTabIndexRedirection, useResultsTab } from '../use-results-tab';
+import {
+    computingTypeToShortcircuitTabRedirection,
+    ResultTabIndexRedirection,
+    useResultsTab,
+} from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
@@ -26,20 +30,22 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { computingTypeToShortcircuitTabRedirection } from 'hooks/use-last-launched-computation';
 
 interface ShortCircuitAnalysisResultTabProps {
     view: string;
-    lastLaunchedComputation: ComputingType;
 }
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
-> = ({ view, lastLaunchedComputation }) => {
+> = ({ view }) => {
+    const lastCompletedComputation = useSelector(
+        (state: ReduxState) => state.lastCompletedComputation
+    );
+
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
-            computingTypeToShortcircuitTabRedirection(lastLaunchedComputation),
-        [lastLaunchedComputation]
+            computingTypeToShortcircuitTabRedirection(lastCompletedComputation),
+        [lastCompletedComputation]
     );
 
     const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);

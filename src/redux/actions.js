@@ -669,3 +669,12 @@ export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
         nodeId: nodeId,
     };
 }
+
+export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
+
+export function setLastCompletedComputation(lastCompletedComputation) {
+    return {
+        type: SET_LAST_COMPLETED_COMPUTATION,
+        lastCompletedComputation: lastCompletedComputation,
+    };
+}

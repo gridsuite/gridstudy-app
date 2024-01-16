@@ -33,7 +33,6 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
 import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
-import { useLastLaunchedComputation } from 'hooks/use-last-launched-computation';
 import ParametersTabs from './parameters-tabs';
 
 const styles = {
@@ -120,8 +119,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     );
 
     const { openDiagramView } = useDiagram();
-
-    const lastLaunchedComputation = useLastLaunchedComputation();
 
     const disabled = !isNodeBuilt(currentNode);
 
@@ -296,7 +293,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                         currentNode={currentNode}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
-                        lastLaunchedComputation={lastLaunchedComputation}
                         view={props.view}
                     />
                 </TabPanelLazy>

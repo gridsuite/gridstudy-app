@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import ComputingType from 'components/computing-status/computing-type';
+import { IService } from 'components/result-view-tab';
 import { StudyView } from 'components/study-pane';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -66,4 +68,55 @@ const useResultsTabRedirectionLock = (): [
     }, [computationStatus]);
 
     return [redirectionLock, setRedirectionLock];
+};
+
+const getServiceResultTabIndex = (
+    computingType: ComputingType,
+    availableServices?: IService[]
+) => {
+    return availableServices
+        ? availableServices
+              .map((service) => service.computingType)
+              .findIndex((computations) => computations.includes(computingType))
+        : ResultsTabsRootLevel.LOADFLOW;
+};
+
+//function to convert computing type to the index corresponding to the resulting computation tab.
+//the list of services must also be passed as parameter because its content is dynamic depending on the state of the application (e.g. developer mode disabled)
+export const computingTypeToRootTabRedirection = (
+    computingType: ComputingType,
+    availableServices?: IService[]
+): ResultTabIndexRedirection => {
+    console.log(computingType);
+
+    const rootResultTabIndex = getServiceResultTabIndex(
+        computingType,
+        availableServices
+    );
+    switch (computingType) {
+        case ComputingType.LOADFLOW:
+        case ComputingType.SECURITY_ANALYSIS:
+        case ComputingType.SENSITIVITY_ANALYSIS:
+        case ComputingType.DYNAMIC_SIMULATION:
+        case ComputingType.VOLTAGE_INIT:
+        case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:
+        case ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS:
+        case ComputingType.NON_EVACUATED_ENERGY_ANALYSIS:
+            return rootResultTabIndex;
+        default:
+            return ResultsTabsRootLevel.LOADFLOW;
+    }
+};
+
+export const computingTypeToShortcircuitTabRedirection = (
+    computingType: ComputingType | undefined
+): ResultTabIndexRedirection => {
+    switch (computingType) {
+        case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:
+            return ShortCircuitAnalysisResultTabs.ALL_BUSES;
+        case ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS:
+            return ShortCircuitAnalysisResultTabs.ONE_BUS;
+        default:
+            return ShortCircuitAnalysisResultTabs.ALL_BUSES;
+    }
 };
