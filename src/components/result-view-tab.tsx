@@ -27,6 +27,7 @@ import {
     useResultsTab,
 } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
+import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
@@ -98,6 +99,9 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
+    const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
@@ -153,6 +157,17 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode]);
 
+    const renderNonEvacuatedEnergyResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <NonEvacuatedEnergyResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id!}
+                />
+            </Paper>
+        );
+    }, [studyUuid, currentNode]);
+
     const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
@@ -199,6 +214,14 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
+                id: 'NonEvacuatedEnergyAnalysis',
+                displayed:
+                    enableDeveloperMode &&
+                    nonEvacuatedEnergyUnavailability ===
+                        OptionalServicesStatus.Up,
+                renderResult: renderNonEvacuatedEnergyResult,
+            },
+            {
                 id: 'ShortCircuitAnalysis',
                 computingType: [
                     ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
@@ -226,6 +249,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         ].filter(({ displayed }: IService) => displayed);
     }, [
         sensitivityAnalysisUnavailability,
+        nonEvacuatedEnergyUnavailability,
         securityAnalysisAvailability,
         dynamicSimulationAvailability,
         voltageInitAvailability,
@@ -234,6 +258,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderDynamicSimulationResult,
         renderSecurityAnalysisResult,
         renderSensitivityAnalysisResult,
+        renderNonEvacuatedEnergyResult,
         renderShortCircuitAnalysisResult,
         renderVoltageInitResult,
         renderLoadFlowResult,

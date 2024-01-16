@@ -83,6 +83,15 @@ import { SecurityAnalysisParameters } from './dialogs/parameters/security-analys
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import {
+    fetchDefaultNonEvacuatedEnergyProvider,
+    fetchNonEvacuatedEnergyProvider,
+    updateNonEvacuatedEnergyProvider,
+} from 'services/study/non-evacuated-energy';
+import {
+    NonEvacuatedEnergyParameters,
+    useGetNonEvacuatedEnergyParameters,
+} from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -150,6 +159,7 @@ enum TAB_VALUES {
     lfParamsTabValue = 'LoadFlow',
     securityAnalysisParamsTabValue = 'SecurityAnalysis',
     sensitivityAnalysisParamsTabValue = 'SensitivityAnalysis',
+    nonEvacuatedEnergyParamsTabValue = 'NonEvacuatedEnergyAnalysis',
     shortCircuitParamsTabValue = 'ShortCircuit',
     dynamicSimulationParamsTabValue = 'DynamicSimulation',
     advancedParamsTabValue = 'Advanced',
@@ -158,6 +168,7 @@ enum TAB_VALUES {
 
 const hasValidationTabs = [
     TAB_VALUES.sensitivityAnalysisParamsTabValue,
+    TAB_VALUES.nonEvacuatedEnergyParamsTabValue,
     TAB_VALUES.shortCircuitParamsTabValue,
     TAB_VALUES.dynamicSimulationParamsTabValue,
     TAB_VALUES.voltageInitParamsTabValue,
@@ -186,6 +197,9 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         OptionalServicesNames.SecurityAnalysis
     );
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
@@ -233,8 +247,21 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         updateSensitivityAnalysisProvider
     );
 
+    const nonEvacuatedEnergyBackend = useParametersBackend(
+        user,
+        'NonEvacuatedEnergy',
+        nonEvacuatedEnergyAvailability,
+        fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
+        fetchNonEvacuatedEnergyProvider,
+        fetchDefaultNonEvacuatedEnergyProvider,
+        updateNonEvacuatedEnergyProvider
+    );
+
     const useSensitivityAnalysisParameters =
         useGetSensitivityAnalysisParameters();
+
+    const useNonEvacuatedEnergyParameters =
+        useGetNonEvacuatedEnergyParameters();
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
@@ -267,6 +294,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             if (
                 !enableDeveloperMode &&
                 (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
+                    oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
                     oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
                     oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)
             ) {
@@ -308,6 +336,15 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                         setHaveDirtyFields={setHaveDirtyFields}
                     />
                 );
+            case TAB_VALUES.nonEvacuatedEnergyParamsTabValue:
+                return (
+                    <NonEvacuatedEnergyParameters
+                        parametersBackend={nonEvacuatedEnergyBackend}
+                        useNonEvacuatedEnergyParameters={
+                            useNonEvacuatedEnergyParameters
+                        }
+                    />
+                );
             case TAB_VALUES.shortCircuitParamsTabValue:
                 return (
                     <ShortCircuitParameters
@@ -337,8 +374,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         loadFlowParametersBackend,
         securityAnalysisParametersBackend,
         sensitivityAnalysisBackend,
+        nonEvacuatedEnergyBackend,
         tabValue,
         useSensitivityAnalysisParameters,
+        useNonEvacuatedEnergyParameters,
         useShortCircuitParameters,
         useVoltageInitParameters,
         user,
@@ -401,6 +440,20 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                     TAB_VALUES.sensitivityAnalysisParamsTabValue
                                 }
                             />
+                            {enableDeveloperMode && (
+                                <Tab
+                                    disabled={
+                                        nonEvacuatedEnergyAvailability !==
+                                        OptionalServicesStatus.Up
+                                    }
+                                    label={
+                                        <FormattedMessage id="NonEvacuatedEnergyAnalysis" />
+                                    }
+                                    value={
+                                        TAB_VALUES.nonEvacuatedEnergyParamsTabValue
+                                    }
+                                />
+                            )}
                             <Tab
                                 disabled={
                                     shortCircuitAvailability !==

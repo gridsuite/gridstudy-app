@@ -22,6 +22,7 @@ export interface ReduxState {
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
     notificationIdList: UUID[];
     theme: string;
+    nonEvacuatedEnergyNotif: boolean;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
@@ -70,6 +71,7 @@ export interface ComputingStatus {
     [ComputingType.LOADFLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
     [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
