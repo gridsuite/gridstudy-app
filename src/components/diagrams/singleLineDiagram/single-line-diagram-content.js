@@ -305,7 +305,7 @@ function SingleLineDiagramContent(props) {
                     handleRunShortcircuitAnalysis={
                         handleRunShortcircuitAnalysis
                     }
-                    handleOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialogFactory(
+                    handleOpenDynamicSimulationEventDialog={makeOpenDynamicSimulationEventDialogHandler(
                         closeBusMenu
                     )}
                     busId={busMenu.busId}
@@ -358,7 +358,7 @@ function SingleLineDiagramContent(props) {
         ]
     );
 
-    const handleOpenDynamicSimulationEventDialogFactory = useCallback(
+    const makeOpenDynamicSimulationEventDialogHandler = useCallback(
         (closeMenu) => (equipmentId, equipmentType, dialogTitle) => {
             closeMenu();
             setDynamicSimulationEventDialogTitle(dialogTitle);
@@ -388,7 +388,7 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
-                    handleOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialogFactory(
+                    handleOpenDynamicSimulationEventDialog={makeOpenDynamicSimulationEventDialogHandler(
                         closeEquipmentMenu
                     )}
                     currentNode={currentNode}
@@ -416,7 +416,7 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     handleDeleteEquipment={handleDeleteEquipment}
-                    handleOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialogFactory(
+                    handleOpenDynamicSimulationEventDialog={makeOpenDynamicSimulationEventDialogHandler(
                         closeEquipmentMenu
                     )}
                 />
