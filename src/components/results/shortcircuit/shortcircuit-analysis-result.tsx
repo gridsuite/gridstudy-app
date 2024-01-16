@@ -235,6 +235,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     filterSelector,
                 }}
                 filterEnums={filterEnums}
+                studyUuid={studyUuid}
+                currentNode={currentNode?.id}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

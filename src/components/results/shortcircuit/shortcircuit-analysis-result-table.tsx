@@ -6,7 +6,7 @@
  */
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
@@ -36,7 +36,26 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import IconButton from '@mui/material/IconButton';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
+const styles = {
+    gridContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+        marginTop: '-40px',
+    },
+    grid: {
+        flexGrow: '1',
+    },
+};
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
     analysisType: ShortCircuitAnalysisType;
@@ -44,6 +63,8 @@ interface ShortCircuitAnalysisResultProps {
     filterProps: FilterPropsType;
     sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
+    studyUuid: string;
+    currentNode: string;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -86,10 +107,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
+    studyUuid,
+    currentNode,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
-
+    const { snackError } = useSnackMessage();
     const columns = useMemo(() => {
         const isAllBusesAnalysisType =
             analysisType === ShortCircuitAnalysisType.ALL_BUSES;
@@ -358,18 +381,72 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         !isFetching
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
+    const headersCsv = columns
+        .filter((column) => 'headerName' in column)
+        .map((column) => (column as { headerName?: string }).headerName || '');
+    const exportCsv = useCallback(() => {
+        downloadShortCircuitResultZippedCsv(
+            studyUuid,
+            currentNode,
+            analysisType,
+            headersCsv
+        )
+            .then((response) => {
+                debugger;
+                response.blob().then((blb: Blob) => {
+                    const url = URL.createObjectURL(blb);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute(
+                        'download',
+                        analysisType === ShortCircuitAnalysisType.ONE_BUS
+                            ? 'oneBus-results.zip'
+                            : 'allBuses_results.zip'
+                    );
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'ShortCirduitAnalysisExportCsvResultsError',
+                    }),
+                });
+            });
+    }, [studyUuid, currentNode, intl, snackError, headersCsv, analysisType]);
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <CustomAGGrid
-                rowData={rowsToShow}
-                defaultColDef={defaultColDef}
-                onGridReady={onGridReady}
-                getRowStyle={getRowStyle}
-                enableCellTextSelection={true}
-                columnDefs={columns}
-                overlayNoRowsTemplate={message}
-            />
+        <Box sx={styles.gridContainer}>
+            <Box sx={styles.csvExport}>
+                <Box style={{ flexGrow: 1 }}></Box>
+                <Box>
+                    <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                </Box>
+                <Box>
+                    <IconButton
+                        disabled={!rowsToShow || rowsToShow.length === 0}
+                        aria-label="exportCSVButton"
+                        onClick={exportCsv}
+                    >
+                        <GetAppIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+            <Box sx={styles.grid}>
+                <CustomAGGrid
+                    rowData={rowsToShow}
+                    defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
+                    enableCellTextSelection={true}
+                    columnDefs={columns}
+                    overlayNoRowsTemplate={message}
+                />
+            </Box>
         </Box>
     );
 };
