@@ -305,9 +305,9 @@ function SingleLineDiagramContent(props) {
                     handleRunShortcircuitAnalysis={
                         handleRunShortcircuitAnalysis
                     }
-                    handleOpenDynamicSimulationEventDialog={
-                        handleOpenDynamicSimulationEventDialog
-                    }
+                    handleOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialogFactory(
+                        closeBusMenu
+                    )}
                     busId={busMenu.busId}
                     position={busMenu.position}
                     onClose={closeBusMenu}
@@ -358,16 +358,16 @@ function SingleLineDiagramContent(props) {
         ]
     );
 
-    const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId, equipmentType, dialogTitle) => {
-            closeEquipmentMenu();
+    const handleOpenDynamicSimulationEventDialogFactory = useCallback(
+        (closeMenu) => (equipmentId, equipmentType, dialogTitle) => {
+            closeMenu();
             setDynamicSimulationEventDialogTitle(dialogTitle);
             setEquipmentToConfigDynamicSimulationEvent({
                 equipmentId,
                 equipmentType,
             });
         },
-        [closeEquipmentMenu]
+        []
     );
 
     const handleCloseDynamicSimulationEventDialog = useCallback(() => {
@@ -388,9 +388,9 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
-                    handleOpenDynamicSimulationEventDialog={
-                        handleOpenDynamicSimulationEventDialog
-                    }
+                    handleOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialogFactory(
+                        closeEquipmentMenu
+                    )}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -416,9 +416,9 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     handleDeleteEquipment={handleDeleteEquipment}
-                    handleOpenDynamicSimulationEventDialog={
-                        handleOpenDynamicSimulationEventDialog
-                    }
+                    handleOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialogFactory(
+                        closeEquipmentMenu
+                    )}
                 />
             )
         );
