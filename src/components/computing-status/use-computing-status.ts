@@ -100,6 +100,8 @@ export const useComputingStatus: UseComputingStatusProps = (
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
 
+    //the callback crosschecks the computation status and the content of the last update reference
+    //in order to determine which computation just ended
     const isComputationCompleted = useCallback(
         (status: RunningStatus) =>
             [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
