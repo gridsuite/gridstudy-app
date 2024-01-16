@@ -19,21 +19,21 @@
     <path
        id="path3740"
        d="M113.094 136.678C118.197 136.678 122.333 132.541 122.333 127.439C122.333 122.336 118.197 118.199 113.094 118.199C107.991 118.199 103.855 122.336 103.855 127.439C103.855 132.541 107.991 136.678 113.094 136.678Z"
-       fill="#A5D6A7"
+       fill="#81C784"
        fill-opacity="0.941176" />
     <path
        id="path3740-0"
        d="M356.178 137.198C361.478 137.198 365.774 132.902 365.774 127.602C365.774 122.302 361.478 118.005 356.178 118.005C350.878 118.005 346.581 122.302 346.581 127.602C346.581 132.902 350.878 137.198 356.178 137.198Z"
-       fill="#A5D6A7" />
+       fill="#81C784" />
     <g
        id="path7047">
       <path
          d="M112.797 115.151V51.701Z"
-         fill="#9DCC9F"
+         fill="#81C784"
          id="path135" />
       <path
          d="M112.797 115.151V51.701"
-         stroke="#9DCC9F"
+         stroke="#81C784"
          stroke-width="3.85668"
          stroke-dasharray="3.86 3.86"
          id="path137" />
@@ -42,11 +42,11 @@
        id="path7047-2">
       <path
          d="M356.198 114.191V50.7413Z"
-         fill="#9DCC9F"
+         fill="#81C784"
          id="path140" />
       <path
          d="M356.198 114.191V50.7413"
-         stroke="#9DCC9F"
+         stroke="#81C784"
          stroke-width="3.85668"
          stroke-dasharray="3.86 3.86"
          id="path142" />
@@ -54,37 +54,37 @@
     <path
        id="path7084"
        d="M470.284 157.765C485.905 157.765 498.569 145.101 498.569 129.481C498.569 113.86 485.905 101.196 470.284 101.196C454.663 101.196 442 113.86 442 129.481C442 145.101 454.663 157.765 470.284 157.765Z"
-       stroke="#FFCC80"
+       stroke="#FFB74D"
        stroke-width="5.2" />
     <path
        id="path9570"
        d="M459.117 126.761L458.864 132.57L471.618 132.57L467.198 137.242L471.491 141.282L482.855 129.792L471.996 117.796L467.198 121.963L471.491 126.509L459.117 126.761Z"
-       fill="#FFCC80" />
+       fill="#FFB74D" />
     <path
        id="path3740-0-8"
        d="M591.543 137.198C596.843 137.198 601.139 132.902 601.139 127.602C601.139 122.302 596.843 118.005 591.543 118.005C586.243 118.005 581.946 122.302 581.946 127.602C581.946 132.902 586.243 137.198 591.543 137.198Z"
-       fill="#A5D6A7" />
+       fill="#81C784" />
     <path
        id="path3740-0-5"
        d="M1021.89 137.178C1027.19 137.178 1031.49 132.881 1031.49 127.581C1031.49 122.281 1027.19 117.985 1021.89 117.985C1016.59 117.985 1012.29 122.281 1012.29 127.581C1012.29 132.881 1016.59 137.178 1021.89 137.178Z"
-       fill="#A5D6A7" />
+       fill="#81C784" />
     <path
        id="path3740-0-0"
        d="M804.596 137.726C809.896 137.726 814.193 133.43 814.193 128.13C814.193 122.83 809.896 118.533 804.596 118.533C799.296 118.533 795 122.83 795 128.13C795 133.43 799.296 137.726 804.596 137.726Z"
-       fill="#90CAF9" />
+       fill="#64B5F6" />
     <path
        id="lineBefore-6"
        d="M778.617 123H616.383H609V132H616.383H778.617H786V123H778.617Z"
-       fill="#90CAF9" />
+       fill="#64B5F6" />
     <g
        id="path7047-6">
       <path
          d="M804.107 114.052V50.6018Z"
-         fill="#9DCC9F"
+         fill="#81C784"
          id="path151" />
       <path
          d="M804.107 114.052V50.6018"
-         stroke="#90CAF9"
+         stroke="#64B5F6"
          stroke-width="3.85668"
          stroke-dasharray="3.86 3.86"
          id="path153" />
@@ -93,11 +93,11 @@
        id="path7047-8">
       <path
          d="M1021.89 115.052V51.6018Z"
-         fill="#9DCC9F"
+         fill="#81C784"
          id="path156" />
       <path
          d="M1021.89 115.052V51.6018"
-         stroke="#9DCC9F"
+         stroke="#81C784"
          stroke-width="3.85668"
          stroke-dasharray="3.86 3.86"
          id="path158" />
@@ -106,11 +106,11 @@
        id="path7047-5">
       <path
          d="M591.564 114.909V51.4589Z"
-         fill="#9DCC9F"
+         fill="#81C784"
          id="path161" />
       <path
          d="M591.564 114.909V51.4589"
-         stroke="#9DCC9F"
+         stroke="#81C784"
          stroke-width="3.85668"
          stroke-dasharray="3.86 3.86"
          id="path163" />
@@ -118,37 +118,37 @@
     <path
        id="lineBefore-6-4"
        d="M995.45 123H829.55H822V132H829.55H995.45H1003V123H995.45Z"
-       fill="#90CAF9" />
+       fill="#64B5F6" />
     <g
        transform="translate(0,0.83700441)"
        id="path7047-2_2">
       <path
-         style="fill:#9dcc9f"
+         style="fill:#81C784"
          d="M 880.45,310 H 817 Z"
          id="path167" />
       <path
-         style="stroke:#9dcc9f;stroke-width:3.85667992;stroke-dasharray:3.86, 3.86"
+         style="stroke:#81C784;stroke-width:3.85667992;stroke-dasharray:3.86, 3.86"
          d="M 880.45,310 H 817"
          id="path169" />
     </g>
     <path
        id="lineBefore_2"
        d="M800 147.419V200.581V203H809V200.581V147.419V145H800V147.419Z"
-       fill="#90CAF9" />
+       fill="#64B5F6" />
     <path
        id="lineBefore_3"
        d="M800 241.211V289.789V292H809V289.789V241.211V239H800V241.211Z"
-       fill="#90CAF9" />
+       fill="#64B5F6" />
     <path
        id="path3740-0_2"
        d="M804.596 319.193C809.896 319.193 814.193 314.896 814.193 309.596C814.193 304.296 809.896 300 804.596 300C799.296 300 795 304.296 795 309.596C795 314.896 799.296 319.193 804.596 319.193Z"
-       fill="#A5D6A7" />
+       fill="#81C784" />
     <text
        y="-3.5710286e-08"
        x="168.55133"
        id="text4625-2-3-9"
        xml:space="preserve"
-       style="font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+       style="font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
        font-size="18.6667"
        letter-spacing="0em"><tspan
          style="text-align:center;text-anchor:middle"
@@ -160,7 +160,7 @@
        x="182.28012"
        id="text177"
        xml:space="preserve"
-       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
        font-size="18.6667"
        font-weight="bold"
        letter-spacing="0em"><tspan
@@ -173,7 +173,7 @@
        x="154.65849"
        id="text4625-3-2"
        xml:space="preserve"
-       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
        font-size="18.6667"
        font-weight="bold"
        letter-spacing="0em"><tspan
@@ -186,7 +186,7 @@
        x="159.72235"
        id="text4625-2-3-9_2"
        xml:space="preserve"
-       style="font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+       style="font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
        font-size="18.6667"
        letter-spacing="0em"><tspan
          style="text-align:center;text-anchor:middle"
@@ -198,7 +198,7 @@
        x="164.2749"
        id="text4625-9-6"
        xml:space="preserve"
-       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
        font-size="18.6667"
        font-weight="bold"
        letter-spacing="0em"><tspan
@@ -211,7 +211,7 @@
        x="125.56497"
        id="text1382"
        xml:space="preserve"
-       style="font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
+       style="font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
        font-size="18.6667"
        letter-spacing="0em"><tspan
          style="text-align:center;text-anchor:middle"
@@ -223,7 +223,7 @@
        x="128.61015"
        id="text4625-9"
        xml:space="preserve"
-       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
        font-size="18.6667"
        font-weight="bold"
        letter-spacing="0em"><tspan
@@ -236,7 +236,7 @@
        x="155.00211"
        id="text177_2"
        xml:space="preserve"
-       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
        font-size="18.6667"
        font-weight="bold"
        letter-spacing="0em"><tspan
@@ -261,7 +261,7 @@
        x="128.61015"
        id="text4625"
        xml:space="preserve"
-       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#9dcc9f"
+       style="font-weight:bold;font-size:18.66670036px;font-family:sans-serif;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
        font-size="18.6667"
        font-weight="bold"
        letter-spacing="0em"><tspan
