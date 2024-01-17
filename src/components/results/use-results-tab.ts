@@ -57,15 +57,15 @@ const useResultsTabRedirectionLock = (): [
     Boolean,
     Dispatch<SetStateAction<Boolean>>
 ] => {
-    const computationStatus: ComputingStatus = useSelector(
-        (state: ReduxState) => state.computingStatus
+    const lastCompletedComputation: string = useSelector(
+        (state: ReduxState) => state.lastCompletedComputation
     );
     const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
 
     useEffect(() => {
         //we ought to release the redirection lock if the user launch a new computation
         setRedirectionLock(false);
-    }, [computationStatus]);
+    }, [lastCompletedComputation]);
 
     return [redirectionLock, setRedirectionLock];
 };

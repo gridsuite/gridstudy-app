@@ -70,7 +70,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
             setTabIndex(newIndex);
-            //when we manually browse results we ought to block further redirections
+            //when we manually browse results we ought to block further redirections until the next completed computation
             setRedirectionLock(true);
         },
         [setTabIndex, setRedirectionLock]
