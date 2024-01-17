@@ -80,8 +80,10 @@ const getPropertiesFromModification = (properties) => {
         ? properties.map((p) => {
               return {
                   [NAME]: p[NAME],
-                  [VALUE]: p[VALUE],
-                  [PREVIOUS_VALUE]: null,
+                  // workaround to keep the previous value when the user deletes a property :
+                  // the previous value is stored in the value field (see onSubmit)
+                  [VALUE]: p[DELETION_MARK] ? null : p[VALUE],
+                  [PREVIOUS_VALUE]: p[DELETION_MARK] ? p[VALUE] : null,
                   [ADDED]: p[ADDED],
                   [DELETION_MARK]: p[DELETION_MARK],
               };
@@ -181,7 +183,9 @@ const SubstationModificationDialog = ({
                         : null;
                     newModificationProperties.push({
                         ...property,
-                        [PREVIOUS_VALUE]: previousValue,
+                        [PREVIOUS_VALUE]: property[DELETION_MARK]
+                            ? property[PREVIOUS_VALUE]
+                            : previousValue,
                     });
                 });
             }
@@ -253,6 +257,19 @@ const SubstationModificationDialog = ({
 
     const onSubmit = useCallback(
         (substation) => {
+            // workaround to keep the previous value when the user deletes a property :
+            // the previous value is stored in the value field
+            const properties = substation[ADDITIONAL_PROPERTIES]?.filter(
+                (p) => p[VALUE] != null || p[DELETION_MARK]
+            ).map((p) => {
+                if (p[DELETION_MARK]) {
+                    return {
+                        ...p,
+                        [VALUE]: p[PREVIOUS_VALUE],
+                    };
+                }
+                return p;
+            });
             modifySubstation(
                 studyUuid,
                 currentNodeUuid,
@@ -261,9 +278,7 @@ const SubstationModificationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData?.uuid,
-                substation[ADDITIONAL_PROPERTIES]?.filter(
-                    (p) => p[VALUE] != null || p[DELETION_MARK]
-                )
+                properties
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
