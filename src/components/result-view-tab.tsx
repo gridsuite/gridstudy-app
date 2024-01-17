@@ -43,6 +43,7 @@ import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { Box } from '@mui/system';
 import ComputingType from './computing-status/computing-type';
 import { useSelector } from 'react-redux';
+import { usePrevious } from './study-container';
 
 const styles = {
     table: {
@@ -309,17 +310,16 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     };
 
-    const previousEnableDeveloperMode = useRef(enableDeveloperMode);
+    const previousEnableDeveloperMode = usePrevious(enableDeveloperMode);
     useEffect(() => {
         if (
             !enableDeveloperMode &&
-            previousEnableDeveloperMode.current !== enableDeveloperMode
+            previousEnableDeveloperMode !== enableDeveloperMode
         ) {
             // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
             setTabIndex(0);
         }
-        previousEnableDeveloperMode.current = enableDeveloperMode;
-    }, [enableDeveloperMode]);
+    }, [enableDeveloperMode, previousEnableDeveloperMode]);
 
     const handleChangeTab = useCallback(
         (event: React.SyntheticEvent, newTabIndex: number) => {
