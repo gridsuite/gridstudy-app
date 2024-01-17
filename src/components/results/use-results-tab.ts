@@ -10,7 +10,7 @@ import { IService } from 'components/result-view-tab';
 import { StudyView } from 'components/study-pane';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ComputingStatus, ReduxState } from 'redux/reducer.type';
+import { ReduxState } from 'redux/reducer.type';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 
 export enum ResultsTabsRootLevel {
@@ -63,7 +63,7 @@ const useResultsTabRedirectionLock = (): [
     const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
 
     useEffect(() => {
-        //we ought to release the redirection lock if the user launch a new computation
+        //we ought to release the redirection lock if the user launches a new computation
         setRedirectionLock(false);
     }, [lastCompletedComputation]);
 
