@@ -21,6 +21,7 @@ import {
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
 import { downloadZipFile } from 'services/utils';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
@@ -35,6 +36,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
     enumValueTranslations,
 }) => {
     const intl: IntlShape = useIntl();
+    const { snackError } = useSnackMessage();
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
             ? result?.map((preContingencyResult: PreContingencyResult) => {
@@ -59,32 +61,20 @@ export const SecurityAnalysisResultN: FunctionComponent<
             : [];
     }, [intl, result]);
 
+    const columnDefs = useMemo(
+        () =>
+            securityAnalysisTableNColumnsDefinition(
+                intl,
+                sortProps,
+                filterProps,
+                filterEnums
+            ),
+        [intl, sortProps, filterProps, filterEnums]
+    );
+
     const csvHeaders = useMemo(
-        () => [
-            intl.formatMessage({
-                id: 'Equipment',
-            }),
-            intl.formatMessage({
-                id: 'ViolationType',
-            }),
-            intl.formatMessage({
-                id: 'LimitName',
-            }),
-            intl.formatMessage({
-                id: 'Limit',
-            }),
-            intl.formatMessage({
-                id: 'CalculatedValue',
-            }),
-            intl.formatMessage({
-                id: 'Loading',
-            }),
-            intl.formatMessage({
-                id: 'Overload',
-            }),
-            intl.formatMessage({ id: 'LimitSide' }),
-        ],
-        [intl]
+        () => columnDefs.map((cDef) => cDef.headerName),
+        [columnDefs]
     );
 
     const exportResultCsv = useCallback(() => {
@@ -96,19 +86,17 @@ export const SecurityAnalysisResultN: FunctionComponent<
             },
             csvHeaders,
             enumValueTranslations
-        ).then((fileBlob) => downloadZipFile(fileBlob, 'n-results.zip'));
+        )
+            .then((fileBlob) => downloadZipFile(fileBlob, 'n-results.zip'))
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'securityAnalysisCsvResultsError',
+                    }),
+                });
+            });
     }, [enumValueTranslations, csvHeaders, studyUuid, nodeUuid]);
-
-    const columnDefs = useMemo(
-        () =>
-            securityAnalysisTableNColumnsDefinition(
-                intl,
-                sortProps,
-                filterProps,
-                filterEnums
-            ),
-        [intl, sortProps, filterProps, filterEnums]
-    );
 
     return (
         <SecurityAnalysisTable

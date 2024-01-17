@@ -181,5 +181,5 @@ export interface SecurityAnalysisResultProps {
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
-    exportCsv?: () => void;
+    exportCsv: () => void;
 }

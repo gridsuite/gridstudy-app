@@ -21,6 +21,7 @@ import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
 import { Box, IconButton } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import { ExportButton } from 'components/utils/export-button';
 
 const styles = {
     gridContainer: {
@@ -76,18 +77,10 @@ export const SecurityAnalysisTable: FunctionComponent<
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
                 <Box style={{ flexGrow: 1 }}></Box>
-                <Box>
-                    <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                </Box>
-                <Box>
-                    <IconButton
-                        disabled={!rowsToShow || rowsToShow.length === 0}
-                        aria-label="exportCSVButton"
-                        onClick={exportCsv}
-                    >
-                        <GetAppIcon />
-                    </IconButton>
-                </Box>
+                <ExportButton
+                    disabled={!rowsToShow || rowsToShow.length === 0}
+                    onClick={exportCsv}
+                />
             </Box>
             <Box sx={styles.grid}>
                 <CustomAGGrid

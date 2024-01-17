@@ -42,20 +42,5 @@ export const CsvExport = ({
         });
     }, [columns, getCSVFilename, gridRef, tableNamePrefix, skipColumnHeaders]);
 
-    return (
-        <>
-            <span>
-                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-            </span>
-            <span>
-                <IconButton
-                    disabled={disabled}
-                    aria-label="exportCSVButton"
-                    onClick={downloadCSVData}
-                >
-                    <GetAppIcon />
-                </IconButton>
-            </span>
-        </>
-    );
+    return <ExportButton disabled={disabled} onClick={downloadCSVData} />;
 };

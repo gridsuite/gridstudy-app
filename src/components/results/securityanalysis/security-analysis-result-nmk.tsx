@@ -192,76 +192,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [isFromContingency, theme.selectedRow.background]
     );
 
-    const nmkContingenciesResultsCsvHeaders = useMemo(
-        () => [
-            intl.formatMessage({
-                id: 'ContingencyId',
-            }),
-            intl.formatMessage({
-                id: 'ComputationStatus',
-            }),
-            intl.formatMessage({
-                id: 'Constraint',
-            }),
-            intl.formatMessage({
-                id: 'ViolationType',
-            }),
-            intl.formatMessage({
-                id: 'LimitName',
-            }),
-            intl.formatMessage({
-                id: 'Limit',
-            }),
-            intl.formatMessage({
-                id: 'CalculatedValue',
-            }),
-            intl.formatMessage({ id: 'Loading' }),
-            intl.formatMessage({ id: 'Overload' }),
-            intl.formatMessage({ id: 'LimitSide' }),
-        ],
-        [intl]
-    );
-
-    const nmkConstraintsResultsCsvHeaders = useMemo(
-        () => [
-            intl.formatMessage({
-                id: 'Constraint',
-            }),
-            intl.formatMessage({
-                id: 'ContingencyId',
-            }),
-            intl.formatMessage({
-                id: 'ComputationStatus',
-            }),
-            intl.formatMessage({
-                id: 'ViolationType',
-            }),
-            intl.formatMessage({
-                id: 'LimitName',
-            }),
-            intl.formatMessage({
-                id: 'Limit',
-            }),
-            intl.formatMessage({
-                id: 'CalculatedValue',
-            }),
-            intl.formatMessage({ id: 'Loading' }),
-            intl.formatMessage({ id: 'Overload' }),
-            intl.formatMessage({ id: 'LimitSide' }),
-        ],
-        [intl]
-    );
-
     const csvHeaders = useMemo(
-        () =>
-            isFromContingency
-                ? nmkContingenciesResultsCsvHeaders
-                : nmkConstraintsResultsCsvHeaders,
-        [
-            isFromContingency,
-            nmkContingenciesResultsCsvHeaders,
-            nmkConstraintsResultsCsvHeaders,
-        ]
+        () => columnDefs.map((cDef) => cDef.headerName),
+        [columnDefs]
     );
 
     const exportResultCsv = useCallback(() => {
@@ -275,7 +208,16 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             },
             csvHeaders,
             enumValueTranslations
-        ).then((fileBlob) => downloadZipFile(fileBlob, 'nmk-results.zip'));
+        )
+            .then((fileBlob) => downloadZipFile(fileBlob, 'nmk-results.zip'))
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'securityAnalysisCsvResultsError',
+                    }),
+                });
+            });
     }, [
         csvHeaders,
         enumValueTranslations,
