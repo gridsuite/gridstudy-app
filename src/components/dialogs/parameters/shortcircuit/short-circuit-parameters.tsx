@@ -192,14 +192,14 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
     return (
         <Grid container spacing={2} paddingLeft={2}>
-            <Grid container paddingTop={2}>
-                {gridItem(feederResult, 12)}
+            <Grid container paddingTop={2} xl={6}>
+                {gridItem(feederResult, 9)}
             </Grid>
             <GridSection
                 title="ShortCircuitPredefinedParameters"
                 heading={'4'}
             />
-            <Grid container spacing={1} alignItems={'center'}>
+            <Grid xl={6} container spacing={1} alignItems={'center'}>
                 {gridItem(predefinedParameters, 8)}
                 {gridItem(statusToShow, 4)}
             </Grid>

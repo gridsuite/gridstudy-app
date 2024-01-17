@@ -49,6 +49,10 @@ export default class LogReport {
         this.subReports = [];
         this.logs = [];
         this.parentReportId = parentReportId;
+        // The different severities for this report (not including the subreports)
+        this.severityList = [];
+        // Represent all the different severities of this report and it's subreports
+        this.allSeverityList = [];
         this.init(reportType, jsonReporter);
     }
 
@@ -80,6 +84,14 @@ export default class LogReport {
         return this.logs;
     }
 
+    getSeverityList() {
+        return this.severityList;
+    }
+
+    getAllSeverityList() {
+        return this.allSeverityList;
+    }
+
     getAllLogs() {
         return this.getLogs().concat(
             this.getSubReports().flatMap((r) => r.getAllLogs())
@@ -97,17 +109,36 @@ export default class LogReport {
         jsonReporter.reports.map((value) =>
             this.logs.push(new LogReportItem(value, this.uniqueId))
         );
+
+        // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
+        jsonReporter.taskValues?.severityList?.value
+            .split(/[[,\]]/)
+            .filter((e) => e.length)
+            .map((es) => es.trim())
+            .forEach((el) => this.severityList.push(el));
+
+        this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
     }
 
-    getHighestSeverity(currentSeverity = LogReportItem.SEVERITY.UNKNOWN) {
-        let reduceFct = (p, c) => (p.level < c.level ? c : p);
-
-        let highestSeverity = this.getLogs()
-            .map((r) => r.getSeverity())
-            .reduce(reduceFct, currentSeverity);
-
-        return this.getSubReports()
-            .map((r) => r.getHighestSeverity(highestSeverity))
+    getHighestSeverity() {
+        // We have a un-ordered list of existing severities, like ['INFO', 'ERROR', 'DEBUG'].
+        // Lets find out the highest level corresponding SEVERITY object, like SEVERITY.ERROR:
+        let reduceFct = (p, c) => (c.level > p.level ? c : p);
+        let highestSeverity = LogReportItem.SEVERITY.UNKNOWN;
+        return Object.values(LogReportItem.SEVERITY)
+            .filter((s) => this.allSeverityList.includes(s.name))
             .reduce(reduceFct, highestSeverity);
+    }
+
+    initAllSeverityList() {
+        let logSeverityList = this.getSeverityList();
+
+        this.getSubReports()
+            .map((e) => e.initAllSeverityList())
+            .forEach((e) => {
+                logSeverityList = [...new Set([...logSeverityList, ...e])];
+            });
+
+        return logSeverityList;
     }
 }

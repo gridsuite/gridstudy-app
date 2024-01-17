@@ -15,11 +15,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
+    ADDED,
     ADDITIONAL_PROPERTIES,
     COUNTRY,
+    DELETION_MARK,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     NAME,
+    PREVIOUS_VALUE,
     VALUE,
 } from 'components/utils/field-constants';
 import { getPropertiesSchema } from '../property/property-utils';
@@ -44,11 +47,32 @@ const formSchema = yup.object().shape({
 
 const getProperties = (properties) => {
     return properties
-        ? Object.entries(properties).map((p) => {
-              return { [NAME]: p[0], [VALUE]: p[1] };
+        ? properties.map((p) => {
+              return {
+                  [NAME]: p[NAME],
+                  [VALUE]: p[VALUE],
+                  [PREVIOUS_VALUE]: null,
+                  [ADDED]: p[ADDED],
+                  [DELETION_MARK]: p[DELETION_MARK],
+              };
           })
         : [];
 };
+
+const getPropertiesFromElement = (properties) => {
+    return properties
+        ? Object.entries(properties).map((p) => {
+              return {
+                  [NAME]: p[0],
+                  [VALUE]: p[1],
+                  [PREVIOUS_VALUE]: null,
+                  [ADDED]: true,
+                  [DELETION_MARK]: false,
+              };
+          })
+        : [];
+};
+
 const SubstationCreationDialog = ({
     editData,
     currentNode,
@@ -73,7 +97,9 @@ const SubstationCreationDialog = ({
                 [EQUIPMENT_ID]: substation.id + '(1)',
                 [EQUIPMENT_NAME]: substation.name ?? '',
                 [COUNTRY]: substation.countryCode,
-                [ADDITIONAL_PROPERTIES]: getProperties(substation.properties),
+                [ADDITIONAL_PROPERTIES]: getPropertiesFromElement(
+                    substation.properties
+                ),
             },
             { keepDefaultValues: true }
         );

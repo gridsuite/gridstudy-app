@@ -584,14 +584,13 @@ export const SensitivityAnalysisParameters = ({
                 <Grid
                     container
                     sx={{ height: '100%' }}
-                    direction="column"
                     justifyContent="space-between"
                 >
                     <Grid item container>
-                        <Grid item xs={8} sx={styles.parameterName}>
+                        <Grid item xs={8} xl={4} sx={styles.parameterName}>
                             <FormattedMessage id="Provider" />
                         </Grid>
-                        <Grid item xs={4} sx={styles.controlItem}>
+                        <Grid item xs={4} xl={2} sx={styles.controlItem}>
                             <SelectInput
                                 name={PROVIDER}
                                 disableClearable
@@ -610,20 +609,22 @@ export const SensitivityAnalysisParameters = ({
                         })}
                         key="sensitivityAnalysisParameters"
                     >
-                        <Grid container paddingTop={1} paddingBottom={1}>
-                            <LineSeparator />
+                        <Grid xl={6}>
+                            <Grid container paddingTop={1} paddingBottom={1}>
+                                <LineSeparator />
+                            </Grid>
+                            <SensitivityAnalysisFields
+                                reset={reset}
+                                useSensitivityAnalysisParameters={
+                                    useSensitivityAnalysisParameters
+                                }
+                            />
                         </Grid>
-                        <SensitivityAnalysisFields
-                            reset={reset}
-                            useSensitivityAnalysisParameters={
-                                useSensitivityAnalysisParameters
-                            }
-                        />
-                        <Grid container paddingTop={1} paddingBottom={2}>
+                        <Grid container paddingTop={4} paddingBottom={2}>
                             <LineSeparator />
                         </Grid>
                         <Grid container justifyContent={'right'}>
-                            <Grid item marginBottom="-50px">
+                            <Grid item marginBottom={-9}>
                                 {launchLoader
                                     ? renderComputingEventLoading()
                                     : renderComputingEvent()}

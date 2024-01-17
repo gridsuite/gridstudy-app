@@ -63,7 +63,10 @@ export const FilterButton = ({ selectedItems, setSelectedItems }) => {
 
     return (
         <Box sx={styles.container}>
-            <IconButton onClick={handleClick}>
+            <IconButton
+                onClick={handleClick}
+                disabled={Object.keys(selectedItems).length === 0}
+            >
                 <FilterAltIcon sx={styles.icon} />
                 {areSomeSeveritiesUnchecked && (
                     <Box sx={styles.notificationDot} />

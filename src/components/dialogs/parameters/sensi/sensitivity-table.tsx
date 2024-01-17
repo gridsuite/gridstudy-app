@@ -37,6 +37,8 @@ interface SensitivityTableProps {
     columnsDefinition: IColumnsDef[];
     tableHeight: number;
     createRows: (a: number) => void;
+    disableAdd?: boolean;
+    disableDelete: boolean;
     onFormChanged: (a: boolean) => void;
     onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
@@ -46,6 +48,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     columnsDefinition,
     tableHeight,
     createRows,
+    disableAdd,
+    disableDelete = false,
     onFormChanged,
     onChangeParams,
 }) => {
@@ -129,7 +133,10 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 id: 'AddRows',
                             })}
                         >
-                            <IconButton onClick={handleAddRowsButton}>
+                            <IconButton
+                                disabled={disableAdd}
+                                onClick={handleAddRowsButton}
+                            >
                                 <AddCircleIcon />
                             </IconButton>
                         </Tooltip>
@@ -144,6 +151,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 row={row}
                                 index={index}
                                 handleDeleteButton={handleDeleteButton}
+                                disableDelete={disableDelete}
                                 fetchCount={fetchCount}
                             />
                         )
