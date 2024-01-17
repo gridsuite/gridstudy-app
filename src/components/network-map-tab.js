@@ -43,6 +43,7 @@ import {
     fetchSubstationPositions,
 } from '../services/study/geo-data';
 import { Box } from '@mui/system';
+import { fetchMapBoxToken } from 'services/utils';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -103,6 +104,7 @@ export const NetworkMapTab = ({
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] =
         useState(false);
     const [isInitialized, setInitialized] = useState(false);
+    const [mapBoxToken, setMapBoxToken] = useState();
 
     const { snackError } = useSnackMessage();
 
@@ -776,6 +778,12 @@ export const NetworkMapTab = ({
     }, [updateMapEquipments, loadGeoData]);
 
     useEffect(() => {
+        fetchMapBoxToken().then((token) =>
+            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN)
+        );
+    }, []);
+
+    useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
@@ -941,43 +949,34 @@ export const NetworkMapTab = ({
         );
     }
 
+    const INITIAL_ZOOM = 9;
+    const LABELS_ZOOM_THRESHOLD = 9;
+    const ARROWS_ZOOM_THRESHOLD = 7;
+    const centerOnSubstation = { to: 'SUB1' };
+    const useName = true;
+
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
-            updatedLines={[
-                ...(updatedLines ?? []),
-                ...(updatedHvdcLines ?? []),
-            ]}
             geoData={geoData}
-            displayOverlayLoader={!basicDataReady && mapDataLoading}
-            filteredNominalVoltages={filteredNominalVoltages}
-            labelsZoomThreshold={9}
-            arrowsZoomThreshold={7}
+            labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
+            arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
             initialPosition={INITIAL_POSITION}
-            initialZoom={1}
-            lineFullPath={lineFullPath}
-            lineParallelPath={lineParallelPath}
-            lineFlowMode={lineFlowMode}
-            lineFlowColorMode={lineFlowColorMode}
-            lineFlowAlertThreshold={lineFlowAlertThreshold}
-            loadFlowStatus={loadFlowStatus}
+            initialZoom={INITIAL_ZOOM}
+            centerOnSubstation={centerOnSubstation}
+            useName={useName}
             onSubstationClick={openVoltageLevel}
-            onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
-            }
-            onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE)
-            }
-            visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.SUBSTATION)
+                showEquipmentMenu(equipment, x, y, 'substation')
+            }
+            onLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, 'line')
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
-            disabled={disabled}
-            onReloadMapClick={updateMapEquipmentsAndGeoData}
+            mapBoxToken={mapBoxToken}
         />
     );
 
