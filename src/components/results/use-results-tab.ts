@@ -62,8 +62,8 @@ const useResultsTabRedirectionLock = (): [
     );
     const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
 
-    //we ought to release the redirection lock if the user launch a new computation
     useEffect(() => {
+        //we ought to release the redirection lock if the user launch a new computation
         setRedirectionLock(false);
     }, [computationStatus]);
 

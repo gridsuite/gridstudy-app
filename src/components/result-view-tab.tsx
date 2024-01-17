@@ -323,6 +323,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const handleChangeTab = useCallback(
         (event: React.SyntheticEvent, newTabIndex: number) => {
             setTabIndex(newTabIndex);
+            //when we manually browse results we ought to block further redirections until the next launched computation
             setRedirectionLock(true);
         },
         [setRedirectionLock]
