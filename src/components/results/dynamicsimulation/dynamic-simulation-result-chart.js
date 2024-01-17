@@ -88,7 +88,7 @@ const styles = {
 
 const DynamicSimulationResultChart = ({
     groupId,
-    timeseriesMetadatas,
+    timeseriesMetadatas = [],
     selected,
     loadTimeSeries,
 }) => {
