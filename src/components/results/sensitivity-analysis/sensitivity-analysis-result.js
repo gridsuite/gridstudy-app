@@ -38,6 +38,12 @@ function makeRows(resultRecord) {
     });
 }
 
+function getDisplayedColumns(params) {
+    return params.api.columnModel.columnDefs.map(
+        (c) => c.headerComponentParams.displayName
+    );
+}
+
 const SensitivityAnalysisResult = ({
     result,
     nOrNkIndex,
@@ -191,14 +197,21 @@ const SensitivityAnalysisResult = ({
         (params) => {
             if (params.api) {
                 params.api.sizeColumnsToFit();
-                const csvHeaders = params.api.columnModel.columnDefs.map(
-                    (c) => c.headerComponentParams.displayName
-                );
-                handleCsvHeadersChange(csvHeaders);
+                handleCsvHeadersChange(getDisplayedColumns(params));
             }
         },
         [handleCsvHeadersChange]
     );
+
+    const onGridColumnsChanged = useCallback(
+        (params) => {
+            if (params.api) {
+                handleCsvHeadersChange(getDisplayedColumns(params));
+            }
+        },
+        [handleCsvHeadersChange]
+    );
+
     const message = getNoRowsMessage(
         messages,
         rows,
@@ -225,6 +238,7 @@ const SensitivityAnalysisResult = ({
                 gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
+                onGridColumnsChanged={onGridColumnsChanged}
             />
         </div>
     );

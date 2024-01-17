@@ -168,8 +168,7 @@ export function getSensitivityAnalysisFactorsCount(
 export function exportSensitivityResultsAsCsv(
     studyUuid,
     currentNodeUuid,
-    resultSelector,
-    headers
+    sensiRequestBody
 ) {
     console.info(
         `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
@@ -185,9 +184,6 @@ export function exportSensitivityResultsAsCsv(
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            selector: JSON.stringify(resultSelector),
-            csvHeaders: headers,
-        }),
+        body: JSON.stringify(sensiRequestBody),
     });
 }
