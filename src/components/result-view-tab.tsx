@@ -284,18 +284,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         view
     );
 
-    const previousEnableDeveloperMode = useRef(enableDeveloperMode);
-    useEffect(() => {
-        if (
-            !enableDeveloperMode &&
-            previousEnableDeveloperMode.current !== enableDeveloperMode
-        ) {
-            // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
-            setTabIndex(0);
-        }
-        previousEnableDeveloperMode.current = enableDeveloperMode;
-    }, [enableDeveloperMode]);
-
     const renderTab = (service: IService) => {
         return (
             <Tab
@@ -320,6 +308,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             </TabPanelLazy>
         );
     };
+
+    const previousEnableDeveloperMode = useRef(enableDeveloperMode);
+    useEffect(() => {
+        if (
+            !enableDeveloperMode &&
+            previousEnableDeveloperMode.current !== enableDeveloperMode
+        ) {
+            // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
+            setTabIndex(0);
+        }
+        previousEnableDeveloperMode.current = enableDeveloperMode;
+    }, [enableDeveloperMode]);
 
     const handleChangeTab = useCallback(
         (event: React.SyntheticEvent, newTabIndex: number) => {
