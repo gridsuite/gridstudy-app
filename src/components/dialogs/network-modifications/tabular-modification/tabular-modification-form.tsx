@@ -92,14 +92,12 @@ const TabularModificationForm = () => {
         if (csvTranslatedColumns) {
             // First comment line contains header translation
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
-
-            // Optionally a second comment line
             if (
-                watchType === EQUIPMENT_TYPES.GENERATOR ||
-                watchType === EQUIPMENT_TYPES.LOAD ||
-                watchType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR ||
-                watchType === EQUIPMENT_TYPES.SUBSTATION
+                !!intl.messages[
+                    'TabularModificationSkeletonComment/' + watchType
+                ]
             ) {
+                // Optionally a second comment line, if present in translation file
                 commentData.push([
                     intl.formatMessage({
                         id: 'TabularModificationSkeletonComment/' + watchType,
