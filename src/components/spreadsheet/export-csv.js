@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { IconButton } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
-import GetAppIcon from '@mui/icons-material/GetApp';
+import { useIntl } from 'react-intl';
 import { useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
 import { ExportButton } from 'components/utils/export-button';

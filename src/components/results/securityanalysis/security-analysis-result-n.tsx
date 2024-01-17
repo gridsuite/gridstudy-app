@@ -96,7 +96,14 @@ export const SecurityAnalysisResultN: FunctionComponent<
                     }),
                 });
             });
-    }, [enumValueTranslations, csvHeaders, studyUuid, nodeUuid]);
+    }, [
+        enumValueTranslations,
+        csvHeaders,
+        studyUuid,
+        nodeUuid,
+        snackError,
+        intl,
+    ]);
 
     return (
         <SecurityAnalysisTable

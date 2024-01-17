@@ -224,6 +224,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         isFromContingency,
         studyUuid,
         nodeUuid,
+        snackError,
+        intl,
     ]);
 
     const agGridProps = {

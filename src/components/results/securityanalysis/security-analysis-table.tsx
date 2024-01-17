@@ -14,13 +14,12 @@ import {
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
 import { GridReadyEvent } from 'ag-grid-community';
-import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
+import { IntlShape, useIntl } from 'react-intl';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
-import { Box, IconButton } from '@mui/material';
-import GetAppIcon from '@mui/icons-material/GetApp';
+import { Box } from '@mui/material';
 import { ExportButton } from 'components/utils/export-button';
 
 const styles = {
