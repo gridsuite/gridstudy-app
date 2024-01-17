@@ -12,7 +12,9 @@ import { useIntl } from 'react-intl';
 import React, {
     FunctionComponent,
     useCallback,
+    useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
@@ -281,6 +283,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         setTabIndex,
         view
     );
+
+    const previousEnableDeveloperMode = useRef(enableDeveloperMode);
+    useEffect(() => {
+        if (
+            !enableDeveloperMode &&
+            previousEnableDeveloperMode.current !== enableDeveloperMode
+        ) {
+            // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
+            setTabIndex(0);
+        }
+        previousEnableDeveloperMode.current = enableDeveloperMode;
+    }, [enableDeveloperMode]);
 
     const renderTab = (service: IService) => {
         return (
