@@ -28,7 +28,7 @@ import { CustomMenuItem } from '../utils/custom-nested-menu';
 interface BusMenuProps {
     busId: string;
     handleRunShortcircuitAnalysis: (busId: string) => void;
-    handleOpenDynamicSimulationEventDialog: (
+    onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: string,
         dialogTitle: string
@@ -54,7 +54,7 @@ const styles = {
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
     handleRunShortcircuitAnalysis,
-    handleOpenDynamicSimulationEventDialog,
+    onOpenDynamicSimulationEventDialog,
     position,
     onClose,
 }) => {
@@ -86,6 +86,18 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         onClose();
         handleRunShortcircuitAnalysis(busId);
     }, [busId, onClose, handleRunShortcircuitAnalysis]);
+
+    const handleOpenDynamicSimulationEventDialog = useCallback(
+        (equipmentId: string, equipmentType: string, dialogTitle: string) => {
+            onClose();
+            onOpenDynamicSimulationEventDialog(
+                equipmentId,
+                equipmentType,
+                dialogTitle
+            );
+        },
+        [onClose, onOpenDynamicSimulationEventDialog]
+    );
 
     return (
         <Menu
@@ -124,7 +136,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
                     equipmentType={EQUIPMENT_TYPES.BUS}
-                    handleOpenDynamicSimulationEventDialog={
+                    onOpenDynamicSimulationEventDialog={
                         handleOpenDynamicSimulationEventDialog
                     }
                     disabled={!isNodeEditable}

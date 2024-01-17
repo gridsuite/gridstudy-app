@@ -305,9 +305,9 @@ function SingleLineDiagramContent(props) {
                     handleRunShortcircuitAnalysis={
                         handleRunShortcircuitAnalysis
                     }
-                    handleOpenDynamicSimulationEventDialog={makeOpenDynamicSimulationEventDialogHandler(
-                        closeBusMenu
-                    )}
+                    onOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
                     busId={busMenu.busId}
                     position={busMenu.position}
                     onClose={closeBusMenu}
@@ -358,9 +358,8 @@ function SingleLineDiagramContent(props) {
         ]
     );
 
-    const makeOpenDynamicSimulationEventDialogHandler = useCallback(
-        (closeMenu) => (equipmentId, equipmentType, dialogTitle) => {
-            closeMenu();
+    const handleOpenDynamicSimulationEventDialog = useCallback(
+        (equipmentId, equipmentType, dialogTitle) => {
             setDynamicSimulationEventDialogTitle(dialogTitle);
             setEquipmentToConfigDynamicSimulationEvent({
                 equipmentId,
@@ -388,9 +387,9 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
-                    handleOpenDynamicSimulationEventDialog={makeOpenDynamicSimulationEventDialogHandler(
-                        closeEquipmentMenu
-                    )}
+                    onOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -416,9 +415,9 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     handleDeleteEquipment={handleDeleteEquipment}
-                    handleOpenDynamicSimulationEventDialog={makeOpenDynamicSimulationEventDialogHandler(
-                        closeEquipmentMenu
-                    )}
+                    onOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
                 />
             )
         );
