@@ -41,7 +41,7 @@ export const CURVE_EQUIPMENT_TYPES = [
 
 // this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
 export const getReferencedEquipmentTypeForModel = (equipmentType) => {
-    // particular cas, BUSBAR_SECTION and BUS use the same default model for Bus
+    // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
     return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION
         ? EQUIPMENT_TYPES.BUS
         : equipmentType;
