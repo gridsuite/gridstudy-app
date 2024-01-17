@@ -10,6 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
+import { ExportButton } from 'components/utils/export-button';
 
 export const CsvExport = ({
     gridRef,
