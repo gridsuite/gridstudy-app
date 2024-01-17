@@ -7,14 +7,7 @@
 
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-    Box,
-    CircularProgress,
-    IconButton,
-    LinearProgress,
-    Tab,
-    Tabs,
-} from '@mui/material';
+import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
@@ -36,13 +29,8 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import React, { useCallback } from 'react';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
-import GetAppIcon from '@mui/icons-material/GetApp';
-import { green } from '@mui/material/colors';
-import CheckIcon from '@mui/icons-material/Check';
-import Typography from '@mui/material/Typography';
+import ExportZippedCsvResults from '../../utils/export-zipped-csv-results';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -50,11 +38,9 @@ export const SensitivityResultTabs = [
 ];
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
-    const { snackError } = useSnackMessage();
-    const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKind, setSensiKind] = useState(SENSITIVITY_IN_DELTA_MW);
-    const [success, setSuccess] = useState(false);
+    const [resultDownloadSuccess, setResultDownloadSuccess] = useState(false);
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
@@ -79,19 +65,19 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
            for the page prop of MUI TablePagination if was not on the first page
            for the prev sensiKind */
         setPage(0);
-        setSuccess(false);
+        setResultDownloadSuccess(false);
     };
 
     const handleSensiKindChange = (newSensiKind) => {
         initTable(nOrNkIndex);
         setSensiKind(newSensiKind);
-        setSuccess(false);
+        setResultDownloadSuccess(false);
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
         initTable(newNOrNKIndex);
         setNOrNkIndex(newNOrNKIndex);
-        setSuccess(false);
+        setResultDownloadSuccess(false);
     };
 
     const openLoader = useOpenLoaderShortWait({
@@ -111,78 +97,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         setCsvHeaders(headersCsv);
     }, []);
 
-    const [csvLoading, setCsvLoading] = useState(false);
-    const exportResultsAsCsv = useCallback(() => {
-        setCsvLoading(true);
-        setSuccess(false);
-        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, {
-            csvHeaders,
-            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
-            sensitivityFunctionType: FUNCTION_TYPES[sensiKind],
-        })
-            .then((response) => {
-                response.blob().then((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'sensitivity_results.zip');
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    setSuccess(true);
-                });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'SensitivityAnalysisResultsError',
-                    }),
-                });
-            })
-            .finally(() => setCsvLoading(false));
-    }, [
-        intl,
-        nOrNkIndex,
-        nodeUuid,
-        sensiKind,
-        snackError,
-        studyUuid,
-        csvHeaders,
-    ]);
-
-    const csvDownloadButton = (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Typography>
-                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-            </Typography>
-            <Box sx={{ m: 1, position: 'relative' }}>
-                <IconButton
-                    aria-label="save"
-                    color="primary"
-                    onClick={exportResultsAsCsv}
-                >
-                    {success ? <CheckIcon /> : <GetAppIcon />}
-                </IconButton>
-                {csvLoading && (
-                    <CircularProgress
-                        size={30}
-                        sx={{
-                            color: green[500],
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            marginTop: '-15px',
-                            marginLeft: '-15px',
-                            zIndex: 1,
-                        }}
-                    />
-                )}
-            </Box>
-        </div>
-    );
-
     return (
         <>
             <Grid container justifyContent="space-between">
@@ -192,7 +106,24 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         setSensiKind={handleSensiKindChange}
                     />
                 </Grid>
-                <Grid item>{csvDownloadButton}</Grid>
+                <Grid item>
+                    <ExportZippedCsvResults
+                        resultDownloadSuccess={resultDownloadSuccess}
+                        setResultDownloadSuccess={setResultDownloadSuccess}
+                        exportPromise={exportSensitivityResultsAsCsv(
+                            studyUuid,
+                            nodeUuid,
+                            {
+                                csvHeaders,
+                                tabSelection:
+                                    SensitivityResultTabs[nOrNkIndex].id,
+                                sensitivityFunctionType:
+                                    FUNCTION_TYPES[sensiKind],
+                            }
+                        )}
+                        fileName={'sensitivity_analyse_results.zip'}
+                    />
+                </Grid>
             </Grid>
             {sensiResultKind.includes(sensiKind) && (
                 <>

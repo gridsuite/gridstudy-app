@@ -1417,5 +1417,7 @@
     "ratedVoltage1": "Tension d'enroulement 1 (kV)",
     "ratedVoltage2": "Tension d'enroulement 2 (kV)",
     "linearShuntCompensators": "MCS linéaires",
-    "substationCountry": "Pays"
+    "substationCountry": "Pays",
+
+    "csvExportResultError": "Une erreur s'est produite lors d'export des résultats"
 }
