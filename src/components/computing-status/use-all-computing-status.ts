@@ -13,6 +13,7 @@ import {
     getDynamicSimulationRunningStatus,
     getVoltageInitRunningStatus,
     getLoadFlowRunningStatus,
+    getNonEvacuatedEnergyRunningStatus,
 } from '../utils/running-status';
 
 import { UUID } from 'crypto';
@@ -28,6 +29,7 @@ import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowStatus } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
+import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
@@ -38,6 +40,10 @@ const securityAnalysisStatusInvalidations = [
 const sensitivityAnalysisStatusInvalidations = [
     'sensitivityAnalysis_status',
     'sensitivityAnalysis_failed',
+];
+const nonEvacuatedEnergyStatusInvalidations = [
+    'nonEvacuatedEnergy_status',
+    'nonEvacuatedEnergy_failed',
 ];
 const shortCircuitAnalysisStatusInvalidations = [
     'shortCircuitAnalysis_status',
@@ -65,6 +71,9 @@ export const useAllComputingStatus = (
         OptionalServicesNames.SecurityAnalysis
     );
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
@@ -104,6 +113,16 @@ export const useAllComputingStatus = (
         getSensitivityAnalysisRunningStatus,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        fetchNonEvacuatedEnergyStatus,
+        nonEvacuatedEnergyStatusInvalidations,
+        getNonEvacuatedEnergyRunningStatus,
+        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
+        nonEvacuatedEnergyAvailability
     );
 
     useComputingStatus(

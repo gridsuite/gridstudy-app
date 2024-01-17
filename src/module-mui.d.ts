@@ -5,13 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Theme } from '@mui/material/styles';
-import { CrossValidationOptions } from './spreadsheet/utils/equipment-table-utils';
+import {
+    Theme as MuiTheme,
+    ThemeOptions as MuiThemeOptions,
+} from '@mui/material/styles/createTheme';
 
 // used to customize mui theme
 // https://mui.com/material-ui/customization/theming/#typescript
 declare module '@mui/material/styles' {
-    interface Theme {
+    export * from '@mui/material/styles';
+    interface ThemeExtension {
         aggrid: string;
         aggridValueChangeHighlightBackgroundColor: string;
         selectedRow: {
@@ -24,13 +27,10 @@ declare module '@mui/material/styles' {
             background: string;
         };
     }
-}
+    export interface Theme extends MuiTheme, Required<ThemeExtension> {}
 
-declare module 'ag-grid-community' {
-    // used to add properties that are not supported by ColDef such as numeric, fractionDigits...
-    interface ColDef {
-        numeric?: boolean;
-        fractionDigits?: number;
-        crossValidation?: CrossValidationOptions;
-    }
+    // allow configuration using `createTheme`
+    export interface ThemeOptions
+        extends MuiThemeOptions,
+            Partial<ThemeExtension> {}
 }
