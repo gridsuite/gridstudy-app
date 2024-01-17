@@ -10,10 +10,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
-    ACTIVE_POWER,
+    P0,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    Q0,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -30,8 +30,8 @@ import { FetchStatus } from '../../../../../services/utils';
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
-    [ACTIVE_POWER]: null,
-    [REACTIVE_POWER]: null,
+    [P0]: null,
+    [Q0]: null,
 };
 
 const formSchema = yup
@@ -39,8 +39,8 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_NAME]: yup.string(),
         [LOAD_TYPE]: yup.string().nullable(),
-        [ACTIVE_POWER]: yup.number().nullable(),
-        [REACTIVE_POWER]: yup.number().nullable(),
+        [P0]: yup.number().nullable(),
+        [Q0]: yup.number().nullable(),
     })
     .required();
 
@@ -83,8 +83,8 @@ const LoadModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
                 [LOAD_TYPE]: load.loadType?.value ?? null,
-                [ACTIVE_POWER]: load.p0?.value ?? null,
-                [REACTIVE_POWER]: load.q0?.value ?? null,
+                [P0]: load.p0?.value ?? null,
+                [Q0]: load.q0?.value ?? null,
             });
         },
         [reset]
@@ -105,8 +105,8 @@ const LoadModificationDialog = ({
                 selectedId,
                 sanitizeString(load?.equipmentName),
                 load?.loadType,
-                load?.activePower,
-                load?.reactivePower,
+                load?.p0,
+                load?.q0,
                 undefined,
                 undefined,
                 !!editData,

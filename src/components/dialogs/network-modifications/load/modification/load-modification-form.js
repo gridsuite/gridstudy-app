@@ -7,10 +7,10 @@
 
 import { TextInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER,
+    P0,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    Q0,
 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -114,7 +114,7 @@ const LoadModificationForm = ({
 
     const activePowerField = (
         <FloatInput
-            name={ACTIVE_POWER}
+            name={P0}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={loadInfos?.p0}
@@ -124,7 +124,7 @@ const LoadModificationForm = ({
 
     const reactivePowerField = (
         <FloatInput
-            name={REACTIVE_POWER}
+            name={Q0}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
             previousValue={loadInfos?.q0}

@@ -7,11 +7,11 @@
 
 import Grid from '@mui/material/Grid';
 import {
-    ACTIVE_POWER,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    P0,
+    Q0,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import {
@@ -74,7 +74,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
 
     const activePowerField = (
         <FloatInput
-            name={ACTIVE_POWER}
+            name={P0}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
         />
@@ -82,7 +82,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
 
     const reactivePowerField = (
         <FloatInput
-            name={REACTIVE_POWER}
+            name={Q0}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
         />
