@@ -18,12 +18,12 @@ import {
 } from '../../../dialogUtils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
+    B,
     CHARACTERISTICS,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
+    RATED_U1,
+    RATED_U2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
 } from 'components/utils/field-constants';
@@ -58,7 +58,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     const magnetizingConductanceField = (
         <FloatInput
-            name={`${id}.${MAGNETIZING_CONDUCTANCE}`}
+            name={`${id}.${G}`}
             label="MagnetizingConductance"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(twtToModify?.g)}
@@ -68,7 +68,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     const magnetizingSusceptanceField = (
         <FloatInput
-            name={`${id}.${MAGNETIZING_SUSCEPTANCE}`}
+            name={`${id}.${B}`}
             label="MagnetizingSusceptance"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(twtToModify?.b)}
@@ -88,7 +88,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     const ratedVoltage1Field = (
         <FloatInput
-            name={`${id}.${RATED_VOLTAGE_1}`}
+            name={`${id}.${RATED_U1}`}
             label="RatedVoltage"
             adornment={VoltageAdornment}
             previousValue={twtToModify?.ratedU1}
@@ -98,7 +98,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     const ratedVoltage2Field = (
         <FloatInput
-            name={`${id}.${RATED_VOLTAGE_2}`}
+            name={`${id}.${RATED_U2}`}
             label="RatedVoltage"
             adornment={VoltageAdornment}
             previousValue={twtToModify?.ratedU2}

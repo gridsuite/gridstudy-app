@@ -7,11 +7,11 @@
 
 import {
     CHARACTERISTICS,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
+    B,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
+    RATED_U1,
+    RATED_U2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
 } from 'components/utils/field-constants';
@@ -25,20 +25,20 @@ const characteristicsValidationSchema = (isModification, additionalFields) => ({
         [SERIES_REACTANCE]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [MAGNETIZING_CONDUCTANCE]: isModification
+        [G]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [MAGNETIZING_SUSCEPTANCE]: isModification
+        [B]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
         [RATED_S]: yup
             .number()
             .nullable()
             .positive('RatedNominalPowerGreaterThanZero'),
-        [RATED_VOLTAGE_1]: isModification
+        [RATED_U1]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [RATED_VOLTAGE_2]: isModification
+        [RATED_U2]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
         ...additionalFields,
@@ -56,11 +56,11 @@ const characteristicsEmptyFormData = (additionalFields) => ({
     [CHARACTERISTICS]: {
         [SERIES_RESISTANCE]: null,
         [SERIES_REACTANCE]: null,
-        [MAGNETIZING_CONDUCTANCE]: null,
-        [MAGNETIZING_SUSCEPTANCE]: null,
+        [G]: null,
+        [B]: null,
         [RATED_S]: null,
-        [RATED_VOLTAGE_1]: null,
-        [RATED_VOLTAGE_2]: null,
+        [RATED_U1]: null,
+        [RATED_U2]: null,
         ...additionalFields,
     },
 });
@@ -73,23 +73,24 @@ export const getCharacteristicsFormData = (
     {
         seriesResistance = null,
         seriesReactance = null,
-        magnetizingConductance = null,
-        magnetizingSusceptance = null,
+        g = null,
+        b = null,
         ratedS = null,
-        ratedVoltage1 = null,
-        ratedVoltage2 = null,
+        ratedU1 = null,
+        ratedU2 = null,
     },
     additionalFields = {}
 ) => {
+    console.log("from getCharacteristicsFormData hhhh" ,ratedU1 ,ratedU2)
     return {
         [CHARACTERISTICS]: {
             [SERIES_RESISTANCE]: seriesResistance,
             [SERIES_REACTANCE]: seriesReactance,
-            [MAGNETIZING_CONDUCTANCE]: magnetizingConductance,
-            [MAGNETIZING_SUSCEPTANCE]: magnetizingSusceptance,
+            [G]: g,
+            [B]: b,
             [RATED_S]: ratedS,
-            [RATED_VOLTAGE_1]: ratedVoltage1,
-            [RATED_VOLTAGE_2]: ratedVoltage2,
+            [RATED_U1]: ratedU1,
+            [RATED_U2]: ratedU2,
             ...additionalFields,
         },
     };

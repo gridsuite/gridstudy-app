@@ -18,12 +18,12 @@ import {
     ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
+    B,
     PHASE_TAP_CHANGER,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
+    RATED_U1,
+    RATED_U2,
     RATIO_TAP_CHANGER,
     REGULATING,
     REGULATION_MODE,
@@ -225,14 +225,10 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getCharacteristicsFormData({
                     seriesResistance: twt.seriesResistance?.value,
                     seriesReactance: twt.seriesReactance?.value,
-                    magnetizingConductance: unitToMicroUnit(
-                        twt.magnetizingConductance?.value
-                    ),
-                    magnetizingSusceptance: unitToMicroUnit(
-                        twt.magnetizingSusceptance?.value
-                    ),
-                    ratedVoltage1: twt.ratedVoltage1?.value,
-                    ratedVoltage2: twt.ratedVoltage2?.value,
+                    g: unitToMicroUnit(twt.g?.value),
+                    b: unitToMicroUnit(twt.b?.value),
+                    ratedU1: twt.ratedU1?.value,
+                    ratedU2: twt.ratedU2?.value,
                     ratedS: twt.ratedS?.value,
                 }),
                 ...getLimitsFormData({
@@ -621,15 +617,11 @@ const TwoWindingsTransformerModificationDialog = ({
                 toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
                 toModificationOperation(characteristics[SERIES_RESISTANCE]),
                 toModificationOperation(characteristics[SERIES_REACTANCE]),
-                toModificationOperation(
-                    microUnitToUnit(characteristics[MAGNETIZING_CONDUCTANCE])
-                ),
-                toModificationOperation(
-                    microUnitToUnit(characteristics[MAGNETIZING_SUSCEPTANCE])
-                ),
+                toModificationOperation(microUnitToUnit(characteristics[G])),
+                toModificationOperation(microUnitToUnit(characteristics[B])),
                 toModificationOperation(characteristics[RATED_S]),
-                toModificationOperation(characteristics[RATED_VOLTAGE_1]),
-                toModificationOperation(characteristics[RATED_VOLTAGE_2]),
+                toModificationOperation(characteristics[RATED_U1]),
+                toModificationOperation(characteristics[RATED_U2]),
                 currentLimits1,
                 currentLimits2,
                 ratioTap,
