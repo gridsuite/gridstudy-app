@@ -30,6 +30,11 @@ export const ENERGY_SOURCES = [
     { id: 'OTHER', label: 'Other' },
 ];
 
+export const SHUNT_COMPENSATOR_TYPES = {
+    REACTOR: { id: 'REACTOR', label: 'Reactor' },
+    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
+};
+
 export const REGULATION_TYPES = {
     DISTANT: { id: 'DISTANT', label: 'Distant' },
     LOCAL: { id: 'LOCAL', label: 'Local' },

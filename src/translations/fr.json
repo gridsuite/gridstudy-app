@@ -706,9 +706,10 @@
     "TabularModification": "Modification tabulaire",
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
-    "TabularModificationGeneratorSkeletonComment" : "#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false",
-    "TabularModificationLoadSkeletonComment": "#,AUXILIARY | FICTITIOUS,,",
-    "TabularModificationShuntSkeletonComment": "#,\"Pour chaque MCS, il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit, la susceptance installée sera ignorée.\"",
+    "TabularModificationSkeletonComment/GENERATOR" : "#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false,",
+    "TabularModificationSkeletonComment/LOAD": "#,AUXILIARY | FICTITIOUS,,",
+    "TabularModificationSkeletonComment/SUBSTATION": "#,Code à 2 lettres de la norme ISO 3166-1 (FR ES PT IT CH DE BE LU NL GB ...)",
+    "TabularModificationSkeletonComment/SHUNT_COMPENSATOR": "#Pour chaque MCS il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit la susceptance installée sera ignorée.,,,REACTOR | CAPACITOR,,",
     "TabularModificationShuntWarning": "La modification tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
     "equipmentId": "ID",
     "activePower": "p (MW)",
@@ -1317,6 +1318,7 @@
     "magnetizingConductance": "Conductance magnétisante (μS)",
     "magnetizingSusceptance": "Susceptance magnétisante (μS)",
     "ratedNominalPower": "Puissance nominale (MVA)",
+    "ratedS": "Puissance nominale (MVA)",
 
     "ShortcircuitInProgress": "Calcul de court-circuit en cours...",
 
@@ -1418,5 +1420,5 @@
     "ratedVoltage1": "Tension d'enroulement 1 (kV)",
     "ratedVoltage2": "Tension d'enroulement 2 (kV)",
     "linearShuntCompensators": "MCS linéaires",
-    "substationCountry": "Pays"
+    "substationCountry": "Code pays"
 }
