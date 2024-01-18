@@ -42,7 +42,7 @@ import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { Box } from '@mui/system';
 import ComputingType from './computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { usePrevious } from './study-container';
+import { usePrevious } from './utils/utils';
 
 const styles = {
     table: {
