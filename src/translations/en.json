@@ -426,6 +426,8 @@
     "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
+    "yes": "Yes",
+    "no": "No",
     "Loading": "Load (%)",
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
@@ -550,7 +552,7 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
-    "genericConfirmQuestion": "Are you sure that you want to abort?",
+    "genericConfirmQuestion": "Current modifications are not saved. Are you sure you want to leave ?",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -701,9 +703,10 @@
     "TabularModification": "Tabular modification",
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
-    "TabularModificationGeneratorSkeletonComment" : "#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false",
-    "TabularModificationLoadSkeletonComment": "#,AUXILIARY | FICTITIOUS,,",
-    "TabularModificationShuntSkeletonComment": "#,\"For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input, the maximum susceptance will be ignored.\"",
+    "TabularModificationSkeletonComment/GENERATOR" : "#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false,",
+    "TabularModificationSkeletonComment/LOAD": "#,AUXILIARY | FICTITIOUS,,",
+    "TabularModificationSkeletonComment/SUBSTATION": "#,2-letter code from ISO 3166-1 standard (FR ES PT IT CH DE BE LU NL GB ...)",
+    "TabularModificationSkeletonComment/SHUNT_COMPENSATOR": "#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,,REACTOR | CAPACITOR,,",
     "TabularModificationShuntWarning": "Both maximum reactive power (and/or type) and maximum susceptance have been submitted for the same shunt compensator. Maximum susceptance will thus be ignored.",
     "equipmentId": "ID",
     "activePower": "p (MW)",
@@ -901,6 +904,8 @@
     "BusbarOrNodeID": "Bus bar section / bus",
     "Line1": "Line 1",
     "Line2": "Line 2",
+    "ReplacingLine1": "Replacing line 1",
+    "ReplacingLine2": "Replacing line 2",
     "VoltageLevelToSplitAt": "Voltage level to split at",
     "Line1ID": "Line 1 ID",
     "Line2ID": "Line 2 ID",
@@ -1292,6 +1297,7 @@
     "magnetizingConductance": "Magnetizing conductance (μS)",
     "magnetizingSusceptance": "Magnetizing susceptance (μS)",
     "ratedNominalPower": "Rated nominal power (MVA)",
+    "ratedS": "Rated nominal power (MVA)",
 
     "ShortcircuitInProgress": "Shortcircuit computation in progress...",
 
@@ -1394,5 +1400,5 @@
     "ratedVoltage1": "Rated voltage 1 (kV)",
     "ratedVoltage2": "Rated voltage 2 (kV)",
     "linearShuntCompensators": "Linear shunt compensators",
-    "substationCountry": "Country"
+    "substationCountry": "Country code"
 }
