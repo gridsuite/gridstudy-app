@@ -10,7 +10,7 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setComputingStatus } from 'redux/actions';
+import { setComputingStatus, setLastCompletedComputation } from 'redux/actions';
 import { ComputingType } from './computing-type';
 import { ReduxState, StudyUpdated } from 'redux/reducer.type';
 import { OptionalServicesStatus } from '../utils/optional-services';
@@ -21,6 +21,7 @@ interface UseComputingStatusProps {
         nodeUuid: UUID,
         fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
         invalidations: string[],
+        completions: string[],
         resultConversion: (x: string) => RunningStatus,
         computingType: ComputingType,
         optionalServiceAvailabilityStatus?: OptionalServicesStatus
@@ -87,6 +88,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     nodeUuid,
     fetcher,
     invalidations,
+    completions,
     resultConversion,
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
@@ -98,18 +100,35 @@ export const useComputingStatus: UseComputingStatusProps = (
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
 
+    //the callback crosschecks the computation status and the content of the last update reference
+    //in order to determine which computation just ended
+    const isComputationCompleted = useCallback(
+        (status: RunningStatus) =>
+            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
+            completions.includes(
+                lastUpdateRef.current?.studyUpdatedForce.eventData?.headers
+                    ?.updateType ?? ''
+            ),
+        [completions]
+    );
+
     const update = useCallback(() => {
         // this is used to prevent race conditions from happening
         // if another request is sent, the previous one won't do anything
         let canceledRequest = false;
 
+        //upon changing node we reset the last completed computation to prevent results misredirection
+        dispatch(setLastCompletedComputation());
+
         nodeUuidRef.current = nodeUuid;
         fetcher(studyUuid, nodeUuid)
             .then((res: string) => {
                 if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
-                    dispatch(
-                        setComputingStatus(computingType, resultConversion(res))
-                    );
+                    const status = resultConversion(res);
+                    dispatch(setComputingStatus(computingType, status));
+                    if (isComputationCompleted(status)) {
+                        dispatch(setLastCompletedComputation(computingType));
+                    }
                 }
             })
             .catch(() => {
@@ -124,12 +143,13 @@ export const useComputingStatus: UseComputingStatusProps = (
             canceledRequest = true;
         };
     }, [
-        computingType,
         nodeUuid,
         fetcher,
         studyUuid,
         resultConversion,
         dispatch,
+        computingType,
+        isComputationCompleted,
     ]);
 
     /* initial fetch and update */
