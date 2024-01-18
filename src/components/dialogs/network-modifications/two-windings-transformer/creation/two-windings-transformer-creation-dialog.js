@@ -37,13 +37,13 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
+    R,
+    X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -216,8 +216,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 [EQUIPMENT_ID]: twt.equipmentId,
                 [EQUIPMENT_NAME]: twt.equipmentName,
                 ...getTwoWindingsTransformerFormData({
-                    seriesResistance: twt.seriesResistance,
-                    seriesReactance: twt.seriesReactance,
+                    r: twt.r,
+                    x: twt.x,
                     g: unitToMicroUnit(twt.g),
                     b: unitToMicroUnit(twt.b),
                     ratedU1: twt.ratedU1,
@@ -346,8 +346,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 [EQUIPMENT_ID]: twt.id + '(1)',
                 [EQUIPMENT_NAME]: twt.name ?? '',
                 ...getTwoWindingsTransformerFormData({
-                    seriesResistance: twt.r,
-                    seriesReactance: twt.x,
+                    r: twt.r,
+                    x: twt.x,
                     g: unitToMicroUnit(twt.g),
                     b: unitToMicroUnit(twt.b),
                     ratedU1: twt.ratedU1,
@@ -683,8 +683,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 currentNodeUuid,
                 twt[EQUIPMENT_ID],
                 sanitizeString(twt[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
+                characteristics[R],
+                characteristics[X],
                 characteristics[G],
                 characteristics[B],
                 characteristics[RATED_S] ?? '',

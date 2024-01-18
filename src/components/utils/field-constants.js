@@ -28,15 +28,17 @@ export const TYPE = 'type';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
-export const SERIES_RESISTANCE = 'seriesResistance';
-export const SERIES_REACTANCE = 'seriesReactance';
+export const SERIES_RESISTANCE = 'seriesResistance'; //
+export const SERIES_REACTANCE = 'seriesReactance'; //
+export const R = 'r'; //
+export const X = 'x'; //
 export const MAGNETIZING_CONDUCTANCE = 'magnetizingConductance'; //
 export const MAGNETIZING_SUSCEPTANCE = 'magnetizingSusceptance'; //
 export const G = 'g';
 export const B = 'b';
 export const RATED_S = 'ratedS';
-export const RATED_VOLTAGE_1 = 'ratedVoltage1';//
-export const RATED_VOLTAGE_2 = 'ratedVoltage2';//
+export const RATED_VOLTAGE_1 = 'ratedVoltage1'; //
+export const RATED_VOLTAGE_2 = 'ratedVoltage2'; //
 
 export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';

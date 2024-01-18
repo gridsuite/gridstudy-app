@@ -18,12 +18,12 @@ import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    R,
     SHUNT_CONDUCTANCE_1,
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
+    X,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import { unitToMicroUnit } from 'utils/rounding';
@@ -60,7 +60,7 @@ const LineCharacteristicsPane = ({
 
     const seriesResistanceField = (
         <FloatInput
-            name={`${id}.${SERIES_RESISTANCE}`}
+            name={`${id}.${R}`}
             label="SeriesResistanceText"
             adornment={OhmAdornment}
             previousValue={lineToModify?.r}
@@ -70,7 +70,7 @@ const LineCharacteristicsPane = ({
 
     const seriesReactanceField = (
         <FloatInput
-            name={`${id}.${SERIES_REACTANCE}`}
+            name={`${id}.${X}`}
             label="SeriesReactanceText"
             adornment={OhmAdornment}
             previousValue={lineToModify?.x}

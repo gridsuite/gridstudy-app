@@ -12,17 +12,17 @@ import {
     RATED_S,
     RATED_U1,
     RATED_U2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    R,
+    X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
 const characteristicsValidationSchema = (isModification, additionalFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
-        [SERIES_RESISTANCE]: isModification
+        [R]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [SERIES_REACTANCE]: isModification
+        [X]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
         [G]: isModification
@@ -54,8 +54,8 @@ export const getCharacteristicsValidationSchema = (
 
 const characteristicsEmptyFormData = (additionalFields) => ({
     [CHARACTERISTICS]: {
-        [SERIES_RESISTANCE]: null,
-        [SERIES_REACTANCE]: null,
+        [R]: null,
+        [X]: null,
         [G]: null,
         [B]: null,
         [RATED_S]: null,
@@ -71,8 +71,8 @@ export const getCharacteristicsEmptyFormData = (additionalFields = {}) => {
 
 export const getCharacteristicsFormData = (
     {
-        seriesResistance = null,
-        seriesReactance = null,
+        r = null,
+        x = null,
         g = null,
         b = null,
         ratedS = null,
@@ -81,11 +81,10 @@ export const getCharacteristicsFormData = (
     },
     additionalFields = {}
 ) => {
-    console.log("from getCharacteristicsFormData hhhh" ,ratedU1 ,ratedU2)
     return {
         [CHARACTERISTICS]: {
-            [SERIES_RESISTANCE]: seriesResistance,
-            [SERIES_REACTANCE]: seriesReactance,
+            [R]: r,
+            [X]: x,
             [G]: g,
             [B]: b,
             [RATED_S]: ratedS,

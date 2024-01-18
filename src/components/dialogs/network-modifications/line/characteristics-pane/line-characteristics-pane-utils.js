@@ -9,12 +9,12 @@ import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    R,
     SHUNT_CONDUCTANCE_1,
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
+    X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import {
@@ -28,10 +28,10 @@ const characteristicsValidationSchema = (
     modification
 ) => ({
     [id]: yup.object().shape({
-        [SERIES_RESISTANCE]: modification
+        [R]: modification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [SERIES_REACTANCE]: modification
+        [X]: modification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
         [SHUNT_SUSCEPTANCE_1]: yup.number().nullable(),
@@ -59,8 +59,8 @@ export const getCharacteristicsValidationSchema = (
 
 const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
     [id]: {
-        [SERIES_RESISTANCE]: null,
-        [SERIES_REACTANCE]: null,
+        [R]: null,
+        [X]: null,
         [SHUNT_SUSCEPTANCE_1]: null,
         [SHUNT_CONDUCTANCE_1]: null,
         [SHUNT_SUSCEPTANCE_2]: null,
@@ -81,8 +81,8 @@ export const getCharacteristicsEmptyFormData = (
 
 export const getCharacteristicsFormData = (
     {
-        seriesResistance = null,
-        seriesReactance = null,
+        r = null,
+        x = null,
         shuntConductance1 = null,
         shuntSusceptance1 = null,
         shuntConductance2 = null,
@@ -93,8 +93,8 @@ export const getCharacteristicsFormData = (
     id = CHARACTERISTICS
 ) => ({
     [id]: {
-        [SERIES_RESISTANCE]: seriesResistance,
-        [SERIES_REACTANCE]: seriesReactance,
+        [R]: r,
+        [X]: x,
         [SHUNT_CONDUCTANCE_1]: shuntConductance1,
         [SHUNT_SUSCEPTANCE_1]: shuntSusceptance1,
         [SHUNT_CONDUCTANCE_2]: shuntConductance2,
@@ -106,8 +106,8 @@ export const getCharacteristicsFormData = (
 
 export const getCharacteristicsWithOutConnectivityFormData = (
     {
-        seriesResistance = null,
-        seriesReactance = null,
+        r = null,
+        x = null,
         shuntConductance1 = null,
         shuntSusceptance1 = null,
         shuntConductance2 = null,
@@ -116,8 +116,8 @@ export const getCharacteristicsWithOutConnectivityFormData = (
     id = CHARACTERISTICS
 ) => ({
     [id]: {
-        [SERIES_RESISTANCE]: seriesResistance,
-        [SERIES_REACTANCE]: seriesReactance,
+        [R]: r,
+        [X]: x,
         [SHUNT_CONDUCTANCE_1]: shuntConductance1,
         [SHUNT_SUSCEPTANCE_1]: shuntSusceptance1,
         [SHUNT_CONDUCTANCE_2]: shuntConductance2,

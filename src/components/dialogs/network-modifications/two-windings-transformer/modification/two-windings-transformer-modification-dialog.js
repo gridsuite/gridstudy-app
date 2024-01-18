@@ -29,13 +29,13 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
+    X,
+    R,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -223,8 +223,8 @@ const TwoWindingsTransformerModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: twt.equipmentName?.value,
                 ...getCharacteristicsFormData({
-                    seriesResistance: twt.seriesResistance?.value,
-                    seriesReactance: twt.seriesReactance?.value,
+                    r: twt.r?.value,
+                    x: twt.x?.value,
                     g: unitToMicroUnit(twt.g?.value),
                     b: unitToMicroUnit(twt.b?.value),
                     ratedU1: twt.ratedU1?.value,
@@ -615,8 +615,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 currentNodeUuid,
                 selectedId,
                 toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
-                toModificationOperation(characteristics[SERIES_RESISTANCE]),
-                toModificationOperation(characteristics[SERIES_REACTANCE]),
+                toModificationOperation(characteristics[R]),
+                toModificationOperation(characteristics[X]),
                 toModificationOperation(microUnitToUnit(characteristics[G])),
                 toModificationOperation(microUnitToUnit(characteristics[B])),
                 toModificationOperation(characteristics[RATED_S]),

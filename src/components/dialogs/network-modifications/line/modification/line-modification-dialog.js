@@ -15,8 +15,7 @@ import {
     EQUIPMENT_NAME,
     LIMITS,
     PERMANENT_LIMIT,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    R,
     SHUNT_CONDUCTANCE_1,
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
@@ -25,6 +24,7 @@ import {
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
+    X,
 } from 'components/utils/field-constants';
 import { FormProvider, useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
@@ -138,8 +138,8 @@ const LineModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
                 ...getCharacteristicsWithOutConnectivityFormData({
-                    seriesResistance: line.seriesResistance?.value ?? null,
-                    seriesReactance: line.seriesReactance?.value ?? null,
+                    r: line.r?.value ?? null,
+                    x: line.x?.value ?? null,
                     shuntConductance1: unitToMicroUnit(
                         line.shuntConductance1?.value ?? null
                     ),
@@ -246,8 +246,8 @@ const LineModificationDialog = ({
                 currentNodeUuid,
                 selectedId,
                 sanitizeString(line[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
+                characteristics[R],
+                characteristics[X],
                 microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_1]),
                 microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_1]),
                 microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_2]),
@@ -366,16 +366,12 @@ const LineModificationDialog = ({
     };
 
     const handleLineSegmentsBuildSubmit = (data) => {
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
-            data[TOTAL_RESISTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
-            data[TOTAL_REACTANCE],
-            { shouldDirty: true }
-        );
+        setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
+            shouldDirty: true,
+        });
         setValue(
             `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
             data[TOTAL_SUSCEPTANCE] / 2,

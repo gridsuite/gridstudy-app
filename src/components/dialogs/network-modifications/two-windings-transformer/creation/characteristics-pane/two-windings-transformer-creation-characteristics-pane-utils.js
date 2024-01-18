@@ -42,8 +42,8 @@ export const getTwoWindingsTransformerEmptyFormData = () => {
 
 export const getTwoWindingsTransformerFormData = (
     {
-        seriesResistance = null,
-        seriesReactance = null,
+        r = null,
+        x = null,
         g = null,
         b = null,
         ratedS = null,
@@ -56,8 +56,8 @@ export const getTwoWindingsTransformerFormData = (
 ) =>
     getCharacteristicsFormData(
         {
-            seriesResistance,
-            seriesReactance,
+            r,
+            x,
             g,
             b,
             ratedS,

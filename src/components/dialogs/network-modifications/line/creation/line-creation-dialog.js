@@ -21,8 +21,6 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     PERMANENT_LIMIT,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
     SHUNT_CONDUCTANCE_1,
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
@@ -35,6 +33,8 @@ import {
     TOTAL_RESISTANCE,
     TOTAL_REACTANCE,
     TOTAL_SUSCEPTANCE,
+    R,
+    X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -155,8 +155,8 @@ const LineCreationDialog = ({
                     equipmentName: line.name ?? '',
                 }),
                 ...getCharacteristicsFormData({
-                    seriesResistance: line.r,
-                    seriesReactance: line.x,
+                    r: line.r,
+                    x: line.x,
                     shuntConductance1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
                     shuntSusceptance1: unitToMicroUnit(line.b1),
                     shuntConductance2: unitToMicroUnit(line.g2),
@@ -215,8 +215,8 @@ const LineCreationDialog = ({
                     equipmentName: line.equipmentName,
                 }),
                 ...getCharacteristicsFormData({
-                    seriesResistance: line.seriesResistance,
-                    seriesReactance: line.seriesReactance,
+                    r: line.r,
+                    x: line.x,
                     shuntConductance1: unitToMicroUnit(line.shuntConductance1),
                     shuntSusceptance1: unitToMicroUnit(line.shuntSusceptance1),
                     shuntConductance2: unitToMicroUnit(line.shuntConductance2),
@@ -284,16 +284,12 @@ const LineCreationDialog = ({
         }));
 
     const handleLineSegmentsBuildSubmit = (data) => {
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
-            data[TOTAL_RESISTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
-            data[TOTAL_REACTANCE],
-            { shouldDirty: true }
-        );
+        setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
+            shouldDirty: true,
+        });
         setValue(
             `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
             data[TOTAL_SUSCEPTANCE] / 2,
@@ -316,8 +312,8 @@ const LineCreationDialog = ({
                 currentNodeUuid,
                 header[EQUIPMENT_ID],
                 sanitizeString(header[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
+                characteristics[R],
+                characteristics[X],
                 microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_1]),
                 microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_1]),
                 microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_2]),

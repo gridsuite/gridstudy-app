@@ -21,11 +21,11 @@ import {
     B,
     CHARACTERISTICS,
     G,
+    R,
     RATED_S,
     RATED_U1,
     RATED_U2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    X,
 } from 'components/utils/field-constants';
 import { unitToMicroUnit } from '../../../../../utils/rounding';
 
@@ -38,7 +38,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     const seriesResistanceField = (
         <FloatInput
-            name={`${id}.${SERIES_RESISTANCE}`}
+            name={`${id}.${R}`}
             label="SeriesResistanceText"
             adornment={OhmAdornment}
             previousValue={twtToModify?.r}
@@ -48,7 +48,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     const seriesReactanceField = (
         <FloatInput
-            name={`${id}.${SERIES_REACTANCE}`}
+            name={`${id}.${X}`}
             label="SeriesReactanceText"
             adornment={OhmAdornment}
             previousValue={twtToModify?.x}
