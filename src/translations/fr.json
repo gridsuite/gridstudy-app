@@ -705,7 +705,7 @@
     "TabularModification": "Modification tabulaire",
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
-    "TabularModificationSkeletonComment/GENERATOR" : "#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false,",
+    "TabularModificationSkeletonComment/GENERATOR" : "#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false,,true | false",
     "TabularModificationSkeletonComment/LOAD": "#,AUXILIARY | FICTITIOUS,,",
     "TabularModificationSkeletonComment/SUBSTATION": "#,Code à 2 lettres de la norme ISO 3166-1 (FR ES PT IT CH DE BE LU NL GB ...)",
     "TabularModificationSkeletonComment/SHUNT_COMPENSATOR": "#Pour chaque MCS il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit la susceptance installée sera ignorée.,,,REACTOR | CAPACITOR,,",
@@ -1293,7 +1293,7 @@
     "StartupCost": "Coût de démarrage",
 
     "Connect": "Reconnexion ?",
-    "Connected": "Connecté",
+    "connected": "Connecté",
     "ConnectedSide1": "Connecté 1",
     "ConnectedSide2": "Connecté 2",
     "ConnectedT3WSide1": "Connecté 1",

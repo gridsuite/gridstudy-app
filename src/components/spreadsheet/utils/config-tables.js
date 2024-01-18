@@ -1689,7 +1689,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -1854,7 +1854,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2036,7 +2036,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2107,7 +2107,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2321,7 +2321,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2496,7 +2496,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2586,7 +2586,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2661,7 +2661,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,

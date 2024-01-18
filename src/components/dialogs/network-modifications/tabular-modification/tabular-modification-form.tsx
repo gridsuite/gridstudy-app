@@ -200,7 +200,7 @@ const TabularModificationForm = () => {
             }
             columnDef.field = field;
             columnDef.headerName = intl.formatMessage({ id: field });
-            if (field === 'voltageRegulationOn') {
+            if (field === 'voltageRegulationOn' || field === 'connected') {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
