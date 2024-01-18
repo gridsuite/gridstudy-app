@@ -60,16 +60,16 @@ const PropertiesForm = ({
 
     const deleteCallback = useCallback(
         (idx: number) => {
-            let marked = false;
+            let markedForDeletion = false;
             const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
             if (properties && typeof properties[idx] !== 'undefined') {
-                marked = properties[idx][DELETION_MARK];
+                markedForDeletion = properties[idx][DELETION_MARK];
             } else {
                 return false;
             }
 
             let canRemoveLine = true;
-            if (marked) {
+            if (markedForDeletion) {
                 // just unmark
                 setValue(
                     `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
@@ -78,7 +78,7 @@ const PropertiesForm = ({
                 );
                 canRemoveLine = false;
             } else {
-                // we can mark as deleted only prop having a previous value, not added in current modification
+                // we should mark for deletion a property that actually exists in the network and not delete the property line straight away
                 if (
                     properties[idx][PREVIOUS_VALUE] &&
                     properties[idx][ADDED] === false
@@ -119,7 +119,7 @@ const PropertiesForm = ({
     return (
         <>
             <Grid container>
-                <GridSection title={'AdditionalInformations'} />
+                <GridSection title={'AdditionalInformation'}/>
                 {additionalProps}
             </Grid>
         </>

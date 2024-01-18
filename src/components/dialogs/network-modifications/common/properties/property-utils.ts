@@ -60,9 +60,7 @@ export const fetchPredefinedProperties = (
     return fetchAppsAndUrls().then((res: [Metadata]) => {
         const studyMetadata = res.filter(isStudyMetadata);
         if (!studyMetadata) {
-            return Promise.reject(
-                'Study entry could not be found in metadatas'
-            );
+            return Promise.reject('Study entry could not be found in metadata');
         }
 
         return studyMetadata[0].predefinedEquipmentProperties?.[
@@ -103,7 +101,7 @@ export const getPropertiesFromModification = (
     };
 };
 
-export const getPropertiesFromEquipment = (
+export const copyEquipmentPropertiesForCreation = (
     equipmentInfos: Equipment
 ): Properties => {
     return {
@@ -121,7 +119,13 @@ export const getPropertiesFromEquipment = (
     };
 };
 
-export const concatProperties = (
+/*
+    We first load modification properties (empty at creation but could be filled later on), then we load properties
+    already present on the equipment (network). If one of the equipment properties key is present in the modification
+    we update the previousValue of this one, it means the modification change the network property value.
+    If not we add it as an unmodified property. We will be able to delete it or modify its value, but not it's name.
+ */
+export const mergeModificationAndEquipmentProperties = (
     modificationProperties: Property[],
     equipment: Equipment
 ): Property[] => {

@@ -29,7 +29,7 @@ import { modifySubstation } from '../../../../../services/study/network-modifica
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    concatProperties,
+    mergeModificationAndEquipmentProperties,
     emptyProperties,
     getPropertiesFromModification,
     modificationPropertiesSchema,
@@ -104,7 +104,10 @@ const SubstationModificationDialog = ({
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
             );
-            return concatProperties(modificationProperties, equipment);
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
         },
         [getValues]
     );

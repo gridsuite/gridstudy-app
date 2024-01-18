@@ -854,7 +854,7 @@
     "shuntCompensatorType": "Type",
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
-    "AdditionalInformations": "Additional informations",
+  "AdditionalInformation": "Additional information",
     "Information": "Information",
     "AddProperty": "Add property",
     "PropertyName": "Property name",

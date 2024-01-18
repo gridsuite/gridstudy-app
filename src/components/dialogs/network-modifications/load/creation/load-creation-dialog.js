@@ -39,7 +39,7 @@ import { createLoad } from '../../../../../services/study/network-modifications'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
-    getPropertiesFromEquipment,
+    copyEquipmentPropertiesForCreation,
     getPropertiesFromModification,
     creationPropertiesSchema,
     toModificationProperties,
@@ -110,7 +110,7 @@ const LoadCreationDialog = ({
                 connectionName: load.connectablePosition.connectionName,
                 // connected is not copied on purpose: we use the default value (true) in all cases
             }),
-            ...getPropertiesFromEquipment(load),
+            ...copyEquipmentPropertiesForCreation(load),
         });
     };
 

@@ -31,7 +31,7 @@ import {
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    concatProperties,
+    mergeModificationAndEquipmentProperties,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
@@ -118,7 +118,10 @@ const LoadModificationDialog = ({
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
             );
-            return concatProperties(modificationProperties, equipment);
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
         },
         [getValues]
     );

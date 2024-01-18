@@ -27,7 +27,7 @@ import { createSubstation } from '../../../../../services/study/network-modifica
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
-    getPropertiesFromEquipment,
+    copyEquipmentPropertiesForCreation,
     getPropertiesFromModification,
     creationPropertiesSchema,
     toModificationProperties,
@@ -72,7 +72,7 @@ const SubstationCreationDialog = ({
                 [EQUIPMENT_ID]: substation.id + '(1)',
                 [EQUIPMENT_NAME]: substation.name ?? '',
                 [COUNTRY]: substation.countryCode,
-                ...getPropertiesFromEquipment(substation),
+                ...copyEquipmentPropertiesForCreation(substation),
             },
             { keepDefaultValues: true }
         );
