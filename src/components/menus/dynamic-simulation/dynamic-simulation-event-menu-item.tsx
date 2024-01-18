@@ -26,7 +26,7 @@ const styles = {
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;
     equipmentType: string;
-    handleOpenDynamicSimulationEventDialog: (
+    onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: string,
         dialogTitle: string
@@ -41,14 +41,14 @@ const DynamicSimulationEventMenuItem = (
     const {
         equipmentId,
         equipmentType,
-        handleOpenDynamicSimulationEventDialog,
+        onOpenDynamicSimulationEventDialog,
         disabled,
     } = props;
     return (
         <CustomMenuItem
             sx={styles.menuItem}
             onClick={() =>
-                handleOpenDynamicSimulationEventDialog(
+                onOpenDynamicSimulationEventDialog(
                     equipmentId,
                     equipmentType,
                     `${getEventType(equipmentType)}${
