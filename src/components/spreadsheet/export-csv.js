@@ -10,6 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
+import { formatNAValue } from './utils/cell-renderers';
 
 export const CsvExport = ({
     gridRef,
@@ -34,13 +35,35 @@ export const CsvExport = ({
             .filter((column) => column.field !== EDIT_COLUMN)
             .map((column) => column.field);
 
+        const processData = () => {
+            const gridData =
+                gridRef?.current?.api
+                    ?.getModel()
+                    ?.rowsToDisplay.map((node) => node.data) || [];
+            Object.keys(gridData).forEach((item) => {
+                gridData[item].limitName = formatNAValue(
+                    gridData[item].limitName,
+                    intl
+                );
+            });
+            return gridData;
+        };
+
         gridRef?.current?.api?.exportDataAsCsv({
             suppressQuotes: true,
             columnKeys: filteredColumnsKeys,
             skipColumnHeaders: skipColumnHeaders,
             fileName: tableNamePrefix.concat(getCSVFilename()),
+            rowData: processData(),
         });
-    }, [columns, getCSVFilename, gridRef, tableNamePrefix, skipColumnHeaders]);
+    }, [
+        columns,
+        getCSVFilename,
+        gridRef,
+        tableNamePrefix,
+        skipColumnHeaders,
+        intl,
+    ]);
 
     return (
         <>
