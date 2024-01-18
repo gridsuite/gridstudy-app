@@ -39,7 +39,15 @@ const styles = {
 
 export const SecurityAnalysisTable: FunctionComponent<
     SecurityAnalysisResultProps
-> = ({ rows, columnDefs, isLoadingResult, agGridProps, exportCsv }) => {
+> = ({
+    rows,
+    columnDefs,
+    isLoadingResult,
+    agGridProps,
+    exportCsv,
+    isCsvExportSuccessful,
+    isCsvExportLoading,
+}) => {
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
@@ -79,6 +87,8 @@ export const SecurityAnalysisTable: FunctionComponent<
                 <ExportButton
                     disabled={!rowsToShow || rowsToShow.length === 0}
                     onClick={exportCsv}
+                    isDownloadLoading={isCsvExportLoading}
+                    isDownloadSuccessful={isCsvExportSuccessful}
                 />
             </Box>
             <Box sx={styles.grid}>

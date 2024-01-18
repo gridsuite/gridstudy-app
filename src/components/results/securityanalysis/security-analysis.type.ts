@@ -182,4 +182,6 @@ export interface SecurityAnalysisResultProps {
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
     exportCsv: () => void;
+    isCsvExportSuccessful: boolean;
+    isCsvExportLoading: boolean;
 }

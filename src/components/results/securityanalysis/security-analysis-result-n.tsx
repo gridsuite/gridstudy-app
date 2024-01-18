@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import {
     PreContingencyResult,
     SecurityAnalysisNTableRow,
@@ -37,6 +37,9 @@ export const SecurityAnalysisResultN: FunctionComponent<
 }) => {
     const intl: IntlShape = useIntl();
     const { snackError } = useSnackMessage();
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
+
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
             ? result?.map((preContingencyResult: PreContingencyResult) => {
@@ -78,6 +81,8 @@ export const SecurityAnalysisResultN: FunctionComponent<
     );
 
     const exportResultCsv = useCallback(() => {
+        setIsCsvExportLoading(true);
+        setIsCsvExportSuccessful(false);
         downloadSecurityAnalysisResultZippedCsv(
             studyUuid,
             nodeUuid,
@@ -87,7 +92,10 @@ export const SecurityAnalysisResultN: FunctionComponent<
             csvHeaders,
             enumValueTranslations
         )
-            .then((fileBlob) => downloadZipFile(fileBlob, 'n-results.zip'))
+            .then((fileBlob) => {
+                downloadZipFile(fileBlob, 'n-results.zip');
+                setIsCsvExportSuccessful(true);
+            })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -95,7 +103,8 @@ export const SecurityAnalysisResultN: FunctionComponent<
                         id: 'securityAnalysisCsvResultsError',
                     }),
                 });
-            });
+            })
+            .finally(() => setIsCsvExportLoading(false));
     }, [
         enumValueTranslations,
         csvHeaders,
@@ -111,6 +120,8 @@ export const SecurityAnalysisResultN: FunctionComponent<
             columnDefs={columnDefs}
             isLoadingResult={isLoadingResult}
             exportCsv={exportResultCsv}
+            isCsvExportLoading={isCsvExportLoading}
+            isCsvExportSuccessful={isCsvExportSuccessful}
         />
     );
 };

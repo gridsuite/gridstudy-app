@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
@@ -63,6 +68,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     const theme = useTheme();
     const intl: IntlShape = useIntl();
     const { snackError } = useSnackMessage();
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
 
     const onClickNmKConstraint = useCallback(
         (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
@@ -198,6 +205,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     );
 
     const exportResultCsv = useCallback(() => {
+        setIsCsvExportLoading(true);
+        setIsCsvExportSuccessful(false);
         downloadSecurityAnalysisResultZippedCsv(
             studyUuid,
             nodeUuid,
@@ -209,7 +218,10 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             csvHeaders,
             enumValueTranslations
         )
-            .then((fileBlob) => downloadZipFile(fileBlob, 'nmk-results.zip'))
+            .then((fileBlob) => {
+                downloadZipFile(fileBlob, 'nmk-results.zip');
+                setIsCsvExportSuccessful(true);
+            })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -217,7 +229,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                         id: 'securityAnalysisCsvResultsError',
                     }),
                 });
-            });
+            })
+            .finally(() => setIsCsvExportLoading(false));
     }, [
         csvHeaders,
         enumValueTranslations,
@@ -243,6 +256,8 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     isLoadingResult={isLoadingResult}
                     agGridProps={agGridProps}
                     exportCsv={exportResultCsv}
+                    isCsvExportLoading={isCsvExportLoading}
+                    isCsvExportSuccessful={isCsvExportSuccessful}
                 />
             </Box>
             <Box>
