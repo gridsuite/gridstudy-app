@@ -32,7 +32,7 @@ import {
     concatProperties,
     emptyProperties,
     getPropertiesFromModification,
-    propertiesSchema,
+    modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 
@@ -48,7 +48,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         [COUNTRY]: yup.string().nullable(),
     })
-    .concat(propertiesSchema);
+    .concat(modificationPropertiesSchema);
 
 /**
  * Dialog to modify a substation in the network

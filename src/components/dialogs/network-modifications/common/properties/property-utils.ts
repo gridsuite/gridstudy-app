@@ -14,21 +14,22 @@ import {
     ADDED,
 } from 'components/utils/field-constants';
 import { fetchAppsAndUrls } from '../../../../../services/utils';
-import { InferType } from 'yup';
 
 export type Property = {
-    name: string | null;
-    value: string | null;
-    previousValue?: string | null;
-    deletionMark?: boolean;
-    added?: boolean;
+    [NAME]: string | null;
+    [VALUE]: string | null;
+    [PREVIOUS_VALUE]: string | null;
+    [DELETION_MARK]: boolean;
+    [ADDED]: boolean;
+};
+
+type Properties = {
+    [ADDITIONAL_PROPERTIES]: Property[] | null;
 };
 
 export type PredefinedProperties = {
     [propertyName: string]: string[];
 };
-
-type Properties = InferType<typeof propertiesSchema>;
 
 type Equipment = {
     properties: Record<string, string> | undefined;
@@ -163,28 +164,59 @@ export const toModificationProperties = (properties: Properties) => {
     );
 };
 
-export const propertiesSchema = yup.object({
+export const creationPropertiesSchema = yup.object({
     [ADDITIONAL_PROPERTIES]: yup
         .array()
         .of(
             yup.object().shape({
-                [NAME]: yup.string().nullable().defined(),
-                [VALUE]: yup.string().nullable().defined(),
+                [NAME]: yup.string().required(),
+                [VALUE]: yup.string().required(),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
-                [DELETION_MARK]: yup.boolean(),
-                [ADDED]: yup.boolean(),
+                [DELETION_MARK]: yup.boolean().required(),
+                [ADDED]: yup.boolean().required(),
             })
         )
-        .nullable()
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
-            checkUniqueProperties(values)
+            checkUniquePropertyNames(values)
         ),
 });
 
-const checkUniqueProperties = (properties: Property[] | null | undefined) => {
-    if (properties === null || properties === undefined) {
+export const modificationPropertiesSchema = yup.object({
+    [ADDITIONAL_PROPERTIES]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [NAME]: yup.string().required(),
+                [VALUE]: yup
+                    .string()
+                    .nullable()
+                    .when([PREVIOUS_VALUE, DELETION_MARK], {
+                        is: (
+                            previousValue: string | null,
+                            deletionMark: boolean
+                        ) => previousValue === null && !deletionMark,
+                        then: (schema) => schema.required(),
+                    }),
+                [PREVIOUS_VALUE]: yup.string().nullable(),
+                [DELETION_MARK]: yup.boolean().required(),
+                [ADDED]: yup.boolean().required(),
+            })
+        )
+        .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
+            checkUniquePropertyNames(values)
+        ),
+});
+
+const checkUniquePropertyNames = (
+    properties:
+        | {
+        name: string;
+    }[]
+        | undefined
+) => {
+    if (properties === undefined) {
         return true;
     }
-    const validValues = properties.filter((v) => v?.name && v?.value);
+    const validValues = properties.filter((v) => v.name);
     return validValues.length === new Set(validValues.map((v) => v.name)).size;
 };

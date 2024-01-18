@@ -29,7 +29,7 @@ import {
     emptyProperties,
     getPropertiesFromEquipment,
     getPropertiesFromModification,
-    propertiesSchema,
+    creationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 
@@ -46,7 +46,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         [COUNTRY]: yup.string().nullable(),
     })
-    .concat(propertiesSchema);
+    .concat(creationPropertiesSchema);
 
 const SubstationCreationDialog = ({
     editData,

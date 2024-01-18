@@ -34,8 +34,8 @@ import {
     concatProperties,
     emptyProperties,
     getPropertiesFromModification,
-    propertiesSchema,
     toModificationProperties,
+    modificationPropertiesSchema,
 } from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 
@@ -55,7 +55,7 @@ const formSchema = yup
         [ACTIVE_POWER]: yup.number().nullable(),
         [REACTIVE_POWER]: yup.number().nullable(),
     })
-    .concat(propertiesSchema)
+    .concat(modificationPropertiesSchema)
     .required();
 
 /**

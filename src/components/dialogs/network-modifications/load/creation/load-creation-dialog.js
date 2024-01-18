@@ -41,7 +41,7 @@ import {
     emptyProperties,
     getPropertiesFromEquipment,
     getPropertiesFromModification,
-    propertiesSchema,
+    creationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 
@@ -74,7 +74,7 @@ const formSchema = yup
         [REACTIVE_POWER]: yup.number().nullable().required(),
         ...getConnectivityWithPositionValidationSchema(),
     })
-    .concat(propertiesSchema)
+    .concat(creationPropertiesSchema)
     .required();
 
 const LoadCreationDialog = ({
