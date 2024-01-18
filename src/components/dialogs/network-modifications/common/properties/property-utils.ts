@@ -1,10 +1,9 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import yup from 'components/utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
@@ -30,6 +29,10 @@ export type PredefinedProperties = {
 };
 
 type Properties = InferType<typeof propertiesSchema>;
+
+type Equipment = {
+    properties: Record<string, string> | undefined;
+};
 
 interface Metadata {
     name: string;
@@ -93,25 +96,25 @@ export const getPropertiesFromModification = (
                       [PREVIOUS_VALUE]: null,
                       [ADDED]: p[ADDED],
                       [DELETION_MARK]: p[DELETION_MARK],
-                  } as Property;
+                  };
               })
             : null,
     };
 };
 
-export const getPropertiesFromEquipment = (equipmentInfos: {
-    properties: Record<string, string> | undefined;
-}): Properties => {
+export const getPropertiesFromEquipment = (
+    equipmentInfos: Equipment
+): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: equipmentInfos.properties
             ? Object.entries(equipmentInfos.properties).map(([name, value]) => {
                   return {
                       [NAME]: name,
-                      [VALUE]: null,
-                      [PREVIOUS_VALUE]: value,
+                      [VALUE]: value,
+                      [PREVIOUS_VALUE]: null,
                       [DELETION_MARK]: false,
-                      [ADDED]: false,
-                  } satisfies Property;
+                      [ADDED]: true,
+                  };
               })
             : null,
     };
@@ -119,7 +122,7 @@ export const getPropertiesFromEquipment = (equipmentInfos: {
 
 export const concatProperties = (
     modificationProperties: Property[],
-    equipmentProperties: Property[]
+    equipment: Equipment
 ): Property[] => {
     const newModificationProperties = new Map<string, Property>();
     for (const property of modificationProperties) {
@@ -127,23 +130,29 @@ export const concatProperties = (
             newModificationProperties.set(property.name, property);
         }
     }
-    for (const property of equipmentProperties) {
-        if (property.name !== null) {
-            let propertyToAdd;
-            // If the property is present in the modification and in the equipment
-            if (newModificationProperties.has(property.name)) {
-                const modProperty = newModificationProperties.get(
-                    property.name
-                )!;
-                propertyToAdd = {
-                    ...modProperty,
-                    previousValue: property.value, // We set previous value of the modification to the equipment value
-                };
-            } else {
-                propertyToAdd = property;
+    if (equipment.properties !== undefined) {
+        Object.entries(equipment.properties).forEach(([name, value]) => {
+            if (name !== null) {
+                let propertyToAdd;
+                // If the property is present in the modification and in the equipment
+                if (newModificationProperties.has(name)) {
+                    const modProperty = newModificationProperties.get(name)!;
+                    propertyToAdd = {
+                        ...modProperty,
+                        previousValue: value, // We set previous value of the modification to the equipment value
+                    };
+                } else {
+                    propertyToAdd = {
+                        [NAME]: name,
+                        [VALUE]: null,
+                        [PREVIOUS_VALUE]: value,
+                        [DELETION_MARK]: false,
+                        [ADDED]: false,
+                    };
+                }
+                newModificationProperties.set(name, propertyToAdd);
             }
-            newModificationProperties.set(property.name, propertyToAdd);
-        }
+        });
     }
     return Array.from(newModificationProperties.values());
 };

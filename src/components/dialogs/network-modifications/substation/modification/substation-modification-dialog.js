@@ -31,7 +31,6 @@ import { FetchStatus } from '../../../../../services/utils';
 import {
     concatProperties,
     emptyProperties,
-    getPropertiesFromEquipment,
     getPropertiesFromModification,
     propertiesSchema,
     toModificationProperties,
@@ -101,16 +100,11 @@ const SubstationModificationDialog = ({
 
     const getConcatenatedProperties = useCallback(
         (equipment) => {
-            // comes from existing eqpt in network, ex: Object { p1: "v1", p2: "v2" }
-            const equipmentProperties = getPropertiesFromEquipment(equipment);
             // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
             );
-            return concatProperties(
-                modificationProperties,
-                equipmentProperties[ADDITIONAL_PROPERTIES]
-            );
+            return concatProperties(modificationProperties, equipment);
         },
         [getValues]
     );
