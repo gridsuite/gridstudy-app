@@ -61,6 +61,7 @@ import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
+import { usePrevious } from './utils/utils';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -190,14 +191,6 @@ function useStudy(studyUuidRequest) {
     }, [studyUuidRequest, intlRef]);
 
     return [studyUuid, pending, errMessage];
-}
-
-function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-        ref.current = value;
-    }, [value]);
-    return ref.current;
 }
 
 export const UPDATE_TYPE_HEADER = 'updateType';
