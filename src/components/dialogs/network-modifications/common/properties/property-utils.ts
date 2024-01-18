@@ -214,8 +214,8 @@ export const modificationPropertiesSchema = yup.object({
 const checkUniquePropertyNames = (
     properties:
         | {
-        name: string;
-    }[]
+              name: string;
+          }[]
         | undefined
 ) => {
     if (properties === undefined) {

@@ -119,7 +119,7 @@ const PropertiesForm = ({
     return (
         <>
             <Grid container>
-                <GridSection title={'AdditionalInformation'}/>
+                <GridSection title={'AdditionalInformation'} />
                 {additionalProps}
             </Grid>
         </>
