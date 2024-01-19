@@ -39,11 +39,11 @@
         <path
            id="path3740-0-0"
            d="M337.626 137.726C342.926 137.726 347.222 133.43 347.222 128.13C347.222 122.83 342.926 118.533 337.626 118.533C332.326 118.533 328.03 122.83 328.03 128.13C328.03 133.43 332.326 137.726 337.626 137.726Z"
-           fill="#64B5F6" />
+           fill="#FFA4C2" />
         <path
            id="lineBefore-6"
            d="M311.647 123H149.412H142.03V132H149.412H311.647H319.03V123H311.647Z"
-           fill="#64B5F6" />
+           fill="#FFA4C2" />
         <g
            id="path7047-6">
           <path
@@ -52,7 +52,7 @@
              id="path143" />
           <path
              d="M337.137 114.052V50.6018"
-             stroke="#64B5F6"
+             stroke="#FFA4C2"
              stroke-width="3.85668"
              stroke-dasharray="3.86 3.86"
              id="path145" />
@@ -86,7 +86,7 @@
         <path
            id="lineBefore-6-4"
            d="M528.48 123H362.579H355.03V132H362.579H528.48H536.03V123H528.48Z"
-           fill="#64B5F6" />
+           fill="#FFA4C2" />
         <g
            id="path7047-2">
           <path
@@ -103,11 +103,11 @@
         <path
            id="lineBefore"
            d="M333.03 147.419V200.581V203H342.03V200.581V147.419V145H333.03V147.419Z"
-           fill="#64B5F6" />
+           fill="#FFA4C2" />
         <path
            id="lineBefore_2"
            d="M333.03 241.211V289.789V292H342.03V289.789V241.211V239H333.03V241.211Z"
-           fill="#64B5F6" />
+           fill="#FFA4C2" />
         <path
            id="path3740-0"
            d="M337.626 319.193C342.926 319.193 347.222 314.896 347.222 309.596C347.222 304.296 342.926 300 337.626 300C332.326 300 328.03 304.296 328.03 309.596C328.03 314.896 332.326 319.193 337.626 319.193Z"
@@ -115,7 +115,7 @@
         <text
            id="text4625-2-3-9"
            xml:space="preserve"
-           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64b5f6"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
            font-size="18.6667"
            letter-spacing="0em"
            x="166.52489"
@@ -153,7 +153,7 @@
         <text
            id="text4625-2-3-9_2"
            xml:space="preserve"
-           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64b5f6"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
            font-size="18.6667"
            letter-spacing="0em"
            x="147.36993"
@@ -165,7 +165,7 @@
         <text
            id="text4625-9-6"
            xml:space="preserve"
-           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
            font-size="18.6667"
            font-weight="bold"
            letter-spacing="0em"
@@ -178,7 +178,7 @@
         <text
            id="text1382"
            xml:space="preserve"
-           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64b5f6"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
            font-size="18.6667"
            letter-spacing="0em"
            x="124.46366"
@@ -258,7 +258,7 @@
         <text
            id="text4625-2"
            xml:space="preserve"
-           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#ffa4c2"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
            font-size="18.6667"
            letter-spacing="0em"
            x="223.04057"
