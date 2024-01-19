@@ -40,6 +40,12 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'voltageRegulationOn',
         'voltageSetpoint',
         'connected',
+        'transientReactance',
+        'stepUpTransformerReactance',
+        'plannedActivePowerSetPoint',
+        'marginalCost',
+        'plannedOutageRate',
+        'forcedOutageRate',
     ],
     BATTERY: [
         'equipmentId',
