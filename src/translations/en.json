@@ -696,6 +696,8 @@
     "LCC_CONVERTER_STATION": "Lcc Converter Station",
     "VSC_CONVERTER_STATION": "Vsc Converter Station",
     "VSC": "Vsc",
+    "BUS": "Bus",
+    "BUSBAR_SECTION": "Bus bar section",
     "BY_FORMULA": "By formula",
     "SHUNT_COMPENSATOR": "Shunt Compensator",
     "STATIC_VAR_COMPENSATOR": "Static Var Compensator",

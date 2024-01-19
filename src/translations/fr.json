@@ -698,6 +698,8 @@
     "LCC_CONVERTER_STATION": "Station de conversion LCC",
     "VSC_CONVERTER_STATION": "Station de conversion VSC",
     "VSC": "Vsc",
+    "BUS": "Bus",
+    "BUSBAR_SECTION": "Section de jeux de barres",
     "BY_FORMULA": "Par formule",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
