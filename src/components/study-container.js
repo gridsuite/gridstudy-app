@@ -455,73 +455,125 @@ export function StudyContainer({ view, onChangeTab }) {
         };
     }, [dispatch, fetchStudyPath]);
 
-    const loadTree = useCallback(() => {
-        console.info(
-            `Loading network modification tree of study '${studyUuid}'...`
-        );
-
-        const networkModificationTree = fetchNetworkModificationTree(studyUuid);
-
-        networkModificationTree
-            .then((tree) => {
-                const networkModificationTreeModel =
-                    new NetworkModificationTreeModel();
-                networkModificationTreeModel.setTreeElements(tree);
-                networkModificationTreeModel.updateLayout();
-
-                fetchCaseName(studyUuid)
-                    .then((res) => {
-                        if (res) {
-                            networkModificationTreeModel.setCaseName(res);
-                            dispatch(
-                                loadNetworkModificationTreeSuccess(
-                                    networkModificationTreeModel
-                                )
-                            );
-                        }
-                    })
-                    .catch((err) => {
-                        snackWarning({
-                            headerId: 'CaseNameLoadError',
-                        });
-                    });
-
-                // Select root node by default
-                let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
-                // if reindexation is ongoing then stay on root node, all variants will be removed
-                // if indexation is done then look for the next built node.
-                // This is to avoid future fetch on variants removed during reindexation process
-                if (
-                    studyIndexationStatusRef.current ===
-                    STUDY_INDEXATION_STATUS.INDEXED
-                ) {
-                    firstSelectedNode =
-                        getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
-                            BUILD_STATUS.BUILT,
-                            BUILD_STATUS.BUILT_WITH_WARNING,
-                            BUILD_STATUS.BUILT_WITH_ERROR,
-                        ]) || firstSelectedNode;
-                }
-
-                // To get positions we must get the node from the model class
-                const ModelFirstSelectedNode = {
-                    ...networkModificationTreeModel.treeNodes.find(
-                        (node) => node.id === firstSelectedNode.id
-                    ),
-                };
-                dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NetworkModificationTreeLoadError',
-                });
-            })
-            .finally(() =>
-                console.debug('Network modification tree loading finished')
+    const loadTree = useCallback(
+        (initIndexationStatus) => {
+            console.info(
+                `Loading network modification tree of study '${studyUuid}'...`
             );
-        // Note: studyUuid and dispatch don't change
-    }, [studyUuid, dispatch, snackError, snackWarning]);
+
+            const networkModificationTree =
+                fetchNetworkModificationTree(studyUuid);
+
+            networkModificationTree
+                .then((tree) => {
+                    const networkModificationTreeModel =
+                        new NetworkModificationTreeModel();
+                    networkModificationTreeModel.setTreeElements(tree);
+                    networkModificationTreeModel.updateLayout();
+
+                    fetchCaseName(studyUuid)
+                        .then((res) => {
+                            if (res) {
+                                networkModificationTreeModel.setCaseName(res);
+                                dispatch(
+                                    loadNetworkModificationTreeSuccess(
+                                        networkModificationTreeModel
+                                    )
+                                );
+                            }
+                        })
+                        .catch((err) => {
+                            snackWarning({
+                                headerId: 'CaseNameLoadError',
+                            });
+                        });
+
+                    // Select root node by default
+                    let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
+                    // if reindexation is ongoing then stay on root node, all variants will be removed
+                    // if indexation is done then look for the next built node.
+                    // This is to avoid future fetch on variants removed during reindexation process
+                    if (
+                        initIndexationStatus === STUDY_INDEXATION_STATUS.INDEXED
+                    ) {
+                        firstSelectedNode =
+                            getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
+                                BUILD_STATUS.BUILT,
+                                BUILD_STATUS.BUILT_WITH_WARNING,
+                                BUILD_STATUS.BUILT_WITH_ERROR,
+                            ]) || firstSelectedNode;
+                    }
+
+                    // To get positions we must get the node from the model class
+                    const ModelFirstSelectedNode = {
+                        ...networkModificationTreeModel.treeNodes.find(
+                            (node) => node.id === firstSelectedNode.id
+                        ),
+                    };
+                    dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'NetworkModificationTreeLoadError',
+                    });
+                })
+                .finally(() =>
+                    console.debug('Network modification tree loading finished')
+                );
+            // Note: studyUuid and dispatch don't change
+        },
+        [studyUuid, dispatch, snackError, snackWarning]
+    );
+
+    const checkStudyIndexation = useCallback(() => {
+        setIsStudyIndexationPending(true);
+        return fetchStudyIndexationStatus(studyUuid)
+            .then((status) => {
+                switch (status) {
+                    case STUDY_INDEXATION_STATUS.INDEXED: {
+                        dispatch(setStudyIndexationStatus(status));
+                        setIsStudyIndexationPending(false);
+                        break;
+                    }
+                    case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
+                        dispatch(setStudyIndexationStatus(status));
+                        break;
+                    }
+                    case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
+                        dispatch(setStudyIndexationStatus(status));
+                        reindexAllStudy(studyUuid)
+                            .catch((error) => {
+                                // unknown error when trying to reindex study
+                                snackError({
+                                    headerId: 'studyIndexationError',
+                                    messageTxt: error,
+                                });
+                            })
+                            .finally(() => {
+                                setIsStudyIndexationPending(false);
+                            });
+                        break;
+                    }
+                    default: {
+                        setIsStudyIndexationPending(false);
+                        snackError({
+                            headerId: 'studyIndexationStatusUnknown',
+                            headerValues: { status: status },
+                        });
+                        break;
+                    }
+                }
+                return status;
+            })
+            .catch(() => {
+                // unknown error when checking study indexation status
+                setIsStudyIndexationPending(false);
+                snackError({
+                    headerId: 'checkstudyIndexationError',
+                });
+            });
+    }, [studyUuid, dispatch, snackError]);
 
     const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
         (successCallback) => {
@@ -530,7 +582,9 @@ export function StudyContainer({ view, onChangeTab }) {
                     if (response.status === HttpStatusCode.OK) {
                         successCallback && successCallback();
                         setIsStudyNetworkFound(true);
-                        loadTree();
+                        checkStudyIndexation().then((status) => {
+                            loadTree(status);
+                        });
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
@@ -572,56 +626,8 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
                 });
         },
-        [studyUuid, loadTree, snackWarning, intlRef]
+        [studyUuid, checkStudyIndexation, loadTree, snackWarning, intlRef]
     );
-
-    const checkStudyIndexation = useCallback(() => {
-        setIsStudyIndexationPending(true);
-        fetchStudyIndexationStatus(studyUuid)
-            .then((status) => {
-                switch (status) {
-                    case STUDY_INDEXATION_STATUS.INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        setIsStudyIndexationPending(false);
-                        break;
-                    }
-                    case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
-                        dispatch(setStudyIndexationStatus(status));
-                        break;
-                    }
-                    case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        reindexAllStudy(studyUuid)
-                            .catch((error) => {
-                                // unknown error when trying to reindex study
-                                snackError({
-                                    headerId: 'studyIndexationError',
-                                    messageTxt: error,
-                                });
-                            })
-                            .finally(() => {
-                                setIsStudyIndexationPending(false);
-                            });
-                        break;
-                    }
-                    default: {
-                        setIsStudyIndexationPending(false);
-                        snackError({
-                            headerId: 'studyIndexationStatusUnknown',
-                            headerValues: { status: status },
-                        });
-                        break;
-                    }
-                }
-            })
-            .catch(() => {
-                // unknown error when checking study indexation status
-                setIsStudyIndexationPending(false);
-                snackError({
-                    headerId: 'checkstudyIndexationError',
-                });
-            });
-    }, [studyUuid, dispatch, snackError]);
 
     useEffect(() => {
         if (studyUuid && !isStudyNetworkFound) {
@@ -632,14 +638,6 @@ export function StudyContainer({ view, onChangeTab }) {
         checkNetworkExistenceAndRecreateIfNotFound,
         studyUuid,
     ]);
-
-    // first time we need to check indexation status by query
-    // studyIndexationStatus = STUDY_INDEXATION_STATUS.NOT_INDEXED by default
-    useEffect(() => {
-        if (studyUuid) {
-            checkStudyIndexation();
-        }
-    }, [checkStudyIndexation, studyUuid]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -757,7 +755,6 @@ export function StudyContainer({ view, onChangeTab }) {
         snackInfo,
         snackWarning,
         dispatch,
-        checkStudyIndexation,
     ]);
 
     //handles map automatic mode network reload
