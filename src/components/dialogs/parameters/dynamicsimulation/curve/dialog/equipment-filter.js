@@ -47,15 +47,13 @@ export const getReferencedEquipmentTypeForModel = (equipmentType) => {
         : equipmentType;
 };
 
-// this function is used to provide some basic values of expert filter for some particular cases
-const getExpertFilterBasicFieldsForType = (equipmentType) => {
-    if (equipmentType === EQUIPMENT_TYPES.BUS) {
-        return {
-            topologyKind: 'BUS_BREAKER',
-        };
-    } else {
-        return {};
-    }
+// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
+const getTopologyKindIfNecessary = (equipmentType) => {
+    return equipmentType === EQUIPMENT_TYPES.BUS
+        ? {
+              topologyKind: 'BUS_BREAKER',
+          }
+        : {};
 };
 
 const NOMINAL_VOLTAGE_UNIT = 'kV';
@@ -194,7 +192,7 @@ const EquipmentFilter = forwardRef(
             };
 
             const expertFilter = {
-                ...getExpertFilterBasicFieldsForType(equipmentType),
+                ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
                 type: 'EXPERT',
                 equipmentType: equipmentType,
                 rules: buildExpertRules(
