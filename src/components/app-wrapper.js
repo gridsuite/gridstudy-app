@@ -72,7 +72,6 @@ let lightTheme = createTheme({
             },
         },
     },
-
     palette: {
         mode: 'light',
     },
@@ -110,14 +109,6 @@ let lightTheme = createTheme({
     aggrid: 'ag-theme-alpine',
     overlay: {
         background: '#e6e6e6',
-    },
-});
-
-lightTheme = createTheme(lightTheme, {
-    palette: {
-        customButton: {
-            main: lightTheme.palette.text.primary,
-        },
     },
 });
 
@@ -174,14 +165,6 @@ let darkTheme = createTheme({
     aggrid: 'ag-theme-alpine-dark',
     overlay: {
         background: '#121212',
-    },
-});
-
-darkTheme = createTheme(darkTheme, {
-    palette: {
-        customButton: {
-            main: darkTheme.palette.text.primary,
-        },
     },
 });
 
