@@ -19,10 +19,10 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     R,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
+    G1,
+    G2,
+    B1,
+    B2,
     X,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
@@ -80,7 +80,7 @@ const LineCharacteristicsPane = ({
 
     const shuntConductance1Field = (
         <FloatInput
-            name={`${id}.${SHUNT_CONDUCTANCE_1}`}
+            name={`${id}.${G1}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.g1)}
@@ -90,7 +90,7 @@ const LineCharacteristicsPane = ({
 
     const shuntSusceptance1Field = (
         <FloatInput
-            name={`${id}.${SHUNT_SUSCEPTANCE_1}`}
+            name={`${id}.${B1}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.b1)}
@@ -100,7 +100,7 @@ const LineCharacteristicsPane = ({
 
     const shuntConductance2Field = (
         <FloatInput
-            name={`${id}.${SHUNT_CONDUCTANCE_2}`}
+            name={`${id}.${G2}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.g2)}
@@ -110,7 +110,7 @@ const LineCharacteristicsPane = ({
 
     const shuntSusceptance2Field = (
         <FloatInput
-            name={`${id}.${SHUNT_SUSCEPTANCE_2}`}
+            name={`${id}.${B2}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.b2)}

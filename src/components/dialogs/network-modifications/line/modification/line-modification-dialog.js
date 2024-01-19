@@ -16,10 +16,10 @@ import {
     LIMITS,
     PERMANENT_LIMIT,
     R,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
+    G1,
+    G2,
+    B1,
+    B2,
     TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -140,18 +140,10 @@ const LineModificationDialog = ({
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,
-                    shuntConductance1: unitToMicroUnit(
-                        line.shuntConductance1?.value ?? null
-                    ),
-                    shuntSusceptance1: unitToMicroUnit(
-                        line.shuntSusceptance1?.value ?? null
-                    ),
-                    shuntConductance2: unitToMicroUnit(
-                        line.shuntConductance2?.value ?? null
-                    ),
-                    shuntSusceptance2: unitToMicroUnit(
-                        line.shuntSusceptance2?.value ?? null
-                    ),
+                    g1: unitToMicroUnit(line.g1?.value ?? null),
+                    b1: unitToMicroUnit(line.b1?.value ?? null),
+                    g2: unitToMicroUnit(line.g2?.value ?? null),
+                    b2: unitToMicroUnit(line.b2?.value ?? null),
                 }),
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
@@ -248,10 +240,10 @@ const LineModificationDialog = ({
                 sanitizeString(line[EQUIPMENT_NAME]),
                 characteristics[R],
                 characteristics[X],
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_2]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_2]),
+                microUnitToUnit(characteristics[G1]),
+                microUnitToUnit(characteristics[B1]),
+                microUnitToUnit(characteristics[G2]),
+                microUnitToUnit(characteristics[B2]),
                 currentLimits1,
                 currentLimits2,
                 !!editData,
@@ -372,16 +364,12 @@ const LineModificationDialog = ({
         setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
             shouldDirty: true,
         });
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
+        setValue(`${CHARACTERISTICS}.${B1}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
     };
 
     const headerAndTabs = (
