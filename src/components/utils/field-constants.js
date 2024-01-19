@@ -8,6 +8,8 @@
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
+export const CONSTANT_ACTIVE_POWER = 'constantActivePower';
+export const CONSTANT_REACTIVE_POWER = 'constantReactivePower';
 export const ACTIVE_POWER = 'activePower';
 export const REACTIVE_POWER = 'reactivePower';
 export const CONNECTIVITY = 'connectivity';
@@ -22,6 +24,8 @@ export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'connected';
+export const CONNECTED1 = 'connected1';
+export const CONNECTED2 = 'connected2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -44,6 +48,8 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
+export const MAX_ACTIVE_POWER = 'maxActivePower';
+export const MIN_ACTIVE_POWER = 'minActivePower';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
@@ -160,6 +166,7 @@ export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
+export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerReactance';
 export const REGULATING_TERMINAL = 'regulatingTerminal';
 export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
 export const GENERATOR = 'generator';

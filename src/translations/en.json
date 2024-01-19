@@ -671,6 +671,8 @@
     "Setpoints": "Setpoints",
     "Connectivity": "Connectivity",
     "connected": "Connected",
+    "connected1": "Connected 1",
+    "connected2": "Connected 2",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",
