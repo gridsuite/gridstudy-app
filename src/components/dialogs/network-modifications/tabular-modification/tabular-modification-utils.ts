@@ -53,6 +53,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'activePowerSetpoint',
         'maxActivePower',
         'reactivePowerSetpoint',
+        'connected',
     ],
     VOLTAGE_LEVEL: [
         'equipmentId',
@@ -67,6 +68,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'shuntCompensatorType',
         'maxQAtNominalV',
         'maxSusceptance',
+        'connected',
     ],
     LINE: [
         EQUIPMENT_ID,
@@ -82,6 +84,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'loadType',
         'constantActivePower',
         'constantReactivePower',
+        'connected',
     ],
     TWO_WINDINGS_TRANSFORMER: [
         EQUIPMENT_ID,
