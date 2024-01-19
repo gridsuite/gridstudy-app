@@ -87,6 +87,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
+    SET_LAST_COMPLETED_COMPUTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -231,6 +232,7 @@ const initialState = {
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
+    lastCompletedComputation: null,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -1015,6 +1017,9 @@ export const reducer = createReducer(initialState, {
     },
     [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
         state.studyIndexationStatus = action.studyIndexationStatus;
+    },
+    [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
+        state.lastCompletedComputation = action.lastCompletedComputation;
     },
 });
 
