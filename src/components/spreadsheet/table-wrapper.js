@@ -65,6 +65,7 @@ import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
+import ComputingType from 'components/computing-status/computing-type';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -123,6 +124,10 @@ const TableWrapper = (props) => {
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -194,7 +199,7 @@ const TableWrapper = (props) => {
             if (column.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
                 const isValueInvalid =
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                     column.canBeInvalidated;
 
                 column.cellRendererParams = {
@@ -220,7 +225,7 @@ const TableWrapper = (props) => {
 
             return column;
         },
-        [fluxConvention, intl, lockedColumnsNames, props.loadFlowStatus]
+        [fluxConvention, intl, lockedColumnsNames, loadFlowStatus]
     );
 
     const equipmentDefinition = useMemo(
@@ -1051,7 +1056,6 @@ TableWrapper.defaultProps = {
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
-    loadFlowStatus: RunningStatus.IDLE,
     disabled: false,
 };
 
@@ -1061,7 +1065,6 @@ TableWrapper.propTypes = {
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
     disabled: PropTypes.bool,
 };
 

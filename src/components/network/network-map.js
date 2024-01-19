@@ -40,6 +40,7 @@ import { fetchMapBoxToken } from '../../services/utils';
 import { Box } from '@mui/system';
 
 import { MapboxOverlay } from '@deck.gl/mapbox';
+import ComputingType from 'components/computing-status/computing-type';
 
 // MouseEvent.button https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
 const MOUSE_EVENT_BUTTON_LEFT = 0;
@@ -108,6 +109,9 @@ const NetworkMap = (props) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { getNameOrId } = useNameOrId();
 
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
     const readyToDisplay =
         props.mapEquipments !== null &&
         props.geoData !== null &&
@@ -269,7 +273,7 @@ const NetworkMap = (props) => {
                         anchorEl={divRef.current}
                         equipmentId={tooltip.equipmentId}
                         equipmentType={EQUIPMENT_TYPES.LINE}
-                        loadFlowStatus={props.loadFlowStatus}
+                        loadFlowStatus={loadFlowStatus}
                     />
                 </div>
             )
@@ -415,7 +419,7 @@ const NetworkMap = (props) => {
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
-                loadFlowStatus: props?.loadFlowStatus,
+                loadFlowStatus: loadFlowStatus,
                 lineFullPath:
                     props.geoData.linePositionsById.size > 0 &&
                     props.lineFullPath,
@@ -542,7 +546,6 @@ NetworkMap.defaultProps = {
     lineFlowHidden: true,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
-    loadFlowStatus: RunningStatus.IDLE,
     visible: true,
     displayOverlayLoader: false,
     disabled: false,
@@ -569,7 +572,6 @@ NetworkMap.propTypes = {
     lineFlowHidden: PropTypes.bool,
     lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
-    loadFlowStatus: PropTypes.oneOf(Object.values(RunningStatus)),
     visible: PropTypes.bool,
     updatedLines: PropTypes.array,
     displayOverlayLoader: PropTypes.bool,

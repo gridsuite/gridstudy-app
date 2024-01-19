@@ -93,6 +93,9 @@ function SingleLineDiagramContent(props) {
     const computationStarting = useSelector(
         (state) => state.computationStarting
     );
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
@@ -430,7 +433,7 @@ function SingleLineDiagramContent(props) {
                 anchorEl={equipmentPopoverAnchorEl}
                 equipmentType={hoveredEquipmentType}
                 equipmentId={hoveredEquipmentId}
-                loadFlowStatus={props.loadFlowStatus}
+                loadFlowStatus={loadFlowStatus}
             />
         );
     };
@@ -642,7 +645,7 @@ function SingleLineDiagramContent(props) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                         styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
@@ -696,7 +699,6 @@ function SingleLineDiagramContent(props) {
 }
 
 SingleLineDiagramContent.propTypes = {
-    loadFlowStatus: PropTypes.any,
     showInSpreadsheet: PropTypes.func,
     studyUuid: PropTypes.string,
     svgType: PropTypes.string,
