@@ -74,7 +74,7 @@
            id="path7047-5">
           <path
              d="M124.594 114.909V51.4589Z"
-             fill="#81C784"
+             fill="#FFA4C2"
              id="path153" />
           <path
              d="M124.594 114.909V51.4589"
@@ -95,7 +95,7 @@
              id="path159" />
           <path
              d="M413.479 310H350.03"
-             stroke="#81C784"
+             stroke="#FFA4C2"
              stroke-width="3.85668"
              stroke-dasharray="3.86 3.86"
              id="path161" />
@@ -111,7 +111,7 @@
         <path
            id="path3740-0"
            d="M337.626 319.193C342.926 319.193 347.222 314.896 347.222 309.596C347.222 304.296 342.926 300 337.626 300C332.326 300 328.03 304.296 328.03 309.596C328.03 314.896 332.326 319.193 337.626 319.193Z"
-           fill="#81C784" />
+           fill="#FFA4C2" />
         <text
            id="text4625-2-3-9"
            xml:space="preserve"
@@ -127,7 +127,7 @@
         <text
            id="text177"
            xml:space="preserve"
-           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
            font-size="18.6667"
            font-weight="bold"
            letter-spacing="0em"
@@ -206,7 +206,7 @@
         <path
            id="lineBefore_3"
            d="M1008.21 124H816.642H807.925V133H816.642H1008.21H1016.92V124H1008.21Z"
-           fill="#FFA4C2" />
+           fill="#64B5F6" />
         <path
            id="path3740"
            d="M791.019 136.678C796.121 136.678 800.258 132.541 800.258 127.439C800.258 122.336 796.121 118.199 791.019 118.199C785.916 118.199 781.779 122.336 781.779 127.439C781.779 132.541 785.916 136.678 791.019 136.678Z"

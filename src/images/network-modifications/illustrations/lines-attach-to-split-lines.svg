@@ -89,7 +89,7 @@
              d="M 437.197,310 H 370.108 Z"
              id="path26" />
           <path
-             style="stroke:#81C784;stroke-width:3.85667992;stroke-dasharray:3.86, 3.86"
+             style="stroke:#FFA4C2;stroke-width:3.85667992;stroke-dasharray:3.86, 3.86"
              d="M 437.197,310 H 370.108"
              id="path28" />
         </g>
@@ -102,7 +102,7 @@
            id="lineBefore_2"
            d="M 352.133,241.211 V 289.789 292 h 9.516 V 289.789 241.211 239 h -9.516 z" />
         <path
-           style="fill:#81C784"
+           style="fill:#FFA4C2"
            id="path3740-0"
            d="m 356.993,319.193 c 5.604,0 10.147,-4.297 10.147,-9.597 0,-5.3 -4.543,-9.596 -10.147,-9.596 -5.604,0 -10.147,4.296 -10.147,9.596 0,5.3 4.543,9.597 10.147,9.597 z" />
         <text
@@ -131,7 +131,7 @@
         <text
            id="text177"
            xml:space="preserve"
-           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
            font-size="18.6667"
            font-weight="bold"
            letter-spacing="0em"
@@ -213,7 +213,7 @@
            id="path3740-0-5_2"
            d="m 1289.9,137.178 c 5.6,0 10.14,-4.297 10.14,-9.597 0,-5.3 -4.54,-9.596 -10.14,-9.596 -5.61,0 -10.15,4.296 -10.15,9.596 0,5.3 4.54,9.597 10.15,9.597 z" />
         <path
-           style="fill:#FFB74D"
+           style="fill:#64B5F6"
            id="path3740-0-0_2"
            d="m 1060.14,137.726 c 5.6,0 10.15,-4.296 10.15,-9.596 0,-5.3 -4.55,-9.597 -10.15,-9.597 -5.6,0 -10.15,4.297 -10.15,9.597 0,5.3 4.55,9.596 10.15,9.596 z" />
         <path
@@ -227,7 +227,7 @@
              d="M 1059.62,114.052 V 50.6018 Z"
              id="path56" />
           <path
-             style="stroke:#FFB74D;stroke-width:3.85667992;stroke-dasharray:3.86, 3.86"
+             style="stroke:#64B5F6;stroke-width:3.85667992;stroke-dasharray:3.86, 3.86"
              d="M 1059.62,114.052 V 50.6018"
              id="path58" />
         </g>
@@ -287,7 +287,7 @@
            x="164.19392"
            id="text4625-9-6_2"
            xml:space="preserve"
-           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFB74D"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
            font-size="18.6667"
            font-weight="bold"
            letter-spacing="0em"><tspan
