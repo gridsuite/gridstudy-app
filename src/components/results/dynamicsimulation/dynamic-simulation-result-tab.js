@@ -27,7 +27,9 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
         null,
         (res) => ({
             status: res.status,
-            timeseries: Array(res.timeseriesMetadatas.length),
+            timeseries: res.timeseriesMetadatas
+                ? Array(res.timeseriesMetadatas.length)
+                : undefined,
             timeseriesMetadatas: res.timeseriesMetadatas,
         })
     );
