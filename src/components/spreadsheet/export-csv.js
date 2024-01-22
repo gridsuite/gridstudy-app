@@ -41,11 +41,12 @@ export const CsvExport = ({
                     ?.getModel()
                     ?.rowsToDisplay.map((node) => node.data) || [];
             Object.keys(gridData).forEach((item) => {
-                gridData[item].limitName &&
-                    (gridData[item].limitName = formatNAValue(
+                if (gridData[item].limitName) {
+                    gridData[item].limitName = formatNAValue(
                         gridData[item].limitName,
                         intl
-                    ));
+                    );
+                }
             });
             return gridData;
         };
