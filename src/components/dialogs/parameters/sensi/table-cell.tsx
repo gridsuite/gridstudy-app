@@ -19,8 +19,14 @@ function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
     column: any,
-    onRowChanged: (a: boolean) => void
+    onRowChanged: (a: boolean, source: string) => void
 ) {
+    const handleDirectoryItemsChange = () => {
+        onRowChanged(true, 'directory');
+    };
+    const handleSwitchInputChange = () => {
+        onRowChanged(true, 'switch');
+    };
     return (
         <TableCell
             key={column.dataKey}
@@ -37,7 +43,7 @@ function EditableTableCell(
                     hideErrorMessage={true}
                     label={undefined}
                     itemFilter={undefined}
-                    onRowChanged={onRowChanged}
+                    onRowChanged={handleDirectoryItemsChange}
                 />
             )}
             {column.menuItems && (
@@ -50,7 +56,7 @@ function EditableTableCell(
                 />
             )}
             {column.checkboxItems && (
-                <span onChange={() => onRowChanged(true)}>
+                <span onChange={handleSwitchInputChange}>
                     <SwitchInput
                         name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     />

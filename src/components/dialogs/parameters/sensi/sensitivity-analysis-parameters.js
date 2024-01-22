@@ -211,6 +211,7 @@ export const SensitivityAnalysisParameters = ({
                         formatNewParams(newParams, false)
                     );
                     updateProvider(newParams[PROVIDER]);
+                    initRowsCount();
                 })
                 .catch((error) => {
                     snackError({
@@ -252,17 +253,18 @@ export const SensitivityAnalysisParameters = ({
 
             totalResultCount += count;
         });
-        return totalResultCount;
+        setAnalysisComputeComplexity(totalResultCount);
+        const timeoutId = setTimeout(() => {
+            setLaunchLoader(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
     }, [getValues]);
 
     const onFormChanged = useCallback(
         (onFormChanged) => {
             if (onFormChanged) {
                 setLaunchLoader(true);
-                setAnalysisComputeComplexity(getResultCount());
-                setTimeout(() => {
-                    setLaunchLoader(false);
-                }, 500);
+                getResultCount();
             }
         },
         [getResultCount]
@@ -282,10 +284,7 @@ export const SensitivityAnalysisParameters = ({
                             `${arrayFormName}[${index}].[${COUNT}]`,
                             parseIntData(value, 0)
                         );
-                        setAnalysisComputeComplexity(getResultCount());
-                        setTimeout(() => {
-                            setLaunchLoader(false);
-                        }, 500);
+                        getResultCount();
                     });
                 })
                 .catch((error) => {
@@ -302,11 +301,24 @@ export const SensitivityAnalysisParameters = ({
 
     const initRowsCount = useCallback(() => {
         const handleEntries = (entries, parameter) => {
-            entries
-                .filter((entry) => entry[ACTIVATED] && !entry[COUNT])
-                .forEach((entry, index) =>
-                    onChangeParams(entry, parameter, index)
+            const entriesWithIndices = entries.map((entry, index) => ({
+                entry,
+                index,
+            }));
+            const filteredInitEntries = entries.filter(
+                (entry) =>
+                    entry[ACTIVATED] &&
+                    entry[MONITORED_BRANCHES].length > 0 &&
+                    (entry[INJECTIONS]?.length > 0 ||
+                        entry[PSTS]?.length > 0 ||
+                        entry[HVDC_LINES]?.length > 0)
+            );
+            filteredInitEntries.forEach((entry) => {
+                const originalIndex = entriesWithIndices.findIndex(
+                    (obj) => obj.entry === entry
                 );
+                onChangeParams(entry, parameter, originalIndex);
+            });
         };
 
         const values = getValues();
