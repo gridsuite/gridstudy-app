@@ -222,29 +222,3 @@ export function fetchMapBoxToken() {
             return res.mapBoxToken;
         });
 }
-
-export const backendFetchFile = (url, init, token) => {
-    const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.blob());
-};
-
-const FILE_TYPE = {
-    ZIP: 'ZIP',
-};
-export const downloadZipFile = (blob, fileName) => {
-    downloadFile(blob, fileName, FILE_TYPE.ZIP);
-};
-
-const downloadFile = (blob, filename, type) => {
-    let contentType;
-    if (type === FILE_TYPE.ZIP) {
-        contentType = 'application/octet-stream';
-    }
-    const href = window.URL.createObjectURL(new Blob([blob], { contentType }));
-    const link = document.createElement('a');
-    link.href = href;
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-};

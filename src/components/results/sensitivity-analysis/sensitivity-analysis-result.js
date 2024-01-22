@@ -27,6 +27,7 @@ import {
     SENSITIVITY_AT_NODE,
     SUFFIX_TYPES,
 } from './sensitivity-analysis-content';
+import { ExportButton } from '../../utils/export-button';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -53,6 +54,9 @@ const SensitivityAnalysisResult = ({
     filterProps,
     isLoading,
     handleCsvHeadersChange,
+    exportResultAsCsv,
+    isCsvExportLoading,
+    isCsvExportSuccessful,
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
@@ -229,6 +233,20 @@ const SensitivityAnalysisResult = ({
     return (
         <div style={{ position: 'relative', flexGrow: 1 }}>
             <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                }}
+            >
+                <Box style={{ flexGrow: 1 }}></Box>
+                <ExportButton
+                    disabled={!rowsToShow || rowsToShow.length === 0}
+                    onClick={exportResultAsCsv}
+                    isDownloadLoading={isCsvExportLoading}
+                    isDownloadSuccessful={isCsvExportSuccessful}
+                />
+            </Box>
             <CustomAGGrid
                 ref={gridRef}
                 rowData={rowsToShow}

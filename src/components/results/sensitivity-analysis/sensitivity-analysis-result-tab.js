@@ -29,8 +29,9 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import React, { useCallback } from 'react';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
-import Grid from '@mui/material/Grid';
-import ExportZippedCsvResults from '../../utils/export-zipped-csv-results';
+import { downloadZipFile } from '../../../services/utils';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -38,9 +39,12 @@ export const SensitivityResultTabs = [
 ];
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
+    const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKind, setSensiKind] = useState(SENSITIVITY_IN_DELTA_MW);
     const [resultDownloadSuccess, setResultDownloadSuccess] = useState(false);
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
@@ -97,34 +101,46 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         setCsvHeaders(headersCsv);
     }, []);
 
+    const exportResultAsCsv = useCallback(() => {
+        setIsCsvExportLoading(true);
+        setResultDownloadSuccess(false);
+        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, {
+            csvHeaders,
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
+            sensitivityFunctionType: FUNCTION_TYPES[sensiKind],
+        })
+            .then((response: any) => {
+                response.blob().then((blob: Blob) => {
+                    downloadZipFile(blob, 'sensitivity_analyse_results.zip');
+                    setResultDownloadSuccess(true);
+                });
+            })
+            .catch((error: any) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'csvExportSensitivityResultError',
+                    }),
+                });
+                setResultDownloadSuccess(false);
+            })
+            .finally(() => setIsCsvExportLoading(false));
+    }, [
+        snackError,
+        studyUuid,
+        nodeUuid,
+        csvHeaders,
+        intl,
+        nOrNkIndex,
+        sensiKind,
+    ]);
+
     return (
         <>
-            <Grid container justifyContent="space-between">
-                <Grid item>
-                    <SensitivityAnalysisTabs
-                        sensiKind={sensiKind}
-                        setSensiKind={handleSensiKindChange}
-                    />
-                </Grid>
-                <Grid item>
-                    <ExportZippedCsvResults
-                        resultDownloadSuccess={resultDownloadSuccess}
-                        setResultDownloadSuccess={setResultDownloadSuccess}
-                        exportPromise={exportSensitivityResultsAsCsv(
-                            studyUuid,
-                            nodeUuid,
-                            {
-                                csvHeaders,
-                                tabSelection:
-                                    SensitivityResultTabs[nOrNkIndex].id,
-                                sensitivityFunctionType:
-                                    FUNCTION_TYPES[sensiKind],
-                            }
-                        )}
-                        fileName={'sensitivity_analyse_results.zip'}
-                    />
-                </Grid>
-            </Grid>
+            <SensitivityAnalysisTabs
+                sensiKind={sensiKind}
+                setSensiKind={handleSensiKindChange}
+            />
             {sensiResultKind.includes(sensiKind) && (
                 <>
                     <Tabs
@@ -151,6 +167,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             filterSelector,
                         }}
                         handleCsvHeadersChange={handleCsvHeadersChange}
+                        exportResultAsCsv={exportResultAsCsv}
+                        isCsvExportLoading={isCsvExportLoading}
+                        isCsvExportSuccessful={resultDownloadSuccess}
                     />
                 </>
             )}
