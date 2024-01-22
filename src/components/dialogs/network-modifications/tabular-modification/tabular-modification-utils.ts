@@ -8,17 +8,17 @@
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import {
     EQUIPMENT_ID,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
+    B,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
+    RATED_U1,
+    RATED_U2,
+    X,
+    R,
+    G1,
+    G2,
+    B1,
+    B2,
     SUBSTATION_COUNTRY,
 } from 'components/utils/field-constants';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
@@ -63,12 +63,12 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     ],
     LINE: [
         EQUIPMENT_ID,
-        SERIES_RESISTANCE,
-        SERIES_REACTANCE,
-        SHUNT_CONDUCTANCE_1,
-        SHUNT_CONDUCTANCE_2,
-        SHUNT_SUSCEPTANCE_1,
-        SHUNT_SUSCEPTANCE_2,
+        R,
+        X,
+        G1,
+        G2,
+        B1,
+        B2
     ],
     LOAD: [
         'equipmentId',
@@ -78,12 +78,12 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     ],
     TWO_WINDINGS_TRANSFORMER: [
         EQUIPMENT_ID,
-        SERIES_RESISTANCE,
-        SERIES_REACTANCE,
-        MAGNETIZING_CONDUCTANCE,
-        MAGNETIZING_SUSCEPTANCE,
-        RATED_VOLTAGE_1,
-        RATED_VOLTAGE_2,
+        R,
+        X,
+        G,
+        B,
+        RATED_U1,
+        RATED_U2,
         RATED_S,
     ],
     SUBSTATION: [EQUIPMENT_ID, SUBSTATION_COUNTRY],
@@ -121,12 +121,12 @@ export const convertValueFromBackToFront = (
             return value;
         case SUBSTATION_COUNTRY:
             return translate(value?.value);
-        case MAGNETIZING_CONDUCTANCE:
-        case MAGNETIZING_SUSCEPTANCE:
-        case SHUNT_CONDUCTANCE_1:
-        case SHUNT_CONDUCTANCE_2:
-        case SHUNT_SUSCEPTANCE_1:
-        case SHUNT_SUSCEPTANCE_2:
+        case G:
+        case B:
+        case G1:
+        case G2:
+        case B1:
+        case B2:
             return unitToMicroUnit(value?.value);
         default:
             return value?.value;
@@ -143,12 +143,12 @@ export const convertValueFromFrontToBack = (
             return value;
         case SUBSTATION_COUNTRY:
             return toModificationOperation(getCountryCode(value));
-        case MAGNETIZING_CONDUCTANCE:
-        case MAGNETIZING_SUSCEPTANCE:
-        case SHUNT_CONDUCTANCE_1:
-        case SHUNT_CONDUCTANCE_2:
-        case SHUNT_SUSCEPTANCE_1:
-        case SHUNT_SUSCEPTANCE_2:
+        case G:
+        case B:
+        case G1:
+        case G2:
+        case B1:
+        case B2:
             return toModificationOperation(microUnitToUnit(value));
         default:
             return toModificationOperation(value);

@@ -59,7 +59,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
     const magnetizingConductanceField = (
         <FloatInput
             name={`${id}.${G}`}
-            label="MagnetizingConductance"
+            label="G"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(twtToModify?.g)}
             clearable={isModification}
@@ -69,7 +69,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
     const magnetizingSusceptanceField = (
         <FloatInput
             name={`${id}.${B}`}
-            label="MagnetizingSusceptance"
+            label="B"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(twtToModify?.b)}
             clearable={isModification}
