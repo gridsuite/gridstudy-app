@@ -44,14 +44,16 @@ const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
                     overflowY: 'hidden',
                 }}
             >
-                {result && dynamicSimulationResultPresent && (
-                    <DynamicSimulationResultChartTabs
-                        result={{
-                            timeseriesMetadatas: result.timeseriesMetadatas,
-                        }}
-                        loadTimeSeries={loadTimeSeries}
-                    />
-                )}
+                {result &&
+                    result.timeseriesMetadatas &&
+                    dynamicSimulationResultPresent && (
+                        <DynamicSimulationResultChartTabs
+                            result={{
+                                timeseriesMetadatas: result.timeseriesMetadatas,
+                            }}
+                            loadTimeSeries={loadTimeSeries}
+                        />
+                    )}
             </Box>
         </Box>
     );
