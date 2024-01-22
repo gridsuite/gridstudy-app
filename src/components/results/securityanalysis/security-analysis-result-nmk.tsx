@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
@@ -18,6 +23,7 @@ import {
     flattenNmKResultsContingencies,
     handlePostSortRows,
     PAGE_OPTIONS,
+    RESULT_TYPE,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
@@ -28,6 +34,8 @@ import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { BranchSide } from '../../utils/constants';
+import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
+import { downloadZipFile } from 'services/utils';
 
 const styles = {
     container: {
@@ -53,12 +61,15 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
+    enumValueTranslations,
 }) => {
     const { content } = result || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
     const { snackError } = useSnackMessage();
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
 
     const onClickNmKConstraint = useCallback(
         (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
@@ -188,6 +199,48 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [isFromContingency, theme.selectedRow.background]
     );
 
+    const csvHeaders = useMemo(
+        () => columnDefs.map((cDef) => cDef.headerName),
+        [columnDefs]
+    );
+
+    const exportResultCsv = useCallback(() => {
+        setIsCsvExportLoading(true);
+        setIsCsvExportSuccessful(false);
+        downloadSecurityAnalysisResultZippedCsv(
+            studyUuid,
+            nodeUuid,
+            {
+                resultType: isFromContingency
+                    ? RESULT_TYPE.NMK_CONTINGENCIES
+                    : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
+            },
+            csvHeaders,
+            enumValueTranslations
+        )
+            .then((fileBlob) => {
+                downloadZipFile(fileBlob, 'nmk-results.zip');
+                setIsCsvExportSuccessful(true);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'securityAnalysisCsvResultsError',
+                    }),
+                });
+            })
+            .finally(() => setIsCsvExportLoading(false));
+    }, [
+        csvHeaders,
+        enumValueTranslations,
+        isFromContingency,
+        studyUuid,
+        nodeUuid,
+        snackError,
+        intl,
+    ]);
+
     const agGridProps = {
         postSortRows: handlePostSortRows,
         getRowStyle,
@@ -202,6 +255,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
                     agGridProps={agGridProps}
+                    exportCsv={exportResultCsv}
+                    isCsvExportLoading={isCsvExportLoading}
+                    isCsvExportSuccessful={isCsvExportSuccessful}
                 />
             </Box>
             <Box>
