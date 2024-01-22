@@ -10,14 +10,7 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    Grid,
-    Button,
-    DialogActions,
-    Box,
-    CircularProgress,
-    Typography,
-} from '@mui/material';
+import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
