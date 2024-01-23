@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { IconButton } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
-import GetAppIcon from '@mui/icons-material/GetApp';
+import { useIntl } from 'react-intl';
 import { useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
+import { ExportButton } from 'components/utils/export-button';
 import { formatNAValue } from './utils/cell-renderers';
 
 export const CsvExport = ({
@@ -41,10 +40,12 @@ export const CsvExport = ({
                     ?.getModel()
                     ?.rowsToDisplay.map((node) => node.data) || [];
             Object.keys(gridData).forEach((item) => {
-                gridData[item].limitName = formatNAValue(
-                    gridData[item].limitName,
-                    intl
-                );
+                if (gridData[item].limitName) {
+                    gridData[item].limitName = formatNAValue(
+                        gridData[item].limitName,
+                        intl
+                    );
+                }
             });
             return gridData;
         };
@@ -65,20 +66,5 @@ export const CsvExport = ({
         intl,
     ]);
 
-    return (
-        <>
-            <span>
-                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-            </span>
-            <span>
-                <IconButton
-                    disabled={disabled}
-                    aria-label="exportCSVButton"
-                    onClick={downloadCSVData}
-                >
-                    <GetAppIcon />
-                </IconButton>
-            </span>
-        </>
-    );
+    return <ExportButton disabled={disabled} onClick={downloadCSVData} />;
 };
