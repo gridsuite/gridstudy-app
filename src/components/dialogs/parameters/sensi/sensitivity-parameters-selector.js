@@ -110,7 +110,12 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams }) => {
                 </Tabs>
 
                 {tabInfo.map((tab, index) => (
-                    <TabPanel key={tab.label} value={tabValue} index={index}>
+                    <TabPanel
+                        key={tab.label}
+                        value={tabValue}
+                        index={index}
+                        sx={{ paddingTop: 1 }}
+                    >
                         {tabValue === TAB_VALUES.SensitivityBranches &&
                             tab.subTabs && (
                                 <>

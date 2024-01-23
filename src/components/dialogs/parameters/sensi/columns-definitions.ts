@@ -67,7 +67,7 @@ export interface ISensiParameters {
 export interface IColumnsDef {
     label: string;
     dataKey: string;
-    initialValue: boolean | string | string[];
+    initialValue: boolean | string | string[] | number;
     editable?: boolean;
     directoryItems?: boolean;
     menuItems?: boolean;
@@ -75,6 +75,8 @@ export interface IColumnsDef {
     elementType?: string;
     titleId?: string;
     checkboxItems?: boolean;
+    floatItems?: boolean;
+    textItems?: boolean;
     width?: string;
 }
 export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [

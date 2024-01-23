@@ -1,4 +1,3 @@
-import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import {
     computeMaxQAtNominalV,
     computeMaxSusceptance,
@@ -13,7 +12,10 @@ import {
     RefreshCellsParams,
     GridApi,
 } from 'ag-grid-community';
-import { REGULATION_TYPES } from 'components/network/constants';
+import {
+    REGULATION_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
+} from 'components/network/constants';
 
 type DynamicValidation = Record<string, number | undefined>;
 

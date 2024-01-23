@@ -61,6 +61,7 @@ import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
+import { usePrevious } from './utils/utils';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -192,14 +193,6 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
-function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-        ref.current = value;
-    }, [value]);
-    return ref.current;
-}
-
 export const UPDATE_TYPE_HEADER = 'updateType';
 const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
     'study_network_recreation_done';
@@ -295,6 +288,12 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
+            if (updateTypeHeader === 'nonEvacuatedEnergy_failed') {
+                snackError({
+                    headerId: 'nonEvacuatedEnergyAnalysisError',
+                    messageTxt: errorMessage,
+                });
+            }
             if (
                 updateTypeHeader === 'shortCircuitAnalysis_failed' ||
                 updateTypeHeader === 'oneBusShortCircuitAnalysis_failed'
@@ -306,7 +305,7 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             if (updateTypeHeader === 'dynamicSimulation_failed') {
                 snackError({
-                    headerId: 'dynamicSimulationError',
+                    headerId: 'DynamicSimulationRunError',
                     messageTxt: errorMessage,
                 });
             }

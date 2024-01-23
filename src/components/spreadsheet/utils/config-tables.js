@@ -22,7 +22,7 @@ import {
     PHASE_REGULATION_MODES,
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
-    SIDE,
+    SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
 import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
