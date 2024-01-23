@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import {
     PreContingencyResult,
     SecurityAnalysisNTableRow,
@@ -15,14 +15,31 @@ import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import {
     MAX_INT32,
+    RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
+import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
+import { downloadZipFile } from 'services/utils';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
-> = ({ result, isLoadingResult, sortProps, filterProps, filterEnums }) => {
+> = ({
+    result,
+    isLoadingResult,
+    sortProps,
+    filterProps,
+    filterEnums,
+    studyUuid,
+    nodeUuid,
+    enumValueTranslations,
+}) => {
     const intl: IntlShape = useIntl();
+    const { snackError } = useSnackMessage();
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
+
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
             ? result?.map((preContingencyResult: PreContingencyResult) => {
@@ -58,11 +75,53 @@ export const SecurityAnalysisResultN: FunctionComponent<
         [intl, sortProps, filterProps, filterEnums]
     );
 
+    const csvHeaders = useMemo(
+        () => columnDefs.map((cDef) => cDef.headerName),
+        [columnDefs]
+    );
+
+    const exportResultCsv = useCallback(() => {
+        setIsCsvExportLoading(true);
+        setIsCsvExportSuccessful(false);
+        downloadSecurityAnalysisResultZippedCsv(
+            studyUuid,
+            nodeUuid,
+            {
+                resultType: RESULT_TYPE.N,
+            },
+            csvHeaders,
+            enumValueTranslations
+        )
+            .then((fileBlob) => {
+                downloadZipFile(fileBlob, 'n-results.zip');
+                setIsCsvExportSuccessful(true);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'securityAnalysisCsvResultsError',
+                    }),
+                });
+            })
+            .finally(() => setIsCsvExportLoading(false));
+    }, [
+        enumValueTranslations,
+        csvHeaders,
+        studyUuid,
+        nodeUuid,
+        snackError,
+        intl,
+    ]);
+
     return (
         <SecurityAnalysisTable
             rows={rows}
             columnDefs={columnDefs}
             isLoadingResult={isLoadingResult}
+            exportCsv={exportResultCsv}
+            isCsvExportLoading={isCsvExportLoading}
+            isCsvExportSuccessful={isCsvExportSuccessful}
         />
     );
 };
