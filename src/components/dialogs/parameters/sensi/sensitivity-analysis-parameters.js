@@ -199,36 +199,6 @@ export const SensitivityAnalysisParameters = ({
         return getGenericRowNewParams(row);
     }, []);
 
-    const onSubmit = useCallback(
-        (newParams) => {
-            setIsSubmitAction(true);
-            setSensitivityAnalysisParameters(
-                studyUuid,
-                formatNewParams(newParams)
-            )
-                .then(() => {
-                    setSensitivityAnalysisParams(
-                        formatNewParams(newParams, false)
-                    );
-                    updateProvider(newParams[PROVIDER]);
-                    initRowsCount();
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisParametersError',
-                    });
-                });
-        },
-        [
-            setSensitivityAnalysisParams,
-            snackError,
-            studyUuid,
-            formatNewParams,
-            updateProvider,
-        ]
-    );
-
     const getResultCount = useCallback(() => {
         const values = getValues();
         let totalResultCount = 0;
@@ -298,41 +268,6 @@ export const SensitivityAnalysisParameters = ({
         },
         [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
     );
-
-    const initRowsCount = useCallback(() => {
-        const handleEntries = (entries, parameter) => {
-            const entriesWithIndices = entries.map((entry, index) => ({
-                entry,
-                index,
-            }));
-            const filteredInitEntries = entries.filter(
-                (entry) =>
-                    entry[ACTIVATED] &&
-                    entry[MONITORED_BRANCHES].length > 0 &&
-                    (entry[INJECTIONS]?.length > 0 ||
-                        entry[PSTS]?.length > 0 ||
-                        entry[HVDC_LINES]?.length > 0)
-            );
-            filteredInitEntries.forEach((entry) => {
-                const originalIndex = entriesWithIndices.findIndex(
-                    (obj) => obj.entry === entry
-                );
-                onChangeParams(entry, parameter, originalIndex);
-            });
-        };
-
-        const values = getValues();
-        handleEntries(
-            values[PARAMETER_SENSI_INJECTIONS_SET],
-            PARAMETER_SENSI_INJECTIONS_SET
-        );
-        handleEntries(
-            values[PARAMETER_SENSI_INJECTION],
-            PARAMETER_SENSI_INJECTION
-        );
-        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
-        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
-    }, [onChangeParams, getValues]);
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
@@ -515,6 +450,71 @@ export const SensitivityAnalysisParameters = ({
             reset(values);
         },
         [reset]
+    );
+
+    const initRowsCount = useCallback(() => {
+        const handleEntries = (entries, parameter) => {
+            const entriesWithIndices = entries.map((entry, index) => ({
+                entry,
+                index,
+            }));
+            const filteredInitEntries = entries.filter(
+                (entry) =>
+                    entry[ACTIVATED] &&
+                    entry[MONITORED_BRANCHES].length > 0 &&
+                    (entry[INJECTIONS]?.length > 0 ||
+                        entry[PSTS]?.length > 0 ||
+                        entry[HVDC_LINES]?.length > 0)
+            );
+            filteredInitEntries.forEach((entry) => {
+                const originalIndex = entriesWithIndices.findIndex(
+                    (obj) => obj.entry === entry
+                );
+                onChangeParams(entry, parameter, originalIndex);
+            });
+        };
+
+        const values = getValues();
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTIONS_SET],
+            PARAMETER_SENSI_INJECTIONS_SET
+        );
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTION],
+            PARAMETER_SENSI_INJECTION
+        );
+        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
+        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
+    }, [onChangeParams, getValues]);
+    const onSubmit = useCallback(
+        (newParams) => {
+            setIsSubmitAction(true);
+            setSensitivityAnalysisParameters(
+                studyUuid,
+                formatNewParams(newParams)
+            )
+                .then(() => {
+                    setSensitivityAnalysisParams(
+                        formatNewParams(newParams, false)
+                    );
+                    updateProvider(newParams[PROVIDER]);
+                    initRowsCount();
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'SensitivityAnalysisParametersError',
+                    });
+                });
+        },
+        [
+            setSensitivityAnalysisParams,
+            snackError,
+            studyUuid,
+            formatNewParams,
+            updateProvider,
+            initRowsCount,
+        ]
     );
 
     useEffect(() => {
