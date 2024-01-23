@@ -13,8 +13,7 @@ import {
     NumericalField,
     SelectCountryField,
     BooleanListField,
-    TWTRatioRegulatingTerminalEditor,
-    TWTPhaseRegulatingTerminalEditor,
+    TWTRegulatingTerminalEditor,
 } from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
@@ -39,7 +38,7 @@ import {
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import {
     computeHighTapPosition,
-    getTapChangerRegulationTerminalGeneratorValue,
+    getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
 import {
     getComputedPhaseRegulationType,
@@ -861,10 +860,10 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatioRegulatingTerminalGenerator',
-                field: 'RatioRegulatingTerminalGenerator',
+                id: 'RatioRegulatingTerminal',
+                field: 'RatioRegulatingTerminal',
                 valueGetter: (params) =>
-                    getTapChangerRegulationTerminalGeneratorValue(
+                    getTapChangerRegulationTerminalValue(
                         params?.data?.ratioTapChanger
                     ),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
@@ -880,11 +879,10 @@ export const TABLES_DEFINITIONS = {
                         columnValue: REGULATION_TYPES.DISTANT.id,
                     },
                 },
-                cellEditor: TWTRatioRegulatingTerminalEditor,
+                cellEditor: TWTRegulatingTerminalEditor,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            getTapChangerRegulationTerminalGeneratorValue,
+                        defaultValue: getTapChangerRegulationTerminalValue,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1108,10 +1106,10 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'PhaseRegulatingTerminalGenerator',
-                field: 'PhaseRegulatingTerminalGenerator',
+                id: 'PhaseRegulatingTerminal',
+                field: 'PhaseRegulatingTerminal',
                 valueGetter: (params) =>
-                    getTapChangerRegulationTerminalGeneratorValue(
+                    getTapChangerRegulationTerminalValue(
                         params?.data?.phaseTapChanger
                     ),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
@@ -1127,13 +1125,11 @@ export const TABLES_DEFINITIONS = {
                         columnValue: REGULATION_TYPES.DISTANT.id,
                     },
                 },
-                cellEditor: TWTPhaseRegulatingTerminalEditor,
+                cellEditor: TWTRegulatingTerminalEditor,
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: (params) => {
-                            getTapChangerRegulationTerminalGeneratorValue(
-                                params
-                            );
+                            getTapChangerRegulationTerminalValue(params);
                         },
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1186,7 +1182,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'PhaseTap',
-                field: 'phaseTapChanger',
+                field: 'phaseTapChanger.tapPosition',
                 filter: 'agNumberColumnFilter',
                 numeric: true,
                 fractionDigits: 0,

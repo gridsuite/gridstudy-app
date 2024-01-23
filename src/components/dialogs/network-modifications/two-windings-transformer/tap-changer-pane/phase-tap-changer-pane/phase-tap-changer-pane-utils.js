@@ -345,12 +345,12 @@ export const getComputedPhaseTapChangerRegulationMode = (
 };
 
 export const getPhaseTapRegulationSideId = (twt) => {
-    const phaseTapChengerValues = twt?.phaseTapChanger;
-    if (!phaseTapChengerValues || !twt) {
+    const phaseTapChangerValues = twt?.phaseTapChanger;
+    if (!phaseTapChangerValues || !twt) {
         return null;
     }
-    if (phaseTapChengerValues?.regulatingTerminalConnectableId === twt?.id) {
-        return phaseTapChengerValues?.regulatingTerminalVlId ===
+    if (phaseTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
+        return phaseTapChangerValues?.regulatingTerminalVlId ===
             twt?.voltageLevelId1
             ? SIDE.SIDE1.id
             : SIDE.SIDE2.id;

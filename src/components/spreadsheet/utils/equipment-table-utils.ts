@@ -2,7 +2,7 @@ import {
     computeMaxQAtNominalV,
     computeMaxSusceptance,
     computeSwitchedOnValue,
-    getTapChangerRegulationTerminalGeneratorValue,
+    getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
 import { EDIT_COLUMN } from './config-tables';
 import {
@@ -92,13 +92,13 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
     switch (colId) {
         case 'ratioTapChanger.regulationType':
             if (ratioRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
-                // This solve the problem of required on RatioRegulatingTerminalGenerator when we set regulationType to distant
+                // This solve the problem of required on RatioRegulatingTerminal when we set regulationType to distant
                 const regulatingTerminalGenerator =
-                    getTapChangerRegulationTerminalGeneratorValue(
+                    getTapChangerRegulationTerminalValue(
                         previousData?.ratioTapChanger
                     );
                 rowNode.setDataValue(
-                    'RatioRegulatingTerminalGenerator',
+                    'RatioRegulatingTerminal',
                     regulatingTerminalGenerator
                 );
             }
@@ -106,20 +106,20 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                 rowNodes: [rowNode],
                 columns: [
                     'ratioTapChanger.regulationType',
-                    'RatioRegulatingTerminalGenerator',
+                    'RatioRegulatingTerminal',
                 ],
             });
             break;
 
         case 'phaseTapChanger.regulationType':
             if (phaseRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
-                // This solve the problem of required on RatioRegulatingTerminalGenerator when we set regulationType to distant
+                // This solve the problem of required on PhaseRegulatingTerminal when we set regulationType to distant
                 const regulatingTerminalGenerator =
-                    getTapChangerRegulationTerminalGeneratorValue(
+                    getTapChangerRegulationTerminalValue(
                         previousData?.phaseTapChanger
                     );
                 rowNode.setDataValue(
-                    'PhaseRegulatingTerminalGenerator',
+                    'PhaseRegulatingTerminal',
                     regulatingTerminalGenerator
                 );
             }
@@ -127,15 +127,14 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                 rowNodes: [rowNode],
                 columns: [
                     'phaseTapChanger.regulationType',
-                    'PhaseRegulatingTerminalGenerator',
+                    'PhaseRegulatingTerminal',
                 ],
             });
             break;
 
-        case 'RatioRegulatingTerminalGenerator':
-            const RatioRegulatingTerminalGenerator =
-                params.data.RatioRegulatingTerminalGenerator;
-            if (RatioRegulatingTerminalGenerator) {
+        case 'RatioRegulatingTerminal':
+            const RatioRegulatingTerminal = params.data.RatioRegulatingTerminal;
+            if (RatioRegulatingTerminal) {
                 params.data.ratioTapChanger.regulatingTerminalVlId =
                     params.context.dynamicValidation.ratioTapChanger.regulatingTerminalVlId;
                 params.data.ratioTapChanger.regulatingTerminalConnectableId =
@@ -149,10 +148,9 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
             }
             break;
 
-        case 'PhaseRegulatingTerminalGenerator':
-            const PhaseRegulatingTerminalGenerator =
-                params.data.PhaseRegulatingTerminalGenerator;
-            if (PhaseRegulatingTerminalGenerator) {
+        case 'PhaseRegulatingTerminal':
+            const PhaseRegulatingTerminal = params.data.PhaseRegulatingTerminal;
+            if (PhaseRegulatingTerminal) {
                 params.data.phaseTapChanger.regulatingTerminalVlId =
                     params.context.dynamicValidation.phaseTapChanger.regulatingTerminalVlId;
                 params.data.phaseTapChanger.regulatingTerminalConnectableId =

@@ -22,7 +22,7 @@ import {
 } from './equipment-table-utils';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
-import { getTapChangerRegulationTerminalGeneratorValue } from 'components/utils/utils';
+import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
 
 export const GeneratorRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }, ref) => {
@@ -105,20 +105,27 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
     }
 );
 
-export const TWTRatioRegulatingTerminalEditor = forwardRef(
+export const TWTRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }, ref) => {
         const [
             openTWTRegulatingTerminalPopup,
             setOpenTWTRegulatingTerminalPopup,
         ] = useState(true);
 
+        const isRatioTapChanger = colDef.field === 'RatioRegulatingTerminal';
+
+        const tapChangerType = isRatioTapChanger
+            ? 'ratioTapChanger'
+            : 'phaseTapChanger';
+
         useImperativeHandle(
             ref,
             () => {
                 return {
                     getValue: () => {
-                        return getTapChangerRegulationTerminalGeneratorValue(
-                            gridContext.dynamicValidation?.ratioTapChanger || {}
+                        return getTapChangerRegulationTerminalValue(
+                            gridContext.dynamicValidation?.[tapChangerType] ||
+                                {}
                         );
                     },
                     getField: () => {
@@ -138,17 +145,17 @@ export const TWTRatioRegulatingTerminalEditor = forwardRef(
             } = updatedRegulatedTerminal || {};
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
-                'ratioTapChanger.regulatingTerminalConnectableId',
+                `${tapChangerType}.regulatingTerminalConnectableId`,
                 equipmentId
             );
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
-                'ratioTapChanger.regulatingTerminalConnectableType',
+                `${tapChangerType}.regulatingTerminalConnectableType`,
                 equipmentType
             );
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
-                'ratioTapChanger.regulatingTerminalVlId',
+                `${tapChangerType}.regulatingTerminalVlId`,
                 voltageLevelId
             );
             setOpenTWTRegulatingTerminalPopup(false);
@@ -158,19 +165,19 @@ export const TWTRatioRegulatingTerminalEditor = forwardRef(
             gridApi.stopEditing();
         };
 
-        const getRatioTapChangerValue = () => {
-            const ratioTapChanger = {
-                ...rowData?.ratioTapChanger,
+        const getTapChangerValue = () => {
+            const tapChanger = {
+                ...rowData?.[tapChangerType],
                 regulatingTerminalConnectableId:
-                    rowData?.ratioTapChanger?.regulatingTerminalConnectableId ||
-                    '',
+                    rowData?.[tapChangerType]
+                        ?.regulatingTerminalConnectableId || '',
                 regulatingTerminalConnectableType:
-                    rowData?.ratioTapChanger
+                    rowData?.[tapChangerType]
                         ?.regulatingTerminalConnectableType || '',
                 regulatingTerminalVlId:
-                    rowData?.ratioTapChanger?.regulatingTerminalVlId || '',
+                    rowData?.[tapChangerType]?.regulatingTerminalVlId || '',
             };
-            return ratioTapChanger;
+            return tapChanger;
         };
 
         return (
@@ -184,93 +191,7 @@ export const TWTRatioRegulatingTerminalEditor = forwardRef(
                 ) => {
                     handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
                 }}
-                data={getRatioTapChangerValue()}
-                previousData={gridContext.dataToModify}
-            />
-        );
-    }
-);
-
-export const TWTPhaseRegulatingTerminalEditor = forwardRef(
-    ({ gridContext, colDef, gridApi, rowData }, ref) => {
-        const [
-            openTWTRegulatingTerminalPopup,
-            setOpenTWTRegulatingTerminalPopup,
-        ] = useState(true);
-
-        useImperativeHandle(
-            ref,
-            () => {
-                return {
-                    getValue: () => {
-                        return getTapChangerRegulationTerminalGeneratorValue(
-                            gridContext.dynamicValidation.phaseTapChanger || {}
-                        );
-                    },
-                    getField: () => {
-                        return colDef.field;
-                    },
-                };
-            },
-            [colDef.field, gridContext.dynamicValidation]
-        );
-
-        const handleSaveRegulatingTerminalPopup = (
-            updatedRegulatedTerminal
-        ) => {
-            const {
-                equipment: { type: equipmentType, id: equipmentId } = {},
-                voltageLevel: { id: voltageLevelId } = {},
-            } = updatedRegulatedTerminal || {};
-            gridContext.dynamicValidation = deepUpdateValue(
-                gridContext.dynamicValidation,
-                'phaseTapChanger.regulatingTerminalConnectableId',
-                equipmentId
-            );
-            gridContext.dynamicValidation = deepUpdateValue(
-                gridContext.dynamicValidation,
-                'phaseTapChanger.regulatingTerminalConnectableType',
-                equipmentType
-            );
-            gridContext.dynamicValidation = deepUpdateValue(
-                gridContext.dynamicValidation,
-                'phaseTapChanger.regulatingTerminalVlId',
-                voltageLevelId
-            );
-            setOpenTWTRegulatingTerminalPopup(false);
-        };
-        const handleCancelRegulatingTerminalPopup = () => {
-            setOpenTWTRegulatingTerminalPopup(false);
-            gridApi.stopEditing();
-        };
-
-        const getPhaseTapChangerValue = () => {
-            const phaseTapChanger = {
-                ...rowData?.phaseTapChanger,
-                regulatingTerminalConnectableId:
-                    rowData?.phaseTapChanger?.regulatingTerminalConnectableId ||
-                    '',
-                regulatingTerminalConnectableType:
-                    rowData?.phaseTapChanger
-                        ?.regulatingTerminalConnectableType || '',
-                regulatingTerminalVlId:
-                    rowData?.phaseTapChanger?.regulatingTerminalVlId || '',
-            };
-            return phaseTapChanger;
-        };
-
-        return (
-            <RegulatingTerminalModificationDialog
-                open={openTWTRegulatingTerminalPopup}
-                onClose={handleCancelRegulatingTerminalPopup}
-                currentNode={gridContext.currentNode}
-                studyUuid={gridContext.studyUuid}
-                onModifyRegulatingTerminalGenerator={(
-                    updatedRegulatedTerminal
-                ) => {
-                    handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
-                }}
-                data={getPhaseTapChangerValue()}
+                data={getTapChangerValue()}
                 previousData={gridContext.dataToModify}
             />
         );

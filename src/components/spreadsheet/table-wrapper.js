@@ -1134,7 +1134,7 @@ const TableWrapper = (props) => {
                 ) {
                     updateGeneratorCells(params);
                 } else if (
-                    params.data.metadata?.equipmentType ===
+                    params.data.metadata.equipmentType ===
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
                 ) {
                     updateTwtCells(params);

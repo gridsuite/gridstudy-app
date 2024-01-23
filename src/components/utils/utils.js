@@ -168,7 +168,7 @@ export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
     }
 };
 
-export const getTapChangerRegulationTerminalGeneratorValue = (tapChanger) => {
+export const getTapChangerRegulationTerminalValue = (tapChanger) => {
     let regulatingTerminalGeneratorValue =
         tapChanger?.regulatingTerminalConnectableId ?? '';
     if (tapChanger?.regulatingTerminalVlId) {
