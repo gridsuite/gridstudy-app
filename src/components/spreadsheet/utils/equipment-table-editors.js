@@ -133,7 +133,7 @@ export const TWTRegulatingTerminalEditor = forwardRef(
                     },
                 };
             },
-            [colDef.field, gridContext.dynamicValidation]
+            [colDef.field, gridContext.dynamicValidation, tapChangerType]
         );
 
         const handleSaveRegulatingTerminalPopup = (
