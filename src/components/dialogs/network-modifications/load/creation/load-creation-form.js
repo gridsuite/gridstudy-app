@@ -28,6 +28,7 @@ import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -113,6 +114,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
+            <PropertiesForm networkElementType={'load'} />
         </>
     );
 };

@@ -414,7 +414,8 @@ export function createLoad(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -446,6 +447,7 @@ export function createLoad(
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -461,7 +463,8 @@ export function modifyLoad(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -489,6 +492,7 @@ export function modifyLoad(
             q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+            properties,
         }),
     });
 }

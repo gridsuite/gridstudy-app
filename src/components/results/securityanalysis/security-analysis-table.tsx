@@ -19,10 +19,35 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
+import { Box } from '@mui/material';
+import { ExportButton } from 'components/utils/export-button';
+
+const styles = {
+    gridContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+    },
+    grid: {
+        flexGrow: '1',
+    },
+};
 
 export const SecurityAnalysisTable: FunctionComponent<
     SecurityAnalysisResultProps
-> = ({ rows, columnDefs, isLoadingResult, agGridProps }) => {
+> = ({
+    rows,
+    columnDefs,
+    isLoadingResult,
+    agGridProps,
+    exportCsv,
+    isCsvExportSuccessful,
+    isCsvExportLoading,
+}) => {
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
@@ -56,13 +81,26 @@ export const SecurityAnalysisTable: FunctionComponent<
     );
 
     return (
-        <CustomAGGrid
-            rowData={rowsToShow}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            onGridReady={onGridReady}
-            overlayNoRowsTemplate={overlayNoRowsTemplate}
-            {...agGridProps}
-        />
+        <Box sx={styles.gridContainer}>
+            <Box sx={styles.csvExport}>
+                <Box style={{ flexGrow: 1 }}></Box>
+                <ExportButton
+                    disabled={!rowsToShow || rowsToShow.length === 0}
+                    onClick={exportCsv}
+                    isDownloadLoading={isCsvExportLoading}
+                    isDownloadSuccessful={isCsvExportSuccessful}
+                />
+            </Box>
+            <Box sx={styles.grid}>
+                <CustomAGGrid
+                    rowData={rowsToShow}
+                    columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
+                    overlayNoRowsTemplate={overlayNoRowsTemplate}
+                    {...agGridProps}
+                />
+            </Box>
+        </Box>
     );
 };

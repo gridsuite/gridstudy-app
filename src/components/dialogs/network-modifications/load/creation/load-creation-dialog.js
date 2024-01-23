@@ -37,6 +37,13 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    copyEquipmentPropertiesForCreation,
+    getPropertiesFromModification,
+    creationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 /**
  * Dialog to create a load in the network
@@ -54,6 +61,7 @@ const emptyFormData = {
     [P0]: null,
     [Q0]: null,
     ...getConnectivityWithPositionEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -66,6 +74,7 @@ const formSchema = yup
         [Q0]: yup.number().nullable().required(),
         ...getConnectivityWithPositionValidationSchema(),
     })
+    .concat(creationPropertiesSchema)
     .required();
 
 const LoadCreationDialog = ({
@@ -101,6 +110,7 @@ const LoadCreationDialog = ({
                 connectionName: load.connectablePosition.connectionName,
                 // connected is not copied on purpose: we use the default value (true) in all cases
             }),
+            ...copyEquipmentPropertiesForCreation(load),
         });
     };
 
@@ -120,6 +130,7 @@ const LoadCreationDialog = ({
                     connectionPosition: load.connectionPosition,
                     connected: load.connected,
                 }),
+                ...getPropertiesFromModification(load.properties),
             });
         },
         [reset]
@@ -157,7 +168,8 @@ const LoadCreationDialog = ({
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null,
-                load.connectivity?.connected
+                load.connectivity?.connected,
+                toModificationProperties(load)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
