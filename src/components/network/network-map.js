@@ -25,7 +25,6 @@ import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
-import { RunningStatus } from '../utils/running-status';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
