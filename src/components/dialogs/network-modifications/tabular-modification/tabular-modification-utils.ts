@@ -61,15 +61,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'maxQAtNominalV',
         'maxSusceptance',
     ],
-    LINE: [
-        EQUIPMENT_ID,
-        R,
-        X,
-        G1,
-        G2,
-        B1,
-        B2
-    ],
+    LINE: [EQUIPMENT_ID, R, X, G1, G2, B1, B2],
     LOAD: [
         'equipmentId',
         'loadType',
