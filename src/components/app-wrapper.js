@@ -112,6 +112,21 @@ let lightTheme = createTheme({
     },
 });
 
+lightTheme = createTheme(lightTheme, {
+    palette: {
+        cancelButtonColor: {
+            main: lightTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
+        },
+    },
+});
+
 let darkTheme = createTheme({
     components: {
         MuiTab: {
@@ -165,6 +180,21 @@ let darkTheme = createTheme({
     aggrid: 'ag-theme-alpine-dark',
     overlay: {
         background: '#121212',
+    },
+});
+
+darkTheme = createTheme(darkTheme, {
+    palette: {
+        cancelButtonColor: {
+            main: darkTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
+        },
     },
 });
 
