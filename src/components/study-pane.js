@@ -293,6 +293,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                         currentNode={currentNode}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
+                        view={props.view}
                     />
                 </TabPanelLazy>
             </Box>

@@ -106,10 +106,6 @@ export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
     SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
 };
-export const SHUNT_COMPENSATOR_TYPES = {
-    REACTOR: { id: 'REACTOR', label: 'Reactor' },
-    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
-};
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';

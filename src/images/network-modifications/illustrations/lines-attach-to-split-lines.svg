@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    viewBox="0 0 1423 364"
-   fill="none"
    version="1.1"
-   id="svg85">
+   id="svg85"
+   fill="none">
+  <defs
+     id="defs73" />
   <g
      transform="translate(-36.907781)"
      id="CREA - Piquage en coupure - BLK">
     <path
        style="display:inline;fill:#272727;fill-opacity:1;stroke:none;stroke-width:0.48604044;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="line-split-illu-background"
-       d="M 1454.1292,0.72493728 H 44.138047 c -3.35725,0 -6.07884,3.33327002 -6.07884,7.44508002 V 357.27994 c 0,4.112 2.72159,7.445 6.07884,7.445 H 1454.1292 c 3.36,0 6.08,-3.333 6.08,-7.445 V 8.1700173 c 0,-4.11181 -2.72,-7.44508002 -6.08,-7.44508002 z" />
+       d="M 1454.1292,-3.3759273 H 44.138047 c -3.35725,0 -6.07884,3.33327004 -6.07884,7.44508 V 353.17908 c 0,4.112 2.72159,7.445 6.07884,7.445 H 1454.1292 c 3.36,0 6.08,-3.333 6.08,-7.445 V 4.0691527 c 0,-4.11180996 -2.72,-7.44508 -6.08,-7.44508 z" />
     <g
        id="Group 4">
       <g
@@ -268,17 +270,17 @@
              y="40.968124"
              style="text-align:center;text-anchor:middle">Poste extrémité</tspan></text>
         <text
-           y="-1.4498745"
-           x="150.41379"
+           y="-0.93726641"
+           x="162.71638"
            id="text4625-2-3-9_3"
            xml:space="preserve"
            style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
            font-size="18.6667"
            letter-spacing="0em"><tspan
-             style="text-align:center;text-anchor:middle"
+             style="font-size:16.00003433px;text-align:center;text-anchor:middle"
              id="lines-attach-illu-line2-right-txt"
-             x="1173.9038"
-             y="156.38112">Liaison extrémité</tspan></text>
+             x="1186.2064"
+             y="156.89374">Liaison de remplacement 2</tspan></text>
         <text
            y="0.72493732"
            x="164.19392"
@@ -294,16 +296,16 @@
              y="39.780636">Poste en coupure</tspan></text>
         <text
            y="-0.3624686"
-           x="121.92136"
+           x="115.77006"
            id="text1382_2"
            xml:space="preserve"
            style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#90caf9"
            font-size="18.6667"
            letter-spacing="0em"><tspan
-             style="text-align:center;text-anchor:middle"
+             style="font-size:16px;text-align:center;text-anchor:middle"
              id="lines-attach-illu-line1-right-txt"
-             x="942.24768"
-             y="157.01753">Liaison origine</tspan></text>
+             x="936.09637"
+             y="157.01753">Liaison de remplacement 1</tspan></text>
         <text
            id="text4625-9_2"
            xml:space="preserve"
@@ -319,5 +321,5 @@
              style="text-align:center;text-anchor:middle">Poste origine</tspan></text>
       </g>
     </g>
-  </g>
+   </g>
 </svg>

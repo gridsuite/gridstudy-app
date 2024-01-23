@@ -7,7 +7,6 @@
 
 import {
     SHUNT_COMPENSATOR_TYPE,
-    SHUNT_COMPENSATOR_TYPES,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     MAXIMUM_SECTION_COUNT,
@@ -19,6 +18,7 @@ import {
 } from 'components/utils/field-constants';
 import { computeSwitchedOnValue } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
+import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 
 const characteristicsValidationSchema = (isModification) => ({
     [CHARACTERISTICS_CHOICE]: yup.string().required(),

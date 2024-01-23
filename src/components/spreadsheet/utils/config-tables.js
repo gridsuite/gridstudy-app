@@ -18,8 +18,8 @@ import {
     ENERGY_SOURCES,
     LOAD_TYPES,
     REGULATION_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
-import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import {

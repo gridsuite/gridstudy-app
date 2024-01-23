@@ -113,14 +113,11 @@ export const formatModification = (modification: Modification) => {
 
 export const convertValueFromBackToFront = (
     key: string,
-    value: { value: string | number },
-    translate: (code: string | number) => string
+    value: { value: string | number }
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
-        case SUBSTATION_COUNTRY:
-            return translate(value?.value);
         case G:
         case B:
         case G1:
@@ -135,14 +132,11 @@ export const convertValueFromBackToFront = (
 
 export const convertValueFromFrontToBack = (
     key: string,
-    value: string | number,
-    getCountryCode: (code: string | number) => string
+    value: string | number
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
-        case SUBSTATION_COUNTRY:
-            return toModificationOperation(getCountryCode(value));
         case G:
         case B:
         case G1:
