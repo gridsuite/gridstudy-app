@@ -43,7 +43,7 @@ import {
     fetchSubstationPositions,
 } from '../services/study/geo-data';
 import { Box } from '@mui/system';
-import { fetchMapBoxToken } from 'services/utils';
+import { useMapBoxToken } from './network/network-map/use-mapbox-token';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -104,7 +104,7 @@ export const NetworkMapTab = ({
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] =
         useState(false);
     const [isInitialized, setInitialized] = useState(false);
-    const [mapBoxToken, setMapBoxToken] = useState();
+    const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
 
@@ -776,12 +776,6 @@ export const NetworkMapTab = ({
             }
         });
     }, [updateMapEquipments, loadGeoData]);
-
-    useEffect(() => {
-        fetchMapBoxToken().then((token) =>
-            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN)
-        );
-    }, []);
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
