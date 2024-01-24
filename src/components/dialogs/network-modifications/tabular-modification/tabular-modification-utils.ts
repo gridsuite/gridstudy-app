@@ -112,8 +112,8 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     LOAD: [
         EQUIPMENT_ID,
         LOAD_TYPE,
-        CONSTANT_ACTIVE_POWER,
-        CONSTANT_REACTIVE_POWER,
+        'p0',
+        'q0',
         CONNECTED,
     ],
     TWO_WINDINGS_TRANSFORMER: [

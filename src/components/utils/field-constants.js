@@ -10,9 +10,8 @@ export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
 export const CONSTANT_ACTIVE_POWER = 'constantActivePower';
 export const CONSTANT_REACTIVE_POWER = 'constantReactivePower';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
 export const CONNECTIVITY = 'connectivity';
+export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
@@ -279,6 +278,8 @@ export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';
 
 // VSC
+export const ACTIVE_POWER = 'activePower';
+export const REACTIVE_POWER = 'reactivePower';
 export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
 export const DC_RESISTANCE = 'dcResistance';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
