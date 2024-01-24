@@ -106,16 +106,16 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         setResultDownloadSuccess(false);
         exportSensitivityResultsAsCsv(studyUuid, nodeUuid, {
             csvHeaders,
-            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
+            resultTab: SensitivityResultTabs[nOrNkIndex].id,
             sensitivityFunctionType: FUNCTION_TYPES[sensiKind],
         })
-            .then((response: any) => {
-                response.blob().then((blob: Blob) => {
+            .then((response) => {
+                response.blob().then((blob) => {
                     downloadZipFile(blob, 'sensitivity_analyse_results.zip');
                     setResultDownloadSuccess(true);
                 });
             })
-            .catch((error: any) => {
+            .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: intl.formatMessage({
