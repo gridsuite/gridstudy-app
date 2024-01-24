@@ -4,9 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-import { gridItem, italicFontTextField } from '../../../dialogUtils';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import {
     NAME,
@@ -15,12 +13,22 @@ import {
     DELETION_MARK,
     ADDED,
 } from 'components/utils/field-constants';
-import { fetchPredefinedProperties } from './property-utils';
 import { useWatch } from 'react-hook-form';
 import { TextInput } from '@gridsuite/commons-ui';
+import { PredefinedProperties } from './property-utils';
+import { gridItem, italicFontTextField } from '../../../dialogUtils';
 
-const PropertyForm = ({ name, index }) => {
-    const [predefinedProperties, setPredefinedProperties] = useState();
+type PropertyFormProps = {
+    name: string;
+    index: string;
+    predefinedProperties: PredefinedProperties;
+};
+
+const PropertyForm = ({
+    name,
+    index,
+    predefinedProperties,
+}: PropertyFormProps) => {
     const watchPropertyName = useWatch({ name: `${name}.${index}.${NAME}` });
     const watchPropertyPreviousValue = useWatch({
         name: `${name}.${index}.${PREVIOUS_VALUE}`,
@@ -39,14 +47,6 @@ const PropertyForm = ({ name, index }) => {
     const predefinedValues = useMemo(() => {
         return predefinedProperties?.[watchPropertyName]?.sort() ?? [];
     }, [watchPropertyName, predefinedProperties]);
-
-    useEffect(() => {
-        fetchPredefinedProperties().then((res) => {
-            if (res?.substation) {
-                setPredefinedProperties(res.substation);
-            }
-        });
-    }, []);
 
     const nameField = (
         <AutocompleteInput
