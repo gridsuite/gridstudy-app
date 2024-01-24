@@ -192,7 +192,7 @@ export const TWTRegulatingTerminalEditor = forwardRef(
                     handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
                 }}
                 data={getTapChangerValue()}
-                previousData={gridContext.dataToModify}
+                previousData={gridContext.dataToModify?.[tapChangerType]}
             />
         );
     }
