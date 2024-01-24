@@ -7,7 +7,7 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "^0.43.1",
+        "@gridsuite/commons-ui": "^0.43.0",
         "@hookform/resolvers": "^3.0.0",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
@@ -59,8 +59,7 @@
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
         "typescript": "^5.0.4",
-        "yup": "^1.0.0",
-        "file-system-access": "^1.0.4"
+        "yup": "^1.0.0"
     },
     "scripts": {
         "start": "react-scripts start",
