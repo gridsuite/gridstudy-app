@@ -6,19 +6,16 @@
  */
 
 import Grid from '@mui/material/Grid';
-import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
+import { filledTextField, gridItem } from '../../../dialogUtils';
 import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
 import {
-    ADDITIONAL_PROPERTIES,
     COUNTRY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
 } from 'components/utils/field-constants';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
-import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
-import PropertyForm from '../property/property-form';
-import { getPropertyInitialValues } from '../property/property-utils';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const SubstationCreationForm = () => {
     const substationIdField = (
@@ -46,15 +43,6 @@ const SubstationCreationForm = () => {
         />
     );
 
-    const additionalProps = (
-        <ExpandableInput
-            name={ADDITIONAL_PROPERTIES}
-            Field={PropertyForm}
-            addButtonLabel={'AddProperty'}
-            initialValue={getPropertyInitialValues()}
-        />
-    );
-
     return (
         <>
             <Grid container spacing={2}>
@@ -62,11 +50,7 @@ const SubstationCreationForm = () => {
                 {gridItem(substationNameField, 4)}
                 {gridItem(substationCountryField, 4)}
             </Grid>
-
-            <Grid container>
-                <GridSection title={'AdditionalInformations'} />
-                {additionalProps}
-            </Grid>
+            <PropertiesForm networkElementType={'substation'} />
         </>
     );
 };
