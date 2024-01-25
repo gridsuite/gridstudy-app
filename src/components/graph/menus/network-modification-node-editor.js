@@ -28,6 +28,7 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
@@ -1059,6 +1060,19 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
+                <IconButton
+                    onClick={doDeleteModification}
+                    size={'small'}
+                    sx={styles.toolbarIcon}
+                    disabled={
+                        !(selectedItems?.size > 0) ||
+                        isAnyNodeBuilding ||
+                        mapDataLoading ||
+                        !currentNode
+                    }
+                >
+                    <SaveIcon />
+                </IconButton>
             </Toolbar>
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
 
