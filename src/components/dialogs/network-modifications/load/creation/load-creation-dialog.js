@@ -8,11 +8,11 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ACTIVE_POWER,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    P0,
+    Q0,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -58,8 +58,8 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
-    [ACTIVE_POWER]: null,
-    [REACTIVE_POWER]: null,
+    [P0]: null,
+    [Q0]: null,
     ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
 };
@@ -70,8 +70,8 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         [LOAD_TYPE]: yup.string().nullable(),
-        [ACTIVE_POWER]: yup.number().nullable().required(),
-        [REACTIVE_POWER]: yup.number().nullable().required(),
+        [P0]: yup.number().nullable().required(),
+        [Q0]: yup.number().nullable().required(),
         ...getConnectivityWithPositionValidationSchema(),
     })
     .concat(creationPropertiesSchema)
@@ -100,8 +100,8 @@ const LoadCreationDialog = ({
             [EQUIPMENT_ID]: load.id + '(1)',
             [EQUIPMENT_NAME]: load.name ?? '',
             [LOAD_TYPE]: load.type,
-            [ACTIVE_POWER]: load.p0,
-            [REACTIVE_POWER]: load.q0,
+            [P0]: load.p0,
+            [Q0]: load.q0,
             ...getConnectivityFormData({
                 voltageLevelId: load.voltageLevelId,
                 busbarSectionId: load.busOrBusbarSectionId,
@@ -120,8 +120,8 @@ const LoadCreationDialog = ({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
                 [LOAD_TYPE]: load.loadType,
-                [ACTIVE_POWER]: load.activePower,
-                [REACTIVE_POWER]: load.reactivePower,
+                [P0]: load.p0,
+                [Q0]: load.q0,
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     busbarSectionId: load.busOrBusbarSectionId,
@@ -158,8 +158,8 @@ const LoadCreationDialog = ({
                 load[EQUIPMENT_ID],
                 sanitizeString(load[EQUIPMENT_NAME]),
                 !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                load[ACTIVE_POWER],
-                load[REACTIVE_POWER],
+                load[P0],
+                load[Q0],
                 load.connectivity.voltageLevel.id,
                 load.connectivity.busOrBusbarSection.id,
                 !!editData,

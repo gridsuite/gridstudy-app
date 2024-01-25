@@ -2345,7 +2345,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantActivePower',
+                id: 'p0',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2366,7 +2366,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantReactivePower',
+                id: 'q0',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -3178,7 +3178,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantActivePower',
+                id: 'p0',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -3186,7 +3186,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantReactivePower',
+                id: 'q0',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
