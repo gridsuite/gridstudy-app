@@ -53,8 +53,8 @@ const SensitivityAnalysisResult = ({
     sortProps,
     filterProps,
     isLoading,
-    handleCsvHeadersChange,
-    exportResultAsCsv,
+    onCsvHeadersChange: handleCsvHeadersChange,
+    onExportResultAsCsv: handleExportResultAsCsv,
     isCsvExportLoading,
     isCsvExportSuccessful,
 }) => {
@@ -197,7 +197,7 @@ const SensitivityAnalysisResult = ({
         suppressMultiSort: true,
     };
 
-    const onGridReady = useCallback(
+    const handleGridReady = useCallback(
         (params) => {
             if (params.api) {
                 params.api.sizeColumnsToFit();
@@ -207,7 +207,7 @@ const SensitivityAnalysisResult = ({
         [handleCsvHeadersChange]
     );
 
-    const onGridColumnsChanged = useCallback(
+    const handleGridColumnsChanged = useCallback(
         (params) => {
             if (params.api) {
                 handleCsvHeadersChange(getDisplayedColumns(params));
@@ -242,7 +242,7 @@ const SensitivityAnalysisResult = ({
                 <Box style={{ flexGrow: 1 }}></Box>
                 <ExportButton
                     disabled={!rowsToShow || rowsToShow.length === 0}
-                    onClick={exportResultAsCsv}
+                    onClick={handleExportResultAsCsv}
                     isDownloadLoading={isCsvExportLoading}
                     isDownloadSuccessful={isCsvExportSuccessful}
                 />
@@ -252,11 +252,11 @@ const SensitivityAnalysisResult = ({
                 rowData={rowsToShow}
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
-                onGridReady={onGridReady}
+                onGridReady={handleGridReady}
                 gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
-                onGridColumnsChanged={onGridColumnsChanged}
+                onGridColumnsChanged={handleGridColumnsChanged}
             />
         </div>
     );
@@ -275,6 +275,10 @@ SensitivityAnalysisResult.propTypes = {
     sortProps: PropTypes.object,
     filterProps: PropTypes.object,
     isLoading: PropTypes.bool,
+    onCsvHeadersChange: PropTypes.func,
+    onExportResultAsCsv: PropTypes.func,
+    isCsvExportLoading: PropTypes.bool,
+    isCsvExportSuccessful: PropTypes.bool,
 };
 
 export default SensitivityAnalysisResult;

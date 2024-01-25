@@ -43,7 +43,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKind, setSensiKind] = useState(SENSITIVITY_IN_DELTA_MW);
-    const [resultDownloadSuccess, setResultDownloadSuccess] = useState(false);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector(
@@ -69,19 +69,18 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
            for the page prop of MUI TablePagination if was not on the first page
            for the prev sensiKind */
         setPage(0);
-        setResultDownloadSuccess(false);
+
+        setIsCsvExportSuccessful(false);
     };
 
     const handleSensiKindChange = (newSensiKind) => {
         initTable(nOrNkIndex);
         setSensiKind(newSensiKind);
-        setResultDownloadSuccess(false);
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
         initTable(newNOrNKIndex);
         setNOrNkIndex(newNOrNKIndex);
-        setResultDownloadSuccess(false);
     };
 
     const openLoader = useOpenLoaderShortWait({
@@ -101,9 +100,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         setCsvHeaders(headersCsv);
     }, []);
 
-    const exportResultAsCsv = useCallback(() => {
+    const handleExportResultAsCsv = useCallback(() => {
         setIsCsvExportLoading(true);
-        setResultDownloadSuccess(false);
+        setIsCsvExportSuccessful(false);
         exportSensitivityResultsAsCsv(studyUuid, nodeUuid, {
             csvHeaders,
             resultTab: SensitivityResultTabs[nOrNkIndex].id,
@@ -112,7 +111,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             .then((response) => {
                 response.blob().then((blob) => {
                     downloadZipFile(blob, 'sensitivity_analyse_results.zip');
-                    setResultDownloadSuccess(true);
+                    setIsCsvExportSuccessful(true);
                 });
             })
             .catch((error) => {
@@ -122,7 +121,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         id: 'csvExportSensitivityResultError',
                     }),
                 });
-                setResultDownloadSuccess(false);
+                setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
     }, [
@@ -166,10 +165,10 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             updateFilter,
                             filterSelector,
                         }}
-                        handleCsvHeadersChange={handleCsvHeadersChange}
-                        exportResultAsCsv={exportResultAsCsv}
+                        onCsvHeadersChange={handleCsvHeadersChange}
+                        onExportResultAsCsv={handleExportResultAsCsv}
                         isCsvExportLoading={isCsvExportLoading}
-                        isCsvExportSuccessful={resultDownloadSuccess}
+                        isCsvExportSuccessful={isCsvExportSuccessful}
                     />
                 </>
             )}

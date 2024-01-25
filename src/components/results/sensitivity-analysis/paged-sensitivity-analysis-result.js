@@ -36,8 +36,8 @@ const PagedSensitivityAnalysisResult = ({
     setPage,
     sortProps,
     filterProps,
-    handleCsvHeadersChange,
-    exportResultAsCsv,
+    onCsvHeadersChange: handleCsvHeadersChange,
+    onExportResultAsCsv: handleExportResultAsCsv,
     isCsvExportLoading,
     isCsvExportSuccessful,
 }) => {
@@ -215,8 +215,8 @@ const PagedSensitivityAnalysisResult = ({
                 }}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
-                handleCsvHeadersChange={handleCsvHeadersChange}
-                exportResultAsCsv={exportResultAsCsv}
+                onCsvHeadersChange={handleCsvHeadersChange}
+                onExportResultAsCsv={handleExportResultAsCsv}
                 isCsvExportLoading={isCsvExportLoading}
                 isCsvExportSuccessful={isCsvExportSuccessful}
             />
@@ -241,6 +241,10 @@ PagedSensitivityAnalysisResult.propTypes = {
     sortProps: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
+    onCsvHeadersChange: PropTypes.func,
+    onExportResultAsCsv: PropTypes.func,
+    isCsvExportLoading: PropTypes.bool,
+    isCsvExportSuccessful: PropTypes.bool,
 };
 
 export default PagedSensitivityAnalysisResult;
