@@ -7,11 +7,11 @@
 
 import Grid from '@mui/material/Grid';
 import {
-    ACTIVE_POWER,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    P0,
+    Q0,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import {
@@ -28,6 +28,7 @@ import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -74,7 +75,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
 
     const activePowerField = (
         <FloatInput
-            name={ACTIVE_POWER}
+            name={P0}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
         />
@@ -82,7 +83,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
 
     const reactivePowerField = (
         <FloatInput
-            name={REACTIVE_POWER}
+            name={Q0}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
         />
@@ -113,6 +114,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
+            <PropertiesForm networkElementType={'load'} />
         </>
     );
 };

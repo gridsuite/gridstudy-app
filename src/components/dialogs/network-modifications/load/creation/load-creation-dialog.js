@@ -8,11 +8,11 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ACTIVE_POWER,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    P0,
+    Q0,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -37,6 +37,13 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    copyEquipmentPropertiesForCreation,
+    getPropertiesFromModification,
+    creationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 /**
  * Dialog to create a load in the network
@@ -51,9 +58,10 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
-    [ACTIVE_POWER]: null,
-    [REACTIVE_POWER]: null,
+    [P0]: null,
+    [Q0]: null,
     ...getConnectivityWithPositionEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -62,10 +70,11 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         [LOAD_TYPE]: yup.string().nullable(),
-        [ACTIVE_POWER]: yup.number().nullable().required(),
-        [REACTIVE_POWER]: yup.number().nullable().required(),
+        [P0]: yup.number().nullable().required(),
+        [Q0]: yup.number().nullable().required(),
         ...getConnectivityWithPositionValidationSchema(),
     })
+    .concat(creationPropertiesSchema)
     .required();
 
 const LoadCreationDialog = ({
@@ -91,8 +100,8 @@ const LoadCreationDialog = ({
             [EQUIPMENT_ID]: load.id + '(1)',
             [EQUIPMENT_NAME]: load.name ?? '',
             [LOAD_TYPE]: load.type,
-            [ACTIVE_POWER]: load.p0,
-            [REACTIVE_POWER]: load.q0,
+            [P0]: load.p0,
+            [Q0]: load.q0,
             ...getConnectivityFormData({
                 voltageLevelId: load.voltageLevelId,
                 busbarSectionId: load.busOrBusbarSectionId,
@@ -101,6 +110,7 @@ const LoadCreationDialog = ({
                 connectionName: load.connectablePosition.connectionName,
                 // connected is not copied on purpose: we use the default value (true) in all cases
             }),
+            ...copyEquipmentPropertiesForCreation(load),
         });
     };
 
@@ -110,8 +120,8 @@ const LoadCreationDialog = ({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
                 [LOAD_TYPE]: load.loadType,
-                [ACTIVE_POWER]: load.activePower,
-                [REACTIVE_POWER]: load.reactivePower,
+                [P0]: load.p0,
+                [Q0]: load.q0,
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     busbarSectionId: load.busOrBusbarSectionId,
@@ -120,6 +130,7 @@ const LoadCreationDialog = ({
                     connectionPosition: load.connectionPosition,
                     connected: load.connected,
                 }),
+                ...getPropertiesFromModification(load.properties),
             });
         },
         [reset]
@@ -147,8 +158,8 @@ const LoadCreationDialog = ({
                 load[EQUIPMENT_ID],
                 sanitizeString(load[EQUIPMENT_NAME]),
                 !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                load[ACTIVE_POWER],
-                load[REACTIVE_POWER],
+                load[P0],
+                load[Q0],
                 load.connectivity.voltageLevel.id,
                 load.connectivity.busOrBusbarSection.id,
                 !!editData,
@@ -157,7 +168,8 @@ const LoadCreationDialog = ({
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null,
-                load.connectivity?.connected
+                load.connectivity?.connected,
+                toModificationProperties(load)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

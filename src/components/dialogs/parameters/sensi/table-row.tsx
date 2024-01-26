@@ -21,7 +21,7 @@ interface TableRowComponentProps {
     index: number;
     handleDeleteButton: (index: number) => void;
     disableDelete: boolean;
-    fetchCount: (a: string, b: number) => void;
+    fetchCount: (a: string, b: number, c: string) => void;
 }
 
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
@@ -38,8 +38,8 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     function handleHover(enter: boolean) {
         return setIsHover(enter);
     }
-    const handleRowChanged = (isChanged: boolean) => {
-        isChanged && fetchCount(arrayFormName, index);
+    const handleRowChanged = (isChanged: boolean, source: string) => {
+        isChanged && fetchCount(arrayFormName, index, source);
     };
 
     return (

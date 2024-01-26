@@ -10,14 +10,7 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    Grid,
-    Button,
-    DialogActions,
-    Box,
-    CircularProgress,
-    Typography,
-} from '@mui/material';
+import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -206,35 +199,6 @@ export const SensitivityAnalysisParameters = ({
         return getGenericRowNewParams(row);
     }, []);
 
-    const onSubmit = useCallback(
-        (newParams) => {
-            setIsSubmitAction(true);
-            setSensitivityAnalysisParameters(
-                studyUuid,
-                formatNewParams(newParams)
-            )
-                .then(() => {
-                    setSensitivityAnalysisParams(
-                        formatNewParams(newParams, false)
-                    );
-                    updateProvider(newParams[PROVIDER]);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisParametersError',
-                    });
-                });
-        },
-        [
-            setSensitivityAnalysisParams,
-            snackError,
-            studyUuid,
-            formatNewParams,
-            updateProvider,
-        ]
-    );
-
     const getResultCount = useCallback(() => {
         const values = getValues();
         let totalResultCount = 0;
@@ -259,17 +223,18 @@ export const SensitivityAnalysisParameters = ({
 
             totalResultCount += count;
         });
-        return totalResultCount;
+        setAnalysisComputeComplexity(totalResultCount);
+        const timeoutId = setTimeout(() => {
+            setLaunchLoader(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
     }, [getValues]);
 
     const onFormChanged = useCallback(
         (onFormChanged) => {
             if (onFormChanged) {
                 setLaunchLoader(true);
-                setAnalysisComputeComplexity(getResultCount());
-                setTimeout(() => {
-                    setLaunchLoader(false);
-                }, 1000);
+                getResultCount();
             }
         },
         [getResultCount]
@@ -289,8 +254,7 @@ export const SensitivityAnalysisParameters = ({
                             `${arrayFormName}[${index}].[${COUNT}]`,
                             parseIntData(value, 0)
                         );
-                        setAnalysisComputeComplexity(getResultCount());
-                        setLaunchLoader(false);
+                        getResultCount();
                     });
                 })
                 .catch((error) => {
@@ -304,28 +268,6 @@ export const SensitivityAnalysisParameters = ({
         },
         [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
     );
-
-    const initRowsCount = useCallback(() => {
-        const handleEntries = (entries, parameter) => {
-            entries
-                .filter((entry) => entry[ACTIVATED] && !entry[COUNT])
-                .forEach((entry, index) =>
-                    onChangeParams(entry, parameter, index)
-                );
-        };
-
-        const values = getValues();
-        handleEntries(
-            values[PARAMETER_SENSI_INJECTIONS_SET],
-            PARAMETER_SENSI_INJECTIONS_SET
-        );
-        handleEntries(
-            values[PARAMETER_SENSI_INJECTION],
-            PARAMETER_SENSI_INJECTION
-        );
-        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
-        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
-    }, [onChangeParams, getValues]);
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
@@ -510,6 +452,71 @@ export const SensitivityAnalysisParameters = ({
         [reset]
     );
 
+    const initRowsCount = useCallback(() => {
+        const handleEntries = (entries, parameter) => {
+            const entriesWithIndices = entries.map((entry, index) => ({
+                entry,
+                index,
+            }));
+            const filteredInitEntries = entries.filter(
+                (entry) =>
+                    entry[ACTIVATED] &&
+                    entry[MONITORED_BRANCHES].length > 0 &&
+                    (entry[INJECTIONS]?.length > 0 ||
+                        entry[PSTS]?.length > 0 ||
+                        entry[HVDC_LINES]?.length > 0)
+            );
+            filteredInitEntries.forEach((entry) => {
+                const originalIndex = entriesWithIndices.findIndex(
+                    (obj) => obj.entry === entry
+                );
+                onChangeParams(entry, parameter, originalIndex);
+            });
+        };
+
+        const values = getValues();
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTIONS_SET],
+            PARAMETER_SENSI_INJECTIONS_SET
+        );
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTION],
+            PARAMETER_SENSI_INJECTION
+        );
+        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
+        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
+    }, [onChangeParams, getValues]);
+    const onSubmit = useCallback(
+        (newParams) => {
+            setIsSubmitAction(true);
+            setSensitivityAnalysisParameters(
+                studyUuid,
+                formatNewParams(newParams)
+            )
+                .then(() => {
+                    setSensitivityAnalysisParams(
+                        formatNewParams(newParams, false)
+                    );
+                    updateProvider(newParams[PROVIDER]);
+                    initRowsCount();
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'SensitivityAnalysisParametersError',
+                    });
+                });
+        },
+        [
+            setSensitivityAnalysisParams,
+            snackError,
+            studyUuid,
+            formatNewParams,
+            updateProvider,
+            initRowsCount,
+        ]
+    );
+
     useEffect(() => {
         if (sensitivityAnalysisParams) {
             fromSensitivityAnalysisParamsDataToFormValues(
@@ -538,23 +545,18 @@ export const SensitivityAnalysisParameters = ({
 
     const renderComputingEventLoading = () => {
         return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress
-                        size={'1em'}
-                        sx={styles.circularProgress}
-                    />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={'loadingComputing'} />
-                </Typography>
-            </Box>
+            <Alert severity={'info'} sx={{ justifyContent: 'center' }}>
+                <FormattedMessage id={'loadingComputing'} />
+            </Alert>
         );
     };
 
     const renderComputingEvent = () => {
         return (
-            <Alert severity={isMaxReached ? 'error' : 'info'}>
+            <Alert
+                severity={isMaxReached ? 'error' : 'info'}
+                sx={{ justifyContent: 'center' }}
+            >
                 {analysisComputeComplexity > 999999 ? (
                     <FormattedMessage id="SimulatedCalculationExceedsLimit" />
                 ) : (
@@ -624,7 +626,7 @@ export const SensitivityAnalysisParameters = ({
                             <LineSeparator />
                         </Grid>
                         <Grid container justifyContent={'right'}>
-                            <Grid item marginBottom={-9}>
+                            <Grid item marginBottom={-9} width={'300px'}>
                                 {launchLoader
                                     ? renderComputingEventLoading()
                                     : renderComputingEvent()}
