@@ -582,9 +582,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     if (response.status === HttpStatusCode.OK) {
                         successCallback && successCallback();
                         setIsStudyNetworkFound(true);
-                        checkStudyIndexation().then((status) => {
-                            loadTree(status);
-                        });
+                        checkStudyIndexation().then(loadTree);
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
