@@ -7,10 +7,10 @@
 
 import { TextInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER,
+    P0,
     EQUIPMENT_NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    Q0,
 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -23,52 +23,13 @@ import { SelectInput } from '@gridsuite/commons-ui';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useIntl } from 'react-intl';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
 import { TextField } from '@mui/material';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
+import PropertiesForm from '../../common/properties/properties-form';
 
-const LoadModificationForm = ({
-    currentNode,
-    studyUuid,
-    setDataFetchStatus,
-    equipmentId,
-}) => {
-    const currentNodeUuid = currentNode?.id;
-    const [loadInfos, setLoadInfos] = useState(null);
+const LoadModificationForm = ({ loadToModify, equipmentId }) => {
     const intl = useIntl();
-
-    useEffect(() => {
-        if (equipmentId) {
-            setDataFetchStatus(FetchStatus.RUNNING);
-            fetchNetworkElementInfos(
-                studyUuid,
-                currentNodeUuid,
-                EQUIPMENT_TYPES.LOAD,
-                EQUIPMENT_INFOS_TYPES.FORM.type,
-                equipmentId,
-                true
-            )
-                .then((value) => {
-                    if (value) {
-                        setLoadInfos(value);
-                        setDataFetchStatus(FetchStatus.SUCCEED);
-                    } else {
-                        setDataFetchStatus(FetchStatus.FAILED);
-                    }
-                })
-                .catch(() => {
-                    setDataFetchStatus(FetchStatus.FAILED);
-                });
-        } else {
-            setLoadInfos(null);
-        }
-    }, [studyUuid, currentNodeUuid, equipmentId, setDataFetchStatus]);
 
     const loadIdField = (
         <TextField
@@ -89,7 +50,7 @@ const LoadModificationForm = ({
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={loadInfos?.name}
+            previousValue={loadToModify?.name}
             clearable
         />
     );
@@ -103,9 +64,9 @@ const LoadModificationForm = ({
             size={'small'}
             formProps={filledTextField}
             previousValue={
-                loadInfos?.type && loadInfos.type !== 'UNDEFINED'
+                loadToModify?.type && loadToModify.type !== 'UNDEFINED'
                     ? intl.formatMessage({
-                          id: getLoadTypeLabel(loadInfos?.type),
+                          id: getLoadTypeLabel(loadToModify?.type),
                       })
                     : undefined
             }
@@ -114,20 +75,20 @@ const LoadModificationForm = ({
 
     const activePowerField = (
         <FloatInput
-            name={ACTIVE_POWER}
+            name={P0}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={loadInfos?.p0}
+            previousValue={loadToModify?.p0}
             clearable
         />
     );
 
     const reactivePowerField = (
         <FloatInput
-            name={REACTIVE_POWER}
+            name={Q0}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-            previousValue={loadInfos?.q0}
+            previousValue={loadToModify?.q0}
             clearable
         />
     );
@@ -144,6 +105,7 @@ const LoadModificationForm = ({
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
+            <PropertiesForm networkElementType={'load'} isModification={true} />
         </>
     );
 };

@@ -354,7 +354,7 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-                    label: 'MultipleEquipments',
+                    label: 'MultipleEquipment',
                     action: () => adapt(ByFilterDeletionDialog),
                 },
             ],
