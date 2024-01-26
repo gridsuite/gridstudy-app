@@ -27,7 +27,6 @@ import {
     SENSITIVITY_AT_NODE,
     SUFFIX_TYPES,
 } from './sensitivity-analysis-content';
-import { ExportButton } from '../../utils/export-button';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -39,12 +38,6 @@ function makeRows(resultRecord) {
     });
 }
 
-function getDisplayedColumns(params) {
-    return params.api.columnModel.columnDefs.map(
-        (c) => c.headerComponentParams.displayName
-    );
-}
-
 const SensitivityAnalysisResult = ({
     result,
     nOrNkIndex,
@@ -53,16 +46,14 @@ const SensitivityAnalysisResult = ({
     sortProps,
     filterProps,
     isLoading,
-    onCsvHeadersChange: handleCsvHeadersChange,
-    onExportResultAsCsv: handleExportResultAsCsv,
-    isCsvExportLoading,
-    isCsvExportSuccessful,
+    ...props
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+    const { onGridColumnsChanged } = props;
 
     const messages = useIntlResultStatusMessages(intl, true);
 
@@ -201,19 +192,10 @@ const SensitivityAnalysisResult = ({
         (params) => {
             if (params.api) {
                 params.api.sizeColumnsToFit();
-                handleCsvHeadersChange(getDisplayedColumns(params));
+                onGridColumnsChanged && onGridColumnsChanged(params);
             }
         },
-        [handleCsvHeadersChange]
-    );
-
-    const handleGridColumnsChanged = useCallback(
-        (params) => {
-            if (params.api) {
-                handleCsvHeadersChange(getDisplayedColumns(params));
-            }
-        },
-        [handleCsvHeadersChange]
+        [onGridColumnsChanged]
     );
 
     const message = getNoRowsMessage(
@@ -233,20 +215,6 @@ const SensitivityAnalysisResult = ({
     return (
         <div style={{ position: 'relative', flexGrow: 1 }}>
             <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                }}
-            >
-                <Box style={{ flexGrow: 1 }}></Box>
-                <ExportButton
-                    disabled={!rowsToShow || rowsToShow.length === 0}
-                    onClick={handleExportResultAsCsv}
-                    isDownloadLoading={isCsvExportLoading}
-                    isDownloadSuccessful={isCsvExportSuccessful}
-                />
-            </Box>
             <CustomAGGrid
                 ref={gridRef}
                 rowData={rowsToShow}
@@ -256,7 +224,7 @@ const SensitivityAnalysisResult = ({
                 gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
-                onGridColumnsChanged={handleGridColumnsChanged}
+                {...props}
             />
         </div>
     );
@@ -275,10 +243,6 @@ SensitivityAnalysisResult.propTypes = {
     sortProps: PropTypes.object,
     filterProps: PropTypes.object,
     isLoading: PropTypes.bool,
-    onCsvHeadersChange: PropTypes.func,
-    onExportResultAsCsv: PropTypes.func,
-    isCsvExportLoading: PropTypes.bool,
-    isCsvExportSuccessful: PropTypes.bool,
 };
 
 export default SensitivityAnalysisResult;

@@ -36,10 +36,7 @@ const PagedSensitivityAnalysisResult = ({
     setPage,
     sortProps,
     filterProps,
-    onCsvHeadersChange: handleCsvHeadersChange,
-    onExportResultAsCsv: handleExportResultAsCsv,
-    isCsvExportLoading,
-    isCsvExportSuccessful,
+    ...props
 }) => {
     const intl = useIntl();
 
@@ -215,10 +212,7 @@ const PagedSensitivityAnalysisResult = ({
                 }}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
-                onCsvHeadersChange={handleCsvHeadersChange}
-                onExportResultAsCsv={handleExportResultAsCsv}
-                isCsvExportLoading={isCsvExportLoading}
-                isCsvExportSuccessful={isCsvExportSuccessful}
+                {...props}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
@@ -241,10 +235,6 @@ PagedSensitivityAnalysisResult.propTypes = {
     sortProps: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
-    onCsvHeadersChange: PropTypes.func,
-    onExportResultAsCsv: PropTypes.func,
-    isCsvExportLoading: PropTypes.bool,
-    isCsvExportSuccessful: PropTypes.bool,
 };
 
 export default PagedSensitivityAnalysisResult;

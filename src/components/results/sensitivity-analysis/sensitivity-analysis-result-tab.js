@@ -32,11 +32,18 @@ import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivi
 import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
+import { ExportButton } from '../../utils/export-button';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
     { id: 'N_K', label: 'N-K' },
 ];
+
+function getDisplayedColumns(params) {
+    return params.api.columnModel.columnDefs.map(
+        (c) => c.headerComponentParams.displayName
+    );
+}
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const { snackError } = useSnackMessage();
@@ -95,16 +102,25 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     ];
 
     const [csvHeaders, setCsvHeaders] = useState([]);
+    const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
-    const handleCsvHeadersChange = useCallback((headersCsv) => {
-        setCsvHeaders(headersCsv);
+    const handleGridColumnsChanged = useCallback((params) => {
+        if (params?.api) {
+            setCsvHeaders(getDisplayedColumns(params));
+        }
+    }, []);
+
+    const handleRowDataUpdated = useCallback((params) => {
+        if (params?.api) {
+            setIsCsvButtonDisabled(params.api.getModel().getRowCount() === 0);
+        }
     }, []);
 
     const handleExportResultAsCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
         exportSensitivityResultsAsCsv(studyUuid, nodeUuid, {
-            csvHeaders,
+            csvHeaders: csvHeaders,
             resultTab: SensitivityResultTabs[nOrNkIndex].id,
             sensitivityFunctionType: FUNCTION_TYPES[sensiKind],
         })
@@ -128,10 +144,10 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         snackError,
         studyUuid,
         nodeUuid,
-        csvHeaders,
         intl,
         nOrNkIndex,
         sensiKind,
+        csvHeaders,
     ]);
 
     return (
@@ -142,14 +158,27 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             />
             {sensiResultKind.includes(sensiKind) && (
                 <>
-                    <Tabs
-                        value={nOrNkIndex}
-                        onChange={handleSensiNOrNkIndexChange}
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                        }}
                     >
-                        {SensitivityResultTabs.map((tab) => (
-                            <Tab key={tab.label} label={tab.label} />
-                        ))}
-                    </Tabs>
+                        <Tabs
+                            value={nOrNkIndex}
+                            onChange={handleSensiNOrNkIndexChange}
+                        >
+                            {SensitivityResultTabs.map((tab) => (
+                                <Tab key={tab.label} label={tab.label} />
+                            ))}
+                        </Tabs>
+                        <ExportButton
+                            disabled={isCsvButtonDisabled}
+                            onClick={handleExportResultAsCsv}
+                            isDownloadLoading={isCsvExportLoading}
+                            isDownloadSuccessful={isCsvExportSuccessful}
+                        />
+                    </div>
                     <PagedSensitivityAnalysisResult
                         nOrNkIndex={nOrNkIndex}
                         sensiKind={sensiKind}
@@ -165,10 +194,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             updateFilter,
                             filterSelector,
                         }}
-                        onCsvHeadersChange={handleCsvHeadersChange}
-                        onExportResultAsCsv={handleExportResultAsCsv}
-                        isCsvExportLoading={isCsvExportLoading}
-                        isCsvExportSuccessful={isCsvExportSuccessful}
+                        onGridColumnsChanged={handleGridColumnsChanged}
+                        onRowDataUpdated={handleRowDataUpdated}
                     />
                 </>
             )}
