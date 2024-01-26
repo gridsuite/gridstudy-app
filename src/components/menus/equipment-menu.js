@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Menu from '@mui/material/Menu';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
@@ -32,7 +32,7 @@ const withEquipmentMenu =
         handleViewInSpreadsheet,
         handleDeleteEquipment,
         handleOpenModificationDialog,
-        handleOpenDynamicSimulationEventDialog,
+        onOpenDynamicSimulationEventDialog,
     }) => {
         const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -45,6 +45,18 @@ const withEquipmentMenu =
                 !isNodeReadOnly(currentNode) &&
                 !isAnyNodeBuilding,
             [currentNode, isAnyNodeBuilding]
+        );
+
+        const handleOpenDynamicSimulationEventDialog = useCallback(
+            (equipmentId, equipmentType, dialogTitle) => {
+                handleClose();
+                onOpenDynamicSimulationEventDialog(
+                    equipmentId,
+                    equipmentType,
+                    dialogTitle
+                );
+            },
+            [handleClose, onOpenDynamicSimulationEventDialog]
         );
 
         return (
@@ -70,7 +82,7 @@ const withEquipmentMenu =
                     <DynamicSimulationEventMenuItem
                         equipmentId={equipment.id}
                         equipmentType={equipmentType}
-                        handleOpenDynamicSimulationEventDialog={
+                        onOpenDynamicSimulationEventDialog={
                             handleOpenDynamicSimulationEventDialog
                         }
                         disabled={!isNodeEditable}

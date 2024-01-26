@@ -55,14 +55,16 @@ import {
     formatPropertiesForBackend,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
-import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
     updateGeneratorCells,
     updateShuntCompensatorCells,
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { REGULATION_TYPES } from 'components/network/constants';
+import {
+    REGULATION_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
+} from 'components/network/constants';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited

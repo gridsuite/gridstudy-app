@@ -349,12 +349,12 @@ const NetworkModificationNodeEditor = () => {
             subItems: [
                 {
                     id: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
-                    label: 'UnitDeletion',
+                    label: 'SingleEquipment',
                     action: () => adapt(EquipmentDeletionDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-                    label: 'ByFilterDeletion',
+                    label: 'MultipleEquipment',
                     action: () => adapt(ByFilterDeletionDialog),
                 },
             ],

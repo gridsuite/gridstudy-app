@@ -35,7 +35,26 @@ import {
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
     EQUIPMENT_TYPES.LOAD,
+    EQUIPMENT_TYPES.BUS,
+    EQUIPMENT_TYPES.BUSBAR_SECTION,
 ];
+
+// this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
+export const getReferencedEquipmentTypeForModel = (equipmentType) => {
+    // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
+    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION
+        ? EQUIPMENT_TYPES.BUS
+        : equipmentType;
+};
+
+// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
+const getTopologyKindIfNecessary = (equipmentType) => {
+    return equipmentType === EQUIPMENT_TYPES.BUS
+        ? {
+              topologyKind: 'BUS_BREAKER',
+          }
+        : {};
+};
 
 const NOMINAL_VOLTAGE_UNIT = 'kV';
 
@@ -173,6 +192,7 @@ const EquipmentFilter = forwardRef(
             };
 
             const expertFilter = {
+                ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
                 type: 'EXPERT',
                 equipmentType: equipmentType,
                 rules: buildExpertRules(
@@ -185,8 +205,7 @@ const EquipmentFilter = forwardRef(
             // evaluate by filter-server
             return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter)
                 .then((equipments) => {
-                    // take only ids when return
-                    return equipments.map(({ id }) => ({ id }));
+                    return equipments;
                 })
                 .catch((error) => {
                     snackError({
@@ -289,7 +308,7 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                     <Grid item xs={6}>
                         <Select
-                            labelId={'DynamicSimulationCurveEquipementType'}
+                            labelId={'DynamicSimulationCurveEquipmentType'}
                             value={equipmentType}
                             onChange={handleEquipmentTypeChange}
                             size="small"

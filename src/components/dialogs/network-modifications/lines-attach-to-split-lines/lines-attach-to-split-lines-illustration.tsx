@@ -36,7 +36,7 @@ const replacedTexts = [
     },
     {
         eltId: 'lines-attach-illu-line1-right-txt',
-        tradId: 'Line1',
+        tradId: 'ReplacingLine1',
     },
     {
         eltId: 'lines-attach-illu-line2-left-txt',
@@ -44,7 +44,7 @@ const replacedTexts = [
     },
     {
         eltId: 'lines-attach-illu-line2-right-txt',
-        tradId: 'Line2',
+        tradId: 'ReplacingLine2',
     },
     {
         eltId: 'lines-attach-illu-voltage-level-to-split-at-right-txt',

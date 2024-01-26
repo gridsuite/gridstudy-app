@@ -18,8 +18,8 @@ import {
     ENERGY_SOURCES,
     LOAD_TYPES,
     REGULATION_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
-import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import {
@@ -1812,7 +1812,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantActivePower',
+                id: 'p0',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1833,7 +1833,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantReactivePower',
+                id: 'q0',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2645,7 +2645,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantActivePower',
+                id: 'p0',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2653,7 +2653,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantReactivePower',
+                id: 'q0',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

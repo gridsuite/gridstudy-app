@@ -405,8 +405,8 @@ export function createLoad(
     id,
     name,
     loadType,
-    constantActivePower,
-    constantReactivePower,
+    p0,
+    q0,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
@@ -414,7 +414,8 @@ export function createLoad(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -438,14 +439,15 @@ export function createLoad(
             equipmentId: id,
             equipmentName: name,
             loadType: loadType,
-            activePower: constantActivePower,
-            reactivePower: constantReactivePower,
+            p0: p0,
+            q0: q0,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -456,12 +458,13 @@ export function modifyLoad(
     id,
     name,
     loadType,
-    activePower,
-    reactivePower,
+    p0,
+    q0,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -485,10 +488,11 @@ export function modifyLoad(
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
-            constantActivePower: toModificationOperation(activePower),
-            constantReactivePower: toModificationOperation(reactivePower),
+            p0: toModificationOperation(p0),
+            q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+            properties,
         }),
     });
 }
@@ -1645,7 +1649,7 @@ export function deleteEquipmentByFilter(
 
 export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
     console.info(
-        'Fetching network modifications (matadata) for nodeUuid : ',
+        'Fetching network modifications (metadata) for nodeUuid : ',
         nodeUuid
     );
     const urlSearchParams = new URLSearchParams();

@@ -223,7 +223,6 @@ const DirectoryItemSelector = (props) => {
             data={data}
             onlyLeaves={true}
             sortMethod={sortHandlingDirectories}
-            cancelButtonProps={{ color: 'customButton' }}
             {...props}
         />
     );
