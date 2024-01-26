@@ -613,8 +613,8 @@ const TableWrapper = (props) => {
                             editingDataRef.current.name
                         ),
                         getFieldValue(
-                            editingData.nominalVoltage,
-                            editingDataRef.current.nominalVoltage
+                            editingData.nominalV,
+                            editingDataRef.current.nominalV
                         ),
                         getFieldValue(
                             editingData.lowVoltageLimit,

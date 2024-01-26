@@ -16,6 +16,7 @@ export const ID = 'id';
 export const NAME = 'name';
 export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
+export const NOMINAL_V = 'nominalV';
 export const TOPOLOGY_KIND = 'topologyKind';
 export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
 export const CONNECTION_DIRECTION = 'connectionDirection';

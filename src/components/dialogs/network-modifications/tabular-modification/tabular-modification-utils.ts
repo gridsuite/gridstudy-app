@@ -49,7 +49,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     ],
     VOLTAGE_LEVEL: [
         'equipmentId',
-        'nominalVoltage',
+        'nominalV',
         'lowVoltageLimit',
         'highVoltageLimit',
     ],
