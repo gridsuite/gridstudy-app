@@ -70,12 +70,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         SHUNT_SUSCEPTANCE_1,
         SHUNT_SUSCEPTANCE_2,
     ],
-    LOAD: [
-        'equipmentId',
-        'loadType',
-        'constantActivePower',
-        'constantReactivePower',
-    ],
+    LOAD: ['equipmentId', 'loadType', 'p0', 'q0'],
     TWO_WINDINGS_TRANSFORMER: [
         EQUIPMENT_ID,
         SERIES_RESISTANCE,

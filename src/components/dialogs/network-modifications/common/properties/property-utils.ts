@@ -24,7 +24,7 @@ export type Property = {
 };
 
 type Properties = {
-    [ADDITIONAL_PROPERTIES]: Property[] | null;
+    [ADDITIONAL_PROPERTIES]: Property[];
 };
 
 export type PredefinedProperties = {
@@ -70,7 +70,7 @@ export const fetchPredefinedProperties = (
 };
 
 export const emptyProperties: Properties = {
-    [ADDITIONAL_PROPERTIES]: null,
+    [ADDITIONAL_PROPERTIES]: [],
 };
 
 export const initializedProperty = (): Property => {
@@ -97,7 +97,7 @@ export const getPropertiesFromModification = (
                       [DELETION_MARK]: p[DELETION_MARK],
                   };
               })
-            : null,
+            : [],
     };
 };
 
@@ -115,7 +115,7 @@ export const copyEquipmentPropertiesForCreation = (
                       [ADDED]: true,
                   };
               })
-            : null,
+            : [],
     };
 };
 
@@ -163,9 +163,10 @@ export const mergeModificationAndEquipmentProperties = (
 };
 
 export const toModificationProperties = (properties: Properties) => {
-    return properties[ADDITIONAL_PROPERTIES]?.filter(
+    const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
         (p: Property) => p.value !== null || p[DELETION_MARK]
     );
+    return filteredProperties?.length === 0 ? undefined : filteredProperties;
 };
 
 export const creationPropertiesSchema = yup.object({
