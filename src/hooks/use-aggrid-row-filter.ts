@@ -7,7 +7,6 @@
 
 import { FROM_COLUMN_TO_FIELD as SHORT_CIRCUIT_FIELDS } from 'components/results/shortcircuit/shortcircuit-analysis-result-content';
 import { useCallback, useMemo, useState } from 'react';
-import { kiloUnitToUnit } from 'utils/rounding';
 
 type FilterDataType = { value: string; type: string; dataType: string };
 
@@ -126,17 +125,17 @@ export const useAggridRowFilter = (
 
             const { value, type, dataType } = selectedValue;
 
-            let updatedValue = value;
+            let backendValue = value;
 
             if (dataType === 'number' && kiloValues.includes(field)) {
-                updatedValue = String(kiloUnitToUnit(parseInt(value)));
+                backendValue = String(parseInt(value) * 1000);
             }
 
             return {
                 column: field,
                 dataType,
                 type,
-                value: updatedValue,
+                value: backendValue,
             };
         });
     }, [filterSelectorKeys, filters]);
