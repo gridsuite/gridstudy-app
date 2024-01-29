@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
 import {
@@ -18,16 +17,11 @@ import {
     flattenNmKResultsContingencies,
     handlePostSortRows,
     PAGE_OPTIONS,
-    securityAnalysisTableNmKConstraintsColumnsDefinition,
-    securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
-import { Box, Button, Tooltip, useTheme } from '@mui/material';
-import { fetchLineOrTransformer } from '../../../services/study/network-map';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { RowClassParams } from 'ag-grid-community';
+import { Box, useTheme } from '@mui/material';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { BranchSide } from '../../utils/constants';
 
 const styles = {
     container: {
@@ -44,122 +38,15 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     SecurityAnalysisResultNmkProps
 > = ({
     result,
+    columnDefs,
     isLoadingResult,
     isFromContingency,
-    openVoltageLevelDiagram,
-    studyUuid,
-    nodeUuid,
     paginationProps,
-    sortProps,
-    filterProps,
-    filterEnums,
-    setCsvHeaders,
 }) => {
     const { content } = result || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
-    const { snackError } = useSnackMessage();
-
-    const onClickNmKConstraint = useCallback(
-        (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
-            if (studyUuid && nodeUuid) {
-                if (column?.field === 'subjectId') {
-                    let vlId: string | undefined = '';
-                    const { subjectId, side } = row || {};
-                    // ideally we would have the type of the network element, but we don't
-                    fetchLineOrTransformer(studyUuid, nodeUuid, subjectId)
-                        .then((equipment) => {
-                            if (!equipment) {
-                                // if we didnt find a line or transformer, it's a voltage level
-                                vlId = subjectId;
-                            } else if (row.side) {
-                                if (
-                                    side ===
-                                    intl.formatMessage({ id: BranchSide.ONE })
-                                ) {
-                                    vlId = equipment.voltageLevelId1;
-                                } else if (
-                                    side ===
-                                    intl.formatMessage({ id: BranchSide.TWO })
-                                ) {
-                                    vlId = equipment.voltageLevelId2;
-                                } else {
-                                    vlId = equipment.voltageLevelId3;
-                                }
-                            } else {
-                                vlId = equipment.voltageLevelId1;
-                            }
-                        })
-                        .finally(() => {
-                            if (!vlId) {
-                                console.error(
-                                    `Impossible to open the SLD for equipment ID '${row.subjectId}'`
-                                );
-                                snackError({
-                                    messageId: 'NetworkElementNotFound',
-                                    messageValues: {
-                                        elementId: row.subjectId || '',
-                                    },
-                                });
-                            } else {
-                                if (openVoltageLevelDiagram) {
-                                    openVoltageLevelDiagram(vlId);
-                                }
-                            }
-                        });
-                }
-            }
-        },
-        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
-    );
-
-    const SubjectIdRenderer = useCallback(
-        (props: ICellRendererParams) => {
-            const { value, node, colDef } = props || {};
-            const onClick = () => {
-                const row: SecurityAnalysisNmkTableRow = { ...node?.data };
-                onClickNmKConstraint(row, colDef);
-            };
-            if (value) {
-                return (
-                    <Tooltip title={value}>
-                        <Button sx={styles.button} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
-                );
-            }
-        },
-        [onClickNmKConstraint]
-    );
-
-    const columnDefs = useMemo(
-        () =>
-            isFromContingency
-                ? securityAnalysisTableNmKContingenciesColumnsDefinition(
-                      intl,
-                      SubjectIdRenderer,
-                      filterProps,
-                      sortProps,
-                      filterEnums
-                  )
-                : securityAnalysisTableNmKConstraintsColumnsDefinition(
-                      intl,
-                      SubjectIdRenderer,
-                      filterProps,
-                      sortProps,
-                      filterEnums
-                  ),
-        [
-            isFromContingency,
-            intl,
-            SubjectIdRenderer,
-            filterProps,
-            sortProps,
-            filterEnums,
-        ]
-    );
 
     const rows = useMemo(
         () =>
@@ -188,10 +75,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         },
         [isFromContingency, theme.selectedRow.background]
     );
-
-    useEffect(() => {
-        setCsvHeaders(columnDefs.map((cDef) => cDef.headerName ?? ''));
-    }, [columnDefs, setCsvHeaders]);
 
     const agGridProps = {
         postSortRows: handlePostSortRows,

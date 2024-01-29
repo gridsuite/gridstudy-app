@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useEffect, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import {
     PreContingencyResult,
     SecurityAnalysisNTableRow,
@@ -13,22 +13,12 @@ import {
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import {
-    MAX_INT32,
-    securityAnalysisTableNColumnsDefinition,
-} from './security-analysis-result-utils';
+import { MAX_INT32 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
-> = ({
-    result,
-    isLoadingResult,
-    sortProps,
-    filterProps,
-    filterEnums,
-    setCsvHeaders,
-}) => {
+> = ({ result, isLoadingResult, columnDefs }) => {
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
@@ -54,21 +44,6 @@ export const SecurityAnalysisResultN: FunctionComponent<
               }) ?? []
             : [];
     }, [intl, result]);
-
-    const columnDefs = useMemo(
-        () =>
-            securityAnalysisTableNColumnsDefinition(
-                intl,
-                sortProps,
-                filterProps,
-                filterEnums
-            ),
-        [intl, sortProps, filterProps, filterEnums]
-    );
-
-    useEffect(() => {
-        setCsvHeaders(columnDefs.map((cDef) => cDef.headerName ?? ''));
-    }, [columnDefs, setCsvHeaders]);
 
     return (
         <SecurityAnalysisTable

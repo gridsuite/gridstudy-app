@@ -14,7 +14,7 @@ import React, {
     useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { ReduxState } from '../../../redux/reducer.type';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
@@ -38,6 +38,7 @@ import {
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     getIdType,
+    securityAnalysisTableNColumnsDefinition,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -45,6 +46,7 @@ import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
+import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -86,7 +88,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [hasFilter, setHasFilter] = useState<boolean>(false);
-    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
 
     const N_RESULTS_TAB_INDEX = 0;
     const NMK_RESULTS_TAB_INDEX = 1;
@@ -246,6 +247,28 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }, [tabIndex, nmkType]);
 
+    const columnDefs = useSecurityAnalysisColumnsDefs(
+        {
+            onSortChanged,
+            sortConfig,
+        },
+        {
+            updateFilter,
+            filterSelector,
+        },
+        filterEnums,
+        resultType,
+        openVoltageLevelDiagram,
+        studyUuid,
+        nodeUuid
+    );
+
+    const csvHeaders = useMemo(
+        () => columnDefs.map((cDef) => cDef.headerName ?? ''),
+        [columnDefs]
+    );
+
+    console.log('RESULT', result);
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -291,7 +314,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             nodeUuid={nodeUuid}
                             csvHeaders={csvHeaders}
                             resultType={resultType}
-                            disabled={!result || result.length === 0}
+                            disabled={
+                                !result ||
+                                (result.content &&
+                                    result.content.length === 0) ||
+                                result.length === 0
+                            }
                         />
                     )}
                 </Box>
@@ -304,18 +332,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
-                        sortProps={{
-                            onSortChanged,
-                            sortConfig,
-                        }}
-                        filterProps={{
-                            updateFilter,
-                            filterSelector,
-                        }}
-                        filterEnums={filterEnums}
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
-                        setCsvHeaders={setCsvHeaders}
+                        columnDefs={columnDefs}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (
@@ -325,9 +342,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         isFromContingency={
                             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                         }
-                        openVoltageLevelDiagram={openVoltageLevelDiagram}
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
                         paginationProps={{
                             count,
                             rowsPerPage,
@@ -335,16 +349,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             onPageChange: handleChangePage,
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
-                        sortProps={{
-                            onSortChanged,
-                            sortConfig,
-                        }}
-                        filterProps={{
-                            updateFilter,
-                            filterSelector,
-                        }}
-                        filterEnums={filterEnums}
-                        setCsvHeaders={setCsvHeaders}
+                        columnDefs={columnDefs}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&
