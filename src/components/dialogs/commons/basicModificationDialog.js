@@ -38,7 +38,11 @@ const BasicModificationDialog = ({
     };
 
     const submitButton = (
-        <Button onClick={handleSubmit} disabled={disabledSave}>
+        <Button
+            onClick={handleSubmit}
+            variant="outlined"
+            disabled={disabledSave}
+        >
             <FormattedMessage id="validate" />
         </Button>
     );
