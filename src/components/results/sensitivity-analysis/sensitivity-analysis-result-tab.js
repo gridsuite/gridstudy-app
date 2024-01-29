@@ -158,10 +158,11 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             />
             {sensiResultKind.includes(sensiKind) && (
                 <>
-                    <div
-                        style={{
+                    <Box
+                        sx={{
                             display: 'flex',
                             justifyContent: 'space-between',
+                            alignItems: 'flex-end',
                         }}
                     >
                         <Tabs
@@ -178,7 +179,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             isDownloadLoading={isCsvExportLoading}
                             isDownloadSuccessful={isCsvExportSuccessful}
                         />
-                    </div>
+                    </Box>
                     <PagedSensitivityAnalysisResult
                         nOrNkIndex={nOrNkIndex}
                         sensiKind={sensiKind}
