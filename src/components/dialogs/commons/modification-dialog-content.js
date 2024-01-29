@@ -8,7 +8,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
-    Button,
     Grid,
     Dialog,
     DialogTitle,
@@ -23,6 +22,7 @@ import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import { BUILD_STATUS } from '../../network/constants';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 const styles = {
     warningMessage: (theme) => ({
@@ -128,9 +128,7 @@ const ModificationDialogContent = ({
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel}>
-                    <FormattedMessage id="cancel" />
-                </Button>
+                <CancelButton onClick={handleCancel} />
                 {submitButton}
             </DialogActions>
         </Dialog>
