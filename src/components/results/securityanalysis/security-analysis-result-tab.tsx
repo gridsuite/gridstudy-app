@@ -14,7 +14,7 @@ import React, {
     useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { ReduxState } from '../../../redux/reducer.type';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
@@ -38,7 +38,6 @@ import {
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     getIdType,
-    securityAnalysisTableNColumnsDefinition,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -268,7 +267,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [columnDefs]
     );
 
-    console.log('RESULT', result);
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>

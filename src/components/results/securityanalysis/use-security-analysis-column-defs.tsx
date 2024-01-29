@@ -1,12 +1,18 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { fetchLineOrTransformer } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ICellRendererParams } from 'ag-grid-community';
 import { Button, Tooltip } from '@mui/material';
 import {
     RESULT_TYPE,
