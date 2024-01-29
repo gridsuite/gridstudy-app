@@ -21,6 +21,7 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
 import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
 import { MAX_ROWS_NUMBER } from 'components/utils/dnd-table/dnd-table';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 export const ImportRuleDialog = (props) => {
     const handleCloseDialog = () => {
@@ -88,10 +89,12 @@ export const ImportRuleDialog = (props) => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCloseDialog}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button disabled={isInvalid} onClick={handleSave}>
+                <CancelButton onClick={handleCloseDialog} />
+                <Button
+                    onClick={handleSave}
+                    variant="outlined"
+                    disabled={isInvalid}
+                >
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
