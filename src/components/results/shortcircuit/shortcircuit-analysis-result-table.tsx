@@ -453,7 +453,15 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 });
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [studyUuid, currentNode, intl, snackError, headersCsv, analysisType]);
+    }, [
+        studyUuid,
+        currentNode,
+        intl,
+        snackError,
+        headersCsv,
+        analysisType,
+        enumValueTranslations,
+    ]);
 
     return (
         <Box sx={styles.gridContainer}>
