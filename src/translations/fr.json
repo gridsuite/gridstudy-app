@@ -554,7 +554,7 @@
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
-    "genericConfirmQuestion": "Les modifications que vous avez réalisées n'ont pas été enregistrées. Voulez-vous quitter l'onglet ?",
+    "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
@@ -1208,6 +1208,8 @@
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
     "NetworkElementNotFound": "L'élément de réseau \"{elementId}\" n'existe pas",
+
+    "dialog.button.leave": "Quitter",
 
     "CatalogButtonTooltip": "Ouvrir le catalogue",
     "LineTypesCatalogDialogTitle": "Définir les segments de ligne",
