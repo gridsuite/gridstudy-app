@@ -475,11 +475,15 @@ const NetworkMap = (props) => {
     // map.resize() when the parent size has changed, otherwise the map is not
     // redrawn. It seems like this is autodetected when the browser window is
     // resized, but not for programmatic resizes of the parent. For now in our
-    // app, only study display mode resizes programmatically
+    // app, only 2 things need this to ensure the map keeps the correct size:
+    // - changing study display mode because it changes the map container size
+    //   programmatically
+    // - changing visible when the map provider is changed in the settings because
+    //   it causes a render with the map container having display:none
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     useEffect(() => {
         mapRef.current?.resize();
-    }, [studyDisplayMode]);
+    }, [studyDisplayMode, props.visible]);
 
     const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
     const mapLib =
