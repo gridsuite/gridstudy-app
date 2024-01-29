@@ -579,7 +579,6 @@ export const TABLES_DEFINITIONS = {
         name: 'TwoWindingsTransformers',
         type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
         fetchers: EQUIPMENT_FETCHERS.TWO_WINDINGS_TRANSFORMER,
-        groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
             {
                 id: 'ID',
