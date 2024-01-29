@@ -1411,5 +1411,8 @@
     "ratedVoltage1": "Rated voltage 1 (kV)",
     "ratedVoltage2": "Rated voltage 2 (kV)",
     "linearShuntCompensators": "Linear shunt compensators",
+
+    "csvExportSensitivityResultError": "An error occurred when exporting sensitivity results",
+
     "substationCountry": "Country code"
 }

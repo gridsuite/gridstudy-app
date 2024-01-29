@@ -14,6 +14,7 @@ import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     COMPUTATION_RESULTS_LOGS,
     DATA_KEY_TO_FILTER_KEY,
+    FUNCTION_TYPES,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
@@ -26,15 +27,31 @@ import { RunningStatus } from '../../utils/running-status';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import React, { useCallback } from 'react';
+import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
+import { downloadZipFile } from '../../../services/utils';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
+import { ExportButton } from '../../utils/export-button';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
     { id: 'N_K', label: 'N-K' },
 ];
 
+function getDisplayedColumns(params) {
+    return params.api.columnModel.columnDefs.map(
+        (c) => c.headerComponentParams.displayName
+    );
+}
+
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
+    const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKind, setSensiKind] = useState(SENSITIVITY_IN_DELTA_MW);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
@@ -59,6 +76,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
            for the page prop of MUI TablePagination if was not on the first page
            for the prev sensiKind */
         setPage(0);
+
+        setIsCsvExportSuccessful(false);
     };
 
     const handleSensiKindChange = (newSensiKind) => {
@@ -82,6 +101,55 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         SENSITIVITY_AT_NODE,
     ];
 
+    const [csvHeaders, setCsvHeaders] = useState([]);
+    const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
+
+    const handleGridColumnsChanged = useCallback((params) => {
+        if (params?.api) {
+            setCsvHeaders(getDisplayedColumns(params));
+        }
+    }, []);
+
+    const handleRowDataUpdated = useCallback((params) => {
+        if (params?.api) {
+            setIsCsvButtonDisabled(params.api.getModel().getRowCount() === 0);
+        }
+    }, []);
+
+    const handleExportResultAsCsv = useCallback(() => {
+        setIsCsvExportLoading(true);
+        setIsCsvExportSuccessful(false);
+        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, {
+            csvHeaders: csvHeaders,
+            resultTab: SensitivityResultTabs[nOrNkIndex].id,
+            sensitivityFunctionType: FUNCTION_TYPES[sensiKind],
+        })
+            .then((response) => {
+                response.blob().then((blob) => {
+                    downloadZipFile(blob, 'sensitivity_analyse_results.zip');
+                    setIsCsvExportSuccessful(true);
+                });
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'csvExportSensitivityResultError',
+                    }),
+                });
+                setIsCsvExportSuccessful(false);
+            })
+            .finally(() => setIsCsvExportLoading(false));
+    }, [
+        snackError,
+        studyUuid,
+        nodeUuid,
+        intl,
+        nOrNkIndex,
+        sensiKind,
+        csvHeaders,
+    ]);
+
     return (
         <>
             <SensitivityAnalysisTabs
@@ -90,14 +158,28 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             />
             {sensiResultKind.includes(sensiKind) && (
                 <>
-                    <Tabs
-                        value={nOrNkIndex}
-                        onChange={handleSensiNOrNkIndexChange}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-end',
+                        }}
                     >
-                        {SensitivityResultTabs.map((tab) => (
-                            <Tab key={tab.label} label={tab.label} />
-                        ))}
-                    </Tabs>
+                        <Tabs
+                            value={nOrNkIndex}
+                            onChange={handleSensiNOrNkIndexChange}
+                        >
+                            {SensitivityResultTabs.map((tab) => (
+                                <Tab key={tab.label} label={tab.label} />
+                            ))}
+                        </Tabs>
+                        <ExportButton
+                            disabled={isCsvButtonDisabled}
+                            onClick={handleExportResultAsCsv}
+                            isDownloadLoading={isCsvExportLoading}
+                            isDownloadSuccessful={isCsvExportSuccessful}
+                        />
+                    </Box>
                     <PagedSensitivityAnalysisResult
                         nOrNkIndex={nOrNkIndex}
                         sensiKind={sensiKind}
@@ -113,6 +195,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             updateFilter,
                             filterSelector,
                         }}
+                        onGridColumnsChanged={handleGridColumnsChanged}
+                        onRowDataUpdated={handleRowDataUpdated}
                     />
                 </>
             )}

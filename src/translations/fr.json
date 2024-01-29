@@ -1432,5 +1432,8 @@
     "ratedVoltage1": "Tension d'enroulement 1 (kV)",
     "ratedVoltage2": "Tension d'enroulement 2 (kV)",
     "linearShuntCompensators": "MCS linéaires",
+
+    "csvExportSensitivityResultError": "Une erreur est survenue lors de l'export des résultats de l'analyse de sensibilité",
+
     "substationCountry": "Code pays"
 }
