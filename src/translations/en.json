@@ -553,7 +553,7 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
-    "genericConfirmQuestion": "Current modifications are not saved. Are you sure you want to leave ?",
+    "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -1281,6 +1281,8 @@
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost",
+
+    "dialog.button.leave": "Leave",
 
     "Connect": "Reconnect ?",
     "ConnectedSide1": "Connected 1",

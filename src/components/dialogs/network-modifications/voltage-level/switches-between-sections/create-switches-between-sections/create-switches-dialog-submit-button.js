@@ -13,7 +13,7 @@ const CreateSwitchesDialogSubmitButton = ({ handleSave }) => {
     const { handleSubmit } = useFormContext();
 
     return (
-        <Button onClick={handleSubmit(handleSave)}>
+        <Button onClick={handleSubmit(handleSave)} variant="outlined">
             <FormattedMessage id="validate" />
         </Button>
     );
