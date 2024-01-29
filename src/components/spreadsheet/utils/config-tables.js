@@ -7,17 +7,19 @@
 
 import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { SitePropertiesEditor } from './equipement-table-popup-editors';
 import {
-    BooleanListField,
     GeneratorRegulatingTerminalEditor,
     NumericalField,
+    SelectCountryField,
+    BooleanListField,
 } from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
     LOAD_TYPES,
     REGULATION_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
-import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import {
@@ -168,18 +170,43 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
             },
             {
                 id: 'Country',
                 field: 'countryName',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: SelectCountryField,
+                valueSetter: (params) => {
+                    params.data.countryCode = params?.newValue?.countryCode;
+                    params.data.countryName = params?.newValue?.countryName;
+                    return params;
+                },
             },
             {
                 id: 'Properties',
                 field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter, // valueFormatter does not work here
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
                 getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
             },
         ],
     },
@@ -1785,7 +1812,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantActivePower',
+                id: 'p0',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1806,7 +1833,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantReactivePower',
+                id: 'q0',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1877,7 +1904,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaximumSectionCount',
+                id: 'maximumSectionCount',
                 field: 'maximumSectionCount',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1899,7 +1926,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'ShuntSectionCount',
+                id: 'sectionCount',
                 field: 'sectionCount',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1917,7 +1944,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
-                    minExpression: 1,
+                    minExpression: 0,
                     maxExpression: 'maximumSectionCount',
                 },
             },
@@ -1977,7 +2004,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'MaxShuntSusceptance',
+                id: 'maxSusceptance',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 field: 'maxSusceptance',
@@ -2618,7 +2645,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantActivePower',
+                id: 'p0',
                 field: 'p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -2626,7 +2653,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'constantReactivePower',
+                id: 'q0',
                 field: 'q0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',

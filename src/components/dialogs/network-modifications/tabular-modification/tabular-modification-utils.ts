@@ -53,6 +53,14 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         'lowVoltageLimit',
         'highVoltageLimit',
     ],
+    SHUNT_COMPENSATOR: [
+        'equipmentId',
+        'maximumSectionCount',
+        'sectionCount',
+        'shuntCompensatorType',
+        'maxQAtNominalV',
+        'maxSusceptance',
+    ],
     LINE: [
         EQUIPMENT_ID,
         SERIES_RESISTANCE,
@@ -62,12 +70,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         SHUNT_SUSCEPTANCE_1,
         SHUNT_SUSCEPTANCE_2,
     ],
-    LOAD: [
-        'equipmentId',
-        'loadType',
-        'constantActivePower',
-        'constantReactivePower',
-    ],
+    LOAD: ['equipmentId', 'loadType', 'p0', 'q0'],
     TWO_WINDINGS_TRANSFORMER: [
         EQUIPMENT_ID,
         SERIES_RESISTANCE,
@@ -86,6 +89,7 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
     BATTERY: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+    SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
     LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
     TWO_WINDINGS_TRANSFORMER:
         MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
@@ -104,14 +108,11 @@ export const formatModification = (modification: Modification) => {
 
 export const convertValueFromBackToFront = (
     key: string,
-    value: { value: string | number },
-    translate: (code: string | number) => string
+    value: { value: string | number }
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
-        case SUBSTATION_COUNTRY:
-            return translate(value?.value);
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
         case SHUNT_CONDUCTANCE_1:
@@ -126,14 +127,11 @@ export const convertValueFromBackToFront = (
 
 export const convertValueFromFrontToBack = (
     key: string,
-    value: string | number,
-    getCountryCode: (code: string | number) => string
+    value: string | number
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
-        case SUBSTATION_COUNTRY:
-            return toModificationOperation(getCountryCode(value));
         case MAGNETIZING_CONDUCTANCE:
         case MAGNETIZING_SUSCEPTANCE:
         case SHUNT_CONDUCTANCE_1:

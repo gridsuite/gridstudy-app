@@ -46,7 +46,9 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { attachLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';
+import { getNewVoltageLevelOptions } from '../../../utils/utils';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -100,12 +102,14 @@ const LineAttachToVoltageLevelDialog = ({
 
     const { snackError } = useSnackMessage();
 
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (lineAttach) => {
@@ -161,6 +165,10 @@ const LineAttachToVoltageLevelDialog = ({
 
     const onSubmit = useCallback(
         (lineAttach) => {
+            const currentVoltageLevelId =
+                lineAttach[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
+            const isNewVoltageLevel =
+                newVoltageLevel?.equipmentId === currentVoltageLevelId;
             attachLine(
                 studyUuid,
                 currentNodeUuid,
@@ -169,8 +177,8 @@ const LineAttachToVoltageLevelDialog = ({
                 parseFloat(lineAttach[SLIDER_PERCENTAGE]),
                 lineAttach[ATTACHMENT_POINT_ID],
                 sanitizeString(lineAttach[ATTACHMENT_POINT_NAME]),
-                newVoltageLevel,
-                lineAttach[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                isNewVoltageLevel ? newVoltageLevel : null,
+                currentVoltageLevelId,
                 lineAttach[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 attachmentLine,
                 lineAttach[LINE1_ID],
@@ -193,6 +201,18 @@ const LineAttachToVoltageLevelDialog = ({
             studyUuid,
         ]
     );
+
+    useEffect(() => {
+        if (studyUuid && currentNode?.id) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                    );
+                }
+            );
+        }
+    }, [studyUuid, currentNode?.id]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -287,6 +307,22 @@ const LineAttachToVoltageLevelDialog = ({
                     preparedVoltageLevel.sectionCount,
                     preparedVoltageLevel.busbarCount
                 );
+
+                // we keep the old voltage level id, so it can be removed for from voltage level options
+                const oldVoltageLevelId = newVoltageLevel?.equipmentId;
+
+                const formattedVoltageLevel =
+                    getNewVoltageLevelData(preparedVoltageLevel);
+
+                // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
+                const newVoltageLevelOptions = getNewVoltageLevelOptions(
+                    formattedVoltageLevel,
+                    oldVoltageLevelId,
+                    voltageLevelOptions
+                );
+
+                setVoltageLevelOptions(newVoltageLevelOptions);
+
                 setNewVoltageLevel(preparedVoltageLevel);
                 setValue(
                     `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
@@ -300,20 +336,8 @@ const LineAttachToVoltageLevelDialog = ({
                 );
             });
         },
-        [setValue]
+        [setValue, newVoltageLevel, voltageLevelOptions]
     );
-
-    const onVoltageLevelChange = useCallback(() => {
-        const currentVoltageLevelId = getValues(
-            `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`
-        );
-        if (
-            newVoltageLevel &&
-            currentVoltageLevelId !== newVoltageLevel?.equipmentId
-        ) {
-            setNewVoltageLevel(null);
-        }
-    }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -345,7 +369,7 @@ const LineAttachToVoltageLevelDialog = ({
                     lineToEdit={attachmentLine}
                     onVoltageLevelCreationDo={onVoltageLevelCreationDo}
                     voltageLevelToEdit={newVoltageLevel}
-                    onVoltageLevelChange={onVoltageLevelChange}
+                    allVoltageLevelOptions={voltageLevelOptions}
                 />
             </ModificationDialog>
         </FormProvider>

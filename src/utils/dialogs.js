@@ -13,6 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 const SelectOptionsDialog = ({
     open,
@@ -21,6 +22,7 @@ const SelectOptionsDialog = ({
     title,
     child,
     style,
+    validateKey,
 }) => {
     const handleClose = () => {
         onClose();
@@ -33,11 +35,9 @@ const SelectOptionsDialog = ({
                 {child}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    <FormattedMessage id="cancel" />
-                </Button>
+                <CancelButton onClick={handleClose} />
                 <Button onClick={onClick} variant="outlined">
-                    <FormattedMessage id="validate" />
+                    <FormattedMessage id={validateKey || 'validate'} />
                 </Button>
             </DialogActions>
         </Dialog>
@@ -50,6 +50,8 @@ SelectOptionsDialog.propTypes = {
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     child: PropTypes.element.isRequired,
+    style: PropTypes.oneOfType(PropTypes.object, PropTypes.func),
+    validateKey: PropTypes.string,
 };
 
 export { SelectOptionsDialog };

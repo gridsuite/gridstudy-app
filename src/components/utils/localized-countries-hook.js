@@ -7,7 +7,7 @@
 
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { getComputedLanguage } from '../../utils/language';
 
 export const LocalizedCountries = () => {
@@ -40,22 +40,5 @@ export const LocalizedCountries = () => {
         return localizedCountriesModule.get(countryCode);
     };
 
-    const getCountryCode = useCallback(
-        (countryName) => {
-            const country = localizedCountriesModule
-                .array()
-                .find(
-                    (country) =>
-                        country.label?.toUpperCase() ===
-                        countryName?.toUpperCase()
-                );
-            if (country) {
-                return country.code;
-            }
-            return null;
-        },
-        [localizedCountriesModule]
-    );
-
-    return { translate, countryCodes, getCountryCode };
+    return { translate, countryCodes };
 };

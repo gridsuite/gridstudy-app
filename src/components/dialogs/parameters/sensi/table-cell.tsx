@@ -8,14 +8,25 @@
 import { TableCell } from '@mui/material';
 import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
 import React from 'react';
-import { SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import {
+    SelectInput,
+    SwitchInput,
+    FloatInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 
 function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
     column: any,
-    onRowChanged: (a: boolean) => void
+    onRowChanged: (a: boolean, source: string) => void
 ) {
+    const handleDirectoryItemsChange = () => {
+        onRowChanged(true, 'directory');
+    };
+    const handleSwitchInputChange = () => {
+        onRowChanged(true, 'switch');
+    };
     return (
         <TableCell
             key={column.dataKey}
@@ -32,7 +43,7 @@ function EditableTableCell(
                     hideErrorMessage={true}
                     label={undefined}
                     itemFilter={undefined}
-                    onRowChanged={onRowChanged}
+                    onRowChanged={handleDirectoryItemsChange}
                 />
             )}
             {column.menuItems && (
@@ -44,13 +55,23 @@ function EditableTableCell(
                     fullWidth
                 />
             )}
-
             {column.checkboxItems && (
-                <span onChange={() => onRowChanged(true)}>
+                <span onChange={handleSwitchInputChange}>
                     <SwitchInput
                         name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     />
                 </span>
+            )}
+            {column.floatItems && (
+                <FloatInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                />
+            )}
+            {column.textItems && (
+                <TextInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    formProps={{ disabled: !column.editable }}
+                />
             )}
         </TableCell>
     );

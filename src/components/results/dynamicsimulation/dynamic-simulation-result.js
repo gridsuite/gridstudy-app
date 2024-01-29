@@ -10,11 +10,16 @@ import { useSelector } from 'react-redux';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
 import DynamicSimulationResultChartTabs from './dynamic-simulation-result-chart-tabs';
 import { Box } from '@mui/material';
+import ComputingType from 'components/computing-status/computing-type';
+import RunningStatus from 'components/utils/running-status';
 
 const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
-    const dynamicSimulationNotif = useSelector(
-        (state) => state.dynamicSimulationNotif
+    const dynamicSimulationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
+    const dynamicSimulationResultPresent =
+        dynamicSimulationStatus === RunningStatus.SUCCEED ||
+        dynamicSimulationStatus === RunningStatus.FAILED;
 
     return (
         <Box
@@ -23,7 +28,7 @@ const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
             }}
         >
             <Box>
-                {result && dynamicSimulationNotif && (
+                {result && dynamicSimulationResultPresent && (
                     <DynamicSimulationResultTable
                         result={[
                             {
@@ -39,14 +44,16 @@ const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
                     overflowY: 'hidden',
                 }}
             >
-                {result && dynamicSimulationNotif && (
-                    <DynamicSimulationResultChartTabs
-                        result={{
-                            timeseriesMetadatas: result.timeseriesMetadatas,
-                        }}
-                        loadTimeSeries={loadTimeSeries}
-                    />
-                )}
+                {result &&
+                    result.timeseriesMetadatas &&
+                    dynamicSimulationResultPresent && (
+                        <DynamicSimulationResultChartTabs
+                            result={{
+                                timeseriesMetadatas: result.timeseriesMetadatas,
+                            }}
+                            loadTimeSeries={loadTimeSeries}
+                        />
+                    )}
             </Box>
         </Box>
     );

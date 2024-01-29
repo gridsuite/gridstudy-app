@@ -14,7 +14,6 @@ import {
     MAX_Q_AT_NOMINAL_V,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
-    SHUNT_COMPENSATOR_TYPES,
     SWITCHED_ON_Q_AT_NOMINAL_V,
     SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
@@ -33,6 +32,7 @@ import {
 } from '../../../dialogUtils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
+import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({
@@ -92,7 +92,7 @@ export const CharacteristicsForm = ({
     const maximumSectionCountField = (
         <IntegerInput
             name={MAXIMUM_SECTION_COUNT}
-            label={'MaximumSectionCount'}
+            label={'maximumSectionCount'}
             previousValue={previousValues?.maximumSectionCount}
             clearable={isModification}
         />
@@ -101,7 +101,7 @@ export const CharacteristicsForm = ({
     const sectionCountField = (
         <IntegerInput
             name={SECTION_COUNT}
-            label={'ShuntSectionCount'}
+            label={'sectionCount'}
             previousValue={previousValues?.sectionCount}
             clearable={isModification}
         />
@@ -157,7 +157,7 @@ export const CharacteristicsForm = ({
     const maxSusceptanceField = (
         <FloatInput
             name={MAX_SUSCEPTANCE}
-            label={'MaxShuntSusceptance'}
+            label={'maxSusceptance'}
             adornment={SusceptanceAdornment}
             previousValue={previousMaxSusceptance}
             clearable={isModification}

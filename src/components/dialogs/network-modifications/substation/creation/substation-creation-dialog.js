@@ -15,40 +15,39 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
-    ADDITIONAL_PROPERTIES,
     COUNTRY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    NAME,
-    VALUE,
 } from 'components/utils/field-constants';
-import { getPropertiesSchema } from '../property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { createSubstation } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    copyEquipmentPropertiesForCreation,
+    getPropertiesFromModification,
+    creationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
+    ...emptyProperties,
 };
-const formSchema = yup.object().shape({
-    [EQUIPMENT_ID]: yup.string().required(),
-    [EQUIPMENT_NAME]: yup.string(),
-    [COUNTRY]: yup.string().nullable(),
-    ...getPropertiesSchema(),
-});
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_NAME]: yup.string(),
+        [COUNTRY]: yup.string().nullable(),
+    })
+    .concat(creationPropertiesSchema);
 
-const getProperties = (properties) => {
-    return properties
-        ? Object.entries(properties).map((p) => {
-              return { [NAME]: p[0], [VALUE]: p[1] };
-          })
-        : [];
-};
 const SubstationCreationDialog = ({
     editData,
     currentNode,
@@ -73,7 +72,7 @@ const SubstationCreationDialog = ({
                 [EQUIPMENT_ID]: substation.id + '(1)',
                 [EQUIPMENT_NAME]: substation.name ?? '',
                 [COUNTRY]: substation.countryCode,
-                [ADDITIONAL_PROPERTIES]: getProperties(substation.properties),
+                ...copyEquipmentPropertiesForCreation(substation),
             },
             { keepDefaultValues: true }
         );
@@ -93,7 +92,7 @@ const SubstationCreationDialog = ({
                 [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData.equipmentName ?? '',
                 [COUNTRY]: editData.substationCountry,
-                [ADDITIONAL_PROPERTIES]: getProperties(editData.properties),
+                ...getPropertiesFromModification(editData.properties),
             });
         }
     }, [reset, editData]);
@@ -112,7 +111,7 @@ const SubstationCreationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData ? editData.uuid : undefined,
-                substation[ADDITIONAL_PROPERTIES]
+                toModificationProperties(substation)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

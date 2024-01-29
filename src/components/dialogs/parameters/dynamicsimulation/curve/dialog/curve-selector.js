@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography, useTheme } from '@mui/material';
-import EquipmentFilter, { CURVE_EQUIPMENTS } from './equipment-filter';
+import { Grid, Typography } from '@mui/material';
+import EquipmentFilter, {
+    getReferencedEquipmentTypeForModel,
+} from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, {
@@ -16,17 +18,25 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+
+const styles = {
+    h6: (theme) => ({
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(1),
+    }),
+};
 
 const CurveSelector = forwardRef((props, ref) => {
-    const theme = useTheme();
-
     const equipmentFilterRef = useRef();
     const modelFilterRef = useRef();
 
-    const [equipment, setEquipment] = useState(CURVE_EQUIPMENTS.GENERATOR);
+    const [equipmentType, setEquipmentType] = useState(
+        EQUIPMENT_TYPES.GENERATOR
+    );
 
-    const handleChangeEquipment = useCallback((newEquipment) => {
-        setEquipment(newEquipment);
+    const handleChangeEquipmentType = useCallback((newEquipmentType) => {
+        setEquipmentType(newEquipmentType);
     }, []);
 
     // expose some api for the component by using ref
@@ -56,18 +66,15 @@ const CurveSelector = forwardRef((props, ref) => {
                 justifyContent={'flex-start'}
                 spacing={1}
             >
-                <Typography
-                    sx={{ marginBottom: theme.spacing(2) }}
-                    variant="h6"
-                >
+                <Typography sx={styles.h6} variant="h6">
                     <FormattedMessage
                         id={'DynamicSimulationCurveEquipmentFilter'}
                     ></FormattedMessage>
                 </Typography>
                 <EquipmentFilter
                     ref={equipmentFilterRef}
-                    equipment={equipment}
-                    onChangeEquipment={handleChangeEquipment}
+                    equipmentType={equipmentType}
+                    onChangeEquipmentType={handleChangeEquipmentType}
                 />
             </Grid>
             <Grid
@@ -79,15 +86,17 @@ const CurveSelector = forwardRef((props, ref) => {
                 justifyContent={'flex-start'}
                 spacing={1}
             >
-                <Typography
-                    sx={{ marginBottom: theme.spacing(2) }}
-                    variant="h6"
-                >
+                <Typography sx={styles.h6} variant="h6">
                     <FormattedMessage
                         id={'DynamicSimulationCurveCurveFilter'}
                     ></FormattedMessage>
                 </Typography>
-                <ModelFilter ref={modelFilterRef} equipment={equipment} />
+                <ModelFilter
+                    ref={modelFilterRef}
+                    equipmentType={getReferencedEquipmentTypeForModel(
+                        equipmentType
+                    )}
+                />
             </Grid>
         </>
     );

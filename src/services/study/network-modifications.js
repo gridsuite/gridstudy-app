@@ -405,8 +405,8 @@ export function createLoad(
     id,
     name,
     loadType,
-    constantActivePower,
-    constantReactivePower,
+    p0,
+    q0,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
@@ -414,7 +414,8 @@ export function createLoad(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -438,14 +439,15 @@ export function createLoad(
             equipmentId: id,
             equipmentName: name,
             loadType: loadType,
-            activePower: constantActivePower,
-            reactivePower: constantReactivePower,
+            p0: p0,
+            q0: q0,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -456,12 +458,13 @@ export function modifyLoad(
     id,
     name,
     loadType,
-    activePower,
-    reactivePower,
+    p0,
+    q0,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -485,10 +488,11 @@ export function modifyLoad(
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
-            constantActivePower: toModificationOperation(activePower),
-            constantReactivePower: toModificationOperation(reactivePower),
+            p0: toModificationOperation(p0),
+            q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+            properties,
         }),
     });
 }
@@ -1093,16 +1097,12 @@ export function createSubstation(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
 
-    const asObj = !properties?.length
-        ? undefined
-        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
-
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
         equipmentId: substationId,
         equipmentName: substationName,
         substationCountry: substationCountry === '' ? null : substationCountry,
-        properties: asObj,
+        properties,
     });
 
     if (isUpdate) {
@@ -1120,6 +1120,66 @@ export function createSubstation(
         },
         body: body,
     });
+}
+
+/**
+ * Formats the properties of an array of properties so it can be consumed by the backend.
+ * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean} | null>} - The modified properties.
+ */
+export function formatPropertiesForBackend(previousProperties, newProperties) {
+    if (JSON.stringify(previousProperties) === JSON.stringify(newProperties)) {
+        // return null so the backend does not update the properties
+        return null;
+    }
+
+    //take each attribute of previousProperties and convert it to and array of { 'name': aa, 'value': yy }
+    const previousPropertiesArray = Object.entries(previousProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+    const newPropertiesArray = Object.entries(newProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+
+    const propertiesModifications = [];
+    previousPropertiesArray.forEach((previousPropertiePair) => {
+        const updatedProperty = newPropertiesArray.find(
+            (updatedObj) => updatedObj.name === previousPropertiePair.name
+        );
+
+        if (!updatedProperty) {
+            // The property has been deleted (does not exist in the new properties array)
+            propertiesModifications.push({
+                ...previousPropertiePair,
+                previousValue: previousPropertiePair.value,
+                value: null,
+                deletionMark: true,
+            });
+        } else if (updatedProperty.value !== previousPropertiePair.value) {
+            // the property exist in both the previous and the new properties array but has been modified
+            propertiesModifications.push({
+                ...updatedProperty,
+                added: false,
+                deletionMark: false,
+                previousValue: previousPropertiePair.value,
+            });
+        }
+    });
+
+    newPropertiesArray.forEach((newPropertie) => {
+        // The property has been added
+        const previousPropertie = previousPropertiesArray.find(
+            (oldObj) => oldObj.name === newPropertie.name
+        );
+        //the propertie is new ( does not exist in the previous properties array)
+        if (!previousPropertie) {
+            propertiesModifications.push({
+                ...newPropertie,
+                added: true,
+                deletionMark: false,
+            });
+        }
+    });
+    return propertiesModifications;
 }
 
 export function modifySubstation(
@@ -1589,7 +1649,7 @@ export function deleteEquipmentByFilter(
 
 export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
     console.info(
-        'Fetching network modifications (matadata) for nodeUuid : ',
+        'Fetching network modifications (metadata) for nodeUuid : ',
         nodeUuid
     );
     const urlSearchParams = new URLSearchParams();

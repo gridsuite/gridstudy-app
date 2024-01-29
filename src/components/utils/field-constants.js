@@ -8,9 +8,8 @@
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
 export const CONNECTIVITY = 'connectivity';
+export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
@@ -104,10 +103,6 @@ export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
 export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
     SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
-};
-export const SHUNT_COMPENSATOR_TYPES = {
-    REACTOR: { id: 'REACTOR', label: 'Reactor' },
-    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
 };
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
@@ -276,6 +271,8 @@ export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';
 
 // VSC
+export const ACTIVE_POWER = 'activePower';
+export const REACTIVE_POWER = 'reactivePower';
 export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
 export const DC_RESISTANCE = 'dcResistance';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
@@ -313,3 +310,30 @@ export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
 export const EQUIPMENT_FIELD = 'equipmentField';
 
 export const SUBSTATION_COUNTRY = 'substationCountry';
+
+// non evacuated energy
+export const GENERATION_STAGES_KIND = 'energySource';
+export const GENERATION_STAGES_PERCENT_MAXP_1 = 'percentMaxP1';
+export const GENERATION_STAGES_PERCENT_MAXP_2 = 'percentMaxP2';
+export const GENERATION_STAGES_PERCENT_MAXP_3 = 'percentMaxP3';
+export const STAGES_DEFINITION_INDEX = 'stagesDefinitonIndex';
+export const PMAX_PERCENTS_INDEX = 'pMaxPercentsIndex';
+
+export const SENSITIVITY_THRESHOLD = 'sensitivityThreshold';
+export const GENERATORS_CAPPINGS_KIND = 'energySource';
+export const GENERATORS_CAPPINGS_FILTER = 'generators';
+
+export const BRANCHES = 'branches';
+export const MONITORED_BRANCHES_IST_N = 'istN';
+export const MONITORED_BRANCHES_LIMIT_NAME_N = 'limitNameN';
+export const MONITORED_BRANCHES_COEFF_N = 'nCoefficient';
+export const MONITORED_BRANCHES_IST_N_1 = 'istNm1';
+export const MONITORED_BRANCHES_LIMIT_NAME_N_1 = 'limitNameNm1';
+export const MONITORED_BRANCHES_COEFF_N_1 = 'nm1Coefficient';
+
+export const GENERATORS_CAPPINGS = 'generatorsCappings';
+export const STAGES_SELECTION = 'stagesSelection';
+export const STAGES_DEFINITION = 'stagesDefinition';
+export const STAGES_DEFINITION_GENERATORS = 'generators';
+export const PMAX_PERCENTS = 'pMaxPercents';
+export const GENERATORS_LIMIT = 'generatorsCappings';

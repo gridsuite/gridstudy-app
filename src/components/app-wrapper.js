@@ -78,7 +78,6 @@ let lightTheme = createTheme({
             },
         },
     },
-
     palette: {
         mode: 'light',
     },
@@ -126,8 +125,15 @@ let lightTheme = createTheme({
 
 lightTheme = createTheme(lightTheme, {
     palette: {
-        customButton: {
-            main: lightTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: lightTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });
@@ -195,8 +201,15 @@ let darkTheme = createTheme({
 
 darkTheme = createTheme(darkTheme, {
     palette: {
-        customButton: {
-            main: darkTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: darkTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });

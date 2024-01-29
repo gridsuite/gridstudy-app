@@ -38,14 +38,6 @@ import {
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
     CHANGE_REORDERED_COLUMNS,
-    ADD_LOADFLOW_NOTIF,
-    RESET_LOADFLOW_NOTIF,
-    ADD_SA_NOTIF,
-    ADD_VOLTAGE_INIT_NOTIF,
-    RESET_SA_NOTIF,
-    RESET_VOLTAGE_INIT_NOTIF,
-    ADD_SENSI_NOTIF,
-    RESET_SENSI_NOTIF,
     COMPONENT_LIBRARY,
     FAVORITE_CONTINGENCY_LISTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -66,12 +58,6 @@ import {
     TOGGLE_PIN_DIAGRAM,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
-    ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
-    RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
-    ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF,
-    RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF,
-    ADD_DYNAMIC_SIMULATION_NOTIF,
-    RESET_DYNAMIC_SIMULATION_NOTIF,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     MAP_EQUIPMENTS_CREATED,
@@ -102,6 +88,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
+    SET_LAST_COMPLETED_COMPUTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -173,6 +160,7 @@ const initialComputingStatus = {
     [ComputingType.LOADFLOW]: RunningStatus.IDLE,
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
@@ -222,13 +210,6 @@ const initialState = {
     showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
-    loadflowNotif: false,
-    saNotif: false,
-    voltageInitNotif: false,
-    sensiNotif: false,
-    allBusesShortCircuitNotif: false,
-    oneBusShortCircuitNotif: false,
-    dynamicSimulationNotif: false,
     fullScreenDiagram: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
@@ -255,6 +236,7 @@ const initialState = {
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
+    lastCompletedComputation: null,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -557,62 +539,6 @@ export const reducer = createReducer(initialState, {
 
     [SET_DELETED_EQUIPMENTS]: (state, action) => {
         state.deletedEquipments = action.deletedEquipments;
-    },
-
-    [ADD_LOADFLOW_NOTIF]: (state) => {
-        state.loadflowNotif = true;
-    },
-
-    [RESET_LOADFLOW_NOTIF]: (state) => {
-        state.loadflowNotif = false;
-    },
-
-    [ADD_SA_NOTIF]: (state) => {
-        state.saNotif = true;
-    },
-
-    [RESET_SA_NOTIF]: (state) => {
-        state.saNotif = false;
-    },
-
-    [ADD_VOLTAGE_INIT_NOTIF]: (state) => {
-        state.voltageInitNotif = true;
-    },
-
-    [RESET_VOLTAGE_INIT_NOTIF]: (state) => {
-        state.voltageInitNotif = false;
-    },
-
-    [ADD_SENSI_NOTIF]: (state) => {
-        state.sensiNotif = true;
-    },
-
-    [RESET_SENSI_NOTIF]: (state) => {
-        state.sensiNotif = false;
-    },
-
-    [ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.allBusesShortCircuitNotif = true;
-    },
-
-    [RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.allBusesShortCircuitNotif = false;
-    },
-
-    [ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.oneBusShortCircuitNotif = true;
-    },
-
-    [RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.oneBusShortCircuitNotif = false;
-    },
-
-    [ADD_DYNAMIC_SIMULATION_NOTIF]: (state) => {
-        state.dynamicSimulationNotif = true;
-    },
-
-    [RESET_DYNAMIC_SIMULATION_NOTIF]: (state) => {
-        state.dynamicSimulationNotif = false;
     },
 
     [SUBSTATION_LAYOUT]: (state, action) => {
@@ -1099,6 +1025,9 @@ export const reducer = createReducer(initialState, {
     },
     [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
         state.studyIndexationStatus = action.studyIndexationStatus;
+    },
+    [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
+        state.lastCompletedComputation = action.lastCompletedComputation;
     },
 });
 

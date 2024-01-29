@@ -19,13 +19,12 @@ import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
 } from '../../../utils/config-params';
-import { CloseButton, useParameterState, styles } from './parameters';
+import { useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { ParamLine, ParameterType } from './widget';
 import { useState } from 'react';
-import { mergeSx } from '../../utils/functions';
 
-export const MapParameters = ({ hideParameters }) => {
+export const MapParameters = () => {
     const alertThresholdMarks = [
         {
             value: 0,
@@ -48,10 +47,12 @@ export const MapParameters = ({ hideParameters }) => {
     return (
         <>
             <Grid
+                xl={6}
                 container
                 spacing={1}
                 sx={styles.scrollableGrid}
                 key={'mapParameters'}
+                marginTop={-3}
             >
                 <ParamLine
                     type={ParameterType.Switch}
@@ -120,13 +121,6 @@ export const MapParameters = ({ hideParameters }) => {
                         [MAP_BASEMAP_CARTO_NOLABEL]: 'CartoNoLabel',
                     }}
                 />
-            </Grid>
-            <Grid
-                container
-                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
-                maxWidth="md"
-            >
-                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

@@ -7,7 +7,6 @@
 
 import {
     SHUNT_COMPENSATOR_TYPE,
-    SHUNT_COMPENSATOR_TYPES,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     MAXIMUM_SECTION_COUNT,
@@ -19,6 +18,7 @@ import {
 } from 'components/utils/field-constants';
 import { computeSwitchedOnValue } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
+import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 
 const characteristicsValidationSchema = (isModification) => ({
     [CHARACTERISTICS_CHOICE]: yup.string().required(),
@@ -73,10 +73,10 @@ const getCharacteristicsCreateFormValidationSchema = () => {
         [SECTION_COUNT]: yup
             .number()
             .required()
-            .min(1, 'SectionCountBetweenOneAndMaximumSectionCount')
+            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount')
             .max(
                 yup.ref(MAXIMUM_SECTION_COUNT),
-                'SectionCountBetweenOneAndMaximumSectionCount'
+                'SectionCountBetweenZeroAndMaximumSectionCount'
             ),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().notRequired(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().notRequired(),
@@ -97,7 +97,7 @@ const getCharacteristicsModificationFormValidationSchema = () => {
         [SECTION_COUNT]: yup
             .number()
             .nullable()
-            .min(1, 'SectionCountBetweenOneAndMaximumSectionCount'),
+            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount'),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };

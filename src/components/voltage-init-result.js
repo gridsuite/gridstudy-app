@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
-    useCallback,
-    useState,
-    useEffect,
-    useMemo,
-    useRef,
-} from 'react';
+import React, { useCallback, useState, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -18,13 +12,11 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { green, red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
-    fetchVoltageInitResult,
     getVoltageInitModifications,
 } from '../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -48,23 +40,17 @@ const styles = {
         top: 0,
         left: 0,
     },
-    succeed: {
-        color: green[500],
-    },
-    fail: {
-        color: red[500],
-    },
-    buttonApplyModifications: {
+    succeed: (theme) => ({
+        color: theme.palette.success.main,
+    }),
+    fail: (theme) => ({
+        color: theme.palette.error.main,
+    }),
+    buttonApplyModifications: (theme) => ({
         display: 'flex',
-        position: 'relative',
-        marginLeft: '5px',
-    },
-    labelAppliedModifications: {
-        display: 'flex',
-        position: 'relative',
-        marginTop: '12px',
-        marginLeft: '20px',
-    },
+        alignItems: 'center',
+        paddingLeft: theme.spacing(2),
+    }),
     gridContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -94,9 +80,8 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
 
-    const [resultToShow, setResultToShow] = useState(result);
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
-        !resultToShow || !resultToShow.modificationsGroupUuid
+        !result || !result.modificationsGroupUuid
     );
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] =
@@ -105,18 +90,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
 
     const intl = useIntl();
 
-    const viNotif = useSelector((state) => state.voltageInitNotif);
-
     const openLoader = useOpenLoaderShortWait({
         isLoading: status === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
     });
-
-    useEffect(() => {
-        fetchVoltageInitResult(studyUuid, currentNode.id).then((res) => {
-            setResultToShow(res);
-        });
-    }, [viNotif, disabledApplyModifications, studyUuid, currentNode.id]);
 
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
@@ -141,19 +118,14 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
         cloneVoltageInitModifications(studyUuid, currentNode.id)
-            .then(() => {
-                setApplyingModifications(false);
-                setResultToShow({
-                    ...resultToShow,
-                    modificationsGroupUuid: null,
-                });
-            })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errCloneVoltageInitModificationMsg',
                 });
                 setDisableApplyModifications(false);
+            })
+            .finally(() => {
                 setApplyingModifications(false);
             });
     };
@@ -166,14 +138,14 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 // this endpoint returns a list, but we are expecting a single modification here
                 setVoltageInitModification(modificationList.at(0));
                 setPreviewModificationsDialogOpen(true);
-                setDisableApplyModifications(false);
-                setApplyingModifications(false);
             })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errPreviewVoltageInitModificationMsg',
                 });
+            })
+            .finally(() => {
                 setDisableApplyModifications(false);
                 setApplyingModifications(false);
             });
@@ -232,7 +204,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
@@ -269,7 +241,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Stack
                     direction={'row'}
                     gap={1}
-                    marginBottom={-4.5}
+                    marginBottom={2}
                     marginTop={1.5}
                     marginLeft={2}
                 >
@@ -288,7 +260,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
@@ -321,7 +292,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
-                    headerHeight={0}
                     skipColumnHeaders={true}
                 />
             </>
@@ -378,8 +348,8 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                             variant="outlined"
                             onClick={previewModifications}
                             disabled={
-                                !resultToShow ||
-                                !resultToShow.modificationsGroupUuid ||
+                                !result ||
+                                !result.modificationsGroupUuid ||
                                 disabledApplyModifications
                             }
                         >
@@ -387,35 +357,28 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                         </Button>
                         {previewModificationsDialogOpen &&
                             renderPreviewModificationsDialog()}
-                        {resultToShow &&
-                            !resultToShow.modificationsGroupUuid && (
-                                <div style={styles.labelAppliedModifications}>
+                        {result &&
+                            !result.modificationsGroupUuid &&
+                            status === RunningStatus.SUCCEED && (
+                                <Box sx={{ paddingLeft: 2 }}>
                                     <FormattedMessage id="modificationsAlreadyApplied" />
-                                </div>
+                                </Box>
                             )}
                         {applyingModifications && (
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    marginTop: '5px',
-                                    marginLeft: '20px',
-                                }}
-                            >
-                                <CircularProgress />
-                            </div>
+                            <CircularProgress
+                                sx={{ paddingLeft: 2 }}
+                                size={'1em'}
+                            />
                         )}
                     </Box>
                 </Box>
                 <div style={{ flexGrow: 1 }}>
-                    {viNotif &&
-                        resultToShow &&
+                    {result &&
                         tabIndex === 0 &&
-                        renderIndicatorsTable(resultToShow.indicators)}
-                    {viNotif &&
-                        resultToShow &&
+                        renderIndicatorsTable(result.indicators)}
+                    {result &&
                         tabIndex === 1 &&
-                        renderReactiveSlacksTable(resultToShow.reactiveSlacks)}
+                        renderReactiveSlacksTable(result.reactiveSlacks)}
                     {tabIndex === 2 && renderReportViewer()}
                 </div>
             </>

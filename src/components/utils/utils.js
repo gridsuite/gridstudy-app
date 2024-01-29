@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useEffect, useRef } from 'react';
 import { getIn } from 'yup';
 import { toNumber } from './validation-functions';
 
@@ -243,3 +244,31 @@ export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
         }, [])
     );
 };
+
+export function getNewVoltageLevelOptions(
+    formattedVoltageLevel,
+    oldVoltageLevelId,
+    voltageLevelOptions
+) {
+    const newVoltageLevelOptions =
+        formattedVoltageLevel.id === oldVoltageLevelId
+            ? voltageLevelOptions.filter(
+                  (vl) => vl.id !== formattedVoltageLevel.id
+              )
+            : voltageLevelOptions.filter(
+                  (vl) =>
+                      vl.id !== formattedVoltageLevel.id &&
+                      vl.id !== oldVoltageLevelId
+              );
+    newVoltageLevelOptions.push(formattedVoltageLevel);
+
+    return newVoltageLevelOptions;
+}
+
+export function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    return ref.current;
+}

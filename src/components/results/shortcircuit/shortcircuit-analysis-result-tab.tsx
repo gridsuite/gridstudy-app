@@ -14,8 +14,8 @@ import React, {
 } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
+    computingTypeToShortcircuitTabRedirection,
     ResultTabIndexRedirection,
-    ResultsTabsLevel,
     useResultsTab,
 } from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';
@@ -32,15 +32,24 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 interface ShortCircuitAnalysisResultTabProps {
-    resultTabIndexRedirection: ResultTabIndexRedirection;
+    view: string;
 }
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
-> = ({ resultTabIndexRedirection }) => {
-    const [tabIndex, setTabIndex] = useState(
-        resultTabIndexRedirection?.[ResultsTabsLevel.ONE] ?? 0
+> = ({ view }) => {
+    const lastCompletedComputation = useSelector(
+        (state: ReduxState) => state.lastCompletedComputation
     );
+
+    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
+        () =>
+            computingTypeToShortcircuitTabRedirection(lastCompletedComputation),
+        [lastCompletedComputation]
+    );
+
+    const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
+
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const AllBusesShortCircuitStatus = useSelector(
@@ -52,13 +61,19 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    useResultsTab(resultTabIndexRedirection, setTabIndex, ResultsTabsLevel.ONE);
+    const setRedirectionLock = useResultsTab(
+        resultTabIndexRedirection,
+        setTabIndex,
+        view
+    );
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
             setTabIndex(newIndex);
+            //when we manually browse results we ought to block further redirections until the next completed computation
+            setRedirectionLock(true);
         },
-        [setTabIndex]
+        [setTabIndex, setRedirectionLock]
     );
 
     const RESULTS_TAB_INDEX = 0;

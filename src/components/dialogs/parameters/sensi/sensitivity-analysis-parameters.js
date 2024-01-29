@@ -10,18 +10,11 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    Grid,
-    Button,
-    DialogActions,
-    Box,
-    CircularProgress,
-    Typography,
-} from '@mui/material';
+import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { LabelledButton, styles } from '../parameters';
+import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -73,9 +66,8 @@ import {
     getSensiPstformatNewParams,
     getSensiPSTsFormSchema,
 } from './utils';
-import { SelectOptionsDialog } from '../../../../utils/dialogs';
-import DialogContentText from '@mui/material/DialogContentText';
 import Alert from '@mui/material/Alert';
+import { mergeSx } from 'components/utils/functions';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -116,13 +108,12 @@ const formSchema = yup
 
 const numberMax = 500000;
 export const SensitivityAnalysisParameters = ({
-    hideParameters,
     parametersBackend,
     useSensitivityAnalysisParameters,
+    setHaveDirtyFields,
 }) => {
     const { snackError } = useSnackMessage();
 
-    const [popupConfirm, setPopupConfirm] = useState(false);
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
@@ -133,15 +124,6 @@ export const SensitivityAnalysisParameters = ({
         id: key,
         label: providers[key],
     }));
-
-    const handlePopupConfirm = useCallback(() => {
-        hideParameters();
-        setPopupConfirm(false);
-    }, [hideParameters]);
-
-    const handleClosePopupConfirm = useCallback(() => {
-        setPopupConfirm(false);
-    }, []);
 
     const resetSensitivityParametersAndProvider = useCallback(() => {
         resetProvider();
@@ -217,35 +199,6 @@ export const SensitivityAnalysisParameters = ({
         return getGenericRowNewParams(row);
     }, []);
 
-    const onSubmit = useCallback(
-        (newParams) => {
-            setIsSubmitAction(true);
-            setSensitivityAnalysisParameters(
-                studyUuid,
-                formatNewParams(newParams)
-            )
-                .then(() => {
-                    setSensitivityAnalysisParams(
-                        formatNewParams(newParams, false)
-                    );
-                    updateProvider(newParams[PROVIDER]);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisParametersError',
-                    });
-                });
-        },
-        [
-            setSensitivityAnalysisParams,
-            snackError,
-            studyUuid,
-            formatNewParams,
-            updateProvider,
-        ]
-    );
-
     const getResultCount = useCallback(() => {
         const values = getValues();
         let totalResultCount = 0;
@@ -270,17 +223,18 @@ export const SensitivityAnalysisParameters = ({
 
             totalResultCount += count;
         });
-        return totalResultCount;
+        setAnalysisComputeComplexity(totalResultCount);
+        const timeoutId = setTimeout(() => {
+            setLaunchLoader(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
     }, [getValues]);
 
     const onFormChanged = useCallback(
         (onFormChanged) => {
             if (onFormChanged) {
                 setLaunchLoader(true);
-                setAnalysisComputeComplexity(getResultCount());
-                setTimeout(() => {
-                    setLaunchLoader(false);
-                }, 1000);
+                getResultCount();
             }
         },
         [getResultCount]
@@ -300,8 +254,7 @@ export const SensitivityAnalysisParameters = ({
                             `${arrayFormName}[${index}].[${COUNT}]`,
                             parseIntData(value, 0)
                         );
-                        setAnalysisComputeComplexity(getResultCount());
-                        setLaunchLoader(false);
+                        getResultCount();
                     });
                 })
                 .catch((error) => {
@@ -315,28 +268,6 @@ export const SensitivityAnalysisParameters = ({
         },
         [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
     );
-
-    const initRowsCount = useCallback(() => {
-        const handleEntries = (entries, parameter) => {
-            entries
-                .filter((entry) => entry[ACTIVATED] && !entry[COUNT])
-                .forEach((entry, index) =>
-                    onChangeParams(entry, parameter, index)
-                );
-        };
-
-        const values = getValues();
-        handleEntries(
-            values[PARAMETER_SENSI_INJECTIONS_SET],
-            PARAMETER_SENSI_INJECTIONS_SET
-        );
-        handleEntries(
-            values[PARAMETER_SENSI_INJECTION],
-            PARAMETER_SENSI_INJECTION
-        );
-        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
-        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
-    }, [onChangeParams, getValues]);
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
         (parameters) => {
@@ -521,16 +452,70 @@ export const SensitivityAnalysisParameters = ({
         [reset]
     );
 
-    const handleClose = useCallback(() => {
-        if (
-            formState.dirtyFields &&
-            Object.keys(formState.dirtyFields).length === 0
-        ) {
-            hideParameters();
-        } else {
-            setPopupConfirm(true);
-        }
-    }, [hideParameters, formState.dirtyFields]);
+    const initRowsCount = useCallback(() => {
+        const handleEntries = (entries, parameter) => {
+            const entriesWithIndices = entries.map((entry, index) => ({
+                entry,
+                index,
+            }));
+            const filteredInitEntries = entries.filter(
+                (entry) =>
+                    entry[ACTIVATED] &&
+                    entry[MONITORED_BRANCHES].length > 0 &&
+                    (entry[INJECTIONS]?.length > 0 ||
+                        entry[PSTS]?.length > 0 ||
+                        entry[HVDC_LINES]?.length > 0)
+            );
+            filteredInitEntries.forEach((entry) => {
+                const originalIndex = entriesWithIndices.findIndex(
+                    (obj) => obj.entry === entry
+                );
+                onChangeParams(entry, parameter, originalIndex);
+            });
+        };
+
+        const values = getValues();
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTIONS_SET],
+            PARAMETER_SENSI_INJECTIONS_SET
+        );
+        handleEntries(
+            values[PARAMETER_SENSI_INJECTION],
+            PARAMETER_SENSI_INJECTION
+        );
+        handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
+        handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
+    }, [onChangeParams, getValues]);
+    const onSubmit = useCallback(
+        (newParams) => {
+            setIsSubmitAction(true);
+            setSensitivityAnalysisParameters(
+                studyUuid,
+                formatNewParams(newParams)
+            )
+                .then(() => {
+                    setSensitivityAnalysisParams(
+                        formatNewParams(newParams, false)
+                    );
+                    updateProvider(newParams[PROVIDER]);
+                    initRowsCount();
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'SensitivityAnalysisParametersError',
+                    });
+                });
+        },
+        [
+            setSensitivityAnalysisParams,
+            snackError,
+            studyUuid,
+            formatNewParams,
+            updateProvider,
+            initRowsCount,
+        ]
+    );
 
     useEffect(() => {
         if (sensitivityAnalysisParams) {
@@ -560,23 +545,18 @@ export const SensitivityAnalysisParameters = ({
 
     const renderComputingEventLoading = () => {
         return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress
-                        size={'1em'}
-                        sx={styles.circularProgress}
-                    />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={'loadingComputing'} />
-                </Typography>
-            </Box>
+            <Alert severity={'info'} sx={{ justifyContent: 'center' }}>
+                <FormattedMessage id={'loadingComputing'} />
+            </Alert>
         );
     };
 
     const renderComputingEvent = () => {
         return (
-            <Alert severity={isMaxReached ? 'error' : 'info'}>
+            <Alert
+                severity={isMaxReached ? 'error' : 'info'}
+                sx={{ justifyContent: 'center' }}
+            >
                 {analysisComputeComplexity > 999999 ? (
                     <FormattedMessage id="SimulatedCalculationExceedsLimit" />
                 ) : (
@@ -596,81 +576,94 @@ export const SensitivityAnalysisParameters = ({
         [analysisComputeComplexity]
     );
 
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     return (
         <>
             <FormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid container spacing={1} paddingTop={1}>
-                    <Grid item xs={8} sx={styles.parameterName}>
-                        <FormattedMessage id="Provider" />
-                    </Grid>
-                    <Grid item xs={4} sx={styles.controlItem}>
-                        <SelectInput
-                            name={PROVIDER}
-                            disableClearable
-                            size="small"
-                            options={Object.values(formattedProviders)}
-                        ></SelectInput>
-                    </Grid>
-                </Grid>
                 <Grid
                     container
-                    sx={styles.scrollableGrid}
-                    key="sensitivityAnalysisParameters"
+                    sx={{ height: '100%' }}
+                    justifyContent="space-between"
                 >
-                    <Grid container paddingTop={1} paddingBottom={1}>
-                        <LineSeparator />
-                    </Grid>
-                    <SensitivityAnalysisFields
-                        reset={reset}
-                        useSensitivityAnalysisParameters={
-                            useSensitivityAnalysisParameters
-                        }
-                    />
-                    <Grid container paddingTop={1} paddingBottom={2}>
-                        <LineSeparator />
-                    </Grid>
-                    <Grid container justifyContent={'right'}>
-                        <Grid item marginBottom="-50px">
-                            {launchLoader
-                                ? renderComputingEventLoading()
-                                : renderComputingEvent()}
-                            <FormattedMessage id="SimulatedCalculationMax" />
+                    <Grid item container>
+                        <Grid item xs={8} xl={4} sx={styles.parameterName}>
+                            <FormattedMessage id="Provider" />
+                        </Grid>
+                        <Grid item xs={4} xl={2} sx={styles.controlItem}>
+                            <SelectInput
+                                name={PROVIDER}
+                                disableClearable
+                                size="small"
+                                options={Object.values(formattedProviders)}
+                            />
                         </Grid>
                     </Grid>
-                    <SensitivityParametersSelector
-                        reset={reset}
-                        useSensitivityAnalysisParameters={
-                            useSensitivityAnalysisParameters
-                        }
-                        onFormChanged={onFormChanged}
-                        onChangeParams={onChangeParams}
-                    />
-                </Grid>
-                <DialogActions>
-                    <Button onClick={clear}>
-                        <FormattedMessage id="resetToDefault" />
-                    </Button>
-                    <SubmitButton
-                        onClick={handleSubmit(onSubmit)}
-                        variant="outlined"
-                        disabled={launchLoader || isMaxReached}
+                    <Grid
+                        xs
+                        item
+                        container
+                        sx={mergeSx(styles.scrollableGrid, {
+                            paddingTop: 0,
+                            display: 'unset',
+                        })}
+                        key="sensitivityAnalysisParameters"
                     >
-                        <FormattedMessage id="validate" />
-                    </SubmitButton>
-                    <LabelledButton callback={handleClose} label="cancel" />
-                </DialogActions>
-            </FormProvider>
+                        <Grid xl={6}>
+                            <Grid container paddingTop={1} paddingBottom={1}>
+                                <LineSeparator />
+                            </Grid>
+                            <SensitivityAnalysisFields
+                                reset={reset}
+                                useSensitivityAnalysisParameters={
+                                    useSensitivityAnalysisParameters
+                                }
+                            />
+                        </Grid>
+                        <Grid container paddingTop={4} paddingBottom={2}>
+                            <LineSeparator />
+                        </Grid>
+                        <Grid container justifyContent={'right'}>
+                            <Grid item marginBottom={-9} width={'300px'}>
+                                {launchLoader
+                                    ? renderComputingEventLoading()
+                                    : renderComputingEvent()}
+                                <FormattedMessage id="SimulatedCalculationMax" />
+                            </Grid>
+                        </Grid>
+                        <SensitivityParametersSelector
+                            reset={reset}
+                            useSensitivityAnalysisParameters={
+                                useSensitivityAnalysisParameters
+                            }
+                            onFormChanged={onFormChanged}
+                            onChangeParams={onChangeParams}
+                        />
+                    </Grid>
 
-            <SelectOptionsDialog
-                open={popupConfirm}
-                onClose={handleClosePopupConfirm}
-                onClick={handlePopupConfirm}
-                child={
-                    <DialogContentText>
-                        <FormattedMessage id="genericConfirmQuestion" />
-                    </DialogContentText>
-                }
-            />
+                    <Grid item container>
+                        <DialogActions
+                            sx={mergeSx(styles.controlParametersItem, {
+                                paddingLeft: 0,
+                                paddingBottom: 2,
+                            })}
+                        >
+                            <Button onClick={clear}>
+                                <FormattedMessage id="resetToDefault" />
+                            </Button>
+                            <SubmitButton
+                                onClick={handleSubmit(onSubmit)}
+                                variant="outlined"
+                                disabled={launchLoader || isMaxReached}
+                            >
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </DialogActions>
+                    </Grid>
+                </Grid>
+            </FormProvider>
         </>
     );
 };

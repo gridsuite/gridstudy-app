@@ -45,22 +45,26 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifySubstation,
     modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyShuntCompensator,
     modifyVoltageLevel,
     requestNetworkChange,
+    formatPropertiesForBackend,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
-import { SHUNT_COMPENSATOR_TYPES } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
     updateGeneratorCells,
     updateShuntCompensatorCells,
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { REGULATION_TYPES } from 'components/network/constants';
+import {
+    REGULATION_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
+} from 'components/network/constants';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -436,6 +440,21 @@ const TableWrapper = (props) => {
     const buildEditPromise = useCallback(
         (editingData, groovyCr, context) => {
             switch (editingData?.metadata.equipmentType) {
+                case EQUIPMENT_TYPES.SUBSTATION:
+                    const propertiesForBackend = formatPropertiesForBackend(
+                        editingDataRef.current.properties ?? {},
+                        editingData.properties ?? {}
+                    );
+                    return modifySubstation(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.countryCode,
+                        false,
+                        undefined,
+                        propertiesForBackend
+                    );
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
                         props.studyUuid,

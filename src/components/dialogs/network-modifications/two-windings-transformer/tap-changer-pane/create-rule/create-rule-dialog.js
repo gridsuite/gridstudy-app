@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Dialog, DialogActions } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { Dialog, DialogActions } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import CreateRuleForm from './create-rule-form';
 import {
@@ -19,6 +18,7 @@ import {
     LOW_TAP_POSITION,
 } from 'components/utils/field-constants';
 import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 const emptyFormData = getCreateRuteEmptyFormData();
 const formSchema = getCreateRuleValidationSchema();
@@ -52,9 +52,7 @@ export const CreateRuleDialog = (props) => {
             <FormProvider validationSchema={formSchema} {...formMethods}>
                 <CreateRuleForm {...props} />
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
+                    <CancelButton onClick={handleCloseDialog} />
                     <CreateRuleDialogSubmitButton
                         handleSave={handleSave}
                         allowNegativeValues={allowNegativeValues}

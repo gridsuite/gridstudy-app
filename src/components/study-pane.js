@@ -33,6 +33,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
 import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
+import ParametersTabs from './parameters-tabs';
 
 const styles = {
     map: {
@@ -80,6 +81,7 @@ export const StudyView = {
     SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
     LOGS: 'Logs',
+    PARAMETERS: 'Parameters',
 };
 
 const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
@@ -291,15 +293,13 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                         currentNode={currentNode}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
+                        view={props.view}
                     />
                 </TabPanelLazy>
             </Box>
-
-            <div
-                className="singlestretch-child"
-                style={{
-                    display: props.view === StudyView.LOGS ? null : 'none',
-                }}
+            <TabPanelLazy
+                selected={props.view === StudyView.LOGS}
+                key={`logs-${currentNode?.id}`}
             >
                 <ReportViewerTab
                     studyId={studyUuid}
@@ -307,7 +307,13 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     currentNode={currentNode}
                     disabled={disabled}
                 />
-            </div>
+            </TabPanelLazy>
+            <TabPanelLazy
+                key={`parameters-${currentNode?.id}`}
+                selected={props.view === StudyView.PARAMETERS}
+            >
+                <ParametersTabs studyId={studyUuid} />
+            </TabPanelLazy>
         </>
     );
 };
