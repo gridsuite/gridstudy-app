@@ -194,7 +194,8 @@ export function downloadShortCircuitResultZippedCsv(
     studyUuid,
     currentNodeUuid,
     analysisType,
-    headersCsv
+    headersCsv,
+    enumValueTranslations
 ) {
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`
@@ -213,6 +214,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(headersCsv),
+        body: JSON.stringify(headersCsv, enumValueTranslations),
     });
 }

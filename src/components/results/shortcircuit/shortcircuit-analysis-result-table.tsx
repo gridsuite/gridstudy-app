@@ -388,9 +388,41 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         !isFetching
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
-    const headersCsv = columns
-        .filter((column) => 'headerName' in column)
-        .map((column) => (column as { headerName?: string }).headerName || '');
+    const headersCsv = useMemo(
+        () =>
+            columns
+                .filter((column) => 'headerName' in column)
+                .map(
+                    (column) =>
+                        (column as { headerName?: string }).headerName || ''
+                ),
+        [columns]
+    );
+
+    const enumValueTranslations = useMemo(() => {
+        const returnedValue: Record<string, string> = {};
+        const enumValuesToTranslate = [
+            'THREE_PHASE',
+            'SINGLE_PHASE',
+            'ACTIVE_POWER',
+            'APPARENT_POWER',
+            'CURRENT',
+            'LOW_VOLTAGE',
+            'HIGH_VOLTAGE',
+            'LOW_VOLTAGE_ANGLE',
+            'HIGH_VOLTAGE_ANGLE',
+            'LOW_SHORT_CIRCUIT_CURRENT',
+            'HIGH_SHORT_CIRCUIT_CURRENT',
+            'OTHER',
+        ];
+
+        enumValuesToTranslate.forEach((value) => {
+            returnedValue[value] = intl.formatMessage({ id: value });
+        });
+
+        return returnedValue;
+    }, [intl]);
+
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
@@ -398,16 +430,19 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             studyUuid,
             currentNode,
             analysisType,
-            headersCsv
+            headersCsv,
+            enumValueTranslations
         )
-            .then((fileBlob) => {
-                downloadZipFile(
-                    fileBlob,
-                    analysisType === ShortCircuitAnalysisType.ONE_BUS
-                        ? 'oneBus-results.zip'
-                        : 'allBuses_results.zip'
-                );
-                setIsCsvExportSuccessful(true);
+            .then((response) => {
+                response.blob().then((fileBlob: Blob) => {
+                    downloadZipFile(
+                        fileBlob,
+                        analysisType === ShortCircuitAnalysisType.ONE_BUS
+                            ? 'oneBus-results.zip'
+                            : 'allBuses_results.zip'
+                    );
+                    setIsCsvExportSuccessful(true);
+                });
             })
             .catch((error) => {
                 snackError({
