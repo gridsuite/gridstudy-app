@@ -14,14 +14,11 @@ import React, {
     useEffect,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { ReduxState } from '../../../redux/reducer.type';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
-import {
-    downloadSecurityAnalysisResultZippedCsv,
-    fetchSecurityAnalysisResult,
-} from '../../../services/study/security-analysis';
+import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
@@ -47,12 +44,10 @@ import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
-import { ExportButton } from 'components/utils/export-button';
-import { downloadZipFile } from 'services/utils';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 
 const styles = {
-    subTabsToolboxContainer: {
+    tabsAndToolboxContainer: {
         display: 'flex',
         position: 'relative',
         justifyContent: 'space-between',
@@ -91,7 +86,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [hasFilter, setHasFilter] = useState<boolean>(false);
-    const [csvHeaders, setCsvHeaders] = useState<string[]>();
+    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
 
     const N_RESULTS_TAB_INDEX = 0;
     const NMK_RESULTS_TAB_INDEX = 1;
@@ -253,7 +248,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     return (
         <>
-            <Box sx={styles.subTabsToolboxContainer}>
+            <Box sx={styles.tabsAndToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label="N" />
@@ -296,7 +291,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             nodeUuid={nodeUuid}
                             csvHeaders={csvHeaders}
                             resultType={resultType}
-                            disabled={result == undefined || result.size === 0}
+                            disabled={!result || result.length === 0}
                         />
                     )}
                 </Box>

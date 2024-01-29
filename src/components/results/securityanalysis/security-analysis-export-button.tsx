@@ -86,6 +86,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<
             })
             .finally(() => setIsCsvExportLoading(false));
     }, [
+        resultType,
         csvHeaders,
         enumValueTranslations,
         studyUuid,

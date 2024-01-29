@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
@@ -24,7 +18,6 @@ import {
     flattenNmKResultsContingencies,
     handlePostSortRows,
     PAGE_OPTIONS,
-    RESULT_TYPE,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
@@ -35,8 +28,6 @@ import { fetchLineOrTransformer } from '../../../services/study/network-map';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { BranchSide } from '../../utils/constants';
-import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
-import { downloadZipFile } from 'services/utils';
 
 const styles = {
     container: {
@@ -62,7 +53,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
-    enumValueTranslations,
     setCsvHeaders,
 }) => {
     const { content } = result || {};
@@ -201,7 +191,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
 
     useEffect(() => {
         setCsvHeaders(columnDefs.map((cDef) => cDef.headerName ?? ''));
-    }, [columnDefs]);
+    }, [columnDefs, setCsvHeaders]);
 
     const agGridProps = {
         postSortRows: handlePostSortRows,

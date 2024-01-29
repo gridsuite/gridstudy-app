@@ -68,7 +68,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
 
     useEffect(() => {
         setCsvHeaders(columnDefs.map((cDef) => cDef.headerName ?? ''));
-    }, [columnDefs]);
+    }, [columnDefs, setCsvHeaders]);
 
     return (
         <SecurityAnalysisTable
