@@ -152,6 +152,7 @@ export interface SecurityAnalysisResultNProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     enumValueTranslations?: Record<string, string>;
+    setCsvHeaders: (csvHeaders: string[]) => void;
 }
 
 export interface SecurityAnalysisResultNmkProps {
@@ -166,6 +167,7 @@ export interface SecurityAnalysisResultNmkProps {
     filterProps: FilterPropsType;
     filterEnums: FilterEnumsType;
     enumValueTranslations?: Record<string, string>;
+    setCsvHeaders: (csvHeaders: string[]) => void;
 }
 
 export interface SecurityAnalysisNTableRow {
@@ -181,7 +183,4 @@ export interface SecurityAnalysisResultProps {
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
-    exportCsv: () => void;
-    isCsvExportSuccessful: boolean;
-    isCsvExportLoading: boolean;
 }

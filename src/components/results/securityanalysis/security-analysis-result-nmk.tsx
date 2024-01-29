@@ -8,6 +8,7 @@
 import React, {
     FunctionComponent,
     useCallback,
+    useEffect,
     useMemo,
     useState,
 } from 'react';
@@ -62,14 +63,13 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     filterProps,
     filterEnums,
     enumValueTranslations,
+    setCsvHeaders,
 }) => {
     const { content } = result || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
     const { snackError } = useSnackMessage();
-    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
-    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
 
     const onClickNmKConstraint = useCallback(
         (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
@@ -199,47 +199,9 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [isFromContingency, theme.selectedRow.background]
     );
 
-    const csvHeaders = useMemo(
-        () => columnDefs.map((cDef) => cDef.headerName),
-        [columnDefs]
-    );
-
-    const exportResultCsv = useCallback(() => {
-        setIsCsvExportLoading(true);
-        setIsCsvExportSuccessful(false);
-        downloadSecurityAnalysisResultZippedCsv(
-            studyUuid,
-            nodeUuid,
-            {
-                resultType: isFromContingency
-                    ? RESULT_TYPE.NMK_CONTINGENCIES
-                    : RESULT_TYPE.NMK_LIMIT_VIOLATIONS,
-            },
-            csvHeaders,
-            enumValueTranslations
-        )
-            .then((fileBlob) => {
-                downloadZipFile(fileBlob, 'nmk-results.zip');
-                setIsCsvExportSuccessful(true);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'securityAnalysisCsvResultsError',
-                    }),
-                });
-            })
-            .finally(() => setIsCsvExportLoading(false));
-    }, [
-        csvHeaders,
-        enumValueTranslations,
-        isFromContingency,
-        studyUuid,
-        nodeUuid,
-        snackError,
-        intl,
-    ]);
+    useEffect(() => {
+        setCsvHeaders(columnDefs.map((cDef) => cDef.headerName ?? ''));
+    }, [columnDefs]);
 
     const agGridProps = {
         postSortRows: handlePostSortRows,
@@ -255,9 +217,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                     columnDefs={columnDefs}
                     isLoadingResult={isLoadingResult}
                     agGridProps={agGridProps}
-                    exportCsv={exportResultCsv}
-                    isCsvExportLoading={isCsvExportLoading}
-                    isCsvExportSuccessful={isCsvExportSuccessful}
                 />
             </Box>
             <Box>

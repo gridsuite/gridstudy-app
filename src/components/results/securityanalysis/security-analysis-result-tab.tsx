@@ -18,7 +18,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { ReduxState } from '../../../redux/reducer.type';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
-import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
+import {
+    downloadSecurityAnalysisResultZippedCsv,
+    fetchSecurityAnalysisResult,
+} from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
@@ -44,11 +47,19 @@ import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
+import { ExportButton } from 'components/utils/export-button';
+import { downloadZipFile } from 'services/utils';
+import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 
 const styles = {
-    container: {
+    subTabsToolboxContainer: {
         display: 'flex',
         position: 'relative',
+        justifyContent: 'space-between',
+    },
+    toolboxContainer: {
+        display: 'flex',
+        gap: 2,
     },
     tabs: {
         position: 'relative',
@@ -80,8 +91,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [hasFilter, setHasFilter] = useState<boolean>(false);
-
-    const intl = useIntl();
+    const [csvHeaders, setCsvHeaders] = useState<string[]>();
 
     const N_RESULTS_TAB_INDEX = 0;
     const NMK_RESULTS_TAB_INDEX = 1;
@@ -229,33 +239,21 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const enumValueTranslations = useMemo(() => {
-        const returnedValue: Record<string, string> = {};
-        const enumValuesToTranslate = [
-            'CURRENT',
-            'HIGH_VOLTAGE',
-            'LOW_VOLTAGE',
-            'ACTIVE_POWER',
-            'APPARENT_POWER',
-            'MAX_ITERATION_REACHED',
-            'OTHER',
-            'SOLVER_FAILED',
-            'CONVERGED',
-            'FAILED',
-            'ONE',
-            'TWO',
-        ];
+    const resultType = useMemo(() => {
+        if (tabIndex === N_RESULTS_TAB_INDEX) {
+            return RESULT_TYPE.N;
+        }
 
-        enumValuesToTranslate.forEach((value) => {
-            returnedValue[value] = intl.formatMessage({ id: value });
-        });
-
-        return returnedValue;
-    }, [intl]);
+        if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
+            return RESULT_TYPE.NMK_CONTINGENCIES;
+        } else {
+            return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
+        }
+    }, [tabIndex, nmkType]);
 
     return (
         <>
-            <Box sx={styles.container}>
+            <Box sx={styles.subTabsToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label="N" />
@@ -269,8 +267,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         />
                     </Tabs>
                 </Box>
-                {tabIndex === NMK_RESULTS_TAB_INDEX && (
-                    <Box sx={styles.nmkResultSelect}>
+
+                <Box sx={styles.toolboxContainer}>
+                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
                         <Select
                             labelId="nmk-type-label"
                             value={nmkType}
@@ -289,8 +288,18 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                                 <FormattedMessage id="ContingenciesFromConstraints" />
                             </MenuItem>
                         </Select>
-                    </Box>
-                )}
+                    )}
+                    {(tabIndex === NMK_RESULTS_TAB_INDEX ||
+                        tabIndex === N_RESULTS_TAB_INDEX) && (
+                        <SecurityAnalysisExportButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            csvHeaders={csvHeaders}
+                            resultType={resultType}
+                            disabled={result == undefined || result.size === 0}
+                        />
+                    )}
+                </Box>
             </Box>
             <Box sx={styles.loader}>
                 {shouldOpenLoader && <LinearProgress />}
@@ -311,7 +320,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         filterEnums={filterEnums}
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
-                        enumValueTranslations={enumValueTranslations}
+                        setCsvHeaders={setCsvHeaders}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (
@@ -340,7 +349,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             filterSelector,
                         }}
                         filterEnums={filterEnums}
-                        enumValueTranslations={enumValueTranslations}
+                        setCsvHeaders={setCsvHeaders}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&
