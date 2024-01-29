@@ -145,11 +145,11 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const plannedOutageRateField = (
-        <FloatInput name={PLANNED_OUTAGE_RATE} label={'PlannedOutageRate'} />
+        <FloatInput name={PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />
     );
 
     const forcedOutageRateField = (
-        <FloatInput name={FORCED_OUTAGE_RATE} label={'ForcedOutageRate'} />
+        <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />
     );
 
     return (
