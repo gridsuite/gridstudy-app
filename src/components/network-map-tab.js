@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import NetworkMap from './network/network-map';
+import { NetworkMap } from '@powsybl/diagram-viewer';
 import React, {
     useCallback,
     useEffect,
@@ -44,7 +44,7 @@ import {
 } from '../services/study/geo-data';
 import { Box } from '@mui/system';
 import { useMapBoxToken } from './network/network-map/use-mapbox-token';
-
+import 'mapbox-gl/dist/mapbox-gl.css';
 const INITIAL_POSITION = [0, 0];
 
 const styles = {
@@ -90,6 +90,7 @@ export const NetworkMapTab = ({
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
+    const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel?.treeNodes.find(
@@ -946,19 +947,31 @@ export const NetworkMapTab = ({
     const INITIAL_ZOOM = 9;
     const LABELS_ZOOM_THRESHOLD = 9;
     const ARROWS_ZOOM_THRESHOLD = 7;
-    const centerOnSubstation = { to: 'SUB1' };
     const useName = true;
 
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
             geoData={geoData}
+            updatedLines={[
+                ...(updatedLines ?? []),
+                ...(updatedHvdcLines ?? []),
+            ]}
+            displayOverlayLoader={!basicDataReady && mapDataLoading}
+            filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
             arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
             initialPosition={INITIAL_POSITION}
             initialZoom={INITIAL_ZOOM}
-            centerOnSubstation={centerOnSubstation}
+            lineFullPath={lineFullPath}
+            lineParallelPath={lineParallelPath}
+            lineFlowMode={lineFlowMode}
+            lineFlowColorMode={lineFlowColorMode}
+            lineFlowAlertThreshold={lineFlowAlertThreshold}
+            loadFlowStatus={loadFlowStatus}
             useName={useName}
+            visible={visible}
+            disabled={disabled}
             onSubstationClick={openVoltageLevel}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
@@ -971,6 +984,9 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
+            centerOnSubstation={centerOnSubstation}
+            isManualRefreshBackdropDisplayed={true}
+            onManualRefreshClick={updateMapEquipmentsAndGeoData}
         />
     );
 
