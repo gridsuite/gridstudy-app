@@ -69,11 +69,6 @@ export const VSC_MODIFICATION_TABS = {
     CONVERTER_STATION_2: 2,
 };
 
-interface VscModificationDialogProps {
-    // Add your props here
-}
-
-// const VscModificationDialog: React.FC<VscModificationDialogProps> = ({//FIXME: add props type
 const VscModificationDialog: React.FC<any> = ({
     editData,
     currentNode,
@@ -86,23 +81,18 @@ const VscModificationDialog: React.FC<any> = ({
     const [tabIndex, setTabIndex] = useState(
         VSC_MODIFICATION_TABS.HVDC_LINE_TAB
     );
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>(
-        []
-    );
 
     const [equipementId, setEquipementId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
-    const [vscInfos, setVcsToModify] = useState<VscModificationInfo | null>(null);
+    const [vscInfos, setVcsToModify] = useState<VscModificationInfo | null>(
+        null
+    );
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
-
-    // const clear = useCallback(() => {
-    //     reset(emptyFormData);
-    // }, [reset]);
+    const { reset } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -113,11 +103,9 @@ const VscModificationDialog: React.FC<any> = ({
     });
     const fromEditDataToFormValues = useCallback(
         (editData: any) => {
-            // FIXME (jamal): add type
             if (editData?.equipmentId) {
                 setEquipementId(editData.equipmentId);
             }
-            console.log('editData', editData);
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName ?? '',
                 ...getVscHvdcLineModificationTabFormData(
@@ -169,7 +157,6 @@ const VscModificationDialog: React.FC<any> = ({
                 )
                     .then((value: VscModificationInfo) => {
                         setVcsToModify(value);
-                        console.log('debug', 'vscToModify', value);
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch((error) => {
@@ -181,13 +168,7 @@ const VscModificationDialog: React.FC<any> = ({
                 setVcsToModify(null);
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            getValues,
-            setValue,
-            setValuesAndEmptyOthers,
-        ]
+        [studyUuid, currentNodeUuid, setValuesAndEmptyOthers]
     );
     useEffect(() => {
         if (equipementId) {
@@ -195,9 +176,7 @@ const VscModificationDialog: React.FC<any> = ({
         }
     }, [equipementId, onEquipmentIdChange]);
 
-    console.log('debug', 'editingData', editData);
     const onSubmit = (hvdcLine: any) => {
-        //FIXME: add type
         const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
         const converterStation1 = getConverterStationModificationData(
             hvdcLine[CONVERTER_STATION_1],
@@ -286,7 +265,7 @@ const VscModificationDialog: React.FC<any> = ({
                         equipmentId={equipementId}
                         setTabIndex={setTabIndex}
                         vscInfos={vscInfos}
-                        tabIndexesWithError={tabIndexesWithError}
+                        tabIndexesWithError={[]}
                     ></VscModificationForm>
                 )}
             </ModificationDialog>

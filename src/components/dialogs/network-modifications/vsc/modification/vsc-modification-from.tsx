@@ -99,7 +99,11 @@ export const VscModificationForm: FunctionComponent<
             {/*</Grid>*/}
             <Box>{headersAndTabs}</Box>
             <Box hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB} p={1}>
-                <VscHvdcLinePane id={HVDC_LINE_TAB} previousValues={vscInfos} />
+                <VscHvdcLinePane
+                    id={HVDC_LINE_TAB}
+                    previousValues={vscInfos}
+                    isEquipementModification={true}
+                />
             </Box>
             <Box
                 hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_1}

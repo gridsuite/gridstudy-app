@@ -32,7 +32,7 @@ import Grid from '@mui/material/Grid';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
-import { ConverterStationElementInfos, ConverterStationInterfaceEditData } from './converter-station-utils';
+import { ConverterStationElementInfos } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 
 interface VscConverterStationPaneProps {
@@ -81,10 +81,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     }, [studyUuid, currentNodeUuid]);
 
-    console.log('debug', 'ConverterStationPane', previousValues);
     const previousDataany = previousValues as any;
 
-    const generatorIdField = isModification ? ( // TODO: fix this add isModification
+    const generatorIdField = isModification ? ( // TODO (jamal) : fix this add isModification
         <TextField
             size="small"
             fullWidth
@@ -111,9 +110,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
-    //FIXME (jamal) to reactivate
-    const connectivityForm = isModification ? null
-    : (
+    const connectivityForm = isModification ? null : (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
             voltageLevelOptions={voltageLevelOptions}
@@ -141,11 +138,12 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
+    const voltageRegulationOn = previousValues?.voltageRegulationOn ?? null;
     const voltageRegulation = isModification ? (
         <CheckboxNullableInput
             name={`${id}.${VOLTAGE_REGULATION_ON}`}
             label={'VoltageRegulationText'}
-            previousValue={previousValues?.voltageRegulationOn}
+            previousValue={voltageRegulationOn}
             id={undefined}
             formProps={undefined}
         />

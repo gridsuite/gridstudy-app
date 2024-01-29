@@ -21,6 +21,7 @@ import {
 import {
     ActivePowerAdornment,
     gridItem,
+    gridItemWithTooltip,
     GridSection,
     OhmAdornment,
     VoltageAdornment,
@@ -31,6 +32,7 @@ import Grid from '@mui/material/Grid';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
+import { useIntl } from 'react-intl';
 
 interface VscHvdcLinePaneProps {
     id: string;
@@ -43,6 +45,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     isEquipementModification = false,
     previousValues,
 }) => {
+    const intl = useIntl();
     const { trigger } = useFormContext();
 
     const angleDroopWatch = useWatch({
@@ -125,15 +128,30 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         />
     );
 
+    const previousAngleDropPowerControl = () => {
+        if (previousValues?.angleDroopActivePowerControl) {
+            return intl.formatMessage({ id: 'On' });
+        }
+        if (previousValues?.angleDroopActivePowerControl === false) {
+            return intl.formatMessage({ id: 'Off' });
+        }
+        return intl.formatMessage({ id: 'NoModification' });
+    };
+
     const AngleDroopActivePowerControl = isEquipementModification ? (
-        <CheckboxNullableInput
-            name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
-            label={'angleDroopActivePowerControlLabel'}
-            previousValue={previousValues?.angleDroopActivePowerControl}
-            id={'angleDroopActivePowerControl'}
-            formProps={undefined}
-            //FIXME (jamal) set the previos value
-        />
+        gridItemWithTooltip(
+            <CheckboxNullableInput
+                name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
+                label={'angleDroopActivePowerControlLabel'}
+                previousValue={previousAngleDropPowerControl}
+                id={undefined}
+                formProps={undefined}
+            />,
+            intl.formatMessage({
+                id: 'NoModification',
+            }),
+            4
+        )
     ) : (
         <SwitchInput
             name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}

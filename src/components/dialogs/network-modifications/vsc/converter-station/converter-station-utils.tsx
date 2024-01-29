@@ -42,7 +42,7 @@ import { sanitizeString } from '../../../dialogUtils';
 import {
     calculateCurvePointsToStore,
     completeReactiveCapabilityCurvePointsData,
-    getRowEmptyFormData
+    getRowEmptyFormData,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { MODIFICATION_TYPES } from '../../../../utils/modification-type';
 import { toModificationOperation } from '../../../../utils/utils';
@@ -122,10 +122,9 @@ export interface ConverterStationElementInfos {
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
     connectablePositionInfos: ConnectablePositionInfos;
-
-    reactivePower?: number;//FIXME (jamal) should be removed ?
-    voltageRegulationOn: boolean;//FIXME (jamal) should be removed ?
-    voltage?: number;//FIXME (jamal) should be removed ?
+    reactivePower?: number;
+    voltageRegulationOn: boolean;
+    voltage?: number;
 }
 
 export function getVscConverterStationSchema(id: string) {
@@ -230,7 +229,10 @@ export function getConverterStationCreationData(converterStation: any) {
     };
 }
 
-export function getConverterStationModificationData(converterStation: any, converterStationToModify: ConverterStationElementInfos | undefined) {
+export function getConverterStationModificationData(
+    converterStation: any,
+    converterStationToModify: ConverterStationElementInfos | undefined
+) {
     const reactiveLimits = converterStation[REACTIVE_LIMITS];
     const buildCurvePointsToStore = calculateCurvePointsToStore(
         reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
