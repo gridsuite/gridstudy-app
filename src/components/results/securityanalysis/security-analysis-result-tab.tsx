@@ -99,6 +99,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         FROM_COLUMN_TO_FIELD,
+        undefined,
         () => {
             setPage(0);
         }

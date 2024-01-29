@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FROM_COLUMN_TO_FIELD as SHORT_CIRCUIT_FIELDS } from 'components/results/shortcircuit/shortcircuit-analysis-result-content';
 import { useCallback, useMemo, useState } from 'react';
-import { kiloUnitToUnit } from 'utils/rounding';
 
 type FilterDataType = { value: string; type: string; dataType: string };
 
@@ -69,13 +67,11 @@ const changeValueFromArrayWithFieldValue = (
     }
 };
 
-const kiloValues = [
-    SHORT_CIRCUIT_FIELDS.limitMax,
-    SHORT_CIRCUIT_FIELDS.limitMin,
-];
-
 export const useAggridRowFilter = (
     filterSelectorKeys: Record<string, string>,
+    updateValueCallback:
+        | ((field: string, value: string, dataType: string) => string)
+        | undefined,
     updateFilterCallback = () => {}
 ): UseAggridRowFilterOutputType => {
     const [filters, setFilters] = useState<FilterType[]>([]);
@@ -128,8 +124,8 @@ export const useAggridRowFilter = (
 
             let backendValue = value;
 
-            if (dataType === 'number' && kiloValues.includes(field)) {
-                backendValue = String(kiloUnitToUnit(parseFloat(value)));
+            if (updateValueCallback) {
+                backendValue = updateValueCallback(field, value, dataType);
             }
 
             return {
@@ -139,7 +135,7 @@ export const useAggridRowFilter = (
                 value: backendValue,
             };
         });
-    }, [filterSelectorKeys, filters]);
+    }, [filterSelectorKeys, filters, updateValueCallback]);
 
     const initFilters = useCallback(() => {
         setFilters([]);

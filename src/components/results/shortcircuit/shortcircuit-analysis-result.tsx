@@ -43,6 +43,7 @@ import {
     FilterEnumsType,
     useAggridRowFilter,
 } from '../../../hooks/use-aggrid-row-filter';
+import { kiloUnitToUnit } from 'utils/rounding';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -62,6 +63,12 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     customTablePaginationProps,
 }) => {
     const intl = useIntl();
+
+    const kiloValues = [
+        FROM_COLUMN_TO_FIELD.limitMax,
+        FROM_COLUMN_TO_FIELD.limitMin,
+    ];
+
     const { snackError } = useSnackMessage();
 
     const [rowsPerPage, setRowsPerPage] = useState<number>(
@@ -97,6 +104,12 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
         fromFrontColumnToBackKeys,
+        (field, value, type) => {
+            if (type === 'number' && kiloValues.includes(field)) {
+                return String(kiloUnitToUnit(parseFloat(value)));
+            }
+            return value;
+        },
         () => {
             setPage(0);
         }
