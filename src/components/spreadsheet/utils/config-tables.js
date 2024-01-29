@@ -1482,7 +1482,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'TransientReactance',
+                id: 'transientReactance',
                 field: 'generatorShortCircuit.transientReactance',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1516,7 +1516,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'TransformerReactance',
+                id: 'stepUpTransformerReactance',
                 field: 'generatorShortCircuit.stepUpTransformerReactance',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1551,7 +1551,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'PlannedActivePowerSetPoint',
+                id: 'plannedActivePowerSetPoint',
                 field: 'generatorStartup.plannedActivePowerSetPoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1585,7 +1585,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'StartupCost',
+                id: 'marginalCost',
                 field: 'generatorStartup.marginalCost',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1618,7 +1618,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'PlannedOutageRate',
+                id: 'plannedOutageRate',
                 field: 'generatorStartup.plannedOutageRate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1654,7 +1654,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'ForcedOutageRate',
+                id: 'forcedOutageRate',
                 field: 'generatorStartup.forcedOutageRate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1689,7 +1689,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -1854,7 +1854,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2036,7 +2036,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2107,7 +2107,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2321,7 +2321,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2496,7 +2496,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2586,7 +2586,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -2661,7 +2661,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected',
+                id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,

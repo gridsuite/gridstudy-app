@@ -26,9 +26,9 @@ export const EQUIPMENTS_FIELDS = {
             id: 'PLANNED_ACTIVE_POWER_SET_POINT',
             label: 'PlannedActivePowerSetPointForm',
         },
-        { id: 'MARGINAL_COST', label: 'StartupCost' },
-        { id: 'PLANNED_OUTAGE_RATE', label: 'PlannedOutageRate' },
-        { id: 'FORCED_OUTAGE_RATE', label: 'ForcedOutageRate' },
+        { id: 'MARGINAL_COST', label: 'marginalCost' },
+        { id: 'PLANNED_OUTAGE_RATE', label: 'plannedOutageRate' },
+        { id: 'FORCED_OUTAGE_RATE', label: 'forcedOutageRate' },
         { id: 'DROOP', label: 'ActivePowerRegulationDroop' },
         { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm' },
         {
