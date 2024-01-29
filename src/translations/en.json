@@ -491,6 +491,7 @@
     "descTransient": "Transient",
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "securityAnalysisCsvResultsError": "An error occurred while exporting the security analysis results",
+    "shortCircuitAnalysisCsvResultsError": "An error occurred while exporting the short circuit results",
     "startLoadFlowError": "An error occurred while starting the load flow",
     "LoadFlowResultsCurrentViolations": "Current violations",
     "LoadFlowResultsVoltageViolations": "Voltage violations",

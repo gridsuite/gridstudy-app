@@ -5,8 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
+import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
@@ -36,10 +41,10 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import IconButton from '@mui/material/IconButton';
-import GetAppIcon from '@mui/icons-material/GetApp';
 import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportButton } from '../../utils/export-button';
+import { downloadZipFile } from '../../../services/utils';
 
 const styles = {
     gridContainer: {
@@ -113,6 +118,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const intl = useIntl();
     const theme = useTheme();
     const { snackError } = useSnackMessage();
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const columns = useMemo(() => {
         const isAllBusesAnalysisType =
             analysisType === ShortCircuitAnalysisType.ALL_BUSES;
@@ -385,56 +392,44 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         .filter((column) => 'headerName' in column)
         .map((column) => (column as { headerName?: string }).headerName || '');
     const exportCsv = useCallback(() => {
+        setIsCsvExportLoading(true);
+        setIsCsvExportSuccessful(false);
         downloadShortCircuitResultZippedCsv(
             studyUuid,
             currentNode,
             analysisType,
             headersCsv
         )
-            .then((response) => {
-                debugger;
-                response.blob().then((blb: Blob) => {
-                    const url = URL.createObjectURL(blb);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute(
-                        'download',
-                        analysisType === ShortCircuitAnalysisType.ONE_BUS
-                            ? 'oneBus-results.zip'
-                            : 'allBuses_results.zip'
-                    );
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                });
+            .then((fileBlob) => {
+                downloadZipFile(
+                    fileBlob,
+                    analysisType === ShortCircuitAnalysisType.ONE_BUS
+                        ? 'oneBus-results.zip'
+                        : 'allBuses_results.zip'
+                );
+                setIsCsvExportSuccessful(true);
             })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: intl.formatMessage({
-                        id: 'ShortCirduitAnalysisExportCsvResultsError',
+                        id: 'shortCircuitAnalysisCsvResultsError',
                     }),
                 });
-            });
+            })
+            .finally(() => setIsCsvExportLoading(false));
     }, [studyUuid, currentNode, intl, snackError, headersCsv, analysisType]);
 
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
                 <Box style={{ flexGrow: 1 }}></Box>
-                <Box>
-                    <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                </Box>
-                <Box>
-                    <IconButton
-                        disabled={!rowsToShow || rowsToShow.length === 0}
-                        aria-label="exportCSVButton"
-                        onClick={exportCsv}
-                    >
-                        <GetAppIcon />
-                    </IconButton>
-                </Box>
+                <ExportButton
+                    disabled={!rowsToShow || rowsToShow.length === 0}
+                    onClick={exportCsv}
+                    isDownloadLoading={isCsvExportLoading}
+                    isDownloadSuccessful={isCsvExportSuccessful}
+                />
             </Box>
             <Box sx={styles.grid}>
                 <CustomAGGrid
