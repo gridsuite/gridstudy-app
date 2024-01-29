@@ -554,7 +554,7 @@
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
-    "genericConfirmQuestion": "Les modifications que vous avez réalisées n'ont pas été enregistrées. Voulez-vous quitter l'onglet ?",
+    "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
@@ -1209,6 +1209,8 @@
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
     "NetworkElementNotFound": "L'élément de réseau \"{elementId}\" n'existe pas",
 
+    "dialog.button.leave": "Quitter",
+
     "CatalogButtonTooltip": "Ouvrir le catalogue",
     "LineTypesCatalogDialogTitle": "Définir les segments de ligne",
     "AddSegment": "Ajouter segment",
@@ -1352,8 +1354,8 @@
     "PhaseDeadBand": "Bande morte du déphaseur",
     "RatedVoltage1": "Tension d'enroulement 1",
     "RatedVoltage2": "Tension d'enroulement 2",
-    "PhaseRegulatingValue": "valeur de réglage de déphaseur",
-    "RatioTargetV": "Tension de sonsigne du régleur",
+    "PhaseRegulatingValue": "Valeur de réglage de déphaseur",
+    "RatioTargetV": "Tension de consigne du régleur",
     "GeneratorTargetV": "Consigne tension",
 
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
