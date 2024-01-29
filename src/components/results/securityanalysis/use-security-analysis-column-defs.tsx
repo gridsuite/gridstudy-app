@@ -22,6 +22,8 @@ import {
 } from './security-analysis-result-utils';
 import { SortPropsType } from 'hooks/use-aggrid-sort';
 import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
 
 const styles = {
     button: {
@@ -34,9 +36,7 @@ type UseSecurityAnalysisColumnsDefsProps = (
     filterProps: FilterPropsType,
     filterEnums: FilterEnumsType,
     resultType: RESULT_TYPE,
-    openVoltageLevelDiagram: (id: string) => void,
-    studyUuid: UUID,
-    nodeUuid: UUID
+    openVoltageLevelDiagram: (id: string) => void
 ) => ColDef<any>[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps =
@@ -45,12 +45,16 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
         filterProps,
         filterEnums,
         resultType,
-        openVoltageLevelDiagram,
-        nodeUuid,
-        studyUuid
+        openVoltageLevelDiagram
     ) => {
         const intl = useIntl();
         const { snackError } = useSnackMessage();
+        const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+        const currentNode = useSelector(
+            (state: ReduxState) => state.currentTreeNode
+        );
+
+        const nodeUuid = currentNode.id;
 
         // for nmk views, click handler on subjectId cell
         const onClickNmKConstraint = useCallback(

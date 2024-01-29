@@ -257,9 +257,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         },
         filterEnums,
         resultType,
-        openVoltageLevelDiagram,
-        studyUuid,
-        nodeUuid
+        openVoltageLevelDiagram
     );
 
     const csvHeaders = useMemo(
