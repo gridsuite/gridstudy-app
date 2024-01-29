@@ -72,6 +72,7 @@ const ModificationDialog = ({
     const submitButton = (
         <SubmitButton
             onClick={handleSubmit(handleValidate, handleValidationError)}
+            variant="outlined"
             disabled={disabledSave}
         />
     );
