@@ -16,6 +16,7 @@ import {
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
     const [rowNumber, setRowNumber] = useState(1);
@@ -45,15 +46,14 @@ function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleOnClose}>
-                    <FormattedMessage id="cancel" />
-                </Button>
+                <CancelButton onClick={handleOnClose} />
                 <Button
-                    disabled={rowNumber <= 0}
                     onClick={() => {
                         handleAddButton(rowNumber);
                         handleOnClose();
                     }}
+                    variant="outlined"
+                    disabled={rowNumber <= 0}
                 >
                     <FormattedMessage id="AddRowsButton" />
                 </Button>
