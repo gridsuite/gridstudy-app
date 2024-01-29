@@ -16,7 +16,15 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import {
+    CONNECTED,
+    CONNECTED1,
+    CONNECTED2,
+    EQUIPMENT_ID,
+    MODIFICATIONS_TABLE,
+    TYPE,
+    VOLTAGE_REGULATION_ON,
+} from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
@@ -181,7 +189,6 @@ const TabularModificationForm = () => {
 
     const defaultColDef = useMemo(
         () => ({
-            flex: 1,
             sortable: true,
             resizable: false,
             lockPinned: true,
@@ -195,12 +202,17 @@ const TabularModificationForm = () => {
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
             const columnDef: ColDef = {};
-            if (field === 'equipmentId') {
+            if (field === EQUIPMENT_ID) {
                 columnDef.pinned = true;
             }
             columnDef.field = field;
             columnDef.headerName = intl.formatMessage({ id: field });
-            if (field === 'voltageRegulationOn') {
+            if (
+                field === VOLTAGE_REGULATION_ON ||
+                field === CONNECTED ||
+                field === CONNECTED1 ||
+                field === CONNECTED2
+            ) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;

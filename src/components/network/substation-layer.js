@@ -56,10 +56,7 @@ class SubstationLayer extends CompositeLayer {
                     const nominalVoltages = [
                         ...new Set(
                             substation.voltageLevels
-                                .map(
-                                    (voltageLevel) =>
-                                        voltageLevel.nominalV
-                                )
+                                .map((voltageLevel) => voltageLevel.nominalV)
                                 .sort(
                                     (nominalVoltage1, nominalVoltage2) =>
                                         nominalVoltage1 - nominalVoltage2
@@ -74,9 +71,7 @@ class SubstationLayer extends CompositeLayer {
                             const voltageLevels = e[1];
 
                             let metaVoltageLevels =
-                                metaVoltageLevelsByNominalVoltage.get(
-                                    nominalV
-                                );
+                                metaVoltageLevelsByNominalVoltage.get(nominalV);
                             if (!metaVoltageLevels) {
                                 metaVoltageLevels = [];
                                 metaVoltageLevelsByNominalVoltage.set(
@@ -126,9 +121,7 @@ class SubstationLayer extends CompositeLayer {
                 substationsLabels = substationsLabels.filter(
                     (substation) =>
                         substation.voltageLevels.find((v) =>
-                            props.filteredNominalVoltages.includes(
-                                v.nominalV
-                            )
+                            props.filteredNominalVoltages.includes(v.nominalV)
                         ) !== undefined
                 );
             }
@@ -154,17 +147,13 @@ class SubstationLayer extends CompositeLayer {
                         this.props.geoData.getSubstationPosition(
                             metaVoltageLevel.voltageLevels[0].substationId
                         ),
-                    getFillColor: this.props.getNominalVoltageColor(
-                        e.nominalV
-                    ),
+                    getFillColor: this.props.getNominalVoltageColor(e.nominalV),
                     getRadius: (voltageLevel) =>
                         SUBSTATION_RADIUS *
                         (voltageLevel.nominalVoltageIndex + 1),
                     visible:
                         !this.props.filteredNominalVoltages ||
-                        this.props.filteredNominalVoltages.includes(
-                            e.nominalV
-                        ),
+                        this.props.filteredNominalVoltages.includes(e.nominalV),
                     updateTriggers: {
                         getPosition: [
                             this.props.geoData.substationPositionsById,
