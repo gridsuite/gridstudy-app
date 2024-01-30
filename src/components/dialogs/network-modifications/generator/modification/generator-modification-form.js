@@ -40,6 +40,7 @@ import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -277,6 +278,7 @@ const GeneratorModificationForm = ({
                     {gridItem(forcedOutageRateField, 4)}
                 </Grid>
             </Grid>
+            <PropertiesForm networkElementType={'generator'} isModification={true} />
         </>
     );
 };

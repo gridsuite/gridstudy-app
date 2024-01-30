@@ -13,6 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
+    ADDITIONAL_PROPERTIES,
     DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
@@ -71,6 +72,13 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyGenerator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    mergeModificationAndEquipmentProperties,
+    emptyProperties,
+    getPropertiesFromModification,
+    toModificationProperties,
+    modificationPropertiesSchema,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -86,6 +94,7 @@ const emptyFormData = {
     [FORCED_OUTAGE_RATE]: null,
     ...getSetPointsEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -123,6 +132,7 @@ const formSchema = yup
         ...getSetPointsSchema(true),
         ...getReactiveLimitsSchema(true),
     })
+    .concat(modificationPropertiesSchema)
     .required();
 
 const GeneratorModificationDialog = ({
@@ -201,6 +211,7 @@ const GeneratorModificationDialog = ({
                     equipmentId: editData?.regulatingTerminalId?.value,
                     equipmentType: editData?.regulatingTerminalType?.value,
                     voltageLevelId: editData?.regulatingTerminalVlId?.value,
+                    ...getPropertiesFromModification(editData.properties),
                 }),
             });
         },
@@ -212,6 +223,20 @@ const GeneratorModificationDialog = ({
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
+
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
+    );
 
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
@@ -296,11 +321,17 @@ const GeneratorModificationDialog = ({
                                 reactiveCapabilityCurveTable:
                                     previousReactiveCapabilityCurveTable,
                             });
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getConcatenatedProperties(value),
+                            }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
                         setGeneratorToModify(null);
+                        reset(emptyFormData);
                         setDataFetchStatus(FetchStatus.FAILED);
                     });
             } else {
@@ -389,7 +420,8 @@ const GeneratorModificationDialog = ({
                 isReactiveCapabilityCurveOn
                     ? null
                     : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null
+                isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null,
+                toModificationProperties(generator)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
