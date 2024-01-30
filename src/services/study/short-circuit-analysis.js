@@ -214,6 +214,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(headersCsv, enumValueTranslations),
+        body: JSON.stringify({ headersCsv, enumValueTranslations }),
     });
 }
