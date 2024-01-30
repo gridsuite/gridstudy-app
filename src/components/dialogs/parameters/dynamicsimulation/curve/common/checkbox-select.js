@@ -30,6 +30,7 @@ const CheckboxSelect = ({
     getOptionLabel: defaultGetOptionLabel,
     onChange,
     value: initialSelectedOptions,
+    disabled,
 }) => {
     const intl = useIntl();
     const [selectedOptions, setSelectedOptions] = useState(
@@ -99,6 +100,7 @@ const CheckboxSelect = ({
                 size={'small'}
                 key={CHECK_ALL.value}
                 value={CHECK_ALL.value}
+                disabled={disabled}
             >
                 <ListItemText
                     primary={intl.formatMessage({ id: CHECK_ALL.label })}
@@ -108,13 +110,19 @@ const CheckboxSelect = ({
                 size={'small'}
                 key={UNCHECK_ALL.value}
                 value={UNCHECK_ALL.value}
+                disabled={disabled}
             >
                 <ListItemText
                     primary={intl.formatMessage({ id: UNCHECK_ALL.label })}
                 />
             </MenuItem>
             {options.map((option) => (
-                <MenuItem size={'small'} key={option} value={option}>
+                <MenuItem
+                    size={'small'}
+                    key={option}
+                    value={option}
+                    disabled={disabled}
+                >
                     <Checkbox checked={selectedOptions.indexOf(option) > -1} />
                     <ListItemText>{getOptionLabel(option)}</ListItemText>
                 </MenuItem>
