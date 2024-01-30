@@ -26,7 +26,7 @@ import {
     kiloUnitToUnit,
     unitToKiloUnit,
     unitToMicroUnit,
-} from '../../../utils/rounding';
+} from '../../../utils/unit-converter';
 
 const generateTapPositions = (params) => {
     return params

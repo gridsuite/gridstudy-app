@@ -21,7 +21,7 @@ import {
     SHUNT_SUSCEPTANCE_2,
     SUBSTATION_COUNTRY,
 } from 'components/utils/field-constants';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { toModificationOperation } from 'components/utils/utils';
 
 export interface TabularModificationFields {

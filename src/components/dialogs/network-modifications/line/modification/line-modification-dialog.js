@@ -28,7 +28,7 @@ import {
 } from 'components/utils/field-constants';
 import { FormProvider, useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter.tsx';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 
