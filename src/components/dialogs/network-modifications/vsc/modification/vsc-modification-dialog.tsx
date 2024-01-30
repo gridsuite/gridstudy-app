@@ -58,9 +58,9 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2),
+    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
+    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
+    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
 };
 
 export const VSC_MODIFICATION_TABS = {
@@ -146,7 +146,6 @@ const VscModificationDialog: React.FC<any> = ({
         (equipementId: string | null) => {
             if (equipementId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                console.log('debug', 'equipementId', equipementId);
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -159,7 +158,7 @@ const VscModificationDialog: React.FC<any> = ({
                         setVcsToModify(value);
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch((error) => {
+                    .catch((_) => {
                         setVcsToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
                     });
@@ -275,5 +274,5 @@ const VscModificationDialog: React.FC<any> = ({
 
 export default VscModificationDialog;
 function snackError(arg0: { messageTxt: any; headerId: string }) {
-    throw new Error('Function not implemented.');
+    throw new Error('Function not implemented.\n'+ arg0.messageTxt);
 }

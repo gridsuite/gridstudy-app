@@ -70,7 +70,7 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB),
+    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, false),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2),
 };

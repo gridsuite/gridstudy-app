@@ -94,7 +94,10 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
         ),
     };
 }
-export function getVscHvdcLinePaneEmptyFormData(id: string) {
+export function getVscHvdcLinePaneEmptyFormData(
+    id: string,
+    isModification: boolean
+) {
     return {
         [id]: {
             [DC_NOMINAL_VOLTAGE]: null,
@@ -104,7 +107,7 @@ export function getVscHvdcLinePaneEmptyFormData(id: string) {
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
             [CONVERTERS_MODE]: null,
             [ACTIVE_POWER]: null,
-            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: false,
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: isModification ? null : false,
             [P0]: null,
             [DROOP]: null,
         },

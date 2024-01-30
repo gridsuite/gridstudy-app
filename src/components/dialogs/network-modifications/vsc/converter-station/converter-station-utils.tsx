@@ -123,7 +123,7 @@ export interface ConverterStationElementInfos {
     minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
     connectablePositionInfos: ConnectablePositionInfos;
     reactivePower?: number;
-    voltageRegulationOn: boolean;
+    voltageRegulationOn?: boolean;
     voltage?: number;
 }
 
@@ -177,14 +177,17 @@ export function getVscConverterStationModificationSchema(id: string) {
     };
 }
 
-export function getVscConverterStationEmptyFormData(id: string) {
+export function getVscConverterStationEmptyFormData(
+    id: string,
+    isModification = false
+) {
     return {
         [id]: {
             [CONVERTER_STATION_ID]: null,
             [CONVERTER_STATION_NAME]: null,
             [LOSS_FACTOR]: null,
             [REACTIVE_POWER]: null,
-            [VOLTAGE_REGULATION_ON]: false,
+            [VOLTAGE_REGULATION_ON]: isModification ? null : false,
             [VOLTAGE]: null,
             ...getConnectivityWithPositionEmptyFormData(),
             ...getReactiveLimitsEmptyFormData(),
@@ -374,7 +377,6 @@ function getConverterStationReactiveLimits(
 function getConverterStationModificationReactiveLimits(
     converterStationEditData: ConverterStationModificationInterfaceEditData
 ) {
-    console.log('debug', 'converterStationEditData', converterStationEditData);
     return {
         ...getReactiveLimitsFormData({
             reactiveCapabilityCurveChoice: converterStationEditData

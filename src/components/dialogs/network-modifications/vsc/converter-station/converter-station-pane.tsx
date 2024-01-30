@@ -83,12 +83,11 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 
     const previousDataany = previousValues as any;
 
-    const generatorIdField = isModification ? ( // TODO (jamal) : fix this add isModification
+    const generatorIdField = isModification ? (
         <TextField
             size="small"
             fullWidth
             label={'ID'}
-            // name={`${id}.${CONVERTER_STATION_ID}`}
             value={previousDataany?.id}
             InputProps={{
                 readOnly: true,
