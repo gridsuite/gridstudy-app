@@ -13,12 +13,16 @@ import {
     NumericalField,
     SelectCountryField,
     BooleanListField,
+    TWTRegulatingTerminalEditor,
 } from './equipment-table-editors';
 import {
     ENERGY_SOURCES,
     LOAD_TYPES,
+    PHASE_REGULATION_MODES,
+    RATIO_REGULATION_MODES,
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
+    SIDE,
 } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
@@ -27,6 +31,19 @@ import {
     unitToKiloUnit,
     unitToMicroUnit,
 } from '../../../utils/rounding';
+import {
+    getComputedRegulationMode,
+    getComputedRegulationType,
+    getComputedTapSideId,
+} from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import {
+    computeHighTapPosition,
+    getTapChangerRegulationTerminalValue,
+} from 'components/utils/utils';
+import {
+    getComputedPhaseRegulationType,
+    getPhaseTapRegulationSideId,
+} from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 
 const generateTapPositions = (params) => {
     return params
@@ -92,6 +109,65 @@ const isEditableRegulatingTerminalCell = (params) => {
         (params.data.RegulationTypeText === REGULATION_TYPES.DISTANT.id ||
             params.data?.regulatingTerminalVlId ||
             params.data?.regulatingTerminalConnectableId)
+    );
+};
+
+const getTwtRatioRegulationTypeId = (twt) => {
+    //regulationType is set by the user (in edit mode)
+    if (twt?.ratioTapChanger?.regulationType) {
+        return twt.ratioTapChanger.regulationType;
+    }
+    //otherwise, we compute it
+    const computedRegulationType = getComputedRegulationType(twt);
+    return computedRegulationType?.id || null;
+};
+
+const getTwtRatioRegulationModeId = (twt) => {
+    //regulationMode is set by the user (in edit mode)
+    if (twt?.ratioTapChanger?.regulationMode !== undefined) {
+        return twt.ratioTapChanger.regulationMode;
+    }
+    //otherwise, we compute it
+    const computedRegulationMode = getComputedRegulationMode(twt);
+    return computedRegulationMode?.id || null;
+};
+
+const getTwtPhaseRegulationTypeId = (twt) => {
+    const phaseTapValues = twt?.phaseTapChanger;
+    if (phaseTapValues && phaseTapValues.regulationType) {
+        //this is the case where the regulation type is set by the user (in edit mode)
+        return phaseTapValues.regulationType;
+    }
+    //otherwise, we compute it
+    const computedRegulationType = getComputedPhaseRegulationType(twt);
+    return computedRegulationType?.id || null;
+};
+
+const isEditableTwtPhaseRegulationSideCell = (params) => {
+    return (
+        isEditable(params) &&
+        getTwtPhaseRegulationTypeId(params.data) === REGULATION_TYPES.LOCAL.id
+    );
+};
+
+const isEditableTwtRatioRegulationSideCell = (params) => {
+    return (
+        isEditable(params) &&
+        getTwtRatioRegulationTypeId(params.data) === REGULATION_TYPES.LOCAL.id
+    );
+};
+
+const isEditableTwtRatioRegulatingTerminalCell = (params) => {
+    return (
+        isEditable(params) &&
+        getTwtRatioRegulationTypeId(params.data) === REGULATION_TYPES.DISTANT.id
+    );
+};
+
+const isEditableTwtPhaseRegulatingTerminalCell = (params) => {
+    return (
+        isEditable(params) &&
+        getTwtPhaseRegulationTypeId(params.data) === REGULATION_TYPES.DISTANT.id
     );
 };
 
@@ -503,7 +579,6 @@ export const TABLES_DEFINITIONS = {
         name: 'TwoWindingsTransformers',
         type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
         fetchers: EQUIPMENT_FETCHERS.TWO_WINDINGS_TRANSFORMER,
-        groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
             {
                 id: 'ID',
@@ -535,6 +610,46 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
+            },
+            {
+                id: 'ratedVoltage1',
+                field: 'ratedU1',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 0,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.ratedU1,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ratedVoltage2',
+                field: 'ratedU2',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 0,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.ratedU2,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'ActivePowerSide1',
@@ -574,35 +689,253 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'LoadTapChangingCapabilities',
-                field: 'loadTapChangingCapabilities',
+                field: 'ratioTapChanger.loadTapChangingCapabilities',
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger?.loadTapChangingCapabilities,
-                boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: BooleanListField,
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger = {
+                        ...(params.data.ratioTapChanger || {}),
+                        loadTapChangingCapabilities: params.newValue,
+                        regulationMode: !!params.newValue
+                            ? getTwtRatioRegulationModeId(params.data) ||
+                              RATIO_REGULATION_MODES.FIXED_RATIO.id
+                            : null,
+                    };
+                    return params;
+                },
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.ratioTapChanger
+                                ?.loadTapChangingCapabilities != null
+                                ? +params.data?.ratioTapChanger
+                                      ?.loadTapChangingCapabilities
+                                : '',
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RegulatingRatio',
-                field: 'regulatingRatio',
+                id: 'RegulationMode',
+                field: 'ratioTapChanger.regulationMode',
                 valueGetter: (params) =>
-                    params?.data?.ratioTapChanger?.regulating,
-                boolean: true,
-                cellRenderer: BooleanCellRenderer,
+                    getTwtRatioRegulationModeId(params?.data),
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger = {
+                        ...(params.data?.ratioTapChanger || {}),
+                        regulationMode: params.newValue,
+                    };
+
+                    return params;
+                },
+                columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: Object.values(RATIO_REGULATION_MODES).map(
+                            (regulationMode) => regulationMode.id
+                        ),
+                    };
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn:
+                            'ratioTapChanger.loadTapChangingCapabilities',
+                        columnValue: 1,
+                    },
+                },
             },
             {
                 id: 'TargetVPoint',
                 field: 'ratioTapChanger.targetV',
-                numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data?.ratioTapChanger?.targetV,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger = {
+                        ...(params.data?.ratioTapChanger || {}),
+                        targetV: params.newValue,
+                    };
+                    return params;
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RatioDeadBand',
+                field: 'ratioTapChanger.targetDeadband',
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data.ratioTapChanger.targetDeadband,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger = {
+                        ...(params.data?.ratioTapChanger || {}),
+                        targetDeadband: params.newValue,
+                    };
+                    return params;
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RatioRegulationTypeText',
+                field: 'ratioTapChanger.regulationType',
+                valueGetter: (params) =>
+                    getTwtRatioRegulationTypeId(params?.data),
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger = {
+                        ...(params.data?.ratioTapChanger || {}),
+                        regulationType: params.newValue,
+                    };
+                    return params;
+                },
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(REGULATION_TYPES).map(
+                                (type) => type.id
+                            ),
+                        ],
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RatioRegulatedSide',
+                field: 'ratioTapChanger.regulationSide',
+                valueGetter: (params) =>
+                    params.data?.ratioTapChanger?.regulationSide ??
+                    getComputedTapSideId(params?.data),
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger = {
+                        ...(params.data?.ratioTapChanger || {}),
+                        regulationSide: params.newValue,
+                    };
+                    return params;
+                },
+                editable: isEditableTwtRatioRegulationSideCell,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [...Object.values(SIDE).map((side) => side.id)],
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RatioRegulatingTerminal',
+                field: 'RatioRegulatingTerminal',
+                valueGetter: (params) =>
+                    getTapChangerRegulationTerminalValue(
+                        params?.data?.ratioTapChanger
+                    ),
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                getQuickFilterText: excludeFromGlobalFilter,
+                cellStyle: (params) =>
+                    isEditableTwtRatioRegulatingTerminalCell(params)
+                        ? editableCellStyle(params)
+                        : {},
+                editable: isEditableTwtRatioRegulatingTerminalCell,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'ratioTapChanger.regulationType',
+                        columnValue: REGULATION_TYPES.DISTANT.id,
+                    },
+                },
+                cellEditor: TWTRegulatingTerminalEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: getTapChangerRegulationTerminalValue,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+            },
+            {
+                id: 'RatioLowTapPosition',
+                field: 'ratioTapChanger.lowTapPosition',
+                getQuickFilterText: excludeFromGlobalFilter,
+                filter: 'agNumberColumnFilter',
+                numeric: true,
+                fractionDigits: 0,
+                editable: (params) =>
+                    isEditable(params) &&
+                    params.data?.ratioTapChanger?.steps?.length > 0,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: (params) => {
+                    return {
+                        values: generateTapPositions(
+                            params.data?.ratioTapChanger
+                        ),
+                    };
+                },
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger = {
+                        ...(params.data?.ratioTapChanger || {}),
+                        lowTapPosition: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'ratioTapChanger.steps',
+                    },
+                },
+            },
+            {
+                id: 'RatioHighTapPosition',
+                field: 'ratioTapChanger.highTapPosition',
+                valueGetter: (params) =>
+                    computeHighTapPosition(
+                        params?.data?.ratioTapChanger?.steps
+                    ),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioTap',
-                field: 'ratioTapChanger',
+                field: 'ratioTapChanger.tapPosition',
                 filter: 'agNumberColumnFilter',
-                changeCmd: generateTapRequest('Ratio'),
+                numeric: true,
                 fractionDigits: 0,
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger?.tapPosition,
@@ -622,32 +955,235 @@ export const TABLES_DEFINITIONS = {
                         ),
                     };
                 },
-                editable: isEditable,
+                editable: (params) =>
+                    isEditable(params) &&
+                    params.data?.ratioTapChanger?.steps?.length > 0,
                 cellStyle: editableCellStyle,
                 getQuickFilterText: excludeFromGlobalFilter,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'ratioTapChanger.steps',
+                    },
+                },
             },
             {
                 id: 'RegulatingMode',
-                field: 'regulationMode',
+                field: 'phaseTapChanger.regulationMode',
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.regulationMode,
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger = {
+                        ...(params.data?.phaseTapChanger || {}),
+                        regulationMode: params.newValue,
+                    };
+                    return params;
+                },
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                getQuickFilterText: excludeFromGlobalFilter,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: Object.values(PHASE_REGULATION_MODES).map(
+                            (regulationMode) => regulationMode.id
+                        ),
+                    };
+                },
+            },
+            {
+                id: 'RegulatingValue',
+                field: 'phaseTapChanger.regulationValue',
+                filter: 'agNumberColumnFilter',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                fractionDigits: 1,
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger?.regulationValue,
+                getQuickFilterText: excludeFromGlobalFilter,
+                editable: (params) =>
+                    isEditable(params) &&
+                    params.data?.phaseTapChanger?.regulationMode !==
+                        PHASE_REGULATION_MODES.FIXED_TAP.id,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.phaseTapChanger?.regulationValue,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger = {
+                        ...(params.data?.phaseTapChanger || {}),
+                        regulationValue: params.newValue,
+                    };
+                    return params;
+                },
+            },
+            {
+                id: 'PhaseDeadBand',
+                field: 'phaseTapChanger.targetDeadband',
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+                editable: (params) =>
+                    isEditable(params) &&
+                    params.data?.phaseTapChanger?.regulationMode !==
+                        PHASE_REGULATION_MODES.FIXED_TAP.id,
+                cellStyle: editableCellStyle,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data?.phaseTapChanger?.targetDeadband,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger = {
+                        ...(params.data?.phaseTapChanger || {}),
+                        targetDeadband: params.newValue,
+                    };
+                    return params;
+                },
+            },
+            {
+                id: 'PhaseRegulationTypeText',
+                field: 'phaseTapChanger.regulationType',
+                valueGetter: (params) =>
+                    getTwtPhaseRegulationTypeId(params?.data),
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger = {
+                        ...(params.data?.phaseTapChanger || {}),
+                        regulationType: params.newValue,
+                    };
+                    return params;
+                },
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [
+                            ...Object.values(REGULATION_TYPES).map(
+                                (type) => type.id
+                            ),
+                        ],
+                    };
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RegulatingPhase',
-                field: 'regulatingPhase',
+                id: 'PhaseRegulatedSide',
+                field: 'ratioTapChanger.regulationSide',
                 valueGetter: (params) =>
-                    params?.data?.phaseTapChanger?.regulating,
-                boolean: true,
-                cellRenderer: BooleanCellRenderer,
+                    params.data?.phaseTapChanger?.regulationSide ||
+                    getPhaseTapRegulationSideId(params?.data),
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger = {
+                        ...(params.data?.phaseTapChanger || {}),
+                        regulationSide: params.newValue,
+                    };
+                    return params;
+                },
+                editable: isEditableTwtPhaseRegulationSideCell,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: () => {
+                    return {
+                        values: [...Object.values(SIDE).map((side) => side.id)],
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'PhaseRegulatingTerminal',
+                field: 'PhaseRegulatingTerminal',
+                valueGetter: (params) =>
+                    getTapChangerRegulationTerminalValue(
+                        params?.data?.phaseTapChanger
+                    ),
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                getQuickFilterText: excludeFromGlobalFilter,
+                cellStyle: (params) =>
+                    isEditableTwtPhaseRegulatingTerminalCell(params)
+                        ? editableCellStyle(params)
+                        : {},
+                editable: isEditableTwtPhaseRegulatingTerminalCell,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'phaseTapChanger.regulationType',
+                        columnValue: REGULATION_TYPES.DISTANT.id,
+                    },
+                },
+                cellEditor: TWTRegulatingTerminalEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: (params) => {
+                            getTapChangerRegulationTerminalValue(params);
+                        },
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+            },
+            {
+                id: 'PhaseLowTapPosition',
+                field: 'phaseTapChanger.lowTapPosition',
+                getQuickFilterText: excludeFromGlobalFilter,
+                filter: 'agNumberColumnFilter',
+                numeric: true,
+                fractionDigits: 0,
+                editable: (params) =>
+                    isEditable(params) &&
+                    params.data?.phaseTapChanger?.steps?.length > 0,
+                cellStyle: editableCellStyle,
+                cellEditor: 'agSelectCellEditor',
+                cellEditorParams: (params) => {
+                    return {
+                        values: generateTapPositions(
+                            params.data?.phaseTapChanger
+                        ),
+                    };
+                },
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger = {
+                        ...(params.data?.phaseTapChanger || {}),
+                        lowTapPosition: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'phaseTapChanger.steps',
+                    },
+                },
+            },
+            {
+                id: 'PhaseHighTapPosition',
+                field: 'phaseTapChanger.highTapPosition',
+                valueGetter: (params) =>
+                    computeHighTapPosition(
+                        params?.data?.phaseTapChanger?.steps
+                    ),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'PhaseTap',
-                field: 'phaseTapChanger',
+                field: 'phaseTapChanger.tapPosition',
                 filter: 'agNumberColumnFilter',
-                changeCmd: generateTapRequest('Phase'),
+                numeric: true,
                 fractionDigits: 0,
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.tapPosition,
@@ -662,24 +1198,20 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data.phaseTapChanger
+                            params.data?.phaseTapChanger
                         ),
                     };
                 },
-                editable: isEditable,
+                editable: (params) =>
+                    isEditable(params) &&
+                    params.data?.phaseTapChanger?.steps?.length > 0,
                 cellStyle: editableCellStyle,
                 getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
-                id: 'RegulatingValue',
-                field: 'regulationValue',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-                fractionDigits: 1,
-                valueGetter: (params) =>
-                    params?.data?.phaseTapChanger?.regulationValue,
-                getQuickFilterText: excludeFromGlobalFilter,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'phaseTapChanger.steps',
+                    },
+                },
             },
             {
                 id: 'r',

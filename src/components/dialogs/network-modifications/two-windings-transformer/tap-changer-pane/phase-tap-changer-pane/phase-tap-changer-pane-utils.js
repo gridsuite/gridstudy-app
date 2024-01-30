@@ -344,16 +344,34 @@ export const getComputedPhaseTapChangerRegulationMode = (
     }
 };
 
-export const getComputedPreviousPhaseRegulationType = (previousValues) => {
-    if (!previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
+export const getPhaseTapRegulationSideId = (twt) => {
+    const phaseTapChangerValues = twt?.phaseTapChanger;
+    if (!phaseTapChangerValues || !twt) {
         return null;
     }
-    if (
-        previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !==
-        previousValues?.id
-    ) {
-        return REGULATION_TYPES.DISTANT.id;
+    if (phaseTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
+        return phaseTapChangerValues?.regulatingTerminalVlId ===
+            twt?.voltageLevelId1
+            ? SIDE.SIDE1.id
+            : SIDE.SIDE2.id;
     } else {
-        return REGULATION_TYPES.LOCAL.id;
+        return null;
     }
+};
+
+export const getComputedPhaseRegulationType = (twt) => {
+    if (!twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
+        return null;
+    }
+    if (twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !== twt?.id) {
+        return REGULATION_TYPES.DISTANT;
+    } else {
+        return REGULATION_TYPES.LOCAL;
+    }
+};
+
+export const getComputedPreviousPhaseRegulationType = (previousValues) => {
+    const previousRegulationType =
+        getComputedPhaseRegulationType(previousValues);
+    return previousRegulationType?.id || null;
 };
