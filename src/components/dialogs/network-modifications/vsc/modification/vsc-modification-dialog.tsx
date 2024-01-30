@@ -271,5 +271,5 @@ const VscModificationDialog: React.FC<any> = ({
 
 export default VscModificationDialog;
 function snackError(arg0: { messageTxt: any; headerId: string }) {
-    throw new Error('Function not implemented.\n'+ arg0.messageTxt);
+    throw new Error('Function not implemented.\n' + arg0.messageTxt);
 }
