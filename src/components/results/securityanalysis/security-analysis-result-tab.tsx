@@ -267,7 +267,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const isExportButtonDisabled =
         // results not ready yet
-        securityAnalysisStatus === RunningStatus.RUNNING ||
+        securityAnalysisStatus !== RunningStatus.SUCCEED ||
         isLoadingResult ||
         // no result yet
         !result ||
