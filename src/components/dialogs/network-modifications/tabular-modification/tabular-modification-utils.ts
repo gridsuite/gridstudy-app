@@ -98,17 +98,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         MAX_SUSCEPTANCE,
         CONNECTED,
     ],
-    LINE: [
-        EQUIPMENT_ID,
-        R,
-        X,
-        G1,
-        G2,
-        B1,
-        B2,
-        CONNECTED1,
-        CONNECTED2,
-    ],
+    LINE: [EQUIPMENT_ID, R, X, G1, G2, B1, B2, CONNECTED1, CONNECTED2],
     LOAD: [EQUIPMENT_ID, LOAD_TYPE, P0, Q0, CONNECTED],
     TWO_WINDINGS_TRANSFORMER: [
         EQUIPMENT_ID,
