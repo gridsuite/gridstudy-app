@@ -265,6 +265,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         [columnDefs]
     );
 
+    const isExportButtonDisabled =
+        // results not ready yet
+        securityAnalysisStatus === RunningStatus.RUNNING ||
+        isLoadingResult ||
+        // no result yet
+        !result ||
+        // empty paged result
+        (result.content && result.content.length === 0) ||
+        // empty array result
+        result.length === 0;
+
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -310,12 +321,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             nodeUuid={nodeUuid}
                             csvHeaders={csvHeaders}
                             resultType={resultType}
-                            disabled={
-                                !result ||
-                                (result.content &&
-                                    result.content.length === 0) ||
-                                result.length === 0
-                            }
+                            disabled={isExportButtonDisabled}
                         />
                     )}
                 </Box>
