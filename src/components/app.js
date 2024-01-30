@@ -43,6 +43,7 @@ import {
     selectUseName,
     selectFluxConvention,
     selectMapManualRefresh,
+    selectMapBaseMap,
     selectEnableDeveloperMode,
     setParamsLoaded,
     setOptionalServices,
@@ -78,6 +79,7 @@ import {
     PARAM_USE_NAME,
     PARAM_FLUX_CONVENTION,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
     PARAM_DEVELOPER_MODE,
     PARAM_LIMIT_REDUCTION,
 } from '../utils/config-params';
@@ -212,6 +214,9 @@ const App = () => {
                         dispatch(
                             selectMapManualRefresh(param.value === 'true')
                         );
+                        break;
+                    case PARAM_MAP_BASEMAP:
+                        dispatch(selectMapBaseMap(param.value));
                         break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));

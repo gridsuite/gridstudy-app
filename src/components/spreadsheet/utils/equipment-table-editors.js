@@ -22,6 +22,7 @@ import {
 } from './equipment-table-utils';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
+import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
 
 export const GeneratorRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }, ref) => {
@@ -99,6 +100,99 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                 }}
                 data={rowData}
                 previousData={gridContext.dataToModify}
+            />
+        );
+    }
+);
+
+export const TWTRegulatingTerminalEditor = forwardRef(
+    ({ gridContext, colDef, gridApi, rowData }, ref) => {
+        const [
+            openTWTRegulatingTerminalPopup,
+            setOpenTWTRegulatingTerminalPopup,
+        ] = useState(true);
+
+        const isRatioTapChanger = colDef.field === 'RatioRegulatingTerminal';
+
+        const tapChangerType = isRatioTapChanger
+            ? 'ratioTapChanger'
+            : 'phaseTapChanger';
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        return getTapChangerRegulationTerminalValue(
+                            gridContext.dynamicValidation?.[tapChangerType] ||
+                                {}
+                        );
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field, gridContext.dynamicValidation, tapChangerType]
+        );
+
+        const handleSaveRegulatingTerminalPopup = (
+            updatedRegulatedTerminal
+        ) => {
+            const {
+                equipment: { type: equipmentType, id: equipmentId } = {},
+                voltageLevel: { id: voltageLevelId } = {},
+            } = updatedRegulatedTerminal || {};
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                `${tapChangerType}.regulatingTerminalConnectableId`,
+                equipmentId
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                `${tapChangerType}.regulatingTerminalConnectableType`,
+                equipmentType
+            );
+            gridContext.dynamicValidation = deepUpdateValue(
+                gridContext.dynamicValidation,
+                `${tapChangerType}.regulatingTerminalVlId`,
+                voltageLevelId
+            );
+            setOpenTWTRegulatingTerminalPopup(false);
+        };
+        const handleCancelRegulatingTerminalPopup = () => {
+            setOpenTWTRegulatingTerminalPopup(false);
+            gridApi.stopEditing();
+        };
+
+        const getTapChangerValue = () => {
+            const tapChanger = {
+                ...rowData?.[tapChangerType],
+                regulatingTerminalConnectableId:
+                    rowData?.[tapChangerType]
+                        ?.regulatingTerminalConnectableId || '',
+                regulatingTerminalConnectableType:
+                    rowData?.[tapChangerType]
+                        ?.regulatingTerminalConnectableType || '',
+                regulatingTerminalVlId:
+                    rowData?.[tapChangerType]?.regulatingTerminalVlId || '',
+            };
+            return tapChanger;
+        };
+
+        return (
+            <RegulatingTerminalModificationDialog
+                open={openTWTRegulatingTerminalPopup}
+                onClose={handleCancelRegulatingTerminalPopup}
+                currentNode={gridContext.currentNode}
+                studyUuid={gridContext.studyUuid}
+                onModifyRegulatingTerminalGenerator={(
+                    updatedRegulatedTerminal
+                ) => {
+                    handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
+                }}
+                data={getTapChangerValue()}
+                previousData={gridContext.dataToModify?.[tapChangerType]}
             />
         );
     }

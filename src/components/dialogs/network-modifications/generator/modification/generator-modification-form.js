@@ -193,7 +193,7 @@ const GeneratorModificationForm = ({
     const plannedOutageRateField = (
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
-            label={'PlannedOutageRate'}
+            label={'plannedOutageRate'}
             previousValue={
                 generatorToModify?.generatorStartup?.plannedOutageRate
             }
@@ -204,7 +204,7 @@ const GeneratorModificationForm = ({
     const forcedOutageRateField = (
         <FloatInput
             name={FORCED_OUTAGE_RATE}
-            label={'ForcedOutageRate'}
+            label={'forcedOutageRate'}
             previousValue={
                 generatorToModify?.generatorStartup?.forcedOutageRate
             }
