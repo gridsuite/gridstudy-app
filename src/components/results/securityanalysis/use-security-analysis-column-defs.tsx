@@ -9,7 +9,6 @@ import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
-import { UUID } from 'crypto';
 import { fetchLineOrTransformer } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
