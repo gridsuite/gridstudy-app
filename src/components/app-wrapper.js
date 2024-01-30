@@ -53,7 +53,13 @@ import external_labels_en from '../translations/extern-en.json';
 import external_labels_fr from '../translations/extern-fr.json';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
-import { PARAM_THEME } from '../utils/config-params';
+import {
+    PARAM_THEME,
+    basemap_style_theme_key,
+    MAP_BASEMAP_MAPBOX,
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
+} from '../utils/config-params';
 
 let lightTheme = createTheme({
     components: {
@@ -72,7 +78,6 @@ let lightTheme = createTheme({
             },
         },
     },
-
     palette: {
         mode: 'light',
     },
@@ -106,7 +111,12 @@ let lightTheme = createTheme({
     formFiller: {
         background: '#e6e6e6',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/light-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
+        'mapbox://styles/mapbox/light-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
+        'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
+        'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     aggrid: 'ag-theme-alpine',
     overlay: {
         background: '#e6e6e6',
@@ -115,8 +125,15 @@ let lightTheme = createTheme({
 
 lightTheme = createTheme(lightTheme, {
     palette: {
-        customButton: {
-            main: lightTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: lightTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });
@@ -170,7 +187,12 @@ let darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
+        'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
+        'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
+        'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
     aggrid: 'ag-theme-alpine-dark',
     overlay: {
         background: '#121212',
@@ -179,8 +201,15 @@ let darkTheme = createTheme({
 
 darkTheme = createTheme(darkTheme, {
     palette: {
-        customButton: {
-            main: darkTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: darkTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });

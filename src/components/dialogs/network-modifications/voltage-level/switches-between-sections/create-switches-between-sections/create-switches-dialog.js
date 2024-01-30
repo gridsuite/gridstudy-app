@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Dialog, DialogActions } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { Dialog, DialogActions } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CreateSwitchesDialogSubmitButton from './create-switches-dialog-submit-button';
@@ -18,6 +17,7 @@ import {
 import { SWITCH_KINDS } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useEffect } from 'react';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 const formSchema = yup.object().shape({
     ...getCreateSwitchesValidationSchema(),
@@ -62,9 +62,7 @@ export const CreateSwitchesDialog = (props) => {
             <FormProvider validationSchema={formSchema} {...formMethods}>
                 <CreateSwitchesForm id={SWITCH_KINDS} />
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
+                    <CancelButton onClick={handleCloseDialog} />
                     <CreateSwitchesDialogSubmitButton handleSave={handleSave} />
                 </DialogActions>
             </FormProvider>

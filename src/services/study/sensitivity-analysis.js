@@ -164,3 +164,26 @@ export function getSensitivityAnalysisFactorsCount(
         method: 'GET',
     });
 }
+
+export function exportSensitivityResultsAsCsv(
+    studyUuid,
+    currentNodeUuid,
+    csvConfig
+) {
+    console.info(
+        `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
+    );
+
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/sensitivity-analysis/result/csv`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(csvConfig),
+    });
+}

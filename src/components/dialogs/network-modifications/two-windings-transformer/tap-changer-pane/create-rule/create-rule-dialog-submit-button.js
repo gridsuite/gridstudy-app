@@ -33,6 +33,7 @@ const CreateRuleDialogSubmitButton = ({ handleSave, allowNegativeValues }) => {
     return (
         <Button
             onClick={handleSubmit(handleSave)}
+            variant="outlined"
             disabled={isTapValuesInvalid()}
         >
             <FormattedMessage id="validate" />

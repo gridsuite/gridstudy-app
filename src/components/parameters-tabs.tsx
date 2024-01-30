@@ -516,8 +516,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                         <FormattedMessage id="genericConfirmQuestion" />
                     </DialogContentText>
                 }
-                validateKey={'yes'}
-                cancelKey={'no'}
+                validateKey={'dialog.button.leave'}
             />
         </>
     );
