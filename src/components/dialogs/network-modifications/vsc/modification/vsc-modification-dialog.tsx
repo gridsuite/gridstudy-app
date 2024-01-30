@@ -223,14 +223,11 @@ const VscModificationDialog: React.FC<any> = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                // onValidationError={onValidationError}
                 onValidationError={() => {}}
                 onValidated={() => {}}
                 aria-labelledby="dialog-modify-vsc"
                 maxWidth={'md'}
                 titleId="ModifyVsc"
-                // subtitle={headersAndTabs}
-                // searchCopy={searchCopy}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
