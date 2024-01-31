@@ -346,8 +346,8 @@
     "Disconnect/GENERATOR": "Déclencher group {computedLabel}",
     "NodeFault/BUS": "Court-circuit sur le bus {computedLabel}",
 
-    "Branch.Side.ONE": "Côté 1",
-    "Branch.Side.TWO": "Côté 2",
+    "TwoSides.ONE": "Côté 1",
+    "TwoSides.TWO": "Côté 2",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
@@ -437,6 +437,7 @@
     "FAILED" : "Echec",
     "ONE" : "Côté 1",
     "TWO" : "Côté 2",
+    "THREE" : "Côté 3",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
