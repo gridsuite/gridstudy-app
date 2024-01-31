@@ -278,7 +278,10 @@ const GeneratorModificationForm = ({
                     {gridItem(forcedOutageRateField, 4)}
                 </Grid>
             </Grid>
-            <PropertiesForm networkElementType={'generator'} isModification={true} />
+            <PropertiesForm
+                networkElementType={'generator'}
+                isModification={true}
+            />
         </>
     );
 };
