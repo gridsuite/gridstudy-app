@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     forwardRef,
     useCallback,
@@ -24,6 +24,11 @@ import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { Box } from '@mui/system';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import {
+    PREFIX_MODEL_KEY,
+    PREFIX_VARIABLE_KEY,
+    PREFIX_VARIABLE_SET_KEY,
+} from './curve-constants';
 
 const modelsToVariablesTree = (models) => {
     return models.reduce(
@@ -91,6 +96,31 @@ const variablesTreeToVariablesArray = (variablesTree, parentId) => {
     return result;
 };
 
+const makeGetModelLabel = (intl) => (value) =>
+    intl.formatMessage({
+        id: `${PREFIX_MODEL_KEY}/${value}`,
+    });
+
+const makeGetVariableLabel = (intl) => (elem) => {
+    if (!elem.parentId) {
+        // root element => that is model element in the variable tree
+        return intl.formatMessage({ id: `${PREFIX_MODEL_KEY}/${elem.name}` });
+    } else {
+        // either a variable set element or variable element in the variable tree
+        if (elem.variableId) {
+            // that is a variable element
+            return intl.formatMessage({
+                id: `${PREFIX_VARIABLE_KEY}/${elem.name}`,
+            });
+        } else {
+            // must be a variable set element
+            return intl.formatMessage({
+                id: `${PREFIX_VARIABLE_SET_KEY}/${elem.name}`,
+            });
+        }
+    }
+};
+
 const styles = {
     grid: (theme) => ({
         width: '100%',
@@ -104,6 +134,8 @@ const styles = {
 
 const ModelFilter = forwardRef(
     ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
+        const intl = useIntl();
+
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -200,6 +232,14 @@ const ModelFilter = forwardRef(
             []
         );
 
+        const getModelLabel = useMemo(() => {
+            return makeGetModelLabel(intl);
+        }, [intl]);
+
+        const getVariableLabel = useMemo(() => {
+            return makeGetVariableLabel(intl);
+        }, [intl]);
+
         return (
             <>
                 {/* Models used in a mapping */}
@@ -214,7 +254,7 @@ const ModelFilter = forwardRef(
                     <Grid item xs={6}>
                         <CheckboxSelect
                             options={initialSelectedModels}
-                            getOptionLabel={(value) => associatedModels[value]}
+                            getOptionLabel={getModelLabel}
                             value={initialSelectedModels}
                             onChange={handleModelChange}
                             disabled={
@@ -247,6 +287,7 @@ const ModelFilter = forwardRef(
                             <CheckboxTreeview
                                 ref={variablesRef}
                                 data={filteredVariables}
+                                getLabel={getVariableLabel}
                                 checkAll
                                 sx={{
                                     maxHeight: '440px',
