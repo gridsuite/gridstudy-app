@@ -46,12 +46,14 @@ const SensitivityAnalysisResult = ({
     sortProps,
     filterProps,
     isLoading,
+    ...props
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+    const { onGridColumnsChanged } = props;
 
     const messages = useIntlResultStatusMessages(intl, true);
 
@@ -186,11 +188,16 @@ const SensitivityAnalysisResult = ({
         suppressMultiSort: true,
     };
 
-    const onGridReady = useCallback((params) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
+    const handleGridReady = useCallback(
+        (params) => {
+            if (params.api) {
+                params.api.sizeColumnsToFit();
+                onGridColumnsChanged && onGridColumnsChanged(params);
+            }
+        },
+        [onGridColumnsChanged]
+    );
+
     const message = getNoRowsMessage(
         messages,
         rows,
@@ -213,10 +220,11 @@ const SensitivityAnalysisResult = ({
                 rowData={rowsToShow}
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
-                onGridReady={onGridReady}
+                onGridReady={handleGridReady}
                 gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
+                {...props}
             />
         </div>
     );
