@@ -581,7 +581,7 @@ export function modifyGenerator(
         maximumReactivePower: toModificationOperation(maximumReactivePower),
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-        properties
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',

@@ -339,7 +339,15 @@ const GeneratorModificationDialog = ({
                 setGeneratorToModify(null);
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, setValue, getConcatenatedProperties, setValuesAndEmptyOthers]
+        [
+            studyUuid,
+            currentNodeUuid,
+            reset,
+            getValues,
+            setValue,
+            getConcatenatedProperties,
+            setValuesAndEmptyOthers,
+        ]
     );
 
     useEffect(() => {
