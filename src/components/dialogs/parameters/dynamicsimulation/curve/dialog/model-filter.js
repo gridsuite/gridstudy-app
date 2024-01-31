@@ -219,7 +219,7 @@ const ModelFilter = forwardRef(
                             onChange={handleModelChange}
                             disabled={
                                 initialSelectedModels.length ===
-                                1 /* disable if only one model to choose */
+                                1 /* disabled if only one model to choose */
                             }
                         />
                     </Grid>
