@@ -50,6 +50,8 @@ interface IShortCircuitAnalysisGlobalResultProps {
     result: SCAFaultResult[];
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     customTablePaginationProps: any;
+    onGridColumnsChanged: (params: any) => void;
+    onRowDataUpdated: (params: any) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
@@ -60,6 +62,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     result,
     updateResult,
     customTablePaginationProps,
+    onGridColumnsChanged,
+    onRowDataUpdated,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -235,8 +239,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     filterSelector,
                 }}
                 filterEnums={filterEnums}
-                studyUuid={studyUuid}
-                currentNode={currentNode?.id}
+                onGridColumnsChanged={onGridColumnsChanged}
+                onRowDataUpdated={onRowDataUpdated}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

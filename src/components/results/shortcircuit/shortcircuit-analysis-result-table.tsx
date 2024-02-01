@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    useCallback,
-    useMemo,
-} from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import {
@@ -39,22 +35,8 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { DISPLAY_CONVERSION } from '../../../utils/unit-converter';
 
-const styles = {
-    gridContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    csvExport: {
-        display: 'flex',
-        alignItems: 'baseline',
-        marginTop: '-40px',
-    },
-    grid: {
-        flexGrow: '1',
-    },
-};
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
     analysisType: ShortCircuitAnalysisType;
@@ -62,8 +44,8 @@ interface ShortCircuitAnalysisResultProps {
     filterProps: FilterPropsType;
     sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
-    studyUuid: string;
-    currentNode: string;
+    onGridColumnsChanged: (params: any) => void;
+    onRowDataUpdated: (params: any) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -106,14 +88,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
-    studyUuid,
-    currentNode,
+    onGridColumnsChanged,
+    onRowDataUpdated,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
-    const { snackError } = useSnackMessage();
-    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
-    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
+
     const columns = useMemo(() => {
         const isAllBusesAnalysisType =
             analysisType === ShortCircuitAnalysisType.ALL_BUSES;
@@ -276,11 +256,15 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         []
     );
 
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
+    const onGridReady = useCallback(
+        (params: GridReadyEvent) => {
+            if (params?.api) {
+                params.api.sizeColumnsToFit();
+                onGridColumnsChanged && onGridColumnsChanged(params);
+            }
+        },
+        [onGridColumnsChanged]
+    );
 
     const getCurrent = useCallback(
         (x: SCAFaultResult | SCAFeederResult) => {
@@ -380,103 +364,18 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         !isFetching
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
-    const headersCsv = useMemo(
-        () =>
-            columns
-                .filter((column) => 'headerName' in column)
-                .map(
-                    (column) =>
-                        (column as { headerName?: string }).headerName || ''
-                ),
-        [columns]
-    );
-
-    const enumValueTranslations = useMemo(() => {
-        const returnedValue: Record<string, string> = {};
-        const enumValuesToTranslate = [
-            'THREE_PHASE',
-            'SINGLE_PHASE',
-            'ACTIVE_POWER',
-            'APPARENT_POWER',
-            'CURRENT',
-            'LOW_VOLTAGE',
-            'HIGH_VOLTAGE',
-            'LOW_VOLTAGE_ANGLE',
-            'HIGH_VOLTAGE_ANGLE',
-            'LOW_SHORT_CIRCUIT_CURRENT',
-            'HIGH_SHORT_CIRCUIT_CURRENT',
-            'OTHER',
-        ];
-
-        enumValuesToTranslate.forEach((value) => {
-            returnedValue[value] = intl.formatMessage({ id: value });
-        });
-
-        return returnedValue;
-    }, [intl]);
-
-    const exportCsv = useCallback(() => {
-        setIsCsvExportLoading(true);
-        setIsCsvExportSuccessful(false);
-        downloadShortCircuitResultZippedCsv(
-            studyUuid,
-            currentNode,
-            analysisType,
-            headersCsv,
-            enumValueTranslations
-        )
-            .then((response) => {
-                response.blob().then((fileBlob: Blob) => {
-                    downloadZipFile(
-                        fileBlob,
-                        analysisType === ShortCircuitAnalysisType.ONE_BUS
-                            ? 'oneBus-results.zip'
-                            : 'allBuses_results.zip'
-                    );
-                    setIsCsvExportSuccessful(true);
-                });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'shortCircuitAnalysisCsvResultsError',
-                    }),
-                });
-            })
-            .finally(() => setIsCsvExportLoading(false));
-    }, [
-        studyUuid,
-        currentNode,
-        intl,
-        snackError,
-        headersCsv,
-        analysisType,
-        enumValueTranslations,
-    ]);
 
     return (
-        <Box sx={styles.gridContainer}>
-            <Box sx={styles.csvExport}>
-                <Box style={{ flexGrow: 1 }}></Box>
-                <ExportButton
-                    disabled={!rowsToShow || rowsToShow.length === 0}
-                    onClick={exportCsv}
-                    isDownloadLoading={isCsvExportLoading}
-                    isDownloadSuccessful={isCsvExportSuccessful}
-                />
-            </Box>
-            <Box sx={styles.grid}>
-                <CustomAGGrid
-                    rowData={rowsToShow}
-                    defaultColDef={defaultColDef}
-                    onGridReady={onGridReady}
-                    getRowStyle={getRowStyle}
-                    enableCellTextSelection={true}
-                    columnDefs={columns}
-                    overlayNoRowsTemplate={message}
-                />
-            </Box>
+        <Box sx={{ flexGrow: 1 }}>
+            <CustomAGGrid
+                rowData={rowsToShow}
+                defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+                enableCellTextSelection={true}
+                columnDefs={columns}
+                overlayNoRowsTemplate={message}
+            />
         </Box>
     );
 };

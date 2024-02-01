@@ -13,10 +13,17 @@ import {
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
-import { useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { ComputingType } from 'components/computing-status/computing-type';
 
-export const ShortCircuitAnalysisAllBusesResult = () => {
+interface ShortCircuitAnalysisAllBusResultProps {
+    onGridColumnsChanged: (params: any) => void;
+    onRowDataUpdated: (params: any) => void;
+}
+
+export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<
+    ShortCircuitAnalysisAllBusResultProps
+> = ({ onGridColumnsChanged, onRowDataUpdated }) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
@@ -41,6 +48,8 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
                 labelRowsPerPageId:
                     'muiTablePaginationLabelRowsPerPageAllBusesSCA',
             }}
+            onGridColumnsChanged={onGridColumnsChanged}
+            onRowDataUpdated={onRowDataUpdated}
         />
     );
 };
