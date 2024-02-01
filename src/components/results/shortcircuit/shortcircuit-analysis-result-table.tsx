@@ -363,12 +363,16 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         shortCircuitAnalysisStatus,
         !isFetching
     );
-    const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
+    const rowsToShow = (rows: any) => {
+        let currentRows = getRows(rows, shortCircuitAnalysisStatus);
+        onRowDataUpdated && onRowDataUpdated(currentRows.length === 0);
+        return currentRows;
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <CustomAGGrid
-                rowData={rowsToShow}
+                rowData={rowsToShow(rows)}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}

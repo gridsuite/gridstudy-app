@@ -72,7 +72,6 @@ export const ShortCircuitExportButton: FunctionComponent<
 
         return returnedValue;
     }, [intl]);
-
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
@@ -101,6 +100,7 @@ export const ShortCircuitExportButton: FunctionComponent<
                         id: 'shortCircuitAnalysisCsvResultsError',
                     }),
                 });
+                setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
     }, [

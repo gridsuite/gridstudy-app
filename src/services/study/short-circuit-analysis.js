@@ -208,6 +208,7 @@ export function downloadShortCircuitResultZippedCsv(
     const param = new URLSearchParams({ type });
     const urlWithParam = `${url}?${param.toString()}`;
     console.debug(urlWithParam);
+    debugger;
     return backendFetch(urlWithParam, {
         method: 'POST',
         headers: {

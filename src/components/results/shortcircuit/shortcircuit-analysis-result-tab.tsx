@@ -40,7 +40,9 @@ interface ShortCircuitAnalysisResultTabProps {
 }
 
 function getDisplayedColumns(params: any) {
-    return params.api.columnModel.columnDefs.map((c: any) => c.headerName);
+    return params.api.columnModel.columnDefs
+        .filter((c: any) => !c.hide)
+        .map((c: any) => c.headerName);
 }
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<
@@ -121,14 +123,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
 
     const handleGridColumnsChanged = useCallback((params: any) => {
         if (params?.api) {
+            debugger;
             setCsvHeaders(getDisplayedColumns(params));
         }
     }, []);
 
-    const handleRowDataUpdated = useCallback((params: any) => {
-        if (params?.api) {
-            setIsCsvButtonDisabled(params.api.getModel().getRowCount() === 0);
-        }
+    const handleRowDataUpdated = useCallback((disabled: boolean) => {
+        setIsCsvButtonDisabled(disabled);
     }, []);
 
     return (
@@ -164,13 +165,18 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                         }
                     />
                 </Tabs>
-                <ShortCircuitExportButton
-                    studyUuid={studyUuid}
-                    nodeUuid={nodeUuid}
-                    csvHeaders={csvHeaders}
-                    analysisType={tabIndex}
-                    disabled={isCsvButtonDisabled}
-                />
+                {resultOrLogIndex === RESULTS_TAB_INDEX &&
+                    (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ||
+                        tabIndex ===
+                            ShortCircuitAnalysisResultTabs.ONE_BUS) && (
+                        <ShortCircuitExportButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            csvHeaders={csvHeaders}
+                            analysisType={tabIndex}
+                            disabled={isCsvButtonDisabled}
+                        />
+                    )}
             </Box>
             {resultOrLogIndex === RESULTS_TAB_INDEX &&
                 (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ? (
