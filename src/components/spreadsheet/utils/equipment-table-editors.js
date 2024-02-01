@@ -261,6 +261,15 @@ export const NumericalField = forwardRef(
         function renderNumericText() {
             return (
                 <TextField
+                    sx={{
+                        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
+                            {
+                                display: 'none',
+                            },
+                        '& input[type=number]': {
+                            MozAppearance: 'textfield',
+                        },
+                    }}
                     value={value}
                     onChange={validateEvent}
                     error={error}

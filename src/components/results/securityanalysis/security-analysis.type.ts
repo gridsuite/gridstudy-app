@@ -146,26 +146,15 @@ export interface SecurityAnalysisTabProps {
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
-    sortProps: SortPropsType;
-    filterProps: FilterPropsType;
-    filterEnums: FilterEnumsType;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    enumValueTranslations?: Record<string, string>;
+    columnDefs: ColDef<any>[];
 }
 
 export interface SecurityAnalysisResultNmkProps {
     result?: SecurityAnalysisNmkResult;
+    columnDefs: ColDef<any>[];
     isLoadingResult: boolean;
     isFromContingency: boolean;
-    openVoltageLevelDiagram?: (voltageLevelId: string) => void;
-    studyUuid?: string;
-    nodeUuid?: string;
     paginationProps: PaginationProps;
-    sortProps: SortPropsType;
-    filterProps: FilterPropsType;
-    filterEnums: FilterEnumsType;
-    enumValueTranslations?: Record<string, string>;
 }
 
 export interface SecurityAnalysisNTableRow {
@@ -181,7 +170,4 @@ export interface SecurityAnalysisResultProps {
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
-    exportCsv: () => void;
-    isCsvExportSuccessful: boolean;
-    isCsvExportLoading: boolean;
 }
