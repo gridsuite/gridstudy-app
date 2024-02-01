@@ -10,11 +10,16 @@ import {
     backendFetchJson,
     getRequestParamFromList,
 } from './utils';
+import { UUID } from 'crypto';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/explore`;
 const PREFIX_DIRECTORY_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/directory`;
 
-export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
+export function fetchElementsMetadata(
+    ids: UUID[],
+    elementTypes: string[],
+    equipmentTypes: string[]
+) {
     console.info('Fetching elements metadata');
 
     // Add params to Url
@@ -47,10 +52,10 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
 }
 
 export function createParameter(
-    newParameter,
-    name,
-    parameterType,
-    parentDirectoryUuid
+    newParameter: any,
+    name: string,
+    parameterType: string,
+    parentDirectoryUuid: string
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -68,7 +73,11 @@ export function createParameter(
     );
 }
 
-export function elementExists(directoryUuid, elementName, type) {
+export function elementExists(
+    directoryUuid: UUID,
+    elementName: string,
+    type: string
+) {
     const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
 
     console.debug(existsElementUrl);
