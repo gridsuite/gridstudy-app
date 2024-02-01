@@ -437,7 +437,6 @@
     "FAILED" : "Echec",
     "ONE" : "Côté 1",
     "TWO" : "Côté 2",
-    "THREE" : "Côté 3",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",
