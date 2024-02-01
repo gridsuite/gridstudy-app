@@ -7,6 +7,11 @@
 
 import { CustomColDef, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
+import {
+    convertFromDisplayToRealValues,
+    convertFromRealValuesToDisplay,
+    DISPLAY_CONVERSION,
+} from '../../utils/unit-converter';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
@@ -14,7 +19,13 @@ export const makeAgGridCustomHeaderColumn = ({
     filterParams, // filterParams: Parameters for the column's filtering functionality
     ...props // agGrid column props
 }: CustomColDef) => {
-    const { headerName, field = '', fractionDigits, numeric } = props;
+    const {
+        headerName,
+        field = '',
+        fractionDigits,
+        numeric,
+        displayConversionMode = DISPLAY_CONVERSION.NONE,
+    } = props;
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
@@ -38,6 +49,11 @@ export const makeAgGridCustomHeaderColumn = ({
         headerTooltip: headerName,
         minWidth,
         fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
+        valueGetter: (params: any) =>
+            convertFromRealValuesToDisplay(
+                params.data[field],
+                displayConversionMode
+            ),
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             field,
@@ -55,6 +71,11 @@ export const makeAgGridCustomHeaderColumn = ({
                 filterSelector,
                 filterOptions,
                 updateFilter,
+                parser: (params: string) =>
+                    convertFromDisplayToRealValues(
+                        params,
+                        displayConversionMode
+                    ),
             },
         },
         ...props,

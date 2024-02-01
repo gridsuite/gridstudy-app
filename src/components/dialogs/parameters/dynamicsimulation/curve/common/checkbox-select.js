@@ -30,6 +30,7 @@ const CheckboxSelect = ({
     getOptionLabel: defaultGetOptionLabel,
     onChange,
     value: initialSelectedOptions,
+    disabled,
 }) => {
     const intl = useIntl();
     const [selectedOptions, setSelectedOptions] = useState(
@@ -94,6 +95,7 @@ const CheckboxSelect = ({
             }}
             MenuProps={MenuProps}
             sx={{ width: '100%' }}
+            disabled={disabled}
         >
             <MenuItem
                 size={'small'}
