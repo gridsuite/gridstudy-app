@@ -211,8 +211,8 @@ const GeneratorModificationDialog = ({
                     equipmentId: editData?.regulatingTerminalId?.value,
                     equipmentType: editData?.regulatingTerminalType?.value,
                     voltageLevelId: editData?.regulatingTerminalVlId?.value,
-                    ...getPropertiesFromModification(editData.properties),
                 }),
+                ...getPropertiesFromModification(editData.properties),
             });
         },
         [reset]
