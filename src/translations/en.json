@@ -571,9 +571,6 @@
     "Provider": "Provider",
     "LimitReduction": "Limit reduction",
     "Default": "Default",
-    "OpenLoadFlow": "Open Load Flow",
-    "Hades2": "Hades 2",
-    "DynaFlow": "Dyna Flow",
 
     "fetchLoadFlowProvidersError": "An error occurred while fetching the load flow providers",
     "fetchLoadFlowProviderError": "An error occured when fetching the load flow provider",
@@ -1115,7 +1112,7 @@
     "SensitivityBranches": "Branches",
     "SensitivityInjectionsSet": "Relatively to injections set :",
     "SensitivityInjection": "Relatively to each injection :",
-    "SensitivityHvdc": "Relatively to each HVDC :",
+    "SensitivityHVDC": "Relatively to each HVDC :",
     "SensitivityTD": "Relatively to each PST :",
     "SensitivityNodes": "Nodes",
     "SensiInjectionsSet": "Set Injections",
