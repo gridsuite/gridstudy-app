@@ -26,7 +26,7 @@ import {
     SHUNT_SUSCEPTANCE_2,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { unitToMicroUnit } from 'utils/rounding';
+import { unitToMicroUnit } from 'utils/unit-converter';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const styles = {

@@ -41,7 +41,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
     FORM_LOADING_DELAY,
