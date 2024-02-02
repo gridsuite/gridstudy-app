@@ -1113,7 +1113,7 @@
     "SensitivityInjectionsSet": "Relatively to injections set :",
     "SensitivityInjection": "Relatively to each injection :",
     "SensitivityHVDC": "Relatively to each HVDC :",
-    "SensitivityTD": "Relatively to each PST :",
+    "SensitivityPST": "Relatively to each PST :",
     "SensitivityNodes": "Nodes",
     "SensiInjectionsSet": "Set Injections",
     "SensiInjection": "Injection",
