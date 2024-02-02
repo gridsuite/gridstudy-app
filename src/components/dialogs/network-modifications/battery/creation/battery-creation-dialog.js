@@ -150,8 +150,8 @@ const BatteryCreationDialog = ({
             reset({
                 [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData.equipmentName ?? '',
-                [MAXIMUM_ACTIVE_POWER]: editData.maxActivePower,
-                [MINIMUM_ACTIVE_POWER]: editData.minActivePower,
+                [MAXIMUM_ACTIVE_POWER]: editData.maxP,
+                [MINIMUM_ACTIVE_POWER]: editData.minP,
                 [ACTIVE_POWER_SET_POINT]: editData.activePowerSetpoint,
                 [REACTIVE_POWER_SET_POINT]: editData.reactivePowerSetpoint,
                 [FREQUENCY_REGULATION]: editData.participate,
