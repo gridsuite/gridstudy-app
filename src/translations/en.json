@@ -346,8 +346,8 @@
     "Disconnect/GENERATOR": "Trip generator {computedLabel}",
     "NodeFault/BUS": "Node fault on bus {computedLabel}",
 
-    "Branch.Side.ONE": "Origin side",
-    "Branch.Side.TWO": "Extremity side",
+    "TwoSides.ONE": "Origin side",
+    "TwoSides.TWO": "Extremity side",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
