@@ -51,6 +51,10 @@ import exportParameters_fr from '../translations/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
 import external_labels_en from '../translations/extern-en.json';
 import external_labels_fr from '../translations/extern-fr.json';
+import aggrid_locale_en from '../translations/aggrid-locale-en';
+import aggrid_locale_fr from '../translations/aggrid-locale-fr';
+import backend_locale_en from '../translations/backend-locale-en';
+import backend_locale_fr from '../translations/backend-locale-fr';
 import dynamic_mapping_models_en from '../translations/dynamic-mapping-models-en';
 import dynamic_mapping_models_fr from '../translations/dynamic-mapping-models-fr';
 import { store } from '../redux/store';
@@ -241,6 +245,8 @@ const messages = {
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
         ...common_button_en,
+        ...aggrid_locale_en,
+        ...backend_locale_en,
         ...dynamic_mapping_models_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
@@ -260,6 +266,8 @@ const messages = {
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
         ...common_button_fr,
+        ...aggrid_locale_fr,
+        ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
