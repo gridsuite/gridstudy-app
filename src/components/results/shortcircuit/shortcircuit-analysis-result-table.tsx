@@ -266,6 +266,15 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [onGridColumnsChanged]
     );
 
+    const handleRowDataUpdated = useCallback(
+        (params: any) => {
+            if (params?.api) {
+                onRowDataUpdated(params.api.getModel().getRowCount() === 0);
+            }
+        },
+        [onRowDataUpdated]
+    );
+
     const getCurrent = useCallback(
         (x: SCAFaultResult | SCAFeederResult) => {
             let current = NaN;
@@ -363,22 +372,19 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         shortCircuitAnalysisStatus,
         !isFetching
     );
-    const rowsToShow = (rows: any) => {
-        let currentRows = getRows(rows, shortCircuitAnalysisStatus);
-        onRowDataUpdated && onRowDataUpdated(currentRows.length === 0);
-        return currentRows;
-    };
+    const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <CustomAGGrid
-                rowData={rowsToShow(rows)}
+                rowData={rowsToShow}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
                 enableCellTextSelection={true}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
+                onRowDataUpdated={handleRowDataUpdated}
             />
         </Box>
     );

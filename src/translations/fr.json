@@ -487,7 +487,7 @@
     "descTransient": "Transitoire",
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "securityAnalysisCsvResultsError": "Une erreur est survenue lors de l'export des résultats de l'analyse de sécurité",
-    "shortCircuitAnalysisCsvResultsError": "Une erreur est survenue lors de l'export des résultats de court-circuit",
+    "shortCircuitAnalysisCsvResultsError": "Une erreur est survenue lors de l'export des résultats de l'analyse de court-circuit",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
     "LoadFlowResultsCurrentViolations": "Contraintes de transit",
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
