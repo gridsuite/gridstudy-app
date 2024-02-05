@@ -24,11 +24,6 @@ import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { Box } from '@mui/system';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import {
-    PREFIX_MODEL_KEY,
-    PREFIX_VARIABLE_KEY,
-    PREFIX_VARIABLE_SET_KEY,
-} from './curve-constants';
 
 const modelsToVariablesTree = (models) => {
     return models.reduce(
@@ -98,27 +93,27 @@ const variablesTreeToVariablesArray = (variablesTree, parentId) => {
 
 const makeGetModelLabel = (intl) => (value) =>
     intl.formatMessage({
-        id: `${PREFIX_MODEL_KEY}/${value}`,
+        id: `models.${value}`,
     });
 
 const makeGetVariableLabel = (intl) => (elem) => {
     if (!elem.parentId) {
         // root element => that is model element in the variable tree
-        return intl.formatMessage({ id: `${PREFIX_MODEL_KEY}/${elem.name}` });
-    } else {
-        // either a variable set element or variable element in the variable tree
-        if (elem.variableId) {
-            // that is a variable element
-            return intl.formatMessage({
-                id: `${PREFIX_VARIABLE_KEY}/${elem.name}`,
-            });
-        } else {
-            // must be a variable set element
-            return intl.formatMessage({
-                id: `${PREFIX_VARIABLE_SET_KEY}/${elem.name}`,
-            });
-        }
+        return intl.formatMessage({ id: `models.${elem.name}` });
     }
+
+    // either a variable set element or variable element in the variable tree
+    if (elem.variableId) {
+        // that is a variable element
+        return intl.formatMessage({
+            id: `variableSets.${elem.name}`,
+        });
+    }
+
+    // must be a variable set element
+    return intl.formatMessage({
+        id: `variables.${elem.name}`,
+    });
 };
 
 const styles = {

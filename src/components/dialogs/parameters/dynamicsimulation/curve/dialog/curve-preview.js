@@ -17,7 +17,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
-import { PREFIX_VARIABLE_KEY } from './curve-constants';
 
 const styles = {
     grid: {
@@ -52,7 +51,7 @@ const CurvePreview = forwardRef((props, ref) => {
                 }),
                 valueFormatter: (params) =>
                     intl.formatMessage({
-                        id: `${PREFIX_VARIABLE_KEY}/${params.value}`,
+                        id: `variables.${params.value}`,
                     }),
             },
         ];

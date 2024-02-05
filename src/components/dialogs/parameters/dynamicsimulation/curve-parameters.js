@@ -14,7 +14,6 @@ import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from '../../../spreadsheet/global-filter';
 import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { PREFIX_VARIABLE_KEY } from './curve/dialog/curve-constants';
 
 const styles = {
     grid: {
@@ -133,7 +132,7 @@ const CurveParameters = ({ path }) => {
                 }),
                 valueFormatter: (params) =>
                     intl.formatMessage({
-                        id: `${PREFIX_VARIABLE_KEY}/${params.value}`,
+                        id: `variables.${params.value}`,
                     }),
             },
         ];
