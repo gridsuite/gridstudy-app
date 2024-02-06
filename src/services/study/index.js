@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { getSortValue } from 'hooks/use-aggrid-sort';
 import {
     backendFetch,
     backendFetchJson,
@@ -182,14 +183,6 @@ export function searchEquipmentsInfos(
             '/search?' +
             urlSearchParams.toString()
     );
-}
-
-export function fetchLimitViolations(studyUuid, currentNodeUuid) {
-    console.info(`Fetching limit violations ...`);
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/limit-violations';
-    return backendFetchJson(url);
 }
 
 export function fetchContingencyCount(

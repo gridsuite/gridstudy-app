@@ -5,28 +5,73 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useCallback, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage } from 'react-intl/lib';
-import { LoadFlowTabProps } from './load-flow-result.type';
+import { LoadFlowTabProps, QueryParamsType } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
-import { fetchLoadFlowResult } from '../../../services/study/loadflow';
+import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
+import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
+import {
+    FROM_COLUMN_TO_FIELD,
+    useFetchFiltersEnums,
+} from './load-flow-result-utils';
+import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
 }) => {
     const loadflowResultInvalidations = ['loadflowResult'];
+    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
+        colKey: 'subjectId',
+        sortWay: SORT_WAYS.asc,
+    });
+
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+        FROM_COLUMN_TO_FIELD,
+        () => {}
+    );
+    const [tabIndex, setTabIndex] = useState(0);
+    const [hasFilter, setHasFilter] = useState<boolean>(false);
+
+    const { loading: filterEnumsLoading, result: filterEnums } =
+        useFetchFiltersEnums(hasFilter, setHasFilter);
+
+    const fetchLoadflowResultWithQueryParams = useCallback(
+        (studyUuid: string, nodeUuid: string) => {
+            /* if (tabIndex === LOGS_TAB_INDEX) {
+                return Promise.resolve();
+            } */
+
+            const queryParams: QueryParamsType = {};
+
+            if (sortConfig) {
+                const { sortWay, colKey } = sortConfig;
+                queryParams['sort'] = {
+                    colKey: FROM_COLUMN_TO_FIELD[colKey],
+                    sortWay,
+                };
+            }
+
+            if (filterSelector) {
+                queryParams['filters'] = filterSelector;
+            }
+
+            return fetchLimitViolations(studyUuid, nodeUuid, queryParams);
+        },
+        [sortConfig, filterSelector]
+    );
 
     const [loadflowResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
-        fetchLoadFlowResult,
+        fetchLoadflowResultWithQueryParams,
         loadflowResultInvalidations
     );
-    const [tabIndex, setTabIndex] = useState(0);
+
     return (
         <>
             <div>
@@ -66,6 +111,18 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 nodeUuid={nodeUuid}
                 tabIndex={tabIndex}
                 isWaiting={isWaiting}
+                sortProps={{
+                    onSortChanged,
+                    sortConfig,
+                }}
+                filterProps={{
+                    updateFilter,
+                    filterSelector,
+                }}
+                filterEnums={filterEnums}
+                fetchLoadflowResultWithQueryParams={
+                    fetchLoadflowResultWithQueryParams
+                }
             />
         </>
     );

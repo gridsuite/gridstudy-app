@@ -6,6 +6,12 @@
  */
 
 import { UUID } from 'crypto';
+import {
+    FilterEnumsType,
+    FilterPropsType,
+    FilterSelectorType,
+} from 'hooks/use-aggrid-row-filter';
+import { SortConfigType, SortPropsType } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
 
 export interface ComponentResult {
@@ -24,6 +30,11 @@ export interface LoadFlowResult {
     componentResults: ComponentResult[];
 }
 
+export type QueryParamsType = Record<
+    string,
+    string | number | SortConfigType | FilterSelectorType[]
+>;
+
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',
     LOW_VOLTAGE = 'LOW_VOLTAGE',
@@ -31,12 +42,19 @@ export enum LimitTypes {
 }
 export interface LoadFlowTabProps {
     studyUuid: UUID;
-    nodeUuid: UUID | undefined;
+    nodeUuid: UUID;
 }
 export interface LoadflowResultProps extends LoadFlowTabProps {
     result: LoadFlowResult;
     tabIndex: number;
     isWaiting: boolean;
+    sortProps: SortPropsType;
+    filterProps: FilterPropsType;
+    filterEnums: FilterEnumsType;
+    fetchLoadflowResultWithQueryParams: (
+        studyUuid: string,
+        nodeUuid: string
+    ) => Promise<any>;
 }
 
 export interface OverloadedEquipment {

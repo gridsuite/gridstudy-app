@@ -29,6 +29,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 
 import {
+    FROM_COLUMN_TO_FIELD,
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowResultColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
@@ -45,7 +46,6 @@ import {
     getRows,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
-import { fetchLimitViolations } from '../../../services/study';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Box } from '@mui/system';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -55,6 +55,8 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
+import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
+import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -62,6 +64,10 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     nodeUuid,
     tabIndex,
     isWaiting,
+    sortProps,
+    filterProps,
+    filterEnums,
+    fetchLoadflowResultWithQueryParams,
 }) => {
     const styles = {
         cell: {
@@ -99,6 +105,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] =
         useState(false);
     const gridRef = useRef();
+
     //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
     const openLoaderCurrentTab = useOpenLoaderShortWait({
         isLoading:
@@ -153,8 +160,13 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     }, []);
 
     const loadFlowCurrentViolationsColumns = useMemo(() => {
-        return loadFlowCurrentViolationsColumnsDefinition(intl);
-    }, [intl]);
+        return loadFlowCurrentViolationsColumnsDefinition(
+            intl,
+            sortProps,
+            filterProps,
+            filterEnums
+        );
+    }, [filterEnums, filterProps, intl, sortProps]);
 
     const loadFlowVoltageViolationsColumns = useMemo(() => {
         return loadFlowVoltageViolationsColumnsDefinition(intl);
@@ -200,14 +212,14 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     useEffect(() => {
         if (result) {
-            fetchLimitViolations(studyUuid, nodeUuid)
+            fetchLoadflowResultWithQueryParams(studyUuid, nodeUuid)
                 .then((overloadedEquipments: OverloadedEquipmentFromBack[]) => {
                     setIsOverloadedEquipmentsReady(true);
                     const sortedLines = overloadedEquipments
                         .map((overloadedEquipment) =>
                             makeData(overloadedEquipment, intl)
                         )
-                        .sort((a, b) => b.overload - a.overload);
+                        //.sort((a, b) => b.overload - a.overload);
                     setOverloadedEquipments(sortedLines);
                 })
                 .catch((error) => {
