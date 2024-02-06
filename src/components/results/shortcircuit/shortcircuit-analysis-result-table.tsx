@@ -44,6 +44,8 @@ interface ShortCircuitAnalysisResultProps {
     filterProps: FilterPropsType;
     sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -86,6 +88,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
+    onGridColumnsChanged,
+    onRowDataUpdated,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
@@ -252,11 +256,24 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         []
     );
 
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
+    const onGridReady = useCallback(
+        (params: GridReadyEvent) => {
+            if (params?.api) {
+                params.api.sizeColumnsToFit();
+                onGridColumnsChanged && onGridColumnsChanged(params);
+            }
+        },
+        [onGridColumnsChanged]
+    );
+
+    const handleRowDataUpdated = useCallback(
+        (params: GridReadyEvent) => {
+            if (params?.api) {
+                onRowDataUpdated(params);
+            }
+        },
+        [onRowDataUpdated]
+    );
 
     const getCurrent = useCallback(
         (x: SCAFaultResult | SCAFeederResult) => {
@@ -367,6 +384,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 enableCellTextSelection={true}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
+                onRowDataUpdated={handleRowDataUpdated}
             />
         </Box>
     );
