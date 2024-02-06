@@ -55,7 +55,7 @@ export function createParameter(
     newParameter: any,
     name: string,
     parameterType: string,
-    parentDirectoryUuid: string
+    parentDirectoryUuid: UUID
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -84,6 +84,30 @@ export function elementExists(
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
             return response.status !== 204; // HTTP 204 : No-content
+        }
+    );
+}
+
+export interface ModificationElementCreationProps {
+    elementUuid: UUID;
+    description: string;
+    elementName: string;
+}
+
+export function createModifications(
+    parentDirectoryUuid: UUID,
+    modificationList: ModificationElementCreationProps[]
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/network-modifications?' +
+            urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(modificationList),
         }
     );
 }
