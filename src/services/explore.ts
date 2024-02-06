@@ -102,7 +102,7 @@ export function createModifications(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/network-modifications?' +
+            '/v1/explore/modifications?' +
             urlSearchParams.toString(),
         {
             method: 'post',
