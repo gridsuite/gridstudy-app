@@ -21,7 +21,7 @@ import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
-    'BRANCH_STATUS_MODIFICATION',
+    'OPERATING_STATUS_MODIFICATION',
 ]);
 
 const isEditableModification = (modif) => {
@@ -120,7 +120,7 @@ export const ModificationListItem = ({
         [modif, handleToggle]
     );
 
-    const getBranchStatusModificationValues = (modification) => {
+    const getOperatingStatusModificationValues = (modification) => {
         return {
             action: modification.action,
             energizedEnd: modification.energizedVoltageLevelId,
@@ -143,9 +143,9 @@ export const ModificationListItem = ({
         const modificationValues = JSON.parse(modif.messageValues);
 
         switch (modif.messageType) {
-            case MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type:
+            case MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type:
                 setComputedLabelValues(
-                    getBranchStatusModificationValues(modificationValues)
+                    getOperatingStatusModificationValues(modificationValues)
                 );
                 break;
             case MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type:

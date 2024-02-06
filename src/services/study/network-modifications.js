@@ -15,7 +15,7 @@ import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
     BRANCH_SIDE,
-    BRANCH_STATUS_ACTION,
+    OPERATING_STATUS_ACTION,
 } from '../../components/network/constants';
 
 export function changeNetworkModificationOrder(
@@ -115,56 +115,56 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     });
 }
 
-function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
-    const changeBranchStatusUrl =
+function changeOperatingStatus(studyUuid, currentNodeUuid, equipment, action) {
+    const changeOperatingStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-    console.debug('%s with action: %s', changeBranchStatusUrl, action);
+    console.debug('%s with action: %s', changeOperatingStatusUrl, action);
 
     let energizedVoltageLevelId;
     switch (action) {
-        case BRANCH_STATUS_ACTION.ENERGISE_END_ONE:
-            energizedVoltageLevelId = branch.voltageLevelId1;
+        case OPERATING_STATUS_ACTION.ENERGISE_END_ONE:
+            energizedVoltageLevelId = equipment.voltageLevelId1;
             break;
-        case BRANCH_STATUS_ACTION.ENERGISE_END_TWO:
-            energizedVoltageLevelId = branch.voltageLevelId2;
+        case OPERATING_STATUS_ACTION.ENERGISE_END_TWO:
+            energizedVoltageLevelId = equipment.voltageLevelId2;
             break;
         default:
             energizedVoltageLevelId = undefined;
     }
 
-    return backendFetch(changeBranchStatusUrl, {
+    return backendFetch(changeOperatingStatusUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
-            equipmentId: branch.id,
+            type: MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type,
+            equipmentId: equipment.id,
             energizedVoltageLevelId: energizedVoltageLevelId,
             action: action,
         }),
     });
 }
 
-export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('locking out branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+export function lockoutOperating(studyUuid, currentNodeUuid, equipment) {
+    console.info('locking out equipment ' + equipment.id + ' ...');
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.LOCKOUT
+        equipment,
+        OPERATING_STATUS_ACTION.LOCKOUT
     );
 }
 
-export function tripBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('tripping branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+export function tripOperating(studyUuid, currentNodeUuid, equipment) {
+    console.info('tripping equipment ' + equipment.id + ' ...');
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.TRIP
+        equipment,
+        OPERATING_STATUS_ACTION.TRIP
     );
 }
 
@@ -177,23 +177,23 @@ export function energiseBranchEnd(
     console.info(
         'energise branch ' + branch.id + ' on side ' + branchSide + ' ...'
     );
-    return changeBranchStatus(
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
         branch,
         branchSide === BRANCH_SIDE.ONE
-            ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-            : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
+            ? OPERATING_STATUS_ACTION.ENERGISE_END_ONE
+            : OPERATING_STATUS_ACTION.ENERGISE_END_TWO
     );
 }
 
 export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
     console.info('switching on branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
         branch,
-        BRANCH_STATUS_ACTION.SWITCH_ON
+        OPERATING_STATUS_ACTION.SWITCH_ON
     );
 }
 

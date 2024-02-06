@@ -32,9 +32,9 @@ import {
 } from '../utils/equipment-types';
 import {
     energiseBranchEnd,
-    lockoutBranch,
+    lockoutOperating,
     switchOnBranch,
-    tripBranch,
+    tripOperating,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from '../dialogs/parameters/parameters';
@@ -73,7 +73,7 @@ const withBranchMenu =
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
-        const [branch, setBranch] = useState(null);
+        const [equipmentStatus, setEquipmentStatus] = useState(null);
 
         const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -91,7 +91,7 @@ const withBranchMenu =
                 false
             ).then((value) => {
                 if (value) {
-                    setBranch(value);
+                    setEquipmentStatus(value);
                 }
             });
         }, [studyUuid, currentNode?.id, equipmentType, equipment.id]);
@@ -99,14 +99,19 @@ const withBranchMenu =
         const isNodeEditable = useMemo(
             function () {
                 return (
-                    branch &&
+                    equipmentStatus &&
                     isNodeBuilt(currentNode) &&
                     !isNodeReadOnly(currentNode) &&
                     !isAnyNodeBuilding &&
                     !modificationInProgress
                 );
             },
-            [branch, currentNode, isAnyNodeBuilding, modificationInProgress]
+            [
+                equipmentStatus,
+                currentNode,
+                isAnyNodeBuilding,
+                modificationInProgress,
+            ]
         );
 
         function handleError(error, translationKey) {
@@ -128,30 +133,37 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutBranch(studyUuid, currentNode?.id, branch).catch((error) => {
-                handleError(error, 'UnableToLockout');
-            });
-        }
-
-        function handleTrip() {
-            startModification();
-            tripBranch(studyUuid, currentNode?.id, branch).catch((error) => {
-                handleError(error, 'UnableToTrip');
-            });
-        }
-
-        function handleEnergise(side) {
-            startModification();
-            energiseBranchEnd(studyUuid, currentNode?.id, branch, side).catch(
+            lockoutOperating(studyUuid, currentNode?.id, equipmentStatus).catch(
                 (error) => {
-                    handleError(error, 'UnableToEnergiseOnOneEnd');
+                    handleError(error, 'UnableToLockout');
                 }
             );
         }
 
+        function handleTrip() {
+            startModification();
+            tripOperating(studyUuid, currentNode?.id, equipmentStatus).catch(
+                (error) => {
+                    handleError(error, 'UnableToTrip');
+                }
+            );
+        }
+
+        function handleEnergise(side) {
+            startModification();
+            energiseBranchEnd(
+                studyUuid,
+                currentNode?.id,
+                equipmentStatus,
+                side
+            ).catch((error) => {
+                handleError(error, 'UnableToEnergiseOnOneEnd');
+            });
+        }
+
         function handleSwitchOn() {
             startModification();
-            switchOnBranch(studyUuid, currentNode?.id, branch).catch(
+            switchOnBranch(studyUuid, currentNode?.id, equipmentStatus).catch(
                 (error) => {
                     handleError(error, 'UnableToSwitchOn');
                 }
@@ -197,7 +209,7 @@ const withBranchMenu =
                         onClick={() => handleLockout()}
                         disabled={
                             !isNodeEditable ||
-                            branch.branchStatus === 'PLANNED_OUTAGE'
+                            equipmentStatus.operatingStatus === 'PLANNED_OUTAGE'
                         }
                     >
                         <ListItemIcon>
@@ -220,7 +232,7 @@ const withBranchMenu =
                     onClick={() => handleTrip()}
                     disabled={
                         !isNodeEditable ||
-                        branch.branchStatus === 'FORCED_OUTAGE'
+                        equipmentStatus.operatingStatus === 'FORCED_OUTAGE'
                     }
                 >
                     <ListItemIcon>
@@ -246,7 +258,7 @@ const withBranchMenu =
                         }
                         disabled={
                             !isNodeEditable ||
-                            branch.branchStatus === 'FORCED_OUTAGE'
+                            equipmentStatus.operatingStatus === 'FORCED_OUTAGE'
                         }
                     />
                 )}
@@ -256,8 +268,8 @@ const withBranchMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal1Connected &&
-                                !branch.terminal2Connected)
+                            (equipmentStatus.terminal1Connected &&
+                                !equipmentStatus.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -275,8 +287,8 @@ const withBranchMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: branch?.voltageLevelName1,
-                                                id: branch?.voltageLevelId1,
+                                                name: equipmentStatus?.voltageLevelName1,
+                                                id: equipmentStatus?.voltageLevelId1,
                                             }),
                                         }
                                     )}
@@ -291,8 +303,8 @@ const withBranchMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal2Connected &&
-                                !branch.terminal1Connected)
+                            (equipmentStatus.terminal2Connected &&
+                                !equipmentStatus.terminal1Connected)
                         }
                     >
                         <ListItemIcon>
@@ -310,8 +322,8 @@ const withBranchMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: branch?.voltageLevelName2,
-                                                id: branch?.voltageLevelId2,
+                                                name: equipmentStatus?.voltageLevelName2,
+                                                id: equipmentStatus?.voltageLevelId2,
                                             }),
                                         }
                                     )}
@@ -326,8 +338,8 @@ const withBranchMenu =
                         onClick={() => handleSwitchOn()}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal1Connected &&
-                                branch.terminal2Connected)
+                            (equipmentStatus.terminal1Connected &&
+                                equipmentStatus.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
