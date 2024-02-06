@@ -43,6 +43,7 @@ import {
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { DISPLAY_CONVERSION, convertFromRealValuesToDisplay } from 'utils/unit-converter';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -344,6 +345,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
+            displayConversionMode: DISPLAY_CONVERSION.TO_KILO,
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
