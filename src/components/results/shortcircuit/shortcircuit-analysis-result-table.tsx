@@ -44,8 +44,8 @@ interface ShortCircuitAnalysisResultProps {
     filterProps: FilterPropsType;
     sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
-    onGridColumnsChanged: (params: any) => void;
-    onRowDataUpdated: (params: any) => void;
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -267,9 +267,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     );
 
     const handleRowDataUpdated = useCallback(
-        (params: any) => {
+        (params: GridReadyEvent) => {
             if (params?.api) {
-                onRowDataUpdated(params.api.getModel().getRowCount() === 0);
+                onRowDataUpdated(params);
             }
         },
         [onRowDataUpdated]

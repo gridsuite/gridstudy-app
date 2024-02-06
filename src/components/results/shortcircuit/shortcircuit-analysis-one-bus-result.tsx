@@ -19,10 +19,11 @@ import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-an
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { GridReadyEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisOneBusResultProps {
-    onGridColumnsChanged: (params: any) => void;
-    onRowDataUpdated: (params: any) => void;
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
 export const ShortCircuitAnalysisOneBusResult: FunctionComponent<

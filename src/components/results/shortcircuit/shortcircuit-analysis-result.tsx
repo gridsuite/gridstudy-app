@@ -43,6 +43,7 @@ import {
     FilterEnumsType,
     useAggridRowFilter,
 } from '../../../hooks/use-aggrid-row-filter';
+import { GridReadyEvent } from 'ag-grid-community';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -50,8 +51,8 @@ interface IShortCircuitAnalysisGlobalResultProps {
     result: SCAFaultResult[];
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     customTablePaginationProps: any;
-    onGridColumnsChanged: (params: any) => void;
-    onRowDataUpdated: (params: any) => void;
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
