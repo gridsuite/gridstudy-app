@@ -28,3 +28,19 @@ export function connectNotificationsWsUpdateConfig() {
     };
     return reconnectingWebSocket;
 }
+
+export function connectGlobalNotificationsWs() {
+    const webSocketBaseUrl = getWsBase();
+    const webSocketUrl =
+        webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/global';
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(() =>
+        getUrlWithToken(webSocketUrl)
+    );
+    reconnectingWebSocket.onopen = function () {
+        console.info(
+            'Connected Websocket for global messages ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
+}

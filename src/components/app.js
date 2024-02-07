@@ -94,7 +94,10 @@ import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';
-import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
+import {
+    connectGlobalNotificationsWs,
+    connectNotificationsWsUpdateConfig,
+} from '../services/config-notification';
 import {
     fetchConfigParameter,
     fetchConfigParameters,
@@ -105,6 +108,7 @@ import {
 } from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import { defaultOptionalServicesState } from 'redux/reducer';
+import { closeSnackbar, enqueueSnackbar } from 'notistack';
 
 const noUserManager = { instance: null, error: null };
 
@@ -140,6 +144,12 @@ const App = () => {
     const location = useLocation();
 
     const [tabIndex, setTabIndex] = useState(0);
+
+    const [maintenanceSnackBarId, setMaintenanceSnackBarId] = useState(null);
+
+    const HEADER_MAINTENANCE = 'maintenance';
+
+    const HEADER_CANCEL_MAINTENANCE = 'cancelMaintenance';
 
     const updateParams = useCallback(
         (params) => {
@@ -380,6 +390,53 @@ const App = () => {
         return ws;
     }, [updateParams, snackError, dispatch]);
 
+    const connectGlobalNotifications = useCallback(() => {
+        const ws = connectGlobalNotificationsWs();
+        ws.onmessage = function (event) {
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers.messageType === HEADER_MAINTENANCE) {
+                if (eventData.headers.duration) {
+                    setMaintenanceSnackBarId(
+                        enqueueSnackbar(eventData.payload, {
+                            autoHideDuration: eventData.headers.duration * 1000,
+                            variant: 'info',
+                            style: {
+                                whiteSpace: 'pre-line',
+                            },
+                            anchorOrigin: {
+                                vertical: 'top',
+                                horizontal: 'center',
+                            },
+                        })
+                    );
+                } else {
+                    setMaintenanceSnackBarId(
+                        enqueueSnackbar(eventData.payload, {
+                            variant: 'info',
+                            persist: true,
+                            style: {
+                                whiteSpace: 'pre-line',
+                            },
+                            anchorOrigin: {
+                                vertical: 'top',
+                                horizontal: 'center',
+                            },
+                        })
+                    );
+                }
+            } else if (
+                eventData.headers.messageType === HEADER_CANCEL_MAINTENANCE
+            ) {
+                //nothing happens if the id is null or if the snackbar it references is already closed
+                closeSnackbar(maintenanceSnackBarId);
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, [maintenanceSnackBarId]);
+
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useMatch({
@@ -514,8 +571,10 @@ const App = () => {
                 );
 
             const ws = connectNotificationsUpdateConfig();
+            const ws2 = connectGlobalNotifications();
             return function () {
                 ws.close();
+                ws2.close();
             };
         }
     }, [
@@ -523,6 +582,7 @@ const App = () => {
         dispatch,
         updateParams,
         connectNotificationsUpdateConfig,
+        connectGlobalNotifications,
         snackError,
     ]);
 
