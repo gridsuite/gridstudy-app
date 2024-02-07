@@ -12,66 +12,38 @@ import { FormattedMessage } from 'react-intl/lib';
 import { LoadFlowTabProps, QueryParamsType } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
-import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
-import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
 import {
-    FROM_COLUMN_TO_FIELD,
-    useFetchFiltersEnums,
-} from './load-flow-result-utils';
-import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
+    fetchLimitViolations,
+    fetchLoadFlowResult,
+} from '../../../services/study/loadflow';
+import { LimiViolationResult } from './limi-violation-result';
+import { Box, LinearProgress } from '@mui/material';
+import { REPORT_TYPES } from 'components/utils/report-type';
+import RunningStatus from 'components/utils/running-status';
+import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from 'components/network/constants';
+import { ReduxState } from 'redux/reducer.type';
+import ComputingType from 'components/computing-status/computing-type';
+import { useSelector } from 'react-redux';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
 }) => {
     const loadflowResultInvalidations = ['loadflowResult'];
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colKey: 'subjectId',
-        sortWay: SORT_WAYS.asc,
-    });
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        FROM_COLUMN_TO_FIELD,
-        () => {}
-    );
     const [tabIndex, setTabIndex] = useState(0);
-    const [hasFilter, setHasFilter] = useState<boolean>(false);
-
-    const { loading: filterEnumsLoading, result: filterEnums } =
-        useFetchFiltersEnums(hasFilter, setHasFilter);
-
-    const fetchLoadflowResultWithQueryParams = useCallback(
-        (studyUuid: string, nodeUuid: string) => {
-            /* if (tabIndex === LOGS_TAB_INDEX) {
-                return Promise.resolve();
-            } */
-
-            const queryParams: QueryParamsType = {};
-
-            if (sortConfig) {
-                const { sortWay, colKey } = sortConfig;
-                queryParams['sort'] = {
-                    colKey: FROM_COLUMN_TO_FIELD[colKey],
-                    sortWay,
-                };
-            }
-
-            if (filterSelector) {
-                queryParams['filters'] = filterSelector;
-            }
-
-            return fetchLimitViolations(studyUuid, nodeUuid, queryParams);
-        },
-        [sortConfig, filterSelector]
+    const loadFlowStatus = useSelector(
+        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
     const [loadflowResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
-        fetchLoadflowResultWithQueryParams,
+        fetchLoadFlowResult,
         loadflowResultInvalidations
     );
-
     return (
         <>
             <div>
@@ -105,25 +77,33 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     />
                 </Tabs>
             </div>
-            <LoadFlowResult
-                result={loadflowResult}
-                studyUuid={studyUuid}
-                nodeUuid={nodeUuid}
-                tabIndex={tabIndex}
-                isWaiting={isWaiting}
-                sortProps={{
-                    onSortChanged,
-                    sortConfig,
-                }}
-                filterProps={{
-                    updateFilter,
-                    filterSelector,
-                }}
-                filterEnums={filterEnums}
-                fetchLoadflowResultWithQueryParams={
-                    fetchLoadflowResultWithQueryParams
-                }
-            />
+
+            {(tabIndex === 0 || tabIndex === 1) && (
+                <LimiViolationResult
+                    result={loadflowResult}
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    tabIndex={tabIndex}
+                    isWaiting={isWaiting}
+                />
+            )}
+            {tabIndex === 2 && (
+                <LoadFlowResult
+                    result={loadflowResult}
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    tabIndex={tabIndex}
+                    isWaiting={isWaiting}
+                />
+            )}
+            {tabIndex === 3 && (               
+                    (loadFlowStatus === RunningStatus.SUCCEED ||
+                        loadFlowStatus === RunningStatus.FAILED) && (
+                        <ComputationReportViewer
+                            reportType={REPORT_TYPES.LOADFLOW}
+                        />
+                    )               
+            )}
         </>
     );
 };

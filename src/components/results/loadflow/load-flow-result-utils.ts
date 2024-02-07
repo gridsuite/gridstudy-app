@@ -21,6 +21,7 @@ import { BranchSide } from '../../utils/constants';
 import {
     convertDuration,
     formatNAValue,
+    parseDuration,
 } from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -37,6 +38,7 @@ import {
     fetchSecurityAnalysisAvailableComputationStatus,
     fetchSecurityAnalysisAvailableLimitTypes,
 } from 'services/security-analysis';
+import { fetchLoadflowAvailableBranchSides, fetchLoadflowAvailableComputationStatus, fetchLoadflowAvailableLimitTypes } from 'services/loadflow';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -72,21 +74,15 @@ export const convertLimitName = (limitName: string | null, intl: IntlShape) => {
         : limitName;
 };
 
-export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
-    subjectId: 'subjectId',
-    contingencyId: 'contingencyId',
-    status: 'status',
-    limitType: 'limitType',
-    limitName: 'limitName',
-    side: 'side',
-    acceptableDuration: 'acceptableDuration',
-    limit: 'limit',
-    value: 'value',
-    loading: 'loading',
-};
 
-export const getIdType = (index: number): string => {
-    return index === 0 || index === 1 ? 'subjectId' : 'contingencyId';
+export const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
+    connectedComponentNum: 'connectedComponentNum',
+    status: 'status',
+    synchronousComponentNum: 'synchronousComponentNum',
+    iterationCount: 'iterationCount',
+    slackBusId: 'slackBusId',
+    slackBusActivePowerMismatch: 'slackBusActivePowerMismatch',
+    distributedActivePower: 'distributedActivePower',
 };
 
 export const makeData = (
@@ -127,9 +123,9 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchSecurityAnalysisAvailableComputationStatus(),
-                fetchSecurityAnalysisAvailableLimitTypes(),
-                fetchSecurityAnalysisAvailableBranchSides(),
+                fetchLoadflowAvailableComputationStatus(),
+                fetchLoadflowAvailableLimitTypes(),
+                fetchLoadflowAvailableBranchSides(),
             ];
 
             setLoading(true);
@@ -232,15 +228,16 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'overload',
             numeric: true,
             fractionDigits: 2,
-            sortProps,
+            /* sortProps,
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
                 filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
                 ],
-            },
+            }, */
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
@@ -248,10 +245,11 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
                 filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
                 ],
             },
             valueGetter: (value: ValueGetterParams) =>
@@ -263,11 +261,13 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
                 filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
                 ],
+                parser: parseDuration,
             },
             valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
@@ -288,10 +288,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
+                filterEnums,
             },
         }),
     ];
@@ -299,88 +296,169 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
 
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
-        ? intl.formatMessage({ id: limitType })
+        ? intl.formatMessage({ id: limitType }) 
         : limitType;
 };
 export const loadFlowVoltageViolationsColumnsDefinition = (
-    intl: IntlShape
+    intl: IntlShape,
+    sortProps: SortPropsType,
+    filterProps: FilterPropsType,
+    filterEnums: FilterEnumsType
 ): ColDef[] => {
     return [
-        {
-            headerName: intl.formatMessage({ id: 'VoltageLevel' }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
             field: 'name',
-        },
-        {
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
-            valueFormatter: (params: ValueFormatterParams) =>
-                formatLimitType(params.value, intl),
-        },
-        {
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
+            valueGetter: (value: ValueGetterParams) => {               
+                return formatLimitType(value.data.limitType, intl);
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
-            filter: 'agNumberColumnFilter',
-        },
-        {
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: [
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                ],
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
             field: 'value',
             numeric: true,
             fractionDigits: 2,
-            filter: 'agNumberColumnFilter',
-        },
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: [
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                ],
+            },
+        }),
     ];
 };
 
 export const loadFlowResultColumnsDefinition = (
     intl: IntlShape,
+    sortProps: SortPropsType,
+    filterProps: FilterPropsType,
+    filterEnums: FilterEnumsType,
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
     return [
-        {
-            headerName: intl.formatMessage({
-                id: 'connectedComponentNum',
-            }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'connectedComponentNum' }),
             field: 'connectedComponentNum',
-            numeric: true,
-            filter: 'agNumberColumnFilter',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'synchronousComponentNum',
-            }),
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: [
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                ],
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'synchronousComponentNum' }),
             field: 'synchronousComponentNum',
-            numeric: true,
-            filter: 'agNumberColumnFilter',
-        },
-        {
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: [
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                ],
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'status' }),
             field: 'status',
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums
+            },
             cellRenderer: statusCellRender,
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'iterationCount',
-            }),
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'iterationCount' }),
             field: 'iterationCount',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'slackBusId',
-            }),
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: [
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                ],
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'slackBusId' }),
             field: 'slackBusId',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'slackBusActivePowerMismatch',
-            }),
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterComparators: [
+                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
+                    FILTER_TEXT_COMPARATORS.CONTAINS,
+                ],
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'slackBusActivePowerMismatch' }),
             field: 'slackBusActivePowerMismatch',
             numeric: true,
             fractionDigits: 2,
+            sortProps,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: [
+                    FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+                ],
+            },
             cellRenderer: numberRenderer,
-            filter: 'agNumberColumnFilter',
-        },
+        }),
+    
     ];
 };

@@ -48,13 +48,6 @@ export interface LoadflowResultProps extends LoadFlowTabProps {
     result: LoadFlowResult;
     tabIndex: number;
     isWaiting: boolean;
-    sortProps: SortPropsType;
-    filterProps: FilterPropsType;
-    filterEnums: FilterEnumsType;
-    fetchLoadflowResultWithQueryParams: (
-        studyUuid: string,
-        nodeUuid: string
-    ) => Promise<any>;
 }
 
 export interface OverloadedEquipment {

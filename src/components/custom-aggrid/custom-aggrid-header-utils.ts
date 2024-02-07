@@ -51,8 +51,8 @@ export const makeAgGridCustomHeaderColumn = ({
         fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         valueGetter: (params: any) =>
             convertFromRealValuesToDisplay(
-                params.data[field],
-                displayConversionMode
+                    params.data[field],
+                    displayConversionMode
             ),
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
