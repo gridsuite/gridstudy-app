@@ -20,7 +20,7 @@ import {
     deleteModifications,
     restoreModifications,
 } from 'services/study/network-modifications';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
@@ -187,9 +187,7 @@ const RestoreModificationDialog = ({
                 </DragDropContext>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    <FormattedMessage id="close" />
-                </Button>
+                <CancelButton onClick={handleClose} />
                 <Button
                     onClick={() => setOpenDeleteConfirmationPopup(true)}
                     disabled={!selectedItems.size}
@@ -201,7 +199,7 @@ const RestoreModificationDialog = ({
                     onClick={handleRestore}
                     disabled={!selectedItems.size}
                 >
-                    <FormattedMessage id="restore" />
+                    <FormattedMessage id="button.restore" />
                 </Button>
             </DialogActions>
             {openDeleteConfirmationPopup && (
@@ -215,6 +213,7 @@ const RestoreModificationDialog = ({
                         />
                     }
                     onValidate={handleDelete}
+                    validateButtonLabel="button.delete"
                     onClose={() => setOpenDeleteConfirmationPopup(false)}
                 />
             )}

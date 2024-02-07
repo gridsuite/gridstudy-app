@@ -150,6 +150,10 @@ declare module '@gridsuite/commons-ui' {
         disabled?: boolean;
     }>;
 
+    export const CancelButton: FunctionComponent<{
+        onClick: () => void;
+    }>;
+
     export const FieldLabel: FunctionComponent<{
         label: string;
         optional?: boolean;

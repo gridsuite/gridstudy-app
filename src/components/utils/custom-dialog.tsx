@@ -7,17 +7,20 @@ import {
     DialogTitle,
 } from '@mui/material';
 import Button from '@mui/material/Button';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 interface CustomDialogProps {
     title?: string;
     content: React.ReactNode;
     onValidate: () => void;
+    validateButtonLabel?: string;
     onClose: () => void;
 }
 export const CustomDialog: FunctionComponent<CustomDialogProps> = ({
     title,
     content,
     onValidate,
+    validateButtonLabel,
     onClose,
 }) => {
     const intl = useIntl();
@@ -36,11 +39,13 @@ export const CustomDialog: FunctionComponent<CustomDialogProps> = ({
             {title && <DialogTitle id={'modal-title'}>{title}</DialogTitle>}
             <DialogContent>{content}</DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    {intl.formatMessage({ id: 'cancel' })}
-                </Button>
+                <CancelButton onClick={handleClose} />
                 <Button variant={'outlined'} onClick={handleValidate}>
-                    {intl.formatMessage({ id: 'validate' })}
+                    {intl.formatMessage(
+                        validateButtonLabel
+                            ? { id: validateButtonLabel }
+                            : { id: 'validate' }
+                    )}
                 </Button>
             </DialogActions>
         </Dialog>
