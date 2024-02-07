@@ -87,6 +87,8 @@ export const NetworkMapTab = ({
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
@@ -985,8 +987,11 @@ export const NetworkMapTab = ({
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
             centerOnSubstation={centerOnSubstation}
-            isManualRefreshBackdropDisplayed={true}
+            isManualRefreshBackdropDisplayed={
+                mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
+            }
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
+            triggerMapResizeOnChange={studyDisplayMode}
         />
     );
 
