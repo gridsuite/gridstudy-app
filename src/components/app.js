@@ -395,6 +395,8 @@ const App = () => {
         ws.onmessage = function (event) {
             let eventData = JSON.parse(event.data);
             if (eventData.headers.messageType === HEADER_MAINTENANCE) {
+                //first we close the previous snackbar (no need to check if there is one because closeSnackbar doesn't fail on null or wrong id)
+                closeSnackbar(maintenanceSnackBarId);
                 if (eventData.headers.duration) {
                     setMaintenanceSnackBarId(
                         enqueueSnackbar(eventData.payload, {
