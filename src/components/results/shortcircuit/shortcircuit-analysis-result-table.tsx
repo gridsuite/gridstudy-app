@@ -110,9 +110,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         const filterPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
             ? filterProps
             : undefined;
-        const filterPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType
-            ? filterProps
-            : undefined;
 
         const textFilterParams = {
             filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -151,7 +148,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
                 sortProps: sortPropsCheckedForOneBusAnalysisType,
-                filterProps: filterPropsCheckedForOneBusAnalysisType,
+                filterProps: filterProps,
                 filterParams: textFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
