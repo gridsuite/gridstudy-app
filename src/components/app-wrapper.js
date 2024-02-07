@@ -51,9 +51,19 @@ import exportParameters_fr from '../translations/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
 import external_labels_en from '../translations/extern-en.json';
 import external_labels_fr from '../translations/extern-fr.json';
+import aggrid_locale_en from '../translations/aggrid-locale-en';
+import aggrid_locale_fr from '../translations/aggrid-locale-fr';
+import backend_locale_en from '../translations/backend-locale-en';
+import backend_locale_fr from '../translations/backend-locale-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
-import { PARAM_THEME } from '../utils/config-params';
+import {
+    PARAM_THEME,
+    basemap_style_theme_key,
+    MAP_BASEMAP_MAPBOX,
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
+} from '../utils/config-params';
 
 let lightTheme = createTheme({
     components: {
@@ -72,7 +82,6 @@ let lightTheme = createTheme({
             },
         },
     },
-
     palette: {
         mode: 'light',
     },
@@ -106,7 +115,12 @@ let lightTheme = createTheme({
     formFiller: {
         background: '#e6e6e6',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/light-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
+        'mapbox://styles/mapbox/light-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
+        'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
+        'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     aggrid: 'ag-theme-alpine',
     overlay: {
         background: '#e6e6e6',
@@ -115,8 +129,15 @@ let lightTheme = createTheme({
 
 lightTheme = createTheme(lightTheme, {
     palette: {
-        customButton: {
-            main: lightTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: lightTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });
@@ -170,7 +191,12 @@ let darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
+        'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
+        'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
+        'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
     aggrid: 'ag-theme-alpine-dark',
     overlay: {
         background: '#121212',
@@ -179,8 +205,15 @@ let darkTheme = createTheme({
 
 darkTheme = createTheme(darkTheme, {
     palette: {
-        customButton: {
-            main: darkTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: darkTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });
@@ -210,6 +243,8 @@ const messages = {
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
         ...common_button_en,
+        ...aggrid_locale_en,
+        ...backend_locale_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -228,6 +263,8 @@ const messages = {
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
         ...common_button_fr,
+        ...aggrid_locale_fr,
+        ...backend_locale_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

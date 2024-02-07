@@ -44,11 +44,18 @@ import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
+import { SecurityAnalysisExportButton } from './security-analysis-export-button';
+import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 
 const styles = {
-    container: {
+    tabsAndToolboxContainer: {
         display: 'flex',
         position: 'relative',
+        justifyContent: 'space-between',
+    },
+    toolboxContainer: {
+        display: 'flex',
+        gap: 2,
     },
     tabs: {
         position: 'relative',
@@ -227,9 +234,51 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         delay: RESULTS_LOADING_DELAY,
     });
 
+    const resultType = useMemo(() => {
+        if (tabIndex === N_RESULTS_TAB_INDEX) {
+            return RESULT_TYPE.N;
+        }
+
+        if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
+            return RESULT_TYPE.NMK_CONTINGENCIES;
+        } else {
+            return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
+        }
+    }, [tabIndex, nmkType]);
+
+    const columnDefs = useSecurityAnalysisColumnsDefs(
+        {
+            onSortChanged,
+            sortConfig,
+        },
+        {
+            updateFilter,
+            filterSelector,
+        },
+        filterEnums,
+        resultType,
+        openVoltageLevelDiagram
+    );
+
+    const csvHeaders = useMemo(
+        () => columnDefs.map((cDef) => cDef.headerName ?? ''),
+        [columnDefs]
+    );
+
+    const isExportButtonDisabled =
+        // results not ready yet
+        securityAnalysisStatus !== RunningStatus.SUCCEED ||
+        isLoadingResult ||
+        // no result yet
+        !result ||
+        // empty paged result
+        (result.content && result.content.length === 0) ||
+        // empty array result
+        result.length === 0;
+
     return (
         <>
-            <Box sx={styles.container}>
+            <Box sx={styles.tabsAndToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label="N" />
@@ -243,8 +292,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         />
                     </Tabs>
                 </Box>
-                {tabIndex === NMK_RESULTS_TAB_INDEX && (
-                    <Box sx={styles.nmkResultSelect}>
+
+                <Box sx={styles.toolboxContainer}>
+                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
                         <Select
                             labelId="nmk-type-label"
                             value={nmkType}
@@ -263,8 +313,18 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                                 <FormattedMessage id="ContingenciesFromConstraints" />
                             </MenuItem>
                         </Select>
-                    </Box>
-                )}
+                    )}
+                    {(tabIndex === NMK_RESULTS_TAB_INDEX ||
+                        tabIndex === N_RESULTS_TAB_INDEX) && (
+                        <SecurityAnalysisExportButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            csvHeaders={csvHeaders}
+                            resultType={resultType}
+                            disabled={isExportButtonDisabled}
+                        />
+                    )}
+                </Box>
             </Box>
             <Box sx={styles.loader}>
                 {shouldOpenLoader && <LinearProgress />}
@@ -274,15 +334,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
-                        sortProps={{
-                            onSortChanged,
-                            sortConfig,
-                        }}
-                        filterProps={{
-                            updateFilter,
-                            filterSelector,
-                        }}
-                        filterEnums={filterEnums}
+                        columnDefs={columnDefs}
                     />
                 )}
                 {tabIndex === NMK_RESULTS_TAB_INDEX && (
@@ -292,9 +344,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         isFromContingency={
                             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                         }
-                        openVoltageLevelDiagram={openVoltageLevelDiagram}
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
                         paginationProps={{
                             count,
                             rowsPerPage,
@@ -302,15 +351,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             onPageChange: handleChangePage,
                             onRowsPerPageChange: handleChangeRowsPerPage,
                         }}
-                        sortProps={{
-                            onSortChanged,
-                            sortConfig,
-                        }}
-                        filterProps={{
-                            updateFilter,
-                            filterSelector,
-                        }}
-                        filterEnums={filterEnums}
+                        columnDefs={columnDefs}
                     />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&

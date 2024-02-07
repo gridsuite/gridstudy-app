@@ -14,7 +14,6 @@ import {
     MAX_Q_AT_NOMINAL_V,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
-    SHUNT_COMPENSATOR_TYPES,
     SWITCHED_ON_Q_AT_NOMINAL_V,
     SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
@@ -33,6 +32,7 @@ import {
 } from '../../../dialogUtils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
+import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({

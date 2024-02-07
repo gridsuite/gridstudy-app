@@ -16,7 +16,15 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import {
+    CONNECTED,
+    CONNECTED1,
+    CONNECTED2,
+    EQUIPMENT_ID,
+    MODIFICATIONS_TABLE,
+    TYPE,
+    VOLTAGE_REGULATION_ON,
+} from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
@@ -78,29 +86,35 @@ const TabularModificationForm = () => {
     });
 
     const csvColumns = useMemo(() => {
+        return TABULAR_MODIFICATION_FIELDS[watchType];
+    }, [watchType]);
+
+    const csvTranslatedColumns = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
             return intl.formatMessage({ id: field });
         });
     }, [intl, watchType]);
 
-    const explanationComment = useMemo(() => {
-        switch (watchType) {
-            case EQUIPMENT_TYPES.GENERATOR:
-                return intl.formatMessage({
-                    id: 'TabularModificationGeneratorSkeletonComment',
-                });
-            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-                return intl.formatMessage({
-                    id: 'TabularModificationShuntSkeletonComment',
-                });
-            case EQUIPMENT_TYPES.LOAD:
-                return intl.formatMessage({
-                    id: 'TabularModificationLoadSkeletonComment',
-                });
-            default:
-                return '';
+    const commentLines = useMemo(() => {
+        let commentData: string[][] = [];
+        if (csvTranslatedColumns) {
+            // First comment line contains header translation
+            commentData.push(['#' + csvTranslatedColumns.join(',')]);
+            if (
+                !!intl.messages[
+                    'TabularModificationSkeletonComment/' + watchType
+                ]
+            ) {
+                // Optionally a second comment line, if present in translation file
+                commentData.push([
+                    intl.formatMessage({
+                        id: 'TabularModificationSkeletonComment/' + watchType,
+                    }),
+                ]);
+            }
         }
-    }, [intl, watchType]);
+        return commentData;
+    }, [intl, watchType, csvTranslatedColumns]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -175,7 +189,6 @@ const TabularModificationForm = () => {
 
     const defaultColDef = useMemo(
         () => ({
-            flex: 1,
             sortable: true,
             resizable: false,
             lockPinned: true,
@@ -189,12 +202,17 @@ const TabularModificationForm = () => {
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
             const columnDef: ColDef = {};
-            if (field === 'equipmentId') {
+            if (field === EQUIPMENT_ID) {
                 columnDef.pinned = true;
             }
             columnDef.field = field;
             columnDef.headerName = intl.formatMessage({ id: field });
-            if (field === 'voltageRegulationOn') {
+            if (
+                field === VOLTAGE_REGULATION_ON ||
+                field === CONNECTED ||
+                field === CONNECTED1 ||
+                field === CONNECTED2
+            ) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
@@ -213,7 +231,7 @@ const TabularModificationForm = () => {
                 <Grid item>
                     <CsvDownloader
                         columns={csvColumns}
-                        datas={[[explanationComment]]}
+                        datas={commentLines}
                         filename={watchType + '_skeleton'}
                     >
                         <Button variant="contained" disabled={!csvColumns}>

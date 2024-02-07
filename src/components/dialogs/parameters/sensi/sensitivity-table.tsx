@@ -65,7 +65,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     }, [append, createRows, currentRows.length]);
 
     const fetchCount = useCallback(
-        (arrayFormName: string, index: number) => {
+        (arrayFormName: string, index: number, source: string) => {
             const row = getValues(arrayFormName)[index];
             const isActivated = row[ACTIVATED];
             const hasMonitoredBranches = row[MONITORED_BRANCHES]?.length > 0;
@@ -73,18 +73,22 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                 row[INJECTIONS]?.length > 0 ||
                 row[HVDC_LINES]?.length > 0 ||
                 row[PSTS]?.length > 0;
-            if (isActivated && hasMonitoredBranches && hasInjections) {
-                onChangeParams(row, arrayFormName, index);
-            } else if (
-                isActivated &&
-                row.count === 0 &&
-                (!hasMonitoredBranches || !hasInjections)
-            ) {
-                onFormChanged(false);
-            } else {
-                if (!hasMonitoredBranches && !hasInjections) {
-                    onFormChanged(false);
+            if (source === 'switch' && hasMonitoredBranches && hasInjections) {
+                if (isActivated) {
+                    onChangeParams(row, arrayFormName, index);
                 } else {
+                    onFormChanged(true);
+                }
+            }
+            if (source === 'directory' && isActivated) {
+                if (hasMonitoredBranches && hasInjections) {
+                    onChangeParams(row, arrayFormName, index);
+                } else if (
+                    (!hasMonitoredBranches || !hasInjections) &&
+                    row.count === 0
+                ) {
+                    onFormChanged(false);
+                } else if (!hasMonitoredBranches || !hasInjections) {
                     onFormChanged(true);
                 }
             }
@@ -104,8 +108,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                     isFormChanged = true;
                 }
                 remove(index);
-                onFormChanged(isFormChanged);
             }
+            isFormChanged && onFormChanged(true);
         },
         [arrayFormName, getValues, onFormChanged, remove]
     );

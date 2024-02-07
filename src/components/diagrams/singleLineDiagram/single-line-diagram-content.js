@@ -305,7 +305,7 @@ function SingleLineDiagramContent(props) {
                     handleRunShortcircuitAnalysis={
                         handleRunShortcircuitAnalysis
                     }
-                    handleOpenDynamicSimulationEventDialog={
+                    onOpenDynamicSimulationEventDialog={
                         handleOpenDynamicSimulationEventDialog
                     }
                     busId={busMenu.busId}
@@ -360,14 +360,13 @@ function SingleLineDiagramContent(props) {
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
         (equipmentId, equipmentType, dialogTitle) => {
-            closeEquipmentMenu();
             setDynamicSimulationEventDialogTitle(dialogTitle);
             setEquipmentToConfigDynamicSimulationEvent({
                 equipmentId,
                 equipmentType,
             });
         },
-        [closeEquipmentMenu]
+        []
     );
 
     const handleCloseDynamicSimulationEventDialog = useCallback(() => {
@@ -388,7 +387,7 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
-                    handleOpenDynamicSimulationEventDialog={
+                    onOpenDynamicSimulationEventDialog={
                         handleOpenDynamicSimulationEventDialog
                     }
                     currentNode={currentNode}
@@ -416,7 +415,7 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     handleDeleteEquipment={handleDeleteEquipment}
-                    handleOpenDynamicSimulationEventDialog={
+                    onOpenDynamicSimulationEventDialog={
                         handleOpenDynamicSimulationEventDialog
                     }
                 />

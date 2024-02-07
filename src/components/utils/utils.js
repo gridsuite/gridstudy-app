@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useEffect, useRef } from 'react';
 import { getIn } from 'yup';
 import { toNumber } from './validation-functions';
 
@@ -167,6 +168,16 @@ export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
     }
 };
 
+export const getTapChangerRegulationTerminalValue = (tapChanger) => {
+    let regulatingTerminalGeneratorValue =
+        tapChanger?.regulatingTerminalConnectableId ?? '';
+    if (tapChanger?.regulatingTerminalVlId) {
+        regulatingTerminalGeneratorValue +=
+            ' ( ' + tapChanger?.regulatingTerminalVlId + ' )';
+    }
+    return regulatingTerminalGeneratorValue;
+};
+
 export function calculateResistance(distance, linearResistance) {
     if (
         distance === undefined ||
@@ -262,4 +273,12 @@ export function getNewVoltageLevelOptions(
     newVoltageLevelOptions.push(formattedVoltageLevel);
 
     return newVoltageLevelOptions;
+}
+
+export function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    return ref.current;
 }

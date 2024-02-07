@@ -26,7 +26,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import { FlatParameters } from '@gridsuite/commons-ui';
+import { CancelButton, FlatParameters } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { CGMES } from 'components/utils/constants';
@@ -231,9 +231,7 @@ const ExportDialog = ({
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    <FormattedMessage id="cancel" />
-                </Button>
+                <CancelButton onClick={handleClose} />
                 <Button
                     onClick={handleExportClick}
                     variant="outlined"

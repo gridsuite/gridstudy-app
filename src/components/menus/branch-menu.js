@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Menu from '@mui/material/Menu';
 
 import ListItemText from '@mui/material/ListItemText';
@@ -63,7 +63,7 @@ const withBranchMenu =
         handleViewInSpreadsheet,
         handleDeleteEquipment,
         handleOpenModificationDialog,
-        handleOpenDynamicSimulationEventDialog,
+        onOpenDynamicSimulationEventDialog,
         currentNode,
         studyUuid,
         modificationInProgress,
@@ -158,6 +158,18 @@ const withBranchMenu =
             );
         }
 
+        const handleOpenDynamicSimulationEventDialog = useCallback(
+            (equipmentId, equipmentType, dialogTitle) => {
+                handleClose();
+                onOpenDynamicSimulationEventDialog(
+                    equipmentId,
+                    equipmentType,
+                    dialogTitle
+                );
+            },
+            [handleClose, onOpenDynamicSimulationEventDialog]
+        );
+
         return (
             <Menu
                 anchorReference="anchorPosition"
@@ -229,7 +241,7 @@ const withBranchMenu =
                     <DynamicSimulationEventMenuItem
                         equipmentId={equipment.id}
                         equipmentType={equipmentType}
-                        handleOpenDynamicSimulationEventDialog={
+                        onOpenDynamicSimulationEventDialog={
                             handleOpenDynamicSimulationEventDialog
                         }
                         disabled={
@@ -396,7 +408,7 @@ withBranchMenu.propTypes = {
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     handleDeleteEquipment: PropTypes.func.isRequired,
     handleOpenModificationDialog: PropTypes.func.isRequired,
-    handleOpenDynamicSimulationEventDialog: PropTypes.func.isRequired,
+    onOpenDynamicSimulationEventDialog: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,

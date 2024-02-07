@@ -13,16 +13,14 @@ import {
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import {
-    MAX_INT32,
-    securityAnalysisTableNColumnsDefinition,
-} from './security-analysis-result-utils';
+import { MAX_INT32 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
-> = ({ result, isLoadingResult, sortProps, filterProps, filterEnums }) => {
+> = ({ result, isLoadingResult, columnDefs }) => {
     const intl: IntlShape = useIntl();
+
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
             ? result?.map((preContingencyResult: PreContingencyResult) => {
@@ -46,17 +44,6 @@ export const SecurityAnalysisResultN: FunctionComponent<
               }) ?? []
             : [];
     }, [intl, result]);
-
-    const columnDefs = useMemo(
-        () =>
-            securityAnalysisTableNColumnsDefinition(
-                intl,
-                sortProps,
-                filterProps,
-                filterEnums
-            ),
-        [intl, sortProps, filterProps, filterEnums]
-    );
 
     return (
         <SecurityAnalysisTable

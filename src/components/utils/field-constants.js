@@ -8,9 +8,8 @@
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
 export const CONNECTIVITY = 'connectivity';
+export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
@@ -22,6 +21,8 @@ export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'connected';
+export const CONNECTED1 = 'connected1';
+export const CONNECTED2 = 'connected2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -44,12 +45,14 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
+export const MAX_ACTIVE_POWER = 'maxActivePower';
+export const MIN_ACTIVE_POWER = 'minActivePower';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
-export const VOLTAGE_SET_POINT = 'voltageSetPoint';
+export const VOLTAGE_SET_POINT = 'voltageSetpoint';
 export const TRANSIENT_REACTANCE = 'transientReactance';
 export const Q_PERCENT = 'qPercent';
 export const FREQUENCY_REGULATION = 'frequencyRegulation';
@@ -104,10 +107,6 @@ export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
 export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
     SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
-};
-export const SHUNT_COMPENSATOR_TYPES = {
-    REACTOR: { id: 'REACTOR', label: 'Reactor' },
-    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
 };
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
@@ -164,6 +163,7 @@ export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
+export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerReactance';
 export const REGULATING_TERMINAL = 'regulatingTerminal';
 export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
 export const GENERATOR = 'generator';
@@ -276,6 +276,8 @@ export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';
 
 // VSC
+export const ACTIVE_POWER = 'activePower';
+export const REACTIVE_POWER = 'reactivePower';
 export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
 export const DC_RESISTANCE = 'dcResistance';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =

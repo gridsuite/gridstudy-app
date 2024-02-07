@@ -33,6 +33,7 @@ import {
     SET_PARAMS_LOADED,
     STUDY_UPDATED,
     MAP_MANUAL_REFRESH,
+    MAP_BASEMAP,
     SUBSTATION_LAYOUT,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
@@ -87,6 +88,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
+    SET_LAST_COMPLETED_COMPUTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -100,6 +102,8 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
+    MAP_BASEMAP_MAPBOX,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -139,6 +143,7 @@ const paramsInitialState = {
     [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_MAP_MANUAL_REFRESH]: false,
+    [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
     [PARAM_CENTER_LABEL]: false,
@@ -231,6 +236,7 @@ const initialState = {
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
+    lastCompletedComputation: null,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -513,6 +519,10 @@ export const reducer = createReducer(initialState, {
 
     [MAP_MANUAL_REFRESH]: (state, action) => {
         state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
+    },
+
+    [MAP_BASEMAP]: (state, action) => {
+        state[PARAM_MAP_BASEMAP] = action[PARAM_MAP_BASEMAP];
     },
 
     [RESET_MAP_RELOADED]: (state) => {
@@ -1015,6 +1025,9 @@ export const reducer = createReducer(initialState, {
     },
     [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
         state.studyIndexationStatus = action.studyIndexationStatus;
+    },
+    [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
+        state.lastCompletedComputation = action.lastCompletedComputation;
     },
 });
 

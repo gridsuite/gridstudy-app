@@ -14,6 +14,8 @@ import {
     FilterPropsType,
     FilterSelectorType,
 } from '../../../hooks/use-aggrid-row-filter';
+import { UUID } from 'crypto';
+import { RESULT_TYPE } from './security-analysis-result-utils';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -136,30 +138,23 @@ export interface SecurityAnalysisNmkResult {
 
 // Components props interfaces
 export interface SecurityAnalysisTabProps {
-    studyUuid: string;
-    nodeUuid: string;
+    studyUuid: UUID;
+    nodeUuid: UUID;
     openVoltageLevelDiagram: (id: string) => void;
 }
 
 export interface SecurityAnalysisResultNProps {
     result?: PreContingencyResult[];
     isLoadingResult: boolean;
-    sortProps: SortPropsType;
-    filterProps: FilterPropsType;
-    filterEnums: FilterEnumsType;
+    columnDefs: ColDef<any>[];
 }
 
 export interface SecurityAnalysisResultNmkProps {
     result?: SecurityAnalysisNmkResult;
+    columnDefs: ColDef<any>[];
     isLoadingResult: boolean;
     isFromContingency: boolean;
-    openVoltageLevelDiagram?: (voltageLevelId: string) => void;
-    studyUuid?: string;
-    nodeUuid?: string;
     paginationProps: PaginationProps;
-    sortProps: SortPropsType;
-    filterProps: FilterPropsType;
-    filterEnums: FilterEnumsType;
 }
 
 export interface SecurityAnalysisNTableRow {
