@@ -45,6 +45,7 @@ import {
 import { Box } from '@mui/system';
 import { useMapBoxToken } from './network/network-map/use-mapbox-token';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import EquipmentPopover from './tooltips/equipment-popover';
 const INITIAL_POSITION = [0, 0];
 
 const styles = {
@@ -946,6 +947,16 @@ export const NetworkMapTab = ({
         );
     }
 
+    const renderLinePopover = (elementId, ref) => (
+        <EquipmentPopover
+            studyUuid={studyUuid}
+            anchorEl={ref}
+            equipmentId={elementId}
+            equipmentType={EQUIPMENT_TYPES.LINE}
+            loadFlowStatus={loadFlowStatus}
+        />
+    );
+
     const INITIAL_ZOOM = 9;
     const LABELS_ZOOM_THRESHOLD = 9;
     const ARROWS_ZOOM_THRESHOLD = 7;
@@ -992,6 +1003,7 @@ export const NetworkMapTab = ({
             }
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
             triggerMapResizeOnChange={studyDisplayMode}
+            renderPopover={renderLinePopover}
         />
     );
 
