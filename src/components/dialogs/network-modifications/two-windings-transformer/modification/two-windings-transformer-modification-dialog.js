@@ -40,7 +40,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialogUtils';
 import {
     FORM_LOADING_DELAY,

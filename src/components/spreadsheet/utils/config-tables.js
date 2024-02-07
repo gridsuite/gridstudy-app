@@ -30,7 +30,7 @@ import {
     kiloUnitToUnit,
     unitToKiloUnit,
     unitToMicroUnit,
-} from '../../../utils/rounding';
+} from '../../../utils/unit-converter';
 import {
     getComputedRegulationMode,
     getComputedRegulationType,

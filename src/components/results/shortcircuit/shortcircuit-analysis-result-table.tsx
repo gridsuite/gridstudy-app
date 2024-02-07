@@ -8,7 +8,6 @@
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
-import { unitToKiloUnit } from 'utils/rounding';
 import {
     SCAFaultResult,
     SCAFeederResult,
@@ -36,6 +35,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { DISPLAY_CONVERSION } from '../../../utils/unit-converter';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -44,6 +44,8 @@ interface ShortCircuitAnalysisResultProps {
     filterProps: FilterPropsType;
     sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -86,6 +88,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
+    onGridColumnsChanged,
+    onRowDataUpdated,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
@@ -174,6 +178,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
+                displayConversionMode: DISPLAY_CONVERSION.TO_KILO,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -183,6 +188,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
+                displayConversionMode: DISPLAY_CONVERSION.TO_KILO,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
@@ -250,11 +256,24 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         []
     );
 
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
+    const onGridReady = useCallback(
+        (params: GridReadyEvent) => {
+            if (params?.api) {
+                params.api.sizeColumnsToFit();
+                onGridColumnsChanged && onGridColumnsChanged(params);
+            }
+        },
+        [onGridColumnsChanged]
+    );
+
+    const handleRowDataUpdated = useCallback(
+        (params: GridReadyEvent) => {
+            if (params?.api) {
+                onRowDataUpdated(params);
+            }
+        },
+        [onRowDataUpdated]
+    );
 
     const getCurrent = useCallback(
         (x: SCAFaultResult | SCAFeederResult) => {
@@ -299,12 +318,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                         elementId: fault.elementId,
                         faultType: intl.formatMessage({ id: fault.faultType }),
                         shortCircuitPower: faultResult.shortCircuitPower,
-                        limitMin: unitToKiloUnit(
-                            faultResult.shortCircuitLimits.ipMin
-                        ),
-                        limitMax: unitToKiloUnit(
-                            faultResult.shortCircuitLimits.ipMax
-                        ),
+                        limitMin: faultResult.shortCircuitLimits.ipMin,
+                        limitMax: faultResult.shortCircuitLimits.ipMax,
                         deltaCurrentIpMax: deltaCurrentIpMax,
                         deltaCurrentIpMin: deltaCurrentIpMin,
                         current: current,
@@ -318,11 +333,11 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                             }),
                             limitMin:
                                 lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                                    ? unitToKiloUnit(lv.limit)
+                                    ? lv.limit
                                     : null,
                             limitMax:
                                 lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                                    ? unitToKiloUnit(lv.limit)
+                                    ? lv.limit
                                     : null,
                             current: lv.value,
                             elementId: '', // we have to add this otherwise it's automatically filtered
@@ -369,6 +384,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 enableCellTextSelection={true}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
+                onRowDataUpdated={handleRowDataUpdated}
             />
         </Box>
     );

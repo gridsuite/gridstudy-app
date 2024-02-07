@@ -387,6 +387,12 @@ const App = () => {
         })
     );
 
+    const [initialMatchSigninCallbackUrl] = useState(
+        useMatch({
+            path: '/sign-in-callback',
+        })
+    );
+
     const isStudyPane =
         useMatch({
             path: '/studies/:studyUuid',
@@ -406,7 +412,8 @@ const App = () => {
                     initialMatchSilentRenewCallbackUrl != null,
                     fetch('idpSettings.json'),
                     fetchValidateUser,
-                    authorizationCodeFlowEnabled
+                    authorizationCodeFlowEnabled,
+                    initialMatchSigninCallbackUrl != null
                 );
             })
             .then((userManager) => {
@@ -416,7 +423,11 @@ const App = () => {
                 setUserManager({ instance: null, error: error.message });
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
-    }, [initialMatchSilentRenewCallbackUrl, dispatch]);
+    }, [
+        initialMatchSilentRenewCallbackUrl,
+        dispatch,
+        initialMatchSigninCallbackUrl,
+    ]);
 
     useEffect(() => {
         if (user !== null) {
