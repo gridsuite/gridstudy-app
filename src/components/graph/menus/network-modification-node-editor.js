@@ -236,7 +236,7 @@ const NetworkModificationNodeEditor = () => {
     const menuDefinition = [
         {
             id: 'CREATE',
-            label: 'Create',
+            label: 'menu.create',
             subItems: [
                 {
                     id: MODIFICATION_TYPES.BATTERY_CREATION.type,
