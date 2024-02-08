@@ -287,6 +287,10 @@ export const useParametersBackend = (
             backendUpdateProvider(studyUuid, newProvider)
                 .then(() => {
                     setProvider(newProvider);
+                    // update the provider in the parameters if params has a provider field
+                    if (params && 'provider' in params) {
+                        setParams({ ...params, provider: newProvider });
+                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -295,7 +299,7 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [type, backendUpdateProvider, studyUuid, snackError]
+        [backendUpdateProvider, studyUuid, params, snackError, type]
     );
 
     const resetProvider = useCallback(() => {
@@ -409,7 +413,11 @@ export const useParametersBackend = (
 
     useEffect(() => {
         if (studyUuid && optionalServiceStatus === OptionalServicesStatus.Up) {
-            if (fetching === FETCHING_STATUS.FINISHED && !provider) {
+            if (
+                fetching === FETCHING_STATUS.FINISHED &&
+                !provider &&
+                backendFetchProvider
+            ) {
                 backendFetchProvider(studyUuid)
                     .then((provider) => {
                         // if provider is not defined or not among allowed values, it's set to default value

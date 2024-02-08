@@ -43,7 +43,6 @@ import {
 import {
     getDefaultLoadFlowProvider,
     getLoadFlowParameters,
-    getLoadFlowProvider,
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from 'services/study/loadflow';
@@ -217,7 +216,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         'LoadFlow',
         OptionalServicesStatus.Up,
         getLoadFlowProviders,
-        getLoadFlowProvider,
+        null,
         getDefaultLoadFlowProvider,
         setLoadFlowProvider,
         getLoadFlowParameters,

@@ -444,30 +444,35 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
         },
     ];
 
+    const currentProvider = useMemo(
+        () => provider ?? params['provider'],
+        [params, provider]
+    );
+
     const [specificCurrentParams, setSpecificCurrentParams] = useState(
         params['specificParametersPerProvider']
     );
 
     const onSpecificParamChange = (paramName, newValue) => {
         const specificParamDescr = Object.values(
-            specificParamsDescrWithoutNanVals[provider]
+            specificParamsDescrWithoutNanVals[currentProvider]
         ).find((descr) => descr.name === paramName);
 
         let specParamsToSave;
         if (specificParamDescr.defaultValue !== newValue) {
             specParamsToSave = {
                 ...specificCurrentParams,
-                [provider]: {
-                    ...specificCurrentParams[provider],
+                [currentProvider]: {
+                    ...specificCurrentParams[currentProvider],
                     [specificParamDescr.name]: newValue,
                 },
             };
         } else {
             const { [specificParamDescr.name]: value, ...otherProviderParams } =
-                specificCurrentParams[provider] || {};
+                specificCurrentParams[currentProvider] || {};
             specParamsToSave = {
                 ...specificCurrentParams,
-                [provider]: otherProviderParams,
+                [currentProvider]: otherProviderParams,
             };
         }
 
@@ -509,18 +514,18 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
         setSpecificCurrentParams((prevCurrentParameters) => {
             return {
                 ...prevCurrentParameters,
-                [provider]: {},
+                [currentProvider]: {},
             };
         });
         resetParameters();
-    }, [resetParameters, provider]);
+    }, [resetParameters, currentProvider]);
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
     useEffect(() => {
-        if (provider === 'DynaFlow' && !enableDeveloperMode) {
+        if (currentProvider === 'DynaFlow' && !enableDeveloperMode) {
             resetProvider();
         }
-    }, [provider, resetProvider, enableDeveloperMode]);
+    }, [currentProvider, resetProvider, enableDeveloperMode]);
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
     const LoadFlowProviders = Object.fromEntries(
@@ -544,7 +549,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     }}
                 >
                     <DropDown
-                        value={provider}
+                        value={currentProvider}
                         label="Provider"
                         values={LoadFlowProviders}
                         callback={updateLfProviderCallback}
@@ -571,12 +576,14 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         commitLFParameter={updateParameters}
                     />
                     <SpecificLoadFlowParameters
-                        disabled={!specificParamsDescriptions?.[provider]}
-                        subText={provider}
+                        disabled={!specificParamsDescriptions[currentProvider]}
+                        subText={currentProvider}
                         specificParamsDescription={
-                            specificParamsDescrWithoutNanVals[provider]
+                            specificParamsDescrWithoutNanVals[currentProvider]
                         }
-                        specificCurrentParams={specificCurrentParams[provider]}
+                        specificCurrentParams={
+                            specificCurrentParams[currentProvider]
+                        }
                         onSpecificParamChange={onSpecificParamChange}
                     />
                 </Grid>
