@@ -551,6 +551,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                             'loading the following loadflow parameters : ' +
                                 parameters.uuid
                         );
+
                         const specParamsToSave = {
                             [provider]:
                                 parameters?.specificParametersPerProvider[
@@ -558,22 +559,11 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                                 ],
                         };
                         const commitParameters = fusionSpecificWithOtherParams(
-                            { ...parameters },
-                            { ...specParamsToSave }
+                            parameters,
+                            specParamsToSave
                         );
-                        updateParameters({ ...commitParameters });
-                        console.log('specParamsToSave: ', specParamsToSave);
-                        console.log('newParams: ', parameters);
-                        console.log(
-                            'specificCurrentParams: ',
-                            specificCurrentParams
-                        );
-                        const data = {
-                            ...specificCurrentParams,
-                            ...specParamsToSave,
-                        };
-                        console.log('data: ', data);
-                        setSpecificCurrentParams(data);
+                        updateParameters(commitParameters);
+                        setSpecificCurrentParams(specParamsToSave);
                     })
                     .catch((error) => {
                         console.error(error);
@@ -585,29 +575,10 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, updateParameters, provider, specificCurrentParams]
+        [snackError, updateParameters, provider]
     );
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
-    const formatParameters = (parameters) => {
-        console.log(' new params :', parameters);
-        console.log(
-            ' specificParametersPerProvider :',
-            params['specificParametersPerProvider']
-        );
-        console.log(
-            ' with provider :',
-            params['specificParametersPerProvider'][provider]
-        );
-        return {
-            ...parameters,
-            /* specificParametersPerProvider: {
-                [provider]: {
-                    ...params['specificParametersPerProvider'][provider],
-                },
-            },*/
-        };
-    };
     return (
         <>
             <Grid sx={{ height: '100%' }} xl={6}>
@@ -688,12 +659,8 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 <CreateParameterDialog
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
-                    parameterValues={() => {
-                        return { ...params };
-                    }}
-                    parameterFormatter={(newParams) =>
-                        formatParameters({ ...newParams })
-                    }
+                    parameterValues={() => params}
+                    parameterFormatter={(newParams) => newParams}
                     parameterType={elementType.LOADFLOW_PARAMETERS}
                 />
             )}
