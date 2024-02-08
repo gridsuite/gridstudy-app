@@ -157,7 +157,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterProps,
                 filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
