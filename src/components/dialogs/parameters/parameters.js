@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useRef,
+    useMemo,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
@@ -261,6 +267,14 @@ export const useParametersBackend = (
     const [fetching, setFetching] = useState(FETCHING_STATUS.NOT_STARTED);
     const [params, setParams] = useState(null);
 
+    // since provider is updated seperately, we need to update the params with the new provider
+    const currentParams = useMemo(() => {
+        if (params && 'provider' in params && provider) {
+            return { ...params, provider: provider };
+        }
+        return params;
+    }, [params, provider]);
+
     const [specificParamsDescription, setSpecificParamsDescription] =
         useState(null);
 
@@ -287,10 +301,6 @@ export const useParametersBackend = (
             backendUpdateProvider(studyUuid, newProvider)
                 .then(() => {
                     setProvider(newProvider);
-                    // update the provider in the parameters if params has a provider field
-                    if (params && 'provider' in params) {
-                        setParams({ ...params, provider: newProvider });
-                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -299,7 +309,7 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [backendUpdateProvider, studyUuid, params, snackError, type]
+        [type, backendUpdateProvider, studyUuid, snackError]
     );
 
     const resetProvider = useCallback(() => {
@@ -333,7 +343,7 @@ export const useParametersBackend = (
     const updateParameter = useCallback(
         (newParams) => {
             if (backendUpdateParameters) {
-                let oldParams = { ...params };
+                let oldParams = { ...currentParams };
                 setParams(newParams);
                 debouncedBackendUpdateParameters(
                     studyUuid,
@@ -345,7 +355,7 @@ export const useParametersBackend = (
         [
             debouncedBackendUpdateParameters,
             backendUpdateParameters,
-            params,
+            currentParams,
             studyUuid,
         ]
     );
@@ -480,6 +490,9 @@ export const useParametersBackend = (
             backendFetchParameters(studyUuid)
                 .then((params) => {
                     setParams(params);
+                    if ('provider' in params) {
+                        setProvider(params.provider);
+                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -501,7 +514,7 @@ export const useParametersBackend = (
         provider,
         updateProvider,
         resetProvider,
-        params,
+        currentParams,
         updateParameter,
         resetParameters,
         specificParamsDescription,
