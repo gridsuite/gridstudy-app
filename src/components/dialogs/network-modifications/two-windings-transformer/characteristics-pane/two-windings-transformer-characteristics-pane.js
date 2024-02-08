@@ -27,7 +27,7 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
 } from 'components/utils/field-constants';
-import { unitToMicroUnit } from '../../../../../utils/rounding';
+import { unitToMicroUnit } from '../../../../../utils/unit-converter';
 
 const TwoWindingsTransformerCharacteristicsPane = ({
     id = CHARACTERISTICS,

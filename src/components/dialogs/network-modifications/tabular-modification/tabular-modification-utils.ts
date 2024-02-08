@@ -49,7 +49,7 @@ import {
     VOLTAGE_REGULATION_ON,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { toModificationOperation } from 'components/utils/utils';
 
 export interface TabularModificationFields {

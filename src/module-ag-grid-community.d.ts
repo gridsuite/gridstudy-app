@@ -6,6 +6,7 @@
  */
 
 import { CrossValidationOptions } from './components/spreadsheet/utils/equipment-table-utils';
+import { DISPLAY_CONVERSION } from './components/custom-aggrid/custom-aggrid-header-utils';
 
 declare module 'ag-grid-community' {
     // used to add properties that are not supported by ColDef such as numeric, fractionDigits...
@@ -13,5 +14,6 @@ declare module 'ag-grid-community' {
         numeric?: boolean;
         fractionDigits?: number;
         crossValidation?: CrossValidationOptions;
+        displayConversionMode?: DISPLAY_CONVERSION_MODE;
     }
 }
