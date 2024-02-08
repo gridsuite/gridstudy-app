@@ -594,7 +594,7 @@
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
     "RestoreModificationText": "Please select modifications to restore",
-    "DeleteModificationText": "{numberToDelete, plural, =0 {Zero modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
+    "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
