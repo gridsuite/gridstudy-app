@@ -29,7 +29,7 @@ import EquipmentDeletionDialog from 'components/dialogs/network-modifications/eq
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import UploadIcon from '@mui/icons-material/Upload';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
@@ -738,6 +738,13 @@ const NetworkModificationNodeEditor = () => {
         );
 
         setSaveInProgress(true);
+        snackInfo({
+            headerId: 'infoCreateModificationsMsg',
+            headerValues: {
+                nbModifications: selectedItems.size,
+                studyDirectory: studyDirName,
+            },
+        });
         createModifications(studyDirectoryUuid, modificationPropsList)
             .catch((errmsg) => {
                 snackError({
@@ -746,13 +753,6 @@ const NetworkModificationNodeEditor = () => {
                 });
             })
             .finally(() => {
-                snackInfo({
-                    headerId: 'infoCreateModificationsMsg',
-                    headerValues: {
-                        nbModifications: selectedItems.size,
-                        studyDirectory: studyDirName,
-                    },
-                });
                 setSaveInProgress(false);
             });
     };
@@ -1078,6 +1078,35 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <AddIcon />
                 </IconButton>
+                <Tooltip
+                    title={<FormattedMessage id={'InsertModificationFrom'} />}
+                >
+                    <span>
+                        <IconButton
+                            onClick={openImportModificationsDialog}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={isAnyNodeBuilding}
+                        >
+                            <CreateNewFolderIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
+                <Tooltip title={<FormattedMessage id={'SaveModificationTo'} />}>
+                    <span>
+                        <IconButton
+                            onClick={doCreateModificationsElements}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={
+                                !(selectedItems?.size > 0) ||
+                                saveInProgress === true
+                            }
+                        >
+                            <SaveIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
@@ -1169,35 +1198,6 @@ const NetworkModificationNodeEditor = () => {
                             }
                         >
                             <RestoreFromTrash />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-                <Tooltip title={<FormattedMessage id={'SaveModificationTo'} />}>
-                    <span>
-                        <IconButton
-                            onClick={doCreateModificationsElements}
-                            size={'small'}
-                            sx={styles.toolbarIcon}
-                            disabled={
-                                !(selectedItems?.size > 0) ||
-                                saveInProgress === true
-                            }
-                        >
-                            <SaveIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-                <Tooltip
-                    title={<FormattedMessage id={'InsertModificationFrom'} />}
-                >
-                    <span>
-                        <IconButton
-                            onClick={openImportModificationsDialog}
-                            size={'small'}
-                            sx={styles.toolbarIcon}
-                            disabled={isAnyNodeBuilding}
-                        >
-                            <UploadIcon />
                         </IconButton>
                     </span>
                 </Tooltip>
