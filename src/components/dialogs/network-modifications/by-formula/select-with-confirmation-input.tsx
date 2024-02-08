@@ -73,6 +73,7 @@ const SelectWithConfirmationInput: FunctionComponent<
                         />
                     }
                     onValidate={handleValidate}
+                    validateButtonLabel="button.changeType"
                     onClose={() => setOpenConfirmationDialog(false)}
                 />
             )}

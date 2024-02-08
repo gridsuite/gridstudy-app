@@ -26,7 +26,7 @@ import {
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
@@ -180,9 +180,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    <FormattedMessage id="close" />
-                </Button>
+                <CancelButton onClick={handleClose} />
                 <Button
                     onClick={() => setOpenDeleteConfirmationPopup(true)}
                     disabled={!selectedNodes.length || nodes.length === 0}
@@ -194,7 +192,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     disabled={!selectedNodes.length || nodes.length === 0}
                     variant="outlined"
                 >
-                    <FormattedMessage id="restore" />
+                    <FormattedMessage id="button.restore" />
                 </Button>
             </DialogActions>
             {openDeleteConfirmationPopup && (
@@ -208,6 +206,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                         />
                     }
                     onValidate={handleDelete}
+                    validateButtonLabel="button.delete"
                     onClose={() => setOpenDeleteConfirmationPopup(false)}
                 />
             )}

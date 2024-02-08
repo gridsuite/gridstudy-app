@@ -23,7 +23,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
+import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
