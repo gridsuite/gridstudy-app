@@ -41,9 +41,9 @@ export const CustomDialog: FunctionComponent<CustomDialogProps> = ({
             <DialogActions>
                 <CancelButton onClick={handleClose} />
                 <Button variant={'outlined'} onClick={handleValidate}>
-                    {intl.formatMessage(
-                        { id: validateButtonLabel ?? 'validate'  }
-                    )}
+                    {intl.formatMessage({
+                        id: validateButtonLabel ?? 'validate',
+                    })}
                 </Button>
             </DialogActions>
         </Dialog>
