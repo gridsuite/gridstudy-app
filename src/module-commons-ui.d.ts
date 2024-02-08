@@ -177,6 +177,7 @@ declare module '@gridsuite/commons-ui' {
         CONTINGENCY_LIST: 'CONTINGENCY_LIST',
         VOLTAGE_INIT_PARAMETERS: 'VOLTAGE_INIT_PARAMETERS',
         SECURITY_ANALYSIS_PARAMETERS: 'SECURITY_ANALYSIS_PARAMETERS',
+        LOADFLOW_PARAMETERS: 'LOADFLOW_PARAMETERS',
     };
 
     interface OverflowableTextProps {
