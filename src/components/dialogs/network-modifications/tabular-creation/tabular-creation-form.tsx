@@ -220,6 +220,7 @@ const TabularCreationForm = () => {
                         columns={csvColumns}
                         datas={commentLines}
                         filename={watchType + '_skeleton'}
+                        disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />
