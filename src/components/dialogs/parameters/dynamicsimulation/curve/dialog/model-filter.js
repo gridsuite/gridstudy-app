@@ -106,13 +106,13 @@ const makeGetVariableLabel = (intl) => (elem) => {
     if (elem.variableId) {
         // that is a variable element
         return intl.formatMessage({
-            id: `variableSets.${elem.name}`,
+            id: `variables.${elem.name}`,
         });
     }
 
     // must be a variable set element
     return intl.formatMessage({
-        id: `variables.${elem.name}`,
+        id: `variableSets.${elem.name}`,
     });
 };
 
