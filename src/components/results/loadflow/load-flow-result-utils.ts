@@ -10,7 +10,7 @@ import {
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
-import { IntlShape } from 'react-intl';
+import { IntlShape, useIntl } from 'react-intl';
 import {
     ColDef,
     ICellRendererParams,
@@ -34,11 +34,10 @@ import {
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useEffect, useState } from 'react';
 import {
-    fetchSecurityAnalysisAvailableBranchSides,
-    fetchSecurityAnalysisAvailableComputationStatus,
-    fetchSecurityAnalysisAvailableLimitTypes,
-} from 'services/security-analysis';
-import { fetchLoadflowAvailableBranchSides, fetchLoadflowAvailableComputationStatus, fetchLoadflowAvailableLimitTypes } from 'services/loadflow';
+    fetchLoadflowAvailableBranchSides,
+    fetchLoadflowAvailableComputationStatus,
+    fetchLoadflowAvailableLimitTypes,
+} from 'services/loadflow';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -74,7 +73,23 @@ export const convertLimitName = (limitName: string | null, intl: IntlShape) => {
         : limitName;
 };
 
-
+export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<
+    string,
+    string
+> = {
+    name: 'subjectId',
+    status: 'status',
+    limitType: 'limitType',
+    limitName: 'limitName',
+    side: 'side',
+    acceptableDuration: 'acceptableDuration',
+    limit: 'limit',
+    value: 'value',
+    loading: 'loading',
+    actualOverloadDuration: 'actualOverload',
+    upComingOverloadDuration: 'upComingOverload',
+    overload: 'overload',
+};
 export const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
     connectedComponentNum: 'connectedComponentNum',
     status: 'status',
@@ -85,12 +100,16 @@ export const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
     distributedActivePower: 'distributedActivePower',
 };
 
+export const getIdType = (index: number): string => {
+    return index === 0 ? 'overload' : 'subjectId';
+};
+
 export const makeData = (
     overloadedEquipment: OverloadedEquipmentFromBack,
     intl: IntlShape
 ): OverloadedEquipment => {
     return {
-        overload: (overloadedEquipment.value / overloadedEquipment.limit) * 100,
+        overload: overloadedEquipment.overload,
         name: overloadedEquipment.subjectId,
         value: overloadedEquipment.value,
         actualOverloadDuration:
@@ -228,7 +247,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'overload',
             numeric: true,
             fractionDigits: 2,
-            /* sortProps,
+            sortProps,
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -237,7 +256,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
                     FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
                 ],
-            }, */
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
@@ -296,7 +315,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
 
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes
-        ? intl.formatMessage({ id: limitType }) 
+        ? intl.formatMessage({ id: limitType })
         : limitType;
 };
 export const loadFlowVoltageViolationsColumnsDefinition = (
@@ -328,7 +347,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            valueGetter: (value: ValueGetterParams) => {               
+            valueGetter: (value: ValueGetterParams) => {
                 return formatLimitType(value.data.limitType, intl);
             },
         }),
@@ -411,7 +430,7 @@ export const loadFlowResultColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums
+                filterEnums,
             },
             cellRenderer: statusCellRender,
         }),
@@ -443,7 +462,9 @@ export const loadFlowResultColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'slackBusActivePowerMismatch' }),
+            headerName: intl.formatMessage({
+                id: 'slackBusActivePowerMismatch',
+            }),
             field: 'slackBusActivePowerMismatch',
             numeric: true,
             fractionDigits: 2,
@@ -459,6 +480,5 @@ export const loadFlowResultColumnsDefinition = (
             },
             cellRenderer: numberRenderer,
         }),
-    
     ];
 };

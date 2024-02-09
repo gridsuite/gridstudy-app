@@ -67,15 +67,16 @@ export const makeAgGridCustomHeaderColumn = ({
             },
             isFilterable,
             filterParams: {
+                parser: (params: string) =>
+                convertFromDisplayToRealValues(
+                    params,
+                    displayConversionMode
+                ),
                 ...filterParams,
                 filterSelector,
                 filterOptions,
                 updateFilter,
-                parser: (params: string) =>
-                    convertFromDisplayToRealValues(
-                        params,
-                        displayConversionMode
-                    ),
+               
             },
         },
         ...props,

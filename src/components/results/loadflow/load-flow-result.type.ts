@@ -6,12 +6,8 @@
  */
 
 import { UUID } from 'crypto';
-import {
-    FilterEnumsType,
-    FilterPropsType,
-    FilterSelectorType,
-} from 'hooks/use-aggrid-row-filter';
-import { SortConfigType, SortPropsType } from 'hooks/use-aggrid-sort';
+import { FilterSelectorType } from 'hooks/use-aggrid-row-filter';
+import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
 
 export interface ComponentResult {
@@ -67,6 +63,7 @@ export interface OverloadedEquipmentFromBack {
     limitName: string | null;
     actualOverloadDuration: 300;
     upComingOverloadDuration: 300;
+    overload: number;
     value: number;
     side: BranchSide | '';
     limitType: LimitTypes;

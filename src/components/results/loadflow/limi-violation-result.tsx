@@ -29,6 +29,8 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 
 import {
+    FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
+    getIdType,
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
@@ -58,6 +60,7 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import { fetchLimitViolations } from 'services/study/loadflow';
+import { UUID } from 'crypto';
 
 export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -84,20 +87,6 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     };
     const theme = useTheme();
     const intl = useIntl();
-
-    const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
-        name: 'subjectId',
-        status: 'status',
-        limitType: 'limitType',
-        limitName: 'limitName',
-        side: 'side',
-        acceptableDuration: 'acceptableDuration',
-        limit: 'limit',
-        value: 'value',
-        loading: 'loading',
-        actualOverloadDuration: 'actualOverload',
-        upComingOverloadDuration: 'upComingOverload',
-    };
 
     const [overloadedEquipments, setOverloadedEquipments] = useState<
         OverloadedEquipment[]
@@ -133,8 +122,8 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     });
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colKey: 'subjectId',
-        sortWay: SORT_WAYS.asc,
+        colKey: 'overload',
+        sortWay: SORT_WAYS.desc,
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
@@ -196,25 +185,19 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
             { updateFilter, filterSelector },
             filterEnums
         );
-    }, [intl]);
-
-    const StatusCellRender = useCallback(
-        (cellData: ICellRendererParams) => {
-            const status = cellData.value;
-            const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
-            return (
-                <Box sx={styles.cell}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Lens fontSize={'medium'} sx={color} />
-                        <span style={{ marginLeft: '4px' }}>{status}</span>
-                    </div>
-                </Box>
-            );
-        },
-        [styles.cell, styles.fail, styles.succeed]
-    );
-
+    }, [filterEnums, filterSelector, intl, sortConfig]);
+    
     const messages = useIntlResultStatusMessages(intl);
+
+    useEffect(() => {
+        initFilters();
+            if (initSort) {
+                initSort(getIdType(tabIndex));
+            }
+        
+    }, [
+       tabIndex
+    ]);
 
     useEffect(() => {
         if (result) {
@@ -233,15 +216,14 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
                         (overloadedEquipment) =>
                             makeData(overloadedEquipment, intl)
                     );
-                    //.sort((a, b) => b.overload - a.overload);
                     setOverloadedEquipments(sortedLines);
                 })
-                .catch((error) => {
+                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'ErrFetchViolationsMsg',
                     });
-                })
+                }) 
                 .finally(() => {
                     setIsOverloadedEquipmentsReady(true);
                     setIsFetchComplete(true);

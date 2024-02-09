@@ -229,6 +229,16 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         snackError,
     ]);
 
+    useEffect(() => {
+        initFilters();
+            if (initSort) {
+                initSort('slackBusId');
+            }
+        
+    }, [
+       tabIndex
+    ]);
+
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
             if (params?.data?.elementId) {
@@ -290,22 +300,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     enableCellTextSelection={true}
                     skipColumnHeaders={false}
                 />
-            </>
-        );
-    };
-
-    const renderLoadFlowReport = () => {
-        return (
-            <>
-                <Box sx={{ height: '4px' }}>
-                    {openLoaderCurrentTab && <LinearProgress />}
-                </Box>
-                {(loadFlowStatus === RunningStatus.SUCCEED ||
-                    loadFlowStatus === RunningStatus.FAILED) && (
-                    <ComputationReportViewer
-                        reportType={REPORT_TYPES.LOADFLOW}
-                    />
-                )}
             </>
         );
     };
