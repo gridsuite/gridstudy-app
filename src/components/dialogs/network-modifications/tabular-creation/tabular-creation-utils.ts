@@ -107,6 +107,8 @@ export const convertCreationFieldFromFrontToBack = (
     switch (key) {
         case FREQUENCY_REGULATION:
             return { key: PARTICIPATE, value: value };
+        case CONNECTION_DIRECTION:
+            return { key: key, value: value ?? 'UNDEFINED' };
         default:
             return { key: key, value: value };
     }
