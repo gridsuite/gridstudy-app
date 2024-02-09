@@ -216,6 +216,7 @@ const VscModificationDialog: React.FC<any> = ({
         <FormProvider
             {...{
                 validationSchema: formSchema,
+                removeOptional: true,
                 ...formMethods,
             }}
         >
@@ -223,8 +224,6 @@ const VscModificationDialog: React.FC<any> = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                onValidationError={() => {}}
-                onValidated={() => {}}
                 aria-labelledby="dialog-modify-vsc"
                 maxWidth={'md'}
                 titleId="ModifyVsc"

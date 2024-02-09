@@ -52,7 +52,7 @@ export const VscModificationForm: FunctionComponent<
             size="small"
             fullWidth
             label={'ID'}
-            value={equipmentId}
+            value={equipmentId || ''}
             InputProps={{
                 readOnly: true,
             }}
@@ -66,7 +66,7 @@ export const VscModificationForm: FunctionComponent<
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={vscInfos?.name}
+            previousValue={vscInfos?.name || ''}
             clearable
         />
     );
