@@ -62,6 +62,7 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -641,8 +642,9 @@ export function StudyContainer({ view, onChangeTab }) {
         const payload = studyUpdatedForce.eventData.payload;
         const substationsIds = payload?.impactedSubstationsIds;
         const deletedEquipments = payload?.deletedEquipments;
+        const collectionElementImpacts = payload?.collectionElementImpacts;
 
-        return [substationsIds, deletedEquipments];
+        return [substationsIds, deletedEquipments, collectionElementImpacts];
     }
 
     useEffect(() => {
@@ -653,8 +655,11 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
-                const [substationsIds, deletedEquipments] =
-                    parseStudyNotification(studyUpdatedForce);
+                const [
+                    substationsIds,
+                    deletedEquipments,
+                    collectionElementImpacts,
+                ] = parseStudyNotification(studyUpdatedForce);
                 if (deletedEquipments?.length > 0) {
                     // removing deleted equipment from the network
                     deletedEquipments.forEach((deletedEquipment) => {
@@ -680,25 +685,21 @@ export function StudyContainer({ view, onChangeTab }) {
                     dispatch(setDeletedEquipments(deletedEquipments));
                 }
                 // updating data related to impacted substations
-                if (substationsIds?.length > 0) {
-                    console.info('Reload network equipments');
-                    const substationsIdsToFetch =
-                        substationsIds?.length >
-                        MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
-                            ? undefined
-                            : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
-                    const updatedEquipments = fetchAllEquipments(
-                        studyUuid,
-                        currentNode?.id,
-                        substationsIdsToFetch
-                    );
+                const updatedEquipments = fetchAllEquipments(
+                    studyUuid,
+                    currentNode?.id,
+                    collectionElementImpacts?.includes(
+                        EQUIPMENT_TYPES.SUBSTATION
+                    )
+                        ? undefined
+                        : substationsIds
+                );
 
-                    updatedEquipments.then((values) => {
-                        dispatch(updateEquipments(values));
-                    });
+                updatedEquipments.then((values) => {
+                    dispatch(updateEquipments(values));
+                });
 
-                    dispatch(setUpdatedSubstationsIds(substationsIds));
-                }
+                dispatch(setUpdatedSubstationsIds(substationsIds));
             }
         }
     }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
