@@ -1391,7 +1391,7 @@
     "TabularCreation": "Tabular creation",
     "ImportCreations": "Import creations",
     "TabularCreationError": "Error while creating tabular creation",
-    "TabularCreationSkeletonComment/GENERATOR" : "#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,,,,true | false,,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,,,,,,,,",
+    "TabularCreationSkeletonComment/GENERATOR" : "#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,,,,true | false,required if voltageRegulationOn is true,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,required if frequencyRegulation is true,,,,,,,",
     "equipmentName": "Name",
     "voltageLevelId": "Voltage level ID",
     "busOrBusbarSectionId": "Bus bar section / bus",
