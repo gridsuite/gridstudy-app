@@ -75,7 +75,12 @@ const TabularCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const {
+        reset,
+        formState: { errors },
+    } = formMethods;
+
+    const disableSave = Object.keys(errors).length > 0;
 
     useEffect(() => {
         if (editData) {
@@ -155,6 +160,7 @@ const TabularCreationDialog = ({
                 fullWidth
                 maxWidth={'lg'}
                 onClear={clear}
+                disabledSave={disableSave}
                 onSave={onSubmit}
                 aria-labelledby="dialog-tabular-creation"
                 titleId="TabularCreation"

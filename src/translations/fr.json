@@ -1408,5 +1408,6 @@
     "regulatingTerminalId": "Ouvrage réglé",
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
-    "droop": "Participation"
+    "droop": "Participation",
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
 }

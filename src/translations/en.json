@@ -1405,5 +1405,6 @@
     "regulatingTerminalId": "Regulated equipment",
     "qPercent": "Reactive percentage",
     "frequencyRegulation": "Active power regulation",
-    "droop": "Droop"
+    "droop": "Droop",
+    "FieldRequired": "At least one value is missing for required field : "
 }

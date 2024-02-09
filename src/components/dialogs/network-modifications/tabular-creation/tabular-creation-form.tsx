@@ -43,7 +43,7 @@ import { ColDef } from 'ag-grid-community/dist/lib/main';
 const TabularCreationForm = () => {
     const intl = useIntl();
 
-    const { setValue, clearErrors, getValues } = useFormContext();
+    const { setValue, clearErrors, setError, getValues } = useFormContext();
 
     const getTypeLabel = useCallback(
         (type: string) => intl.formatMessage({ id: type }),
@@ -53,11 +53,44 @@ const TabularCreationForm = () => {
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             clearErrors(CREATIONS_TABLE);
+            // check required fields are defined
+            let fieldNameInError: string = '';
+            results.data.every((result) => {
+                Object.keys(result).every((key) => {
+                    const found = TABULAR_CREATION_FIELDS[
+                        getValues(TYPE)
+                    ]?.find((field) => {
+                        return field.id === key;
+                    });
+                    if (
+                        found !== undefined &&
+                        found.required &&
+                        (result[key] === undefined || result[key] === null)
+                    ) {
+                        fieldNameInError = key;
+                        return false;
+                    }
+                    return true;
+                });
+                return fieldNameInError !== '';
+            });
             setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
+            if (fieldNameInError !== '') {
+                setError(CREATIONS_TABLE, {
+                    type: 'custom',
+                    message:
+                        intl.formatMessage({
+                            id: 'FieldRequired',
+                        }) +
+                        intl.formatMessage({
+                            id: fieldNameInError,
+                        }),
+                });
+            }
         },
-        [clearErrors, setValue]
+        [clearErrors, setValue, getValues, setError, intl]
     );
 
     const watchType = useWatch({
