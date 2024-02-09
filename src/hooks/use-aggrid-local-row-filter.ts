@@ -14,7 +14,11 @@ import {
 } from './use-aggrid-row-filter';
 import { FILTER_DATA_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
-export const useAggridRowFilterImpl = (
+interface FilterModel {
+    [colId: string]: any;
+}
+
+export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     filterSelectorKeys: Record<string, string>,
     updateFilterCallback = () => {}
@@ -26,7 +30,7 @@ export const useAggridRowFilterImpl = (
 
     const formatCustomFiltersForAgGrid = useCallback(
         (filters: FilterSelectorType[]) => {
-            const agGrifFilterModel: Record<string, any> = {};
+            const agGrifFilterModel: FilterModel = {};
             filters.forEach((filter) => {
                 agGrifFilterModel[filter.column] = {
                     filterType: filter.dataType,

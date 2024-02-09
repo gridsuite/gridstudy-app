@@ -14,7 +14,7 @@ import {
     useAgGridSort,
 } from './use-aggrid-sort';
 
-export const useAgGridSortImpl = (
+export const useAgGridLocalSort = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     initSortConfig: SortConfigType
 ): SortPropsType => {

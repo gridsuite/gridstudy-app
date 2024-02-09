@@ -96,6 +96,29 @@ export const DEFAULT_SORT_ORDER = 'asc';
 
 export const EDIT_COLUMN = 'edit';
 
+const defaultTextFilterConfig = {
+    filter: 'agTextColumnFilter',
+    customFilterParams: {
+        filterDataType: FILTER_DATA_TYPES.TEXT,
+        filterComparators: [
+            FILTER_TEXT_COMPARATORS.STARTS_WITH,
+            FILTER_TEXT_COMPARATORS.CONTAINS,
+        ],
+    },
+};
+
+const defaultNumericFilterConfig = {
+    filter: 'agNumberColumnFilter',
+    customFilterParams: {
+        filterDataType: FILTER_DATA_TYPES.NUMBER,
+        filterComparators: [
+            FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+            FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+            FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+        ],
+    },
+};
+
 const propertiesGetter = (params) => {
     const properties = params?.data?.properties;
     if (properties && Object.keys(properties).length) {
@@ -209,15 +232,7 @@ const generateEditableNumericColumnDefinition = (
         id: id,
         field: field,
         numeric: true,
-        customFilterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: [
-                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-            ],
-        },
-        filter: 'agNumberColumnFilter',
+        ...defaultNumericFilterConfig,
         fractionDigits: fractionDigits,
         changeCmd: changeCmd,
         editable: isEditable,
@@ -254,14 +269,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 isDefaultSort: true,
             },
             {
@@ -269,14 +277,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'name',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Country',
@@ -289,14 +290,7 @@ export const TABLES_DEFINITIONS = {
                     params.data.countryName = params?.newValue?.countryName;
                     return params;
                 },
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Properties',
@@ -320,14 +314,7 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 cellEditorPopup: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
         ],
     },
@@ -342,54 +329,25 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'SubstationId',
                 field: 'substationId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
-                filter: 'agNumberColumnFilter',
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -427,15 +385,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'IpMin',
                 field: 'identifiableShortCircuit.ipMin',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
-                filter: 'agNumberColumnFilter',
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -473,15 +423,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'IpMax',
                 field: 'identifiableShortCircuit.ipMax',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
-                filter: 'agNumberColumnFilter',
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -534,95 +476,43 @@ export const TABLES_DEFINITIONS = {
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelIdSide1',
                 field: 'voltageLevelId1',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelIdSide2',
                 field: 'voltageLevelId2',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'ActivePowerSide1',
                 field: 'p1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -631,15 +521,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSide2',
                 field: 'p2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -648,15 +530,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide1',
                 field: 'q1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -665,15 +539,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide2',
                 field: 'q2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -682,15 +548,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'seriesResistance',
                 field: 'r',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -698,15 +556,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'seriesReactance',
                 field: 'x',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -714,15 +564,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'shuntConductance1',
                 field: 'g1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g1),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -731,15 +573,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'shuntConductance2',
                 field: 'g2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g2),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -748,15 +582,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'shuntSusceptance1',
                 field: 'b1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b1),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -765,15 +591,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'shuntSusceptance2',
                 field: 'b2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b2),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -805,94 +623,42 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelIdSide1',
                 field: 'voltageLevelId1',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelIdSide2',
                 field: 'voltageLevelId2',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'ratedVoltage1',
                 field: 'ratedU1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -912,15 +678,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ratedVoltage2',
                 field: 'ratedU2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -940,15 +698,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSide1',
                 field: 'p1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -957,15 +707,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSide2',
                 field: 'p2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -974,15 +716,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide1',
                 field: 'q1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -991,15 +725,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide2',
                 field: 'q2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1071,27 +797,12 @@ export const TABLES_DEFINITIONS = {
                         columnValue: 1,
                     },
                 },
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'TargetVPoint',
                 field: 'ratioTapChanger.targetV',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1117,15 +828,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioDeadBand',
                 field: 'ratioTapChanger.targetDeadband',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1152,14 +855,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioRegulationTypeText',
                 field: 'ratioTapChanger.regulationType',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: (params) =>
                     getTwtRatioRegulationTypeId(params?.data),
                 valueSetter: (params) => {
@@ -1187,14 +883,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioRegulatedSide',
                 field: 'ratioTapChanger.regulationSide',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: (params) =>
                     params.data?.ratioTapChanger?.regulationSide ??
                     getComputedTapSideId(params?.data),
@@ -1218,14 +907,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioRegulatingTerminal',
                 field: 'RatioRegulatingTerminal',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: (params) =>
                     getTapChangerRegulationTerminalValue(
                         params?.data?.ratioTapChanger
@@ -1259,15 +941,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RatioLowTapPosition',
                 field: 'ratioTapChanger.lowTapPosition',
                 getQuickFilterText: excludeFromGlobalFilter,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 numeric: true,
                 fractionDigits: 0,
                 editable: (params) =>
@@ -1298,15 +972,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioHighTapPosition',
                 field: 'ratioTapChanger.highTapPosition',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 valueGetter: (params) =>
                     computeHighTapPosition(
                         params?.data?.ratioTapChanger?.steps
@@ -1316,15 +982,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap',
                 field: 'ratioTapChanger.tapPosition',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 numeric: true,
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1359,14 +1017,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode',
                 field: 'phaseTapChanger.regulationMode',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.regulationMode,
                 valueSetter: (params) => {
@@ -1392,15 +1043,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingValue',
                 field: 'phaseTapChanger.regulationValue',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 valueGetter: (params) =>
@@ -1433,15 +1076,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseDeadBand',
                 field: 'phaseTapChanger.targetDeadband',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
@@ -1471,14 +1106,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseRegulationTypeText',
                 field: 'phaseTapChanger.regulationType',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: (params) =>
                     getTwtPhaseRegulationTypeId(params?.data),
                 valueSetter: (params) => {
@@ -1506,14 +1134,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseRegulatedSide',
                 field: 'ratioTapChanger.regulationSide',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: (params) =>
                     params.data?.phaseTapChanger?.regulationSide ||
                     getPhaseTapRegulationSideId(params?.data),
@@ -1537,14 +1158,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseRegulatingTerminal',
                 field: 'PhaseRegulatingTerminal',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: (params) =>
                     getTapChangerRegulationTerminalValue(
                         params?.data?.phaseTapChanger
@@ -1580,15 +1194,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'PhaseLowTapPosition',
                 field: 'phaseTapChanger.lowTapPosition',
                 getQuickFilterText: excludeFromGlobalFilter,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 numeric: true,
                 fractionDigits: 0,
                 editable: (params) =>
@@ -1619,15 +1225,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseHighTapPosition',
                 field: 'phaseTapChanger.highTapPosition',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 valueGetter: (params) =>
                     computeHighTapPosition(
                         params?.data?.phaseTapChanger?.steps
@@ -1637,15 +1235,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap',
                 field: 'phaseTapChanger.tapPosition',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 numeric: true,
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1680,15 +1270,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'seriesResistance',
                 field: 'r',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1696,15 +1278,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'seriesReactance',
                 field: 'x',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1712,15 +1286,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'magnetizingConductance',
                 field: 'g',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1729,15 +1295,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'magnetizingSusceptance',
                 field: 'b',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1746,15 +1304,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ratedNominalPower',
                 field: 'ratedS',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1786,121 +1336,54 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelIdT3WSide1',
                 field: 'voltageLevelId1',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelIdT3WSide2',
                 field: 'voltageLevelId2',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelIdT3WSide3',
                 field: 'voltageLevelId3',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalVoltageT3WSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageT3WSide2',
                 field: 'nominalVoltage2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageT3WSide3',
                 field: 'nominalVoltage3',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'ActivePowerT3WSide1',
                 field: 'p1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1909,15 +1392,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerT3WSide2',
                 field: 'p2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1926,15 +1401,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerT3WSide3',
                 field: 'p3',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1943,15 +1410,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerT3WSide1',
                 field: 'q1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1960,15 +1419,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerT3WSide2',
                 field: 'q2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1977,15 +1428,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerT3WSide3',
                 field: 'q3',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2008,30 +1451,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetVPoint1',
                 field: 'targetV1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioTap1',
                 field: 'ratioTapChanger1',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -2073,30 +1500,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetVPoint2',
                 field: 'targetV2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioTap2',
                 field: 'ratioTapChanger2',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -2138,30 +1549,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetVPoint3',
                 field: 'targetV3',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioTap3',
                 field: 'ratioTapChanger3',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -2188,14 +1583,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode1',
                 field: 'regulatingMode1',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -2209,15 +1597,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap1',
                 field: 'phaseTapChanger1',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -2245,15 +1625,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingValue1',
                 field: 'regulatingValue1',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2261,14 +1633,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode2',
                 field: 'regulatingMode2',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -2282,15 +1647,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap2',
                 field: 'phaseTapChanger2',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -2318,15 +1675,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingValue2',
                 field: 'regulatingValue2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2334,6 +1683,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode3',
                 field: 'regulatingMode3',
+                ...defaultNumericFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -2347,15 +1697,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap3',
                 field: 'phaseTapChanger3',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -2383,15 +1725,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingValue3',
                 field: 'regulatingValue3',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2431,26 +1765,12 @@ export const TABLES_DEFINITIONS = {
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 changeCmd: "equipment.setName('{}')\n",
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2458,41 +1778,19 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'energySource',
                 field: 'energySource',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2509,7 +1807,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2519,15 +1817,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2567,15 +1857,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerRegulationDroop',
                 field: 'activePowerControl.droop',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2610,15 +1892,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'minActivePower',
                 field: 'minP',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setMinP({})\n',
                 editable: isEditable,
@@ -2642,15 +1916,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setMaxP({})\n',
                 editable: isEditable,
@@ -2674,15 +1940,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePowerSetpoint',
                 field: 'targetP',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 changeCmd:
                     'if ((equipment.getMinP() <= {} && {} <= equipment.getMaxP()) || {} == 0) { \n' +
                     '    equipment.setTargetP({})\n' +
@@ -2714,15 +1972,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetQ({})\n',
                 editable: isEditable,
@@ -2768,15 +2018,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetV({})\n',
                 editable: isEditable,
@@ -2803,15 +2045,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ReactivePercentageVoltageRegulation',
                 field: 'coordinatedReactiveControl.qPercent',
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2849,15 +2083,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'transientReactance',
                 field: 'generatorShortCircuit.transientReactance',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2891,15 +2117,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'stepUpTransformerReactance',
                 field: 'generatorShortCircuit.stepUpTransformerReactance',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2934,15 +2152,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'plannedActivePowerSetPoint',
                 field: 'generatorStartup.plannedActivePowerSetPoint',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2979,15 +2189,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
                 cellEditor: NumericalField,
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 cellEditorParams: (params) => {
@@ -3017,15 +2219,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'plannedOutageRate',
                 field: 'generatorStartup.plannedOutageRate',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -3061,15 +2255,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'forcedOutageRate',
                 field: 'generatorStartup.forcedOutageRate',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -3110,14 +2296,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulationTypeText',
                 field: 'RegulationTypeText',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 valueGetter: (params) =>
@@ -3140,14 +2319,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingTerminalGenerator',
                 field: 'RegulatingTerminalGenerator',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 valueGetter: RegulatingTerminalCellGetter,
                 cellStyle: (params) =>
                     isEditableRegulatingTerminalCell(params)
@@ -3185,26 +2357,12 @@ export const TABLES_DEFINITIONS = {
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 changeCmd: "equipment.setName('{}')\n",
                 editable: isEditable,
@@ -3213,14 +2371,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'loadType',
                 field: 'type',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3237,43 +2388,20 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3282,15 +2410,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3299,15 +2419,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'p0',
                 field: 'p0',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setP0({})\n',
                 editable: isEditable,
@@ -3328,15 +2440,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'q0',
                 field: 'q0',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setQ0({})\n',
                 editable: isEditable,
@@ -3374,26 +2478,12 @@ export const TABLES_DEFINITIONS = {
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 columnWidth: MIN_COLUMN_WIDTH,
@@ -3401,35 +2491,20 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -3451,15 +2526,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
                     minExpression: 1,
@@ -3481,15 +2548,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
                     minExpression: 0,
@@ -3499,14 +2558,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Type',
                 field: 'type',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 valueGetter: (params) =>
@@ -3540,15 +2592,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
@@ -3563,15 +2607,7 @@ export const TABLES_DEFINITIONS = {
                     (params?.data?.maxQAtNominalV /
                         params?.data?.maximumSectionCount) *
                     params?.data?.sectionCount,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3591,15 +2627,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3611,15 +2639,7 @@ export const TABLES_DEFINITIONS = {
                     (params?.data?.maxSusceptance /
                         params?.data?.maximumSectionCount) *
                     params?.data?.sectionCount,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3643,67 +2663,30 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3712,15 +2695,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3729,15 +2704,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3745,15 +2712,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSetpointMVAR',
                 field: 'reactivePowerSetpoint',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3778,69 +2737,32 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -3850,15 +2772,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -3898,15 +2812,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'DroopColumnName',
                 field: 'activePowerControl.droop',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3941,15 +2847,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'minActivePower',
                 field: 'minP',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3972,15 +2870,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -4003,15 +2893,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePowerSetpoint',
                 field: 'targetP',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -4036,15 +2918,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -4081,73 +2955,38 @@ export const TABLES_DEFINITIONS = {
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 isDefaultSort: true,
-                filter: 'agTextColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
-                filter: 'agTextColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'ConvertersMode',
                 field: 'convertersMode',
                 columnWidth: LARGE_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
-                filter: 'agTextColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'ConverterStationId1',
                 field: 'converterStationId1',
                 columnWidth: LARGE_COLUMN_WIDTH,
-                filter: 'agTextColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'ConverterStationId2',
                 field: 'converterStationId2',
                 columnWidth: LARGE_COLUMN_WIDTH,
-                filter: 'agTextColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'R',
                 field: 'r',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4155,15 +2994,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSetpoint',
                 field: 'activePowerSetpoint',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4171,15 +3002,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4187,15 +3010,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'OprFromCS1toCS2',
                 field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 columnWidth: LARGE_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4204,15 +3019,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'OprFromCS2toCS1',
                 field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 columnWidth: LARGE_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4228,15 +3035,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'K',
                 field: 'hvdcAngleDroopActivePowerControl.droop',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4244,15 +3043,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'P0',
                 field: 'hvdcAngleDroopActivePowerControl.p0',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4269,79 +3060,35 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'HvdcLineId',
                 field: 'hvdcLineId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4350,15 +3097,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4367,15 +3106,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'PowerFactor',
                 field: 'powerFactor',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4383,15 +3114,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'LossFactor',
                 field: 'lossFactor',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4416,79 +3139,35 @@ export const TABLES_DEFINITIONS = {
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'HvdcLineId',
                 field: 'hvdcLineId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4497,15 +3176,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4514,15 +3185,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'LossFactor',
                 field: 'lossFactor',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4537,15 +3200,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4553,15 +3208,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSetpointMVAR',
                 field: 'reactivePowerSetpoint',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4585,80 +3232,36 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Name',
                 field: 'name',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
                 id: 'UcteXnodeCode',
                 field: 'ucteXnodeCode',
                 getQuickFilterText: excludeFromGlobalFilter,
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [
-                        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                        FILTER_TEXT_COMPARATORS.CONTAINS,
-                    ],
-                },
-                filter: 'agTextColumnFilter',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4667,15 +3270,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -4684,15 +3279,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'p0',
                 field: 'p0',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -4700,15 +3287,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'q0',
                 field: 'q0',
                 numeric: true,
-                filter: 'agNumberColumnFilter',
-                customFilterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: [
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-                    ],
-                },
+                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },

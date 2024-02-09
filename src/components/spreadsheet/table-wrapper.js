@@ -82,8 +82,8 @@ import {
 } from 'components/network/constants';
 import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { useAggridRowFilterImpl } from 'hooks/use-aggrid-row-filter-impl';
-import { useAgGridSortImpl } from 'hooks/use-aggrid-sort-impl';
+import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
+import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -221,20 +221,16 @@ const TableWrapper = (props) => {
         return defaultSortCol?.field;
     }, [columnData]);
 
-    const { onSortChanged, sortConfig, initSort } = useAgGridSortImpl(gridRef, {
-        colKey: defaultSortColKey,
-        sortWay: SORT_WAYS.asc,
-    });
-
-    // This is a dummy callback to avoid the warning of missing dependencies and infinite loop
-    const updateFilterCallback = useCallback(() => {}, []);
+    const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
+        gridRef,
+        {
+            colKey: defaultSortColKey,
+            sortWay: SORT_WAYS.asc,
+        }
+    );
 
     const { updateFilter, filterSelector, initFilters } =
-        useAggridRowFilterImpl(
-            gridRef,
-            equipementFiltersSelectorKeys,
-            updateFilterCallback
-        );
+        useAggridLocalRowFilter(gridRef, equipementFiltersSelectorKeys);
 
     const enrichColumn = useCallback(
         (column) => {
@@ -325,9 +321,8 @@ const TableWrapper = (props) => {
         if (props.disabled || !equipments) {
             return [];
         }
-        let rowData = [...equipments];
 
-        return rowData;
+        return equipments;
     }, [equipments, props.disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
