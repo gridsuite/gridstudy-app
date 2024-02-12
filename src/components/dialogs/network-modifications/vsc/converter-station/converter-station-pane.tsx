@@ -88,7 +88,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             size="small"
             fullWidth
             label={'ID'}
-            value={previousDataany?.id}
+            value={previousDataany?.id || ''}
             InputProps={{
                 readOnly: true,
             }}
@@ -101,11 +101,13 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
+    console.log(' is changing ', previousValues?.name ?? 'ddddd')
+
     const generatorNameField = (
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
             label={'converterStationName'}
-            previousValue={previousValues?.name || undefined}
+            previousValue={previousValues?.name ?? ''}
         />
     );
 

@@ -184,7 +184,7 @@ export function getVscConverterStationEmptyFormData(
     return {
         [id]: {
             [CONVERTER_STATION_ID]: null,
-            [CONVERTER_STATION_NAME]: null,
+            [CONVERTER_STATION_NAME]: isModification ? '' : null,
             [LOSS_FACTOR]: null,
             [REACTIVE_POWER]: null,
             [VOLTAGE_REGULATION_ON]: isModification ? null : false,

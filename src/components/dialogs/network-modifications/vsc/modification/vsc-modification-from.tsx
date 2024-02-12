@@ -93,10 +93,6 @@ export const VscModificationForm: FunctionComponent<
 
     return (
         <>
-            {/*<Grid container spacing={2}>*/}
-            {/*    {gridItem(vscIdField, 4)}*/}
-            {/*    {gridItem(vscNameField, 4)}*/}
-            {/*</Grid>*/}
             <Box>{headersAndTabs}</Box>
             <Box hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB} p={1}>
                 <VscHvdcLinePane
@@ -118,19 +114,19 @@ export const VscModificationForm: FunctionComponent<
                     previousValues={vscInfos?.converterStation1}
                 />
             </Box>
-            <Box
-                hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2}
-                p={1}
-            >
-                <ConverterStationPane
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    id={CONVERTER_STATION_2}
-                    stationLabel={'converterStation2'}
-                    isModification={true}
-                    previousValues={vscInfos?.converterStation2}
-                />
-            </Box>
+            {/*<Box*/}
+            {/*    hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2}*/}
+            {/*    p={1}*/}
+            {/*>*/}
+            {/*    <ConverterStationPane*/}
+            {/*        studyUuid={studyUuid}*/}
+            {/*        currentNode={currentNode}*/}
+            {/*        id={CONVERTER_STATION_2}*/}
+            {/*        stationLabel={'converterStation2'}*/}
+            {/*        isModification={true}*/}
+            {/*        previousValues={vscInfos?.converterStation2}*/}
+            {/*    />*/}
+            {/*</Box>*/}
         </>
     );
 };
