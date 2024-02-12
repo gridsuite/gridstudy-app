@@ -1381,5 +1381,26 @@
 
     "csvExportSensitivityResultError": "Une erreur est survenue lors de l'export des résultats de l'analyse de sensibilité",
 
-    "substationCountry": "Code pays"
+    "substationCountry": "Code pays",
+
+    "CreationsRequiredTabError": "Au moins une création est requise",
+    "TabularCreation": "Création tabulaire",
+    "ImportCreations": "Importer des créations",
+    "TabularCreationError": "Erreur lors de la création tabulaire",
+    "TabularCreationSkeletonComment/GENERATOR" : "#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,,,,true | false,required if voltageRegulationOn is true,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,required if frequencyRegulation is true,,,,,,,",
+    "equipmentName": "Nom",
+    "voltageLevelId": "ID Poste",
+    "busOrBusbarSectionId": "SJB / nœud",
+    "connectionName" : "Nom départ",
+    "connectionDirection" : "Sens départ",
+    "connectionPosition" : "Position départ",
+    "minimumReactivePower": "Puissance réactive minimale",
+    "maximumReactivePower": "Puissance réactive maximale",
+    "regulatingTerminalType": "Type d'ouvrage réglé",
+    "regulatingTerminalVlId": "Poste réglé",
+    "regulatingTerminalId": "Ouvrage réglé",
+    "qPercent": "Cœfficient de participation",
+    "frequencyRegulation": "Compensation",
+    "droop": "Participation",
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
 }
