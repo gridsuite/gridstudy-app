@@ -170,10 +170,14 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
                 {gridItem(generatorNameField, 4)}
             </Grid>
 
-            <GridSection title={'Connectivity'} />
-            <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
-            </Grid>
+            {!isModification && (
+                <>
+                    <GridSection title={'Connectivity'} />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivityForm, 12)}
+                    </Grid>
+                </>
+            )}
 
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
