@@ -72,6 +72,12 @@ export const useModificationLabelComputer = () => {
                 return intl.formatMessage({
                     id: modificationMetadata.equipmentType,
                 });
+            case MODIFICATION_TYPES.TABULAR_CREATION.type:
+                return intl.formatMessage({
+                    id:
+                        'network_modifications/tabular/' +
+                        modificationMetadata.tabularCreationType,
+                });
             default:
                 return modificationMetadata.equipmentId || '';
         }
