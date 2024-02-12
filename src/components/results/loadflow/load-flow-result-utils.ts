@@ -10,7 +10,7 @@ import {
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
-import { IntlShape, useIntl } from 'react-intl';
+import { IntlShape } from 'react-intl';
 import {
     ColDef,
     ICellRendererParams,
@@ -73,8 +73,6 @@ export const convertLimitName = (limitName: string | null, intl: IntlShape) => {
         ? intl.formatMessage({ id: 'PermanentLimitName' })
         : limitName;
 };
- 
-
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<
     string,
@@ -200,12 +198,13 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     const convertLimitNameFrontToBack = (limitName: string) => {
         const limitNameMapping = {
             [intl.formatMessage({ id: 'Undefined' })]: NA_Value,
-            [intl.formatMessage({ id: 'PermanentLimitName' })]: PERMANENT_LIMIT_NAME
-        };  
-        if(limitNameMapping[limitName])  {
-          return  limitNameMapping[limitName] 
+            [intl.formatMessage({ id: 'PermanentLimitName' })]:
+                PERMANENT_LIMIT_NAME,
+        };
+        if (limitNameMapping[limitName]) {
+            return limitNameMapping[limitName];
         }
-        return  limitName;
+        return limitName;
     };
     return [
         makeAgGridCustomHeaderColumn({
@@ -220,7 +219,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'limitName',
             sortProps,
             filterProps,
-            filterParams: {...textFilterParams, parser: convertLimitNameFrontToBack },
+            filterParams: {
+                ...textFilterParams,
+                parser: convertLimitNameFrontToBack,
+            },
             valueFormatter: (params: ValueFormatterParams) =>
                 formatNAValue(params.value, intl),
         }),
@@ -265,7 +267,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'upComingOverloadDuration',
             sortProps,
             filterProps,
-            filterParams: {...textFilterParams, parser: parseDuration},
+            filterParams: { ...textFilterParams, parser: parseDuration },
             valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });

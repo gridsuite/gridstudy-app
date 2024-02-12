@@ -5,23 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage } from 'react-intl/lib';
-import { LoadFlowTabProps, QueryParamsType } from './load-flow-result.type';
+import { LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
-import {
-    fetchLimitViolations,
-    fetchLoadFlowResult,
-} from '../../../services/study/loadflow';
+import { fetchLoadFlowResult } from '../../../services/study/loadflow';
 import { LimiViolationResult } from './limi-violation-result';
-import { Box, LinearProgress } from '@mui/material';
 import { REPORT_TYPES } from 'components/utils/report-type';
 import RunningStatus from 'components/utils/running-status';
-import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import { ReduxState } from 'redux/reducer.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
@@ -96,14 +90,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     isWaiting={isWaiting}
                 />
             )}
-            {tabIndex === 3 && (               
-                    (loadFlowStatus === RunningStatus.SUCCEED ||
-                        loadFlowStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer
-                            reportType={REPORT_TYPES.LOADFLOW}
-                        />
-                    )               
-            )}
+            {tabIndex === 3 &&
+                (loadFlowStatus === RunningStatus.SUCCEED ||
+                    loadFlowStatus === RunningStatus.FAILED) && (
+                    <ComputationReportViewer
+                        reportType={REPORT_TYPES.LOADFLOW}
+                    />
+                )}
         </>
     );
 };

@@ -35,10 +35,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import {
-    kiloUnitToUnit,
-    unitToKiloUnit,
-} from '../../../utils/unit-converter';
+import { kiloUnitToUnit, unitToKiloUnit } from '../../../utils/unit-converter';
 import { ValueGetterParams } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultProps {

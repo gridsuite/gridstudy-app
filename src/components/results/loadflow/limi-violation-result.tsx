@@ -16,11 +16,7 @@ import React, {
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/material';
-import { green, red } from '@mui/material/colors';
-import {
-    GridReadyEvent,
-    RowClassParams,
-} from 'ag-grid-community';
+import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import { ComputingType } from '../../computing-status/computing-type';
@@ -51,7 +47,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { REPORT_TYPES } from '../../utils/report-type';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
@@ -64,22 +59,6 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     tabIndex,
     isWaiting,
 }) => {
-    const styles = {
-        cell: {
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            boxSizing: 'border-box',
-            flex: 1,
-            cursor: 'initial',
-        },
-        succeed: {
-            color: green[500],
-        },
-        fail: {
-            color: red[500],
-        },
-    };
     const theme = useTheme();
     const intl = useIntl();
 
@@ -103,19 +82,6 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     const [hasFilter, setHasFilter] = useState<boolean>(false);
     const gridRef = useRef();
 
-    //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
-    const openLoaderCurrentTab = useOpenLoaderShortWait({
-        isLoading:
-            // We want the loader to start when the loadflow begins
-            loadFlowStatus === RunningStatus.RUNNING ||
-            // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
-            // and "the data is post processed and can be displayed"
-            (!isOverloadedEquipmentsReady &&
-                loadFlowStatus === RunningStatus.SUCCEED) ||
-            isWaiting,
-        delay: RESULTS_LOADING_DELAY,
-    });
-
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         colKey: 'overload',
         sortWay: SORT_WAYS.desc,
@@ -128,6 +94,20 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
+
+    //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
+    const openLoaderCurrentTab = useOpenLoaderShortWait({
+        isLoading:
+            // We want the loader to start when the loadflow begins
+            loadFlowStatus === RunningStatus.RUNNING ||
+            // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
+            // and "the data is post processed and can be displayed"
+            (!isOverloadedEquipmentsReady &&
+                loadFlowStatus === RunningStatus.SUCCEED) ||
+            isWaiting ||
+            filterEnumsLoading,
+        delay: RESULTS_LOADING_DELAY,
+    });
 
     const openLoaderVoltageTab = useOpenLoaderShortWait({
         isLoading:
@@ -171,7 +151,14 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
             { updateFilter, filterSelector },
             filterEnums
         );
-    }, [filterEnums, filterSelector, intl, sortConfig]);
+    }, [
+        filterEnums,
+        filterSelector,
+        intl,
+        sortConfig,
+        onSortChanged,
+        updateFilter,
+    ]);
 
     const loadFlowVoltageViolationsColumns = useMemo(() => {
         return loadFlowVoltageViolationsColumnsDefinition(
@@ -180,19 +167,23 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
             { updateFilter, filterSelector },
             filterEnums
         );
-    }, [filterEnums, filterSelector, intl, sortConfig]);
-    
+    }, [
+        filterEnums,
+        filterSelector,
+        intl,
+        sortConfig,
+        onSortChanged,
+        updateFilter,
+    ]);
+
     const messages = useIntlResultStatusMessages(intl);
 
     useEffect(() => {
         initFilters();
-            if (initSort) {
-                initSort(getIdType(tabIndex));
-            }
-        
-    }, [
-       tabIndex
-    ]);
+        if (initSort) {
+            initSort(getIdType(tabIndex));
+        }
+    }, [tabIndex, onSortChanged, updateFilter, initFilters, initSort]);
 
     useEffect(() => {
         if (result) {
@@ -213,12 +204,12 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
                     );
                     setOverloadedEquipments(sortedLines);
                 })
-                 .catch((error) => {
+                .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'ErrFetchViolationsMsg',
                     });
-                }) 
+                })
                 .finally(() => {
                     setIsOverloadedEquipmentsReady(true);
                     setIsFetchComplete(true);
@@ -232,6 +223,8 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
         filterSelector,
         sortConfig,
         snackError,
+        initFilters,
+        initSort,
     ]);
 
     const getRowStyle = useCallback(
