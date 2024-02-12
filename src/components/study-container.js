@@ -39,10 +39,7 @@ import {
 import { RunningStatus } from './utils/running-status';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
-import {
-    BUILD_STATUS,
-    MAX_NUMBER_OF_IMPACTED_SUBSTATIONS,
-} from './network/constants';
+import { BUILD_STATUS } from './network/constants';
 import { connectNotificationsWebsocket } from '../services/study-notification';
 import {
     connectDeletedStudyNotificationsWebsocket,
@@ -698,7 +695,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 updatedEquipments.then((values) => {
                     dispatch(updateEquipments(values));
                 });
-
+                // could be all substations then what...
                 dispatch(setUpdatedSubstationsIds(substationsIds));
             }
         }
