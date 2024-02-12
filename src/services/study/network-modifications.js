@@ -148,7 +148,7 @@ function changeOperatingStatus(studyUuid, currentNodeUuid, equipment, action) {
     });
 }
 
-export function lockoutOperating(studyUuid, currentNodeUuid, equipment) {
+export function lockoutEquipment(studyUuid, currentNodeUuid, equipment) {
     console.info('locking out equipment ' + equipment.id + ' ...');
     return changeOperatingStatus(
         studyUuid,
@@ -158,7 +158,7 @@ export function lockoutOperating(studyUuid, currentNodeUuid, equipment) {
     );
 }
 
-export function tripOperating(studyUuid, currentNodeUuid, equipment) {
+export function tripEquipment(studyUuid, currentNodeUuid, equipment) {
     console.info('tripping equipment ' + equipment.id + ' ...');
     return changeOperatingStatus(
         studyUuid,
@@ -168,7 +168,7 @@ export function tripOperating(studyUuid, currentNodeUuid, equipment) {
     );
 }
 
-export function energiseBranchEnd(
+export function energiseEquipmentEnd(
     studyUuid,
     currentNodeUuid,
     branch,
@@ -187,7 +187,7 @@ export function energiseBranchEnd(
     );
 }
 
-export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
+export function switchOnEquipment(studyUuid, currentNodeUuid, branch) {
     console.info('switching on branch ' + branch.id + ' ...');
     return changeOperatingStatus(
         studyUuid,

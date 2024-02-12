@@ -31,10 +31,10 @@ import {
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import {
-    energiseBranchEnd,
-    lockoutOperating,
-    switchOnBranch,
-    tripOperating,
+    energiseEquipmentEnd,
+    lockoutEquipment,
+    switchOnEquipment,
+    tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from '../dialogs/parameters/parameters';
@@ -53,7 +53,7 @@ const styles = {
     },
 };
 
-const withBranchMenu =
+const withOperatingStatusMenu =
     (BaseMenu) =>
     ({
         equipment,
@@ -133,7 +133,7 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutOperating(studyUuid, currentNode?.id, equipmentStatus).catch(
+            lockoutEquipment(studyUuid, currentNode?.id, equipmentStatus).catch(
                 (error) => {
                     handleError(error, 'UnableToLockout');
                 }
@@ -142,7 +142,7 @@ const withBranchMenu =
 
         function handleTrip() {
             startModification();
-            tripOperating(studyUuid, currentNode?.id, equipmentStatus).catch(
+            tripEquipment(studyUuid, currentNode?.id, equipmentStatus).catch(
                 (error) => {
                     handleError(error, 'UnableToTrip');
                 }
@@ -151,7 +151,7 @@ const withBranchMenu =
 
         function handleEnergise(side) {
             startModification();
-            energiseBranchEnd(
+            energiseEquipmentEnd(
                 studyUuid,
                 currentNode?.id,
                 equipmentStatus,
@@ -163,11 +163,13 @@ const withBranchMenu =
 
         function handleSwitchOn() {
             startModification();
-            switchOnBranch(studyUuid, currentNode?.id, equipmentStatus).catch(
-                (error) => {
-                    handleError(error, 'UnableToSwitchOn');
-                }
-            );
+            switchOnEquipment(
+                studyUuid,
+                currentNode?.id,
+                equipmentStatus
+            ).catch((error) => {
+                handleError(error, 'UnableToSwitchOn');
+            });
         }
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
@@ -412,7 +414,7 @@ const withBranchMenu =
         );
     };
 
-withBranchMenu.propTypes = {
+withOperatingStatusMenu.propTypes = {
     id: PropTypes.string.isRequired,
     equipmentType: PropTypes.string.isRequired,
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
@@ -427,4 +429,4 @@ withBranchMenu.propTypes = {
     setModificationInProgress: PropTypes.func,
 };
 
-export default withBranchMenu;
+export default withOperatingStatusMenu;
