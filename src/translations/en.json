@@ -1391,5 +1391,26 @@
 
     "csvExportSensitivityResultError": "An error occurred when exporting sensitivity results",
 
-    "substationCountry": "Country code"
+    "substationCountry": "Country code",
+
+    "CreationsRequiredTabError": "At least one creation is required",
+    "TabularCreation": "Tabular creation",
+    "ImportCreations": "Import creations",
+    "TabularCreationError": "Error while creating tabular creation",
+    "TabularCreationSkeletonComment/GENERATOR" : "#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,,,,true | false,required if voltageRegulationOn is true,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,required if frequencyRegulation is true,,,,,,,",
+    "equipmentName": "Name",
+    "voltageLevelId": "Voltage level ID",
+    "busOrBusbarSectionId": "Bus bar section / bus",
+    "connectionName" : "Connection name",
+    "connectionDirection" : "Connection direction",
+    "connectionPosition" : "Connection position",
+    "minimumReactivePower": "Minimum reactive power",
+    "maximumReactivePower": "Maximum reactive power",
+    "regulatingTerminalType": "Regulated equipment type",
+    "regulatingTerminalVlId": "Regulated voltage level",
+    "regulatingTerminalId": "Regulated equipment",
+    "qPercent": "Reactive percentage",
+    "frequencyRegulation": "Active power regulation",
+    "droop": "Droop",
+    "FieldRequired": "At least one value is missing for required field : "
 }
