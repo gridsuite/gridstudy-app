@@ -33,11 +33,7 @@ import {
     loadFlowResultColumnsDefinition,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
-import {
-    LimitTypes,
-    LoadflowResultProps,
-    OverloadedEquipment,
-} from './load-flow-result.type';
+import { LoadflowResultProps } from './load-flow-result.type';
 import {
     getNoRowsMessage,
     getRows,
@@ -80,10 +76,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const theme = useTheme();
     const intl = useIntl();
 
-    const [overloadedEquipments, setOverloadedEquipments] = useState<
-        OverloadedEquipment[]
-    >([]);
-
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
     );
@@ -91,24 +83,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const [loadflowResult, setLoadflowResult] = useState(result);
     const [isFetchComplete, setIsFetchComplete] = useState(false);
 
-    const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] =
-        useState(false);
-
     const [hasFilter, setHasFilter] = useState<boolean>(false);
     const gridRef = useRef();
-
-    //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
-    const openLoaderCurrentTab = useOpenLoaderShortWait({
-        isLoading:
-            // We want the loader to start when the loadflow begins
-            loadFlowStatus === RunningStatus.RUNNING ||
-            // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
-            // and "the data is post processed and can be displayed"
-            (!isOverloadedEquipmentsReady &&
-                loadFlowStatus === RunningStatus.SUCCEED) ||
-            isWaiting,
-        delay: RESULTS_LOADING_DELAY,
-    });
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         colKey: 'slackBusId',
@@ -124,7 +100,11 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         useFetchFiltersEnums(hasFilter, setHasFilter);
 
     const openLoaderStatusTab = useOpenLoaderShortWait({
-        isLoading: loadFlowStatus === RunningStatus.RUNNING || isWaiting,
+        isLoading:
+            loadFlowStatus === RunningStatus.RUNNING ||
+            isWaiting ||
+            !isFetchComplete ||
+            filterEnumsLoading,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -188,7 +168,16 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             StatusCellRender,
             NumberRenderer
         );
-    }, [intl, NumberRenderer, StatusCellRender]);
+    }, [
+        intl,
+        NumberRenderer,
+        StatusCellRender,
+        filterEnums,
+        filterSelector,
+        onSortChanged,
+        sortConfig,
+        updateFilter,
+    ]);
 
     const messages = useIntlResultStatusMessages(intl);
 
@@ -209,7 +198,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                         });
                     })
                     .finally(() => {
-                        setIsOverloadedEquipmentsReady(true);
                         setIsFetchComplete(true);
                     });
             }
@@ -229,7 +217,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         if (initSort) {
             initSort('slackBusId');
         }
-    }, [tabIndex]);
+    }, [tabIndex, initFilters, initSort]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
@@ -246,18 +234,12 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         api?.sizeColumnsToFit();
     }, []);
 
-    const currentViolations = overloadedEquipments.filter(
-        (overloadedEquipment) =>
-            overloadedEquipment.limitType === LimitTypes.CURRENT
-    );
-
     useEffect(() => {
         //reset everything at initial state
         if (
             loadFlowStatus === RunningStatus.FAILED ||
             loadFlowStatus === RunningStatus.IDLE
         ) {
-            setIsOverloadedEquipmentsReady(false);
             setIsFetchComplete(false);
         }
     }, [loadFlowStatus]);

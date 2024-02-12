@@ -39,7 +39,6 @@ import {
     LoadflowResultProps,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
-    QueryParamsType,
 } from './load-flow-result.type';
 import {
     getNoRowsMessage,
@@ -52,7 +51,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
