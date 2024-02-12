@@ -49,15 +49,10 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { REPORT_TYPES } from '../../utils/report-type';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
-import {
-    fetchLimitViolations,
-    fetchLoadFlowResult,
-} from 'services/study/loadflow';
+import { fetchLoadFlowResult } from 'services/study/loadflow';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -231,13 +226,10 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     useEffect(() => {
         initFilters();
-            if (initSort) {
-                initSort('slackBusId');
-            }
-        
-    }, [
-       tabIndex
-    ]);
+        if (initSort) {
+            initSort('slackBusId');
+        }
+    }, [tabIndex]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
@@ -259,7 +251,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             overloadedEquipment.limitType === LimitTypes.CURRENT
     );
 
-
     useEffect(() => {
         //reset everything at initial state
         if (
@@ -279,7 +270,10 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             result?.componentResults ? true : false
         );
 
-        const rowsToShow = getRows(loadflowResult?.componentResults, loadFlowStatus);
+        const rowsToShow = getRows(
+            loadflowResult?.componentResults,
+            loadFlowStatus
+        );
         return (
             <>
                 <Box sx={{ height: '4px' }}>

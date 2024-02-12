@@ -16,11 +16,9 @@ import React, {
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/material';
-import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import {
     GridReadyEvent,
-    ICellRendererParams,
     RowClassParams,
 } from 'ag-grid-community';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -60,7 +58,6 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import { fetchLimitViolations } from 'services/study/loadflow';
-import { UUID } from 'crypto';
 
 export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     result,
