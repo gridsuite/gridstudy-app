@@ -200,7 +200,7 @@
     "DynamicSimulationParametersSelection": "Selection des parametres de la simulation dynamique",
     "DynamicSimulationStartTime": "Temps de début",
     "DynamicSimulationStopTime": "Temps d'arrêt",
-    "DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime": "Temps d'arrêt doit être supérieur ou égale au temps de début",
+    "DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime": "Temps d'arrêt doit être supérieur ou égal au temps de début",
     "DynamicSimulationMappingSelection": "Sélectionnez un mappage",
     "DynamicSimulationResultTab": "Page",
     "DynamicSimulationResultChart": "Graphe",
