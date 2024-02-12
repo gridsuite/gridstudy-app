@@ -73,7 +73,7 @@ const withOperatingStatusMenu =
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
-        const [equipmentStatus, setEquipmentStatus] = useState(null);
+        const [equipmentId, setEquipmentId] = useState(null);
 
         const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -91,7 +91,7 @@ const withOperatingStatusMenu =
                 false
             ).then((value) => {
                 if (value) {
-                    setEquipmentStatus(value);
+                    setEquipmentId(value);
                 }
             });
         }, [studyUuid, currentNode?.id, equipmentType, equipment.id]);
@@ -99,7 +99,7 @@ const withOperatingStatusMenu =
         const isNodeEditable = useMemo(
             function () {
                 return (
-                    equipmentStatus &&
+                    equipmentId &&
                     isNodeBuilt(currentNode) &&
                     !isNodeReadOnly(currentNode) &&
                     !isAnyNodeBuilding &&
@@ -107,7 +107,7 @@ const withOperatingStatusMenu =
                 );
             },
             [
-                equipmentStatus,
+                equipmentId,
                 currentNode,
                 isAnyNodeBuilding,
                 modificationInProgress,
@@ -133,7 +133,7 @@ const withOperatingStatusMenu =
 
         function handleLockout() {
             startModification();
-            lockoutEquipment(studyUuid, currentNode?.id, equipmentStatus).catch(
+            lockoutEquipment(studyUuid, currentNode?.id, equipmentId).catch(
                 (error) => {
                     handleError(error, 'UnableToLockout');
                 }
@@ -142,7 +142,7 @@ const withOperatingStatusMenu =
 
         function handleTrip() {
             startModification();
-            tripEquipment(studyUuid, currentNode?.id, equipmentStatus).catch(
+            tripEquipment(studyUuid, currentNode?.id, equipmentId).catch(
                 (error) => {
                     handleError(error, 'UnableToTrip');
                 }
@@ -154,7 +154,7 @@ const withOperatingStatusMenu =
             energiseEquipmentEnd(
                 studyUuid,
                 currentNode?.id,
-                equipmentStatus,
+                equipmentId,
                 side
             ).catch((error) => {
                 handleError(error, 'UnableToEnergiseOnOneEnd');
@@ -163,13 +163,11 @@ const withOperatingStatusMenu =
 
         function handleSwitchOn() {
             startModification();
-            switchOnEquipment(
-                studyUuid,
-                currentNode?.id,
-                equipmentStatus
-            ).catch((error) => {
-                handleError(error, 'UnableToSwitchOn');
-            });
+            switchOnEquipment(studyUuid, currentNode?.id, equipmentId).catch(
+                (error) => {
+                    handleError(error, 'UnableToSwitchOn');
+                }
+            );
         }
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
@@ -211,7 +209,7 @@ const withOperatingStatusMenu =
                         onClick={() => handleLockout()}
                         disabled={
                             !isNodeEditable ||
-                            equipmentStatus.operatingStatus === 'PLANNED_OUTAGE'
+                            equipmentId.operatingStatus === 'PLANNED_OUTAGE'
                         }
                     >
                         <ListItemIcon>
@@ -234,7 +232,7 @@ const withOperatingStatusMenu =
                     onClick={() => handleTrip()}
                     disabled={
                         !isNodeEditable ||
-                        equipmentStatus.operatingStatus === 'FORCED_OUTAGE'
+                        equipmentId.operatingStatus === 'FORCED_OUTAGE'
                     }
                 >
                     <ListItemIcon>
@@ -260,7 +258,7 @@ const withOperatingStatusMenu =
                         }
                         disabled={
                             !isNodeEditable ||
-                            equipmentStatus.operatingStatus === 'FORCED_OUTAGE'
+                            equipmentId.operatingStatus === 'FORCED_OUTAGE'
                         }
                     />
                 )}
@@ -270,8 +268,8 @@ const withOperatingStatusMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
                             !isNodeEditable ||
-                            (equipmentStatus.terminal1Connected &&
-                                !equipmentStatus.terminal2Connected)
+                            (equipmentId.terminal1Connected &&
+                                !equipmentId.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -289,8 +287,8 @@ const withOperatingStatusMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: equipmentStatus?.voltageLevelName1,
-                                                id: equipmentStatus?.voltageLevelId1,
+                                                name: equipmentId?.voltageLevelName1,
+                                                id: equipmentId?.voltageLevelId1,
                                             }),
                                         }
                                     )}
@@ -305,8 +303,8 @@ const withOperatingStatusMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
                             !isNodeEditable ||
-                            (equipmentStatus.terminal2Connected &&
-                                !equipmentStatus.terminal1Connected)
+                            (equipmentId.terminal2Connected &&
+                                !equipmentId.terminal1Connected)
                         }
                     >
                         <ListItemIcon>
@@ -324,8 +322,8 @@ const withOperatingStatusMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: equipmentStatus?.voltageLevelName2,
-                                                id: equipmentStatus?.voltageLevelId2,
+                                                name: equipmentId?.voltageLevelName2,
+                                                id: equipmentId?.voltageLevelId2,
                                             }),
                                         }
                                     )}
@@ -340,8 +338,8 @@ const withOperatingStatusMenu =
                         onClick={() => handleSwitchOn()}
                         disabled={
                             !isNodeEditable ||
-                            (equipmentStatus.terminal1Connected &&
-                                equipmentStatus.terminal2Connected)
+                            (equipmentId.terminal1Connected &&
+                                equipmentId.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
