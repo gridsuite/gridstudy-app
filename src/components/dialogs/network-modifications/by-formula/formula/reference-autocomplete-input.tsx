@@ -87,7 +87,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
             ) => handleFilterOptions(options, state)}
             formProps={{
                 helperText: intl.formatMessage({
-                    id: error?.message ? error.message : 'Use#ToSelectField',
+                    id: error?.message ? error.message : 'UseDashToSelectField',
                 }),
             }}
         />

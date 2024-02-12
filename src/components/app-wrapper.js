@@ -55,6 +55,8 @@ import aggrid_locale_en from '../translations/aggrid-locale-en';
 import aggrid_locale_fr from '../translations/aggrid-locale-fr';
 import backend_locale_en from '../translations/backend-locale-en';
 import backend_locale_fr from '../translations/backend-locale-fr';
+import dynamic_mapping_models_en from '../translations/dynamic-mapping-models-en';
+import dynamic_mapping_models_fr from '../translations/dynamic-mapping-models-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import {
@@ -245,6 +247,7 @@ const messages = {
         ...common_button_en,
         ...aggrid_locale_en,
         ...backend_locale_en,
+        ...dynamic_mapping_models_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -265,6 +268,7 @@ const messages = {
         ...common_button_fr,
         ...aggrid_locale_fr,
         ...backend_locale_fr,
+        ...dynamic_mapping_models_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
