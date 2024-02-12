@@ -101,8 +101,6 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
-    console.log(' is changing ', previousValues?.name ?? 'ddddd')
-
     const generatorNameField = (
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
