@@ -433,6 +433,7 @@ const CreateNodeMenu = ({
                 <CustomDialog
                     content={content}
                     onValidate={handleOnValidate}
+                    validateButtonLabel="button.delete"
                     onClose={handleOnClose}
                 />
             )}
