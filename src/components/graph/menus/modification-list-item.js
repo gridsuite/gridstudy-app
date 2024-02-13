@@ -16,7 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -69,102 +69,19 @@ export const ModificationListItem = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const [computedLabelValues, setComputedLabelValues] = useState();
-
-    /*
-        this version is more optimized because it uses a switch statement instead of a series of if-else statements.
-        this makes the code more readable and easier to maintain.
-        it also eliminate the need for the final if statement by using the default case of the switch statement instead.
-        finally, we uses the default value of equipmentId or empty string
-    */
-    const getComputedLabel = useCallback(() => {
-        const modificationMetadata = JSON.parse(modif.messageValues);
-
-        switch (modif.messageType) {
-            case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
-                return modificationMetadata.lineToSplitId;
-            case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
-                return modificationMetadata.lineToAttachToId;
-            case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
-                return modificationMetadata.attachedLineId;
-            case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
-                return (
-                    modificationMetadata.lineToAttachTo1Id +
-                    '/' +
-                    modificationMetadata.lineToAttachTo2Id
-                );
-            case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
-                return (
-                    modificationMetadata.attachedLineId +
-                    '/' +
-                    modificationMetadata.lineToAttachTo1Id +
-                    '/' +
-                    modificationMetadata.lineToAttachTo2Id
-                );
-            case MODIFICATION_TYPES.TABULAR_MODIFICATION.type:
-                return intl.formatMessage({
-                    id:
-                        'network_modifications/tabular/' +
-                        modificationMetadata.tabularModificationType,
-                });
-            case MODIFICATION_TYPES.BY_FILTER_DELETION.type:
-                return intl.formatMessage({
-                    id: modificationMetadata.equipmentType,
-                });
-            case MODIFICATION_TYPES.TABULAR_CREATION.type:
-                return intl.formatMessage({
-                    id:
-                        'network_modifications/tabular/' +
-                        modificationMetadata.tabularCreationType,
-                });
-            default:
-                return modificationMetadata.equipmentId || '';
-        }
-    }, [intl, modif]);
+    const { computeLabel } = useModificationLabelComputer();
 
     const toggle = useCallback(
         () => handleToggle(modif),
         [modif, handleToggle]
     );
 
-    const getBranchStatusModificationValues = (modification) => {
-        return {
-            action: modification.action,
-            energizedEnd: modification.energizedVoltageLevelId,
-            computedLabel: <strong>{modification.equipmentId}</strong>,
-        };
-    };
-
-    const getEquipmentAttributeModificationValues = (modification) => {
-        return {
-            equipmentAttributeName: modification.equipmentAttributeName,
-            equipmentAttributeValue: modification.equipmentAttributeValue,
-            computedLabel: <strong>{modification.equipmentId}</strong>,
-        };
-    };
-
     useEffect(() => {
         if (!studyUuid || !currentNode || !modif) {
             return;
         }
-        const modificationValues = JSON.parse(modif.messageValues);
-
-        switch (modif.messageType) {
-            case MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type:
-                setComputedLabelValues(
-                    getBranchStatusModificationValues(modificationValues)
-                );
-                break;
-            case MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type:
-                setComputedLabelValues(
-                    getEquipmentAttributeModificationValues(modificationValues)
-                );
-                break;
-            default:
-                setComputedLabelValues({
-                    computedLabel: <strong>{getComputedLabel()}</strong>,
-                });
-        }
-    }, [modif, studyUuid, currentNode, getComputedLabel]);
+        setComputedLabelValues(computeLabel(modif));
+    }, [modif, studyUuid, currentNode, setComputedLabelValues, computeLabel]);
 
     const getLabel = useCallback(() => {
         if (!modif || !computedLabelValues) {
