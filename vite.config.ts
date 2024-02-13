@@ -1,8 +1,7 @@
 import react from '@vitejs/plugin-react';
-import { PluginOption, transformWithEsbuild } from 'vite';
+import { PluginOption } from 'vite';
 import { defineConfig } from 'vite';
 import * as path from 'path';
-import { resolve } from 'path';
 import eslint from 'vite-plugin-eslint';
 import dts from 'vite-plugin-dts';
 import * as fs from 'fs/promises';
@@ -33,8 +32,8 @@ export default defineConfig({
                 plugins: ['@emotion/babel-plugin'],
             },
         }),
-        // eslint(),
-        // dts(),
+        eslint(),
+        dts(),
         svgr({ include: '**/*.svg' }), // default is { include: "**/*.svg?react" }
         reactVirtualized(),
         tsconfigPaths() // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
