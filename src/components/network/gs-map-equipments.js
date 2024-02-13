@@ -16,33 +16,14 @@ import {
     fetchSubstationsMapInfos,
 } from '../../services/study/network';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
+import { MapEquipments } from '@powsybl/diagram-viewer';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
     return map;
 };
 
-export default class MapEquipments {
-    substations = [];
-
-    substationsById = new Map();
-
-    lines = [];
-
-    linesById = new Map();
-
-    hvdcLines = [];
-
-    hvdcLinesById = new Map();
-
-    voltageLevels = [];
-
-    voltageLevelsById = new Map();
-
-    nominalVoltages = [];
-
-    intlRef = undefined;
-
+export default class GSMapEquipments extends MapEquipments {
     initEquipments(studyUuid, currentNodeUuid) {
         const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(
             studyUuid,
@@ -132,6 +113,7 @@ export default class MapEquipments {
     }
 
     constructor(studyUuid, currentNodeUuid, errHandler, dispatch, intlRef) {
+        super();
         this.dispatch = dispatch;
         this.errHandler = errHandler;
         this.intlRef = intlRef;
@@ -387,41 +369,5 @@ export default class MapEquipments {
                 break;
             default:
         }
-    }
-
-    getVoltageLevels() {
-        return this.voltageLevels;
-    }
-
-    getVoltageLevel(id) {
-        return this.voltageLevelsById.get(id);
-    }
-
-    getSubstations() {
-        return this.substations;
-    }
-
-    getSubstation(id) {
-        return this.substationsById.get(id);
-    }
-
-    getNominalVoltages() {
-        return this.nominalVoltages;
-    }
-
-    getLines() {
-        return this.lines;
-    }
-
-    getLine(id) {
-        return this.linesById.get(id);
-    }
-
-    getHvdcLines() {
-        return this.hvdcLines;
-    }
-
-    getHvdcLine(id) {
-        return this.hvdcLinesById.get(id);
     }
 }

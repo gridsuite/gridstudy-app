@@ -29,7 +29,7 @@ import {
     isSameNodeAndBuilt,
 } from './graph/util/model-functions';
 import { resetMapReloaded, setMapDataLoading } from '../redux/actions';
-import MapEquipments from './network/map-equipments';
+import GSMapEquipments from './network/gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
 import SubstationModificationDialog from './dialogs/network-modifications/substation/modification/substation-modification-dialog';
@@ -686,7 +686,7 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        new MapEquipments(
+        new GSMapEquipments(
             studyUuid,
             currentNode?.id,
             snackError,

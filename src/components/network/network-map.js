@@ -40,7 +40,7 @@ import {
     basemap_style_theme_key,
 } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import MapEquipments from './map-equipments';
+import GSMapEquipments from './gs-map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import EquipmentPopover from '.././tooltips/equipment-popover';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -581,7 +581,7 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
-    network: PropTypes.instanceOf(MapEquipments),
+    network: PropTypes.instanceOf(GSMapEquipments),
     geoData: PropTypes.instanceOf(GeoData),
     filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,
