@@ -6,7 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import { LineFlowMode, LineFlowColorMode } from '../../network/line-layer';
+import { LineFlowMode, LineFlowColorMode } from '@powsybl/diagram-viewer';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,

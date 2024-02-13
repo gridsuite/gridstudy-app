@@ -14,41 +14,41 @@ import React, {
     useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import withBranchMenu from './menus/branch-menu';
-import BaseEquipmentMenu from './menus/base-equipment-menu';
-import withEquipmentMenu from './menus/equipment-menu';
-import VoltageLevelChoice from './voltage-level-choice';
-import NominalVoltageFilter from './network/nominal-voltage-filter';
+import withBranchMenu from '../menus/branch-menu';
+import BaseEquipmentMenu from '../menus/base-equipment-menu';
+import withEquipmentMenu from '../menus/equipment-menu';
+import VoltageLevelChoice from '../voltage-level-choice';
+import NominalVoltageFilter from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
-} from '../utils/config-params';
+} from '../../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
     isNodeRenamed,
     isSameNodeAndBuilt,
-} from './graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../redux/actions';
-import GSMapEquipments from './network/gs-map-equipments';
+} from '../graph/util/model-functions';
+import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
-import { UPDATE_TYPE_HEADER } from './study-container';
-import SubstationModificationDialog from './dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
-import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
-import { deleteEquipment } from '../services/study/network-modifications';
-import EquipmentDeletionDialog from './dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import { UPDATE_TYPE_HEADER } from '../study-container';
+import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
+import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import LineModificationDialog from '../dialogs/network-modifications/line/modification/line-modification-dialog';
+import { deleteEquipment } from '../../services/study/network-modifications';
+import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import {
     fetchLinePositions,
     fetchSubstationPositions,
-} from '../services/study/geo-data';
+} from '../../services/study/geo-data';
 import { Box } from '@mui/system';
-import { useMapBoxToken } from './network/network-map/use-mapbox-token';
+import { useMapBoxToken } from './network-map/use-mapbox-token';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import EquipmentPopover from './tooltips/equipment-popover';
+import EquipmentPopover from '../tooltips/equipment-popover';
 const INITIAL_POSITION = [0, 0];
 
 const styles = {
