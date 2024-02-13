@@ -13,7 +13,18 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
     server: {
-        port: 3000
+        port: 3000,
+        proxy: {
+            '/api/gateway': {
+                target: 'http://localhost:9000',
+                rewrite: (path) => path.replace(/^\/api\/gateway/, ''),
+            },
+            '/ws/gateway': {
+                target: 'http://localhost:9000',
+                rewrite: (path) => path.replace(/^\/ws\/gateway/, ''),
+                ws: true,
+            },
+        },
     },
     plugins: [
         react({
