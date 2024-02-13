@@ -695,8 +695,15 @@ export function StudyContainer({ view, onChangeTab }) {
                 updatedEquipments.then((values) => {
                     dispatch(updateEquipments(values));
                 });
-                // could be all substations then what...
-                dispatch(setUpdatedSubstationsIds(substationsIds));
+                dispatch(
+                    setUpdatedSubstationsIds(
+                        collectionElementImpacts?.includes(
+                            EQUIPMENT_TYPES.SUBSTATION
+                        )
+                            ? undefined
+                            : substationsIds
+                    )
+                );
             }
         }
     }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
