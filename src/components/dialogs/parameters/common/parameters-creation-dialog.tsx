@@ -94,12 +94,14 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
 
     const onSubmit = useCallback(
         (values: FormData) => {
-            createParameter(
-                parameterFormatter(parameterValues()),
-                values.name,
-                parameterType,
-                defaultFolder.id
-            );
+            if (defaultFolder.id) {
+                createParameter(
+                    parameterFormatter(parameterValues()),
+                    values.name,
+                    parameterType,
+                    defaultFolder.id
+                );
+            }
         },
         [defaultFolder.id, parameterType, parameterValues, parameterFormatter]
     );
