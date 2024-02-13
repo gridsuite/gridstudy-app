@@ -25,6 +25,7 @@ import {
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
+import { mergeSx } from '../utils/functions';
 
 const styles = {
     iconSize: {
@@ -40,6 +41,15 @@ const styles = {
     displayName: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+    noArrows: {
+        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
+            {
+                display: 'none',
+            },
+        '& input[type=number]': {
+            MozAppearance: 'textfield',
+        },
     },
 };
 
@@ -357,7 +367,10 @@ const CustomHeaderComponent = ({
                                         ? FILTER_DATA_TYPES.NUMBER
                                         : FILTER_DATA_TYPES.TEXT,
                                 }}
-                                sx={styles.input}
+                                sx={mergeSx(
+                                    styles.input,
+                                    isNumberFilter && styles.noArrows
+                                )}
                             />
                         </Grid>
                     )}

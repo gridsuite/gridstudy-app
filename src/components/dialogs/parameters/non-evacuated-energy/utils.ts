@@ -191,8 +191,8 @@ export const getGenerationStagesSelectionParams = (
 export const getGeneratorsCappingsFormSchema = () => ({
     [SENSITIVITY_THRESHOLD]: yup
         .number()
-        .min(0, 'CoefficientLessThanZero')
-        .max(1, 'CoefficientGreaterThanOne')
+        .min(0, 'CoefficientMustBeGreaterOrEqualToZero')
+        .max(1, 'CoefficientMustBeLowerOrEqualToOne')
         .required(),
     [GENERATORS_CAPPINGS]: yup.array().of(
         yup.object().shape({
@@ -268,7 +268,7 @@ export const getMonitoredBranchesFormSchema = () => ({
                 }),
             [MONITORED_BRANCHES_COEFF_N]: yup
                 .number()
-                .min(0, 'CoefficientLessThanZero')
+                .min(0, 'CoefficientMustBeGreaterOrEqualToZero')
                 .required(),
             [MONITORED_BRANCHES_IST_N_1]: yup.boolean().required(),
             [MONITORED_BRANCHES_LIMIT_NAME_N_1]: yup
@@ -281,7 +281,7 @@ export const getMonitoredBranchesFormSchema = () => ({
                 }),
             [MONITORED_BRANCHES_COEFF_N_1]: yup
                 .number()
-                .min(0, 'CoefficientLessThanZero')
+                .min(0, 'CoefficientMustBeGreaterOrEqualToZero')
                 .required(),
             [ACTIVATED]: yup.boolean().required(),
         })
