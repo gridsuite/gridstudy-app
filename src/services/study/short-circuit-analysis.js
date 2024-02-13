@@ -189,3 +189,31 @@ export function fetchShortCircuitLimitViolationTypes() {
     console.debug(getShortCircuitParams);
     return backendFetchJson(getShortCircuitParams);
 }
+
+export function downloadShortCircuitResultZippedCsv(
+    studyUuid,
+    currentNodeUuid,
+    analysisType,
+    headersCsv,
+    enumValueTranslations
+) {
+    console.info(
+        `Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/shortcircuit/result/csv`;
+    const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
+    const param = new URLSearchParams({ type });
+    const urlWithParam = `${url}?${param.toString()}`;
+    console.debug(urlWithParam);
+    return backendFetch(urlWithParam, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ headersCsv, enumValueTranslations }),
+    });
+}

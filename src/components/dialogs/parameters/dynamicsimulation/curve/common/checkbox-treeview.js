@@ -52,7 +52,7 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
 });
 
 const CheckboxTreeview = forwardRef(
-    ({ data: items, checkAll, onSelectionChanged, ...rest }, ref) => {
+    ({ data: items, checkAll, onSelectionChanged, getLabel, ...rest }, ref) => {
         const initialItemStates = useMemo(() => {
             return items.map((elem) => ({
                 id: elem.id,
@@ -235,7 +235,7 @@ const CheckboxTreeview = forwardRef(
                                     handleItemSelect(event, elem.id)
                                 }
                             />
-                            {elem.name}
+                            {getLabel ? getLabel(elem) : elem.name}
                         </>
                     }
                 >
