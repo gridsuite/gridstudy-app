@@ -13,10 +13,14 @@ export const FetchStatus = {
     RUNNING: 'RUNNING',
 };
 
-export const getWsBase = () =>
-    document.baseURI
+export const getWsBase = () =>{
+    const origin = document.baseURI
+    console.log('FM origin', origin);
+    // const origin = new URL(document.baseURI).origin
+    return origin
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
+}
 
 export const getRequestParamFromList = (params, paramName) => {
     return new URLSearchParams(
@@ -135,16 +139,34 @@ const downloadFile = (blob, filename, type) => {
 };
 
 function fetchEnv() {
-    return fetch('env.json').then((res) => res.json());
+    //TODO FM make it works like before ?
+    // const basename = import.meta.env.BASE_URL;
+    // return fetch(basename + 'env.json').then((res) => {
+    return fetch('env.json').then((res) => {
+        console.log('FM res', res);
+        return res.json()
+    });
+}
+
+export function fetchIdpSettings() {
+    //TODO FM make it works like before ?
+    // const basename = import.meta.env.BASE_URL;
+    // return fetch(basename + 'idpSettings.json')
+    return fetch('idpSettings.json')
 }
 
 export function fetchAuthorizationCodeFlowFeatureFlag() {
     console.info(`Fetching authorization code flow feature flag...`);
     return fetchEnv()
-        .then((env) =>
-            fetch(env.appsMetadataServerUrl + '/authentication.json')
+        .then((env) => {
+            console.log('FM env', env);
+            return fetch(env.appsMetadataServerUrl + '/authentication.json')
+        }
         )
-        .then((res) => res.json())
+        .then((res) => {
+            console.log('FM res', res);
+            return res.json()
+        })
         .then((res) => {
             console.log(
                 `Authorization code flow is ${
@@ -174,7 +196,10 @@ export function fetchAppsAndUrls() {
 export function fetchVersion() {
     console.info(`Fetching global metadata...`);
     return fetchEnv()
-        .then((env) => fetch(env.appsMetadataServerUrl + '/version.json'))
+        .then((env) => {
+            console.log('FM env', env);
+            return fetch(env.appsMetadataServerUrl + '/version.json')
+        })
         .then((response) => response.json())
         .catch((reason) => {
             console.error('Error while fetching the version : ' + reason);
@@ -216,8 +241,7 @@ export function getUrlWithToken(baseUrl) {
 
 export function fetchMapBoxToken() {
     console.info(`Fetching MapBoxToken...`);
-    return fetch('env.json')
-        .then((res) => res.json())
+    return fetchEnv()
         .then((res) => {
             return res.mapBoxToken;
         });

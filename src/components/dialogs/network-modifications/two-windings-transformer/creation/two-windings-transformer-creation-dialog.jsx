@@ -89,7 +89,7 @@ import {
     LIMITS,
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
-} from 'components/utils/field-constants.js';
+} from 'components/utils/field-constants';
 import {
     getLimitsEmptyFormData,
     getLimitsFormData,

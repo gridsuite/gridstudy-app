@@ -64,7 +64,7 @@ import {
     LIMITS,
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
-} from 'components/utils/field-constants.js';
+} from 'components/utils/field-constants';
 import LimitsPane from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,

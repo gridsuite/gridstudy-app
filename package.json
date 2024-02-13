@@ -53,20 +53,21 @@
         "react-redux": "^8.0.0",
         "react-resizable": "^3.0.4",
         "react-router-dom": "^6.0.0",
-        "react-scripts": "^5.0.0",
-        "react-virtualized": "^9.21.2",
+        "react-virtualized": "^9.22.5",
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
         "typescript": "^5.0.4",
+        "uuid": "^9.0.1",
         "yup": "^1.0.0"
     },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test --watchAll=false --transformIgnorePatterns \"node_modules/(?!@gridsuite/commons-ui)/\"",
-        "eject": "react-scripts eject"
+        "watch": "vite watch",
+        "build": "vite build",
+        "test": "jest",
+        "start": "vite",
+        "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
     },
     "eslintConfig": {
         "extends": [
@@ -93,9 +94,18 @@
         ]
     },
     "devDependencies": {
+        "@babel/helper-builder-react-jsx": "7.15.4",
+        "@babel/preset-env": "^7.23.8",
+        "@babel/preset-react": "^7.23.3",
+        "@vitejs/plugin-react": "^4.2.1",
         "eslint-config-prettier": "^8.0.0",
         "eslint-plugin-prettier": "^4.0.0",
         "http-proxy-middleware": "^2.0.0",
-        "prettier": "^2.0.5"
+        "prettier": "^2.0.5",
+        "vite": "^5.0.11",
+        "vite-plugin-dts": "^3.7.1",
+        "vite-plugin-eslint": "^1.8.1",
+        "vite-plugin-svgr": "^4.2.0",
+        "vite-tsconfig-paths": "^4.3.1"
     }
 }

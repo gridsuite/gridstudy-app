@@ -273,7 +273,18 @@ const messages = {
     },
 };
 
+console.log('FM document.baseURI', document.baseURI);
+console.log('FM document.documentURI', document.documentURI);
+console.log('FM document.URL', document.URL);
+console.log('FM pathname', new URL(document.baseURI).pathname);
+console.log('FM hostname', new URL(document.baseURI).hostname);
+console.log('FM host', new URL(document.baseURI).host);
+console.log('FM origin', new URL(document.baseURI).origin);
+
+// const basename = new URL(document.baseURI).pathname;
+// const basename = import.meta.env.BASE_URL;
 const basename = new URL(document.querySelector('base').href).pathname;
+console.log('FM basename', basename);
 
 const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);

@@ -16,8 +16,8 @@ import {
     TagRenderer,
     TopBar,
 } from '@gridsuite/commons-ui';
-import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
-import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
+import GridStudyLogoLight from '../images/GridStudy_logo_light.svg';
+import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg';
 import { StudyView } from './study-pane';
 import {
     Badge,
