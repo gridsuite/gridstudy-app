@@ -15,7 +15,6 @@ import {
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
 } from '../../services/study/network';
-import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
