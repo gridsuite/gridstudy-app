@@ -49,16 +49,11 @@ import {
 import { fetchSecurityAnalysisProviders } from 'services/security-analysis';
 import {
     fetchDefaultSecurityAnalysisProvider,
-    fetchSecurityAnalysisProvider,
     getSecurityAnalysisParameters,
     setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from 'services/study/security-analysis';
-import {
-    fetchDefaultSensitivityAnalysisProvider,
-    fetchSensitivityAnalysisProvider,
-    updateSensitivityAnalysisProvider,
-} from 'services/study/sensitivity-analysis';
+import { fetchDefaultSensitivityAnalysisProvider } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import {
     SensitivityAnalysisParameters,
@@ -229,7 +224,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         'SecurityAnalysis',
         securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
-        fetchSecurityAnalysisProvider,
+        null,
         fetchDefaultSecurityAnalysisProvider,
         updateSecurityAnalysisProvider,
         getSecurityAnalysisParameters,
@@ -241,9 +236,9 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         'SensitivityAnalysis',
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
-        fetchSensitivityAnalysisProvider,
+        null,
         fetchDefaultSensitivityAnalysisProvider,
-        updateSensitivityAnalysisProvider
+        null
     );
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
