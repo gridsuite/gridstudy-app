@@ -13,7 +13,7 @@ import { LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
 import { fetchLoadFlowResult } from '../../../services/study/loadflow';
-import { LimiViolationResult } from './limi-violation-result';
+import { LimiViolationResult } from './limit-violation-result';
 import { REPORT_TYPES } from 'components/utils/report-type';
 import RunningStatus from 'components/utils/running-status';
 import { ReduxState } from 'redux/reducer.type';
