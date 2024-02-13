@@ -529,7 +529,8 @@ export function modifyGenerator(
     droop,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -580,6 +581,7 @@ export function modifyGenerator(
         maximumReactivePower: toModificationOperation(maximumReactivePower),
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -627,7 +629,8 @@ export function createGenerator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -680,6 +683,7 @@ export function createGenerator(
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
