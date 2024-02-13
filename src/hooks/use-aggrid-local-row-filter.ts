@@ -21,7 +21,7 @@ interface FilterModel {
 export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     filterSelectorKeys: Record<string, string>,
-    updateFilterCallback = () => {}
+    updateFilterCallback?: () => {}
 ): UseAggridRowFilterOutputType => {
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         filterSelectorKeys,
