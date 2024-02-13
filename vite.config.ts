@@ -38,9 +38,6 @@ export default defineConfig({
         reactVirtualized(),
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
     ],
-    esbuild: {
-        jsxInject: `import React from 'react'`, // because CRA was importing it automatically when missing... cf https://vitejs.dev/guide/features.html#jsx
-    },
 });
 
 // Workaround for react-virtualized with vite
