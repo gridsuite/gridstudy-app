@@ -14,7 +14,7 @@ import React, {
     useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import GeoData from './network/geo-data';
+import { GeoData } from '@powsybl/diagram-viewer';
 import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';

@@ -24,7 +24,7 @@ import { Map, NavigationControl, useControl } from 'react-map-gl';
 import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 
-import GeoData from './geo-data';
+import { GeoData } from '@powsybl/diagram-viewer';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
