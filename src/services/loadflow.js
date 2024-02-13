@@ -45,6 +45,8 @@ export function fetchLoadflowAvailableBranchSides() {
 export function fetchLoadflowAvailableComputationStatus() {
     console.info('fetch available computation status');
     const url = getLoadFlowUrl() + 'computation-status';
+    console.debug(url);
+    return backendFetchJson(url);
 }
 
 export function fetchLoadFlowParameters(parameterUuid) {
