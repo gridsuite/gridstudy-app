@@ -65,7 +65,7 @@ export const useModificationLabelComputer = () => {
             case MODIFICATION_TYPES.TABULAR_MODIFICATION.type:
                 return intl.formatMessage({
                     id:
-                        'network_modifications/tabular/' +
+                        'network_modifications.tabular.' +
                         modificationMetadata.tabularModificationType,
                 });
             case MODIFICATION_TYPES.BY_FILTER_DELETION.type:
@@ -75,7 +75,7 @@ export const useModificationLabelComputer = () => {
             case MODIFICATION_TYPES.TABULAR_CREATION.type:
                 return intl.formatMessage({
                     id:
-                        'network_modifications/tabular/' +
+                        'network_modifications.tabular.' +
                         modificationMetadata.tabularCreationType,
                 });
             default:

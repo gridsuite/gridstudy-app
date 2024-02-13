@@ -44,8 +44,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import networkModification_en from '../translations/external/network-modifications-en.json';
-import networkModification_fr from '../translations/external/network-modifications-fr.json';
+import network_modifications_locale_en from '../translations/dynamic/network-modifications-locale-en';
+import network_modifications_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import exportParameters_en from '../translations/external/export-parameters-en.json';
 import exportParameters_fr from '../translations/external/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
@@ -234,7 +234,7 @@ const messages = {
     en: {
         ...treeview_finder_en,
         ...messages_en,
-        ...networkModification_en,
+        ...network_modifications_locale_en,
         ...exportParameters_en,
         ...report_viewer_en,
         ...login_en,
@@ -256,7 +256,7 @@ const messages = {
     fr: {
         ...treeview_finder_fr,
         ...messages_fr,
-        ...networkModification_fr,
+        ...network_modifications_locale_fr,
         ...exportParameters_fr,
         ...report_viewer_fr,
         ...login_fr,
