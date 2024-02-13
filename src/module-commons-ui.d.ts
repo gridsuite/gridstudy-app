@@ -1,7 +1,7 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { RadioGroupProps, SxProps, TextFieldProps } from '@mui/material';
+    import { ButtonProps, RadioGroupProps, SxProps, TextFieldProps } from '@mui/material';
     import { CaseImportParameters } from 'services/network-conversion';
 
     export const DARK_THEME: String, LIGHT_THEME: String;
@@ -145,10 +145,9 @@ declare module '@gridsuite/commons-ui' {
 
     export const SwitchInput: FunctionComponent<SwitchInputProps>;
 
-    export const SubmitButton: FunctionComponent<{
-        onClick: () => void;
-        disabled?: boolean;
-    }>;
+    export const SubmitButton: FunctionComponent<ButtonProps>;
+
+    export const CancelButton: FunctionComponent<ButtonProps>;
 
     export const FieldLabel: FunctionComponent<{
         label: string;
@@ -174,8 +173,11 @@ declare module '@gridsuite/commons-ui' {
         DIRECTORY: 'DIRECTORY',
         STUDY: 'STUDY',
         FILTER: 'FILTER',
+        MODIFICATION: 'MODIFICATION',
         CONTINGENCY_LIST: 'CONTINGENCY_LIST',
         VOLTAGE_INIT_PARAMETERS: 'VOLTAGE_INIT_PARAMETERS',
+        SECURITY_ANALYSIS_PARAMETERS: 'SECURITY_ANALYSIS_PARAMETERS',
+        LOADFLOW_PARAMETERS: 'LOADFLOW_PARAMETERS',
     };
 
     interface OverflowableTextProps {

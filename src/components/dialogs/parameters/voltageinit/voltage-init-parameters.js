@@ -257,7 +257,6 @@ export const VoltageInitParameters = ({
                 setOpenSelectParameterDialog(false);
                 getVoltageInitParameters(newParams[0].id)
                     .then((parameters) => {
-                        console.log(parameters);
                         console.info(
                             'loading the following voltage init parameters : ' +
                                 parameters.uuid
@@ -416,8 +415,11 @@ export const VoltageInitParameters = ({
                 <CreateParameterDialog
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
-                    parameterGetValues={getValues}
+                    parameterValues={getValues}
                     parameterType={elementType.VOLTAGE_INIT_PARAMETERS}
+                    parameterFormatter={(newParams) =>
+                        formatNewParams(newParams)
+                    }
                 />
             )}
 

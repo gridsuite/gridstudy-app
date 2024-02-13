@@ -18,7 +18,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
@@ -28,6 +28,8 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
@@ -63,6 +65,7 @@ import VoltageInitModificationDialog from 'components/dialogs/network-modificati
 import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
 
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
@@ -74,9 +77,13 @@ import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
+import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
+import { fetchPath } from '../../../services/directory';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer';
+import { createModifications } from '../../../services/explore';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -156,6 +163,8 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
+    const [studyPath, setStudyPath] = useState(undefined);
+    const [saveInProgress, setSaveInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState([]);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -177,6 +186,7 @@ const NetworkModificationNodeEditor = () => {
         FetchStatus.IDLE
     );
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+    const [importDialogOpen, setImportDialogOpen] = useState(false);
 
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -184,6 +194,9 @@ const NetworkModificationNodeEditor = () => {
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef();
+
+    const { computeLabel } = useModificationLabelComputer();
+    const intl = useIntl();
 
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
@@ -235,7 +248,7 @@ const NetworkModificationNodeEditor = () => {
     const menuDefinition = [
         {
             id: 'CREATE',
-            label: 'Create',
+            label: 'menu.create',
             subItems: [
                 {
                     id: MODIFICATION_TYPES.BATTERY_CREATION.type,
@@ -282,6 +295,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VSC_CREATION.type,
                     label: 'VSC',
                     action: () => adapt(VscCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.TABULAR_CREATION.type,
+                    label: 'BY_TABLE',
+                    action: () => adapt(TabularCreationDialog),
                 },
             ],
         },
@@ -486,6 +504,14 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
+    const fetchDefaultDirectoryForStudy = useCallback(() => {
+        fetchPath(studyUuid).then((pathArray) => {
+            if (pathArray?.length > 0) {
+                setStudyPath(pathArray);
+            }
+        });
+    }, [studyUuid]);
+
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
@@ -585,7 +611,7 @@ const NetworkModificationNodeEditor = () => {
             ) {
                 // fetch modifications because it must have changed
                 // Do not clear the modifications list, because currentNode is the concerned one
-                // this allow to append new modifications to the existing list.
+                // this allows to append new modifications to the existing list.
                 dofetchNetworkModifications();
                 dispatch(
                     removeNotificationByNode([
@@ -603,6 +629,12 @@ const NetworkModificationNodeEditor = () => {
         cleanClipboard,
     ]);
 
+    useEffect(() => {
+        if (studyUuid) {
+            fetchDefaultDirectoryForStudy();
+        }
+    }, [studyUuid, fetchDefaultDirectoryForStudy]);
+
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] =
         useState(false);
 
@@ -619,10 +651,15 @@ const NetworkModificationNodeEditor = () => {
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
     };
+
     const openRestoreModificationDialog = useCallback(() => {
         dofetchNetworkModificationsToRestore();
         setRestoreDialogOpen(true);
     }, [dofetchNetworkModificationsToRestore]);
+
+    const openImportModificationsDialog = useCallback(() => {
+        setImportDialogOpen(true);
+    }, []);
 
     const doDeleteModification = useCallback(() => {
         const selectedModificationsUuid = [...selectedItems.values()].map(
@@ -653,6 +690,78 @@ const NetworkModificationNodeEditor = () => {
         cleanClipboard,
         copiedModifications,
     ]);
+
+    const buildModificationCreationProps = (modification, description) => {
+        // Element name will be like the displayed modification name.
+        // Note: having a unique name is done implicitly in explore-server
+        const modificationComputedLabel = intl
+            .formatMessage(
+                { id: 'network_modifications/' + modification.messageType },
+                {
+                    ...modification,
+                    ...computeLabel(modification, false),
+                }
+            )
+            .trim();
+        return {
+            elementUuid: modification.uuid,
+            description: description,
+            elementName: modificationComputedLabel,
+        };
+    };
+
+    const doCreateModificationsElements = () => {
+        // studyPath contains [studyElement, parentDirElement, parentDirElement, ..., RootDirElement]
+        const STUDY_ELEMENT_INDEX = 0;
+        const PARENT_DIRECTORY_INDEX = 1;
+        if (!studyPath || studyPath.length < 2) {
+            snackError({
+                messageTxt: 'unknown study directory',
+                headerId: 'errCreateModificationsMsg',
+            });
+            return;
+        }
+        const studyDirectoryUuid =
+            studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
+        const studyDirName =
+            '/' +
+            studyPath
+                .slice(PARENT_DIRECTORY_INDEX)
+                .reverse()
+                .map((r) => r.elementName)
+                .join('/');
+        const studyFullName =
+            studyDirName + '/' + studyPath[STUDY_ELEMENT_INDEX].elementName;
+        const description = intl.formatMessage(
+            { id: 'SaveModificationDescription' },
+            {
+                nodePath: studyFullName + ':' + currentNode.data.label,
+            }
+        );
+
+        const modificationPropsList = [...selectedItems].map((modification) =>
+            buildModificationCreationProps(modification, description)
+        );
+
+        setSaveInProgress(true);
+        snackInfo({
+            headerId: 'infoCreateModificationsMsg',
+            headerValues: {
+                nbModifications: selectedItems.size,
+                studyDirectory: studyDirName,
+            },
+        });
+        createModifications(studyDirectoryUuid, modificationPropsList)
+            .catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errCreateModificationsMsg',
+                });
+            })
+            .finally(() => {
+                setSaveInProgress(false);
+            });
+    };
 
     const selectedModificationsIds = useCallback(() => {
         const allModificationsIds = modifications.map((m) => m.uuid);
@@ -930,6 +1039,16 @@ const NetworkModificationNodeEditor = () => {
             />
         );
     };
+    const renderImportNetworkModificationsDialog = () => {
+        return (
+            <ImportModificationDialog
+                open={importDialogOpen}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                onClose={() => setImportDialogOpen(false)}
+            />
+        );
+    };
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
@@ -965,6 +1084,35 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <AddIcon />
                 </IconButton>
+                <Tooltip
+                    title={<FormattedMessage id={'InsertModificationFrom'} />}
+                >
+                    <span>
+                        <IconButton
+                            onClick={openImportModificationsDialog}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={isAnyNodeBuilding}
+                        >
+                            <CreateNewFolderIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
+                <Tooltip title={<FormattedMessage id={'SaveModificationTo'} />}>
+                    <span>
+                        <IconButton
+                            onClick={doCreateModificationsElements}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={
+                                !(selectedItems?.size > 0) ||
+                                saveInProgress === true
+                            }
+                        >
+                            <SaveIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
@@ -1061,6 +1209,7 @@ const NetworkModificationNodeEditor = () => {
                 </Tooltip>
             </Toolbar>
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
+            {importDialogOpen && renderImportNetworkModificationsDialog()}
 
             {renderPaneSubtitle()}
 

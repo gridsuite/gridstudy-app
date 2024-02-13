@@ -529,7 +529,8 @@ export function modifyGenerator(
     droop,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -580,6 +581,7 @@ export function modifyGenerator(
         maximumReactivePower: toModificationOperation(maximumReactivePower),
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -627,7 +629,8 @@ export function createGenerator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -680,6 +683,7 @@ export function createGenerator(
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -1780,5 +1784,38 @@ export function modifyByFormula(
             'Content-Type': 'application/json',
         },
         body: body,
+    });
+}
+
+export function createTabularCreation(
+    studyUuid,
+    currentNodeUuid,
+    creationType,
+    creations,
+    isUpdate,
+    modificationUuid
+) {
+    let createTabularCreationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating tabular creation');
+    } else {
+        console.info('Creating tabular creation');
+    }
+
+    return backendFetchText(createTabularCreationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TABULAR_CREATION.type,
+            creationType: creationType,
+            creations: creations,
+        }),
     });
 }
