@@ -13,7 +13,8 @@ import {
 } from './utils';
 import { getStudyUrlWithNodeUuid } from './study';
 
-const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-simulation';
+const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/dynamic-simulation';
 
 // -- Parameters API - BEGIN
 function getDynamicSimulationUrl() {

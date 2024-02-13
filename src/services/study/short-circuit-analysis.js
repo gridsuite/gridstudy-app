@@ -163,6 +163,7 @@ export function setShortCircuitParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
 export function invalidateShortCircuitStatus(studyUuid) {
     console.info('invalidate short circuit status');
     const invalidateShortCircuitStatusUrl =

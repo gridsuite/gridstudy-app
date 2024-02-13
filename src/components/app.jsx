@@ -102,7 +102,7 @@ import {
 import {
     fetchAuthorizationCodeFlowFeatureFlag,
     fetchDefaultParametersValues,
-    fetchIdpSettings
+    fetchIdpSettings,
 } from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import { defaultOptionalServicesState } from 'redux/reducer';
