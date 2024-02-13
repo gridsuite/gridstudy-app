@@ -1782,3 +1782,36 @@ export function modifyByFormula(
         body: body,
     });
 }
+
+export function createTabularCreation(
+    studyUuid,
+    currentNodeUuid,
+    creationType,
+    creations,
+    isUpdate,
+    modificationUuid
+) {
+    let createTabularCreationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating tabular creation');
+    } else {
+        console.info('Creating tabular creation');
+    }
+
+    return backendFetchText(createTabularCreationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TABULAR_CREATION.type,
+            creationType: creationType,
+            creations: creations,
+        }),
+    });
+}
