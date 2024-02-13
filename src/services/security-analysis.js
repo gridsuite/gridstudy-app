@@ -40,3 +40,13 @@ export function fetchSecurityAnalysisAvailableComputationStatus() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function fetchSecurityAnalysisParameters(parameterUuid) {
+    console.info('fetch security analysis parameters');
+    const url =
+        getSecurityAnalysisUrl() +
+        'parameters/' +
+        encodeURIComponent(parameterUuid);
+    console.debug(url);
+    return backendFetchJson(url);
+}

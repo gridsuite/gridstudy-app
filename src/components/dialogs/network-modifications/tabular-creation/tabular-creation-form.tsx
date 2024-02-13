@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -13,26 +13,25 @@ import {
     AutocompleteInput,
     ErrorInput,
     FieldErrorAlert,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import {
     CONNECTED,
-    CONNECTED1,
-    CONNECTED2,
     EQUIPMENT_ID,
-    MODIFICATIONS_TABLE,
+    CREATIONS_TABLE,
     TYPE,
     VOLTAGE_REGULATION_ON,
+    FREQUENCY_REGULATION,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button } from '@mui/material';
 import {
-    TABULAR_MODIFICATION_FIELDS,
+    TABULAR_CREATION_FIELDS,
     styles,
-} from './tabular-modification-utils';
+    TabularCreationField,
+} from './tabular-creation-utils';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     BooleanNullableCellRenderer,
@@ -41,44 +40,57 @@ import {
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community/dist/lib/main';
 
-const TabularModificationForm = () => {
+const TabularCreationForm = () => {
     const intl = useIntl();
 
-    const { snackWarning } = useSnackMessage();
-
-    const { setValue, clearErrors, getValues } = useFormContext();
+    const { setValue, clearErrors, setError, getValues } = useFormContext();
 
     const getTypeLabel = useCallback(
-        (type: string) =>
-            type === EQUIPMENT_TYPES.SHUNT_COMPENSATOR
-                ? intl.formatMessage({
-                      id: 'linearShuntCompensators',
-                  })
-                : intl.formatMessage({ id: type }),
+        (type: string) => intl.formatMessage({ id: type }),
         [intl]
     );
 
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
-            clearErrors(MODIFICATIONS_TABLE);
-            setValue(MODIFICATIONS_TABLE, results.data, {
+            clearErrors(CREATIONS_TABLE);
+            // check required fields are defined
+            let fieldNameInError: string = '';
+            results.data.every((result) => {
+                Object.keys(result).every((key) => {
+                    const found = TABULAR_CREATION_FIELDS[
+                        getValues(TYPE)
+                    ]?.find((field) => {
+                        return field.id === key;
+                    });
+                    if (
+                        found !== undefined &&
+                        found.required &&
+                        (result[key] === undefined || result[key] === null)
+                    ) {
+                        fieldNameInError = key;
+                        return false;
+                    }
+                    return true;
+                });
+                return fieldNameInError !== '';
+            });
+            setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
-            // For shunt compensators, display warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
-            if (
-                results.data.some(
-                    (modification) =>
-                        modification.maxSusceptance &&
-                        (modification.shuntCompensatorType ||
-                            modification.maxQAtNominalV)
-                )
-            ) {
-                snackWarning({
-                    messageId: 'TabularModificationShuntWarning',
+            if (fieldNameInError !== '') {
+                setError(CREATIONS_TABLE, {
+                    type: 'custom',
+                    message:
+                        intl.formatMessage({
+                            id: 'FieldRequired',
+                        }) +
+                        intl.formatMessage({
+                            id: fieldNameInError,
+                        }),
                 });
             }
         },
-        [clearErrors, setValue, snackWarning]
+        [clearErrors, setValue, getValues, setError, intl]
     );
 
     const watchType = useWatch({
@@ -86,12 +98,19 @@ const TabularModificationForm = () => {
     });
 
     const csvColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType];
+        return TABULAR_CREATION_FIELDS[watchType]?.map(
+            (field: TabularCreationField) => {
+                return field.id;
+            }
+        );
     }, [watchType]);
 
     const csvTranslatedColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
-            return intl.formatMessage({ id: field });
+        return TABULAR_CREATION_FIELDS[watchType]?.map((field) => {
+            return (
+                intl.formatMessage({ id: field.id }) +
+                (field.required ? ' (*)' : '')
+            );
         });
     }, [intl, watchType]);
 
@@ -101,14 +120,12 @@ const TabularModificationForm = () => {
             // First comment line contains header translation
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
             if (
-                !!intl.messages[
-                    'TabularModificationSkeletonComment/' + watchType
-                ]
+                !!intl.messages['TabularCreationSkeletonComment/' + watchType]
             ) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
                     intl.formatMessage({
-                        id: 'TabularModificationSkeletonComment/' + watchType,
+                        id: 'TabularCreationSkeletonComment/' + watchType,
                     }),
                 ]);
             }
@@ -118,7 +135,7 @@ const TabularModificationForm = () => {
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label: 'ImportModifications',
+        label: 'ImportCreations',
         header: csvColumns,
         maxTapNumber: undefined,
         disabled: !csvColumns,
@@ -126,14 +143,15 @@ const TabularModificationForm = () => {
     });
 
     const watchTable = useWatch({
-        name: MODIFICATIONS_TABLE,
+        name: CREATIONS_TABLE,
     });
 
     useEffect(() => {
         if (selectedFileError) {
-            setValue(MODIFICATIONS_TABLE, []);
-            clearErrors(MODIFICATIONS_TABLE);
+            setValue(CREATIONS_TABLE, []);
+            clearErrors(CREATIONS_TABLE);
         } else if (selectedFile) {
+            // @ts-ignore
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
@@ -141,11 +159,12 @@ const TabularModificationForm = () => {
                 comments: '#',
                 complete: handleComplete,
                 transformHeader: (header: string) => {
-                    // transform header to modification field
-                    const transformedHeader = TABULAR_MODIFICATION_FIELDS[
+                    // transform header to creation field
+                    const transformedHeader = TABULAR_CREATION_FIELDS[
                         getValues(TYPE)
                     ]?.find(
-                        (field) => intl.formatMessage({ id: field }) === header
+                        (field) =>
+                            intl.formatMessage({ id: field.id }) === header
                     );
                     return transformedHeader ?? header;
                 },
@@ -163,16 +182,16 @@ const TabularModificationForm = () => {
     ]);
 
     const typesOptions = useMemo(() => {
-        //only available types for tabular modification
-        return Object.keys(TABULAR_MODIFICATION_FIELDS).filter(
+        //only available types for tabular creation
+        return Object.keys(TABULAR_CREATION_FIELDS).filter(
             (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );
     }, []);
 
     const handleChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
-        clearErrors(MODIFICATIONS_TABLE);
-        setValue(MODIFICATIONS_TABLE, []);
+        clearErrors(CREATIONS_TABLE);
+        setValue(CREATIONS_TABLE, []);
     }, [clearErrors, setValue, typeChangedTrigger]);
 
     const equipmentTypeField = (
@@ -200,18 +219,19 @@ const TabularModificationForm = () => {
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_CREATION_FIELDS[watchType]?.map((field) => {
             const columnDef: ColDef = {};
-            if (field === EQUIPMENT_ID) {
+            if (field.id === EQUIPMENT_ID) {
                 columnDef.pinned = true;
             }
-            columnDef.field = field;
-            columnDef.headerName = intl.formatMessage({ id: field });
+            columnDef.field = field.id;
+            columnDef.headerName =
+                intl.formatMessage({ id: field.id }) +
+                (field.required ? ' (*)' : '');
             if (
-                field === VOLTAGE_REGULATION_ON ||
-                field === CONNECTED ||
-                field === CONNECTED1 ||
-                field === CONNECTED2
+                field.id === VOLTAGE_REGULATION_ON ||
+                field.id === CONNECTED ||
+                field.id === FREQUENCY_REGULATION
             ) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
@@ -242,7 +262,7 @@ const TabularModificationForm = () => {
                 </Grid>
                 <Grid item>
                     <ErrorInput
-                        name={MODIFICATIONS_TABLE}
+                        name={CREATIONS_TABLE}
                         InputField={FieldErrorAlert}
                     />
                     {selectedFileError && (
@@ -264,4 +284,4 @@ const TabularModificationForm = () => {
     );
 };
 
-export default TabularModificationForm;
+export default TabularCreationForm;
