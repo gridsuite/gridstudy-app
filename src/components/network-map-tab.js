@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NetworkMap } from '@powsybl/diagram-viewer';
+import { NetworkMap, GeoData } from '@powsybl/diagram-viewer';
 import React, {
     useCallback,
     useEffect,
@@ -14,14 +14,16 @@ import React, {
     useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import { GeoData } from '@powsybl/diagram-viewer';
 import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
+import {
+    PARAM_MAP_BASEMAP,
+    PARAM_MAP_MANUAL_REFRESH,
+} from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -45,6 +47,7 @@ import {
 import { Box } from '@mui/system';
 import { useMapBoxToken } from './network/network-map/use-mapbox-token';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import EquipmentPopover from './tooltips/equipment-popover';
 const INITIAL_POSITION = [0, 0];
 
@@ -89,6 +92,7 @@ export const NetworkMapTab = ({
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -1001,9 +1005,15 @@ export const NetworkMapTab = ({
             isManualRefreshBackdropDisplayed={
                 mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
             }
+            // only 2 things need this to ensure the map keeps the correct size:
+            // - changing study display mode because it changes the map container size
+            //   programmatically
+            // - changing visible when the map provider is changed in the settings because
+            //   it causes a render with the map container having display:none
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
-            triggerMapResizeOnChange={studyDisplayMode}
+            triggerMapResizeOnChange={[studyDisplayMode, visible]}
             renderPopover={renderLinePopover}
+            mapLibrary={basemap}
         />
     );
 
