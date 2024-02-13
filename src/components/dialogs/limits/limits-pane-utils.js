@@ -28,7 +28,7 @@ const temporaryLimitsTableValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup
         .number()
         .nullable()
-        .positive('permanentCurrentLimitGreaterThanZero'),
+        .positive('permanentCurrentLimitMustBeGreaterThanZero'),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(

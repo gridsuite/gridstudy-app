@@ -84,7 +84,7 @@ const formSchema = yup.object().shape({
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
-        .min(0, 'ShortCircuitCurrentLimitNotNegative')
+        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
         .max(
             yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
             'ShortCircuitCurrentLimitMinMaxError'
@@ -92,7 +92,7 @@ const formSchema = yup.object().shape({
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
-        .min(0, 'ShortCircuitCurrentLimitNotNegative')
+        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
         .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
             is: (lowShortCircuitCurrentLimit) =>
                 lowShortCircuitCurrentLimit != null,
