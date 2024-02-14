@@ -1,7 +1,12 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { ButtonProps, RadioGroupProps, SxProps, TextFieldProps } from '@mui/material';
+    import {
+        ButtonProps,
+        RadioGroupProps,
+        SxProps,
+        TextFieldProps,
+    } from '@mui/material';
     import { CaseImportParameters } from 'services/network-conversion';
 
     export const DARK_THEME: String, LIGHT_THEME: String;
