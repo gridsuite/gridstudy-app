@@ -4,6 +4,7 @@
     "license": "MPL-2.0",
     "homepage": ".",
     "private": true,
+    "type": "module",
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
