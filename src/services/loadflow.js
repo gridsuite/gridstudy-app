@@ -27,3 +27,11 @@ export function getLoadFlowSpecificParametersDescription() {
     console.debug(getLoadFlowSpecificParametersUrl);
     return backendFetchJson(getLoadFlowSpecificParametersUrl);
 }
+
+export function fetchLoadFlowParameters(parameterUuid) {
+    console.info('fetch load flow parameters');
+    const url =
+        getLoadFlowUrl() + 'parameters/' + encodeURIComponent(parameterUuid);
+    console.debug(url);
+    return backendFetchJson(url);
+}

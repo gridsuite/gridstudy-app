@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Autocomplete, Chip, Grid, TextField } from '@mui/material';
 import {
     DropDown,
@@ -16,7 +16,11 @@ import {
     styles,
 } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { FlatParameters } from '@gridsuite/commons-ui';
+import {
+    elementType,
+    FlatParameters,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import {
@@ -25,6 +29,9 @@ import {
 } from '../../../utils/config-params';
 import { ParameterType, ParamLine, ParameterGroup } from './widget';
 import { mergeSx } from '../../utils/functions';
+import CreateParameterDialog from './common/parameters-creation-dialog';
+import DirectoryItemSelector from '../../directory-item-selector';
+import { fetchLoadFlowParameters } from '../../../services/loadflow';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = LocalizedCountries();
@@ -447,6 +454,12 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     const [specificCurrentParams, setSpecificCurrentParams] = useState(
         params['specificParametersPerProvider']
     );
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
+        useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
+        useState(false);
+    const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const onSpecificParamChange = (paramName, newValue) => {
         const specificParamDescr = Object.values(
@@ -528,7 +541,42 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             ([key]) => !key.includes('DynaFlow') || enableDeveloperMode
         )
     );
+    const handleLoadParameter = useCallback(
+        (newParams) => {
+            if (newParams && newParams.length > 0) {
+                setOpenSelectParameterDialog(false);
+                fetchLoadFlowParameters(newParams[0].id)
+                    .then((parameters) => {
+                        console.info(
+                            'loading the following loadflow parameters : ' +
+                                parameters.uuid
+                        );
 
+                        const specParamsToSave = {
+                            [provider]:
+                                parameters?.specificParametersPerProvider[
+                                    provider
+                                ],
+                        };
+                        const commitParameters = fusionSpecificWithOtherParams(
+                            parameters,
+                            specParamsToSave
+                        );
+                        updateParameters(commitParameters);
+                        setSpecificCurrentParams(specParamsToSave);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [snackError, updateParameters, provider]
+    );
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
@@ -591,6 +639,14 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 )}
             >
                 <LabelledButton
+                    callback={() => setOpenSelectParameterDialog(true)}
+                    label="loadParameters"
+                />
+                <LabelledButton
+                    callback={() => setOpenCreateParameterDialog(true)}
+                    label="save"
+                />
+                <LabelledButton
                     callback={resetLfParametersAndLfProvider}
                     label="resetToDefault"
                 />
@@ -599,6 +655,30 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     label="resetProviderValuesToDefault"
                 />
             </Grid>
+            {openCreateParameterDialog && (
+                <CreateParameterDialog
+                    open={openCreateParameterDialog}
+                    onClose={() => setOpenCreateParameterDialog(false)}
+                    parameterValues={() => params}
+                    parameterFormatter={(newParams) => newParams}
+                    parameterType={elementType.LOADFLOW_PARAMETERS}
+                />
+            )}
+            {openSelectParameterDialog && (
+                <DirectoryItemSelector
+                    open={openSelectParameterDialog}
+                    onClose={handleLoadParameter}
+                    types={[elementType.LOADFLOW_PARAMETERS]}
+                    title={intl.formatMessage({
+                        id: 'showSelectParameterDialog',
+                    })}
+                    onlyLeaves={true}
+                    multiselect={false}
+                    validationButtonText={intl.formatMessage({
+                        id: 'validate',
+                    })}
+                />
+            )}
         </>
     );
 };
