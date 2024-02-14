@@ -61,6 +61,8 @@ import filter_locale_en from '../translations/dynamic/filter-locale-en';
 import filter_locale_fr from '../translations/dynamic/filter-locale-fr';
 import menu_locale_en from '../translations/dynamic/menu-locale-en';
 import menu_locale_fr from '../translations/dynamic/menu-locale-fr';
+import table_locale_en from '../translations/dynamic/table-locale-en';
+import table_locale_fr from '../translations/dynamic/table-locale-fr';
 import errors_locale_en from '../translations/dynamic/errors-locale-en';
 import errors_locale_fr from '../translations/dynamic/errors-locale-fr';
 import { store } from '../redux/store';
@@ -256,6 +258,7 @@ const messages = {
         ...csv_locale_en,
         ...filter_locale_en,
         ...menu_locale_en,
+        ...table_locale_en,
         ...errors_locale_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
@@ -280,6 +283,7 @@ const messages = {
         ...csv_locale_fr,
         ...filter_locale_fr,
         ...menu_locale_fr,
+        ...table_locale_fr,
         ...errors_locale_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
