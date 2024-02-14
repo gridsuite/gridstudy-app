@@ -52,8 +52,8 @@ const network_modifications_locale_fr = {
         'Création du transformateur à 2 enroulements {computedLabel}',
     'network_modifications.TWO_WINDINGS_TRANSFORMER_MODIFICATION':
         'Modification du transformateur à 2 enroulements {computedLabel}',
-    'network_modifications.BRANCH_STATUS_MODIFICATION':
-        '{action, select, TRIP {Déclenchement de {computedLabel}} LOCKOUT {Consignation de {computedLabel}} ENERGISE_END_ONE {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} ENERGISE_END_TWO {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} SWITCH_ON {Mise en service de {computedLabel}} other {Modification du statut de la branche {computedLabel}}}',
+    'network_modifications.OPERATING_STATUS_MODIFICATION':
+        "{action, select, TRIP {Déclenchement de {computedLabel}} LOCKOUT {Consignation de {computedLabel}} ENERGISE_END_ONE {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} ENERGISE_END_TWO {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} SWITCH_ON {Mise en service de {computedLabel}} other {Modification du statut opérationnel de l'équipement {computedLabel}}}",
     'network_modifications.SHUNT_COMPENSATOR_CREATION':
         "Création d'un moyen de compensation {computedLabel}",
     'network_modifications.SHUNT_COMPENSATOR_MODIFICATION':

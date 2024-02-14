@@ -46,8 +46,8 @@ const network_modifications_locale_en = {
         'Creating 2 windings transformer {computedLabel}',
     'network_modifications.TWO_WINDINGS_TRANSFORMER_MODIFICATION':
         'Modifying 2 windings transformer {computedLabel}',
-    'network_modifications.BRANCH_STATUS_MODIFICATION':
-        '{action, select, TRIP {Trip {computedLabel}} LOCKOUT {Lock out {computedLabel}} ENERGISE_END_ONE {Energise {computedLabel} on {energizedEnd}} ENERGISE_END_TWO {Energise {computedLabel} on {energizedEnd}} SWITCH_ON {Switch on {computedLabel}} other {Branch status modification {computedLabel}}}',
+    'network_modifications.OPERATING_STATUS_MODIFICATION':
+        '{action, select, TRIP {Trip {computedLabel}} LOCKOUT {Lock out {computedLabel}} ENERGISE_END_ONE {Energise {computedLabel} on {energizedEnd}} ENERGISE_END_TWO {Energise {computedLabel} on {energizedEnd}} SWITCH_ON {Switch on {computedLabel}} other {Equipment operating status modification {computedLabel}}}',
     'network_modifications.SHUNT_COMPENSATOR_CREATION':
         'Creating shunt compensator {computedLabel}',
     'network_modifications.SHUNT_COMPENSATOR_MODIFICATION':
