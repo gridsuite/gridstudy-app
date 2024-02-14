@@ -7,6 +7,7 @@
 
 import React, {
     forwardRef,
+    useCallback,
     useEffect,
     useImperativeHandle,
     useMemo,
@@ -48,6 +49,8 @@ import { fetchMapBoxToken } from '../../services/utils';
 import { Box } from '@mui/system';
 
 import { MapboxOverlay } from '@deck.gl/mapbox';
+import DrawControl from './draw-control';
+import ControlPanel from './control-panel';
 
 // MouseEvent.button https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
 const MOUSE_EVENT_BUTTON_LEFT = 0;
@@ -101,6 +104,7 @@ const NetworkMap = (props) => {
     const [centered, setCentered] = useState(INITIAL_CENTERED);
     const lastViewStateRef = useRef(null);
     const [tooltip, setTooltip] = useState({});
+    const [features, setFeatures] = useState({});
     const theme = useTheme();
     const foregroundNeutralColor = useMemo(() => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
@@ -504,55 +508,91 @@ const NetworkMap = (props) => {
         setCentered(INITIAL_CENTERED);
     }, [mapLib?.key]);
 
+    const onUpdate = useCallback((e) => {
+        setFeatures((currFeatures) => {
+            const newFeatures = { ...currFeatures };
+            for (const f of e.features) {
+                newFeatures[f.id] = f;
+            }
+            return newFeatures;
+        });
+    }, []);
+
+    const onDelete = useCallback((e) => {
+        setFeatures((currFeatures) => {
+            const newFeatures = { ...currFeatures };
+            for (const f of e.features) {
+                delete newFeatures[f.id];
+            }
+            return newFeatures;
+        });
+    }, []);
+
     return (
         mapLib && (
-            <Map
-                ref={mapRef}
-                style={{ zIndex: 0 }}
-                {...mapLib}
-                onMove={onViewStateChange}
-                doubleClickZoom={false}
-                mapStyle={theme[basemap_style_theme_key(basemap)]}
-                preventStyleDiffing={true}
-                initialViewState={initialViewState}
-                cursor={cursorHandler()} //TODO needed for pointer on our features, but forces us to reeimplement grabbing/grab for panning. Can we avoid reimplementing?
-                onDrag={() => setDragging(true)}
-                onDragEnd={() => setDragging(false)}
-                onContextMenu={onMapContextMenu}
-            >
-                {props.displayOverlayLoader && renderOverlay()}
-                {mapManualRefresh &&
-                    reloadMapNeeded &&
-                    isNodeBuilt(currentNode) && (
-                        <Box sx={styles.mapManualRefreshBackdrop}>
-                            <Button
-                                onClick={props.onReloadMapClick}
-                                aria-label="reload"
-                                color="inherit"
-                                size="large"
-                            >
-                                <ReplayIcon />
-                                <FormattedMessage id="ManuallyRefreshGeoData" />
-                            </Button>
-                        </Box>
-                    )}
-                <DeckGLOverlay
-                    ref={deckRef}
-                    onClick={(info, event) => {
-                        onClickHandler(
-                            info,
-                            event.srcEvent,
-                            props.mapEquipments
-                        );
-                    }}
-                    onAfterRender={onAfterRender} // TODO simplify this
-                    layers={layers}
-                    pickingRadius={PICKING_RADIUS}
-                />
-                {showTooltip && renderTooltip()}
-                {/* visualizePitch true makes the compass reset the pitch when clicked in addition to visualizing it */}
-                <NavigationControl visualizePitch={true} />
-            </Map>
+            <>
+                <Map
+                    ref={mapRef}
+                    style={{ zIndex: 0 }}
+                    {...mapLib}
+                    onMove={onViewStateChange}
+                    doubleClickZoom={false}
+                    mapStyle={theme[basemap_style_theme_key(basemap)]}
+                    preventStyleDiffing={true}
+                    initialViewState={initialViewState}
+                    cursor={cursorHandler()} //TODO needed for pointer on our features, but forces us to reeimplement grabbing/grab for panning. Can we avoid reimplementing?
+                    onDrag={() => setDragging(true)}
+                    onDragEnd={() => setDragging(false)}
+                    onContextMenu={onMapContextMenu}
+                >
+                    {props.displayOverlayLoader && renderOverlay()}
+                    {mapManualRefresh &&
+                        reloadMapNeeded &&
+                        isNodeBuilt(currentNode) && (
+                            <Box sx={styles.mapManualRefreshBackdrop}>
+                                <Button
+                                    onClick={props.onReloadMapClick}
+                                    aria-label="reload"
+                                    color="inherit"
+                                    size="large"
+                                >
+                                    <ReplayIcon />
+                                    <FormattedMessage id="ManuallyRefreshGeoData" />
+                                </Button>
+                            </Box>
+                        )}
+                    <DeckGLOverlay
+                        ref={deckRef}
+                        onClick={(info, event) => {
+                            onClickHandler(
+                                info,
+                                event.srcEvent,
+                                props.mapEquipments
+                            );
+                        }}
+                        onAfterRender={onAfterRender} // TODO simplify this
+                        layers={layers}
+                        pickingRadius={PICKING_RADIUS}
+                    />
+                    {showTooltip && renderTooltip()}
+                    {/* visualizePitch true makes the compass reset the pitch when clicked in addition to visualizing it */}
+                    <NavigationControl visualizePitch={true} />
+
+                    <DrawControl
+                        position="top-left"
+                        displayControlsDefault={false}
+                        controls={{
+                            polygon: true,
+                            trash: true,
+                        }}
+                        defaultMode="draw_polygon"
+                        onCreate={onUpdate}
+                        onUpdate={onUpdate}
+                        onDelete={onDelete}
+                    />
+                </Map>
+                <ControlPanel polygons={Object.values(features)} />
+            </>
         )
     );
 };
