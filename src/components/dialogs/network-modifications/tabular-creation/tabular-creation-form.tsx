@@ -120,12 +120,12 @@ const TabularCreationForm = () => {
             // First comment line contains header translation
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
             if (
-                !!intl.messages['TabularCreationSkeletonComment/' + watchType]
+                !!intl.messages['TabularCreationSkeletonComment.' + watchType]
             ) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
                     intl.formatMessage({
-                        id: 'TabularCreationSkeletonComment/' + watchType,
+                        id: 'TabularCreationSkeletonComment.' + watchType,
                     }),
                 ]);
             }

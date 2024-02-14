@@ -88,7 +88,7 @@ export const ModificationListItem = ({
             return null;
         }
         return intl.formatMessage(
-            { id: 'network_modifications/' + modif.messageType },
+            { id: 'network_modifications.' + modif.messageType },
             {
                 ...modif,
                 ...computedLabelValues,
