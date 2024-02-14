@@ -67,6 +67,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         colKey: defaultSortColumn,
         sortWay: defaultSortOrder,
+        secColKey: '',
+        secSortWay: defaultSortOrder,
     });
     const initTable = (nOrNkIndex) => {
         initFilters();

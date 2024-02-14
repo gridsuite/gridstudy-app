@@ -10,10 +10,17 @@ import { useCallback, useState } from 'react';
 export type SortConfigType = {
     colKey: string;
     sortWay: number;
+    secColKey: string;
+    secSortWay: number;
 };
 
 export type SortPropsType = {
-    onSortChanged: (colKey: string, sortWay: number) => void;
+    onSortChanged: (
+        colKey: string,
+        sortWay: number,
+        secColKey: string,
+        secSortWay: number
+    ) => void;
     sortConfig: SortConfigType;
     initSort?: (colKey: string) => void;
 };
@@ -34,20 +41,44 @@ export const getSortValue = (sortWay: number) => {
 export const useAgGridSort = (
     initSortConfig: SortConfigType
 ): SortPropsType => {
-    const { colKey: initColKey, sortWay: initSortWay } = initSortConfig;
+    const {
+        colKey: initColKey,
+        sortWay: initSortWay,
+        secColKey: initSecColKey,
+        secSortWay: initSecSortWay,
+    } = initSortConfig;
 
     const [sortConfig, setSortConfig] = useState<SortConfigType>({
         colKey: initColKey,
         sortWay: initSortWay,
+        secColKey: initSecColKey,
+        secSortWay: initSecSortWay,
     });
 
     const onSortChanged = useCallback(
-        (colKey: string, sortWay: number) => setSortConfig({ colKey, sortWay }),
+        (
+            colKey: string,
+            sortWay: number,
+            secColKey: string,
+            secSortWay: number
+        ) =>
+            setSortConfig({
+                colKey: colKey,
+                sortWay: sortWay,
+                secColKey: secColKey,
+                secSortWay: secSortWay,
+            }),
         []
     );
 
     const initSort = useCallback(
-        (colKey: string) => setSortConfig({ colKey, sortWay: initSortWay }),
+        (colKey: string) =>
+            setSortConfig({
+                colKey: colKey,
+                sortWay: initSortWay,
+                secColKey: colKey,
+                secSortWay: initSortWay,
+            }),
         [initSortWay]
     );
 

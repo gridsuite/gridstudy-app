@@ -15,5 +15,10 @@ declare module 'ag-grid-community' {
         fractionDigits?: number;
         crossValidation?: CrossValidationOptions;
         displayConversionMode?: DISPLAY_CONVERSION_MODE;
+        /**
+         * If true, this column is used for a secondary sort after another column which is the primary sort column
+         * If false, this is a regular column which triggers a regular primary sort
+         */
+        secondarySort?: boolean;
     }
 }

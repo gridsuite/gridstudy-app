@@ -62,7 +62,12 @@ const CustomHeaderComponent = ({
     } = filterParams;
 
     const {
-        sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
+        sortConfig: {
+            colKey: sortColKey,
+            sortWay,
+            secColKey: secSortColKey,
+            secSortWay,
+        } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
 
@@ -70,6 +75,7 @@ const CustomHeaderComponent = ({
         filterDataType === FILTER_DATA_TYPES.TEXT && !!filterOptions?.length;
     const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
     const isColumnSorted = sortColKey === field;
+    const isColumnSecSorted = secSortColKey === field;
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -139,20 +145,28 @@ const CustomHeaderComponent = ({
 
     const handleSortChange = useCallback(() => {
         let newSort;
-        if (!isColumnSorted) {
-            newSort = SORT_WAY.asc;
-        } else {
+        if (isColumnSorted) {
+            // primary sort changed
             if (sortWay < 0) {
                 newSort = SORT_WAY.asc;
             } else {
                 newSort = SORT_WAY.desc;
             }
+        } else if (isColumnSecSorted) {
+            // secondary sort changed
+            if (secSortWay < 0) {
+                newSort = SORT_WAY.asc;
+            } else {
+                newSort = SORT_WAY.desc;
+            }
+        } else {
+            newSort = SORT_WAY.asc;
         }
 
         if (typeof onSortChanged === 'function') {
             onSortChanged(newSort);
         }
-    }, [isColumnSorted, onSortChanged, sortWay]);
+    }, [isColumnSorted, isColumnSecSorted, onSortChanged, sortWay, secSortWay]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
@@ -226,6 +240,21 @@ const CustomHeaderComponent = ({
                                     <Grid item>
                                         <IconButton>
                                             {sortWay === SORT_WAY.asc ? (
+                                                <ArrowUpward
+                                                    sx={styles.iconSize}
+                                                />
+                                            ) : (
+                                                <ArrowDownward
+                                                    sx={styles.iconSize}
+                                                />
+                                            )}
+                                        </IconButton>
+                                    </Grid>
+                                )}
+                                {isColumnSecSorted && (
+                                    <Grid item>
+                                        <IconButton>
+                                            {secSortWay === SORT_WAY.asc ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />

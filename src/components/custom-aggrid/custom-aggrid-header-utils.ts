@@ -25,6 +25,7 @@ export const makeAgGridCustomHeaderColumn = ({
         fractionDigits,
         numeric,
         displayConversionMode = DISPLAY_CONVERSION.NONE,
+        secondarySort = false,
     } = props;
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
@@ -36,9 +37,10 @@ export const makeAgGridCustomHeaderColumn = ({
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;
     const isCurrentColumnSorted = sortConfig?.colKey === field;
+    const isColumnSecondarySorted = sortConfig?.secColKey === field;
 
     let minWidth = 75;
-    if (isSortable && isCurrentColumnSorted) {
+    if (isSortable && (isCurrentColumnSorted || isColumnSecondarySorted)) {
         minWidth += 30;
     }
     if (isFilterable) {
@@ -62,7 +64,25 @@ export const makeAgGridCustomHeaderColumn = ({
             sortParams: {
                 sortConfig,
                 onSortChanged: (newSortValue: number = 0) => {
-                    onSortChanged(field, newSortValue);
+                    if (sortConfig !== undefined) {
+                        if (secondarySort) {
+                            // only the secondary sort changed
+                            onSortChanged(
+                                sortConfig.colKey,
+                                sortConfig.sortWay,
+                                field,
+                                newSortValue
+                            );
+                        } else {
+                            // only the primary sort changed
+                            onSortChanged(
+                                field,
+                                newSortValue,
+                                sortConfig.secColKey,
+                                sortConfig.secSortWay
+                            );
+                        }
+                    }
                 },
             },
             isFilterable,

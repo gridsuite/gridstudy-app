@@ -98,6 +98,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const { onSortChanged, sortConfig } = useAgGridSort({
         colKey: defaultSortKey,
         sortWay: defaultSortWay,
+        secColKey: '',
+        secSortWay: defaultSortWay,
     });
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
@@ -132,7 +134,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        const { colKey, sortWay } = sortConfig || {};
+        const { colKey, sortWay, secColKey, secSortWay } = sortConfig || {};
 
         const selector = {
             page,
@@ -140,7 +142,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             filter: filterSelector,
             sort: {
                 colKey: fromFrontColumnToBackKeys[colKey],
-                sortWay,
+                sortWay: sortWay,
+                secColKey: fromFrontColumnToBackKeys[secColKey],
+                secSortWay: secSortWay,
             },
         };
 
