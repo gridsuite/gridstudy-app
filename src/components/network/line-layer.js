@@ -280,7 +280,7 @@ class LineLayer extends CompositeLayer {
                         });
 
                         linesStatus.set(line.id, {
-                            branchStatus: line.branchStatus,
+                            operatingStatus: line.operatingStatus,
                         });
 
                         const key = this.genLineKey(line);
@@ -305,7 +305,7 @@ class LineLayer extends CompositeLayer {
                         terminal2Connected: line1.terminal2Connected,
                     });
                     linesStatus.set(line1.id, {
-                        branchStatus: line1.branchStatus,
+                        operatingStatus: line1.operatingStatus,
                     });
                 });
             }
@@ -426,13 +426,13 @@ class LineLayer extends CompositeLayer {
         ) {
             //add icons
             compositeData.forEach((compositeData) => {
-                compositeData.branchStatus = [];
+                compositeData.operatingStatus = [];
                 compositeData.lines.forEach((line) => {
                     let lineStatus = linesStatus.get(line.id);
                     if (
                         lineStatus !== undefined &&
-                        lineStatus.branchStatus !== undefined &&
-                        lineStatus.branchStatus !== 'IN_OPERATION'
+                        lineStatus.operatingStatus !== undefined &&
+                        lineStatus.operatingStatus !== 'IN_OPERATION'
                     ) {
                         let lineData = compositeData.lineMap.get(line.id);
                         let coordinatesIcon =
@@ -448,8 +448,8 @@ class LineLayer extends CompositeLayer {
                                 line.proximityFactorEnd
                             );
                         if (coordinatesIcon !== null) {
-                            compositeData.branchStatus.push({
-                                status: lineStatus.branchStatus,
+                            compositeData.operatingStatus.push({
+                                status: lineStatus.operatingStatus,
                                 printPosition: [
                                     coordinatesIcon.position.longitude,
                                     coordinatesIcon.position.latitude,
@@ -952,17 +952,19 @@ class LineLayer extends CompositeLayer {
             // line status
             const lineStatusIconLayer = new IconLayer(
                 this.getSubLayerProps({
-                    id: 'BranchStatus' + compositeData.nominalVoltage,
-                    data: compositeData.branchStatus,
+                    id: 'OperatingStatus' + compositeData.nominalVoltage,
+                    data: compositeData.operatingStatus,
                     // The position passed to this layer causes a bug when zooming and maxParallelOffset is reached:
                     // the icon is not correctly positioned on the lines, they are slightly off.
                     // In the custom layers, we clamp the distanceBetweenLines. This is not done in the deck.gl TextLayer
                     // and IconLayer or in the position calculated here.
-                    getPosition: (branchStatus) => branchStatus.printPosition,
-                    getIcon: (branchStatus) => getLineIcon(branchStatus.status),
+                    getPosition: (operatingStatus) =>
+                        operatingStatus.printPosition,
+                    getIcon: (operatingStatus) =>
+                        getLineIcon(operatingStatus.status),
                     getSize: this.props.iconSize,
-                    getColor: (branchStatus) => this.props.labelColor,
-                    getPixelOffset: (branchStatus) => branchStatus.offset,
+                    getColor: (operatingStatus) => this.props.labelColor,
+                    getPixelOffset: (operatingStatus) => operatingStatus.offset,
                     visible:
                         (!this.props.filteredNominalVoltages ||
                             this.props.filteredNominalVoltages.includes(

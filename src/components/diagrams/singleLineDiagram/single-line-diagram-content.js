@@ -23,7 +23,7 @@ import {
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
-import withBranchMenu from '../../menus/branch-menu';
+import withOperatingStatusMenu from '../../menus/operating-status-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
@@ -69,7 +69,7 @@ function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
-    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
+    const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const { snackError } = useSnackMessage();
