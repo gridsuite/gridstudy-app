@@ -1058,9 +1058,9 @@
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
-    "SimulatedCalculation": "calculs",
-    "SimulatedCalculationExceedsLimit": "999 999+ calculs",
-    "SimulatedCalculationMax": "500 000 max",
+    "sensitivityAnalysis.simulatedComputations": "{count, plural, =0 {0 calcul} =1 {1 calcul} other {# calculs}}",
+    "sensitivityAnalysis.moreThanOneMillionComputations": "999 999+ calculs",
+    "sensitivityAnalysis.maximumSimulatedComputations": "500 000 max",
     "loadingComputing": "Evaluation en cours...",
 
     "ConnectionName": "Nom départ",

@@ -1059,9 +1059,9 @@
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
-    "SimulatedCalculation": "computations",
-    "SimulatedCalculationExceedsLimit": "999 999+ computations",
-    "SimulatedCalculationMax": "500 000 max",
+    "sensitivityAnalysis.simulatedComputations": "{count, plural, =0 {0 computation} =1 {1 computation} other {# computations}}",
+    "sensitivityAnalysis.moreThanOneMillionComputations": "999 999+ computations",
+    "sensitivityAnalysis.maximumSimulatedComputations": "500 000 max",
     "loadingComputing": "Calculation in progress...",
 
     "ConnectionName": "Connection name",
