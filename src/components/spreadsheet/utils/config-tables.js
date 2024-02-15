@@ -3307,7 +3307,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
-                sort: DEFAULT_SORT_ORDER,
+                isDefaultSort: true,
             },
             {
                 id: 'Magnitude',
