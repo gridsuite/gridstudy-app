@@ -376,9 +376,11 @@ function SingleLineDiagramContent(props) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE ||
-                equipmentMenu.equipmentType ===
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
+            [
+                EQUIPMENT_TYPES.LINE,
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+            ].includes(equipmentMenu.equipmentType) && (
                 <MenuBranch
                     equipment={{ id: equipmentMenu.equipmentId }}
                     equipmentType={equipmentMenu.equipmentType}
@@ -661,10 +663,6 @@ function SingleLineDiagramContent(props) {
             {displayMenu(
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                 'shunt-compensator-menus'
-            )}
-            {displayMenu(
-                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-                'three-windings-transformer-menus'
             )}
             {displayMenu(EQUIPMENT_TYPES.HVDC_LINE, 'hvdc-line-menus')}
             {displayMenu(
