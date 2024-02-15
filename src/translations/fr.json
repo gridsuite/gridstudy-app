@@ -1071,10 +1071,10 @@
     "PSTS": "TDs",
     "ElementAlreadyUsed": "Cet élément est déjà utilisé",
     "Active": "Actif",
-    "SimulatedCalculation": "calculs simulés",
-    "SimulatedCalculationExceedsLimit": "Calculs simulés dépasse la limite",
+    "SimulatedCalculation": "calculs",
+    "SimulatedCalculationExceedsLimit": "999 999+ calculs",
     "SimulatedCalculationMax": "500 000 max",
-    "loadingComputing": "Calcul en cours...",
+    "loadingComputing": "Evaluation en cours...",
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
