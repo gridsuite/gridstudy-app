@@ -34,7 +34,7 @@ const characteristicsValidationSchema = (isModification, additionalFields) => ({
         [RATED_S]: yup
             .number()
             .nullable()
-            .positive('RatedNominalPowerGreaterThanZero'),
+            .positive('RatedNominalPowerMustBeGreaterThanZero'),
         [RATED_U1]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),

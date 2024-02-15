@@ -69,14 +69,14 @@ const getCharacteristicsCreateFormValidationSchema = () => {
         [MAXIMUM_SECTION_COUNT]: yup
             .number()
             .required()
-            .min(1, 'MaximumSectionCountMinimumOne'),
+            .min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne'),
         [SECTION_COUNT]: yup
             .number()
             .required()
-            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount')
+            .min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount')
             .max(
                 yup.ref(MAXIMUM_SECTION_COUNT),
-                'SectionCountBetweenZeroAndMaximumSectionCount'
+                'SectionCountMustBeBetweenZeroAndMaximumSectionCount'
             ),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().notRequired(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().notRequired(),
@@ -92,12 +92,12 @@ const getCharacteristicsModificationFormValidationSchema = () => {
         [MAX_SUSCEPTANCE]: yup.number().nullable(),
         [MAXIMUM_SECTION_COUNT]: yup
             .number()
-            .min(1, 'MaximumSectionCountMinimumOne')
+            .min(1, 'MaximumSectionCountMustBeGreaterOrEqualToOne')
             .nullable(),
         [SECTION_COUNT]: yup
             .number()
             .nullable()
-            .min(0, 'SectionCountBetweenZeroAndMaximumSectionCount'),
+            .min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount'),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().nullable(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().nullable(),
     };

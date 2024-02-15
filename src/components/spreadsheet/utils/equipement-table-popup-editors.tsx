@@ -41,7 +41,7 @@ const validationSchema = yup
             value: yup.string().required('FillAllFields'),
         })
     )
-    .test('unique-keys', 'DuplicatedProps', (values) => {
+    .test('unique-keys', 'DuplicatedPropsError', (values) => {
         const keys = values?.map((value) => value.key);
         const uniqueKeys = new Set(keys);
         return keys?.length === uniqueKeys.size;
