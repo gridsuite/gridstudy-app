@@ -514,9 +514,12 @@ const NetworkMap = (props) => {
             for (const f of e.features) {
                 newFeatures[f.id] = f;
             }
+
+            computesubstationInpolygone(newFeatures)
+
             return newFeatures;
         });
-    }, []);
+    }, [props, readyToDisplayLines]);
 
     const onDelete = useCallback((e) => {
         setFeatures((currFeatures) => {
@@ -528,6 +531,20 @@ const NetworkMap = (props) => {
         });
     }, []);
 
+    //{
+    //   "lat": 50.630348,
+    //   "lon": 4.552271
+    // }
+    // substations: [],
+    //     lines: [],
+    //     geoData: null,
+    const computesubstationInpolygone = (newFeatures) => {
+        if(readyToDisplayLines){
+            console.log('debug', 'substations', props.substations);
+            console.log('debug', 'geoData', props?.geoData);
+            console.log('debug', 'newFeatures', newFeatures);
+        }
+    }
     return (
         mapLib && (
             <>
