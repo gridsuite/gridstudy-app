@@ -210,7 +210,7 @@ const EquipmentFilter = forwardRef(
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'DynamicSimulationFetchEquipmentError',
+                        headerId: 'FilterEvaluationError',
                     });
                 });
         }, [

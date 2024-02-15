@@ -102,13 +102,13 @@ const TabularModificationForm = () => {
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
             if (
                 !!intl.messages[
-                    'TabularModificationSkeletonComment/' + watchType
+                    'TabularModificationSkeletonComment.' + watchType
                 ]
             ) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
                     intl.formatMessage({
-                        id: 'TabularModificationSkeletonComment/' + watchType,
+                        id: 'TabularModificationSkeletonComment.' + watchType,
                     }),
                 ]);
             }

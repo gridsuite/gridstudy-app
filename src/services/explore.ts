@@ -10,13 +10,18 @@ import {
     backendFetchJson,
     getRequestParamFromList,
 } from './utils';
+import { UUID } from 'crypto';
 
 const PREFIX_EXPLORE_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/directory';
 
-export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
+export function fetchElementsMetadata(
+    ids: UUID[],
+    elementTypes: string[],
+    equipmentTypes: string[]
+) {
     console.info('Fetching elements metadata');
 
     // Add params to Url
@@ -49,10 +54,10 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
 }
 
 export function createParameter(
-    newParameter,
-    name,
-    parameterType,
-    parentDirectoryUuid
+    newParameter: any,
+    name: string,
+    parameterType: string,
+    parentDirectoryUuid: UUID
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -70,13 +75,41 @@ export function createParameter(
     );
 }
 
-export function elementExists(directoryUuid, elementName, type) {
+export function elementExists(
+    directoryUuid: UUID,
+    elementName: string,
+    type: string
+) {
     const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
 
     console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then(
         (response) => {
             return response.status !== 204; // HTTP 204 : No-content
+        }
+    );
+}
+
+export interface ModificationElementCreationProps {
+    elementUuid: UUID;
+    description: string;
+    elementName: string;
+}
+
+export function createModifications(
+    parentDirectoryUuid: UUID,
+    modificationList: ModificationElementCreationProps[]
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/modifications?' +
+            urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(modificationList),
         }
     );
 }
