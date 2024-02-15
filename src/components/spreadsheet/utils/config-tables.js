@@ -9,10 +9,10 @@ import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { SitePropertiesEditor } from './equipement-table-popup-editors';
 import {
+    BooleanListField,
     GeneratorRegulatingTerminalEditor,
     NumericalField,
     SelectCountryField,
-    BooleanListField,
     TWTRegulatingTerminalEditor,
 } from './equipment-table-editors';
 import {
@@ -3295,6 +3295,58 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+        ],
+    },
+    BUSES: {
+        index: 14,
+        name: 'Busbar sections',
+        type: EQUIPMENT_TYPES.BUSBAR_SECTION,
+        fetchers: EQUIPMENT_FETCHERS.BUSBAR_SECTION,
+        columns: [
+            {
+                id: 'ID',
+                field: 'id',
+                sort: DEFAULT_SORT_ORDER,
+            },
+            {
+                id: 'Magnitude',
+                field: 'v',
+                numeric: true,
+                ...defaultNumericFilterConfig,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+            },
+            {
+                id: 'Angle',
+                field: 'angle',
+                numeric: true,
+                ...defaultNumericFilterConfig,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+            },
+            {
+                id: 'Connected component',
+                field: 'connectedComponentNum',
+            },
+            {
+                id: 'Synchronous component',
+                field: 'synchronousComponentNum',
+            },
+            {
+                id: 'VoltageLevelId',
+                field: 'voltageLevelId',
+            },
+            {
+                id: 'NominalV',
+                field: 'nominalVoltage',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 0,
+            },
+            {
+                id: 'Country',
+                field: 'countryName',
             },
         ],
     },

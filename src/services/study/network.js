@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
@@ -437,6 +437,20 @@ export function fetchStaticVarCompensators(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
+        EQUIPMENT_INFOS_TYPES.TAB.type
+    );
+}
+
+export function fetchBusbarSections(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.BUSBAR_SECTION,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
