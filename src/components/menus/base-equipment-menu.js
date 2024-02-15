@@ -157,6 +157,7 @@ const BaseEquipmentMenu = ({
     const equipmentsWithBranch = [
         EQUIPMENT_TYPES.LINE,
         EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+        EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
     ];
     const equipmentsNotDeletable = [
         EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
