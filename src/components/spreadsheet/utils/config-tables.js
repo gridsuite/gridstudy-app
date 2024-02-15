@@ -92,8 +92,6 @@ export const MEDIUM_COLUMN_WIDTH = 220;
 export const LARGE_COLUMN_WIDTH = 340;
 export const MAX_LOCKS_PER_TAB = 5;
 
-export const DEFAULT_SORT_ORDER = 'asc';
-
 export const EDIT_COLUMN = 'edit';
 
 const defaultTextFilterConfig = {
