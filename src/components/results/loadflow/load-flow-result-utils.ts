@@ -115,28 +115,53 @@ const numericFilterParams = {
 };
 
 export const getIdType = (index: number): string => {
-    return index === 0 ? 'overload' : 'subjectId';
+    switch (index) {
+        case 0:
+            return 'overload';
+        case 1:
+            return 'subjectId';
+        case 2:
+            return 'slackBusId';
+        default:
+            return '';
+    }
+};
+
+export const mappingFields = (index: number): Record<string, string> => {
+    switch (index) {
+        case 0:
+        case 1:
+            return FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT;
+
+        case 2:
+            return FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT;
+        default:
+            return {};
+    }
 };
 
 export const makeData = (
-    overloadedEquipment: OverloadedEquipmentFromBack,
+    overloadedEquipments: OverloadedEquipmentFromBack[],
     intl: IntlShape
-): OverloadedEquipment => {
-    return {
-        overload: overloadedEquipment.overload,
-        name: overloadedEquipment.subjectId,
-        value: overloadedEquipment.value,
-        actualOverloadDuration:
-            overloadedEquipment.actualOverloadDuration ===
-            UNDEFINED_ACCEPTABLE_DURATION
-                ? null
-                : overloadedEquipment.actualOverloadDuration,
-        upComingOverloadDuration: overloadedEquipment.upComingOverloadDuration,
-        limit: overloadedEquipment.limit,
-        limitName: convertLimitName(overloadedEquipment.limitName, intl),
-        side: convertSide(overloadedEquipment.side, intl),
-        limitType: overloadedEquipment.limitType,
-    };
+): OverloadedEquipment[] => {
+    return overloadedEquipments.map((overloadedEquipment) => {
+        return {
+            overload: overloadedEquipment.overload,
+            name: overloadedEquipment.subjectId,
+            value: overloadedEquipment.value,
+            actualOverloadDuration:
+                overloadedEquipment.actualOverloadDuration ===
+                UNDEFINED_ACCEPTABLE_DURATION
+                    ? null
+                    : overloadedEquipment.actualOverloadDuration,
+            upComingOverloadDuration:
+                overloadedEquipment.upComingOverloadDuration,
+            limit: overloadedEquipment.limit,
+            limitName: convertLimitName(overloadedEquipment.limitName, intl),
+            side: convertSide(overloadedEquipment.side, intl),
+            limitType: overloadedEquipment.limitType,
+        };
+    });
 };
 
 // We can use this custom hook for fetching enums for AutoComplete filter
@@ -358,7 +383,7 @@ export const loadFlowResultColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'connectedComponentNum' }),
             field: 'connectedComponentNum',
-            
+
             sortProps,
             filterProps,
             filterParams: numericFilterParams,

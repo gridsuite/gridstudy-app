@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ColDef } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { FilterSelectorType } from 'hooks/use-aggrid-row-filter';
 import { SortConfigType } from 'hooks/use-aggrid-sort';
@@ -40,10 +41,18 @@ export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
 }
-export interface LoadflowResultProps extends LoadFlowTabProps {
+
+export interface LoadflowResultTap {
+    isLoadingResult: boolean;
+    columnDefs: ColDef<any>[];
+    tableName: string;
+}
+export interface LoadflowResultProps extends LoadflowResultTap {
     result: LoadFlowResult;
-    tabIndex: number;
-    isWaiting: boolean;
+}
+
+export interface LimitViolationResultProps extends LoadflowResultTap {
+    result: OverloadedEquipment[];
 }
 
 export interface OverloadedEquipment {
