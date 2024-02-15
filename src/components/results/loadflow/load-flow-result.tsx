@@ -92,8 +92,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT,
-        () => {}
+        FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =

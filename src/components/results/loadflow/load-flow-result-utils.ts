@@ -358,6 +358,7 @@ export const loadFlowResultColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'connectedComponentNum' }),
             field: 'connectedComponentNum',
+            
             sortProps,
             filterProps,
             filterParams: numericFilterParams,

@@ -51,8 +51,12 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import { fetchLimitViolations } from 'services/study/loadflow';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+} from 'components/custom-aggrid/custom-aggrid-header.type';
 
-export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
+export const LimitViolationResult: FunctionComponent<LoadflowResultProps> = ({
     result,
     studyUuid,
     nodeUuid,
@@ -88,15 +92,14 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
-        () => {}
+        FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
 
     //We give each tab its own loader so we don't have a loader spinning because another tab is still doing some work
-    const openLoaderCurrentTab = useOpenLoaderShortWait({
+    const openLoaderTab = useOpenLoaderShortWait({
         isLoading:
             // We want the loader to start when the loadflow begins
             loadFlowStatus === RunningStatus.RUNNING ||
@@ -106,18 +109,6 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
                 loadFlowStatus === RunningStatus.SUCCEED) ||
             isWaiting ||
             filterEnumsLoading,
-        delay: RESULTS_LOADING_DELAY,
-    });
-
-    const openLoaderVoltageTab = useOpenLoaderShortWait({
-        isLoading:
-            // We want the loader to start when the loadflow begins
-            loadFlowStatus === RunningStatus.RUNNING ||
-            // We still want the loader to be displayed for the remaining time there is between "the loadflow is over"
-            // and "the data is post processed and can be displayed"
-            (!isOverloadedEquipmentsReady &&
-                loadFlowStatus === RunningStatus.SUCCEED) ||
-            isWaiting,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -155,8 +146,8 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
         filterEnums,
         filterSelector,
         intl,
-        sortConfig,
         onSortChanged,
+        sortConfig,
         updateFilter,
     ]);
 
@@ -185,17 +176,44 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
         }
     }, [tabIndex, onSortChanged, updateFilter, initFilters, initSort]);
 
+    const fetchLimitViolationsByType = useCallback(() => {
+        const limitTypeValues =
+            tabIndex === 0
+                ? [LimitTypes.CURRENT]
+                : tabIndex === 1
+                ? [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE]
+                : [];
+        const initialFilters = filterSelector || [];
+        const existingFilterIndex = initialFilters.findIndex(
+            (f) => f.column === 'limitType'
+        );
+        const updatedFilters =
+            existingFilterIndex !== -1 || initialFilters.length !== 0
+                ? initialFilters
+                : [
+                      ...initialFilters,
+                      {
+                          column: 'limitType',
+                          dataType: FILTER_DATA_TYPES.TEXT,
+                          type: FILTER_TEXT_COMPARATORS.EQUALS,
+                          value: limitTypeValues,
+                      },
+                  ];
+
+        return fetchLimitViolations(studyUuid, nodeUuid, {
+            sort: {
+                colKey: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[
+                    sortConfig.colKey
+                ],
+                sortWay: sortConfig.sortWay,
+            },
+            filters: updatedFilters,
+        });
+    }, [studyUuid, nodeUuid, tabIndex, sortConfig, filterSelector]);
+
     useEffect(() => {
         if (result) {
-            fetchLimitViolations(studyUuid, nodeUuid, {
-                sort: {
-                    colKey: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[
-                        sortConfig.colKey
-                    ],
-                    sortWay: sortConfig.sortWay,
-                },
-                filters: filterSelector,
-            })
+            fetchLimitViolationsByType()
                 .then((overloadedEquipments: OverloadedEquipmentFromBack[]) => {
                     setIsOverloadedEquipmentsReady(true);
                     const sortedLines = overloadedEquipments.map(
@@ -220,11 +238,12 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
         nodeUuid,
         intl,
         result,
-        filterSelector,
         sortConfig,
+        filterSelector,
         snackError,
         initFilters,
         initSort,
+        fetchLimitViolationsByType,
     ]);
 
     const getRowStyle = useCallback(
@@ -242,30 +261,25 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
         api?.sizeColumnsToFit();
     }, []);
 
-    const currentViolations = overloadedEquipments.filter(
-        (overloadedEquipment) =>
-            overloadedEquipment.limitType === LimitTypes.CURRENT
-    );
-
     useEffect(() => {
         //To avoid the rapid flashing of "no rows" before we actually show the rows
-        if (currentViolations && isFetchComplete) {
+        if (overloadedEquipments && isFetchComplete) {
             setIsCurrentViolationReady(true);
         }
-    }, [currentViolations, isFetchComplete]);
+    }, [overloadedEquipments, isFetchComplete]);
 
     const renderLoadFlowCurrentViolations = () => {
         const message = getNoRowsMessage(
             messages,
-            currentViolations,
+            overloadedEquipments,
             loadFlowStatus,
             isCurrentViolationReady
         );
-        const rowsToShow = getRows(currentViolations, loadFlowStatus);
+        const rowsToShow = getRows(overloadedEquipments, loadFlowStatus);
         return (
             <>
                 <Box sx={{ height: '4px' }}>
-                    {openLoaderCurrentTab && <LinearProgress />}
+                    {openLoaderTab && <LinearProgress />}
                 </Box>
                 <RenderTableAndExportCsv
                     gridRef={gridRef}
@@ -286,18 +300,12 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
         );
     };
 
-    const voltageViolations = overloadedEquipments.filter(
-        (overloadedEquipment) =>
-            overloadedEquipment.limitType === LimitTypes.HIGH_VOLTAGE ||
-            overloadedEquipment.limitType === LimitTypes.LOW_VOLTAGE
-    );
-
     useEffect(() => {
         //To avoid the rapid flashing of "no rows" before we actually show the rows
-        if (voltageViolations && isFetchComplete) {
+        if (overloadedEquipments && isFetchComplete) {
             setIsVoltageViolationReady(true);
         }
-    }, [voltageViolations, isFetchComplete]);
+    }, [overloadedEquipments, isFetchComplete]);
 
     useEffect(() => {
         //reset everything at initial state
@@ -315,16 +323,16 @@ export const LimiViolationResult: FunctionComponent<LoadflowResultProps> = ({
     const renderLoadFlowVoltageViolations = () => {
         const message = getNoRowsMessage(
             messages,
-            voltageViolations,
+            overloadedEquipments,
             loadFlowStatus,
             isVoltageViolationReady
         );
 
-        const rowsToShow = getRows(voltageViolations, loadFlowStatus);
+        const rowsToShow = getRows(overloadedEquipments, loadFlowStatus);
         return (
             <>
                 <Box sx={{ height: '4px' }}>
-                    {openLoaderVoltageTab && <LinearProgress />}
+                    {openLoaderTab && <LinearProgress />}
                 </Box>
                 <RenderTableAndExportCsv
                     gridRef={gridRef}

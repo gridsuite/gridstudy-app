@@ -20,7 +20,7 @@ export type FilterSelectorType = {
     column: string;
     dataType: string;
     type: string;
-    value: string;
+    value: string | string[];
 };
 
 export type FilterPropsType = {
@@ -69,7 +69,7 @@ const changeValueFromArrayWithFieldValue = (
 
 export const useAggridRowFilter = (
     filterSelectorKeys: Record<string, string>,
-    updateFilterCallback = () => {}
+    updateFilterCallback?: () => void
 ): UseAggridRowFilterOutputType => {
     const [filters, setFilters] = useState<FilterType[]>([]);
 
@@ -90,8 +90,7 @@ export const useAggridRowFilter = (
                         data
                     );
                 }
-
-                updateFilterCallback();
+                updateFilterCallback && updateFilterCallback();
 
                 return updatedFilters;
             });

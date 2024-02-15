@@ -13,7 +13,7 @@ import { LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
 import { fetchLoadFlowResult } from '../../../services/study/loadflow';
-import { LimiViolationResult } from './limit-violation-result';
+import { LimitViolationResult } from './limit-violation-result';
 import { REPORT_TYPES } from 'components/utils/report-type';
 import RunningStatus from 'components/utils/running-status';
 import { ReduxState } from 'redux/reducer.type';
@@ -73,7 +73,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             </div>
 
             {(tabIndex === 0 || tabIndex === 1) && (
-                <LimiViolationResult
+                <LimitViolationResult
                     result={loadflowResult}
                     studyUuid={studyUuid}
                     nodeUuid={nodeUuid}
