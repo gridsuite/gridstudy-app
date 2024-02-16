@@ -558,14 +558,14 @@ export const SensitivityAnalysisParameters = ({
                 sx={{ justifyContent: 'center' }}
             >
                 {analysisComputeComplexity > 999999 ? (
-                    <FormattedMessage id="SimulatedCalculationExceedsLimit" />
+                    <FormattedMessage id="sensitivityAnalysis.moreThanOneMillionComputations" />
                 ) : (
-                    <>
-                        {analysisComputeComplexity
-                            .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}{' '}
-                        <FormattedMessage id="SimulatedCalculation" />
-                    </>
+                    <FormattedMessage
+                        id={'sensitivityAnalysis.simulatedComputations'}
+                        values={{
+                            count: analysisComputeComplexity.toString(),
+                        }}
+                    />
                 )}
             </Alert>
         );
@@ -630,7 +630,7 @@ export const SensitivityAnalysisParameters = ({
                                 {launchLoader
                                     ? renderComputingEventLoading()
                                     : renderComputingEvent()}
-                                <FormattedMessage id="SimulatedCalculationMax" />
+                                <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
                             </Grid>
                         </Grid>
                         <SensitivityParametersSelector

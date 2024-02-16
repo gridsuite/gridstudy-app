@@ -29,7 +29,7 @@ export type FilterPropsType = {
     initFilters?: () => void;
 };
 
-type UseAggridRowFilterOutputType = {
+export type UseAggridRowFilterOutputType = {
     updateFilter: (field: string, data: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
     initFilters: () => void;
@@ -90,6 +90,7 @@ export const useAggridRowFilter = (
                         data
                     );
                 }
+
                 updateFilterCallback && updateFilterCallback();
 
                 return updatedFilters;
