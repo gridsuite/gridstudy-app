@@ -2,33 +2,27 @@
     "button.delete": "Delete",
     "button.changeType": "Change",
     "filter": "Filter",
-
     "deleteStudy": "Delete Study",
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
     "studyDeletedSuccessMsg": "Study deleted",
     "deleteStudyError": "Cannot remove the study if you are not the owner",
     "equipmentsSearchingError": "An error occurred while searching the equipments",
     "equipmentsLoadingError": "An error occurred while loading the available equipments",
-
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
     "renameStudyError": "Cannot rename the study if you are not the owner",
     "renameStudyNotification": "The study has been renamed from {oldStudyName} to {studyName}",
-
     "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
-
     "CopiedNodeInvalidationMessage": "As a result of node modification, the contents of the clipboard have been deleted",
     "CopiedModificationInvalidationMessage": "Following a modification of the hypothesis, the content of the clipboard has been deleted",
     "exportNetwork": "Export the network",
     "export": "Export",
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
-
     "modifyAccessRights": "Modify the access rights",
     "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
     "edit": "Edit",
     "editSiteProperties": "Edit site properties",
-
     "studyNameErrorMsg": "Study name should not be empty",
     "caseNameErrorMsg": "Please select the case name",
     "caseDataErrorMsg": "An error occured when importing the case",
@@ -37,18 +31,15 @@
     "studyCreatingError": "An error occurred while creating the study : {studyName}",
     "studyNameAlreadyUsed": "This study name is already used",
     "nameValidityCheckErrorMsg": "Error while checking name validity: ",
-
     "diagonalLabel": "Display name diagonally",
     "centerLabel": "Center name",
     "topologicalColoring": "Topological coloring",
     "SingleLineDiagram": "Single line diagram",
-
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "An error occured while loading geographical data.",
-
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsChangingDenied": "The requested changes have been rejected",
@@ -58,12 +49,10 @@
     "button.restore": "Restore",
     "close": "Close",
     "validate": "Validate",
-
     "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
     "LoadingOf": "Loading of {value}...",
-
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",
     "CBAll": "All",
@@ -99,9 +88,7 @@
     "Carto": "Carto",
     "CartoNoLabel": "Carto without labels",
     "ManuallyRefreshGeoData": "Update map",
-
     "PageNotFound": "Page not found",
-
     "Spreadsheet": "Spreadsheet",
     "Results": "Results",
     "Substations": "Substations",
@@ -158,7 +145,6 @@
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
     "RegulatingTerminal": "Regulated node",
-
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
@@ -189,10 +175,8 @@
     "AdjustExistingLimits": "Adjust existing limits",
     "AdjustExistingLimitsInfo": "Please enter a positive number in order to increase an existing voltage limit and a negative number in order to decrease an existing voltage limit (new limit = existing limit + user input).",
     "SetDefaultLimits": "Default values to fill missing limits",
-
     "SelectAll": "All",
     "UnselectAll": "None",
-
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -328,19 +312,14 @@
     "DynamicSimulationEventCreating": "Creating event ...",
     "DynamicSimulationEventUpdating": "Updating event ...",
     "DynamicSimulationEventDeleting": "Deleting event ...",
-
-
-
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
-
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",
     "DeleteContingencyList": "Delete",
     "getContingencyListError": "Can't fetch contingencies lists",
     "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
-
     "SensitivityAnalysis": "Sensitivity analysis",
     "SensibilityAnalysisParameters": "Sensitivity analysis parameters",
     "VariablesToSimulate": "Variables to simulate",
@@ -374,7 +353,6 @@
     "THREE_PHASE": "Three-phase",
     "LOW_SHORT_CIRCUIT_CURRENT": "Isc min",
     "HIGH_SHORT_CIRCUIT_CURRENT": "Isc max",
-
     "LimitType": "Limit type",
     "ViolationType": "Violation type",
     "LimitSide": "Side",
@@ -408,12 +386,10 @@
     "FAILED": "Failed",
     "ONE": "Side 1",
     "TWO": "Side 2",
-
     "HighVoltageLimit": "High voltage limit",
     "HighVoltageLimitkV": "High voltage limit (kV)",
     "LowVoltageLimit": "Low voltage limit",
     "LowVoltageLimitkV": "Low voltage limit (kV)",
-
     "descLfVoltageInitMode": "Voltage initialisation mode",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers",
     "descLfUseReactiveLimits": "Take the reactive limits of generators into account",
@@ -433,7 +409,6 @@
     "showSelectDirectoryDialog": "Choose folder",
     "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
-
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
     "descLfDC": "Run a DC power flow",
@@ -452,7 +427,6 @@
     "descLfCountries": "Countries",
     "descLfAllCountries": "All countries",
     "descLfCountriesToBalance": "Countries participating in balancing",
-
     "descWithFeederResult": "With feeder results",
     "descStudyType": "Study type",
     "descTransient": "Transient",
@@ -464,17 +438,14 @@
     "LoadFlowResultsVoltageViolations": "Voltage violations",
     "LoadFlowResultsStatus": "Status",
     "ComputationResultsLogs": "Logs",
-
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
     "status": "Status",
     "iterationCount": "Iteration count",
     "slackBusId": "Slack bus id",
     "slackBusActivePowerMismatch": "Slack bus active power mismatch (MW)",
-
     "isOk": "Ok",
     "metrics": "Metrics",
-
     "SubstationLayout": "Substation diagram layout",
     "HorizontalSubstationLayout": "Horizontal",
     "VerticalSubstationLayout": "Vertical",
@@ -482,14 +453,11 @@
     "SmartWithHorizontalCompactionSubstationLayout": "Smart with horizontal compaction",
     "SmartWithVerticalCompactionSubstationLayout": "Smart with vertical compaction",
     "openSubstation": "Open the substation",
-
     "ConstraintsFromContingencies": "Contingencies -> constraints",
     "ContingenciesFromConstraints": "Constraints -> contingencies",
-
     "Equipment": "Equipment",
     "Constraint": "Constraint",
     "EquipmentType": "Equipment type",
-
     "Loads": "Loads",
     "Batteries": "Batteries",
     "ShuntCompensators": "Shunt Compensators",
@@ -522,17 +490,12 @@
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
     "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
-
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
     "ModifyFromMenu": "Modify",
-
     "Provider": "Provider",
     "LimitReduction": "Limit reduction",
     "Default": "Default",
-
-
-
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
@@ -546,12 +509,10 @@
     "DisplayMinimap": "Display minimap",
     "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
-
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Show logs",
     "loadingReport": "Loading logs in progress...",
-
     "ComponentLibrary": "Component library selection",
     "FluxConvention": "Active and reactive flux convention used in spreadsheets",
     "FluxConvention.iidm": "IIDM",
@@ -593,6 +554,11 @@
     "ReactivePowerText": "Reactive power",
     "VoltageLevel": "Voltage level",
     "BusBarBus": "Bus bar section / bus",
+    "Bus": "Bus",
+    "Magnitude": "Voltage magnitude",
+    "Angle": "Voltage angle",
+    "ConnectedComponent": "Connected component",
+    "SynchronousComponent": "Synchronous component",
     "Setpoints": "Setpoints",
     "Connectivity": "Connectivity",
     "connected": "Connected",
@@ -640,7 +606,6 @@
     "minActivePower": "Min P (MW)",
     "voltageRegulationOn": "Voltage regulation",
     "ModificationsRequiredTabError": "At least one modification is required",
-
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load",
     "LoadModificationError": "Error while modifying load",
@@ -650,7 +615,6 @@
     "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
     "ShuntCompensatorNonlinearError": "It is currently not possible to modify non-linear shunt compensator",
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
-
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
     "CreateGenerator": "Create generator",
@@ -756,7 +720,6 @@
     "TemporaryLimitValue": "Value (A)",
     "TemporaryLimitNameUnicityError": "Temporary limit names must be unique in the table",
     "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
-
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
     "ShuntCurrentNumberOfSections": "Current number of sections",
@@ -787,7 +750,6 @@
     "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
     "SubstationModificationError": "Error while modifying substation",
-
     "CreateVoltageLevel": "Create a voltage level",
     "ModifyVoltageLevel": "Modify a voltage level",
     "Substation": "Substation",
@@ -817,7 +779,6 @@
     "VoltageLevelModificationError": "Error while modifying a voltage level",
     "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
     "BusBarSectionsCopyingNotSupported": "Copying bus bar sections is not supported for this voltage level : values were set to their default",
-
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",
     "LineAttachToVoltageLevel": "Attach a line to another line",
@@ -853,13 +814,10 @@
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError": "Error while deleting an attaching line",
     "GenerationDispatchError": "Error while creating a generation dispatch",
-
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
-
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
-
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
     "TwoWindingsTransformerModificationError": "Error while modifying a 2 windings transformer",
@@ -875,7 +833,6 @@
     "PhaseRegulatedSide": "Phase regulated side",
     "RegulatedSide1": "Side 1",
     "RegulatedSide2": "Side 2",
-
     "OnLoad": "On-load",
     "VoltageRegulation": "Voltage regulation",
     "Regulating": "Regulating",
@@ -902,7 +859,6 @@
     "TapPositionValueError": "The number of taps must not exceed the value {value}",
     "IncoherentLowTapPositionError": "The value should match the lowest tap position generated",
     "IncoherentHighTapPositionError": "The value should match the highest tap position generated",
-
     "GeneratorScaling": "Generator scaling",
     "IterativeLabel": "Iterative",
     "VariationMode": "Variation mode",
@@ -910,7 +866,6 @@
     "StackingUp": "Stacking up",
     "GeneratorScalingError": "Error while creating a generator scaling",
     "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
-
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
     "DeltaReactance": "Δ Reactance (%)",
@@ -918,61 +873,47 @@
     "DeltaSusceptance": "Δ Susceptance (%)",
     "Ratio": "Ratio",
     "Alpha": "Shift angle (°)",
-
     "ImportFileResistance": "Resistance",
     "ImportFileReactance": "Reactance",
     "ImportFileConductance": "Conductance",
     "ImportFileSusceptance": "Susceptance",
     "ImportFileAlpha": "ShiftAngle",
-
     "RegulationMode": "Regulation mode",
-
     "FixedTap": "Fixed tap",
     "CurrentLimiter": "Current limiter",
     "PhaseActivePowerControl": "Active power control",
-
     "FixedRatio": "Fixed ratio",
-
     "RegulatingValueCurrentLimiter": "Current limiter",
     "CurrentLimiterMustBeGreaterThanZero": "The current limiter value must be greater than 0",
     "RegulatingValueActivePowerControl": "Flow set point",
-
     "CreateRegulationRule": "Create regulation rule",
     "LowTapRatio": "Ratio (low tap position)",
     "HighTapRatio": "Ratio (high tap position)",
     "ImportRegulationRule": "Import regulation rule",
-
     "AddRows": "Add",
     "DeleteRows": "Delete",
     "MoveUpRows": "Move up",
     "MoveDownRows": "Move down",
-
     "AddRowsDialogTitle": "How many rows do you want to add ?",
     "AddRowsButton": "Add",
     "MaximumRowNumberError": "The number of rows must not exceed the value {value}",
-
     "DragAndDrop": "Drag and Drop",
-
     "CreateDephasingRule": "Create dephasing rule",
     "LowTapAlpha": "Shift angle (low tap position)",
     "HighTapAlpha": "Shift angle (high tap position)",
     "ImportDephasingRule": "Import dephasing rule",
-
     "GenerateSkeleton": "Generate CSV skeleton",
     "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the skeleton",
     "uploadMessage": " No file selected",
-
     "MagnetizingConductance": "Magnetizing conductance",
     "MagnetizingSusceptance": "Magnetizing susceptance",
     "RatedVoltage": "Rated voltage",
     "TwoWindingsTransformerCreationError": "Error while creating a 2 windings transformer",
     "NewName": "New name",
-
     "CopyFromExisting": "Copy from existing equipment",
     "EquipmentCopied": "Data successfully copied from equipment {equipmentId}",
     "EquipmentCopyFailed404": "Equipment copy failed: the equipment was not found",
     "EquipmentCopyFailed": "Equipment copy failed",
-
     "insertNetworkModificationNodeAbove": "above in the current branch",
     "insertNetworkModificationNodeBelow": "below in the current branch",
     "copyNetworkModificationNode": "Copy node",
@@ -981,7 +922,6 @@
     "pasteNetworkModificationNodeAbove": "above in the current branch",
     "pasteNetworkModificationNodeBelow": "below in the current branch",
     "pasteNetworkModificationNode": "Paste node",
-
     "copyNetworkModificationSubtree": "Copy subtree",
     "pasteNetworkModificationSubtree": "Paste subtree",
     "cutNetworkModificationSubtree": "Cut subtree",
@@ -990,23 +930,18 @@
     "restoreNodes": "Restore nodes",
     "restoreNodesText": "Please select nodes to restore:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Please select a node to delete} =1 {One node or subtree will be permanently deleted.} other {# nodes or subtrees will be permanently deleted.}}",
-
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",
-
     "depth": "Depth: ",
-
     "root": "Root",
     "LogOnlySingleNode": "Log single node",
     "ReportFetchError": "An error occurred while fetching the logs",
-
     "RegulatingMode": "Phase regulation mode",
     "RegulatingPhase": "Phase regulating",
     "RegulatingValue": "Current (A) or flow set point (MW)",
     "LoadTapChangingCapabilities": "Ratio on-load",
     "RegulatingRatio": "Ratio regulating",
     "TargetVPoint": "Voltage set point (kV)",
-
     "RegulatingMode1": "Phase regulation mode 1",
     "RegulatingPhase1": "Phase regulating 1",
     "RegulatingValue1": "Current (A) or flow set point (MW) 1",
@@ -1063,7 +998,6 @@
     "sensitivityAnalysis.moreThanOneMillionComputations": "999 999+ computations",
     "sensitivityAnalysis.maximumSimulatedComputations": "500 000 max",
     "loadingComputing": "Calculation in progress...",
-
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
@@ -1096,15 +1030,12 @@
     "DisplayTakenPositions": "Display taken positions",
     "NodeNotBuildPositionMessage": "Build the node to display taken positions",
     "NoVoltageLevelPositionMessage": "Select a voltage level to display taken positions",
-
     "YupRequired": "This field is required",
     "YupNotTypeNumber": "This field only accepts numeric values",
     "YupNotTypeDefault": "Field value format is incorrect",
-
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
     "NetworkElementNotFound": "The network element \"{elementId}\" does not exist",
-
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
     "AddSegment": "Add segment",
@@ -1177,23 +1108,18 @@
     "importNewSituation": "Import situation",
     "networkRecreationError": "An error occurred when recreating study network",
     "checkNetworkExistenceError": "An error occurred when checking study network existence",
-
     "deleteNodeConfirmation": "\"{nodeName}\" will be deleted.",
     "deleteSubTreeConfirmation": "\"{nodeName}\" {nodesNumber, plural, =0 {will be deleted.} =1 {and its subtree with one node will be deleted.} other {and its subtree with # nodes will be deleted.}}",
-
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
     "marginalCost": "Startup cost",
-
     "dialog.button.leave": "Leave",
-
     "Connect": "Reconnect ?",
     "ConnectedSide1": "Connected 1",
     "ConnectedSide2": "Connected 2",
     "ConnectedT3WSide1": "Connected 1",
     "ConnectedT3WSide2": "Connected 2",
     "ConnectedT3WSide3": "Connected 3",
-
     "converterStationId": "Converter station ID",
     "converterStationName": "Converter station name",
     "converterStation1": "Converter station 1",
@@ -1209,25 +1135,20 @@
     "droopLabel": "k",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
-
     "magnetizingConductance": "Magnetizing conductance (μS)",
     "magnetizingSusceptance": "Magnetizing susceptance (μS)",
     "ratedNominalPower": "Rated nominal power (MVA)",
     "ratedS": "Rated nominal power (MVA)",
-
     "ShortcircuitInProgress": "Shortcircuit computation in progress...",
-
     "tableChangingError": "An error occured when modifying the data",
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationNotIndexed": "Serverside warning: Something went wrong, Study equipments aren't indexed anymore. Please refresh the page (F5)",
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
-
     "EditedField": "Edited field",
     "ReferenceFieldOrValue": "Reference field or value",
     "Operator": "Operator",
-
     "ModifyByFormula": "Modify by formula",
     "UseDashToSelectField": "Use # to select a field",
     "WrongRefOrValueError": "Please enter a valid numeric value or a valid field reference. Use # to select a field",
@@ -1312,9 +1233,9 @@
     "equipmentName": "Name",
     "voltageLevelId": "Voltage level ID",
     "busOrBusbarSectionId": "Bus bar section / bus",
-    "connectionName" : "Connection name",
-    "connectionDirection" : "Connection direction",
-    "connectionPosition" : "Connection position",
+    "connectionName": "Connection name",
+    "connectionDirection": "Connection direction",
+    "connectionPosition": "Connection position",
     "minimumReactivePower": "Minimum reactive power",
     "maximumReactivePower": "Maximum reactive power",
     "regulatingTerminalType": "Regulated equipment type",

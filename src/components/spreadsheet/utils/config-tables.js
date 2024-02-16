@@ -3300,7 +3300,7 @@ export const TABLES_DEFINITIONS = {
     },
     BUSES: {
         index: 14,
-        name: 'Busbar sections',
+        name: 'Bus',
         type: EQUIPMENT_TYPES.BUSBAR_SECTION,
         fetchers: EQUIPMENT_FETCHERS.BUSBAR_SECTION,
         columns: [
@@ -3326,11 +3326,11 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
-                id: 'Connected component',
+                id: 'ConnectedComponent',
                 field: 'connectedComponentNum',
             },
             {
-                id: 'Synchronous component',
+                id: 'SynchronousComponent',
                 field: 'synchronousComponentNum',
             },
             {
