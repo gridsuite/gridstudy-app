@@ -20,7 +20,7 @@ import {
     checkValidationsAndRefreshCells,
     deepUpdateValue,
 } from './equipment-table-utils';
-import { LocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
 
@@ -379,7 +379,7 @@ export const BooleanListField = forwardRef(
 
 export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
     const [value, setValue] = useState(null);
-    const { translate, countryCodes } = LocalizedCountries();
+    const { translate, countryCodes } = useLocalizedCountries();
 
     useImperativeHandle(
         ref,

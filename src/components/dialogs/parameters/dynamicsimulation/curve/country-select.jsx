@@ -5,31 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
 import CheckboxSelect from './common/checkbox-select';
+import { useLocalizedCountries } from '../../../../utils/localized-countries-hook.js';
 
 const CountrySelect = ({ value, options, onChange }) => {
-    // take from CountrySelector
-    const countriesList = useMemo(() => {
-        let countriesList;
-        try {
-            countriesList = require('localized-countries')(
-                require('localized-countries/data/' +
-                    navigator.language.substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            countriesList = require('localized-countries')(
-                require('localized-countries/data/en')
-            );
-        }
-        return countriesList;
-    }, []);
+    const { translate } = useLocalizedCountries();
 
     return (
         <CheckboxSelect
             options={options}
-            getOptionLabel={(code) => countriesList.get(code)}
+            getOptionLabel={(code) => translate(code)}
             value={value}
             onChange={onChange}
         />

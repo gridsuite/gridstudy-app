@@ -6,10 +6,10 @@
  */
 
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { LocalizedCountries } from '../localized-countries-hook';
+import { useLocalizedCountries } from '../localized-countries-hook';
 
 const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
-    const { translate, countryCodes } = LocalizedCountries();
+    const { translate, countryCodes } = useLocalizedCountries();
 
     return (
         <AutocompleteInput
