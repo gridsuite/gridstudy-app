@@ -706,7 +706,7 @@ export const SensitivityAnalysisParameters = ({
                 <CreateParameterDialog
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
-                    parameterValues={() => sensitivityAnalysisParams}
+                    parameterValues={() => formatNewParams(getValues())}
                     parameterFormatter={(newParams) => newParams}
                     parameterType={elementType.SENSITIVITY_PARAMETERS}
                 />
