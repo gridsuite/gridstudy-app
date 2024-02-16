@@ -23,6 +23,7 @@ import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
+import { UpdateReactiveCapabilityCurveTable } from '../converter-station/converter-station-utils';
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -32,6 +33,12 @@ interface VscModificationFormProps {
     vscInfos: VscModificationInfo | null;
     setTabIndex: React.Dispatch<React.SetStateAction<number>>;
     tabIndexesWithError: number[];
+    updatePreviousReactiveCapabilityCurveTableConverterStation1:
+        | UpdateReactiveCapabilityCurveTable
+        | undefined;
+    updatePreviousReactiveCapabilityCurveTableConverterStation2:
+        | UpdateReactiveCapabilityCurveTable
+        | undefined;
 }
 
 export const VscModificationForm: FunctionComponent<
@@ -44,6 +51,8 @@ export const VscModificationForm: FunctionComponent<
     equipmentId,
     vscInfos,
     tabIndexesWithError,
+    updatePreviousReactiveCapabilityCurveTableConverterStation1 = undefined,
+    updatePreviousReactiveCapabilityCurveTableConverterStation2 = undefined,
 }) => {
     // const currentNodeUuid = currentNode?.id;
 
@@ -112,6 +121,9 @@ export const VscModificationForm: FunctionComponent<
                     stationLabel={'converterStation1'}
                     isModification={true}
                     previousValues={vscInfos?.converterStation1}
+                    updatePreviousReactiveCapabilityCurveTableConverterStation={
+                        updatePreviousReactiveCapabilityCurveTableConverterStation1
+                    }
                 />
             </Box>
             <Box
@@ -125,6 +137,9 @@ export const VscModificationForm: FunctionComponent<
                     stationLabel={'converterStation2'}
                     isModification={true}
                     previousValues={vscInfos?.converterStation2}
+                    updatePreviousReactiveCapabilityCurveTableConverterStation={
+                        updatePreviousReactiveCapabilityCurveTableConverterStation2
+                    }
                 />
             </Box>
         </>

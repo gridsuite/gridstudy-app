@@ -11,11 +11,11 @@ import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
-    LOSS_FACTOR, P, Q_MAX_P, Q_MIN_P,
+    LOSS_FACTOR,
     REACTIVE_LIMITS,
     REACTIVE_POWER,
     VOLTAGE,
-    VOLTAGE_REGULATION_ON
+    VOLTAGE_REGULATION_ON,
 } from '../../../../utils/field-constants';
 import {
     gridItem,
@@ -34,7 +34,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { ConverterStationElementInfos } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
-import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { UpdateReactiveCapabilityCurveTable } from '../converter-station/converter-station-utils';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -43,6 +43,7 @@ interface VscConverterStationPaneProps {
     studyUuid: UUID;
     isModification: boolean;
     previousValues?: ConverterStationElementInfos | null;
+    updatePreviousReactiveCapabilityCurveTableConverterStation?: UpdateReactiveCapabilityCurveTable;
 }
 
 const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
@@ -52,9 +53,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     studyUuid,
     isModification,
     previousValues,
+    updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [converterStationToModify, setConverterStationToModify] = useState<any>(previousValues)
     const currentNodeUuid = currentNode?.id;
 
     const { trigger } = useFormContext();
@@ -164,24 +165,6 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
-    const updatePreviousReactiveCapabilityCurveTable : any = (action: string, index: number) => {
-        setConverterStationToModify((previousValues: any) => {
-            console.log('debug', previousValues);
-            const newRccValues = previousValues?.reactiveCapabilityCurvePoints;
-            action === REMOVE
-                ? newRccValues.splice(index, 1)
-                : newRccValues.splice(index, 0, {
-                    [P]: null,
-                    [Q_MIN_P]: null,
-                    [Q_MAX_P]: null,
-                });
-            return {
-                ...previousValues,
-                reactiveCapabilityCurvePoints: newRccValues,
-            };
-        });
-    };
-
     return (
         <Grid container spacing={2}>
             <GridSection title={stationLabel} />
@@ -208,9 +191,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             <ReactiveLimitsForm
                 id={`${id}.${REACTIVE_LIMITS}`}
                 equipmentToModify={previousDataany}
-                // updatePreviousReactiveCapabilityCurveTable={
-                //     updatePreviousReactiveCapabilityCurveTable
-                // }
+                updatePreviousReactiveCapabilityCurveTable={
+                    updatePreviousReactiveCapabilityCurveTableConverterStation as any
+                }
             />
 
             <GridSection title={'Setpoints'} />

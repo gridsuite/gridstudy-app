@@ -47,7 +47,12 @@ import {
 import { MODIFICATION_TYPES } from '../../../../utils/modification-type';
 import { toModificationOperation } from '../../../../utils/utils';
 
-interface ReactiveCapabilityCurvePointsData {
+export type UpdateReactiveCapabilityCurveTable = (
+    action: string,
+    index: number
+) => void;
+
+export interface ReactiveCapabilityCurvePointsData {
     p?: number | null;
     qmaxP?: number | null;
     qminP?: number | null;
@@ -161,17 +166,8 @@ export function getVscConverterStationModificationSchema(id: string) {
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
             [LOSS_FACTOR]: yup.number().nullable(),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
-            // [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
-            // .when([VOLTAGE_REGULATION_ON], {
-            //     is: false,
-            //     then: (schema) => schema.required(),
-            // }),
             [VOLTAGE]: yup.number().nullable(),
-            // .when([VOLTAGE_REGULATION_ON], {
-            //     is: true,
-            //     then: (schema) => schema.required(),
-            // }),
             ...getReactiveLimitsSchema(true),
         }),
     };

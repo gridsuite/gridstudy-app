@@ -24,7 +24,10 @@ import {
     MAXIMUM_ACTIVE_POWER,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
+    P,
     P0,
+    Q_MAX_P,
+    Q_MIN_P,
 } from '../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -44,6 +47,8 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { VscModificationInfo } from 'services/network-modification-types';
+import { REMOVE } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-utils';
 
 const formSchema = yup
     .object()
@@ -212,6 +217,62 @@ const VscModificationDialog: React.FC<any> = ({
         });
     };
 
+    const updateConverterStationCapabilityCurveTable = (
+        newRccValues: ReactiveCapabilityCurvePointsData[] | undefined,
+        action: string,
+        index: number,
+        previousValue: VscModificationInfo | null
+    ): any => {
+        if (!newRccValues) {
+            return previousValue;
+        }
+        action === REMOVE
+            ? newRccValues.splice(index, 1)
+            : newRccValues.splice(index, 0, {
+                  [P]: null,
+                  [Q_MIN_P]: null,
+                  [Q_MAX_P]: null,
+              });
+        return {
+            ...previousValue,
+            reactiveCapabilityCurvePoints: newRccValues,
+        };
+    };
+
+    const updatePreviousReactiveCapabilityCurveTableConverterStation1 = (
+        action: string,
+        index: number
+    ) => {
+        setVcsToModify((previousValue: VscModificationInfo | null) => {
+            const newRccValues =
+                previousValue?.converterStation1?.reactiveCapabilityCurvePoints;
+
+            return updateConverterStationCapabilityCurveTable(
+                newRccValues,
+                action,
+                index,
+                previousValue
+            );
+        });
+    };
+
+    const updatePreviousReactiveCapabilityCurveTableConverterStation2 = (
+        action: string,
+        index: number
+    ) => {
+        setVcsToModify((previousValue: VscModificationInfo | null) => {
+            const newRccValues =
+                previousValue?.converterStation2?.reactiveCapabilityCurvePoints;
+
+            return updateConverterStationCapabilityCurveTable(
+                newRccValues,
+                action,
+                index,
+                previousValue
+            );
+        });
+    };
+
     return (
         <FormProvider
             {...{
@@ -261,6 +322,12 @@ const VscModificationDialog: React.FC<any> = ({
                         setTabIndex={setTabIndex}
                         vscInfos={vscInfos}
                         tabIndexesWithError={[]}
+                        updatePreviousReactiveCapabilityCurveTableConverterStation1={
+                            updatePreviousReactiveCapabilityCurveTableConverterStation1
+                        }
+                        updatePreviousReactiveCapabilityCurveTableConverterStation2={
+                            updatePreviousReactiveCapabilityCurveTableConverterStation2
+                        }
                     ></VscModificationForm>
                 )}
             </ModificationDialog>
@@ -268,7 +335,8 @@ const VscModificationDialog: React.FC<any> = ({
     );
 };
 
-export default VscModificationDialog;
 function snackError(arg0: { messageTxt: any; headerId: string }) {
     throw new Error('Function not implemented.\n' + arg0.messageTxt);
 }
+
+export default VscModificationDialog;
