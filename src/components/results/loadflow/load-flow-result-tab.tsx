@@ -101,7 +101,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             (f) => f.column === 'limitType'
         );
         const updatedFilters =
-            existingFilterIndex !== -1 || initialFilters.length !== 0
+            existingFilterIndex !== -1 &&
+            initialFilters[existingFilterIndex]?.value.length !== 0
                 ? initialFilters
                 : [
                       ...initialFilters,
