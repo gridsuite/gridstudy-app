@@ -3301,8 +3301,8 @@ export const TABLES_DEFINITIONS = {
     BUSES: {
         index: 14,
         name: 'Bus',
-        type: EQUIPMENT_TYPES.BUSBAR_SECTION,
-        fetchers: EQUIPMENT_FETCHERS.BUSBAR_SECTION,
+        type: EQUIPMENT_TYPES.BUS,
+        fetchers: EQUIPMENT_FETCHERS.BUS,
         columns: [
             {
                 id: 'ID',

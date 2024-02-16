@@ -441,16 +441,12 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchBusbarSections(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds
-) {
+export function fetchBuses(studyUuid, currentNodeUuid, substationsIds) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.BUSBAR_SECTION,
+        EQUIPMENT_TYPES.BUS,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
