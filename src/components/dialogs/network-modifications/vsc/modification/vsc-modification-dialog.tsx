@@ -246,7 +246,8 @@ const VscModificationDialog: React.FC<any> = ({
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
                 previousValue?.converterStation1?.reactiveCapabilityCurvePoints;
-
+            console.log('debug', 'previousValue', previousValue);
+            console.log('debug', 'newRccValues', newRccValues);
             return updateConverterStationCapabilityCurveTable(
                 newRccValues,
                 action,
