@@ -55,6 +55,7 @@ const network_modifications_locale_en = {
     'network_modifications.GENERATOR_SCALING':
         'Generator scaling {computedLabel}',
     'network_modifications.VSC_CREATION': 'Creating vsc {computedLabel}',
+    'network_modifications.VSC_MODIFICATION': 'Modifing vsc {computedLabel}',
     'network_modifications.GROOVY_SCRIPT': 'Modification by script',
     'network_modifications.EQUIPMENT_ATTRIBUTE_MODIFICATION':
         '{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Open {computedLabel}} other {Close {computedLabel}}}} other {Equipment modification {computedLabel}}}',

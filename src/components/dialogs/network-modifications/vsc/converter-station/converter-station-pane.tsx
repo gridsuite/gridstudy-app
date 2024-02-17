@@ -34,7 +34,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { ConverterStationElementInfos } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
-import { UpdateReactiveCapabilityCurveTable } from '../converter-station/converter-station-utils';
+import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 
 interface VscConverterStationPaneProps {
     id: string;
