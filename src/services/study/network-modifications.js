@@ -815,7 +815,8 @@ export function createLine(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -864,6 +865,7 @@ export function createLine(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -882,7 +884,8 @@ export function modifyLine(
     currentLimit1,
     currentLimit2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -913,6 +916,7 @@ export function modifyLine(
             shuntSusceptance2: toModificationOperation(shuntSusceptance2),
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
+            properties,
         }),
     });
 }

@@ -80,11 +80,19 @@ import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(),
+    ...emptyProperties,
 };
 
 export const LineCreationDialogTab = {
@@ -138,6 +146,7 @@ const LineCreationDialog = ({
             ),
             ...getLimitsValidationSchema(),
         })
+        .concat(creationPropertiesSchema)
         .required();
 
     const formMethods = useForm({
@@ -202,6 +211,7 @@ const LineCreationDialog = ({
                         )
                     ),
                 }),
+                ...copyEquipmentPropertiesForCreation(line),
             },
             { keepDefaultValues: true }
         );
@@ -258,6 +268,7 @@ const LineCreationDialog = ({
                         )
                     ),
                 }),
+                ...getPropertiesFromModification(line.properties),
             });
         },
         [reset]
@@ -349,7 +360,8 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
                 characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null
+                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
+                toModificationProperties(line)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
