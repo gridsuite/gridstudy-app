@@ -6,6 +6,7 @@
  */
 
 const aggrid_locale_fr = {
+    // Comes from the AgGrid external library
     'grid.contains': 'Contient',
     'grid.notContains': 'Ne contient pas',
     'grid.equals': 'Égal à',

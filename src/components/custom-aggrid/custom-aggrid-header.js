@@ -321,7 +321,7 @@ const CustomHeaderComponent = ({
                                     placeholder={
                                         !selectedFilterData?.length
                                             ? intl.formatMessage({
-                                                  id: 'customAgGridFilter.filterOoo',
+                                                  id: 'filter.filterOoo',
                                               })
                                             : ''
                                     }
@@ -349,7 +349,7 @@ const CustomHeaderComponent = ({
                                         value={filterComparator}
                                     >
                                         {intl.formatMessage({
-                                            id: `customAgGridFilter.${filterComparator}`,
+                                            id: `filter.${filterComparator}`,
                                         })}
                                     </MenuItem>
                                 ))}
@@ -360,7 +360,7 @@ const CustomHeaderComponent = ({
                                 value={selectedFilterData || ''}
                                 onChange={handleFilterTextChange}
                                 placeholder={intl.formatMessage({
-                                    id: 'customAgGridFilter.filterOoo',
+                                    id: 'filter.filterOoo',
                                 })}
                                 inputProps={{
                                     type: isNumberFilter
