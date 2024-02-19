@@ -508,18 +508,25 @@ const NetworkMap = (props) => {
         setCentered(INITIAL_CENTERED);
     }, [mapLib?.key]);
 
-    const onUpdate = useCallback((e) => {
-        setFeatures((currFeatures) => {
-            const newFeatures = { ...currFeatures };
-            for (const f of e.features) {
-                newFeatures[f.id] = f;
-            }
+    useEffect(()=> {
+        console.log('debug', 'features', features);
+        // console.log('debug', 'substations', substations)
+        console.log('debug', 'layer', readyToDisplay ? props.mapEquipments?.substations: [])
+    }, [features])
 
-            computesubstationInpolygone(newFeatures)
+    const onUpdate = useCallback(
+        (e) => {
+            setFeatures((currFeatures) => {
+                const newFeatures = { ...currFeatures };
+                for (const f of e.features) {
+                    newFeatures[f.id] = f;
+                }
 
-            return newFeatures;
-        });
-    }, [props, readyToDisplayLines]);
+                return newFeatures;
+            });
+        },
+        []
+    );
 
     const onDelete = useCallback((e) => {
         setFeatures((currFeatures) => {
@@ -539,12 +546,12 @@ const NetworkMap = (props) => {
     //     lines: [],
     //     geoData: null,
     const computesubstationInpolygone = (newFeatures) => {
-        if(readyToDisplayLines){
-            console.log('debug', 'substations', props.substations);
+        console.log('debug', 'newFeatures', newFeatures);
+        if (readyToDisplayLines) {
+            console.log('debug', 'substations', props?.substations);
             console.log('debug', 'geoData', props?.geoData);
-            console.log('debug', 'newFeatures', newFeatures);
         }
-    }
+    };
     return (
         mapLib && (
             <>
@@ -606,7 +613,7 @@ const NetworkMap = (props) => {
                         onCreate={onUpdate}
                         onUpdate={onUpdate}
                         onDelete={onDelete}
-                    />
+                        />
                 </Map>
                 <ControlPanel polygons={Object.values(features)} />
             </>
