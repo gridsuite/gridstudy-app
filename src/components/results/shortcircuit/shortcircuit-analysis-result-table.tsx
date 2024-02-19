@@ -35,7 +35,8 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { DISPLAY_CONVERSION } from '../../../utils/unit-converter';
+import { kiloUnitToUnit, unitToKiloUnit } from '../../../utils/unit-converter';
+import { ValueGetterParams } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -44,6 +45,8 @@ interface ShortCircuitAnalysisResultProps {
     filterProps: FilterPropsType;
     sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -86,6 +89,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     sortProps,
     filterProps,
     filterEnums,
+    onGridColumnsChanged,
+    onRowDataUpdated,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
@@ -173,8 +178,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                displayConversionMode: DISPLAY_CONVERSION.TO_KILO,
+                filterParams: {
+                    ...numericFilterParams,
+                    parser: kiloUnitToUnit,
+                },
+                valueGetter: (params: ValueGetterParams) =>
+                    unitToKiloUnit(params),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -183,8 +192,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                displayConversionMode: DISPLAY_CONVERSION.TO_KILO,
+                filterParams: {
+                    ...numericFilterParams,
+                    parser: kiloUnitToUnit,
+                },
+                valueGetter: (params: ValueGetterParams) =>
+                    unitToKiloUnit(params),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
@@ -252,11 +265,24 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         []
     );
 
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
+    const onGridReady = useCallback(
+        (params: GridReadyEvent) => {
+            if (params?.api) {
+                params.api.sizeColumnsToFit();
+                onGridColumnsChanged && onGridColumnsChanged(params);
+            }
+        },
+        [onGridColumnsChanged]
+    );
+
+    const handleRowDataUpdated = useCallback(
+        (params: GridReadyEvent) => {
+            if (params?.api) {
+                onRowDataUpdated(params);
+            }
+        },
+        [onRowDataUpdated]
+    );
 
     const getCurrent = useCallback(
         (x: SCAFaultResult | SCAFeederResult) => {
@@ -367,6 +393,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 enableCellTextSelection={true}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
+                onRowDataUpdated={handleRowDataUpdated}
             />
         </Box>
     );
