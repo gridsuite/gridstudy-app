@@ -1760,7 +1760,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1768,7 +1768,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -1777,9 +1777,9 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl
-                                ?.activePowerControlOn != null
+                                ?.participate != null
                                 ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                                      ?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1817,7 +1817,7 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                            'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
@@ -2698,7 +2698,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2706,7 +2706,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -2715,9 +2715,9 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl
-                                ?.activePowerControlOn != null
+                                ?.participate != null
                                 ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                                      ?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -2755,7 +2755,7 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                            'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },

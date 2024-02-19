@@ -120,10 +120,8 @@ const BatteryModificationDialog = ({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
                 [MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
-                [ACTIVE_POWER_SET_POINT]:
-                    editData?.activePowerSetpoint?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]:
-                    editData?.reactivePowerSetpoint?.value ?? null,
+                [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
+                [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
                 ...getReactiveLimitsFormData({
@@ -131,10 +129,8 @@ const BatteryModificationDialog = ({
                         ?.reactiveCapabilityCurve?.value
                         ? 'CURVE'
                         : 'MINMAX',
-                    maximumReactivePower:
-                        editData?.maximumReactivePower?.value ?? null,
-                    minimumReactivePower:
-                        editData?.minimumReactivePower?.value ?? null,
+                    maximumReactivePower: editData?.maxQ?.value ?? null,
+                    minimumReactivePower: editData?.minQ?.value ?? null,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurvePoints?.length > 0
                             ? completeReactiveCapabilityCurvePointsData(

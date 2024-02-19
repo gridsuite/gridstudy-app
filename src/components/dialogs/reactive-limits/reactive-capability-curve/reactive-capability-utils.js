@@ -188,7 +188,7 @@ export const calculateCurvePointsToStore = (
     if (
         reactiveCapabilityCurve.every(
             (point) =>
-                point.p == null && point.qminP == null && point.qmaxP == null
+                point.p == null && point.minQ == null && point.maxQ == null
         )
     ) {
         return null;
@@ -201,14 +201,14 @@ export const calculateCurvePointsToStore = (
                     oldP:
                         equipmentToModify.reactiveCapabilityCurveTable?.[index]
                             ?.p ?? null,
-                    qminP: point?.qminP,
-                    oldQminP:
+                    minQ: point?.minQ,
+                    oldMinQ:
                         equipmentToModify.reactiveCapabilityCurveTable?.[index]
-                            ?.qminP ?? null,
-                    qmaxP: point?.qmaxP,
-                    oldQmaxP:
+                            ?.minQ ?? null,
+                    maxQ: point?.maxQ,
+                    oldMaxQ:
                         equipmentToModify.reactiveCapabilityCurveTable?.[index]
-                            ?.qmaxP ?? null,
+                            ?.maxQ ?? null,
                 };
                 pointsToStore.push(pointToStore);
             }
@@ -217,10 +217,10 @@ export const calculateCurvePointsToStore = (
             (point) =>
                 point.p != null ||
                 point.oldP != null ||
-                point.qmaxP != null ||
-                point.oldQmaxP != null ||
-                point.qminP != null ||
-                point.oldQminP != null
+                point.maxQ != null ||
+                point.oldMaxQ != null ||
+                point.minQ != null ||
+                point.oldMinQ != null
         );
     }
 };

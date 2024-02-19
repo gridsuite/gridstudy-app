@@ -165,7 +165,7 @@ const GeneratorCreationDialog = ({
                 generator.generatorStartup?.plannedOutageRate,
             [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
             [FREQUENCY_REGULATION]:
-                generator.activePowerControl?.activePowerControlOn,
+                generator.activePowerControl?.participate,
             [DROOP]: generator.activePowerControl?.droop,
             [TRANSIENT_REACTANCE]:
                 generator.generatorShortCircuit?.transientReactance,
@@ -184,11 +184,9 @@ const GeneratorCreationDialog = ({
                     ? 'MINMAX'
                     : 'CURVE',
                 minimumReactivePower:
-                    generator?.minMaxReactiveLimits?.minimumReactivePower ??
-                    null,
+                    generator?.minMaxReactiveLimits?.minQ ?? null,
                 maximumReactivePower:
-                    generator?.minMaxReactiveLimits?.maximumReactivePower ??
-                    null,
+                    generator?.minMaxReactiveLimits?.maxQ ?? null,
                 reactiveCapabilityCurveTable:
                     generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
             }),
@@ -247,8 +245,8 @@ const GeneratorCreationDialog = ({
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice:
                         editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
-                    minimumReactivePower: editData?.minimumReactivePower,
-                    maximumReactivePower: editData?.maximumReactivePower,
+                    minimumReactivePower: editData?.minQ,
+                    maximumReactivePower: editData?.maxQ,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurve
                             ? editData?.reactiveCapabilityCurvePoints

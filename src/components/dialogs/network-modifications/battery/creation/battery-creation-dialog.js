@@ -114,7 +114,7 @@ const BatteryCreationDialog = ({
             [ACTIVE_POWER_SET_POINT]: battery.targetP,
             [REACTIVE_POWER_SET_POINT]: battery.targetQ,
             [FREQUENCY_REGULATION]:
-                battery.activePowerControl?.activePowerControlOn,
+                battery.activePowerControl?.participate,
             [DROOP]: battery.activePowerControl?.droop,
             ...getConnectivityFormData({
                 voltageLevelId: battery.voltageLevelId,
@@ -129,9 +129,9 @@ const BatteryCreationDialog = ({
                     ? 'MINMAX'
                     : 'CURVE',
                 minimumReactivePower:
-                    battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
+                    battery?.minMaxReactiveLimits?.minQ ?? null,
                 maximumReactivePower:
-                    battery?.minMaxReactiveLimits?.maximumReactivePower ?? null,
+                    battery?.minMaxReactiveLimits?.maxQ ?? null,
                 reactiveCapabilityCurveTable:
                     battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
             }),
@@ -152,8 +152,8 @@ const BatteryCreationDialog = ({
                 [EQUIPMENT_NAME]: editData.equipmentName ?? '',
                 [MAXIMUM_ACTIVE_POWER]: editData.maxP,
                 [MINIMUM_ACTIVE_POWER]: editData.minP,
-                [ACTIVE_POWER_SET_POINT]: editData.activePowerSetpoint,
-                [REACTIVE_POWER_SET_POINT]: editData.reactivePowerSetpoint,
+                [ACTIVE_POWER_SET_POINT]: editData.targetP,
+                [REACTIVE_POWER_SET_POINT]: editData.targetQ,
                 [FREQUENCY_REGULATION]: editData.participate,
                 [DROOP]: editData.droop,
                 ...getConnectivityFormData({
@@ -167,8 +167,8 @@ const BatteryCreationDialog = ({
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice:
                         editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
-                    minimumReactivePower: editData?.minimumReactivePower,
-                    maximumReactivePower: editData?.maximumReactivePower,
+                    minimumReactivePower: editData?.minQ,
+                    maximumReactivePower: editData?.maxQ,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurve
                             ? editData?.reactiveCapabilityCurvePoints

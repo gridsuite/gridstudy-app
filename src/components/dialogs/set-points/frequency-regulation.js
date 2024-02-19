@@ -27,13 +27,13 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
     });
 
     const previousFrequencyRegulation = useMemo(() => {
-        if (previousValues?.activePowerControl?.activePowerControlOn) {
+        if (previousValues?.activePowerControl?.participate) {
             return intl.formatMessage({ id: 'On' });
         } else if (
-            previousValues?.activePowerControl?.activePowerControlOn ===
+            previousValues?.activePowerControl?.participate ===
                 false ||
             (previousValues &&
-                previousValues?.activePowerControl?.activePowerControlOn ===
+                previousValues?.activePowerControl?.participate ===
                     undefined)
         ) {
             return intl.formatMessage({ id: 'Off' });

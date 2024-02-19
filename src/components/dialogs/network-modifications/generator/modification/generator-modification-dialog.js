@@ -186,10 +186,8 @@ const GeneratorModificationDialog = ({
                         ?.reactiveCapabilityCurve?.value
                         ? 'CURVE'
                         : 'MINMAX',
-                    maximumReactivePower:
-                        editData?.maximumReactivePower?.value ?? null,
-                    minimumReactivePower:
-                        editData?.minimumReactivePower?.value ?? null,
+                    maximumReactivePower: editData?.maxQ?.value ?? null,
+                    minimumReactivePower: editData?.minQ?.value ?? null,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurvePoints?.length > 0
                             ? completeReactiveCapabilityCurvePointsData(

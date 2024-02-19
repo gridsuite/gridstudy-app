@@ -878,9 +878,9 @@ const TableWrapper = (props) => {
                         undefined,
                         getFieldValue(
                             editingData?.activePowerControl
-                                ?.activePowerControlOn,
+                                ?.participate,
                             editingDataRef.current?.activePowerControl
-                                ?.activePowerControlOn
+                                ?.participate
                         ),
                         getFieldValue(
                             editingData?.activePowerControl?.droop,
@@ -951,13 +951,13 @@ const TableWrapper = (props) => {
                         undefined,
                         getFieldValue(
                             editingData.activePowerControl
-                                ?.activePowerControlOn,
+                                ?.participate,
                             editingDataRef.current.activePowerControl
-                                ?.activePowerControlOn != null
+                                ?.participate != null
                                 ? +editingDataRef.current.activePowerControl
-                                      .activePowerControlOn
+                                      .participate
                                 : editingDataRef.current.activePowerControl
-                                      ?.activePowerControlOn
+                                      ?.participate
                         ),
                         getFieldValue(
                             editingData.activePowerControl?.droop,
