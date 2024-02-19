@@ -23,7 +23,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
+import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
@@ -52,7 +52,7 @@ const formSchema = yup.object().shape({
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
-        .min(0, 'ShortCircuitCurrentLimitNotNegative')
+        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
         .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
             is: (highShortCircuitCurrentLimit) =>
                 highShortCircuitCurrentLimit != null,
@@ -65,7 +65,7 @@ const formSchema = yup.object().shape({
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
-        .min(0, 'ShortCircuitCurrentLimitNotNegative'),
+        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero'),
 });
 
 const VoltageLevelModificationDialog = ({

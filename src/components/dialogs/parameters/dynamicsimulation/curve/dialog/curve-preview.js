@@ -49,6 +49,10 @@ const CurvePreview = forwardRef((props, ref) => {
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
                 }),
+                valueFormatter: (params) =>
+                    intl.formatMessage({
+                        id: `variables.${params.value}`,
+                    }),
             },
         ];
     }, [intl]);

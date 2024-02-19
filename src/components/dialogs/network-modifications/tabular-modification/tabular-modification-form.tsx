@@ -102,13 +102,13 @@ const TabularModificationForm = () => {
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
             if (
                 !!intl.messages[
-                    'TabularModificationSkeletonComment/' + watchType
+                    'TabularModificationSkeletonComment.' + watchType
                 ]
             ) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
                     intl.formatMessage({
-                        id: 'TabularModificationSkeletonComment/' + watchType,
+                        id: 'TabularModificationSkeletonComment.' + watchType,
                     }),
                 ]);
             }
@@ -233,6 +233,7 @@ const TabularModificationForm = () => {
                         columns={csvColumns}
                         datas={commentLines}
                         filename={watchType + '_skeleton'}
+                        disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />

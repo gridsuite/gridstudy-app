@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     forwardRef,
     useCallback,
@@ -91,6 +91,31 @@ const variablesTreeToVariablesArray = (variablesTree, parentId) => {
     return result;
 };
 
+const makeGetModelLabel = (intl) => (value) =>
+    intl.formatMessage({
+        id: `models.${value}`,
+    });
+
+const makeGetVariableLabel = (intl) => (elem) => {
+    if (!elem.parentId) {
+        // root element => that is model element in the variable tree
+        return intl.formatMessage({ id: `models.${elem.name}` });
+    }
+
+    // either a variable set element or variable element in the variable tree
+    if (elem.variableId) {
+        // that is a variable element
+        return intl.formatMessage({
+            id: `variables.${elem.name}`,
+        });
+    }
+
+    // must be a variable set element
+    return intl.formatMessage({
+        id: `variableSets.${elem.name}`,
+    });
+};
+
 const styles = {
     grid: (theme) => ({
         width: '100%',
@@ -104,6 +129,8 @@ const styles = {
 
 const ModelFilter = forwardRef(
     ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
+        const intl = useIntl();
+
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -200,6 +227,14 @@ const ModelFilter = forwardRef(
             []
         );
 
+        const getModelLabel = useMemo(() => {
+            return makeGetModelLabel(intl);
+        }, [intl]);
+
+        const getVariableLabel = useMemo(() => {
+            return makeGetVariableLabel(intl);
+        }, [intl]);
+
         return (
             <>
                 {/* Models used in a mapping */}
@@ -214,9 +249,13 @@ const ModelFilter = forwardRef(
                     <Grid item xs={6}>
                         <CheckboxSelect
                             options={initialSelectedModels}
-                            getOptionLabel={(value) => associatedModels[value]}
+                            getOptionLabel={getModelLabel}
                             value={initialSelectedModels}
                             onChange={handleModelChange}
+                            disabled={
+                                initialSelectedModels.length ===
+                                1 /* disabled if only one model to choose */
+                            }
                         />
                     </Grid>
                 </Grid>
@@ -243,6 +282,7 @@ const ModelFilter = forwardRef(
                             <CheckboxTreeview
                                 ref={variablesRef}
                                 data={filteredVariables}
+                                getLabel={getVariableLabel}
                                 checkAll
                                 sx={{
                                     maxHeight: '440px',
