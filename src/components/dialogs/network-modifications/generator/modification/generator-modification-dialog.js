@@ -165,8 +165,8 @@ const GeneratorModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
-                [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
-                [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
+                [MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
+                [MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
                 [RATED_NOMINAL_POWER]:
                     editData?.ratedNominalPower?.value ?? null,
                 [ACTIVE_POWER_SET_POINT]:
