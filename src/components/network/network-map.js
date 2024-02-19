@@ -51,6 +51,7 @@ import { Box } from '@mui/system';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import DrawControl from './draw-control';
 import ControlPanel from './control-panel';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 
 // MouseEvent.button https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
 const MOUSE_EVENT_BUTTON_LEFT = 0;
@@ -508,29 +509,45 @@ const NetworkMap = (props) => {
         setCentered(INITIAL_CENTERED);
     }, [mapLib?.key]);
 
-    useEffect(()=> {
-        console.log('debug', 'features', features);
+    useEffect(() => {
+
         // console.log('debug', 'substations', substations)
-        const substationsList = readyToDisplay ? props.mapEquipments?.substations : [];
-        const positions = substationsList.map ((substation) => props.geoData.getSubstationPosition(substation.id))
-        console.log('debug', 'positions', positions)
+        const substationsList = readyToDisplay
+            ? props.mapEquipments?.substations
+            : [];
+        if (!substationsList) {
+            return;
+        }
 
-        
-    }, [features])
-
-    const onUpdate = useCallback(
-        (e) => {
-            setFeatures((currFeatures) => {
-                const newFeatures = { ...currFeatures };
-                for (const f of e.features) {
-                    newFeatures[f.id] = f;
-                }
-
-                return newFeatures;
+        const positions = substationsList
+            .map((substation) =>
+                props.geoData.getSubstationPosition(substation.id)
+            );
+        const firstAttribute = Object.values(features)[0];
+        const polygoneCoordinates = firstAttribute?.geometry.coordinates;
+        console.log('debug', 'polygoneCoordinates', polygoneCoordinates)
+        if(!polygoneCoordinates)
+        {
+            return;
+        }
+        const results = positions
+            .filter((pos) => {
+                console.log('debug', 'pos', pos);
+                booleanPointInPolygon(pos, polygoneCoordinates)
             });
-        },
-        []
-    );
+        console.log('debug', 'positions', results);
+    }, [features]);
+
+    const onUpdate = useCallback((e) => {
+        setFeatures((currFeatures) => {
+            const newFeatures = { ...currFeatures };
+            for (const f of e.features) {
+                newFeatures[f.id] = f;
+            }
+
+            return newFeatures;
+        });
+    }, []);
 
     const onDelete = useCallback((e) => {
         setFeatures((currFeatures) => {
@@ -542,20 +559,6 @@ const NetworkMap = (props) => {
         });
     }, []);
 
-    //{
-    //   "lat": 50.630348,
-    //   "lon": 4.552271
-    // }
-    // substations: [],
-    //     lines: [],
-    //     geoData: null,
-    const computesubstationInpolygone = (newFeatures) => {
-        console.log('debug', 'newFeatures', newFeatures);
-        if (readyToDisplayLines) {
-            console.log('debug', 'substations', props?.substations);
-            console.log('debug', 'geoData', props?.geoData);
-        }
-    };
     return (
         mapLib && (
             <>
@@ -617,7 +620,7 @@ const NetworkMap = (props) => {
                         onCreate={onUpdate}
                         onUpdate={onUpdate}
                         onDelete={onDelete}
-                        />
+                    />
                 </Map>
                 <ControlPanel polygons={Object.values(features)} />
             </>
