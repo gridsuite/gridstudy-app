@@ -510,31 +510,29 @@ const NetworkMap = (props) => {
     }, [mapLib?.key]);
 
     useEffect(() => {
-
         // console.log('debug', 'substations', substations)
         const substationsList = readyToDisplay
             ? props.mapEquipments?.substations
             : [];
-        if (!substationsList) {
-            return;
-        }
 
-        const positions = substationsList
-            .map((substation) =>
-                props.geoData.getSubstationPosition(substation.id)
-            );
-        const firstAttribute = Object.values(features)[0];
-        const polygoneCoordinates = firstAttribute?.geometry.coordinates;
-        console.log('debug', 'polygoneCoordinates', polygoneCoordinates)
-        if(!polygoneCoordinates)
-        {
+        const positions = substationsList // we need a list of substation and their positions
+            .map((substation) => {
+                return {
+                    substation: substation,
+                    pos: props.geoData.getSubstationPosition(substation.id),
+                };
+            });
+        const firstAttribute = Object.values(features)[0]; // we can draw multiple
+        const polygoneCoordinates = firstAttribute?.geometry;
+        console.log('debug', 'polygoneCoordinates', polygoneCoordinates);
+        if (!polygoneCoordinates) {
             return;
         }
-        const results = positions
-            .filter((pos) => {
-                console.log('debug', 'pos', pos);
-                booleanPointInPolygon(pos, polygoneCoordinates)
-            });
+        const results = positions.filter((substation) => {
+            console.log('debug', 'pos', substation.pos);
+            console.log('debug', 'polygoneCoordinates', polygoneCoordinates);
+            return booleanPointInPolygon(substation.pos, polygoneCoordinates);
+        });
         console.log('debug', 'positions', results);
     }, [features]);
 
