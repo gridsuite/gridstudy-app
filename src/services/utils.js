@@ -15,7 +15,6 @@ export const FetchStatus = {
 
 export const getWsBase = () => {
     const origin = document.baseURI;
-    console.log('FM origin', origin);
     // const origin = new URL(document.baseURI).origin
     return origin
         .replace(/^http:\/\//, 'ws://')
@@ -139,19 +138,12 @@ const downloadFile = (blob, filename, type) => {
 };
 
 function fetchEnv() {
-    //TODO FM make it works like before ?
-    // const basename = import.meta.env.BASE_URL;
-    // return fetch(basename + 'env.json').then((res) => {
     return fetch('env.json').then((res) => {
-        console.log('FM res', res);
         return res.json();
     });
 }
 
 export function fetchIdpSettings() {
-    //TODO FM make it works like before ?
-    // const basename = import.meta.env.BASE_URL;
-    // return fetch(basename + 'idpSettings.json')
     return fetch('idpSettings.json');
 }
 
@@ -159,11 +151,9 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
     console.info(`Fetching authorization code flow feature flag...`);
     return fetchEnv()
         .then((env) => {
-            console.log('FM env', env);
             return fetch(env.appsMetadataServerUrl + '/authentication.json');
         })
         .then((res) => {
-            console.log('FM res', res);
             return res.json();
         })
         .then((res) => {
@@ -196,7 +186,6 @@ export function fetchVersion() {
     console.info(`Fetching global metadata...`);
     return fetchEnv()
         .then((env) => {
-            console.log('FM env', env);
             return fetch(env.appsMetadataServerUrl + '/version.json');
         })
         .then((response) => response.json())
