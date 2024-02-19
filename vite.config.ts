@@ -1,16 +1,34 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import react from '@vitejs/plugin-react';
-import { PluginOption } from 'vite';
+import type { PluginOption } from 'vite';
 import { defineConfig } from 'vite';
 import * as path from 'path';
 import eslint from 'vite-plugin-eslint';
-import dts from 'vite-plugin-dts';
-import * as fs from 'fs/promises';
-import * as url from 'url';
+import * as fs from 'node:fs/promises';
+import * as url from 'node:url';
 import { createRequire } from 'node:module';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+    plugins: [
+        react({
+            jsxImportSource: '@emotion/react',
+            babel: {
+                plugins: ['@emotion/babel-plugin'],
+            },
+        }),
+        eslint(),
+        svgr({ include: '**/*.svg' }), // default is { include: "**/*.svg?react" }
+        reactVirtualized(),
+        tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
+    ],
     server: {
         port: 3000,
         proxy: {
@@ -25,19 +43,6 @@ export default defineConfig({
             },
         },
     },
-    plugins: [
-        react({
-            jsxImportSource: '@emotion/react',
-            babel: {
-                plugins: ['@emotion/babel-plugin'],
-            },
-        }),
-        eslint(),
-        dts(),
-        svgr({ include: '**/*.svg' }), // default is { include: "**/*.svg?react" }
-        reactVirtualized(),
-        tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
-    ],
 });
 
 // Workaround for react-virtualized with vite
