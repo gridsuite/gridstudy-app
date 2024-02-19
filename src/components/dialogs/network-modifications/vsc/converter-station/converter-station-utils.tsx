@@ -252,11 +252,9 @@ export function getConverterStationFromSearchCopy(
                 reactiveCapabilityCurveChoice:
                     converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                 minimumReactivePower:
-                    converterStation?.minMaxReactiveLimits
-                        ?.minQ,
+                    converterStation?.minMaxReactiveLimits?.minQ,
                 maximumReactivePower:
-                    converterStation?.minMaxReactiveLimits
-                        ?.maxQ,
+                    converterStation?.minMaxReactiveLimits?.maxQ,
                 reactiveCapabilityCurveTable:
                     converterStation.reactiveCapabilityCurvePoints ?? null,
             }),

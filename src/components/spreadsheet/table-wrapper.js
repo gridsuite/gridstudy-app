@@ -877,8 +877,7 @@ const TableWrapper = (props) => {
                         regulatingTerminalVlIdFieldValue,
                         undefined,
                         getFieldValue(
-                            editingData?.activePowerControl
-                                ?.participate,
+                            editingData?.activePowerControl?.participate,
                             editingDataRef.current?.activePowerControl
                                 ?.participate
                         ),
@@ -950,8 +949,7 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControl
-                                ?.participate,
+                            editingData.activePowerControl?.participate,
                             editingDataRef.current.activePowerControl
                                 ?.participate != null
                                 ? +editingDataRef.current.activePowerControl

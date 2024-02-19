@@ -113,8 +113,7 @@ const BatteryCreationDialog = ({
             [MINIMUM_ACTIVE_POWER]: battery.minP,
             [ACTIVE_POWER_SET_POINT]: battery.targetP,
             [REACTIVE_POWER_SET_POINT]: battery.targetQ,
-            [FREQUENCY_REGULATION]:
-                battery.activePowerControl?.participate,
+            [FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
             [DROOP]: battery.activePowerControl?.droop,
             ...getConnectivityFormData({
                 voltageLevelId: battery.voltageLevelId,

@@ -30,11 +30,9 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
         if (previousValues?.activePowerControl?.participate) {
             return intl.formatMessage({ id: 'On' });
         } else if (
-            previousValues?.activePowerControl?.participate ===
-                false ||
+            previousValues?.activePowerControl?.participate === false ||
             (previousValues &&
-                previousValues?.activePowerControl?.participate ===
-                    undefined)
+                previousValues?.activePowerControl?.participate === undefined)
         ) {
             return intl.formatMessage({ id: 'Off' });
         }

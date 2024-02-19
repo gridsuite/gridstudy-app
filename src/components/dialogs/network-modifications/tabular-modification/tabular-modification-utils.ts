@@ -79,14 +79,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         PLANNED_OUTAGE_RATE,
         FORCED_OUTAGE_RATE,
     ],
-    BATTERY: [
-        EQUIPMENT_ID,
-        MIN_P,
-        TARGET_P,
-        MAX_P,
-        TARGET_Q,
-        CONNECTED,
-    ],
+    BATTERY: [EQUIPMENT_ID, MIN_P, TARGET_P, MAX_P, TARGET_Q, CONNECTED],
     VOLTAGE_LEVEL: [
         EQUIPMENT_ID,
         NOMINAL_VOLTAGE,

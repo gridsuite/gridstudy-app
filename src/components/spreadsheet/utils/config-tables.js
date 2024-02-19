@@ -1776,10 +1776,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.participate != null
-                                ? +params.data?.activePowerControl
-                                      ?.participate
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1816,8 +1814,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.participate',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
@@ -2714,10 +2711,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.participate != null
-                                ? +params.data?.activePowerControl
-                                      ?.participate
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -2754,8 +2749,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.participate',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
