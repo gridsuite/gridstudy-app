@@ -31,13 +31,14 @@ export const MODIFICATIONS_TABLE = 'modificationsTable';
 export const CREATIONS_TABLE = 'creationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
-export const SERIES_RESISTANCE = 'seriesResistance';
-export const SERIES_REACTANCE = 'seriesReactance';
-export const MAGNETIZING_CONDUCTANCE = 'magnetizingConductance';
-export const MAGNETIZING_SUSCEPTANCE = 'magnetizingSusceptance';
+export const R = 'r';
+export const X = 'x';
+export const G = 'g';
+export const B = 'b';
 export const RATED_S = 'ratedS';
-export const RATED_VOLTAGE_1 = 'ratedVoltage1';
-export const RATED_VOLTAGE_2 = 'ratedVoltage2';
+
+export const RATED_U1 = 'ratedU1';
+export const RATED_U2 = 'ratedU2';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -118,10 +119,10 @@ export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
 export const MAX_SUSCEPTANCE = 'maxSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 //line
-export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
-export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
-export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
-export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
+export const G1 = 'g1';
+export const B1 = 'b1';
+export const G2 = 'g2';
+export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
