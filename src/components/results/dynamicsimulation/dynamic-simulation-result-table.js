@@ -63,6 +63,7 @@ const DynamicSimulationResultTable = ({ result }) => {
                     <VirtualizedTable
                         rows={result}
                         sortable
+                        disableHeader={true}
                         columns={[
                             {
                                 label: intl.formatMessage({

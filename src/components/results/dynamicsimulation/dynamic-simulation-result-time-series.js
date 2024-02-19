@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { Box } from '@mui/material';
-import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
+import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
@@ -28,7 +28,7 @@ const styles = {
     }),
 };
 
-const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
+const DynamicSimulationResultTimeSeries = ({ result, loadTimeSeries }) => {
     const { timeseriesMetadatas } = result;
 
     // tab id is auto increase and reset to zero when there is any tab
@@ -141,7 +141,7 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
             {/* tab contents */}
             <Box
                 sx={{
-                    height: 'calc(100vh - 270px)', // TODO fix layout to use flexGrow : 1
+                    height: 'calc(100vh - 220px)', // TODO fix layout to use flexGrow : 1
                 }}
             >
                 {tabs.map((tab, index) => (
@@ -163,7 +163,7 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
     );
 };
 
-DynamicSimulationResultChartTabs.propTypes = {
+DynamicSimulationResultTimeSeries.propTypes = {
     result: PropTypes.shape({
         timeseriesMetadatas: PropTypes.arrayOf(
             PropTypes.shape({
@@ -174,4 +174,4 @@ DynamicSimulationResultChartTabs.propTypes = {
     loadTimeSeries: PropTypes.func,
 };
 
-export default DynamicSimulationResultChartTabs;
+export default DynamicSimulationResultTimeSeries;
