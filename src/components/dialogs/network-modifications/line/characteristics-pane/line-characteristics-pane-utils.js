@@ -9,12 +9,12 @@ import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
+    R,
+    G1,
+    G2,
+    B1,
+    B2,
+    X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import {
@@ -28,16 +28,16 @@ const characteristicsValidationSchema = (
     modification
 ) => ({
     [id]: yup.object().shape({
-        [SERIES_RESISTANCE]: modification
+        [R]: modification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [SERIES_REACTANCE]: modification
+        [X]: modification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [SHUNT_SUSCEPTANCE_1]: yup.number().nullable(),
-        [SHUNT_CONDUCTANCE_1]: yup.number().nullable(),
-        [SHUNT_SUSCEPTANCE_2]: yup.number().nullable(),
-        [SHUNT_CONDUCTANCE_2]: yup.number().nullable(),
+        [B1]: yup.number().nullable(),
+        [G1]: yup.number().nullable(),
+        [B2]: yup.number().nullable(),
+        [G2]: yup.number().nullable(),
         ...(displayConnectivity &&
             getConnectivityWithPositionValidationSchema(CONNECTIVITY_1)),
         ...(displayConnectivity &&
@@ -59,12 +59,12 @@ export const getCharacteristicsValidationSchema = (
 
 const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
     [id]: {
-        [SERIES_RESISTANCE]: null,
-        [SERIES_REACTANCE]: null,
-        [SHUNT_SUSCEPTANCE_1]: null,
-        [SHUNT_CONDUCTANCE_1]: null,
-        [SHUNT_SUSCEPTANCE_2]: null,
-        [SHUNT_CONDUCTANCE_2]: null,
+        [R]: null,
+        [X]: null,
+        [B1]: null,
+        [G1]: null,
+        [B2]: null,
+        [G2]: null,
         ...(displayConnectivity &&
             getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1)),
         ...(displayConnectivity &&
@@ -81,46 +81,39 @@ export const getCharacteristicsEmptyFormData = (
 
 export const getCharacteristicsFormData = (
     {
-        seriesResistance = null,
-        seriesReactance = null,
-        shuntConductance1 = null,
-        shuntSusceptance1 = null,
-        shuntConductance2 = null,
-        shuntSusceptance2 = null,
+        r = null,
+        x = null,
+        g1 = null,
+        b1 = null,
+        g2 = null,
+        b2 = null,
         connectivity1 = null,
         connectivity2 = null,
     },
     id = CHARACTERISTICS
 ) => ({
     [id]: {
-        [SERIES_RESISTANCE]: seriesResistance,
-        [SERIES_REACTANCE]: seriesReactance,
-        [SHUNT_CONDUCTANCE_1]: shuntConductance1,
-        [SHUNT_SUSCEPTANCE_1]: shuntSusceptance1,
-        [SHUNT_CONDUCTANCE_2]: shuntConductance2,
-        [SHUNT_SUSCEPTANCE_2]: shuntSusceptance2,
+        [R]: r,
+        [X]: x,
+        [G1]: g1,
+        [B1]: b1,
+        [G2]: g2,
+        [B2]: b2,
         [CONNECTIVITY_1]: connectivity1,
         [CONNECTIVITY_2]: connectivity2,
     },
 });
 
 export const getCharacteristicsWithOutConnectivityFormData = (
-    {
-        seriesResistance = null,
-        seriesReactance = null,
-        shuntConductance1 = null,
-        shuntSusceptance1 = null,
-        shuntConductance2 = null,
-        shuntSusceptance2 = null,
-    },
+    { r = null, x = null, g1 = null, b1 = null, g2 = null, b2 = null },
     id = CHARACTERISTICS
 ) => ({
     [id]: {
-        [SERIES_RESISTANCE]: seriesResistance,
-        [SERIES_REACTANCE]: seriesReactance,
-        [SHUNT_CONDUCTANCE_1]: shuntConductance1,
-        [SHUNT_SUSCEPTANCE_1]: shuntSusceptance1,
-        [SHUNT_CONDUCTANCE_2]: shuntConductance2,
-        [SHUNT_SUSCEPTANCE_2]: shuntSusceptance2,
+        [R]: r,
+        [X]: x,
+        [G1]: g1,
+        [B1]: b1,
+        [G2]: g2,
+        [B2]: b2,
     },
 });

@@ -26,24 +26,24 @@ import {
     ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
+    B,
     PHASE_TAP_CHANGER,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
+    RATED_U1,
+    RATED_U2,
     RATIO_TAP_CHANGER,
     REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
+    R,
+    X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -216,16 +216,12 @@ const TwoWindingsTransformerCreationDialog = ({
                 [EQUIPMENT_ID]: twt.equipmentId,
                 [EQUIPMENT_NAME]: twt.equipmentName,
                 ...getTwoWindingsTransformerFormData({
-                    seriesResistance: twt.seriesResistance,
-                    seriesReactance: twt.seriesReactance,
-                    magnetizingConductance: unitToMicroUnit(
-                        twt.magnetizingConductance
-                    ),
-                    magnetizingSusceptance: unitToMicroUnit(
-                        twt.magnetizingSusceptance
-                    ),
-                    ratedVoltage1: twt.ratedVoltage1,
-                    ratedVoltage2: twt.ratedVoltage2,
+                    r: twt.r,
+                    x: twt.x,
+                    g: unitToMicroUnit(twt.g),
+                    b: unitToMicroUnit(twt.b),
+                    ratedU1: twt.ratedU1,
+                    ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
@@ -350,12 +346,12 @@ const TwoWindingsTransformerCreationDialog = ({
                 [EQUIPMENT_ID]: twt.id + '(1)',
                 [EQUIPMENT_NAME]: twt.name ?? '',
                 ...getTwoWindingsTransformerFormData({
-                    seriesResistance: twt.r,
-                    seriesReactance: twt.x,
-                    magnetizingConductance: unitToMicroUnit(twt.g),
-                    magnetizingSusceptance: unitToMicroUnit(twt.b),
-                    ratedVoltage1: twt.ratedU1,
-                    ratedVoltage2: twt.ratedU2,
+                    r: twt.r,
+                    x: twt.x,
+                    g: unitToMicroUnit(twt.g),
+                    b: unitToMicroUnit(twt.b),
+                    ratedU1: twt.ratedU1,
+                    ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
                     permanentLimit1: twt.permanentLimit1,
                     permanentLimit2: twt.permanentLimit2,
@@ -612,12 +608,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 ),
             };
 
-            characteristics[MAGNETIZING_CONDUCTANCE] = microUnitToUnit(
-                characteristics[MAGNETIZING_CONDUCTANCE]
-            );
-            characteristics[MAGNETIZING_SUSCEPTANCE] = microUnitToUnit(
-                characteristics[MAGNETIZING_SUSCEPTANCE]
-            );
+            characteristics[G] = microUnitToUnit(characteristics[G]);
+            characteristics[B] = microUnitToUnit(characteristics[B]);
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
@@ -691,13 +683,13 @@ const TwoWindingsTransformerCreationDialog = ({
                 currentNodeUuid,
                 twt[EQUIPMENT_ID],
                 sanitizeString(twt[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
-                characteristics[MAGNETIZING_CONDUCTANCE],
-                characteristics[MAGNETIZING_SUSCEPTANCE],
+                characteristics[R],
+                characteristics[X],
+                characteristics[G],
+                characteristics[B],
                 characteristics[RATED_S] ?? '',
-                characteristics[RATED_VOLTAGE_1],
-                characteristics[RATED_VOLTAGE_2],
+                characteristics[RATED_U1],
+                characteristics[RATED_U2],
                 currentLimits1,
                 currentLimits2,
                 characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
