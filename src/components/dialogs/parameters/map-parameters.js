@@ -37,7 +37,7 @@ export const MapParameters = () => {
     );
 
     const [isLineFlowNominal, setDisabledFlowAlertThreshold] = useState(
-        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE
+        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_V
     );
 
     return (
@@ -80,13 +80,12 @@ export const MapParameters = () => {
                     labelTitle="LineFlowColorMode"
                     labelValue="line-flow-color-mode-select-label"
                     values={{
-                        [LineFlowColorMode.NOMINAL_VOLTAGE]: 'NominalVoltage',
+                        [LineFlowColorMode.NOMINAL_V]: 'NominalV',
                         [LineFlowColorMode.OVERLOADS]: 'Overloads',
                     }}
                     onPreChange={(event) => {
                         setDisabledFlowAlertThreshold(
-                            event.target.value ===
-                                LineFlowColorMode.NOMINAL_VOLTAGE
+                            event.target.value === LineFlowColorMode.NOMINAL_V
                         );
                     }}
                 />

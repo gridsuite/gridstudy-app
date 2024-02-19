@@ -33,7 +33,7 @@ export const LineFlowMode = {
 };
 
 export const LineFlowColorMode = {
-    NOMINAL_VOLTAGE: 'nominalVoltage',
+    NOMINAL_V: 'nominalV',
     OVERLOADS: 'overloads',
 };
 
@@ -111,7 +111,7 @@ function getLineLoadingZoneColor(zone) {
 }
 
 function getLineColor(line, nominalVoltageColor, props, lineConnection) {
-    if (props.lineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE) {
+    if (props.lineFlowColorMode === LineFlowColorMode.NOMINAL_V) {
         if (
             !lineConnection.terminal1Connected &&
             !lineConnection.terminal2Connected
@@ -996,7 +996,7 @@ LineLayer.defaultProps = {
     disconnectedLineColor: { type: 'color', value: [255, 255, 255] },
     filteredNominalVoltages: null,
     lineFlowMode: LineFlowMode.FEEDERS,
-    lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
+    lineFlowColorMode: LineFlowColorMode.NOMINAL_V,
     lineFlowAlertThreshold: 100,
     showLineFlow: true,
     lineFullPath: true,

@@ -540,7 +540,7 @@ NetworkMap.defaultProps = {
     lineParallelPath: true,
     lineFlowMode: LineFlowMode.FEEDERS,
     lineFlowHidden: true,
-    lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
+    lineFlowColorMode: LineFlowColorMode.NOMINAL_V,
     lineFlowAlertThreshold: 100,
     loadFlowStatus: RunningStatus.IDLE,
     visible: true,

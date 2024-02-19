@@ -141,7 +141,7 @@ const paramsInitialState = {
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
-    [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
+    [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalV',
     [PARAM_CENTER_LABEL]: false,
     [PARAM_DIAGONAL_LABEL]: false,
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
