@@ -511,7 +511,11 @@ const NetworkMap = (props) => {
     useEffect(()=> {
         console.log('debug', 'features', features);
         // console.log('debug', 'substations', substations)
-        console.log('debug', 'layer', readyToDisplay ? props.mapEquipments?.substations: [])
+        const substationsList = readyToDisplay ? props.mapEquipments?.substations : [];
+        const positions = substationsList.map ((substation) => props.geoData.getSubstationPosition(substation.id))
+        console.log('debug', 'positions', positions)
+
+        
     }, [features])
 
     const onUpdate = useCallback(
