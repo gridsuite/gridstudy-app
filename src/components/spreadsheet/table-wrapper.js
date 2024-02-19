@@ -80,6 +80,10 @@ import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
+import { SORT_WAYS } from 'hooks/use-aggrid-sort';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
+import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -202,6 +206,32 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
+    const equipementFiltersSelectorKeys = useMemo(() => {
+        let filtersSelectorKeys = {};
+        TABLES_DEFINITION_INDEXES.get(tabIndex).columns.forEach((column) => {
+            filtersSelectorKeys[column?.field] = column?.field;
+        });
+        return filtersSelectorKeys;
+    }, [tabIndex]);
+
+    const defaultSortColKey = useMemo(() => {
+        const defaultSortCol = columnData.find(
+            (column) => column.isDefaultSort
+        );
+        return defaultSortCol?.field;
+    }, [columnData]);
+
+    const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
+        gridRef,
+        {
+            colKey: defaultSortColKey,
+            sortWay: SORT_WAYS.asc,
+        }
+    );
+
+    const { updateFilter, filterSelector, initFilters } =
+        useAggridLocalRowFilter(gridRef, equipementFiltersSelectorKeys);
+
     const enrichColumn = useCallback(
         (column) => {
             column.headerName = intl.formatMessage({ id: column.id });
@@ -233,9 +263,33 @@ const TableWrapper = (props) => {
                 ? 'left'
                 : undefined;
 
-            return column;
+            return makeAgGridCustomHeaderColumn({
+                headerName: column.headerName,
+                field: column.field,
+                sortProps: {
+                    onSortChanged,
+                    sortConfig,
+                },
+                filterProps: {
+                    updateFilter,
+                    filterSelector,
+                },
+                filterParams: {
+                    ...column?.customFilterParams,
+                },
+                ...column,
+            });
         },
-        [fluxConvention, intl, lockedColumnsNames, props.loadFlowStatus]
+        [
+            fluxConvention,
+            intl,
+            lockedColumnsNames,
+            props.loadFlowStatus,
+            sortConfig,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+        ]
     );
 
     const equipmentDefinition = useMemo(
@@ -257,6 +311,11 @@ const TableWrapper = (props) => {
             });
         }
     }, [errorMessage, snackError]);
+
+    useEffect(() => {
+        initSort(defaultSortColKey);
+        initFilters();
+    }, [tabIndex, initFilters, defaultSortColKey, initSort]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {

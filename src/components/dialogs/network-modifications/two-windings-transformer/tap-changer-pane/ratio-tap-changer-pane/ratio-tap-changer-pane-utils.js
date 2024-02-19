@@ -105,7 +105,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     yup
                         .number()
                         .nullable()
-                        .positive('TargetVoltageGreaterThanZero'),
+                        .positive('TargetVoltageMustBeGreaterThanZero'),
             })
             .when([REGULATION_MODE, LOAD_TAP_CHANGING_CAPABILITIES], {
                 is: (regulationMode, loadTapChangingCapabilities) => {
@@ -127,7 +127,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     yup
                         .number()
                         .nullable()
-                        .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+                        .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
             }),
         [LOW_TAP_POSITION]: yup
             .number()
@@ -147,11 +147,11 @@ const ratioTapChangerValidationSchema = (id) => ({
                         .required()
                         .min(
                             yup.ref(LOW_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         )
                         .max(
                             yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         ),
             }),
         [STEPS]: yup
@@ -254,11 +254,11 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
         [TARGET_V]: yup
             .number()
             .nullable()
-            .positive('TargetVoltageGreaterThanZero'),
+            .positive('TargetVoltageMustBeGreaterThanZero'),
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+            .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
         [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup.number().nullable(),

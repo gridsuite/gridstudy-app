@@ -50,8 +50,8 @@ const formSchema = yup.object().shape({
             yup.object().shape({
                 [SEGMENT_DISTANCE_VALUE]: yup
                     .number()
-                    .required('SegmentDistanceGreaterThanZero')
-                    .moreThan(0, 'SegmentDistanceGreaterThanZero'),
+                    .required('SegmentDistanceMustBeGreaterThanZero')
+                    .moreThan(0, 'SegmentDistanceMustBeGreaterThanZero'),
                 [SEGMENT_TYPE_VALUE]: yup
                     .string()
                     .test(

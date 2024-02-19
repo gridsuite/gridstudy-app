@@ -176,10 +176,14 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <ShortCircuitAnalysisResultTab view={view} />
+                <ShortCircuitAnalysisResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    view={view}
+                />
             </Paper>
         );
-    }, [view]);
+    }, [view, currentNode?.id, studyUuid]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
