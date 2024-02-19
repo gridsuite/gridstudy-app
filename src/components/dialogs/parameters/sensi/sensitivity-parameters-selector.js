@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
-import { Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import { TabPanel, useParameterState } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as sensiParam from './columns-definitions';
@@ -24,8 +24,37 @@ import {
 } from './columns-definitions';
 import SensitivityTable from './sensitivity-table';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
+import CircularProgress from '@mui/material/CircularProgress';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
-const SensitivityParametersSelector = ({ onFormChanged, onChangeParams }) => {
+const styles = {
+    circularProgress: (theme) => ({
+        marginRight: theme.spacing(2),
+        color: theme.palette.primary.main,
+        display: 'flex',
+    }),
+    textInfo: (theme) => ({
+        marginRight: theme.spacing(2),
+        color: theme.palette.primary.main,
+        display: 'flex',
+    }),
+    textInitial: (theme) => ({
+        marginRight: theme.spacing(2),
+        color: 'rgba(91,91,91,255)',
+    }),
+    textAlert: (theme) => ({
+        marginRight: theme.spacing(2),
+        color: theme.palette.error.main,
+        display: 'flex',
+    }),
+};
+
+const SensitivityParametersSelector = ({
+    onFormChanged,
+    onChangeParams,
+    launchLoader,
+    analysisComputeComplexity,
+}) => {
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -85,6 +114,46 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams }) => {
         [intl]
     );
 
+    const renderComputingEventLoading = () => {
+        return (
+            <Box sx={styles.textInfo}>
+                <CircularProgress size={'1em'} sx={styles.circularProgress} />
+                <FormattedMessage id={'loadingComputing'} />
+            </Box>
+        );
+    };
+
+    const renderComputingEvent = () => {
+        if (analysisComputeComplexity > 999999) {
+            return (
+                <Box sx={styles.textAlert}>
+                    <ErrorOutlineIcon size={'1em'} sx={styles.textAlert} />
+                    <FormattedMessage id="sensitivityAnalysis.moreThanOneMillionComputations" />
+                </Box>
+            );
+        } else if (analysisComputeComplexity === 0) {
+            return (
+                <Box sx={styles.textInitial}>
+                    <FormattedMessage
+                        id={'sensitivityAnalysis.simulatedComputations'}
+                        values={{
+                            count: analysisComputeComplexity.toString(),
+                        }}
+                    />
+                </Box>
+            );
+        } else {
+            return (
+                <FormattedMessage
+                    id={'sensitivityAnalysis.simulatedComputations'}
+                    values={{
+                        count: analysisComputeComplexity.toString(),
+                    }}
+                />
+            );
+        }
+    };
+
     useEffect(() => {
         if (!enableDeveloperMode) {
             setTabValue(TAB_VALUES.SensitivityBranches);
@@ -108,7 +177,6 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams }) => {
                         />
                     ))}
                 </Tabs>
-
                 {tabInfo.map((tab, index) => (
                     <TabPanel
                         key={tab.label}
@@ -138,6 +206,22 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams }) => {
                                                 }
                                             ></Tab>
                                         ))}
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'end',
+                                                justifyContent: 'right',
+                                                flex: 'auto',
+                                                flexGrow: '1',
+                                                whiteSpace: 'pre-wrap',
+                                            }}
+                                        >
+                                            {launchLoader
+                                                ? renderComputingEventLoading()
+                                                : renderComputingEvent()}
+                                            <FormattedMessage id="sensitivityAnalysis.separator" />
+                                            <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
+                                        </Box>
                                     </Tabs>
                                     <TabPanel
                                         index={TAB_VALUES.SensiInjectionsSet}
