@@ -205,6 +205,7 @@ const withOperatingStatusMenu =
                     EQUIPMENT_TYPES.LINE,
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                     EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+                    EQUIPMENT_TYPES.HVDC_LINE,
                 ].includes(equipmentType) && (
                     <CustomMenuItem
                         sx={styles.menuItem}

@@ -380,6 +380,7 @@ function SingleLineDiagramContent(props) {
                 EQUIPMENT_TYPES.LINE,
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                 EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+                EQUIPMENT_TYPES.HVDC_LINE,
             ].includes(equipmentMenu.equipmentType) && (
                 <MenuBranch
                     equipment={{ id: equipmentMenu.equipmentId }}
@@ -664,7 +665,6 @@ function SingleLineDiagramContent(props) {
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                 'shunt-compensator-menus'
             )}
-            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE, 'hvdc-line-menus')}
             {displayMenu(
                 EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
                 'lcc-converter-station-menus'
