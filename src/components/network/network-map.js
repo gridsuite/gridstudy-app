@@ -35,10 +35,10 @@ import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { Button, useTheme } from '@mui/material';
 import {
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_MAP_BASEMAP,
-    MAP_BASEMAP_MAPBOX,
     basemap_style_theme_key,
+    MAP_BASEMAP_MAPBOX,
+    PARAM_MAP_BASEMAP,
+    PARAM_MAP_MANUAL_REFRESH,
 } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
@@ -52,6 +52,9 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import DrawControl from './draw-control';
 import ControlPanel from './control-panel';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { createFilter } from '../../services/explore';
+import { fetchPath } from '../../services/directory';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 // MouseEvent.button https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
 const MOUSE_EVENT_BUTTON_LEFT = 0;
@@ -509,8 +512,17 @@ const NetworkMap = (props) => {
         setCentered(INITIAL_CENTERED);
     }, [mapLib?.key]);
 
+    const { snackError } = useSnackMessage();
+    // this useEffect react to the creation of a polygon on the map and create a filter for the substation in the polygon
     useEffect(() => {
-        // console.log('debug', 'substations', substations)
+
+        // in case we want to handle multiple polygons drawing, we need to handle the features as an array
+        const polygoneCoordinates = Object.values(features)[0]?.geometry;
+        if (!polygoneCoordinates) {
+            return;
+        }
+
+        //get the list of substation
         const substationsList = readyToDisplay
             ? props.mapEquipments?.substations
             : [];
@@ -522,18 +534,56 @@ const NetworkMap = (props) => {
                     pos: props.geoData.getSubstationPosition(substation.id),
                 };
             });
-        const firstAttribute = Object.values(features)[0]; // we can draw multiple
-        const polygoneCoordinates = firstAttribute?.geometry;
-        console.log('debug', 'polygoneCoordinates', polygoneCoordinates);
-        if (!polygoneCoordinates) {
-            return;
-        }
-        const results = positions.filter((substation) => {
-            console.log('debug', 'pos', substation.pos);
-            console.log('debug', 'polygoneCoordinates', polygoneCoordinates);
+
+        const substationsInsidePolygone = positions.filter((substation) => {
             return booleanPointInPolygon(substation.pos, polygoneCoordinates);
         });
-        console.log('debug', 'positions', results);
+
+        const voltageLevels = substationsInsidePolygone.map((substation) => {
+            return substation.substation.voltageLevels;
+        }).flat();
+
+        console.log('debug', 'voltageLevels', voltageLevels);
+
+        fetchPath(studyUuid)
+            .then((studyPath) => {
+                if (!studyPath || studyPath.length < 2) {
+                    snackError({
+                        messageTxt: 'unknown study directory',
+                        headerId: 'errCreateModificationsMsg',
+                    });
+                    return;
+                }
+
+                const PARENT_DIRECTORY_INDEX = 1;
+                const studyDirectoryUuid =
+                    studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
+
+                const substationParam = {
+                    type: 'IDENTIFIER_LIST',
+                    equipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+                    filterEquipmentsAttributes: voltageLevels.map((eq) => {
+                        console.log('debug', 'eq', eq);
+                        return { equipmentID: eq.id };
+                    }),
+                };
+
+                createFilter(
+                    substationParam,
+                    'polygoneFilter',
+                    'description',
+                    studyDirectoryUuid
+                )
+                    .then((value) => {
+                        console.log('debug', 'creation filter succeed', value);
+                    })
+                    .catch((error) => {
+                        console.log('debug', 'filter creation failed', error);
+                    });
+            })
+            .catch((error) => {});
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [features]);
 
     const onUpdate = useCallback((e) => {
