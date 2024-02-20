@@ -63,7 +63,7 @@ const handleError = (response) => {
             );
             error.status = response.status;
         }
-        throw error;
+        // throw error;
     });
 };
 
