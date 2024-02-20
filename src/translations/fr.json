@@ -925,6 +925,7 @@
     "ImportFileAlpha": "Dephasage",
 
     "RegulationMode": "Mode de réglage",
+    "RatioRegulationMode": "Mode de réglage régleur",
 
     "FixedTap": "Déphasage constant",
     "CurrentLimiter": "Limitation de courant",

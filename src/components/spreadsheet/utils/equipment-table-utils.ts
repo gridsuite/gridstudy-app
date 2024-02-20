@@ -16,6 +16,7 @@ import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
+import { getComputedRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -117,6 +118,16 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                     regulatingTerminalGenerator,
                     params
                 );
+                // empty regulation side
+                params.data.ratioTapChanger.regulationSide = null;
+                updateCellValue('ratioTapChanger.regulationSide', null, params);
+            } else if (ratioRegulationTypeText === REGULATION_TYPES.LOCAL.id) {
+                params.data.ratioTapChanger.regulatingTerminalVlId = null;
+                params.data.ratioTapChanger.regulatingTerminalConnectableId =
+                    null;
+                params.data.ratioTapChanger.regulatingTerminalConnectableType =
+                    null;
+                updateCellValue('RatioRegulatingTerminal', null, params);
             }
             break;
 
@@ -333,7 +344,13 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
         );
         originalValue =
             colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
-        if (originalValue !== undefined) {
+
+        // if the original value is not undefined, we don't let the user empty the field unless we have
+        // another condition that verifies that the field can be empty (requiredOn, optional, etc.)
+        if (
+            originalValue !== undefined &&
+            !colDef.crossValidation?.requiredOn
+        ) {
             return false;
         } else if (colDef.crossValidation?.optional) {
             return true;
@@ -424,4 +441,14 @@ const checkCrossValidationRequiredOn = (
         // otherwise, we just check if there is a current value
         return dependencyValue === undefined;
     }
+};
+
+export const getInitialTwtRatioRegulationModeId = (twt: any) => {
+    // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
+    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
+        return null;
+    }
+    //otherwise, we compute it
+    const computedRegulationMode = getComputedRegulationMode(twt);
+    return computedRegulationMode?.id || null;
 };

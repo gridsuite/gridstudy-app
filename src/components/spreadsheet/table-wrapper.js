@@ -69,6 +69,7 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
+    getInitialTwtRatioRegulationModeId,
     updateGeneratorCells,
     updateShuntCompensatorCells,
     updateTwtCells,
@@ -300,8 +301,28 @@ const TableWrapper = (props) => {
         [tabIndex]
     );
 
+    const formatFetchedEquipments = useCallback(
+        (fetchedEquipments) => {
+            //Format the twt data to set calculated fields, so that the edition validation is consistent with the displayed data
+            if (equipmentDefinition.type === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) {
+                return fetchedEquipments.map((twt) => {
+                    const formattedTwt = {...twt};
+                    if (formattedTwt?.ratioTapChanger) {
+                        formattedTwt.ratioTapChanger = {
+                            ...formattedTwt.ratioTapChanger,
+                            regulationMode: getInitialTwtRatioRegulationModeId(twt),
+                        }
+                    }
+                    return formattedTwt;
+                });
+            }
+            return fetchedEquipments;
+        },
+        [tabIndex]
+    );
+
     const { equipments, errorMessage, isFetching } =
-        useSpreadsheetEquipments(equipmentDefinition);
+        useSpreadsheetEquipments(equipmentDefinition, formatFetchedEquipments);
 
     useEffect(() => {
         if (errorMessage) {

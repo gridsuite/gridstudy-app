@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadEquipments } from 'redux/actions';
 
-export const useSpreadsheetEquipments = (equipment) => {
+export const useSpreadsheetEquipments = (equipment, formatFetchedEquipments) => {
     const dispatch = useDispatch();
     const equipments = useSelector(
         (state) => state.spreadsheetNetwork[equipment.type]
@@ -24,7 +24,10 @@ export const useSpreadsheetEquipments = (equipment) => {
                 )
             )
                 .then((results) => {
-                    const fetchedEquipments = results.flat();
+                    let fetchedEquipments = results.flat();
+                    if (formatFetchedEquipments) {
+                        fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                    }
                     dispatch(loadEquipments(equipment.type, fetchedEquipments));
                     setIsFetching(false);
                 })

@@ -926,6 +926,7 @@
     "ImportFileAlpha": "ShiftAngle",
 
     "RegulationMode": "Regulation mode",
+    "RatioRegulationMode": "Ratio regulation mode",
 
     "FixedTap": "Fixed tap",
     "CurrentLimiter": "Current limiter",
