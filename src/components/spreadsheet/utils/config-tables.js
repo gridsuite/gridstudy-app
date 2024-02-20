@@ -279,7 +279,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'countryName',
+                field: 'country.name',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,

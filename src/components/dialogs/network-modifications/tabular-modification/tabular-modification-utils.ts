@@ -44,10 +44,10 @@ import {
     G2,
     B2,
     STEP_UP_TRANSFORMER_REACTANCE,
-    SUBSTATION_COUNTRY,
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION_ON,
     VOLTAGE_SET_POINT,
+    COUNTRY,
 } from 'components/utils/field-constants';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { toModificationOperation } from 'components/utils/utils';
@@ -112,7 +112,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         CONNECTED1,
         CONNECTED2,
     ],
-    SUBSTATION: [EQUIPMENT_ID, SUBSTATION_COUNTRY],
+    SUBSTATION: [EQUIPMENT_ID, COUNTRY],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {

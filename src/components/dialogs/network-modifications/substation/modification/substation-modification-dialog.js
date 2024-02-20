@@ -88,7 +88,7 @@ const SubstationModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                [COUNTRY]: editData.substationCountry?.value ?? null,
+                [COUNTRY]: editData.country?.value ?? null,
                 ...getPropertiesFromModification(editData.properties),
             });
         }

@@ -1092,7 +1092,7 @@ export function createSubstation(
     currentNodeUuid,
     substationId,
     substationName,
-    substationCountry,
+    country,
     isUpdate = false,
     modificationUuid,
     properties
@@ -1105,7 +1105,7 @@ export function createSubstation(
         type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
         equipmentId: substationId,
         equipmentName: substationName,
-        substationCountry: substationCountry === '' ? null : substationCountry,
+        country: country === '' ? null : country,
         properties,
     });
 
@@ -1191,7 +1191,7 @@ export function modifySubstation(
     currentNodeUuid,
     id,
     name,
-    substationCountry,
+    country,
     isUpdate = false,
     modificationUuid,
     properties
@@ -1217,7 +1217,7 @@ export function modifySubstation(
             type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
             equipmentId: id,
             equipmentName: toModificationOperation(name),
-            substationCountry: toModificationOperation(substationCountry),
+            country: toModificationOperation(country),
             properties: properties,
         }),
     });
