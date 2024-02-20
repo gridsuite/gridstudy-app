@@ -543,7 +543,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'seriesResistance',
+                id: 'r',
                 field: 'r',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -551,7 +551,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'seriesReactance',
+                id: 'x',
                 field: 'x',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -559,7 +559,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'shuntConductance1',
+                id: 'g1',
                 field: 'g1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -568,7 +568,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'shuntConductance2',
+                id: 'g2',
                 field: 'g2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -577,7 +577,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'shuntSusceptance1',
+                id: 'b1',
                 field: 'b1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -586,7 +586,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'shuntSusceptance2',
+                id: 'b2',
                 field: 'b2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1265,7 +1265,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'seriesResistance',
+                id: 'r',
                 field: 'r',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1273,7 +1273,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'seriesReactance',
+                id: 'x',
                 field: 'x',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1281,7 +1281,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'magnetizingConductance',
+                id: 'g',
                 field: 'g',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1290,7 +1290,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'magnetizingSusceptance',
+                id: 'b',
                 field: 'b',
                 numeric: true,
                 ...defaultNumericFilterConfig,
