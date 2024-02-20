@@ -593,7 +593,7 @@
     "ReactivePowerText": "Reactive power",
     "VoltageLevel": "Voltage level",
     "BusBarBus": "Bus bar section / bus",
-    "Bus": "Bus",
+    "Buses": "Buses",
     "Magnitude": "Voltage magnitude",
     "Angle": "Voltage angle",
     "ConnectedComponent": "Connected component",
