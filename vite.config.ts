@@ -47,7 +47,6 @@ export default defineConfig({
     server: serverSettings, // for npm run start
     preview: serverSettings, // for npm run serve (use local build)
     build: {
-        minify: false, // make it easier to debug
         outDir: 'build'
     },
 });
