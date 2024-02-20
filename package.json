@@ -7,7 +7,7 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "^0.43.1",
+        "@gridsuite/commons-ui": "^0.46.0",
         "@hookform/resolvers": "^3.0.0",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
@@ -32,6 +32,7 @@
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",
         "mapbox-gl": "^3.0.0",
+        "maplibre-gl": "^3.0.0",
         "mjolnir.js": "^2.4.0",
         "mui-nested-menu": "^3.0.0",
         "notistack": "^3.0.0",

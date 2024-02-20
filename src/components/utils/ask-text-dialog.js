@@ -18,6 +18,7 @@ import React, { useEffect } from 'react';
 import { useValidNodeName } from './inputs/input-hooks';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
+import { CancelButton } from '@gridsuite/commons-ui';
 
 /**
  * Display a modal window asking for a single string
@@ -62,12 +63,10 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    {intl.formatMessage({ id: 'cancel' })}
-                </Button>
+                <CancelButton onClick={handleClose} />
                 <Button
-                    variant={'outlined'}
                     onClick={handleValidate}
+                    variant={'outlined'}
                     disabled={!isNameOK}
                 >
                     {intl.formatMessage({ id: 'validate' })}

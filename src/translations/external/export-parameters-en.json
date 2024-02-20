@@ -57,7 +57,7 @@
   "iidm.export.xml.extensions.baseVoltageMapping": "Base voltage mapping",
   "iidm.export.xml.extensions.branchObservability": "Branch observability",
   "iidm.export.xml.extensions.busbarSectionPosition": "Busbar section position",
-  "iidm.export.xml.extensions.branchStatus": "Branch status",
+  "iidm.export.xml.extensions.operatingStatus": "Operating status",
   "iidm.export.xml.extensions.cgmesControlAreas": "Cgmes control areas",
   "iidm.export.xml.extensions.cgmesDanglingLineBoundaryNode": "Cgmes dangling line boundary node",
   "iidm.export.xml.extensions.cgmesLineBoundaryNode": "Cgmes line boundary node",

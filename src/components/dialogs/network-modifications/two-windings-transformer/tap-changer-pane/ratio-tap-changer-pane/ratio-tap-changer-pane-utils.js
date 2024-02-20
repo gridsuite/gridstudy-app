@@ -15,6 +15,7 @@ import {
     NAME,
     NOMINAL_VOLTAGE,
     RATIO_TAP_CHANGER,
+    REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
@@ -104,7 +105,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     yup
                         .number()
                         .nullable()
-                        .positive('TargetVoltageGreaterThanZero'),
+                        .positive('TargetVoltageMustBeGreaterThanZero'),
             })
             .when([REGULATION_MODE, LOAD_TAP_CHANGING_CAPABILITIES], {
                 is: (regulationMode, loadTapChangingCapabilities) => {
@@ -126,7 +127,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     yup
                         .number()
                         .nullable()
-                        .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+                        .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
             }),
         [LOW_TAP_POSITION]: yup
             .number()
@@ -146,11 +147,11 @@ const ratioTapChangerValidationSchema = (id) => ({
                         .required()
                         .min(
                             yup.ref(LOW_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         )
                         .max(
                             yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         ),
             }),
         [STEPS]: yup
@@ -253,11 +254,11 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
         [TARGET_V]: yup
             .number()
             .nullable()
-            .positive('TargetVoltageGreaterThanZero'),
+            .positive('TargetVoltageMustBeGreaterThanZero'),
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+            .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
         [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup.number().nullable(),
@@ -374,21 +375,48 @@ export const getRatioTapChangerFormData = (
     },
 });
 
-export const getComputedPreviousRatioRegulationType = (previousValues) => {
+export const getComputedRegulationType = (twt) => {
     if (
-        !previousValues?.[RATIO_TAP_CHANGER]?.[
-            LOAD_TAP_CHANGING_CAPABILITIES
-        ] ||
-        !previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId
+        !twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES] ||
+        !twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId
     ) {
         return null;
     }
-    if (
-        previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId !==
-        previousValues?.id
-    ) {
-        return REGULATION_TYPES.DISTANT.id;
+    if (twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId !== twt?.id) {
+        return REGULATION_TYPES.DISTANT;
     } else {
-        return REGULATION_TYPES.LOCAL.id;
+        return REGULATION_TYPES.LOCAL;
+    }
+};
+
+export const getComputedRegulationMode = (twt) => {
+    const ratioTapChangerValues = twt?.ratioTapChanger;
+    if (!ratioTapChangerValues) {
+        return null;
+    }
+    if (ratioTapChangerValues[REGULATING]) {
+        return RATIO_REGULATION_MODES.VOLTAGE_REGULATION;
+    } else {
+        return RATIO_REGULATION_MODES.FIXED_RATIO;
+    }
+};
+
+export const getComputedPreviousRatioRegulationType = (previousValues) => {
+    const previousReulationType = getComputedRegulationType(previousValues);
+    return previousReulationType?.id || null;
+};
+
+export const getComputedTapSideId = (twt) => {
+    const ratioTapChangerValues = twt?.ratioTapChanger;
+    if (!ratioTapChangerValues || !twt) {
+        return null;
+    }
+    if (ratioTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
+        return ratioTapChangerValues?.regulatingTerminalVlId ===
+            twt?.voltageLevelId1
+            ? SIDE.SIDE1.id
+            : SIDE.SIDE2.id;
+    } else {
+        return null;
     }
 };

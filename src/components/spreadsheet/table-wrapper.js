@@ -50,22 +50,41 @@ import {
     modifyGenerator,
     modifyLoad,
     modifyShuntCompensator,
+    modifyTwoWindingsTransformer,
     modifyVoltageLevel,
     requestNetworkChange,
     formatPropertiesForBackend,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
 import {
+    LOAD_TAP_CHANGING_CAPABILITIES,
+    LOW_TAP_POSITION,
+    REGULATING,
+    REGULATION_MODE,
+    REGULATION_SIDE,
+    REGULATION_TYPE,
+    TAP_POSITION,
+    TARGET_DEADBAND,
+    TARGET_V,
+} from 'components/utils/field-constants';
+import {
     checkValidationsAndRefreshCells,
     updateGeneratorCells,
     updateShuntCompensatorCells,
+    updateTwtCells,
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
+import { toModificationOperation } from 'components/utils/utils';
+import { sanitizeString } from 'components/dialogs/dialogUtils';
 import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
+import { SORT_WAYS } from 'hooks/use-aggrid-sort';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
+import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -192,6 +211,32 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
+    const equipementFiltersSelectorKeys = useMemo(() => {
+        let filtersSelectorKeys = {};
+        TABLES_DEFINITION_INDEXES.get(tabIndex).columns.forEach((column) => {
+            filtersSelectorKeys[column?.field] = column?.field;
+        });
+        return filtersSelectorKeys;
+    }, [tabIndex]);
+
+    const defaultSortColKey = useMemo(() => {
+        const defaultSortCol = columnData.find(
+            (column) => column.isDefaultSort
+        );
+        return defaultSortCol?.field;
+    }, [columnData]);
+
+    const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
+        gridRef,
+        {
+            colKey: defaultSortColKey,
+            sortWay: SORT_WAYS.asc,
+        }
+    );
+
+    const { updateFilter, filterSelector, initFilters } =
+        useAggridLocalRowFilter(gridRef, equipementFiltersSelectorKeys);
+
     const enrichColumn = useCallback(
         (column) => {
             column.headerName = intl.formatMessage({ id: column.id });
@@ -223,9 +268,32 @@ const TableWrapper = (props) => {
                 ? 'left'
                 : undefined;
 
-            return column;
+            return makeAgGridCustomHeaderColumn({
+                headerName: column.headerName,
+                field: column.field,
+                sortProps: {
+                    onSortChanged,
+                    sortConfig,
+                },
+                filterProps: {
+                    updateFilter,
+                    filterSelector,
+                },
+                filterParams: {
+                    ...column?.customFilterParams,
+                },
+                ...column,
+            });
         },
-        [fluxConvention, intl, lockedColumnsNames, loadFlowStatus]
+        [
+            fluxConvention,
+            intl,
+            lockedColumnsNames,
+            sortConfig,
+            filterSelector,
+            onSortChanged,
+            updateFilter,
+        ]
     );
 
     const equipmentDefinition = useMemo(
@@ -247,6 +315,11 @@ const TableWrapper = (props) => {
             });
         }
     }, [errorMessage, snackError]);
+
+    useEffect(() => {
+        initSort(defaultSortColKey);
+        initFilters();
+    }, [tabIndex, initFilters, defaultSortColKey, initSort]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {
@@ -483,6 +556,275 @@ const TableWrapper = (props) => {
                         ),
                         undefined,
                         undefined,
+                        false,
+                        undefined
+                    );
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+                    let ratioTap = null;
+                    if (editingData?.ratioTapChanger) {
+                        ratioTap = {
+                            [LOAD_TAP_CHANGING_CAPABILITIES]:
+                                toModificationOperation(
+                                    getFieldValue(
+                                        editingData.ratioTapChanger?.[
+                                            LOAD_TAP_CHANGING_CAPABILITIES
+                                        ],
+                                        editingDataRef.current
+                                            .ratioTapChanger?.[
+                                            LOAD_TAP_CHANGING_CAPABILITIES
+                                        ]
+                                    )
+                                ),
+                            [TAP_POSITION]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[TAP_POSITION],
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        TAP_POSITION
+                                    ]
+                                )
+                            ),
+                            [LOW_TAP_POSITION]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[
+                                        LOW_TAP_POSITION
+                                    ],
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        LOW_TAP_POSITION
+                                    ]
+                                )
+                            ),
+                            [REGULATING]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[REGULATING],
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        REGULATING
+                                    ]
+                                )
+                            ),
+                            [REGULATION_TYPE]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[
+                                        REGULATION_TYPE
+                                    ],
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        REGULATION_TYPE
+                                    ]
+                                )
+                            ),
+                            [REGULATION_SIDE]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[
+                                        REGULATION_SIDE
+                                    ],
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        REGULATION_SIDE
+                                    ]
+                                )
+                            ),
+                            regulatingTerminalId: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger
+                                        ?.regulatingTerminalConnectableId,
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        'regulatingTerminalConnectableId'
+                                    ]
+                                )
+                            ),
+                            regulatingTerminalType: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger
+                                        ?.regulatingTerminalConnectableType,
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        'regulatingTerminalConnectableType'
+                                    ]
+                                )
+                            ),
+                            regulatingTerminalVlId: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger
+                                        ?.regulatingTerminalVlId,
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        'regulatingTerminalVlId'
+                                    ]
+                                )
+                            ),
+                            [TARGET_V]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[TARGET_V],
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        TARGET_V
+                                    ]
+                                )
+                            ),
+                            [TARGET_DEADBAND]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[
+                                        TARGET_DEADBAND
+                                    ],
+                                    editingDataRef.current.ratioTapChanger?.[
+                                        TARGET_DEADBAND
+                                    ]
+                                )
+                            ),
+                            steps: null,
+                        };
+                    }
+                    let phaseTap = null;
+                    if (editingData?.phaseTapChanger) {
+                        phaseTap = {
+                            [REGULATION_MODE]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger?.[
+                                        REGULATION_MODE
+                                    ],
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        REGULATION_MODE
+                                    ]
+                                )
+                            ),
+                            [TAP_POSITION]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger?.[TAP_POSITION],
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        TAP_POSITION
+                                    ]
+                                )
+                            ),
+                            [LOW_TAP_POSITION]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger?.[
+                                        LOW_TAP_POSITION
+                                    ],
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        LOW_TAP_POSITION
+                                    ]
+                                )
+                            ),
+                            [REGULATION_TYPE]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger?.[
+                                        REGULATION_TYPE
+                                    ],
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        REGULATION_TYPE
+                                    ]
+                                )
+                            ),
+                            [REGULATION_SIDE]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger?.[
+                                        REGULATION_SIDE
+                                    ],
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        REGULATION_SIDE
+                                    ]
+                                )
+                            ),
+                            regulatingTerminalId: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger
+                                        ?.regulatingTerminalConnectableId,
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        'regulatingTerminalConnectableId'
+                                    ]
+                                )
+                            ),
+                            regulatingTerminalType: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger
+                                        ?.regulatingTerminalConnectableType,
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        'regulatingTerminalConnectableType'
+                                    ]
+                                )
+                            ),
+                            regulatingTerminalVlId: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger
+                                        ?.regulatingTerminalVlId,
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        'regulatingTerminalVlId'
+                                    ]
+                                )
+                            ),
+                            regulationValue: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger
+                                        ?.regulationValue,
+                                    editingDataRef.current.phaseTapChanger
+                                        ?.regulationValue
+                                )
+                            ),
+                            [TARGET_DEADBAND]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.phaseTapChanger?.[
+                                        TARGET_DEADBAND
+                                    ],
+                                    editingDataRef.current.phaseTapChanger?.[
+                                        TARGET_DEADBAND
+                                    ]
+                                )
+                            ),
+                        };
+                    }
+                    return modifyTwoWindingsTransformer(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        toModificationOperation(
+                            sanitizeString(
+                                getFieldValue(
+                                    editingData?.name,
+                                    editingDataRef.current?.name
+                                )
+                            )
+                        ),
+                        toModificationOperation(
+                            getFieldValue(
+                                editingData.r,
+                                editingDataRef.current.r
+                            )
+                        ),
+                        toModificationOperation(
+                            getFieldValue(
+                                editingData.x,
+                                editingDataRef.current.x
+                            )
+                        ),
+                        toModificationOperation(
+                            getFieldValue(
+                                editingData.g,
+                                editingDataRef.current.g
+                            )
+                        ),
+                        toModificationOperation(
+                            getFieldValue(
+                                editingData.b,
+                                editingDataRef.current.b
+                            )
+                        ),
+                        toModificationOperation(
+                            getFieldValue(
+                                editingData.ratedS,
+                                editingDataRef.current.ratedS
+                            )
+                        ),
+                        toModificationOperation(
+                            getFieldValue(
+                                editingData.ratedU1,
+                                editingDataRef.current.ratedU1
+                            )
+                        ),
+                        toModificationOperation(
+                            getFieldValue(
+                                editingData.ratedU2,
+                                editingDataRef.current.ratedU2
+                            )
+                        ),
+                        undefined,
+                        undefined,
+                        ratioTap,
+                        phaseTap,
                         false,
                         undefined
                     );
@@ -854,6 +1196,11 @@ const TableWrapper = (props) => {
                     EQUIPMENT_TYPES.GENERATOR
                 ) {
                     updateGeneratorCells(params);
+                } else if (
+                    params.data.metadata.equipmentType ===
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
+                ) {
+                    updateTwtCells(params);
                 }
                 addDataToBuffer(params.colDef.field, params.oldValue);
                 params.context.dynamicValidation = params.data;

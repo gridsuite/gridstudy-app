@@ -38,6 +38,7 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -145,11 +146,11 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const plannedOutageRateField = (
-        <FloatInput name={PLANNED_OUTAGE_RATE} label={'PlannedOutageRate'} />
+        <FloatInput name={PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />
     );
 
     const forcedOutageRateField = (
-        <FloatInput name={FORCED_OUTAGE_RATE} label={'ForcedOutageRate'} />
+        <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />
     );
 
     return (
@@ -202,6 +203,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
                     {gridItem(forcedOutageRateField, 4)}
                 </Grid>
             </Grid>
+            <PropertiesForm networkElementType={'generator'} />
         </>
     );
 };

@@ -40,6 +40,7 @@ import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -193,7 +194,7 @@ const GeneratorModificationForm = ({
     const plannedOutageRateField = (
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
-            label={'PlannedOutageRate'}
+            label={'plannedOutageRate'}
             previousValue={
                 generatorToModify?.generatorStartup?.plannedOutageRate
             }
@@ -204,7 +205,7 @@ const GeneratorModificationForm = ({
     const forcedOutageRateField = (
         <FloatInput
             name={FORCED_OUTAGE_RATE}
-            label={'ForcedOutageRate'}
+            label={'forcedOutageRate'}
             previousValue={
                 generatorToModify?.generatorStartup?.forcedOutageRate
             }
@@ -277,6 +278,10 @@ const GeneratorModificationForm = ({
                     {gridItem(forcedOutageRateField, 4)}
                 </Grid>
             </Grid>
+            <PropertiesForm
+                networkElementType={'generator'}
+                isModification={true}
+            />
         </>
     );
 };

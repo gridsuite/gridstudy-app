@@ -8,9 +8,8 @@
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
 export const CONNECTIVITY = 'connectivity';
+export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
@@ -18,23 +17,28 @@ export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
 export const TOPOLOGY_KIND = 'topologyKind';
 export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
+export const BUS_OR_BUSBAR_SECTION_ID = 'busOrBusbarSectionId';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'connected';
+export const CONNECTED1 = 'connected1';
+export const CONNECTED2 = 'connected2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
+export const CREATIONS_TABLE = 'creationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
-export const SERIES_RESISTANCE = 'seriesResistance';
-export const SERIES_REACTANCE = 'seriesReactance';
-export const MAGNETIZING_CONDUCTANCE = 'magnetizingConductance';
-export const MAGNETIZING_SUSCEPTANCE = 'magnetizingSusceptance';
+export const R = 'r';
+export const X = 'x';
+export const G = 'g';
+export const B = 'b';
 export const RATED_S = 'ratedS';
-export const RATED_VOLTAGE_1 = 'ratedVoltage1';
-export const RATED_VOLTAGE_2 = 'ratedVoltage2';
+
+export const RATED_U1 = 'ratedU1';
+export const RATED_U2 = 'ratedU2';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -44,15 +48,18 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
+export const MAX_ACTIVE_POWER = 'maxActivePower';
+export const MIN_ACTIVE_POWER = 'minActivePower';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
-export const VOLTAGE_SET_POINT = 'voltageSetPoint';
+export const VOLTAGE_SET_POINT = 'voltageSetpoint';
 export const TRANSIENT_REACTANCE = 'transientReactance';
 export const Q_PERCENT = 'qPercent';
 export const FREQUENCY_REGULATION = 'frequencyRegulation';
+export const PARTICIPATE = 'participate';
 export const DROOP = 'droop';
 export const TRANSFORMER_REACTANCE = 'transformerReactance';
 export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
@@ -60,6 +67,7 @@ export const MARGINAL_COST = 'marginalCost';
 export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
 export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
 export const REACTIVE_LIMITS = 'reactiveLimits';
+export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
@@ -111,10 +119,10 @@ export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
 export const MAX_SUSCEPTANCE = 'maxSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 //line
-export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
-export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
-export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
-export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
+export const G1 = 'g1';
+export const B1 = 'b1';
+export const G2 = 'g2';
+export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
@@ -160,7 +168,12 @@ export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
+export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerReactance';
 export const REGULATING_TERMINAL = 'regulatingTerminal';
+export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
+export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
+export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
+
 export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
 export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
@@ -272,6 +285,8 @@ export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';
 
 // VSC
+export const ACTIVE_POWER = 'activePower';
+export const REACTIVE_POWER = 'reactivePower';
 export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
 export const DC_RESISTANCE = 'dcResistance';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =

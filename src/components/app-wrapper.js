@@ -44,16 +44,36 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import networkModification_en from '../translations/network-modifications-en.json';
-import networkModification_fr from '../translations/network-modifications-fr.json';
-import exportParameters_en from '../translations/export-parameters-en.json';
-import exportParameters_fr from '../translations/export-parameters-fr.json';
+import network_modifications_locale_en from '../translations/dynamic/network-modifications-locale-en';
+import network_modifications_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
+import exportParameters_en from '../translations/external/export-parameters-en.json';
+import exportParameters_fr from '../translations/external/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
-import external_labels_en from '../translations/extern-en.json';
-import external_labels_fr from '../translations/extern-fr.json';
+import aggrid_locale_en from '../translations/external/aggrid-locale-en';
+import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
+import backend_locale_en from '../translations/external/backend-locale-en';
+import backend_locale_fr from '../translations/external/backend-locale-fr';
+import dynamic_mapping_models_en from '../translations/external/dynamic-mapping-models-en';
+import dynamic_mapping_models_fr from '../translations/external/dynamic-mapping-models-fr';
+import csv_locale_en from '../translations/dynamic/csv-locale-en';
+import csv_locale_fr from '../translations/dynamic/csv-locale-fr';
+import filter_locale_en from '../translations/dynamic/filter-locale-en';
+import filter_locale_fr from '../translations/dynamic/filter-locale-fr';
+import menu_locale_en from '../translations/dynamic/menu-locale-en';
+import menu_locale_fr from '../translations/dynamic/menu-locale-fr';
+import table_locale_en from '../translations/dynamic/table-locale-en';
+import table_locale_fr from '../translations/dynamic/table-locale-fr';
+import errors_locale_en from '../translations/dynamic/errors-locale-en';
+import errors_locale_fr from '../translations/dynamic/errors-locale-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
-import { PARAM_THEME } from '../utils/config-params';
+import {
+    PARAM_THEME,
+    basemap_style_theme_key,
+    MAP_BASEMAP_MAPBOX,
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
+} from '../utils/config-params';
 
 let lightTheme = createTheme({
     components: {
@@ -72,7 +92,6 @@ let lightTheme = createTheme({
             },
         },
     },
-
     palette: {
         mode: 'light',
     },
@@ -106,7 +125,12 @@ let lightTheme = createTheme({
     formFiller: {
         background: '#e6e6e6',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/light-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
+        'mapbox://styles/mapbox/light-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
+        'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
+        'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     aggrid: 'ag-theme-alpine',
     overlay: {
         background: '#e6e6e6',
@@ -115,8 +139,15 @@ let lightTheme = createTheme({
 
 lightTheme = createTheme(lightTheme, {
     palette: {
-        customButton: {
-            main: lightTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: lightTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });
@@ -170,7 +201,12 @@ let darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
+        'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
+        'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
+        'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
     aggrid: 'ag-theme-alpine-dark',
     overlay: {
         background: '#121212',
@@ -179,8 +215,15 @@ let darkTheme = createTheme({
 
 darkTheme = createTheme(darkTheme, {
     palette: {
-        customButton: {
-            main: darkTheme.palette.text.primary,
+        cancelButtonColor: {
+            main: darkTheme.palette.text.secondary,
+        },
+    },
+    components: {
+        CancelButton: {
+            defaultProps: {
+                color: 'cancelButtonColor',
+            },
         },
     },
 });
@@ -197,8 +240,7 @@ const messages = {
     en: {
         ...treeview_finder_en,
         ...messages_en,
-        ...networkModification_en,
-        ...external_labels_en,
+        ...network_modifications_locale_en,
         ...exportParameters_en,
         ...report_viewer_en,
         ...login_en,
@@ -210,13 +252,20 @@ const messages = {
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
         ...common_button_en,
+        ...aggrid_locale_en,
+        ...backend_locale_en,
+        ...dynamic_mapping_models_en,
+        ...csv_locale_en,
+        ...filter_locale_en,
+        ...menu_locale_en,
+        ...table_locale_en,
+        ...errors_locale_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
         ...treeview_finder_fr,
         ...messages_fr,
-        ...networkModification_fr,
-        ...external_labels_fr,
+        ...network_modifications_locale_fr,
         ...exportParameters_fr,
         ...report_viewer_fr,
         ...login_fr,
@@ -228,6 +277,14 @@ const messages = {
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
         ...common_button_fr,
+        ...aggrid_locale_fr,
+        ...backend_locale_fr,
+        ...dynamic_mapping_models_fr,
+        ...csv_locale_fr,
+        ...filter_locale_fr,
+        ...menu_locale_fr,
+        ...table_locale_fr,
+        ...errors_locale_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
