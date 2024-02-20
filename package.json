@@ -67,7 +67,8 @@
         "start": "vite",
         "watch": "vite watch",
         "build": "vite build",
-        "test": "jest --watchAll=false --transformIgnorePatterns \"node_modules/(?!@gridsuite/commons-ui)/\"",
+        "serve": "vite preview",
+        "test": "jest",
         "lint": "eslint ./src --ext js,jsx,ts,tsx"
     },
     "eslintConfig": {

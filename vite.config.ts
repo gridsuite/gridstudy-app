@@ -16,6 +16,21 @@ import { createRequire } from 'node:module';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+const serverSettings = {
+    port: 3000,
+    proxy: {
+        '/api/gateway': {
+            target: 'http://localhost:9000',
+            rewrite: (path: string) => path.replace(/^\/api\/gateway/, ''),
+        },
+        '/ws/gateway': {
+            target: 'http://localhost:9000',
+            rewrite: (path: string) => path.replace(/^\/ws\/gateway/, ''),
+            ws: true,
+        },
+    },
+}
+
 export default defineConfig({
     plugins: [
         react({
@@ -29,19 +44,11 @@ export default defineConfig({
         reactVirtualized(),
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
     ],
-    server: {
-        port: 3000,
-        proxy: {
-            '/api/gateway': {
-                target: 'http://localhost:9000',
-                rewrite: (path) => path.replace(/^\/api\/gateway/, ''),
-            },
-            '/ws/gateway': {
-                target: 'http://localhost:9000',
-                rewrite: (path) => path.replace(/^\/ws\/gateway/, ''),
-                ws: true,
-            },
-        },
+    server: serverSettings, // for npm run start
+    preview: serverSettings, // for npm run serve (use local build)
+    build: {
+        minify: false, // make it easier to debug
+        outDir: 'build'
     },
 });
 
