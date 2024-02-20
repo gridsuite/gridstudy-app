@@ -286,13 +286,14 @@ const TableWrapper = (props) => {
             });
         },
         [
-            fluxConvention,
             intl,
             lockedColumnsNames,
-            sortConfig,
-            filterSelector,
             onSortChanged,
+            sortConfig,
             updateFilter,
+            filterSelector,
+            loadFlowStatus,
+            fluxConvention,
         ]
     );
 
