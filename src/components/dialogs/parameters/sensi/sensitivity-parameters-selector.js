@@ -29,21 +29,23 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 const styles = {
     circularProgress: (theme) => ({
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(1),
         color: theme.palette.primary.main,
         display: 'flex',
     }),
+    errorOutlineIcon: (theme) => ({
+        marginRight: theme.spacing(1),
+        color: theme.palette.error.main,
+        display: 'flex',
+    }),
     textInfo: (theme) => ({
-        marginRight: theme.spacing(2),
         color: theme.palette.primary.main,
         display: 'flex',
     }),
     textInitial: (theme) => ({
-        marginRight: theme.spacing(2),
         color: 'rgba(91,91,91,255)',
     }),
     textAlert: (theme) => ({
-        marginRight: theme.spacing(2),
         color: theme.palette.error.main,
         display: 'flex',
     }),
@@ -127,7 +129,10 @@ const SensitivityParametersSelector = ({
         if (analysisComputeComplexity > 999999) {
             return (
                 <Box sx={styles.textAlert}>
-                    <ErrorOutlineIcon size={'1em'} sx={styles.textAlert} />
+                    <ErrorOutlineIcon
+                        size={'1em'}
+                        sx={styles.errorOutlineIcon}
+                    />
                     <FormattedMessage id="sensitivityAnalysis.moreThanOneMillionComputations" />
                 </Box>
             );
@@ -144,12 +149,14 @@ const SensitivityParametersSelector = ({
             );
         } else {
             return (
-                <FormattedMessage
-                    id={'sensitivityAnalysis.simulatedComputations'}
-                    values={{
-                        count: analysisComputeComplexity.toString(),
-                    }}
-                />
+                <Box sx={styles.textInfo}>
+                    <FormattedMessage
+                        id={'sensitivityAnalysis.simulatedComputations'}
+                        values={{
+                            count: analysisComputeComplexity.toString(),
+                        }}
+                    />
+                </Box>
             );
         }
     };
