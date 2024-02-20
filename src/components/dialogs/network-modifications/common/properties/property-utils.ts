@@ -181,7 +181,7 @@ export const creationPropertiesSchema = yup.object({
                 [ADDED]: yup.boolean().required(),
             })
         )
-        .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
+        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) =>
             checkUniquePropertyNames(values)
         ),
 });
@@ -207,7 +207,7 @@ export const modificationPropertiesSchema = yup.object({
                 [ADDED]: yup.boolean().required(),
             })
         )
-        .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
+        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) =>
             checkUniquePropertyNames(values)
         ),
 });
