@@ -44,7 +44,7 @@ export interface StudyUpdatedEventDataHeader {
 
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
-    payload: string;
+    payload: string | any; // TODO check this
 }
 
 export interface StudyUpdated {

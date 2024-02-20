@@ -17,10 +17,6 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
-    setDeletedEquipments,
-    setUpdatedSubstationsIds,
-    updateEquipments,
-    deleteEquipment,
     resetEquipments,
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
@@ -47,7 +43,6 @@ import {
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import {
@@ -59,7 +54,7 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import { useUpdateEquipments } from 'hooks/use-update-equipments';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -241,6 +236,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentNodeRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id);
+    useUpdateEquipments({ studyUuid, currentNodeUuid: currentNode?.id });
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -634,79 +630,6 @@ export function StudyContainer({ view, onChangeTab }) {
         checkNetworkExistenceAndRecreateIfNotFound,
         studyUuid,
     ]);
-
-    function parseStudyNotification(studyUpdatedForce) {
-        const payload = studyUpdatedForce.eventData.payload;
-        const substationsIds = payload?.impactedSubstationsIds;
-        const deletedEquipments = payload?.deletedEquipments;
-        const collectionElementImpacts = payload?.collectionElementImpacts;
-
-        return [substationsIds, deletedEquipments, collectionElementImpacts];
-    }
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'study'
-            ) {
-                // study partial update :
-                // loading equipments involved in the study modification and updating the network
-                const [
-                    substationsIds,
-                    deletedEquipments,
-                    collectionElementImpacts,
-                ] = parseStudyNotification(studyUpdatedForce);
-                if (deletedEquipments?.length > 0) {
-                    // removing deleted equipment from the network
-                    deletedEquipments.forEach((deletedEquipment) => {
-                        if (
-                            deletedEquipment?.equipmentId &&
-                            deletedEquipment?.equipmentType
-                        ) {
-                            console.info(
-                                'removing equipment with id=',
-                                deletedEquipment?.equipmentId,
-                                ' and type=',
-                                deletedEquipment?.equipmentType,
-                                ' from the network'
-                            );
-                            dispatch(
-                                deleteEquipment(
-                                    deletedEquipment?.equipmentType,
-                                    deletedEquipment?.equipmentId
-                                )
-                            );
-                        }
-                    });
-                    dispatch(setDeletedEquipments(deletedEquipments));
-                }
-                // updating data related to impacted substations
-                const updatedEquipments = fetchAllEquipments(
-                    studyUuid,
-                    currentNode?.id,
-                    collectionElementImpacts?.includes(
-                        EQUIPMENT_TYPES.SUBSTATION
-                    )
-                        ? undefined
-                        : substationsIds
-                );
-
-                updatedEquipments.then((values) => {
-                    dispatch(updateEquipments(values));
-                });
-                dispatch(
-                    setUpdatedSubstationsIds(
-                        collectionElementImpacts?.includes(
-                            EQUIPMENT_TYPES.SUBSTATION
-                        )
-                            ? undefined
-                            : substationsIds
-                    )
-                );
-            }
-        }
-    }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
 
     // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
