@@ -31,19 +31,11 @@ import {
     unitToKiloUnit,
     unitToMicroUnit,
 } from '../../../utils/unit-converter';
-import {
-    getComputedRegulationMode,
-    getComputedRegulationType,
-    getComputedTapSideId,
-} from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import { getComputedRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import {
     computeHighTapPosition,
     getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
-import {
-    getComputedPhaseRegulationType,
-    getPhaseTapRegulationSideId,
-} from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
@@ -138,16 +130,6 @@ const isEditableRegulatingTerminalCell = (params) => {
     );
 };
 
-const getTwtRatioRegulationTypeId = (twt) => {
-    //regulationType is set by the user (in edit mode)
-    if (twt?.ratioTapChanger?.regulationType) {
-        return twt.ratioTapChanger.regulationType;
-    }
-    //otherwise, we compute it
-    const computedRegulationType = getComputedRegulationType(twt);
-    return computedRegulationType?.id || null;
-};
-
 const getTwtRatioRegulationModeId = (twt) => {
     //regulationMode is set by the user (in edit mode)
     if (twt?.ratioTapChanger?.regulationMode !== undefined) {
@@ -160,17 +142,6 @@ const getTwtRatioRegulationModeId = (twt) => {
     //otherwise, we compute it
     const computedRegulationMode = getComputedRegulationMode(twt);
     return computedRegulationMode?.id || null;
-};
-
-const getTwtPhaseRegulationTypeId = (twt) => {
-    const phaseTapValues = twt?.phaseTapChanger;
-    if (phaseTapValues && phaseTapValues.regulationType) {
-        //this is the case where the regulation type is set by the user (in edit mode)
-        return phaseTapValues.regulationType;
-    }
-    //otherwise, we compute it
-    const computedRegulationType = getComputedPhaseRegulationType(twt);
-    return computedRegulationType?.id || null;
 };
 
 const hasTwtRatioTapChanger = (params) => {
@@ -201,27 +172,34 @@ const hasTwtPhaseTapChanger = (params) => {
 const isEditableTwtPhaseRegulationSideCell = (params) => {
     return (
         isEditable(params) &&
-        getTwtPhaseRegulationTypeId(params.data) === REGULATION_TYPES.LOCAL.id
+        params.data?.phaseTapChanger?.regulationType ===
+            REGULATION_TYPES.LOCAL.id
     );
 };
 
 const isEditableTwtRatioRegulationSideCell = (params) => {
-    return isEditable(params) && isTwtRatioOnload(params);
+    return (
+        isEditable(params) &&
+        isTwtRatioOnload(params) &&
+        params.data?.ratioTapChanger?.regulationType ===
+            REGULATION_TYPES.LOCAL.id
+    );
 };
 
 const isEditableTwtRatioRegulatingTerminalCell = (params) => {
     return (
         isEditable(params) &&
-        getTwtRatioRegulationTypeId(params.data) ===
-            REGULATION_TYPES.DISTANT.id &&
-        isTwtRatioOnload(params)
+        isTwtRatioOnload(params) &&
+        params.data?.ratioTapChanger?.regulationType ===
+            REGULATION_TYPES.DISTANT.id
     );
 };
 
 const isEditableTwtPhaseRegulatingTerminalCell = (params) => {
     return (
         isEditable(params) &&
-        getTwtPhaseRegulationTypeId(params.data) === REGULATION_TYPES.DISTANT.id
+        params.data?.phaseTapChanger?.regulationType ===
+            REGULATION_TYPES.DISTANT.id
     );
 };
 
@@ -887,7 +865,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'ratioTapChanger.regulationType',
                 ...defaultTextFilterConfig,
                 valueGetter: (params) =>
-                    getTwtRatioRegulationTypeId(params?.data),
+                    params.data?.ratioTapChanger?.regulationType,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data?.ratioTapChanger || {}),
@@ -916,8 +894,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'ratioTapChanger.regulationSide',
                 ...defaultTextFilterConfig,
                 valueGetter: (params) =>
-                    params.data?.ratioTapChanger?.regulationSide ??
-                    getComputedTapSideId(params?.data),
+                    params.data?.ratioTapChanger?.regulationSide,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data?.ratioTapChanger || {}),
@@ -936,18 +913,17 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn: 'ratioTapChanger.regulationType',
+                        columnValue: REGULATION_TYPES.LOCAL.id,
                     },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioRegulatingTerminal',
-                field: 'RatioRegulatingTerminal',
+                field: 'ratioTapChanger.ratioRegulatingTerminal',
                 ...defaultTextFilterConfig,
                 valueGetter: (params) =>
-                    getTapChangerRegulationTerminalValue(
-                        params?.data?.ratioTapChanger
-                    ),
+                    params.data?.ratioTapChanger?.ratioRegulatingTerminal,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
                 cellStyle: (params) =>
@@ -1088,6 +1064,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
                     isEditable(params) &&
+                    hasTwtPhaseTapChanger(params) &&
                     params.data?.phaseTapChanger?.regulationMode !==
                         PHASE_REGULATION_MODES.FIXED_TAP.id,
                 cellStyle: editableCellStyle,
@@ -1118,6 +1095,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
                     isEditable(params) &&
+                    hasTwtPhaseTapChanger(params) &&
                     params.data?.phaseTapChanger?.regulationMode !==
                         PHASE_REGULATION_MODES.FIXED_TAP.id,
                 cellStyle: editableCellStyle,
@@ -1145,7 +1123,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'phaseTapChanger.regulationType',
                 ...defaultTextFilterConfig,
                 valueGetter: (params) =>
-                    getTwtPhaseRegulationTypeId(params?.data),
+                    params.data?.phaseTapChanger?.regulationType,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger = {
                         ...(params.data?.phaseTapChanger || {}),
@@ -1174,8 +1152,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'phaseTapChanger.regulationSide',
                 ...defaultTextFilterConfig,
                 valueGetter: (params) =>
-                    params.data?.phaseTapChanger?.regulationSide ||
-                    getPhaseTapRegulationSideId(params?.data),
+                    params.data?.phaseTapChanger?.regulationSide,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger = {
                         ...(params.data?.phaseTapChanger || {}),
@@ -1191,16 +1168,20 @@ export const TABLES_DEFINITIONS = {
                         values: [...Object.values(SIDE).map((side) => side.id)],
                     };
                 },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'phaseTapChanger.regulationType',
+                        columnValue: REGULATION_TYPES.LOCAL.id,
+                    },
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'PhaseRegulatingTerminal',
-                field: 'PhaseRegulatingTerminal',
+                field: 'phaseTapChanger.phaseRegulatingTerminal',
                 ...defaultTextFilterConfig,
                 valueGetter: (params) =>
-                    getTapChangerRegulationTerminalValue(
-                        params?.data?.phaseTapChanger
-                    ),
+                    params.data?.phaseTapChanger?.phaseRegulatingTerminal,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
                 cellStyle: (params) =>

@@ -69,13 +69,13 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
-    getInitialTwtRatioRegulationModeId,
+    formatTwtDataForTable,
     updateGeneratorCells,
     updateShuntCompensatorCells,
     updateTwtCells,
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { toModificationOperation } from 'components/utils/utils';
+import { getTapChangerRegulationTerminalValue, toModificationOperation } from 'components/utils/utils';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import {
     REGULATION_TYPES,
@@ -85,6 +85,7 @@ import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
+import { getComputedRegulationTypeId, getComputedTapSideId, getInitialTwtRatioRegulationModeId } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -306,13 +307,8 @@ const TableWrapper = (props) => {
             //Format the twt data to set calculated fields, so that the edition validation is consistent with the displayed data
             if (equipmentDefinition.type === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) {
                 return fetchedEquipments.map((twt) => {
-                    const formattedTwt = {...twt};
-                    if (formattedTwt?.ratioTapChanger) {
-                        formattedTwt.ratioTapChanger = {
-                            ...formattedTwt.ratioTapChanger,
-                            regulationMode: getInitialTwtRatioRegulationModeId(twt),
-                        }
-                    }
+                    const formattedTwt = formatTwtDataForTable(twt);
+                    
                     return formattedTwt;
                 });
             }
@@ -343,7 +339,8 @@ const TableWrapper = (props) => {
             return [];
         }
 
-        return equipments;
+        // The equipments are formatted here too, because they are also updated by notfications in study container
+        return formatFetchedEquipments(equipments);
     }, [equipments, props.disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
@@ -1173,8 +1170,9 @@ const TableWrapper = (props) => {
                     true
                 )
                     .then((updatedEquipment) => {
+                        const formattedData = formatTwtDataForTable(updatedEquipment);
                         const transaction = {
-                            update: [updatedEquipment],
+                            update: [formattedData],
                         };
                         gridRef.current.api.applyTransaction(transaction);
                         setLastModifiedEquipment();
@@ -1182,7 +1180,7 @@ const TableWrapper = (props) => {
                             force: true,
                             rowNodes: [
                                 gridRef.current.api.getRowNode(
-                                    updatedEquipment.id
+                                    formattedData.id
                                 ),
                             ],
                         });

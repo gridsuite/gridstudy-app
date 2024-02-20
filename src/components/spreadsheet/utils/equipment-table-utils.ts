@@ -16,7 +16,15 @@ import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
-import { getComputedRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import {
+    getComputedRegulationTypeId,
+    getComputedTapSideId,
+    getInitialTwtRatioRegulationModeId,
+} from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import {
+    getComputedPhaseRegulationTypeId,
+    getPhaseTapRegulationSideId,
+} from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -99,6 +107,55 @@ export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
     }
 };
 
+/*
+ * This function is used to format the data of the table to be able to display it in the table
+ * and resolve the issue of the calculated fields
+ */
+export const formatTwtDataForTable = (twt: any) => {
+    const formattedTwt = { ...twt };
+    if (formattedTwt?.ratioTapChanger) {
+        const regulationType = getComputedRegulationTypeId(formattedTwt);
+        const regulationSide =
+            regulationType === REGULATION_TYPES.LOCAL.id
+                ? getComputedTapSideId(formattedTwt)
+                : null;
+        const ratioRegulatingTerminal =
+            regulationType === REGULATION_TYPES.DISTANT.id
+                ? getTapChangerRegulationTerminalValue(
+                      formattedTwt.ratioTapChanger
+                  )
+                : null;
+        formattedTwt.ratioTapChanger = {
+            ...formattedTwt.ratioTapChanger,
+            regulationMode: getInitialTwtRatioRegulationModeId(twt),
+            regulationType: regulationType,
+            regulationSide: regulationSide,
+            ratioRegulatingTerminal: ratioRegulatingTerminal,
+        };
+    }
+    if (formattedTwt?.phaseTapChanger) {
+        const regulationType = getComputedPhaseRegulationTypeId(formattedTwt);
+        const regulationSide =
+            regulationType === REGULATION_TYPES.LOCAL.id
+                ? getPhaseTapRegulationSideId(formattedTwt)
+                : null;
+        const phaseRegulatingTerminal =
+            regulationType === REGULATION_TYPES.DISTANT.id
+                ? getTapChangerRegulationTerminalValue(
+                      formattedTwt.phaseTapChanger
+                  )
+                : null;
+        formattedTwt.phaseTapChanger = {
+            ...formattedTwt.phaseTapChanger,
+            regulationType: regulationType,
+            regulationSide: regulationSide,
+            phaseRegulatingTerminal: phaseRegulatingTerminal,
+        };
+    }
+
+    return formattedTwt;
+};
+
 export const updateTwtCells = (params: CellEditingStoppedEvent) => {
     const colId = params.column.getColId();
     const ratioRegulationTypeText =
@@ -108,18 +165,7 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
     switch (colId) {
         case 'ratioTapChanger.regulationType':
             if (ratioRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
-                // This solve the problem of required on RatioRegulatingTerminal when we set regulationType to distant
-                const regulatingTerminalGenerator =
-                    getTapChangerRegulationTerminalValue(
-                        params.data?.ratioTapChanger
-                    );
-                updateCellValue(
-                    'RatioRegulatingTerminal',
-                    regulatingTerminalGenerator,
-                    params
-                );
                 // empty regulation side
-                params.data.ratioTapChanger.regulationSide = null;
                 updateCellValue('ratioTapChanger.regulationSide', null, params);
             } else if (ratioRegulationTypeText === REGULATION_TYPES.LOCAL.id) {
                 params.data.ratioTapChanger.regulatingTerminalVlId = null;
@@ -127,27 +173,35 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                     null;
                 params.data.ratioTapChanger.regulatingTerminalConnectableType =
                     null;
-                updateCellValue('RatioRegulatingTerminal', null, params);
-            }
-            break;
-
-        case 'phaseTapChanger.regulationType':
-            if (phaseRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
-                // This solve the problem of required on PhaseRegulatingTerminal when we set regulationType to distant
-                const regulatingTerminalGenerator =
-                    getTapChangerRegulationTerminalValue(
-                        params.data?.phaseTapChanger
-                    );
                 updateCellValue(
-                    'PhaseRegulatingTerminal',
-                    regulatingTerminalGenerator,
+                    'ratioTapChanger.ratioRegulatingTerminal',
+                    null,
                     params
                 );
             }
             break;
 
-        case 'RatioRegulatingTerminal':
-            const ratioRegulatingTerminal = params.data.RatioRegulatingTerminal;
+        case 'phaseTapChanger.regulationType':
+            if (phaseRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
+                // empty regulation side
+                updateCellValue('phaseTapChanger.regulationSide', null, params);
+            } else if (phaseRegulationTypeText === REGULATION_TYPES.LOCAL.id) {
+                params.data.phaseTapChanger.regulatingTerminalVlId = null;
+                params.data.phaseTapChanger.regulatingTerminalConnectableId =
+                    null;
+                params.data.phaseTapChanger.regulatingTerminalConnectableType =
+                    null;
+                updateCellValue(
+                    'phaseTapChanger.phaseRegulatingTerminal',
+                    null,
+                    params
+                );
+            }
+            break;
+
+        case 'ratioTapChanger.ratioRegulatingTerminal':
+            const ratioRegulatingTerminal =
+                params.data?.ratioTapChanger?.ratioRegulatingTerminal;
             if (ratioRegulatingTerminal) {
                 const ratioTapChanger = { ...params.data?.ratioTapChanger };
                 ratioTapChanger.regulatingTerminalVlId =
@@ -160,8 +214,9 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
             }
             break;
 
-        case 'PhaseRegulatingTerminal':
-            const phaseRegulatingTerminal = params.data.PhaseRegulatingTerminal;
+        case 'phaseTapChanger.phaseRegulatingTerminal':
+            const phaseRegulatingTerminal =
+                params.data?.phaseTapChanger?.phaseRegulatingTerminal;
             if (phaseRegulatingTerminal) {
                 const phaseTapChanger = { ...params.data?.phaseTapChanger };
                 phaseTapChanger.regulatingTerminalVlId =
@@ -441,14 +496,4 @@ const checkCrossValidationRequiredOn = (
         // otherwise, we just check if there is a current value
         return dependencyValue === undefined;
     }
-};
-
-export const getInitialTwtRatioRegulationModeId = (twt: any) => {
-    // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
-    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
-        return null;
-    }
-    //otherwise, we compute it
-    const computedRegulationMode = getComputedRegulationMode(twt);
-    return computedRegulationMode?.id || null;
 };
