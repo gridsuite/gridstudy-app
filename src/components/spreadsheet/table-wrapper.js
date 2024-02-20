@@ -75,7 +75,7 @@ import {
     updateTwtCells,
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { getTapChangerRegulationTerminalValue, toModificationOperation } from 'components/utils/utils';
+import { toModificationOperation } from 'components/utils/utils';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import {
     REGULATION_TYPES,
@@ -85,7 +85,6 @@ import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
-import { getComputedRegulationTypeId, getComputedTapSideId, getInitialTwtRatioRegulationModeId } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -305,20 +304,25 @@ const TableWrapper = (props) => {
     const formatFetchedEquipments = useCallback(
         (fetchedEquipments) => {
             //Format the twt data to set calculated fields, so that the edition validation is consistent with the displayed data
-            if (equipmentDefinition.type === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) {
+            if (
+                equipmentDefinition.type ===
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
+            ) {
                 return fetchedEquipments.map((twt) => {
                     const formattedTwt = formatTwtDataForTable(twt);
-                    
+
                     return formattedTwt;
                 });
             }
             return fetchedEquipments;
         },
-        [tabIndex]
+        [equipmentDefinition.type]
     );
 
-    const { equipments, errorMessage, isFetching } =
-        useSpreadsheetEquipments(equipmentDefinition, formatFetchedEquipments);
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+        equipmentDefinition,
+        formatFetchedEquipments
+    );
 
     useEffect(() => {
         if (errorMessage) {
@@ -341,7 +345,7 @@ const TableWrapper = (props) => {
 
         // The equipments are formatted here too, because they are also updated by notfications in study container
         return formatFetchedEquipments(equipments);
-    }, [equipments, props.disabled]);
+    }, [equipments, props.disabled, formatFetchedEquipments]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
     //is reinstanciated in order to notify components using it.
@@ -1170,7 +1174,8 @@ const TableWrapper = (props) => {
                     true
                 )
                     .then((updatedEquipment) => {
-                        const formattedData = formatTwtDataForTable(updatedEquipment);
+                        const formattedData =
+                            formatTwtDataForTable(updatedEquipment);
                         const transaction = {
                             update: [formattedData],
                         };
