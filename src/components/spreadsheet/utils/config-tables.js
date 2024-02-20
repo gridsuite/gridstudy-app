@@ -3300,7 +3300,7 @@ export const TABLES_DEFINITIONS = {
     },
     BUSES: {
         index: 14,
-        name: 'Bus',
+        name: 'Buses',
         type: EQUIPMENT_TYPES.BUS,
         fetchers: EQUIPMENT_FETCHERS.BUS,
         columns: [
@@ -3308,34 +3308,38 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 isDefaultSort: true,
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'Magnitude',
                 field: 'v',
                 numeric: true,
-                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
+                ...defaultNumericFilterConfig,
             },
             {
                 id: 'Angle',
                 field: 'angle',
                 numeric: true,
-                ...defaultNumericFilterConfig,
                 fractionDigits: 1,
                 canBeInvalidated: true,
+                ...defaultNumericFilterConfig,
             },
             {
                 id: 'ConnectedComponent',
                 field: 'connectedComponentNum',
+                ...defaultNumericFilterConfig,
             },
             {
                 id: 'SynchronousComponent',
                 field: 'synchronousComponentNum',
+                ...defaultNumericFilterConfig,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
             },
             {
                 id: 'NominalV',
@@ -3343,10 +3347,12 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
+                ...defaultNumericFilterConfig,
             },
             {
                 id: 'Country',
                 field: 'countryName',
+                ...defaultTextFilterConfig,
             },
         ],
     },
