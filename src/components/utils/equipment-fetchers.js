@@ -7,6 +7,7 @@
 
 import {
     fetchBatteries,
+    fetchBuses,
     fetchDanglingLines,
     fetchGenerators,
     fetchHvdcLines,
@@ -42,4 +43,5 @@ export const EQUIPMENT_FETCHERS = {
     VSC_CONVERTER_STATION: [fetchVscConverterStations],
     LCC_CONVERTER_STATION: [fetchLccConverterStations],
     SWITCH: [],
+    BUS: [fetchBuses],
 };

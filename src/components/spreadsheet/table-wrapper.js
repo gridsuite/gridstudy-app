@@ -80,6 +80,7 @@ import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
+import ComputingType from 'components/computing-status/computing-type';
 import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
@@ -142,6 +143,10 @@ const TableWrapper = (props) => {
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -239,7 +244,7 @@ const TableWrapper = (props) => {
             if (column.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
                 const isValueInvalid =
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                     column.canBeInvalidated;
 
                 column.cellRendererParams = {
@@ -281,14 +286,14 @@ const TableWrapper = (props) => {
             });
         },
         [
-            fluxConvention,
             intl,
             lockedColumnsNames,
-            props.loadFlowStatus,
-            sortConfig,
-            filterSelector,
             onSortChanged,
+            sortConfig,
             updateFilter,
+            filterSelector,
+            loadFlowStatus,
+            fluxConvention,
         ]
     );
 
@@ -1399,7 +1404,6 @@ TableWrapper.defaultProps = {
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
-    loadFlowStatus: RunningStatus.IDLE,
     disabled: false,
 };
 
@@ -1409,7 +1413,6 @@ TableWrapper.propTypes = {
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
     disabled: PropTypes.bool,
 };
 
