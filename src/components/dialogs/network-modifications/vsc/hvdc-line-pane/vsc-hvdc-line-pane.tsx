@@ -138,7 +138,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         return intl.formatMessage({ id: 'NoModification' });
     };
 
-    const AngleDroopActivePowerControl = isEquipementModification ? (
+    const AngleDroopActivePowerControl = isEquipementModification ? 
         gridItemWithTooltip(
             <CheckboxNullableInput
                 name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
@@ -151,8 +151,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
                 id: 'NoModification',
             }),
             4
-        )
-    ) : (
+        ) : (
         <SwitchInput
             name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
             label={'angleDroopActivePowerControlLabel'}
