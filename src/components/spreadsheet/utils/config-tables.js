@@ -1884,7 +1884,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1908,7 +1908,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2836,7 +2836,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2859,7 +2859,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
