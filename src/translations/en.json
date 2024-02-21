@@ -1300,6 +1300,7 @@
     "NoGeneratorsFilterGiven": "At least one generators filter must be given",
     "modificationsAlreadyApplied": "The modifications have already been applied",
     "nominalVoltage": "Nominal voltage (kV)",
+    "nominalV": "Nominal voltage (kV)",
     "lowVoltageLimit": "Low voltage limit (kV)",
     "highVoltageLimit": "High voltage limit (kV)",
     "SingleEquipment": "Single equipment",
