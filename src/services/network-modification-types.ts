@@ -2,7 +2,7 @@ import {
     ConverterStationElementInfos,
 } from '../components/dialogs/network-modifications/vsc/converter-station/converter-station-utils';
 
-export interface VscModificationInfo {//FIXME: rename to VscInfo ?
+export interface VscModificationInfo {//FIXME(jamal): rename to VscInfo ?
     id: string;
     name: string;
     dcNominalVoltage: number;
