@@ -10,8 +10,8 @@ const table_locale_en = {
     DeltaInkA: 'Sensitivity (ΔA / MW or Δ°)',
     DeltaInkABeforeContingency:
         'Sensitivity (ΔA / MW ou Δ°) before contingency',
-    DeltaInkV: 'Sensitivity (ΔkV / ΔkV)',
-    DeltaInkVBeforeContingency: 'Sensitivity (ΔkV / ΔkV) before contingency',
+    DeltaInkV: 'Sensitivity (ΔkV / kV)',
+    DeltaInkVBeforeContingency: 'Sensitivity (ΔkV / kV) before contingency',
     DeltaInkW: 'Sensitivity (ΔMW / MW or Δ°)',
     DeltaInkWBeforeContingency:
         'Sensitivity (ΔMW / MW ou Δ°) before contingency',
