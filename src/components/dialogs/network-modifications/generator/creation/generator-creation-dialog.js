@@ -236,7 +236,7 @@ const GeneratorCreationDialog = ({
                 [RATED_NOMINAL_POWER]: editData.ratedNominalPower,
                 [ACTIVE_POWER_SET_POINT]: editData.activePowerSetpoint,
                 [VOLTAGE_REGULATION]: editData.voltageRegulationOn,
-                [VOLTAGE_SET_POINT]: editData.voltageSetpoint,
+                [VOLTAGE_SET_POINT]: editData.targetV,
                 [REACTIVE_POWER_SET_POINT]: editData.reactivePowerSetpoint,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData.plannedActivePowerSetPoint,

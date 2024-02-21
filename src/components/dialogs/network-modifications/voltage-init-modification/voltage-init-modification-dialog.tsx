@@ -95,7 +95,7 @@ interface ShuntCompensatorRowData {
 
 interface GeneratorData {
     generatorId: string;
-    voltageSetpoint: number | undefined;
+    targetV: number | undefined;
     reactivePowerSetpoint: number | undefined;
 }
 
@@ -370,8 +370,8 @@ const VoltageInitModificationDialog: FunctionComponent<
                                 [VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
-                            if (check(m.voltageSetpoint)) {
-                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                            if (check(m.targetV)) {
+                                row[VOLTAGE_SET_POINT] = m.targetV;
                             }
                             if (check(m.reactivePowerSetpoint)) {
                                 row[REACTIVE_POWER_SET_POINT] =

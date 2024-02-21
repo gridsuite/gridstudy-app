@@ -173,7 +173,7 @@ const GeneratorModificationDialog = ({
                     editData?.activePowerSetpoint?.value ?? null,
                 [VOLTAGE_REGULATION]:
                     editData?.voltageRegulationOn?.value ?? null,
-                [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
+                [VOLTAGE_SET_POINT]: editData?.targetV?.value ?? null,
                 [REACTIVE_POWER_SET_POINT]:
                     editData?.reactivePowerSetpoint?.value ?? null,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
