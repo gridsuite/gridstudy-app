@@ -297,7 +297,8 @@ export function createBattery(
     frequencyRegulation,
     droop,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createBatteryUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -336,6 +337,7 @@ export function createBattery(
             reactivePowerSetpoint,
             participate: frequencyRegulation,
             droop,
+            properties,
         }),
     });
 }
@@ -357,7 +359,8 @@ export function modifyBattery(
     isReactiveCapabilityCurveOn,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -388,6 +391,7 @@ export function modifyBattery(
         maximumReactivePower: toModificationOperation(maximumReactivePower),
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
