@@ -8,14 +8,15 @@
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
 import DraggableTab from './common/draggable-tab/draggable-tab';
 import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
+import useResultTimeSeries from './hooks/useResultTimeSeries';
 
 const styles = {
     root: {
@@ -26,10 +27,16 @@ const styles = {
         marginRight: theme.spacing(10),
         color: theme.palette.primary.main,
     }),
+    loader: {
+        height: '4px',
+    },
 };
 
-const DynamicSimulationResultTimeSeries = ({ result, loadTimeSeries }) => {
-    const { timeseriesMetadatas } = result;
+const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
+    const [result, loadTimeSeries, isLoading] = useResultTimeSeries(
+        nodeUuid,
+        studyUuid
+    );
 
     // tab id is auto increase and reset to zero when there is any tab
     const [tabIncId, setTabIncId] = useState(1);
@@ -86,92 +93,97 @@ const DynamicSimulationResultTimeSeries = ({ result, loadTimeSeries }) => {
     };
 
     return (
-        <Box sx={styles.root}>
-            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                {/* tab headers */}
-                <DroppableTabs
-                    id={'1'}
-                    value={selectedIndex}
-                    onChange={handleTabsChange}
-                    tabsRender={() =>
-                        tabs.map((tab, index) => {
-                            return (
-                                <DraggableTab
-                                    key={index}
-                                    id={`tab-${index}`}
-                                    index={index}
-                                    value={index}
-                                    label={
-                                        <span
-                                            style={{
-                                                whiteSpace: 'nowrap',
-                                            }}
-                                        >
-                                            {`${intl.formatMessage({
-                                                id: 'DynamicSimulationResultTab',
-                                            })} ${tab.id}`}
-                                            <TooltipIconButton
-                                                toolTip={intl.formatMessage({
-                                                    id: 'DynamicSimulationCloseTab',
-                                                })}
-                                                size="small"
-                                                component="span"
-                                                onClick={handleClose(index)}
-                                            >
-                                                <CloseIcon />
-                                            </TooltipIconButton>
-                                        </span>
-                                    }
-                                />
-                            );
-                        })
-                    }
-                    onDragEnd={handleDragEnd}
-                />
-                <TooltipIconButton
-                    toolTip={intl.formatMessage({
-                        id: 'DynamicSimulationAddTab',
-                    })}
-                    sx={styles.addButton}
-                    onClick={handleAddNewTab}
-                >
-                    <AddIcon />
-                </TooltipIconButton>
-            </Box>
-            {/* tab contents */}
-            <Box
-                sx={{
-                    height: 'calc(100vh - 220px)', // TODO fix layout to use flexGrow : 1
-                }}
-            >
-                {tabs.map((tab, index) => (
-                    <Visibility
-                        key={`tab-${tab.id}`}
-                        value={selectedIndex}
-                        index={index}
-                    >
-                        <DynamicSimulationResultChart
-                            groupId={`${tab.id}`}
-                            timeseriesMetadatas={timeseriesMetadatas}
-                            selected={selectedIndex === index}
-                            loadTimeSeries={loadTimeSeries}
+        <>
+            <Box sx={styles.loader}>{isLoading && <LinearProgress />}</Box>
+            {result && (
+                <Box sx={styles.root}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                        {/* tab headers */}
+                        <DroppableTabs
+                            id={'1'}
+                            value={selectedIndex}
+                            onChange={handleTabsChange}
+                            tabsRender={() =>
+                                tabs.map((tab, index) => {
+                                    return (
+                                        <DraggableTab
+                                            key={index}
+                                            id={`tab-${index}`}
+                                            index={index}
+                                            value={index}
+                                            label={
+                                                <span
+                                                    style={{
+                                                        whiteSpace: 'nowrap',
+                                                    }}
+                                                >
+                                                    {`${intl.formatMessage({
+                                                        id: 'DynamicSimulationResultTab',
+                                                    })} ${tab.id}`}
+                                                    <TooltipIconButton
+                                                        toolTip={intl.formatMessage(
+                                                            {
+                                                                id: 'DynamicSimulationCloseTab',
+                                                            }
+                                                        )}
+                                                        size="small"
+                                                        component="span"
+                                                        onClick={handleClose(
+                                                            index
+                                                        )}
+                                                    >
+                                                        <CloseIcon />
+                                                    </TooltipIconButton>
+                                                </span>
+                                            }
+                                        />
+                                    );
+                                })
+                            }
+                            onDragEnd={handleDragEnd}
                         />
-                    </Visibility>
-                ))}
-            </Box>
-        </Box>
+                        <TooltipIconButton
+                            toolTip={intl.formatMessage({
+                                id: 'DynamicSimulationAddTab',
+                            })}
+                            sx={styles.addButton}
+                            onClick={handleAddNewTab}
+                        >
+                            <AddIcon />
+                        </TooltipIconButton>
+                    </Box>
+                    {/* tab contents */}
+                    <Box
+                        sx={{
+                            height: 'calc(100vh - 220px)', // TODO fix layout to use flexGrow : 1
+                        }}
+                    >
+                        {tabs.map((tab, index) => (
+                            <Visibility
+                                key={`tab-${tab.id}`}
+                                value={selectedIndex}
+                                index={index}
+                            >
+                                <DynamicSimulationResultChart
+                                    groupId={`${tab.id}`}
+                                    timeseriesMetadatas={
+                                        result.timeseriesMetadatas
+                                    }
+                                    selected={selectedIndex === index}
+                                    loadTimeSeries={loadTimeSeries}
+                                />
+                            </Visibility>
+                        ))}
+                    </Box>
+                </Box>
+            )}
+        </>
     );
 };
 
 DynamicSimulationResultTimeSeries.propTypes = {
-    result: PropTypes.shape({
-        timeseriesMetadatas: PropTypes.arrayOf(
-            PropTypes.shape({
-                name: PropTypes.string.isRequired,
-            })
-        ),
-    }),
-    loadTimeSeries: PropTypes.func,
+    nodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
 };
 
 export default DynamicSimulationResultTimeSeries;
