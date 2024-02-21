@@ -9,10 +9,10 @@ import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { SitePropertiesEditor } from './equipement-table-popup-editors';
 import {
+    BooleanListField,
     GeneratorRegulatingTerminalEditor,
     NumericalField,
     SelectCountryField,
-    BooleanListField,
     TWTRegulatingTerminalEditor,
 } from './equipment-table-editors';
 import {
@@ -3295,6 +3295,64 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+        ],
+    },
+    BUSES: {
+        index: 14,
+        name: 'Buses',
+        type: EQUIPMENT_TYPES.BUS,
+        fetchers: EQUIPMENT_FETCHERS.BUS,
+        columns: [
+            {
+                id: 'ID',
+                field: 'id',
+                isDefaultSort: true,
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Magnitude',
+                field: 'v',
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+                ...defaultNumericFilterConfig,
+            },
+            {
+                id: 'Angle',
+                field: 'angle',
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+                ...defaultNumericFilterConfig,
+            },
+            {
+                id: 'ConnectedComponent',
+                field: 'connectedComponentNum',
+                ...defaultNumericFilterConfig,
+            },
+            {
+                id: 'SynchronousComponent',
+                field: 'synchronousComponentNum',
+                ...defaultNumericFilterConfig,
+            },
+            {
+                id: 'VoltageLevelId',
+                field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'NominalV',
+                field: 'nominalVoltage',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 0,
+                ...defaultNumericFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'countryName',
+                ...defaultTextFilterConfig,
             },
         ],
     },
