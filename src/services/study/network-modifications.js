@@ -950,7 +950,8 @@ export function createTwoWindingsTransformer(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -997,6 +998,7 @@ export function createTwoWindingsTransformer(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -1018,7 +1020,8 @@ export function modifyTwoWindingsTransformer(
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1053,6 +1056,7 @@ export function modifyTwoWindingsTransformer(
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+            properties,
         }),
     });
 }
