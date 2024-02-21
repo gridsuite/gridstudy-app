@@ -132,6 +132,14 @@ export interface ConverterStationElementInfos {
     voltage?: number;
 }
 
+// the backend return a converterStationElementInfo.reactiveCapabilityCurvePoints 
+// but the form define rename is to reactiveCapabilityCurveTable
+// may be we should refactor the forms in Battery , generator and converter station to use the same name
+export type ConverterStationElementModificationInfos = Omit<
+    ConverterStationElementInfos,
+    'reactiveCapabilityCurvePoints'
+> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePointsData[] };
+
 export function getVscConverterStationSchema(id: string) {
     return {
         [id]: yup.object().shape({
@@ -230,13 +238,16 @@ export function getConverterStationCreationData(converterStation: any) {
 
 export function getConverterStationModificationData(
     converterStation: any,
-    converterStationToModify: ConverterStationElementInfos | undefined
+    converterStationToModify:
+        | ConverterStationElementModificationInfos
+        | undefined
 ) {
-    const reactiveLimits = converterStation[REACTIVE_LIMITS];
+    const reactiveLimits = converterStation[REACTIVE_LIMITS];//should return 3 //OK
     const buildCurvePointsToStore = calculateCurvePointsToStore(
         reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
-        converterStation
+        converterStationToModify
     );
+    console.log("🚀-debug ~ buildCurvePointsToStore:", buildCurvePointsToStore);
     const isReactiveCapabilityCurveOn =
         reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
@@ -260,18 +271,6 @@ export function getConverterStationModificationData(
         busOrBusbarSectionId: toModificationOperation(
             converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]
         ),
-        // connectionName: toModificationOperation(
-        //     sanitizeString(converterStation[CONNECTIVITY]?.[CONNECTION_NAME])
-        // ),
-        // connectionDirection:
-        //     toModificationOperation(converterStation[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
-        //     UNDEFINED_CONNECTION_DIRECTION),
-        // connectionPosition: toModificationOperation(
-        //     converterStation[CONNECTIVITY]?.[CONNECTION_POSITION]
-        // ),
-        // connected: toModificationOperation(
-        //     converterStation[CONNECTIVITY]?.[CONNECTED]
-        // ),
         reactiveCapabilityCurve: toModificationOperation(
             isReactiveCapabilityCurveOn
         ),
@@ -285,7 +284,7 @@ export function getConverterStationModificationData(
                 ? null
                 : reactiveLimits[MAXIMUM_REACTIVE_POWER]
         ),
-        reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
+        reactiveCapabilityCurveTable: isReactiveCapabilityCurveOn
             ? buildCurvePointsToStore
             : null,
     };

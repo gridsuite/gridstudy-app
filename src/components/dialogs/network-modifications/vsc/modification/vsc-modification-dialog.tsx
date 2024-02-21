@@ -28,6 +28,8 @@ import {
     P0,
     Q_MAX_P,
     Q_MIN_P,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_LIMITS,
 } from '../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -47,7 +49,10 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { VscModificationInfo } from 'services/network-modification-types';
-import { REMOVE } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import {
+    REMOVE,
+    setCurrentReactiveCapabilityCurveTable,
+} from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-utils';
 
 const formSchema = yup
@@ -63,9 +68,15 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
-    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
+    [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
+    [CONVERTER_STATION_1]: getVscConverterStationEmptyFormData(
+        CONVERTER_STATION_1,
+        true
+    ),
+    [CONVERTER_STATION_2]: getVscConverterStationEmptyFormData(
+        CONVERTER_STATION_2,
+        true
+    ),
 };
 
 export const VSC_MODIFICATION_TABS = {
@@ -97,7 +108,7 @@ const VscModificationDialog: React.FC<any> = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -159,8 +170,34 @@ const VscModificationDialog: React.FC<any> = ({
                     equipementId,
                     true
                 )
-                    .then((value: VscModificationInfo) => {
-                        setVcsToModify(value);
+                    .then((value: any) => {
+                        const previousReactiveCapabilityCurveTable1 =
+                            value?.converterStation1
+                                ?.reactiveCapabilityCurvePoints;
+                        if (previousReactiveCapabilityCurveTable1) {
+                            setCurrentReactiveCapabilityCurveTable(
+                                previousReactiveCapabilityCurveTable1,
+                                `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                getValues,
+                                setValue
+                            )
+                        }
+                        const previousReactiveCapabilityCurveTable2 =
+                            value?.converterStation2
+                                ?.reactiveCapabilityCurveTable;
+                        setVcsToModify({
+                            ...value,
+                            converterStation1: {
+                                ...value.converterStation1,
+                                reactiveCapabilityCurveTable:
+                                    previousReactiveCapabilityCurveTable1,
+                            },
+                            converterStation2: {
+                                ...value.converterStation2,
+                                reactiveCapabilityCurveTable:
+                                    previousReactiveCapabilityCurveTable2,
+                            },
+                        });
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch((_) => {
@@ -235,7 +272,7 @@ const VscModificationDialog: React.FC<any> = ({
               });
         return {
             ...previousValue,
-            reactiveCapabilityCurvePoints: newRccValues,
+            reactiveCapabilityCurveTable: newRccValues,
         };
     };
 
@@ -245,7 +282,7 @@ const VscModificationDialog: React.FC<any> = ({
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
-                previousValue?.converterStation1?.reactiveCapabilityCurvePoints;
+                previousValue?.converterStation1?.reactiveCapabilityCurveTable;
             console.log('debug', 'previousValue', previousValue);
             console.log('debug', 'newRccValues', newRccValues);
             return updateConverterStationCapabilityCurveTable(
@@ -263,7 +300,7 @@ const VscModificationDialog: React.FC<any> = ({
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
-                previousValue?.converterStation2?.reactiveCapabilityCurvePoints;
+                previousValue?.converterStation2?.reactiveCapabilityCurveTable;
 
             return updateConverterStationCapabilityCurveTable(
                 newRccValues,
