@@ -348,7 +348,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'NominalV',
-                field: 'nominalVoltage',
+                field: 'nominalV',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
@@ -357,7 +357,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue: params.data.nominalVoltage,
+                        defaultValue: params.data.nominalV,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
