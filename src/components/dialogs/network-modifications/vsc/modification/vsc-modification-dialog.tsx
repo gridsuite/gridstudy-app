@@ -69,14 +69,8 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
-    [CONVERTER_STATION_1]: getVscConverterStationEmptyFormData(
-        CONVERTER_STATION_1,
-        true
-    ),
-    [CONVERTER_STATION_2]: getVscConverterStationEmptyFormData(
-        CONVERTER_STATION_2,
-        true
-    ),
+    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
+    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
 };
 
 export const VSC_MODIFICATION_TABS = {
@@ -108,7 +102,7 @@ const VscModificationDialog: React.FC<any> = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues, setValue, handleSubmit, watch } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -180,11 +174,21 @@ const VscModificationDialog: React.FC<any> = ({
                                 `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                 getValues,
                                 setValue
-                            )
+                            );
                         }
+
                         const previousReactiveCapabilityCurveTable2 =
                             value?.converterStation2
                                 ?.reactiveCapabilityCurveTable;
+                        if (previousReactiveCapabilityCurveTable2) {
+                            setCurrentReactiveCapabilityCurveTable(
+                                previousReactiveCapabilityCurveTable2,
+                                `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                getValues,
+                                setValue
+                            );
+                        }
+                        
                         setVcsToModify({
                             ...value,
                             converterStation1: {
@@ -216,6 +220,12 @@ const VscModificationDialog: React.FC<any> = ({
             onEquipmentIdChange(equipementId);
         }
     }, [equipementId, onEquipmentIdChange]);
+
+    // Watch for changes in the form data
+    const formData = watch();
+
+    // Log the form data
+    console.log('debug', formData);
 
     const onSubmit = (hvdcLine: any) => {
         const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
@@ -322,7 +332,7 @@ const VscModificationDialog: React.FC<any> = ({
             <ModificationDialog
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
-                onSave={onSubmit}
+                onSave={handleSubmit(onSubmit)}
                 aria-labelledby="dialog-modify-vsc"
                 maxWidth={'md'}
                 titleId="ModifyVsc"

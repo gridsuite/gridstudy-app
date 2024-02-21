@@ -245,7 +245,9 @@ export function setCurrentReactiveCapabilityCurveTable(
                     currentReactiveCapabilityCurveTable
                 );
             }
-            setValue(fieldKey, currentReactiveCapabilityCurveTable);
+            setValue(fieldKey, currentReactiveCapabilityCurveTable, {
+                shouldValidate: true,
+            });
         } else if (sizeDiff < 0) {
             // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
             for (let i = 0; i > sizeDiff; i--) {
