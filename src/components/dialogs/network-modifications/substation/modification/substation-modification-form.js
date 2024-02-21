@@ -48,7 +48,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
             label={'Country'}
             formProps={filledTextField}
             size={'small'}
-            previousValue={translate(substationToModify?.country.code)}
+            previousValue={translate(substationToModify?.country)}
         />
     );
 

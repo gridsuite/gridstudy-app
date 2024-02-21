@@ -71,7 +71,7 @@ const SubstationCreationDialog = ({
             {
                 [EQUIPMENT_ID]: substation.id + '(1)',
                 [EQUIPMENT_NAME]: substation.name ?? '',
-                [COUNTRY]: substation.country.code,
+                [COUNTRY]: substation.country,
                 ...copyEquipmentPropertiesForCreation(substation),
             },
             { keepDefaultValues: true }

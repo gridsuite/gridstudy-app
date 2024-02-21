@@ -49,6 +49,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const generateTapPositions = (params) => {
     return params
@@ -279,13 +280,17 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.name',
+                field: 'country',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
+                cellRenderer: (props) => {
+                    const { translate } = LocalizedCountries();
+                    const countryName = translate(props.value);
+                    return <span>{countryName}</span>;
+                },
                 valueSetter: (params) => {
-                    params.data.countryCode = params?.newValue?.countryCode;
-                    params.data.countryName = params?.newValue?.countryName;
+                    params.data.country = params?.newValue?.countryCode;
                     return params;
                 },
                 ...defaultTextFilterConfig,
