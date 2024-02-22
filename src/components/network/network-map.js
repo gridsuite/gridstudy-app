@@ -99,7 +99,6 @@ const INITIAL_CENTERED = {
 };
 
 const NetworkMap = (props) => {
-    const [draw, setDraw] = useState(null);
     const [mapBoxToken, setMapBoxToken] = useState();
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
@@ -109,7 +108,6 @@ const NetworkMap = (props) => {
     const [centered, setCentered] = useState(INITIAL_CENTERED);
     const lastViewStateRef = useRef(null);
     const [tooltip, setTooltip] = useState({});
-    const [features, setFeatures] = useState({});
     const theme = useTheme();
     const foregroundNeutralColor = useMemo(() => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
@@ -513,125 +511,7 @@ const NetworkMap = (props) => {
         setCentered(INITIAL_CENTERED);
     }, [mapLib?.key]);
 
-    const { snackError, snackInfo } = useSnackMessage();
     // this useEffect react to the creation of a polygon on the map and create a filter for the substation in the polygon
-    useEffect(() => {
-        // in case we want to handle multiple polygons drawing, we need to handle the features as an array
-        const polygoneCoordinates = Object.values(features)[0]?.geometry;
-        if (!polygoneCoordinates) {
-            return;
-        }
-
-        //get the list of substation
-        const substationsList = readyToDisplay
-            ? props.mapEquipments?.substations
-            : [];
-
-        const positions = substationsList // we need a list of substation and their positions
-            .map((substation) => {
-                return {
-                    substation: substation,
-                    pos: props.geoData.getSubstationPosition(substation.id),
-                };
-            });
-
-        const substationsInsidePolygone = positions.filter((substation) => {
-            return booleanPointInPolygon(substation.pos, polygoneCoordinates);
-        });
-
-        const voltageLevels = substationsInsidePolygone
-            .map((substation) => {
-                return substation.substation.voltageLevels;
-            })
-            .flat();
-
-        console.log('debug', 'voltageLevels', voltageLevels);
-
-        fetchPath(studyUuid)
-            .then((studyPath) => {
-                if (!studyPath || studyPath.length < 2) {
-                    snackError({
-                        messageTxt: 'unknown study directory',
-                        headerId: 'errCreateModificationsMsg',
-                    });
-                    return;
-                }
-
-                const PARENT_DIRECTORY_INDEX = 1;
-                const studyDirectoryUuid =
-                    studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
-
-                const substationParam = {
-                    type: 'IDENTIFIER_LIST',
-                    equipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-                    filterEquipmentsAttributes: voltageLevels.map((eq) => {
-                        console.log('debug', 'eq', eq);
-                        return { equipmentID: eq.id };
-                    }),
-                };
-
-                createFilter(
-                    substationParam,
-                    'polygoneFilter',
-                    'description',
-                    studyDirectoryUuid
-                )
-                    .then((value) => {
-                        console.log('debug', 'creation filter succeed', value);
-                        snackInfo({
-                            messageTxt: `Filter creation succeed. Path: ${studyPath
-                                .map((path) => path.elementUuid)
-                                .join('/')}`,
-                            headerId: 'createFilterMsg',
-                        });
-                    })
-                    .catch((error) => {
-                        console.log('debug', 'filter creation failed', error);
-                    });
-            })
-            .catch((error) => {})
-            .finally(() => {
-                if (draw) {
-                    // Get all features
-                    const features = draw.getAll();
-
-                    // Delete all features
-                    features.features.forEach((feature) => {
-                        draw.delete(feature.id);
-                    });
-                }
-            });
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [features]);
-
-    const onDrawCreate = ({ features, draw }) => {
-        setDraw(draw);
-    };
-
-    const onUpdate = useCallback((e) => {
-        console.log('🚀-debug ~ onUpdate ~ e:', e.action);
-
-        setFeatures((currFeatures) => {
-            const newFeatures = { ...currFeatures };
-            for (const f of e.features) {
-                newFeatures[f.id] = f;
-            }
-
-            return newFeatures;
-        });
-    }, []);
-
-    const onDelete = useCallback((e) => {
-        setFeatures((currFeatures) => {
-            const newFeatures = { ...currFeatures };
-            for (const f of e.features) {
-                delete newFeatures[f.id];
-            }
-            return newFeatures;
-        });
-    }, []);
-
     return (
         mapLib && (
             <>
@@ -688,12 +568,15 @@ const NetworkMap = (props) => {
                         controls={{
                             polygon: true,
                             trash: true,
-                            // uncombine_features: true,
                         }}
+
+                        //
+                        // defaultMode="simple_select"
                         defaultMode="draw_polygon"
-                        onCreate={onDrawCreate}
-                        onUpdate={onUpdate}
-                        onDelete={onDelete}
+                        readyToDisplay={readyToDisplay}
+                        studyUuid={studyUuid}
+                        geoData={props.geoData}
+                        mapEquipments={props.mapEquipments}
                         // styles: pour changer le style du polygone https://github.com/mapbox/mapbox-gl-draw/blob/main/docs/API.md#styling-draw
                     />
                 </Map>
