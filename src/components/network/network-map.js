@@ -17,6 +17,7 @@ import React, {
 import PropTypes from 'prop-types';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import mapboxgl from 'mapbox-gl';
 import maplibregl from 'maplibre-gl';
 
@@ -33,7 +34,7 @@ import { RunningStatus } from '../utils/running-status';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { Button, useTheme } from '@mui/material';
+import { Button, Snackbar, useTheme } from '@mui/material';
 import {
     basemap_style_theme_key,
     MAP_BASEMAP_MAPBOX,
@@ -50,7 +51,6 @@ import { Box } from '@mui/system';
 
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import DrawControl from './draw-control';
-import ControlPanel from './control-panel';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { createFilter } from '../../services/explore';
 import { fetchPath } from '../../services/directory';
@@ -99,6 +99,7 @@ const INITIAL_CENTERED = {
 };
 
 const NetworkMap = (props) => {
+    const [draw, setDraw] = useState(null);
     const [mapBoxToken, setMapBoxToken] = useState();
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
@@ -512,10 +513,9 @@ const NetworkMap = (props) => {
         setCentered(INITIAL_CENTERED);
     }, [mapLib?.key]);
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     // this useEffect react to the creation of a polygon on the map and create a filter for the substation in the polygon
     useEffect(() => {
-
         // in case we want to handle multiple polygons drawing, we need to handle the features as an array
         const polygoneCoordinates = Object.values(features)[0]?.geometry;
         if (!polygoneCoordinates) {
@@ -539,9 +539,11 @@ const NetworkMap = (props) => {
             return booleanPointInPolygon(substation.pos, polygoneCoordinates);
         });
 
-        const voltageLevels = substationsInsidePolygone.map((substation) => {
-            return substation.substation.voltageLevels;
-        }).flat();
+        const voltageLevels = substationsInsidePolygone
+            .map((substation) => {
+                return substation.substation.voltageLevels;
+            })
+            .flat();
 
         console.log('debug', 'voltageLevels', voltageLevels);
 
@@ -576,17 +578,40 @@ const NetworkMap = (props) => {
                 )
                     .then((value) => {
                         console.log('debug', 'creation filter succeed', value);
+                        snackInfo({
+                            messageTxt: `Filter creation succeed. Path: ${studyPath
+                                .map((path) => path.elementUuid)
+                                .join('/')}`,
+                            headerId: 'createFilterMsg',
+                        });
                     })
                     .catch((error) => {
                         console.log('debug', 'filter creation failed', error);
                     });
             })
-            .catch((error) => {});
+            .catch((error) => {})
+            .finally(() => {
+                if (draw) {
+                    // Get all features
+                    const features = draw.getAll();
+
+                    // Delete all features
+                    features.features.forEach((feature) => {
+                        draw.delete(feature.id);
+                    });
+                }
+            });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [features]);
 
+    const onDrawCreate = ({ features, draw }) => {
+        setDraw(draw);
+    };
+
     const onUpdate = useCallback((e) => {
+        console.log('🚀-debug ~ onUpdate ~ e:', e.action);
+
         setFeatures((currFeatures) => {
             const newFeatures = { ...currFeatures };
             for (const f of e.features) {
@@ -658,19 +683,20 @@ const NetworkMap = (props) => {
                     <NavigationControl visualizePitch={true} />
 
                     <DrawControl
-                        position="top-left"
+                        position="bottom-left"
                         displayControlsDefault={false}
                         controls={{
                             polygon: true,
                             trash: true,
+                            // uncombine_features: true,
                         }}
                         defaultMode="draw_polygon"
-                        onCreate={onUpdate}
+                        onCreate={onDrawCreate}
                         onUpdate={onUpdate}
                         onDelete={onDelete}
+                        // styles: pour changer le style du polygone https://github.com/mapbox/mapbox-gl-draw/blob/main/docs/API.md#styling-draw
                     />
                 </Map>
-                <ControlPanel polygons={Object.values(features)} />
             </>
         )
     );
