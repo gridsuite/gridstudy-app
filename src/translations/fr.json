@@ -1299,6 +1299,7 @@
     "NoGeneratorsFilterGiven": "Au moins un filtre de groupes doit être fourni",
     "modificationsAlreadyApplied": "Les modifications ont déjà été appliquées",
     "nominalVoltage": "Tension nominale (kV)",
+    "nominalV": "Tension nominale (kV)",
     "lowVoltageLimit": "Limite tension basse (kV)",
     "highVoltageLimit": "Limite tension haute (kV)",
     "SingleEquipment": "Un ouvrage",
