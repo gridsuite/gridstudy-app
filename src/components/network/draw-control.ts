@@ -63,7 +63,10 @@ function getVoltageLevelInPolygone(
     return voltageLevels;
 }
 
-async function processFeatures(studyUuid: UUID, voltageLevels: any) {
+async function createVoltageLevelFilterInStudyPath(
+    studyUuid: UUID,
+    voltageLevels: any
+) {
     try {
         const studyPath = await fetchPath(studyUuid);
         if (!studyPath || studyPath.length < 2) {
@@ -130,7 +133,7 @@ export default function DrawControl(props: DrawControlProps | any) {
             return;
         }
 
-        processFeatures(props.studyUuid, voltageLevels)
+        createVoltageLevelFilterInStudyPath(props.studyUuid, voltageLevels)
             .then((value) => {
                 snackInfo({
                     messageTxt: 'Filter creation succeed.',
