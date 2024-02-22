@@ -125,10 +125,9 @@ export function fetchShortCircuitAnalysisPagedResults({
         urlSearchParams.append('sort', `${colKey},${getSortValue(sortWay)}`);
 
         if (secColKey !== undefined && secColKey !== '') {
-            urlSearchParams.append('sec_sort_key', `${secColKey}`);
             urlSearchParams.append(
-                'sec_sort_dir',
-                `${getSortValue(secSortWay)}`
+                'sort',
+                `${secColKey},${getSortValue(secSortWay)}`
             );
         }
     }

@@ -82,6 +82,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         colKey: getIdType(tabIndex),
         sortWay: SORT_WAYS.desc,
+        secColKey: getIdType(tabIndex),
+        secSortWay: SORT_WAYS.desc,
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
