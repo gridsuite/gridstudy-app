@@ -7,7 +7,6 @@
 
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import {
-    ACTIVE_POWER_SET_POINT,
     CONNECTED,
     CONNECTED1,
     CONNECTED2,
@@ -30,11 +29,9 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q0,
-    RATED_NOMINAL_POWER,
     RATED_S,
     RATED_VOLTAGE_1,
     RATED_VOLTAGE_2,
-    REACTIVE_POWER_SET_POINT,
     SECTION_COUNT,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
@@ -64,9 +61,9 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         ENERGY_SOURCE,
         MIN_P,
         MAX_P,
-        ACTIVE_POWER_SET_POINT,
-        RATED_NOMINAL_POWER,
-        REACTIVE_POWER_SET_POINT,
+        TARGET_P,
+        RATED_S,
+        TARGET_Q,
         VOLTAGE_REGULATION_ON,
         VOLTAGE_SET_POINT,
         CONNECTED,

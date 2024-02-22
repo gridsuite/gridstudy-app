@@ -167,15 +167,12 @@ const GeneratorModificationDialog = ({
                 [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
                 [MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
                 [MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
-                [RATED_NOMINAL_POWER]:
-                    editData?.ratedNominalPower?.value ?? null,
-                [ACTIVE_POWER_SET_POINT]:
-                    editData?.activePowerSetpoint?.value ?? null,
+                [RATED_NOMINAL_POWER]: editData?.ratedS?.value ?? null,
+                [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
                 [VOLTAGE_REGULATION]:
                     editData?.voltageRegulationOn?.value ?? null,
                 [VOLTAGE_SET_POINT]: editData?.targetV?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]:
-                    editData?.reactivePowerSetpoint?.value ?? null,
+                [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData?.plannedActivePowerSetPoint?.value ?? null,
                 [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
