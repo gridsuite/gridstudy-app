@@ -27,6 +27,7 @@ import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { mergeSx } from '../utils/functions';
+import { unitToMicroUnit } from 'utils/unit-converter';
 
 const styles = {
     tableCells: {
@@ -244,6 +245,121 @@ const EquipmentPopover = ({
                                     <Typography variant="caption">
                                         {equipmentId}
                                     </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <TableContainer
+                                        component={Paper}
+                                        sx={styles.table}
+                                    >
+                                        <Table size={'small'}>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell />
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'characteristic',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'values',
+                                                        })}
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell />
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'seriesResistance',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {checkValue(
+                                                            equipmentInfo.r
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell />
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell />
+
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'seriesReactance',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {checkValue(
+                                                            equipmentInfo.x
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+
+                                                <TableRow>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {
+                                                            equipmentInfo.voltageLevelId1
+                                                        }
+                                                    </TableCell>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'shuntSusceptance',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {unitToMicroUnit(
+                                                            equipmentInfo.b1
+                                                        ).toFixed(2)}
+                                                    </TableCell>
+                                                    <TableCell />
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {
+                                                            equipmentInfo.voltageLevelId2
+                                                        }
+                                                    </TableCell>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'shuntSusceptance',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        sx={styles.tableCells}
+                                                    >
+                                                        {unitToMicroUnit(
+                                                            equipmentInfo.b2
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell />
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
                                 </Grid>
 
                                 <Grid item>
