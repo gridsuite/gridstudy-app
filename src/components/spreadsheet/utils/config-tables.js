@@ -154,10 +154,16 @@ const hasTwtRatioTapChanger = (params) => {
 };
 
 const isTwtRatioOnload = (params) => {
+    const loadTapChangingCapabilities =
+        params.data?.ratioTapChanger?.loadTapChangingCapabilities;
     return (
-        hasTwtRatioTapChanger(params) &&
-        params.data?.ratioTapChanger?.loadTapChangingCapabilities
+        loadTapChangingCapabilities === true ||
+        loadTapChangingCapabilities === 1
     );
+};
+
+const isTwtRatioOnloadAndEditable = (params) => {
+    return isEditable(params) && isTwtRatioOnload(params);
 };
 
 const hasTwtPhaseTapChanger = (params) => {
@@ -167,6 +173,10 @@ const hasTwtPhaseTapChanger = (params) => {
         phaseTapChanger !== undefined &&
         Object.keys(phaseTapChanger).length > 0
     );
+};
+
+const hasTwtPhaseTapChangerAndEditable = (params) => {
+    return isEditable(params) && hasTwtPhaseTapChanger(params);
 };
 
 const isEditableTwtPhaseRegulationSideCell = (params) => {
@@ -179,8 +189,7 @@ const isEditableTwtPhaseRegulationSideCell = (params) => {
 
 const isEditableTwtRatioRegulationSideCell = (params) => {
     return (
-        isEditable(params) &&
-        isTwtRatioOnload(params) &&
+        isTwtRatioOnloadAndEditable(params) &&
         params.data?.ratioTapChanger?.regulationType ===
             REGULATION_TYPES.LOCAL.id
     );
@@ -188,8 +197,7 @@ const isEditableTwtRatioRegulationSideCell = (params) => {
 
 const isEditableTwtRatioRegulatingTerminalCell = (params) => {
     return (
-        isEditable(params) &&
-        isTwtRatioOnload(params) &&
+        isTwtRatioOnloadAndEditable(params) &&
         params.data?.ratioTapChanger?.regulationType ===
             REGULATION_TYPES.DISTANT.id
     );
@@ -659,7 +667,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'ratedVoltage1',
+                id: 'RatedVoltageSide1',
                 field: 'ratedU1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -679,7 +687,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ratedVoltage2',
+                id: 'RatedVoltageSide2',
                 field: 'ratedU2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -785,8 +793,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
-                editable: (params) =>
-                    isEditable(params) && isTwtRatioOnload(params),
+                editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
@@ -810,8 +817,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'ratioTapChanger.targetV',
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
-                editable: (params) =>
-                    isEditable(params) && isTwtRatioOnload(params),
+                editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
@@ -837,8 +843,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'ratioTapChanger.targetDeadband',
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
-                editable: (params) =>
-                    isEditable(params) && isTwtRatioOnload(params),
+                editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
@@ -874,8 +879,7 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 columnWidth: MEDIUM_COLUMN_WIDTH,
-                editable: (params) =>
-                    isEditable(params) && isTwtRatioOnload(params),
+                editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
@@ -1041,8 +1045,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
-                editable: (params) =>
-                    isEditable(params) && hasTwtPhaseTapChanger(params),
+                editable: (params) => hasTwtPhaseTapChangerAndEditable(params),
                 cellStyle: editableCellStyle,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
@@ -1063,8 +1066,7 @@ export const TABLES_DEFINITIONS = {
                     params?.data?.phaseTapChanger?.regulationValue,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
-                    isEditable(params) &&
-                    hasTwtPhaseTapChanger(params) &&
+                    hasTwtPhaseTapChangerAndEditable(params) &&
                     params.data?.phaseTapChanger?.regulationMode !==
                         PHASE_REGULATION_MODES.FIXED_TAP.id,
                 cellStyle: editableCellStyle,
@@ -1094,8 +1096,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
-                    isEditable(params) &&
-                    hasTwtPhaseTapChanger(params) &&
+                    hasTwtPhaseTapChangerAndEditable(params) &&
                     params.data?.phaseTapChanger?.regulationMode !==
                         PHASE_REGULATION_MODES.FIXED_TAP.id,
                 cellStyle: editableCellStyle,
@@ -1132,8 +1133,7 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 columnWidth: MEDIUM_COLUMN_WIDTH,
-                editable: (params) =>
-                    isEditable(params) && hasTwtPhaseTapChanger(params),
+                editable: (params) => hasTwtPhaseTapChangerAndEditable(params),
                 cellStyle: editableCellStyle,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {

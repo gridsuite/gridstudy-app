@@ -69,7 +69,7 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
-    formatTwtDataForTable,
+    formatFetchedEquipments,
     updateGeneratorCells,
     updateShuntCompensatorCells,
     updateTwtCells,
@@ -306,27 +306,20 @@ const TableWrapper = (props) => {
         [tabIndex]
     );
 
-    const formatFetchedEquipments = useCallback(
+    const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments) => {
-            //Format the twt data to set calculated fields, so that the edition validation is consistent with the displayed data
-            if (
-                equipmentDefinition.type ===
-                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
-            ) {
-                return fetchedEquipments.map((twt) => {
-                    const formattedTwt = formatTwtDataForTable(twt);
-
-                    return formattedTwt;
-                });
-            }
-            return fetchedEquipments;
+            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
+            return formatFetchedEquipments(
+                equipmentDefinition.type,
+                fetchedEquipments
+            );
         },
         [equipmentDefinition.type]
     );
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         equipmentDefinition,
-        formatFetchedEquipments
+        formatFetchedEquipmentsHandler
     );
 
     useEffect(() => {
@@ -348,9 +341,8 @@ const TableWrapper = (props) => {
             return [];
         }
 
-        // The equipments are formatted here too, because they are also updated by notfications in study container
-        return formatFetchedEquipments(equipments);
-    }, [equipments, props.disabled, formatFetchedEquipments]);
+        return equipments;
+    }, [equipments, props.disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
     //is reinstanciated in order to notify components using it.
@@ -1180,7 +1172,7 @@ const TableWrapper = (props) => {
                 )
                     .then((updatedEquipment) => {
                         const formattedData =
-                            formatTwtDataForTable(updatedEquipment);
+                            formatFetchedEquipmentsHandler(updatedEquipment);
                         const transaction = {
                             update: [formattedData],
                         };
@@ -1205,6 +1197,7 @@ const TableWrapper = (props) => {
         props.currentNode.id,
         props.studyUuid,
         studyUpdatedForce,
+        formatFetchedEquipmentsHandler,
     ]);
 
     //this listener is called for each cell modified

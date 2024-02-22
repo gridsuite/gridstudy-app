@@ -123,6 +123,8 @@
     "VoltageLevelIdT3WSide3": "Voltage level ID 3",
     "NominalVoltageSide1": "Nominal voltage 1 (kV)",
     "NominalVoltageSide2": "Nominal voltage 2 (kV)",
+    "RatedVoltageSide1": "Rated voltage 1 (kV)",
+    "RatedVoltageSide2": "Rated voltage 2 (kV)",
     "NominalVoltageT3WSide1": "Nominal voltage 1 (kV)",
     "NominalVoltageT3WSide2": "Nominal voltage 2 (kV)",
     "NominalVoltageT3WSide3": "Nominal voltage 3 (kV)",

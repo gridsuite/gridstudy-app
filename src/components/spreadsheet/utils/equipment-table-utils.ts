@@ -25,6 +25,7 @@ import {
     getComputedPhaseRegulationTypeId,
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -111,49 +112,74 @@ export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
  * This function is used to format the data of the table to be able to display it in the table
  * and resolve the issue of the calculated fields
  */
-export const formatTwtDataForTable = (twt: any) => {
-    const formattedTwt = { ...twt };
-    if (formattedTwt?.ratioTapChanger) {
-        const regulationType = getComputedRegulationTypeId(formattedTwt);
-        const regulationSide =
-            regulationType === REGULATION_TYPES.LOCAL.id
-                ? getComputedTapSideId(formattedTwt)
-                : null;
-        const ratioRegulatingTerminal =
-            regulationType === REGULATION_TYPES.DISTANT.id
-                ? getTapChangerRegulationTerminalValue(
-                      formattedTwt.ratioTapChanger
-                  )
-                : null;
-        formattedTwt.ratioTapChanger = {
-            ...formattedTwt.ratioTapChanger,
-            regulationMode: getInitialTwtRatioRegulationModeId(twt),
-            regulationType: regulationType,
-            regulationSide: regulationSide,
-            ratioRegulatingTerminal: ratioRegulatingTerminal,
-        };
-    }
-    if (formattedTwt?.phaseTapChanger) {
-        const regulationType = getComputedPhaseRegulationTypeId(formattedTwt);
-        const regulationSide =
-            regulationType === REGULATION_TYPES.LOCAL.id
-                ? getPhaseTapRegulationSideId(formattedTwt)
-                : null;
-        const phaseRegulatingTerminal =
-            regulationType === REGULATION_TYPES.DISTANT.id
-                ? getTapChangerRegulationTerminalValue(
-                      formattedTwt.phaseTapChanger
-                  )
-                : null;
-        formattedTwt.phaseTapChanger = {
-            ...formattedTwt.phaseTapChanger,
-            regulationType: regulationType,
-            regulationSide: regulationSide,
-            phaseRegulatingTerminal: phaseRegulatingTerminal,
-        };
+const formatRatioTapChanger = (twt: any) => {
+    if (!twt?.ratioTapChanger) {
+        return twt;
     }
 
+    const regulationType = getComputedRegulationTypeId(twt);
+    const regulationSide =
+        regulationType === REGULATION_TYPES.LOCAL.id
+            ? getComputedTapSideId(twt)
+            : null;
+    const ratioRegulatingTerminal =
+        regulationType === REGULATION_TYPES.DISTANT.id
+            ? getTapChangerRegulationTerminalValue(twt.ratioTapChanger)
+            : null;
+
+    return {
+        ...twt,
+        ratioTapChanger: {
+            ...twt.ratioTapChanger,
+            regulationMode: getInitialTwtRatioRegulationModeId(twt),
+            regulationType,
+            regulationSide,
+            ratioRegulatingTerminal,
+        },
+    };
+};
+
+const formatPhaseTapChanger = (twt: any) => {
+    if (!twt?.phaseTapChanger) {
+        return twt;
+    }
+
+    const regulationType = getComputedPhaseRegulationTypeId(twt);
+    const regulationSide =
+        regulationType === REGULATION_TYPES.LOCAL.id
+            ? getPhaseTapRegulationSideId(twt)
+            : null;
+    const phaseRegulatingTerminal =
+        regulationType === REGULATION_TYPES.DISTANT.id
+            ? getTapChangerRegulationTerminalValue(twt.phaseTapChanger)
+            : null;
+
+    return {
+        ...twt,
+        phaseTapChanger: {
+            ...twt.phaseTapChanger,
+            regulationType,
+            regulationSide,
+            phaseRegulatingTerminal,
+        },
+    };
+};
+
+export const formatTwtDataForTable = (twt: any) => {
+    let formattedTwt = formatRatioTapChanger(twt);
+    formattedTwt = formatPhaseTapChanger(formattedTwt);
+
     return formattedTwt;
+};
+
+export const formatFetchedEquipments = (
+    equipmentType: string,
+    equipments: any
+) => {
+    if (equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) {
+        return equipments.map(formatTwtDataForTable);
+    }
+    return equipments;
 };
 
 export const updateTwtCells = (params: CellEditingStoppedEvent) => {
