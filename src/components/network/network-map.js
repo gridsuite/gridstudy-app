@@ -7,7 +7,6 @@
 
 import React, {
     forwardRef,
-    useCallback,
     useEffect,
     useImperativeHandle,
     useMemo,
@@ -34,7 +33,7 @@ import { RunningStatus } from '../utils/running-status';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { Button, Snackbar, useTheme } from '@mui/material';
+import { Button, useTheme } from '@mui/material';
 import {
     basemap_style_theme_key,
     MAP_BASEMAP_MAPBOX,
@@ -51,10 +50,6 @@ import { Box } from '@mui/system';
 
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import DrawControl from './draw-control';
-import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
-import { createFilter } from '../../services/explore';
-import { fetchPath } from '../../services/directory';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 
 // MouseEvent.button https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
 const MOUSE_EVENT_BUTTON_LEFT = 0;
@@ -569,10 +564,9 @@ const NetworkMap = (props) => {
                             polygon: true,
                             trash: true,
                         }}
-
                         //
-                        // defaultMode="simple_select"
-                        defaultMode="draw_polygon"
+                        // defaultMode="simple_select | draw_polygon | ...
+                        defaultMode="simple_select"
                         readyToDisplay={readyToDisplay}
                         studyUuid={studyUuid}
                         geoData={props.geoData}
