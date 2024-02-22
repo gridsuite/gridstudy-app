@@ -220,7 +220,6 @@ const ShuntCompensatorModificationDialog = ({
 
     const onSubmit = useCallback(
         (shuntCompensator) => {
-            console.log('');
             modifyShuntCompensator(
                 studyUuid,
                 currentNodeUuid,

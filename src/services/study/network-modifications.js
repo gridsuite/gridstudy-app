@@ -1256,6 +1256,7 @@ export function createVoltageLevel({
     couplingDevices,
     isUpdate,
     modificationUuid,
+    properties,
 }) {
     let createVoltageLevelUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1282,6 +1283,7 @@ export function createVoltageLevel({
         sectionCount: sectionCount,
         switchKinds: switchKinds,
         couplingDevices: couplingDevices,
+        properties,
     });
 
     return backendFetchText(createVoltageLevelUrl, {
@@ -1305,7 +1307,8 @@ export function modifyVoltageLevel(
     lowShortCircuitCurrentLimit,
     highShortCircuitCurrentLimit,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1333,6 +1336,7 @@ export function modifyVoltageLevel(
             highVoltageLimit: toModificationOperation(highVoltageLimit),
             ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
             ipMax: toModificationOperation(highShortCircuitCurrentLimit),
+            properties,
         }),
     });
 }

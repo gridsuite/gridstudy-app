@@ -46,6 +46,12 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    emptyProperties,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 /**
  * Dialog to create a load in the network
@@ -72,57 +78,60 @@ const emptyFormData = {
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [COUPLING_OMNIBUS]: [],
     [SWITCH_KINDS]: [],
+    ...emptyProperties,
 };
 
-const formSchema = yup.object().shape({
-    [EQUIPMENT_ID]: yup.string().required(),
-    [EQUIPMENT_NAME]: yup.string().nullable(),
-    [SUBSTATION_ID]: yup.string().nullable().required(),
-    [NOMINAL_V]: yup.number().nullable().required(),
-    [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
-    [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-        .number()
-        .nullable()
-        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-        .max(
-            yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
-            'ShortCircuitCurrentLimitMinMaxError'
-        ),
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-        .number()
-        .nullable()
-        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-        .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
-            is: (lowShortCircuitCurrentLimit) =>
-                lowShortCircuitCurrentLimit != null,
-            then: (schema) => schema.required(),
-        }),
-    [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
-    [SECTION_COUNT]: yup.number().min(1).nullable().required(),
-    [SWITCHES_BETWEEN_SECTIONS]: yup
-        .string()
-        .nullable()
-        .when([SECTION_COUNT], {
-            is: (sectionCount) => sectionCount > 1,
-            then: (schema) => schema.required(),
-        }),
-    [COUPLING_OMNIBUS]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-                [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
-            })
-        )
-        .test('coupling-omnibus-between-sections', (values) =>
-            controlCouplingOmnibusBetweenSections(
-                values,
-                'CouplingOmnibusBetweenSameBusbar'
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
+        [SUBSTATION_ID]: yup.string().nullable().required(),
+        [NOMINAL_V]: yup.number().nullable().required(),
+        [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
+        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
+        [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
+            .max(
+                yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
+                'ShortCircuitCurrentLimitMinMaxError'
+            ),
+        [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
+            .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
+                is: (lowShortCircuitCurrentLimit) =>
+                    lowShortCircuitCurrentLimit != null,
+                then: (schema) => schema.required(),
+            }),
+        [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
+        [SECTION_COUNT]: yup.number().min(1).nullable().required(),
+        [SWITCHES_BETWEEN_SECTIONS]: yup
+            .string()
+            .nullable()
+            .when([SECTION_COUNT], {
+                is: (sectionCount) => sectionCount > 1,
+                then: (schema) => schema.required(),
+            }),
+        [COUPLING_OMNIBUS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+                    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
+                })
             )
-        ),
-});
-
+            .test('coupling-omnibus-between-sections', (values) =>
+                controlCouplingOmnibusBetweenSections(
+                    values,
+                    'CouplingOmnibusBetweenSameBusbar'
+                )
+            ),
+    })
+    .concat(creationPropertiesSchema);
 const VoltageLevelCreationDialog = ({
     editData,
     currentNode,
@@ -180,6 +189,7 @@ const VoltageLevelCreationDialog = ({
                               [SWITCH_KIND]: switchKind,
                           }))
                         : [],
+                ...copyEquipmentPropertiesForCreation(voltageLevel),
             });
             if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
@@ -230,6 +240,7 @@ const VoltageLevelCreationDialog = ({
                 isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
                 topologyKind: voltageLevel[TOPOLOGY_KIND],
+                ...toModificationProperties(voltageLevel),
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
