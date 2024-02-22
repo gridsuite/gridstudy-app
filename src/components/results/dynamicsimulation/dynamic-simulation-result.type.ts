@@ -10,3 +10,31 @@ export const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
 export type TimeSeriesMetadata = {
     name: string;
 };
+
+export type StringTimeSeries = {
+    chunks: {
+        values: string[];
+    }[];
+};
+
+export type TimelineEvent = {
+    time: number;
+    modelName: string;
+    message: string;
+};
+
+/**
+ * Each {@link StringTimeSeries} is corresponding to an array of {@link TimelineEvent}
+ *
+ * @param src an array of {@link StringTimeSeries}
+ * @return an array of {@link TimelineEvent}
+ */
+export const transformTimeLinesData = (
+    src: StringTimeSeries[]
+): TimelineEvent[] => {
+    return src.flatMap((stringSeries) => {
+        const events =
+            (stringSeries.chunks && stringSeries.chunks[0].values) ?? [];
+        return events.map((event) => JSON.parse(event));
+    });
+};

@@ -329,7 +329,12 @@
     "DynamicSimulationEventUpdating": "Mise à jour d'un évènement en cours ...",
     "DynamicSimulationEventDeleting": "Suppression d'un évènement en cours ...",
     "DynamicSimulationTabTimeSeries": "Traces",
+    "DynamicSimulationTabTimeLine": "Chronologie",
     "DynamicSimulationTabStatus": "Statut",
+    "DynamicSimulationTimeLineEventTime": "Instant",
+    "DynamicSimulationTimeLineEventModelName": "Ouvrage/Modèle",
+    "DynamicSimulationTimeLineEventModelMessage": "Message",
+
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
