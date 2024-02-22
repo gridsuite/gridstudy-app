@@ -46,7 +46,7 @@ function getVoltageLevelInPolygone(
                 pos: geoData.getSubstationPosition(substation.id),
             };
         });
-    if (!positions ) {
+    if (!positions) {
         return null;
     }
 
