@@ -708,7 +708,8 @@ export function createShuntCompensator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -742,6 +743,7 @@ export function createShuntCompensator(
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -758,7 +760,8 @@ export function modifyShuntCompensator(
     shuntCompensatorType,
     voltageLevelId,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -786,7 +789,8 @@ export function modifyShuntCompensator(
             maxSusceptance: toModificationOperation(maxSusceptance),
             maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
-            voltageLevelId: voltageLevelId,
+            voltageLevelId: toModificationOperation(voltageLevelId),
+            properties,
         }),
     });
 }
