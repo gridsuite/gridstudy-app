@@ -44,9 +44,9 @@ import {
     SUBSTATION_COUNTRY,
     TARGET_P,
     TARGET_Q,
+    TARGET_V,
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION_ON,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { toModificationOperation } from 'components/utils/utils';
@@ -65,7 +65,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         RATED_S,
         TARGET_Q,
         VOLTAGE_REGULATION_ON,
-        VOLTAGE_SET_POINT,
+        TARGET_V,
         CONNECTED,
         TRANSIENT_REACTANCE,
         STEP_UP_TRANSFORMER_REACTANCE,
