@@ -176,9 +176,9 @@ const GeneratorCreationDialog = ({
             [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
             [DROOP]: generator.activePowerControl?.droop,
             [TRANSIENT_REACTANCE]:
-                generator.generatorShortCircuit?.transientReactance,
+                generator.generatorShortCircuit?.directTransX,
             [TRANSFORMER_REACTANCE]:
-                generator.generatorShortCircuit?.stepUpTransformerReactance,
+                generator.generatorShortCircuit?.stepUpTransformerX,
             [VOLTAGE_REGULATION_TYPE]:
                 generator?.regulatingTerminalId ||
                 generator?.regulatingTerminalConnectableId
@@ -245,8 +245,8 @@ const GeneratorCreationDialog = ({
                 [FORCED_OUTAGE_RATE]: editData.forcedOutageRate,
                 [FREQUENCY_REGULATION]: editData.participate,
                 [DROOP]: editData.droop,
-                [TRANSIENT_REACTANCE]: editData.transientReactance,
-                [TRANSFORMER_REACTANCE]: editData.stepUpTransformerReactance,
+                [TRANSIENT_REACTANCE]: editData.directTransX,
+                [TRANSFORMER_REACTANCE]: editData.stepUpTransformerX,
                 [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
                     ? REGULATION_TYPES.DISTANT.id
                     : REGULATION_TYPES.LOCAL.id,

@@ -909,16 +909,15 @@ const TableWrapper = (props) => {
                                 ?.forcedOutageRate
                         ),
                         getFieldValue(
-                            editingData?.generatorShortCircuit
-                                ?.transientReactance,
+                            editingData?.generatorShortCircuit?.directTransX,
                             editingDataRef.current?.generatorShortCircuit
-                                ?.transientReactance
+                                ?.directTransX
                         ),
                         getFieldValue(
                             editingData?.generatorShortCircuit
-                                ?.stepUpTransformerReactance,
+                                ?.stepUpTransformerX,
                             editingDataRef.current?.generatorShortCircuit
-                                ?.stepUpTransformerReactance
+                                ?.stepUpTransformerX
                         ),
                         getFieldValue(
                             editingData?.regulatingTerminalVlId ||

@@ -181,10 +181,9 @@ const GeneratorModificationDialog = ({
                 [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
-                [TRANSIENT_REACTANCE]:
-                    editData?.transientReactance?.value ?? null,
+                [TRANSIENT_REACTANCE]: editData?.directTransX?.value ?? null,
                 [TRANSFORMER_REACTANCE]:
-                    editData?.stepUpTransformerReactance?.value ?? null,
+                    editData?.stepUpTransformerX?.value ?? null,
                 [VOLTAGE_REGULATION_TYPE]:
                     editData?.voltageRegulationType?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,

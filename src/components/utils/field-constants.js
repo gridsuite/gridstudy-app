@@ -59,7 +59,7 @@ export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint'; //
 export const TARGET_Q = 'targetQ';
 export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
 export const VOLTAGE_SET_POINT = 'voltageSetpoint'; //
-export const TRANSIENT_REACTANCE = 'transientReactance';
+export const TRANSIENT_REACTANCE = 'directTransX';
 export const Q_PERCENT = 'qPercent';
 export const FREQUENCY_REGULATION = 'frequencyRegulation';
 export const PARTICIPATE = 'participate';
@@ -173,7 +173,7 @@ export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
-export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerReactance';
+export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
 export const REGULATING_TERMINAL = 'regulatingTerminal';
 export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
 export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
