@@ -15,7 +15,7 @@ import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
     BRANCH_SIDE,
-    BRANCH_STATUS_ACTION,
+    OPERATING_STATUS_ACTION,
 } from '../../components/network/constants';
 
 export function changeNetworkModificationOrder(
@@ -115,60 +115,60 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     });
 }
 
-function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
-    const changeBranchStatusUrl =
+function changeOperatingStatus(studyUuid, currentNodeUuid, equipment, action) {
+    const changeOperatingStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-    console.debug('%s with action: %s', changeBranchStatusUrl, action);
+    console.debug('%s with action: %s', changeOperatingStatusUrl, action);
 
     let energizedVoltageLevelId;
     switch (action) {
-        case BRANCH_STATUS_ACTION.ENERGISE_END_ONE:
-            energizedVoltageLevelId = branch.voltageLevelId1;
+        case OPERATING_STATUS_ACTION.ENERGISE_END_ONE:
+            energizedVoltageLevelId = equipment.voltageLevelId1;
             break;
-        case BRANCH_STATUS_ACTION.ENERGISE_END_TWO:
-            energizedVoltageLevelId = branch.voltageLevelId2;
+        case OPERATING_STATUS_ACTION.ENERGISE_END_TWO:
+            energizedVoltageLevelId = equipment.voltageLevelId2;
             break;
         default:
             energizedVoltageLevelId = undefined;
     }
 
-    return backendFetch(changeBranchStatusUrl, {
+    return backendFetch(changeOperatingStatusUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
-            equipmentId: branch.id,
+            type: MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type,
+            equipmentId: equipment.id,
             energizedVoltageLevelId: energizedVoltageLevelId,
             action: action,
         }),
     });
 }
 
-export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('locking out branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+export function lockoutEquipment(studyUuid, currentNodeUuid, equipment) {
+    console.info('locking out equipment ' + equipment.id + ' ...');
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.LOCKOUT
+        equipment,
+        OPERATING_STATUS_ACTION.LOCKOUT
     );
 }
 
-export function tripBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('tripping branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+export function tripEquipment(studyUuid, currentNodeUuid, equipment) {
+    console.info('tripping equipment ' + equipment.id + ' ...');
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.TRIP
+        equipment,
+        OPERATING_STATUS_ACTION.TRIP
     );
 }
 
-export function energiseBranchEnd(
+export function energiseEquipmentEnd(
     studyUuid,
     currentNodeUuid,
     branch,
@@ -177,23 +177,23 @@ export function energiseBranchEnd(
     console.info(
         'energise branch ' + branch.id + ' on side ' + branchSide + ' ...'
     );
-    return changeBranchStatus(
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
         branch,
         branchSide === BRANCH_SIDE.ONE
-            ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-            : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
+            ? OPERATING_STATUS_ACTION.ENERGISE_END_ONE
+            : OPERATING_STATUS_ACTION.ENERGISE_END_TWO
     );
 }
 
-export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
+export function switchOnEquipment(studyUuid, currentNodeUuid, branch) {
     console.info('switching on branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
         branch,
-        BRANCH_STATUS_ACTION.SWITCH_ON
+        OPERATING_STATUS_ACTION.SWITCH_ON
     );
 }
 
@@ -529,7 +529,8 @@ export function modifyGenerator(
     droop,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -580,6 +581,7 @@ export function modifyGenerator(
         maximumReactivePower: toModificationOperation(maximumReactivePower),
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -627,7 +629,8 @@ export function createGenerator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -680,6 +683,7 @@ export function createGenerator(
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -788,12 +792,12 @@ export function createLine(
     currentNodeUuid,
     lineId,
     lineName,
-    seriesResistance,
-    seriesReactance,
-    shuntConductance1,
-    shuntSusceptance1,
-    shuntConductance2,
-    shuntSusceptance2,
+    r,
+    x,
+    g1,
+    b1,
+    g2,
+    b2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -834,12 +838,12 @@ export function createLine(
             type: MODIFICATION_TYPES.LINE_CREATION.type,
             equipmentId: lineId,
             equipmentName: lineName,
-            seriesResistance: seriesResistance,
-            seriesReactance: seriesReactance,
-            shuntConductance1: shuntConductance1,
-            shuntSusceptance1: shuntSusceptance1,
-            shuntConductance2: shuntConductance2,
-            shuntSusceptance2: shuntSusceptance2,
+            r: r,
+            x: x,
+            g1: g1,
+            b1: b1,
+            g2: g2,
+            b2: b2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -869,12 +873,12 @@ export function modifyLine(
     currentNodeUuid,
     lineId,
     lineName,
-    seriesResistance,
-    seriesReactance,
-    shuntConductance1,
-    shuntSusceptance1,
-    shuntConductance2,
-    shuntSusceptance2,
+    r,
+    x,
+    g1,
+    b1,
+    g2,
+    b2,
     currentLimit1,
     currentLimit2,
     isUpdate,
@@ -901,12 +905,12 @@ export function modifyLine(
             type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
             equipmentId: lineId,
             equipmentName: toModificationOperation(lineName),
-            seriesResistance: toModificationOperation(seriesResistance),
-            seriesReactance: toModificationOperation(seriesReactance),
-            shuntConductance1: toModificationOperation(shuntConductance1),
-            shuntSusceptance1: toModificationOperation(shuntSusceptance1),
-            shuntConductance2: toModificationOperation(shuntConductance2),
-            shuntSusceptance2: toModificationOperation(shuntSusceptance2),
+            r: toModificationOperation(r),
+            x: toModificationOperation(x),
+            g1: toModificationOperation(g1),
+            b1: toModificationOperation(b1),
+            g2: toModificationOperation(g2),
+            b2: toModificationOperation(b2),
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
         }),
@@ -918,13 +922,13 @@ export function createTwoWindingsTransformer(
     currentNodeUuid,
     twoWindingsTransformerId,
     twoWindingsTransformerName,
-    seriesResistance,
-    seriesReactance,
-    magnetizingConductance,
-    magnetizingSusceptance,
+    r,
+    x,
+    g,
+    b,
     ratedS,
-    ratedVoltage1,
-    ratedVoltage2,
+    ratedU1,
+    ratedU2,
     currentLimit1,
     currentLimit2,
     voltageLevelId1,
@@ -966,13 +970,13 @@ export function createTwoWindingsTransformer(
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
             equipmentId: twoWindingsTransformerId,
             equipmentName: twoWindingsTransformerName,
-            seriesResistance: seriesResistance,
-            seriesReactance: seriesReactance,
-            magnetizingConductance: magnetizingConductance,
-            magnetizingSusceptance: magnetizingSusceptance,
+            r: r,
+            x: x,
+            g: g,
+            b: b,
             ratedS: ratedS,
-            ratedVoltage1: ratedVoltage1,
-            ratedVoltage2: ratedVoltage2,
+            ratedU1: ratedU1,
+            ratedU2: ratedU2,
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
             voltageLevelId1: voltageLevelId1,
@@ -998,13 +1002,13 @@ export function modifyTwoWindingsTransformer(
     currentNodeUuid,
     twoWindingsTransformerId,
     twoWindingsTransformerName,
-    seriesResistance,
-    seriesReactance,
-    magnetizingConductance,
-    magnetizingSusceptance,
+    r,
+    x,
+    g,
+    b,
     ratedS,
-    ratedVoltage1,
-    ratedVoltage2,
+    ratedU1,
+    ratedU2,
     currentLimit1,
     currentLimit2,
     ratioTapChanger,
@@ -1034,13 +1038,13 @@ export function modifyTwoWindingsTransformer(
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
             equipmentId: twoWindingsTransformerId,
             equipmentName: twoWindingsTransformerName,
-            seriesResistance: seriesResistance,
-            seriesReactance: seriesReactance,
-            magnetizingConductance: magnetizingConductance,
-            magnetizingSusceptance: magnetizingSusceptance,
+            r: r,
+            x: x,
+            g: g,
+            b: b,
             ratedS: ratedS,
-            ratedVoltage1: ratedVoltage1,
-            ratedVoltage2: ratedVoltage2,
+            ratedU1: ratedU1,
+            ratedU2: ratedU2,
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
@@ -1225,7 +1229,7 @@ export function createVoltageLevel({
     voltageLevelId,
     voltageLevelName,
     substationId,
-    nominalVoltage,
+    nominalV,
     lowVoltageLimit,
     highVoltageLimit,
     ipMin,
@@ -1253,7 +1257,7 @@ export function createVoltageLevel({
         equipmentId: voltageLevelId,
         equipmentName: voltageLevelName,
         substationId: substationId,
-        nominalVoltage: nominalVoltage,
+        nominalV: nominalV,
         lowVoltageLimit: lowVoltageLimit,
         highVoltageLimit: highVoltageLimit,
         ipMin: ipMin,
@@ -1279,7 +1283,7 @@ export function modifyVoltageLevel(
     currentNodeUuid,
     voltageLevelId,
     voltageLevelName,
-    nominalVoltage,
+    nominalV,
     lowVoltageLimit,
     highVoltageLimit,
     lowShortCircuitCurrentLimit,
@@ -1308,7 +1312,7 @@ export function modifyVoltageLevel(
             type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
             equipmentId: voltageLevelId,
             equipmentName: toModificationOperation(voltageLevelName),
-            nominalVoltage: toModificationOperation(nominalVoltage),
+            nominalV: toModificationOperation(nominalV),
             lowVoltageLimit: toModificationOperation(lowVoltageLimit),
             highVoltageLimit: toModificationOperation(highVoltageLimit),
             ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
@@ -1780,5 +1784,38 @@ export function modifyByFormula(
             'Content-Type': 'application/json',
         },
         body: body,
+    });
+}
+
+export function createTabularCreation(
+    studyUuid,
+    currentNodeUuid,
+    creationType,
+    creations,
+    isUpdate,
+    modificationUuid
+) {
+    let createTabularCreationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating tabular creation');
+    } else {
+        console.info('Creating tabular creation');
+    }
+
+    return backendFetchText(createTabularCreationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TABULAR_CREATION.type,
+            creationType: creationType,
+            creations: creations,
+        }),
     });
 }

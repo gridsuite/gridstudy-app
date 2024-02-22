@@ -35,7 +35,8 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { DISPLAY_CONVERSION } from '../../../utils/unit-converter';
+import { kiloUnitToUnit, unitToKiloUnit } from '../../../utils/unit-converter';
+import { ValueGetterParams } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -168,8 +169,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                displayConversionMode: DISPLAY_CONVERSION.TO_KILO,
+                filterParams: {
+                    ...numericFilterParams,
+                    parser: kiloUnitToUnit,
+                },
+                valueGetter: (params: ValueGetterParams) =>
+                    unitToKiloUnit(params),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -178,8 +183,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                displayConversionMode: DISPLAY_CONVERSION.TO_KILO,
+                filterParams: {
+                    ...numericFilterParams,
+                    parser: kiloUnitToUnit,
+                },
+                valueGetter: (params: ValueGetterParams) =>
+                    unitToKiloUnit(params),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),

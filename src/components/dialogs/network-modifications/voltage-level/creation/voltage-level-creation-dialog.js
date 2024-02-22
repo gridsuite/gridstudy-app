@@ -23,7 +23,7 @@ import {
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NAME,
-    NOMINAL_VOLTAGE,
+    NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_ID,
     SWITCHES_BETWEEN_SECTIONS,
@@ -62,7 +62,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [SUBSTATION_ID]: null,
-    [NOMINAL_VOLTAGE]: null,
+    [NOMINAL_V]: null,
     [LOW_VOLTAGE_LIMIT]: null,
     [HIGH_VOLTAGE_LIMIT]: null,
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
@@ -78,13 +78,13 @@ const formSchema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string().nullable(),
     [SUBSTATION_ID]: yup.string().nullable().required(),
-    [NOMINAL_VOLTAGE]: yup.number().nullable().required(),
+    [NOMINAL_V]: yup.number().nullable().required(),
     [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
     [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
-        .min(0, 'ShortCircuitCurrentLimitNotNegative')
+        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
         .max(
             yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
             'ShortCircuitCurrentLimitMinMaxError'
@@ -92,7 +92,7 @@ const formSchema = yup.object().shape({
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
         .number()
         .nullable()
-        .min(0, 'ShortCircuitCurrentLimitNotNegative')
+        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
         .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
             is: (lowShortCircuitCurrentLimit) =>
                 lowShortCircuitCurrentLimit != null,
@@ -153,7 +153,7 @@ const VoltageLevelCreationDialog = ({
                     voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
                 [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
                 [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
-                [NOMINAL_VOLTAGE]: voltageLevel[NOMINAL_VOLTAGE],
+                [NOMINAL_V]: voltageLevel[NOMINAL_V],
                 [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                 [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
@@ -212,7 +212,7 @@ const VoltageLevelCreationDialog = ({
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 substationId: voltageLevel[SUBSTATION_ID],
-                nominalVoltage: voltageLevel[NOMINAL_VOLTAGE],
+                nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 ipMin: kiloUnitToUnit(

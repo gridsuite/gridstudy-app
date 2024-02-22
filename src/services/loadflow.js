@@ -27,3 +27,32 @@ export function getLoadFlowSpecificParametersDescription() {
     console.debug(getLoadFlowSpecificParametersUrl);
     return backendFetchJson(getLoadFlowSpecificParametersUrl);
 }
+
+export function fetchLoadflowAvailableLimitTypes() {
+    console.info('fetch available limit types');
+    const url = getLoadFlowUrl() + 'limit-types';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchLoadflowAvailableBranchSides() {
+    console.info('fetch available branch sides');
+    const url = getLoadFlowUrl() + 'branch-sides';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchLoadflowAvailableComputationStatus() {
+    console.info('fetch available computation status');
+    const url = getLoadFlowUrl() + 'computation-status';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchLoadFlowParameters(parameterUuid) {
+    console.info('fetch load flow parameters');
+    const url =
+        getLoadFlowUrl() + 'parameters/' + encodeURIComponent(parameterUuid);
+    console.debug(url);
+    return backendFetchJson(url);
+}

@@ -5,10 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const backend_locale_en = {
-    OpenLoadFlow: 'Open Load Flow',
-    Hades2: 'Hades 2',
-    DynaFlow: 'Dyna Flow',
-};
-
-export default backend_locale_en;
+// These prefixes used in the path of keys in translation file dynamic-mapping-models-en.ts
+export const PREFIX_MODEL_KEY = 'models';
+export const PREFIX_VARIABLE_SET_KEY = 'variableSets';
+export const PREFIX_VARIABLE_KEY = 'variables';

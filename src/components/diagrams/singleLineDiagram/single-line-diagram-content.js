@@ -23,7 +23,7 @@ import {
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
-import withBranchMenu from '../../menus/branch-menu';
+import withOperatingStatusMenu from '../../menus/operating-status-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
@@ -69,7 +69,7 @@ function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
-    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
+    const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const { snackError } = useSnackMessage();
@@ -92,6 +92,9 @@ function SingleLineDiagramContent(props) {
     );
     const computationStarting = useSelector(
         (state) => state.computationStarting
+    );
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
     const [
@@ -376,9 +379,11 @@ function SingleLineDiagramContent(props) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE ||
-                equipmentMenu.equipmentType ===
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
+            [
+                EQUIPMENT_TYPES.LINE,
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+            ].includes(equipmentMenu.equipmentType) && (
                 <MenuBranch
                     equipment={{ id: equipmentMenu.equipmentId }}
                     equipmentType={equipmentMenu.equipmentType}
@@ -430,7 +435,7 @@ function SingleLineDiagramContent(props) {
                 anchorEl={equipmentPopoverAnchorEl}
                 equipmentType={hoveredEquipmentType}
                 equipmentId={hoveredEquipmentId}
-                loadFlowStatus={props.loadFlowStatus}
+                loadFlowStatus={loadFlowStatus}
             />
         );
     };
@@ -642,7 +647,7 @@ function SingleLineDiagramContent(props) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                         styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
@@ -661,10 +666,6 @@ function SingleLineDiagramContent(props) {
             {displayMenu(
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                 'shunt-compensator-menus'
-            )}
-            {displayMenu(
-                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-                'three-windings-transformer-menus'
             )}
             {displayMenu(EQUIPMENT_TYPES.HVDC_LINE, 'hvdc-line-menus')}
             {displayMenu(
@@ -696,7 +697,6 @@ function SingleLineDiagramContent(props) {
 }
 
 SingleLineDiagramContent.propTypes = {
-    loadFlowStatus: PropTypes.any,
     showInSpreadsheet: PropTypes.func,
     studyUuid: PropTypes.string,
     svgType: PropTypes.string,
