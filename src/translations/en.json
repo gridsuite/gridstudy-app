@@ -328,7 +328,7 @@
     "DynamicSimulationEventCreating": "Creating event ...",
     "DynamicSimulationEventUpdating": "Updating event ...",
     "DynamicSimulationEventDeleting": "Deleting event ...",
-    "DynamicSimulationTabTimeSeries": "Traces",
+    "DynamicSimulationTabTimeSeries": "Curves",
     "DynamicSimulationTabTimeLine": "Chronology",
     "DynamicSimulationTabStatus": "Status",
     "DynamicSimulationTimeLineEventTime": "Instant",
