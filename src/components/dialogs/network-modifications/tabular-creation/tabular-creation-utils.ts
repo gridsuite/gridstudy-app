@@ -21,10 +21,11 @@ import {
     FREQUENCY_REGULATION,
     MARGINAL_COST,
     MAX_P,
+    MAX_Q,
     MAXIMUM_REACTIVE_POWER,
     MIN_P,
+    MIN_Q,
     MINIMUM_REACTIVE_POWER,
-    PARTICIPATE,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q_PERCENT,
@@ -34,6 +35,9 @@ import {
     REGULATING_TERMINAL_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
     STEP_UP_TRANSFORMER_REACTANCE,
+    TARGET_P,
+    TARGET_Q,
+    TARGET_V,
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
@@ -93,8 +97,16 @@ export const convertCreationFieldFromBackToFront = (
     value: { value: string | number | boolean }
 ) => {
     switch (key) {
-        case PARTICIPATE:
-            return { key: FREQUENCY_REGULATION, value: value };
+        case TARGET_V:
+            return { key: VOLTAGE_SET_POINT, value: value };
+        case TARGET_P:
+            return { key: ACTIVE_POWER_SET_POINT, value: value };
+        case TARGET_Q:
+            return { key: REACTIVE_POWER_SET_POINT, value: value };
+        case MIN_Q:
+            return { key: MINIMUM_REACTIVE_POWER, value: value };
+        case MAX_Q:
+            return { key: MAXIMUM_REACTIVE_POWER, value: value };
         default:
             return { key: key, value: value };
     }
@@ -105,8 +117,16 @@ export const convertCreationFieldFromFrontToBack = (
     value: string | number | boolean
 ) => {
     switch (key) {
-        case FREQUENCY_REGULATION:
-            return { key: PARTICIPATE, value: value };
+        case VOLTAGE_SET_POINT:
+            return { key: TARGET_V, value: value };
+        case ACTIVE_POWER_SET_POINT:
+            return { key: TARGET_P, value: value };
+        case REACTIVE_POWER_SET_POINT:
+            return { key: TARGET_Q, value: value };
+        case MINIMUM_REACTIVE_POWER:
+            return { key: MIN_Q, value: value };
+        case MAXIMUM_REACTIVE_POWER:
+            return { key: MAX_Q, value: value };
         case CONNECTION_DIRECTION:
             return { key: key, value: value ?? 'UNDEFINED' };
         default:
