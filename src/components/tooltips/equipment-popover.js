@@ -24,7 +24,10 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { mergeSx } from '../utils/functions';
 import { unitToMicroUnit } from 'utils/unit-converter';
@@ -206,6 +209,92 @@ const EquipmentPopover = ({
         );
     };
 
+    const renderTableCell = ({ label, value, isLabel }) => {
+        return isLabel ? (
+            <TableCell sx={styles.tableCells}>
+                {intl.formatMessage({
+                    id: label,
+                })}
+            </TableCell>
+        ) : (
+            <TableCell sx={styles.tableCells}>{value}</TableCell>
+        );
+    };
+
+    const renderCommonCharacteristics = (equipmentInfo) => {
+        return (
+            <>
+                {equipmentInfo.r && (
+                    <TableRow>
+                        <TableCell />
+                        {renderTableCell({
+                            label: 'seriesResistance',
+                            isLabel: true,
+                        })}
+                        {renderTableCell({
+                            value: checkValue(equipmentInfo.r).toFixed(2),
+                            isLabel: false,
+                        })}
+                    </TableRow>
+                )}
+                {equipmentInfo.x && (
+                    <TableRow>
+                        <TableCell />
+                        {renderTableCell({
+                            label: 'seriesReactance',
+                            isLabel: true,
+                        })}
+                        {renderTableCell({
+                            value: checkValue(equipmentInfo.x).toFixed(2),
+                            isLabel: false,
+                        })}
+                    </TableRow>
+                )}
+            </>
+        );
+    };
+
+    const renderVoltageLevelCharacteristics = (
+        equipmentInfo,
+        equipmentType
+    ) => {
+        const renderShuntSusceptanceRow = (
+            voltageLevelId,
+            susceptanceValue
+        ) => (
+            <TableRow>
+                {renderTableCell({ value: voltageLevelId, isLabel: false })}
+                {renderTableCell({ label: 'shuntSusceptance', isLabel: true })}
+                {renderTableCell({
+                    value: unitToMicroUnit(susceptanceValue).toFixed(2),
+                    isLabel: false,
+                })}
+            </TableRow>
+        );
+
+        return (
+            <>
+                {equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ? (
+                    renderShuntSusceptanceRow(
+                        equipmentInfo.voltageLevelId2,
+                        equipmentInfo?.b
+                    )
+                ) : (
+                    <>
+                        {renderShuntSusceptanceRow(
+                            equipmentInfo.voltageLevelId1,
+                            equipmentInfo.b1
+                        )}
+                        {renderShuntSusceptanceRow(
+                            equipmentInfo.voltageLevelId2,
+                            equipmentInfo?.b2
+                        )}
+                    </>
+                )}
+            </>
+        );
+    };
+
     return (
         <>
             {localAnchorEl && (
@@ -255,113 +344,28 @@ const EquipmentPopover = ({
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell />
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {intl.formatMessage({
-                                                            id: 'characteristic',
-                                                        })}
-                                                    </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {intl.formatMessage({
-                                                            id: 'values',
-                                                        })}
-                                                    </TableCell>
+                                                    {renderTableCell({
+                                                        label: 'characteristic',
+                                                        isLabel: true,
+                                                    })}
+                                                    {renderTableCell({
+                                                        label: 'values',
+                                                        isLabel: true,
+                                                    })}
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                <TableRow>
-                                                    <TableCell />
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {intl.formatMessage({
-                                                            id: 'seriesResistance',
-                                                        })}
-                                                    </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {checkValue(
-                                                            equipmentInfo.r
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell />
-                                                </TableRow>
-                                                <TableRow>
-                                                    <TableCell />
-
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {intl.formatMessage({
-                                                            id: 'seriesReactance',
-                                                        })}
-                                                    </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {checkValue(
-                                                            equipmentInfo.x
-                                                        )}
-                                                    </TableCell>
-                                                </TableRow>
-
-                                                <TableRow>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {
-                                                            equipmentInfo.voltageLevelId1
-                                                        }
-                                                    </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {intl.formatMessage({
-                                                            id: 'shuntSusceptance',
-                                                        })}
-                                                    </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {unitToMicroUnit(
-                                                            equipmentInfo.b1
-                                                        ).toFixed(2)}
-                                                    </TableCell>
-                                                    <TableCell />
-                                                </TableRow>
-                                                <TableRow>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {
-                                                            equipmentInfo.voltageLevelId2
-                                                        }
-                                                    </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {intl.formatMessage({
-                                                            id: 'shuntSusceptance',
-                                                        })}
-                                                    </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {unitToMicroUnit(
-                                                            equipmentInfo.b2
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell />
-                                                </TableRow>
+                                                {renderCommonCharacteristics(
+                                                    equipmentInfo
+                                                )}
+                                                {renderVoltageLevelCharacteristics(
+                                                    equipmentInfo,
+                                                    equipmentType
+                                                )}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
                                 </Grid>
-
                                 <Grid item>
                                     <TableContainer
                                         component={Paper}
