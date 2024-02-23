@@ -46,7 +46,7 @@ export const getVariationsSchema = (id) => ({
     [id]: yup
         .array()
         .nullable()
-        .min(1, 'EmptyList/variations')
+        .min(1, 'EmptyList.variations')
         .of(getVariationSchema()),
 });
 

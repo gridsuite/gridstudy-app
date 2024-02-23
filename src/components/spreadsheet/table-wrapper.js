@@ -80,6 +80,11 @@ import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
+import ComputingType from 'components/computing-status/computing-type';
+import { SORT_WAYS } from 'hooks/use-aggrid-sort';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
+import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -138,6 +143,10 @@ const TableWrapper = (props) => {
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -202,6 +211,32 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
+    const equipementFiltersSelectorKeys = useMemo(() => {
+        let filtersSelectorKeys = {};
+        TABLES_DEFINITION_INDEXES.get(tabIndex).columns.forEach((column) => {
+            filtersSelectorKeys[column?.field] = column?.field;
+        });
+        return filtersSelectorKeys;
+    }, [tabIndex]);
+
+    const defaultSortColKey = useMemo(() => {
+        const defaultSortCol = columnData.find(
+            (column) => column.isDefaultSort
+        );
+        return defaultSortCol?.field;
+    }, [columnData]);
+
+    const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
+        gridRef,
+        {
+            colKey: defaultSortColKey,
+            sortWay: SORT_WAYS.asc,
+        }
+    );
+
+    const { updateFilter, filterSelector, initFilters } =
+        useAggridLocalRowFilter(gridRef, equipementFiltersSelectorKeys);
+
     const enrichColumn = useCallback(
         (column) => {
             column.headerName = intl.formatMessage({ id: column.id });
@@ -209,7 +244,7 @@ const TableWrapper = (props) => {
             if (column.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
                 const isValueInvalid =
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                     column.canBeInvalidated;
 
                 column.cellRendererParams = {
@@ -233,9 +268,33 @@ const TableWrapper = (props) => {
                 ? 'left'
                 : undefined;
 
-            return column;
+            return makeAgGridCustomHeaderColumn({
+                headerName: column.headerName,
+                field: column.field,
+                sortProps: {
+                    onSortChanged,
+                    sortConfig,
+                },
+                filterProps: {
+                    updateFilter,
+                    filterSelector,
+                },
+                filterParams: {
+                    ...column?.customFilterParams,
+                },
+                ...column,
+            });
         },
-        [fluxConvention, intl, lockedColumnsNames, props.loadFlowStatus]
+        [
+            intl,
+            lockedColumnsNames,
+            onSortChanged,
+            sortConfig,
+            updateFilter,
+            filterSelector,
+            loadFlowStatus,
+            fluxConvention,
+        ]
     );
 
     const equipmentDefinition = useMemo(
@@ -257,6 +316,11 @@ const TableWrapper = (props) => {
             });
         }
     }, [errorMessage, snackError]);
+
+    useEffect(() => {
+        initSort(defaultSortColKey);
+        initFilters();
+    }, [tabIndex, initFilters, defaultSortColKey, initSort]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {
@@ -897,8 +961,8 @@ const TableWrapper = (props) => {
                             editingDataRef.current.name
                         ),
                         getFieldValue(
-                            editingData.nominalVoltage,
-                            editingDataRef.current.nominalVoltage
+                            editingData.nominalV,
+                            editingDataRef.current.nominalV
                         ),
                         getFieldValue(
                             editingData.lowVoltageLimit,
@@ -1340,7 +1404,6 @@ TableWrapper.defaultProps = {
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
-    loadFlowStatus: RunningStatus.IDLE,
     disabled: false,
 };
 
@@ -1350,7 +1413,6 @@ TableWrapper.propTypes = {
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
     disabled: PropTypes.bool,
 };
 

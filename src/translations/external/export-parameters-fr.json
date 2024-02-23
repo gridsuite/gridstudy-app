@@ -57,7 +57,7 @@
   "iidm.export.xml.extensions.baseVoltageMapping": "Tension nominale",
   "iidm.export.xml.extensions.branchObservability": "Observabilité des quadripôles",
   "iidm.export.xml.extensions.busbarSectionPosition": "Position des SJBs",
-  "iidm.export.xml.extensions.branchStatus": "Statut de consignation et déclenchement",
+  "iidm.export.xml.extensions.operatingStatus": "Statut de consignation et déclenchement",
   "iidm.export.xml.extensions.cgmesControlAreas": "Cgmes - zone géographique",
   "iidm.export.xml.extensions.cgmesDanglingLineBoundaryNode": "Code EIC des lignes frontières (ligne non mergée)",
   "iidm.export.xml.extensions.cgmesLineBoundaryNode": "Code EIC des lignes frontières (ligne complète)",
