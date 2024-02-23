@@ -174,6 +174,12 @@ const ContingencyListSelector = (props) => {
         setFavoriteSelectorOpen(false);
     };
 
+    const getInitialSelection = () => {
+        return contingencyList.filter((c) =>
+            checkedContingencyListUuids.includes(c.id)
+        );
+    };
+
     const renderButtons = () => {
         return (
             <Grid container spacing={1} item justifyContent={'center'}>
@@ -214,7 +220,7 @@ const ContingencyListSelector = (props) => {
                                 onChecked={handleChecked}
                                 label={(item) => item.name}
                                 id={(item) => item.id}
-                                selection={checkedContingencyListUuids}
+                                initialSelection={getInitialSelection()} // TODO remove ?
                                 itemRenderer={({
                                     item,
                                     checked,
