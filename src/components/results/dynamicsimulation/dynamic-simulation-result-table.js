@@ -15,7 +15,7 @@ import { green, red } from '@mui/material/colors';
 import PropTypes from 'prop-types';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
-import { dynamicSimulationResultInvalidations } from './dynamic-simulation-result.type';
+import { dynamicSimulationResultInvalidations } from './utils/dynamic-simulation-result-utils';
 
 /* must be coherent to LoadFlowResult component */
 const styles = {

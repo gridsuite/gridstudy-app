@@ -13,10 +13,8 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { UUID } from 'crypto';
-import {
-    dynamicSimulationResultInvalidations,
-    TimeSeriesMetadata,
-} from '../dynamic-simulation-result.type';
+import { TimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
+import { dynamicSimulationResultInvalidations } from '../utils/dynamic-simulation-result-utils';
 
 const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
     const [result, isLoading] = useNodeData(
