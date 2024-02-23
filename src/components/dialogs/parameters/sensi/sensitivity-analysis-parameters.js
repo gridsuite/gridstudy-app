@@ -118,20 +118,15 @@ export const SensitivityAnalysisParameters = ({
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
-    const [providers, provider, updateProvider, resetProvider] =
-        parametersBackend;
+    const [providers] = parametersBackend;
     const formattedProviders = Object.keys(providers).map((key) => ({
         id: key,
         label: providers[key],
     }));
 
-    const resetSensitivityParametersAndProvider = useCallback(() => {
-        resetProvider();
-    }, [resetProvider]);
-
     const emptyFormData = useMemo(() => {
         return {
-            [PROVIDER]: provider,
+            [PROVIDER]: null,
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,
@@ -141,7 +136,7 @@ export const SensitivityAnalysisParameters = ({
             [PARAMETER_SENSI_PST]: [],
             [PARAMETER_SENSI_NODES]: [],
         };
-    }, [provider]);
+    }, []);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -154,7 +149,7 @@ export const SensitivityAnalysisParameters = ({
         useSensitivityAnalysisParameters;
 
     const resetSensitivityAnalysisParameters = useCallback(() => {
-        setSensitivityAnalysisParameters(studyUuid, emptyFormData)
+        setSensitivityAnalysisParameters(studyUuid, null)
             .then(() => {
                 return getSensitivityAnalysisParameters(studyUuid)
                     .then((params) => setSensitivityAnalysisParams(params))
@@ -171,10 +166,11 @@ export const SensitivityAnalysisParameters = ({
                     headerId: 'paramsChangingError',
                 });
             });
-    }, [studyUuid, emptyFormData, setSensitivityAnalysisParams, snackError]);
+    }, [studyUuid, setSensitivityAnalysisParams, snackError]);
 
-    const formatNewParams = useCallback((newParams, withProvider = true) => {
-        let params = {
+    const formatNewParams = useCallback((newParams) => {
+        return {
+            [PROVIDER]: newParams[PROVIDER],
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                 newParams[FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD],
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
@@ -187,12 +183,6 @@ export const SensitivityAnalysisParameters = ({
             ...getSensiPstformatNewParams(newParams),
             ...getSensiNodesformatNewParams(newParams),
         };
-        return withProvider
-            ? params
-            : {
-                  [PROVIDER]: newParams[PROVIDER],
-                  ...params,
-              };
     }, []);
 
     const formatFilteredParams = useCallback((row) => {
@@ -494,10 +484,7 @@ export const SensitivityAnalysisParameters = ({
                 formatNewParams(newParams)
             )
                 .then(() => {
-                    setSensitivityAnalysisParams(
-                        formatNewParams(newParams, false)
-                    );
-                    updateProvider(newParams[PROVIDER]);
+                    setSensitivityAnalysisParams(formatNewParams(newParams));
                     initRowsCount();
                 })
                 .catch((error) => {
@@ -512,7 +499,6 @@ export const SensitivityAnalysisParameters = ({
             snackError,
             studyUuid,
             formatNewParams,
-            updateProvider,
             initRowsCount,
         ]
     );
@@ -533,15 +519,9 @@ export const SensitivityAnalysisParameters = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-        resetSensitivityParametersAndProvider();
         resetSensitivityAnalysisParameters();
         setAnalysisComputeComplexity(0);
-    }, [
-        emptyFormData,
-        reset,
-        resetSensitivityAnalysisParameters,
-        resetSensitivityParametersAndProvider,
-    ]);
+    }, [emptyFormData, reset, resetSensitivityAnalysisParameters]);
 
     const renderComputingEventLoading = () => {
         return (
