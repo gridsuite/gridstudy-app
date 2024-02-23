@@ -50,6 +50,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     emptyProperties,
+    getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 
@@ -154,6 +155,9 @@ const VoltageLevelCreationDialog = ({
 
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
+            const properties = fromCopy
+                ? copyEquipmentPropertiesForCreation(voltageLevel)
+                : getPropertiesFromModification(voltageLevel.properties);
             reset({
                 [EQUIPMENT_ID]:
                     (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) +
@@ -189,7 +193,7 @@ const VoltageLevelCreationDialog = ({
                               [SWITCH_KIND]: switchKind,
                           }))
                         : [],
-                ...copyEquipmentPropertiesForCreation(voltageLevel),
+                ...properties,
             });
             if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
@@ -216,6 +220,7 @@ const VoltageLevelCreationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
+            console.log(' voltage level :', voltageLevel);
             onCreateVoltageLevel({
                 studyUuid,
                 currentNodeUuid,
@@ -240,7 +245,7 @@ const VoltageLevelCreationDialog = ({
                 isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
                 topologyKind: voltageLevel[TOPOLOGY_KIND],
-                ...toModificationProperties(voltageLevel),
+                properties: toModificationProperties(voltageLevel),
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
