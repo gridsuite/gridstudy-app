@@ -46,10 +46,13 @@ import {
 } from '../../services/study/geo-data';
 import { Box } from '@mui/system';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import 'maplibre-gl/dist/maplibre-gl.css';
 import EquipmentPopover from '../tooltips/equipment-popover';
+import { useTheme } from '@emotion/react';
+
 const INITIAL_POSITION = [0, 0];
+const INITIAL_ZOOM = 9;
+const LABELS_ZOOM_THRESHOLD = 9;
+const ARROWS_ZOOM_THRESHOLD = 7;
 
 const styles = {
     divNominalVoltageFilter: {
@@ -93,11 +96,14 @@ export const NetworkMapTab = ({
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
+
+    const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel?.treeNodes.find(
@@ -961,11 +967,6 @@ export const NetworkMapTab = ({
         />
     );
 
-    const INITIAL_ZOOM = 9;
-    const LABELS_ZOOM_THRESHOLD = 9;
-    const ARROWS_ZOOM_THRESHOLD = 7;
-    const useName = true;
-
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
@@ -1014,6 +1015,7 @@ export const NetworkMapTab = ({
             triggerMapResizeOnChange={[studyDisplayMode, visible]}
             renderPopover={renderLinePopover}
             mapLibrary={basemap}
+            mapTheme={theme?.palette.mode}
         />
     );
 
