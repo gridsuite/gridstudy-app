@@ -14,7 +14,7 @@ import {
     HIGH_VOLTAGE_LIMIT,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
-    NOMINAL_VOLTAGE,
+    NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
@@ -89,7 +89,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const nominalVoltageField = (
         <FloatInput
-            name={NOMINAL_VOLTAGE}
+            name={NOMINAL_V}
             label={'NominalVoltage'}
             adornment={VoltageAdornment}
         />

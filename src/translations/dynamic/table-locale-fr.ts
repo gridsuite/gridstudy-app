@@ -9,8 +9,8 @@ const table_locale_fr = {
     // Used to create column names in sensitivity analysis results
     DeltaInkA: 'Sensibilité (ΔA / MW ou Δ°)',
     DeltaInkABeforeContingency: 'Sensibilité (ΔA / MW ou Δ°) avant aléa',
-    DeltaInkV: 'Sensibilité (ΔkV / ΔkV)',
-    DeltaInkVBeforeContingency: 'Sensibilité (ΔkV / ΔkV) avant aléa',
+    DeltaInkV: 'Sensibilité (ΔkV / kV)',
+    DeltaInkVBeforeContingency: 'Sensibilité (ΔkV / kV) avant aléa',
     DeltaInkW: 'Sensibilité (ΔMW / MW ou Δ°)',
     DeltaInkWBeforeContingency: 'Sensibilité (ΔMW / MW ou Δ°) avant aléa',
     ValRefInkA: 'Intensité de référence (A)',
