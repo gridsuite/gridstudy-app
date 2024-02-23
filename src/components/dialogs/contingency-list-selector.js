@@ -83,7 +83,7 @@ const ContingencyListSelector = (props) => {
     useEffect(() => {
         setSimulatedContingencyCount(null);
         var discardResult = false;
-        if (props.currentNodeUuid !== null) {
+        if (props.currentNodeUuid !== null && props.open) {
             fetchContingencyCount(
                 props.studyUuid,
                 props.currentNodeUuid,
@@ -97,9 +97,17 @@ const ContingencyListSelector = (props) => {
         return () => {
             discardResult = true;
         };
-    }, [props.studyUuid, props.currentNodeUuid, checkedContingencyListUuids]);
+    }, [
+        props.open,
+        props.studyUuid,
+        props.currentNodeUuid,
+        checkedContingencyListUuids,
+    ]);
 
     useEffect(() => {
+        if (!props.open) {
+            return;
+        }
         if (
             favoriteContingencyListUuids &&
             favoriteContingencyListUuids.length > 0
@@ -133,7 +141,12 @@ const ContingencyListSelector = (props) => {
         } else {
             setContingencyList([]);
         }
-    }, [favoriteContingencyListUuids, setContingencyList, snackError]);
+    }, [
+        props.open,
+        favoriteContingencyListUuids,
+        setContingencyList,
+        snackError,
+    ]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null
