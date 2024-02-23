@@ -93,7 +93,7 @@ const VscModificationDialog: React.FC<any> = ({
     );
 
     const [equipementId, setEquipementId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
-    const [vscInfos, setVcsToModify] = useState<VscModificationInfo | null>(
+    const [vscToModify, setVcsToModify] = useState<VscModificationInfo | null>(
         null
     );
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
@@ -188,7 +188,7 @@ const VscModificationDialog: React.FC<any> = ({
                                 setValue
                             );
                         }
-                        
+
                         setVcsToModify({
                             ...value,
                             converterStation1: {
@@ -222,21 +222,26 @@ const VscModificationDialog: React.FC<any> = ({
     }, [equipementId, onEquipmentIdChange]);
 
     // Watch for changes in the form data
-    const formData = watch();
+    const formData: any = watch(); //(jamal) for debuging to delete
 
     // Log the form data
-    console.log('debug', formData);
+    console.log(
+        'debug',
+        'formData',
+        formData?.converterStation1?.reactiveLimits
+    );
 
     const onSubmit = (hvdcLine: any) => {
         const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
         const converterStation1 = getConverterStationModificationData(
             hvdcLine[CONVERTER_STATION_1],
-            vscInfos?.converterStation1
+            vscToModify?.converterStation1
         );
         const converterStation2 = getConverterStationModificationData(
             hvdcLine[CONVERTER_STATION_2],
-            vscInfos?.converterStation2
+            vscToModify?.converterStation2
         );
+        console.log('debug, onSubmit', converterStation1);
         modifyVsc(
             studyUuid,
             currentNode.id,
@@ -292,7 +297,7 @@ const VscModificationDialog: React.FC<any> = ({
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
-                previousValue?.converterStation1?.reactiveCapabilityCurveTable;
+            previousValue?.converterStation1?.reactiveCapabilityCurveTable;
             console.log('debug', 'previousValue', previousValue);
             console.log('debug', 'newRccValues', newRccValues);
             return updateConverterStationCapabilityCurveTable(
@@ -368,7 +373,7 @@ const VscModificationDialog: React.FC<any> = ({
                         currentNode={currentNode}
                         equipmentId={equipementId}
                         setTabIndex={setTabIndex}
-                        vscInfos={vscInfos}
+                        vscToModify={vscToModify}
                         tabIndexesWithError={[]}
                         updatePreviousReactiveCapabilityCurveTableConverterStation1={
                             updatePreviousReactiveCapabilityCurveTableConverterStation1

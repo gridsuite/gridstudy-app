@@ -132,7 +132,7 @@ export interface ConverterStationElementInfos {
     voltage?: number;
 }
 
-// the backend return a converterStationElementInfo.reactiveCapabilityCurvePoints 
+// the backend return a converterStationElementInfo.reactiveCapabilityCurvePoints
 // but the form define rename is to reactiveCapabilityCurveTable
 // may be we should refactor the forms in Battery , generator and converter station to use the same name
 export type ConverterStationElementModificationInfos = Omit<
@@ -284,7 +284,7 @@ export function getConverterStationModificationData(
                 ? null
                 : reactiveLimits[MAXIMUM_REACTIVE_POWER]
         ),
-        reactiveCapabilityCurveTable: isReactiveCapabilityCurveOn
+        reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
             ? buildCurvePointsToStore
             : null,
     };

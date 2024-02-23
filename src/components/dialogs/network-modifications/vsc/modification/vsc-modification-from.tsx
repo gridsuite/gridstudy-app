@@ -30,7 +30,7 @@ interface VscModificationFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     equipmentId: string;
-    vscInfos: VscModificationInfo | null;
+    vscToModify: VscModificationInfo | null;
     setTabIndex: React.Dispatch<React.SetStateAction<number>>;
     tabIndexesWithError: number[];
     updatePreviousReactiveCapabilityCurveTableConverterStation1:
@@ -49,7 +49,7 @@ export const VscModificationForm: FunctionComponent<
     studyUuid,
     currentNode,
     equipmentId,
-    vscInfos,
+    vscToModify,
     tabIndexesWithError,
     updatePreviousReactiveCapabilityCurveTableConverterStation1 = undefined,
     updatePreviousReactiveCapabilityCurveTableConverterStation2 = undefined,
@@ -75,7 +75,7 @@ export const VscModificationForm: FunctionComponent<
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={vscInfos?.name || ''}
+            previousValue={vscToModify?.name || ''}
             clearable
         />
     );
@@ -106,7 +106,7 @@ export const VscModificationForm: FunctionComponent<
             <Box hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB} p={1}>
                 <VscHvdcLinePane
                     id={HVDC_LINE_TAB}
-                    previousValues={vscInfos}
+                    previousValues={vscToModify}
                     isEquipementModification={true}
                 />
             </Box>
@@ -120,7 +120,7 @@ export const VscModificationForm: FunctionComponent<
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
                     isModification={true}
-                    previousValues={vscInfos?.converterStation1}
+                    previousValues={vscToModify?.converterStation1}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={
                         updatePreviousReactiveCapabilityCurveTableConverterStation1
                     }
@@ -136,7 +136,7 @@ export const VscModificationForm: FunctionComponent<
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
                     isModification={true}
-                    previousValues={vscInfos?.converterStation2}
+                    previousValues={vscToModify?.converterStation2}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={
                         updatePreviousReactiveCapabilityCurveTableConverterStation2
                     }
