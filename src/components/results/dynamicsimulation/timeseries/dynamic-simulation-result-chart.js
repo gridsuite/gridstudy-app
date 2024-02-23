@@ -19,8 +19,8 @@ import {
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
-import Visibility from './common/visibility';
-import TooltipIconButton from './common/tooltip-icon-button';
+import Visibility from '../common/visibility';
+import TooltipIconButton from '../common/tooltip-icon-button';
 import AddIcon from '@mui/icons-material/Add';
 import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
@@ -28,10 +28,10 @@ import { useIntl } from 'react-intl';
 import { MenuOpen } from '@mui/icons-material';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
-import ResponsiveGridLayout from './common/gridlayout/responsive-grid-layout';
+import ResponsiveGridLayout from '../common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
 import { useDebounce } from '@gridsuite/commons-ui';
-import { mergeSx } from '../../utils/functions';
+import { mergeSx } from '../../../utils/functions';
 
 const styles = {
     root: {
