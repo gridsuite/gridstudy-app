@@ -220,7 +220,6 @@ const VoltageLevelCreationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
-            console.log(' voltage level :', voltageLevel);
             onCreateVoltageLevel({
                 studyUuid,
                 currentNodeUuid,
