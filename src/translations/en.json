@@ -330,8 +330,8 @@
     "DynamicSimulationEventCreating": "Creating event ...",
     "DynamicSimulationEventUpdating": "Updating event ...",
     "DynamicSimulationEventDeleting": "Deleting event ...",
-
-
+    "DynamicSimulationTabTimeSeries": "Curves",
+    "DynamicSimulationTabTimeStatus": "Status",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
