@@ -32,7 +32,6 @@ import {
     RATED_S,
     RATED_U1,
     RATED_U2,
-    REACTIVE_POWER_SET_POINT,
     SECTION_COUNT,
     R,
     X,
