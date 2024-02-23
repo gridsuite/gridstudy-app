@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_USE_NAME,
 } from '../../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
