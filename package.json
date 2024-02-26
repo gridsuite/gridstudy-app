@@ -69,12 +69,15 @@
         "build": "vite build",
         "serve": "vite preview",
         "test": "jest",
-        "lint": "eslint ./src --ext js,jsx,ts,tsx --max-warnings 0"
+        "lint": "eslint . --ext js,jsx,ts,tsx --max-warnings 0"
     },
     "eslintConfig": {
         "extends": [
             "react-app",
             "plugin:prettier/recommended"
+        ],
+        "ignorePatterns": [
+            "build"
         ],
         "rules": {
             "prettier/prettier": "warn",
@@ -100,12 +103,19 @@
         "@babel/preset-env": "^7.23.8",
         "@babel/preset-react": "^7.23.3",
         "@babel/preset-typescript": "^7.23.3",
-        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+        "@typescript-eslint/eslint-plugin": "5.62.0",
+        "@typescript-eslint/parser": "5.62.0",
         "@vitejs/plugin-react": "^4.2.1",
-        "eslint": "^8.56.0",
+        "babel-eslint": "^10.1.0",
+        "eslint": "^7.9.0",
         "eslint-config-prettier": "^8.0.0",
-        "eslint-config-react-app": "^7.0.1",
+        "eslint-config-react-app": "^6.0.0",
+        "eslint-plugin-flowtype": "^5.2.0",
+        "eslint-plugin-import": "^2.22.0",
+        "eslint-plugin-jsx-a11y": "^6.3.1",
         "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-react": "^7.21.0",
+        "eslint-plugin-react-hooks": "^4.1.2",
         "jest": "^29.7.0",
         "prettier": "^2.0.5",
         "ts-node": "^10.9.2",
