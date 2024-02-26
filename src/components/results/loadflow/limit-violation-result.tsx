@@ -104,7 +104,7 @@ export const LimitViolationResult: FunctionComponent<
             messages,
             result,
             loadFlowStatus,
-            !isLoadingResult && result?.length !== 0
+            !isLoadingResult
         );
         const rowsToShow = getRows(result, loadFlowStatus);
 

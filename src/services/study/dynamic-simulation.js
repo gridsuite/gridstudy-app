@@ -130,24 +130,6 @@ export function fetchDynamicSimulationResultTimeLine(
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
-    // fetch parallel different results
-    const timeseriesMetadataPromise = fetchDynamicSimulationTimeSeriesMetadata(
-        studyUuid,
-        currentNodeUuid
-    );
-    const statusPromise = fetchDynamicSimulationStatus(
-        studyUuid,
-        currentNodeUuid
-    );
-    return Promise.all([timeseriesMetadataPromise, statusPromise]).then(
-        ([timeseriesMetadatas, status]) => ({
-            timeseriesMetadatas,
-            status,
-        })
-    );
-}
-
 export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
     console.info(
         `Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`
