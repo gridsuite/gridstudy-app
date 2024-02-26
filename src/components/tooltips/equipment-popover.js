@@ -88,9 +88,17 @@ const EquipmentPopover = ({
         return () => clearTimeout(timer);
     }, [anchorEl]);
 
-    const checkValue = (value) => {
+    const formatValue = (value, fixed) => {
         if (value != null && !Number.isNaN(value)) {
-            return value;
+            if (typeof value === 'number') {
+                if (typeof fixed === 'number') {
+                    return value.toFixed(fixed);
+                } else {
+                    return value.toString();
+                }
+            } else {
+                return value;
+            }
         } else {
             return '_';
         }
@@ -109,7 +117,7 @@ const EquipmentPopover = ({
                                     })}
                                 </TableCell>
                                 <TableCell sx={styles.tableCells}>
-                                    {checkValue(
+                                    {formatValue(
                                         Math.round(currentLimits.permanentLimit)
                                     )}
                                 </TableCell>
@@ -122,7 +130,7 @@ const EquipmentPopover = ({
                                                 : 0.2,
                                     })}
                                 >
-                                    {checkValue(
+                                    {formatValue(
                                         Math.round(
                                             side === '1'
                                                 ? (Math.abs(equipmentInfo.i1) *
@@ -135,7 +143,7 @@ const EquipmentPopover = ({
                                     )}
                                 </TableCell>
                                 <TableCell sx={styles.tableCells}>
-                                    {checkValue(
+                                    {formatValue(
                                         side === '1'
                                             ? equipmentInfo.voltageLevelId1
                                             : equipmentInfo.voltageLevelId2
@@ -153,12 +161,12 @@ const EquipmentPopover = ({
                                             key={temporaryLimit.name + side}
                                         >
                                             <TableCell sx={styles.tableCells}>
-                                                {checkValue(
+                                                {formatValue(
                                                     temporaryLimit.name
                                                 )}
                                             </TableCell>
                                             <TableCell sx={styles.tableCells}>
-                                                {checkValue(
+                                                {formatValue(
                                                     Math.round(
                                                         temporaryLimit.value
                                                     )
@@ -174,7 +182,7 @@ const EquipmentPopover = ({
                                                 })}
                                             >
                                                 {side === '1'
-                                                    ? checkValue(
+                                                    ? formatValue(
                                                           Math.round(
                                                               (Math.abs(
                                                                   equipmentInfo.i1
@@ -183,7 +191,7 @@ const EquipmentPopover = ({
                                                                   temporaryLimit.value
                                                           )
                                                       )
-                                                    : checkValue(
+                                                    : formatValue(
                                                           Math.round(
                                                               (Math.abs(
                                                                   equipmentInfo.i2
@@ -194,7 +202,7 @@ const EquipmentPopover = ({
                                                       )}
                                             </TableCell>
                                             <TableCell sx={styles.tableCells}>
-                                                {checkValue(
+                                                {formatValue(
                                                     side === '1'
                                                         ? equipmentInfo.voltageLevelId1
                                                         : equipmentInfo.voltageLevelId2
@@ -232,7 +240,7 @@ const EquipmentPopover = ({
                             isLabel: true,
                         })}
                         {renderTableCell({
-                            value: checkValue(equipmentInfo.r).toFixed(2),
+                            value: formatValue(equipmentInfo.r, 2),
                             isLabel: false,
                         })}
                     </TableRow>
@@ -245,7 +253,7 @@ const EquipmentPopover = ({
                             isLabel: true,
                         })}
                         {renderTableCell({
-                            value: checkValue(equipmentInfo.x).toFixed(2),
+                            value: formatValue(equipmentInfo.x, 2),
                             isLabel: false,
                         })}
                     </TableRow>
@@ -384,14 +392,14 @@ const EquipmentPopover = ({
                                                     <TableCell
                                                         sx={styles.tableCells}
                                                     >
-                                                        {checkValue(
+                                                        {formatValue(
                                                             equipmentInfo.voltageLevelId1
                                                         )}
                                                     </TableCell>
                                                     <TableCell
                                                         sx={styles.tableCells}
                                                     >
-                                                        {checkValue(
+                                                        {formatValue(
                                                             equipmentInfo.voltageLevelId2
                                                         )}
                                                     </TableCell>
@@ -418,7 +426,7 @@ const EquipmentPopover = ({
                                                             }
                                                         )}
                                                     >
-                                                        {checkValue(
+                                                        {formatValue(
                                                             Math.round(
                                                                 equipmentInfo.i1
                                                             )
@@ -436,7 +444,7 @@ const EquipmentPopover = ({
                                                             }
                                                         )}
                                                     >
-                                                        {checkValue(
+                                                        {formatValue(
                                                             Math.round(
                                                                 equipmentInfo.i2
                                                             )
