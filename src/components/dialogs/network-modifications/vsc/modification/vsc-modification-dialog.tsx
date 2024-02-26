@@ -68,7 +68,7 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    [HVDC_LINE_TAB]: getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
+    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
 };
@@ -102,7 +102,7 @@ const VscModificationDialog: React.FC<any> = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues, setValue, handleSubmit, watch } = formMethods;
+    const { reset, getValues, setValue, handleSubmit } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -137,7 +137,7 @@ const VscModificationDialog: React.FC<any> = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData); //FIXME (jamal): uncomment this line
+            fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
 
@@ -213,7 +213,13 @@ const VscModificationDialog: React.FC<any> = ({
                 setVcsToModify(null);
             }
         },
-        [studyUuid, currentNodeUuid, setValuesAndEmptyOthers]
+        [
+            studyUuid,
+            currentNodeUuid,
+            getValues,
+            setValue,
+            setValuesAndEmptyOthers,
+        ]
     );
     useEffect(() => {
         if (equipementId) {
@@ -221,18 +227,9 @@ const VscModificationDialog: React.FC<any> = ({
         }
     }, [equipementId, onEquipmentIdChange]);
 
-    // Watch for changes in the form data
-    const formData: any = watch(); //(jamal) for debuging to delete
-
-    // Log the form data
-    console.log(
-        'debug',
-        'formData',
-        formData?.converterStation1?.reactiveLimits
-    );
-
     const onSubmit = (hvdcLine: any) => {
         const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
+        console.log('debug', 'hvdcLineTab', hvdcLineTab);
         const converterStation1 = getConverterStationModificationData(
             hvdcLine[CONVERTER_STATION_1],
             vscToModify?.converterStation1
@@ -241,7 +238,7 @@ const VscModificationDialog: React.FC<any> = ({
             hvdcLine[CONVERTER_STATION_2],
             vscToModify?.converterStation2
         );
-        console.log('debug, onSubmit', converterStation1);
+
         modifyVsc(
             studyUuid,
             currentNode.id,
@@ -297,9 +294,7 @@ const VscModificationDialog: React.FC<any> = ({
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
-            previousValue?.converterStation1?.reactiveCapabilityCurveTable;
-            console.log('debug', 'previousValue', previousValue);
-            console.log('debug', 'newRccValues', newRccValues);
+                previousValue?.converterStation1?.reactiveCapabilityCurveTable;
             return updateConverterStationCapabilityCurveTable(
                 newRccValues,
                 action,

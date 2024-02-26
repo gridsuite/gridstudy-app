@@ -54,8 +54,6 @@ export const VscModificationForm: FunctionComponent<
     updatePreviousReactiveCapabilityCurveTableConverterStation1 = undefined,
     updatePreviousReactiveCapabilityCurveTableConverterStation2 = undefined,
 }) => {
-    // const currentNodeUuid = currentNode?.id;
-
     const vscIdField = (
         <TextField
             size="small"

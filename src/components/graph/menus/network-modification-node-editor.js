@@ -68,7 +68,6 @@ import TabularModificationDialog from 'components/dialogs/network-modifications/
 import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
 import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
 
-
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,

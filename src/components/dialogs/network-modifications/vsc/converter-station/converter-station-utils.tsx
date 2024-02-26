@@ -242,12 +242,11 @@ export function getConverterStationModificationData(
         | ConverterStationElementModificationInfos
         | undefined
 ) {
-    const reactiveLimits = converterStation[REACTIVE_LIMITS];//should return 3 //OK
+    const reactiveLimits = converterStation[REACTIVE_LIMITS];
     const buildCurvePointsToStore = calculateCurvePointsToStore(
         reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
         converterStationToModify
     );
-    console.log("🚀-debug ~ buildCurvePointsToStore:", buildCurvePointsToStore);
     const isReactiveCapabilityCurveOn =
         reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 

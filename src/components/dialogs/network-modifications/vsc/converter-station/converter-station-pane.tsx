@@ -84,14 +84,12 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     }, [studyUuid, currentNodeUuid]);
 
-    const previousDataany = previousValues as any;
-
     const generatorIdField = isModification ? (
         <TextField
             size="small"
             fullWidth
             label={'ID'}
-            value={previousDataany?.id || ''}
+            value={previousValues?.id || ''}
             InputProps={{
                 readOnly: true,
             }}
@@ -136,7 +134,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${REACTIVE_POWER}`}
             adornment={ReactivePowerAdornment}
             label={'ReactivePowerText'}
-            previousValue={previousValues?.reactivePower}
+            previousValue={previousValues?.reactivePowerSetpoint ?? undefined}
         />
     );
 
@@ -161,7 +159,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${VOLTAGE}`}
             adornment={VoltageAdornment}
             label={'VoltageText'}
-            previousValue={previousValues?.voltage || undefined}
+            previousValue={previousValues?.voltageSetpoint || undefined}
         />
     );
 
@@ -190,7 +188,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm
                 id={`${id}.${REACTIVE_LIMITS}`}
-                equipmentToModify={previousDataany}
+                equipmentToModify={previousValues as any}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTableConverterStation as any
                 }

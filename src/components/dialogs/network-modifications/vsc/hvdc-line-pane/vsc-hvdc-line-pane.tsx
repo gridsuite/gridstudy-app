@@ -92,7 +92,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide1Label'}
             previousValue={
-                previousValues?.operatorActivePowerLimitFromSide1ToSide2
+                previousValues?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2
             }
         />
     );
@@ -103,7 +103,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide2Label'}
             previousValue={
-                previousValues?.operatorActivePowerLimitFromSide2ToSide1
+                previousValues?.hvdcOperatorActivePowerRange?.oprFromCS2toCS1
             }
         />
     );
@@ -129,41 +129,53 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     );
 
     const previousAngleDropPowerControl = () => {
-        if (previousValues?.angleDroopActivePowerControl) {
+        if (
+            previousValues?.hvdcAngleDroopActivePowerControl?.isEnabled === true
+        ) {
             return intl.formatMessage({ id: 'On' });
         }
-        if (previousValues?.angleDroopActivePowerControl === false) {
+        if (
+            previousValues?.hvdcAngleDroopActivePowerControl?.isEnabled ===
+            false
+        ) {
             return intl.formatMessage({ id: 'Off' });
         }
         return intl.formatMessage({ id: 'NoModification' });
     };
 
-    const AngleDroopActivePowerControl = isEquipementModification ? 
-        gridItemWithTooltip(
-            <CheckboxNullableInput
-                name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
-                label={'angleDroopActivePowerControlLabel'}
-                previousValue={previousAngleDropPowerControl}
-                id={undefined}
-                formProps={undefined}
-            />,
-            intl.formatMessage({
-                id: 'NoModification',
-            }),
-            4
-        ) : (
-        <SwitchInput
-            name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
-            label={'angleDroopActivePowerControlLabel'}
-        />
-    );
+    function getAngleDroopActivePowerControl() {
+        if (isEquipementModification) {
+            return gridItemWithTooltip(
+                <CheckboxNullableInput
+                    name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
+                    label={'angleDroopActivePowerControlLabel'}
+                    previousValue={previousAngleDropPowerControl()}
+                    id={undefined}
+                    formProps={undefined}
+                />,
+                intl.formatMessage({
+                    id: 'NoModification',
+                }),
+                4
+            );
+        } else {
+            return (
+                <SwitchInput
+                    name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
+                    label={'angleDroopActivePowerControlLabel'}
+                />
+            );
+        }
+    }
+
+    const AngleDroopActivePowerControl = getAngleDroopActivePowerControl();
 
     const p0Field = (
         <FloatInput
             name={`${id}.${P0}`}
             label={'p0Label'}
             adornment={ActivePowerAdornment}
-            previousValue={previousValues?.p0}
+            previousValue={previousValues?.hvdcAngleDroopActivePowerControl?.p0}
         />
     );
 
@@ -171,7 +183,9 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         <FloatInput
             name={`${id}.${DROOP}`}
             label={'droopLabel'}
-            previousValue={previousValues?.droop}
+            previousValue={
+                previousValues?.hvdcAngleDroopActivePowerControl.droop
+            }
         />
     );
 
