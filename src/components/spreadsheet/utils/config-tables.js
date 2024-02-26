@@ -293,13 +293,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'countryName',
+                field: 'country.countryName',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
                 valueSetter: (params) => {
-                    params.data.countryCode = params?.newValue?.countryCode;
-                    params.data.countryName = params?.newValue?.countryName;
+                    params.data.countryCode =
+                        params?.newValue?.country?.countryCode;
+                    params.data.countryName =
+                        params?.newValue?.country?.countryName;
                     return params;
                 },
                 ...defaultTextFilterConfig,
@@ -353,6 +355,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'SubstationId',
                 field: 'substationId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -507,6 +514,16 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country1',
+                field: 'country1.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country2',
+                field: 'country2.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
@@ -650,6 +667,16 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelIdSide2',
                 field: 'voltageLevelId2',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country1',
+                field: 'country1.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country2',
+                field: 'country2.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -1378,6 +1405,21 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'T3WCountry1',
+                field: 'country1.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'T3WCountry2',
+                field: 'country2.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country3',
+                field: 'country3.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalVoltageT3WSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
@@ -1797,6 +1839,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -2410,6 +2457,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
@@ -2510,6 +2562,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -2695,6 +2752,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
@@ -2768,6 +2830,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -3002,6 +3069,16 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country1',
+                field: 'country1.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country2',
+                field: 'country2.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'R',
                 field: 'r',
                 numeric: true,
@@ -3092,6 +3169,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
@@ -3168,6 +3250,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -3261,6 +3348,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -3363,17 +3455,17 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
                 ...defaultNumericFilterConfig,
-            },
-            {
-                id: 'Country',
-                field: 'countryName',
-                ...defaultTextFilterConfig,
             },
         ],
     },
