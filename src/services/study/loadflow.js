@@ -43,14 +43,6 @@ export function getLoadFlowParameters(studyUuid) {
     return backendFetchJson(getLfParams);
 }
 
-export function getLoadFlowProvider(studyUuid) {
-    console.info('get load flow provider');
-    const getLoadFlowProviderUrl =
-        getStudyUrl(studyUuid) + '/loadflow/provider';
-    console.debug(getLoadFlowProviderUrl);
-    return backendFetchText(getLoadFlowProviderUrl);
-}
-
 export function setLoadFlowProvider(studyUuid, newProvider) {
     console.info('set load flow provider');
     const setLoadFlowProviderUrl =
