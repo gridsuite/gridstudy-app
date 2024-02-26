@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import {
     validateValueIsANumber,
     exportedForTesting,
@@ -44,7 +43,6 @@ test('validation-functions.toNumber', () => {
     expect(toNumber(0.99999)).not.toBe(1);
 
     // Converted values must be equal in these cases
-    expect(toNumber(0) === toNumber(0)).toBe(true);
     expect(toNumber(-0) === toNumber(0)).toBe(true);
     expect(toNumber(0.0) === toNumber(0)).toBe(true);
     expect(toNumber(-0.0) === toNumber(0)).toBe(true);

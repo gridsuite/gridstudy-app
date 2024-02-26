@@ -5,12 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-
 // Because of a circular import issue, we have to import the store to run the
 // unit tests, even if your IDE is showing that the import is unused.
 // eslint-disable-next-line no-use-before-define
-import { store } from './store';
 import { reducer } from './reducer';
 import {
     resetNetworkAreaDiagramDepth,

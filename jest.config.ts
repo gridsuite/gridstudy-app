@@ -14,7 +14,7 @@ const config: Config = {
         '^.+\\.(css|less|scss)$': 'identity-obj-proxy',
     },
     transformIgnorePatterns: ['node_modules/(?!@gridsuite/commons-ui)'], // transform from ESM
-    moduleDirectories: ["node_modules", "src"], // to allow absolute path from ./src
+    moduleDirectories: ['node_modules', 'src'], // to allow absolute path from ./src
     setupFiles: ['<rootDir>/jest.setup.ts'],
 };
 
