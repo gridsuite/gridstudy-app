@@ -274,7 +274,7 @@ const EquipmentPopover = ({
                 {renderTableCell({ value: voltageLevelId, isLabel: false })}
                 {renderTableCell({ label: 'shuntSusceptance', isLabel: true })}
                 {renderTableCell({
-                    value: unitToMicroUnit(susceptanceValue).toFixed(2),
+                    value: unitToMicroUnit(susceptanceValue)?.toFixed(2),
                     isLabel: false,
                 })}
             </TableRow>
