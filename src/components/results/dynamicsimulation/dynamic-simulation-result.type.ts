@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const backend_locale_en = {
-    OpenLoadFlow: 'Open Load Flow',
-    Hades2: 'Hades 2',
-    DynaFlow: 'Dyna Flow',
-};
+export const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
 
-export default backend_locale_en;
+export type TimeSeriesMetadata = {
+    name: string;
+};

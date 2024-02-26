@@ -6,6 +6,7 @@
  */
 
 const aggrid_locale_en = {
+    // Comes from the AgGrid external library
     'grid.noRowsToShow': 'No data',
     'grid.noCalculation': 'No calculation',
     'grid.failed': 'Calculation failed',

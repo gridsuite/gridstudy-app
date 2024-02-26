@@ -105,7 +105,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     yup
                         .number()
                         .nullable()
-                        .positive('TargetVoltageGreaterThanZero'),
+                        .positive('TargetVoltageMustBeGreaterThanZero'),
             })
             .when([REGULATION_MODE, LOAD_TAP_CHANGING_CAPABILITIES], {
                 is: (regulationMode, loadTapChangingCapabilities) => {
@@ -127,7 +127,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     yup
                         .number()
                         .nullable()
-                        .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+                        .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
             }),
         [LOW_TAP_POSITION]: yup
             .number()
@@ -147,11 +147,11 @@ const ratioTapChangerValidationSchema = (id) => ({
                         .required()
                         .min(
                             yup.ref(LOW_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         )
                         .max(
                             yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         ),
             }),
         [STEPS]: yup
@@ -254,11 +254,11 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
         [TARGET_V]: yup
             .number()
             .nullable()
-            .positive('TargetVoltageGreaterThanZero'),
+            .positive('TargetVoltageMustBeGreaterThanZero'),
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+            .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
         [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup.number().nullable(),
@@ -389,6 +389,11 @@ export const getComputedRegulationType = (twt) => {
     }
 };
 
+export const getComputedRegulationTypeId = (twt) => {
+    const regulationType = getComputedRegulationType(twt);
+    return regulationType?.id || null;
+};
+
 export const getComputedRegulationMode = (twt) => {
     const ratioTapChangerValues = twt?.ratioTapChanger;
     if (!ratioTapChangerValues) {
@@ -399,6 +404,16 @@ export const getComputedRegulationMode = (twt) => {
     } else {
         return RATIO_REGULATION_MODES.FIXED_RATIO;
     }
+};
+
+export const getInitialTwtRatioRegulationModeId = (twt) => {
+    // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
+    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
+        return null;
+    }
+    //otherwise, we compute it
+    const computedRegulationMode = getComputedRegulationMode(twt);
+    return computedRegulationMode?.id || null;
 };
 
 export const getComputedPreviousRatioRegulationType = (previousValues) => {

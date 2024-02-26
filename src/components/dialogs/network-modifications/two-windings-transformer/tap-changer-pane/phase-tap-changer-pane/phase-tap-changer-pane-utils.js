@@ -82,7 +82,7 @@ const phaseTapChangerValidationSchema = (id) => ({
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
             .number()
             .nullable()
-            .positive('CurrentLimiterGreaterThanZero')
+            .positive('CurrentLimiterMustBeGreaterThanZero')
             .when([ENABLED, REGULATION_MODE], {
                 is: (enabled, regulationMode) =>
                     enabled &&
@@ -103,7 +103,7 @@ const phaseTapChangerValidationSchema = (id) => ({
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+            .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
@@ -122,11 +122,11 @@ const phaseTapChangerValidationSchema = (id) => ({
                         .required()
                         .min(
                             yup.ref(LOW_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         )
                         .max(
                             yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         ),
             }),
         [STEPS]: yup
@@ -199,12 +199,12 @@ const phaseTapChangerModificationValidationSchema = (id) => ({
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
             .number()
             .nullable()
-            .positive('CurrentLimiterGreaterThanZero'),
+            .positive('CurrentLimiterMustBeGreaterThanZero'),
         [FLOW_SET_POINT_REGULATING_VALUE]: yup.number().nullable(),
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterOrEqualThanZero'),
+            .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
         [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup.number().nullable(),
@@ -368,6 +368,11 @@ export const getComputedPhaseRegulationType = (twt) => {
     } else {
         return REGULATION_TYPES.LOCAL;
     }
+};
+
+export const getComputedPhaseRegulationTypeId = (twt) => {
+    const regulationType = getComputedPhaseRegulationType(twt);
+    return regulationType?.id || null;
 };
 
 export const getComputedPreviousPhaseRegulationType = (previousValues) => {

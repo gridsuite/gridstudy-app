@@ -23,6 +23,10 @@ import { roundToDefaultPrecision } from '../../../utils/rounding';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { inputAdornment } from './util/make-component-utils';
 import { mergeSx } from '../../utils/functions';
+import CreateParameterDialog from './common/parameters-creation-dialog';
+import DirectoryItemSelector from '../../directory-item-selector';
+import { fetchSecurityAnalysisParameters } from '../../../services/security-analysis';
+import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 
 const formatValues = (values, isDivision) => {
     let result = {};
@@ -177,6 +181,11 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
         updateProvider,
     ]);
     const intl = useIntl();
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
+        useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
+        useState(false);
+    const { snackError } = useSnackMessage();
 
     const callBack = (data) => {
         updateParameters({ ...data });
@@ -245,6 +254,30 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
             callback: callBack,
         },
     ];
+    const handleLoadParameter = useCallback(
+        (newParams) => {
+            if (newParams && newParams.length > 0) {
+                setOpenSelectParameterDialog(false);
+                fetchSecurityAnalysisParameters(newParams[0].id)
+                    .then((parameters) => {
+                        console.info(
+                            'loading the following security analysis parameters : ' +
+                                parameters.uuid
+                        );
+                        updateParameters({ ...parameters });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [snackError, updateParameters]
+    );
 
     return (
         <>
@@ -310,6 +343,14 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                 )}
             >
                 <LabelledButton
+                    callback={() => setOpenSelectParameterDialog(true)}
+                    label="loadParameters"
+                />
+                <LabelledButton
+                    callback={() => setOpenCreateParameterDialog(true)}
+                    label="save"
+                />
+                <LabelledButton
                     callback={resetSAParametersAndProvider}
                     label="resetToDefault"
                 />
@@ -318,6 +359,33 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                     callback={resetSAParameters}
                 />
             </Grid>
+            {openCreateParameterDialog && (
+                <CreateParameterDialog
+                    open={openCreateParameterDialog}
+                    onClose={() => setOpenCreateParameterDialog(false)}
+                    parameterValues={() => {
+                        return { ...params };
+                    }}
+                    parameterFormatter={(newParams) => newParams}
+                    parameterType={elementType.SECURITY_ANALYSIS_PARAMETERS}
+                />
+            )}
+
+            {openSelectParameterDialog && (
+                <DirectoryItemSelector
+                    open={openSelectParameterDialog}
+                    onClose={handleLoadParameter}
+                    types={[elementType.SECURITY_ANALYSIS_PARAMETERS]}
+                    title={intl.formatMessage({
+                        id: 'showSelectParameterDialog',
+                    })}
+                    onlyLeaves={true}
+                    multiselect={false}
+                    validationButtonText={intl.formatMessage({
+                        id: 'validate',
+                    })}
+                />
+            )}
         </>
     );
 };

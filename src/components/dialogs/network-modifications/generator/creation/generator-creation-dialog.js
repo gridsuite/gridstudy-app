@@ -75,6 +75,13 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { createGenerator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    copyEquipmentPropertiesForCreation,
+    getPropertiesFromModification,
+    creationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -92,6 +99,7 @@ const emptyFormData = {
     ...getSetPointsEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -127,6 +135,7 @@ const formSchema = yup
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
     })
+    .concat(creationPropertiesSchema)
     .required();
 
 const GeneratorCreationDialog = ({
@@ -207,6 +216,7 @@ const GeneratorCreationDialog = ({
                 connectionName: generator.connectablePosition.connectionName,
                 // connected is not copied on purpose: we use the default value (true) in all cases
             }),
+            ...copyEquipmentPropertiesForCreation(generator),
         });
     };
 
@@ -267,6 +277,7 @@ const GeneratorCreationDialog = ({
                     connectionPosition: editData.connectionPosition,
                     connected: editData.connected,
                 }),
+                ...getPropertiesFromModification(editData.properties),
             });
         }
     }, [editData, reset]);
@@ -327,7 +338,8 @@ const GeneratorCreationDialog = ({
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
                 generator[CONNECTIVITY]?.[CONNECTION_POSITION],
-                generator[CONNECTIVITY]?.[CONNECTED]
+                generator[CONNECTIVITY]?.[CONNECTED],
+                toModificationProperties(generator)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
