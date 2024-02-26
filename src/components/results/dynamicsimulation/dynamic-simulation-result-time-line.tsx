@@ -80,6 +80,8 @@ const DynamicSimulationResultTimeLine = ({
         dynamicSimulationResultInvalidations
     );
 
+    console.log('rerender', { timeLines });
+
     const rowData = useMemo(() => timeLines ?? [], [timeLines]);
 
     const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
@@ -174,12 +176,12 @@ const DynamicSimulationResultTimeLine = ({
         api?.sizeColumnsToFit();
     }, []);
 
-    // messages to show in aggrid
+    // messages to show when no data
     const dynamicSimulationStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
-    const messages = useIntlResultStatusMessages(intl);
+    const messages = useIntlResultStatusMessages(intl, true);
     const overlayNoRowsTemplate = useMemo(
         () =>
             getNoRowsMessage(

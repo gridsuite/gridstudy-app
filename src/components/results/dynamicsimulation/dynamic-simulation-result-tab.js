@@ -6,11 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import ComputingType from '../../computing-status/computing-type';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
-import RunningStatus from '../../utils/running-status';
 import TabPanelLazy from '../common/tab-panel-lazy';
 import DynamicSimulationResultTimeSeries from './dynamic-simulation-result-time-series';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
@@ -31,13 +28,6 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
 
     const [tabIndex, setTabIndex] = useState(TAB_INDEX_TIME_SERIES);
 
-    const dynamicSimulationStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
-    );
-
-    const dynamicSimulationResultPresent =
-        dynamicSimulationStatus === RunningStatus.SUCCEED ||
-        dynamicSimulationStatus === RunningStatus.FAILED;
     const handleTabChange = (_, newTabIndex) => {
         setTabIndex(newTabIndex);
     };
@@ -71,34 +61,28 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
                     key={TAB_INDEX_TIME_SERIES}
                     selected={tabIndex === TAB_INDEX_TIME_SERIES}
                 >
-                    {dynamicSimulationResultPresent && (
-                        <DynamicSimulationResultTimeSeries
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
-                        />
-                    )}
+                    <DynamicSimulationResultTimeSeries
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                    />
                 </TabPanelLazy>
                 <TabPanelLazy
                     key={TAB_INDEX_TIME_SERIES}
                     selected={tabIndex === TAB_INDEX_TIME_LINE}
                 >
-                    {dynamicSimulationResultPresent && (
-                        <DynamicSimulationResultTimeLine
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
-                        />
-                    )}
+                    <DynamicSimulationResultTimeLine
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                    />
                 </TabPanelLazy>
                 <TabPanelLazy
                     key={TAB_INDEX_STATUS}
                     selected={tabIndex === TAB_INDEX_STATUS}
                 >
-                    {dynamicSimulationResultPresent && (
-                        <DynamicSimulationResultTable
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
-                        />
-                    )}
+                    <DynamicSimulationResultTable
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                    />
                 </TabPanelLazy>
             </Box>
         </>
