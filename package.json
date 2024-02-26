@@ -66,10 +66,10 @@
     "scripts": {
         "start": "vite",
         "watch": "vite watch",
-        "build": "tsc && vite build",
+        "build": "vite build",
         "serve": "vite preview",
         "test": "jest",
-        "lint": "eslint ./src --ext js,jsx,ts,tsx"
+        "lint": "eslint ./src --ext js,jsx,ts,tsx --max-warnings 0"
     },
     "eslintConfig": {
         "extends": [

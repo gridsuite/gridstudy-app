@@ -39,7 +39,9 @@ export default defineConfig({
                 plugins: ['@emotion/babel-plugin'],
             },
         }),
-        eslint(),
+        eslint({
+            failOnWarning: true,
+        }),
         svgr({ include: '**/*.svg' }), // default is { include: "**/*.svg?react" }
         reactVirtualized(),
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
