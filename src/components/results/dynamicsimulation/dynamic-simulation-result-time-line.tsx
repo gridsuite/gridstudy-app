@@ -28,16 +28,12 @@ import { useAgGridLocalSort } from '../../../hooks/use-aggrid-local-sort';
 import { SORT_WAYS } from '../../../hooks/use-aggrid-sort';
 import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
 
-import {
-    StringTimeSeries,
-    TimelineEventKeyType,
-} from './types/dynamic-simulation-result.type';
+import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import {
     dynamicSimulationResultInvalidations,
     LARGE_COLUMN_WIDTH,
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
-    transformTimeLinesData,
 } from './utils/dynamic-simulation-result-utils';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeLine } from '../../../services/study/dynamic-simulation';
@@ -77,18 +73,14 @@ const DynamicSimulationResultTimeLine = ({
     const intl = useIntl();
     const gridRef = useRef(null);
 
-    const [result, isLoading] = useNodeData(
+    const [timeLines, isLoading] = useNodeData(
         studyUuid,
         nodeUuid,
         fetchDynamicSimulationResultTimeLine,
-        dynamicSimulationResultInvalidations,
-        null,
-        (timeLines: StringTimeSeries[]) => ({
-            timeLines: transformTimeLinesData(timeLines),
-        })
+        dynamicSimulationResultInvalidations
     );
 
-    const rowData = useMemo(() => result?.timeLines ?? [], [result]);
+    const rowData = useMemo(() => timeLines ?? [], [timeLines]);
 
     const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
         colKey: COL_TIME,

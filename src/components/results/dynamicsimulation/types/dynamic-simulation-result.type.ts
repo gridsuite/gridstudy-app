@@ -10,13 +10,6 @@ export type TimeSeriesMetadata = {
     name: string;
 };
 
-// This type is derived from the {@link com.powsybl.timeseries.StringTimeSeries}
-export type StringTimeSeries = {
-    chunks: {
-        values: string[];
-    }[];
-};
-
 // This type is taken from the {@link com.powsybl.dynamicsimulation.TimelineEvent}
 export type TimelineEvent = {
     time: number;
