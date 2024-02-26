@@ -345,7 +345,6 @@ export function DiagramPane({
     showInSpreadsheet,
     currentNode,
     visible,
-    loadFlowStatus,
     oneBusShortCircuitStatus,
 }) {
     const intl = useIntl();
@@ -1097,7 +1096,6 @@ export function DiagramPane({
                                     diagramView.svgType ===
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
-                                        loadFlowStatus={loadFlowStatus}
                                         oneBusShortCircuitStatus={
                                             oneBusShortCircuitStatus
                                         }
@@ -1114,7 +1112,6 @@ export function DiagramPane({
                                 {diagramView.svgType ===
                                     DiagramType.NETWORK_AREA_DIAGRAM && (
                                     <NetworkAreaDiagramContent
-                                        loadFlowStatus={loadFlowStatus}
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}
                                         svgType={diagramView.svgType}
@@ -1173,7 +1170,6 @@ DiagramPane.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
-    loadFlowStatus: PropTypes.string.isRequired,
     oneBusShortCircuitStatus: PropTypes.string.isRequired,
     visible: PropTypes.bool,
 };

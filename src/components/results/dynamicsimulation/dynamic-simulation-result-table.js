@@ -7,11 +7,15 @@
 
 import VirtualizedTable from '../../utils/virtualized-table';
 import { useIntl } from 'react-intl';
-import { Paper, TableCell } from '@mui/material';
+import { Box, LinearProgress, Paper, TableCell } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Lens } from '@mui/icons-material';
 import React from 'react';
 import { green, red } from '@mui/material/colors';
+import PropTypes from 'prop-types';
+import { useNodeData } from '../../study-container';
+import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
+import { dynamicSimulationResultInvalidations } from './dynamic-simulation-result.type';
 
 /* must be coherent to LoadFlowResult component */
 const styles = {
@@ -34,10 +38,26 @@ const styles = {
     fail: {
         color: red[500],
     },
+    loader: {
+        height: '4px',
+    },
 };
 
-const DynamicSimulationResultTable = ({ result }) => {
+const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
     const intl = useIntl();
+
+    const [result, isLoading] = useNodeData(
+        studyUuid,
+        nodeUuid,
+        fetchDynamicSimulationStatus,
+        dynamicSimulationResultInvalidations,
+        null,
+        (status) => [
+            {
+                status: status,
+            },
+        ]
+    );
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
@@ -57,26 +77,35 @@ const DynamicSimulationResultTable = ({ result }) => {
     }
 
     return (
-        result && (
-            <Paper sx={styles.tablePaper}>
-                {
-                    <VirtualizedTable
-                        rows={result}
-                        sortable
-                        columns={[
-                            {
-                                label: intl.formatMessage({
-                                    id: 'status',
-                                }),
-                                dataKey: 'status',
-                                cellRenderer: StatusCellRender,
-                            },
-                        ]}
-                    />
-                }
-            </Paper>
-        )
+        <>
+            <Box sx={styles.loader}>{isLoading && <LinearProgress />}</Box>
+            {result && (
+                <Paper sx={styles.tablePaper}>
+                    {
+                        <VirtualizedTable
+                            rows={result}
+                            sortable
+                            disableHeader={true}
+                            columns={[
+                                {
+                                    label: intl.formatMessage({
+                                        id: 'status',
+                                    }),
+                                    dataKey: 'status',
+                                    cellRenderer: StatusCellRender,
+                                },
+                            ]}
+                        />
+                    }
+                </Paper>
+            )}
+        </>
     );
+};
+
+DynamicSimulationResultTable.propTypes = {
+    nodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
 };
 
 export default DynamicSimulationResultTable;
