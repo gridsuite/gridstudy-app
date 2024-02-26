@@ -448,29 +448,22 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 computationStopped={computationStopped}
                 disabled={isModificationsInProgress || disabled}
             />
-            {!disabled && (
-                <div>
-                    <ContingencyListSelector
-                        open={showContingencyListSelector}
-                        onClose={() => setShowContingencyListSelector(false)}
-                        onStart={handleStartSecurityAnalysis}
-                        studyUuid={studyUuid}
-                        currentNodeUuid={currentNode?.id}
-                    />
-                    {showDynamicSimulationParametersSelector && (
-                        <DynamicSimulationParametersSelector
-                            open={showDynamicSimulationParametersSelector}
-                            onClose={() =>
-                                setShowDynamicSimulationParametersSelector(
-                                    false
-                                )
-                            }
-                            onStart={handleStartDynamicSimulation}
-                            studyUuid={studyUuid}
-                            currentNodeUuid={currentNode?.id}
-                        />
-                    )}
-                </div>
+            <ContingencyListSelector
+                open={showContingencyListSelector}
+                onClose={() => setShowContingencyListSelector(false)}
+                onStart={handleStartSecurityAnalysis}
+                studyUuid={studyUuid}
+            />
+            {!disabled && showDynamicSimulationParametersSelector && (
+                <DynamicSimulationParametersSelector
+                    open={showDynamicSimulationParametersSelector}
+                    onClose={() =>
+                        setShowDynamicSimulationParametersSelector(false)
+                    }
+                    onStart={handleStartDynamicSimulation}
+                    studyUuid={studyUuid}
+                    currentNodeUuid={currentNode?.id}
+                />
             )}
         </>
     );
