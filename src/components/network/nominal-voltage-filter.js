@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -13,6 +13,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
+import { getNominalVoltageColor } from '../../utils/colors';
+import { LineFlowColorMode } from './line-layer';
 
 const styles = {
     nominalVoltageZone: {
@@ -43,6 +45,7 @@ const styles = {
 };
 
 const NominalVoltageFilter = ({
+    lineFlowColorMode,
     nominalVoltages,
     filteredNominalVoltages,
     onChange,
@@ -53,6 +56,21 @@ const NominalVoltageFilter = ({
             onChange(nominalVoltages);
         }
     }, [nominalVoltages, filteredNominalVoltages, onChange]);
+
+    const voltageColors = useMemo(() => {
+        if (
+            nominalVoltages &&
+            lineFlowColorMode &&
+            lineFlowColorMode !== LineFlowColorMode.NOMINAL_VOLTAGE
+        ) {
+            return null;
+        } else {
+            return nominalVoltages.reduce((mapValues, value, idx, arr) => {
+                mapValues[value] = `rgb(${getNominalVoltageColor(value)})`;
+                return mapValues;
+            }, {});
+        }
+    }, [lineFlowColorMode, nominalVoltages]);
 
     const handleToggle = (vnoms, isToggle) => () => {
         // filter on nominal voltage
@@ -117,7 +135,14 @@ const NominalVoltageFilter = ({
                                 }
                             />
                             <ListItemText
-                                sx={styles.nominalVoltageText}
+                                sx={
+                                    !voltageColors
+                                        ? styles.nominalVoltageText
+                                        : {
+                                              ...styles.nominalVoltageText,
+                                              color: voltageColors[value],
+                                          }
+                                }
                                 disableTypography
                                 primary={`${value} kV`}
                             />
