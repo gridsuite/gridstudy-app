@@ -87,7 +87,7 @@ export const useModificationLabelComputer = () => {
         const modificationValues = JSON.parse(modif.messageValues);
 
         switch (modif.messageType) {
-            case MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type:
+            case MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type:
                 return getBranchStatusModificationValues(
                     modificationValues,
                     withFormat

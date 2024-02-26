@@ -21,7 +21,7 @@ import { useModificationLabelComputer } from '../util/use-modification-label-com
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
-    'BRANCH_STATUS_MODIFICATION',
+    'OPERATING_STATUS_MODIFICATION',
 ]);
 
 const isEditableModification = (modif) => {

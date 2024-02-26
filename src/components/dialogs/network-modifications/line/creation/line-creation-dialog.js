@@ -21,12 +21,10 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     PERMANENT_LIMIT,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
+    G1,
+    G2,
+    B1,
+    B2,
     VOLTAGE_LEVEL,
     CHARACTERISTICS,
     LIMITS,
@@ -35,6 +33,8 @@ import {
     TOTAL_RESISTANCE,
     TOTAL_REACTANCE,
     TOTAL_SUSCEPTANCE,
+    R,
+    X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -155,12 +155,12 @@ const LineCreationDialog = ({
                     equipmentName: line.name ?? '',
                 }),
                 ...getCharacteristicsFormData({
-                    seriesResistance: line.r,
-                    seriesReactance: line.x,
-                    shuntConductance1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
-                    shuntSusceptance1: unitToMicroUnit(line.b1),
-                    shuntConductance2: unitToMicroUnit(line.g2),
-                    shuntSusceptance2: unitToMicroUnit(line.b2),
+                    r: line.r,
+                    x: line.x,
+                    g1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
+                    b1: unitToMicroUnit(line.b1),
+                    g2: unitToMicroUnit(line.g2),
+                    b2: unitToMicroUnit(line.b2),
                     ...(displayConnectivity &&
                         getConnectivityFormData(
                             {
@@ -215,12 +215,12 @@ const LineCreationDialog = ({
                     equipmentName: line.equipmentName,
                 }),
                 ...getCharacteristicsFormData({
-                    seriesResistance: line.seriesResistance,
-                    seriesReactance: line.seriesReactance,
-                    shuntConductance1: unitToMicroUnit(line.shuntConductance1),
-                    shuntSusceptance1: unitToMicroUnit(line.shuntSusceptance1),
-                    shuntConductance2: unitToMicroUnit(line.shuntConductance2),
-                    shuntSusceptance2: unitToMicroUnit(line.shuntSusceptance2),
+                    r: line.r,
+                    x: line.x,
+                    g1: unitToMicroUnit(line.g1),
+                    b1: unitToMicroUnit(line.b1),
+                    g2: unitToMicroUnit(line.g2),
+                    b2: unitToMicroUnit(line.b2),
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: line.busOrBusbarSectionId1,
@@ -284,26 +284,18 @@ const LineCreationDialog = ({
         }));
 
     const handleLineSegmentsBuildSubmit = (data) => {
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
-            data[TOTAL_RESISTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
-            data[TOTAL_REACTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
+        setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${B1}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
     };
 
     const onSubmit = useCallback(
@@ -316,12 +308,12 @@ const LineCreationDialog = ({
                 currentNodeUuid,
                 header[EQUIPMENT_ID],
                 sanitizeString(header[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_2]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_2]),
+                characteristics[R],
+                characteristics[X],
+                microUnitToUnit(characteristics[G1]),
+                microUnitToUnit(characteristics[B1]),
+                microUnitToUnit(characteristics[G2]),
+                microUnitToUnit(characteristics[B2]),
                 characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,

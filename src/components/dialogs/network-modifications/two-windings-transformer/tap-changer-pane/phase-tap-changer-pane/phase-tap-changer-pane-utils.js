@@ -370,6 +370,11 @@ export const getComputedPhaseRegulationType = (twt) => {
     }
 };
 
+export const getComputedPhaseRegulationTypeId = (twt) => {
+    const regulationType = getComputedPhaseRegulationType(twt);
+    return regulationType?.id || null;
+};
+
 export const getComputedPreviousPhaseRegulationType = (previousValues) => {
     const previousRegulationType =
         getComputedPhaseRegulationType(previousValues);
