@@ -69,6 +69,7 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
+    formatFetchedEquipments,
     updateGeneratorCells,
     updateShuntCompensatorCells,
     updateTwtCells,
@@ -305,8 +306,21 @@ const TableWrapper = (props) => {
         [tabIndex]
     );
 
-    const { equipments, errorMessage, isFetching } =
-        useSpreadsheetEquipments(equipmentDefinition);
+    const formatFetchedEquipmentsHandler = useCallback(
+        (fetchedEquipments) => {
+            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
+            return formatFetchedEquipments(
+                equipmentDefinition.type,
+                fetchedEquipments
+            );
+        },
+        [equipmentDefinition.type]
+    );
+
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+        equipmentDefinition,
+        formatFetchedEquipmentsHandler
+    );
 
     useEffect(() => {
         if (errorMessage) {
@@ -1157,8 +1171,10 @@ const TableWrapper = (props) => {
                     true
                 )
                     .then((updatedEquipment) => {
+                        const formattedData =
+                            formatFetchedEquipmentsHandler(updatedEquipment);
                         const transaction = {
-                            update: [updatedEquipment],
+                            update: [formattedData],
                         };
                         gridRef.current.api.applyTransaction(transaction);
                         setLastModifiedEquipment();
@@ -1166,7 +1182,7 @@ const TableWrapper = (props) => {
                             force: true,
                             rowNodes: [
                                 gridRef.current.api.getRowNode(
-                                    updatedEquipment.id
+                                    formattedData.id
                                 ),
                             ],
                         });
@@ -1181,6 +1197,7 @@ const TableWrapper = (props) => {
         props.currentNode.id,
         props.studyUuid,
         studyUpdatedForce,
+        formatFetchedEquipmentsHandler,
     ]);
 
     //this listener is called for each cell modified

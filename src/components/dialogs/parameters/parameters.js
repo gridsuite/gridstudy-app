@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useRef,
+    useMemo,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
@@ -261,6 +267,14 @@ export const useParametersBackend = (
     const [fetching, setFetching] = useState(FETCHING_STATUS.NOT_STARTED);
     const [params, setParams] = useState(null);
 
+    // since provider is updated seperately, we need to update the params with the new provider
+    const currentParams = useMemo(() => {
+        if (params && 'provider' in params && provider) {
+            return { ...params, provider: provider };
+        }
+        return params;
+    }, [params, provider]);
+
     const [specificParamsDescription, setSpecificParamsDescription] =
         useState(null);
 
@@ -329,7 +343,7 @@ export const useParametersBackend = (
     const updateParameter = useCallback(
         (newParams) => {
             if (backendUpdateParameters) {
-                let oldParams = { ...params };
+                let oldParams = { ...currentParams };
                 setParams(newParams);
                 debouncedBackendUpdateParameters(
                     studyUuid,
@@ -341,7 +355,7 @@ export const useParametersBackend = (
         [
             debouncedBackendUpdateParameters,
             backendUpdateParameters,
-            params,
+            currentParams,
             studyUuid,
         ]
     );
@@ -409,7 +423,11 @@ export const useParametersBackend = (
 
     useEffect(() => {
         if (studyUuid && optionalServiceStatus === OptionalServicesStatus.Up) {
-            if (fetching === FETCHING_STATUS.FINISHED && !provider) {
+            if (
+                fetching === FETCHING_STATUS.FINISHED &&
+                !provider &&
+                backendFetchProvider
+            ) {
                 backendFetchProvider(studyUuid)
                     .then((provider) => {
                         // if provider is not defined or not among allowed values, it's set to default value
@@ -472,6 +490,9 @@ export const useParametersBackend = (
             backendFetchParameters(studyUuid)
                 .then((params) => {
                     setParams(params);
+                    if ('provider' in params) {
+                        setProvider(params.provider);
+                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -493,7 +514,7 @@ export const useParametersBackend = (
         provider,
         updateProvider,
         resetProvider,
-        params,
+        currentParams,
         updateParameter,
         resetParameters,
         specificParamsDescription,

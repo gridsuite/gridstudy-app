@@ -133,6 +133,7 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from '../components/utils/optional-services';
+import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -939,6 +940,12 @@ export const reducer = createReducer(initialState, {
             const equipmentType = getEquipmentTypeFromUpdateType(updateType);
             const currentEquipment = state.spreadsheetNetwork[equipmentType];
 
+            // Format the updated equipments to match the table format
+            const formattedEquipments = formatFetchedEquipments(
+                equipmentType,
+                equipments
+            );
+
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment != null) {
                 //since substations data contains voltage level ones, they have to be treated separatly
@@ -951,7 +958,7 @@ export const reducer = createReducer(initialState, {
                             state.spreadsheetNetwork[
                                 EQUIPMENT_TYPES.VOLTAGE_LEVEL
                             ],
-                            equipments
+                            formattedEquipments
                         );
 
                     state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
@@ -961,7 +968,7 @@ export const reducer = createReducer(initialState, {
                 } else {
                     state.spreadsheetNetwork[equipmentType] = updateEquipments(
                         currentEquipment,
-                        equipments
+                        formattedEquipments
                     );
                 }
             }

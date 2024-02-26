@@ -782,7 +782,7 @@ export function modifyShuntCompensator(
             maxSusceptance: toModificationOperation(maxSusceptance),
             maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
-            voltageLevelId: voltageLevelId,
+            voltageLevelId: toModificationOperation(voltageLevelId),
         }),
     });
 }
