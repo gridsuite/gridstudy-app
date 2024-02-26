@@ -65,11 +65,10 @@
     },
     "scripts": {
         "start": "vite",
-        "watch": "vite watch",
-        "build": "vite build",
+        "build": "tsc && vite build",
         "serve": "vite preview",
         "test": "jest",
-        "lint": "eslint . --ext js,jsx,ts,tsx --max-warnings 0"
+        "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0"
     },
     "eslintConfig": {
         "extends": [

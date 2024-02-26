@@ -13,13 +13,10 @@ export const FetchStatus = {
     RUNNING: 'RUNNING',
 };
 
-export const getWsBase = () => {
-    const origin = document.baseURI;
-    // const origin = new URL(document.baseURI).origin
-    return origin
+export const getWsBase = () =>
+    document.baseURI
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
-};
 
 export const getRequestParamFromList = (params, paramName) => {
     return new URLSearchParams(
