@@ -1415,7 +1415,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
-                id: 'Country3',
+                id: 'T3WCountry3',
                 field: 'country3.countryName',
                 ...defaultTextFilterConfig,
             },
