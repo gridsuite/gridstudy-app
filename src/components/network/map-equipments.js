@@ -197,7 +197,7 @@ export default class MapEquipments {
     }
 
     completeSubstationsInfos(equipementsToIndex) {
-        const nominalVoltagesSet = new Set(this.nominalVoltages);
+        const nominalVoltagesSet = new Set();
         if (equipementsToIndex?.length === 0) {
             this.substationsById = new Map();
             this.voltageLevelsById = new Map();
