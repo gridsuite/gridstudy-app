@@ -12,7 +12,7 @@ import {
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getSortValue } from '../../hooks/use-aggrid-sort';
-import { isBlankOrEmpty } from "../../components/utils/validation-functions";
+import { isBlankOrEmpty } from '../../components/utils/validation-functions';
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(
