@@ -148,6 +148,11 @@
     "b1": "Susceptance parallèle 1 (μS)",
     "g2": "Conductance parallèle 2 (μS)",
     "b2": "Susceptance parallèle 2 (μS)",
+    "characteristic": "Carac.",
+    "values": "Valeurs",
+    "seriesResistance": "R (Ω)",
+    "seriesReactance": "X (Ω)",
+    "shuntSusceptance": "B (µS)",
     "ActivePowerControl": "En compensation",
     "DroopColumnName": "Participation (%)",
     "reactivePowerSetpoint": "Q consigne (MVar)",
@@ -1337,5 +1342,5 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "    
 }
