@@ -102,6 +102,8 @@
         "@babel/preset-env": "^7.23.8",
         "@babel/preset-react": "^7.23.3",
         "@babel/preset-typescript": "^7.23.3",
+        "@types/react": "^18.2.56",
+        "@types/react-dom": "^18.2.19",
         "@typescript-eslint/eslint-plugin": "5.62.0",
         "@typescript-eslint/parser": "5.62.0",
         "@vitejs/plugin-react": "^4.2.1",
