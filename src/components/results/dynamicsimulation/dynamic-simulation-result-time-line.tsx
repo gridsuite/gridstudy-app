@@ -7,7 +7,7 @@
 import { UUID } from 'crypto';
 import { Box, LinearProgress } from '@mui/material';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import {
@@ -16,7 +16,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { GridReadyEvent, ICellRendererParams } from 'ag-grid-community';
+import { ICellRendererParams } from 'ag-grid-community';
 import {
     getNoRowsMessage,
     useIntlResultStatusMessages,
@@ -79,10 +79,6 @@ const DynamicSimulationResultTimeLine = ({
         fetchDynamicSimulationResultTimeLine,
         dynamicSimulationResultInvalidations
     );
-
-    console.log('rerender', { timeLines });
-
-    const rowData = useMemo(() => timeLines ?? [], [timeLines]);
 
     const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
         colKey: COL_TIME,
@@ -172,10 +168,6 @@ const DynamicSimulationResultTimeLine = ({
         []
     );
 
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
-
     // messages to show when no data
     const dynamicSimulationStatus = useSelector(
         (state: ReduxState) =>
@@ -186,11 +178,16 @@ const DynamicSimulationResultTimeLine = ({
         () =>
             getNoRowsMessage(
                 messages,
-                rowData,
+                timeLines,
                 dynamicSimulationStatus,
                 !isLoading
             ),
-        [messages, rowData, dynamicSimulationStatus, isLoading]
+        [messages, timeLines, dynamicSimulationStatus, isLoading]
+    );
+
+    const rowDataToShow = useMemo(
+        () => (overlayNoRowsTemplate ? [] : timeLines),
+        [timeLines, overlayNoRowsTemplate]
     );
 
     return (
@@ -202,10 +199,9 @@ const DynamicSimulationResultTimeLine = ({
             )}
             <CustomAGGrid
                 ref={gridRef}
-                rowData={rowData}
+                rowData={rowDataToShow}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
-                onGridReady={onGridReady}
                 overlayNoRowsTemplate={overlayNoRowsTemplate}
                 enableCellTextSelection
             />

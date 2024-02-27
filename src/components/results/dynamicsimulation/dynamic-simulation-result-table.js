@@ -70,11 +70,12 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
         fetchDynamicSimulationStatus,
         dynamicSimulationResultInvalidations,
         null,
-        (status) => [
-            {
-                status: status,
-            },
-        ]
+        (status) =>
+            status && [
+                {
+                    status,
+                },
+            ]
     );
 
     function StatusCellRender(cellData) {
@@ -103,7 +104,7 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
         () =>
             getNoRowsMessage(
                 messages,
-                [result?.status],
+                result,
                 dynamicSimulationStatus,
                 !isLoading
             ),

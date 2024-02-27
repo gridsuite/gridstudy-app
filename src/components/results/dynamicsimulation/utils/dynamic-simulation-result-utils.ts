@@ -7,7 +7,7 @@
 
 export const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
 
-// These constants are taken from config-tables.js
+// These constants are taken from components/spreadsheet/utils/config-tables.js
 export const MIN_COLUMN_WIDTH = 160;
 export const MEDIUM_COLUMN_WIDTH = 220;
 export const LARGE_COLUMN_WIDTH = 340;
