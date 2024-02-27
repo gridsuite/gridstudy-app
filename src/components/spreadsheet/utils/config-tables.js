@@ -3265,14 +3265,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'NominalV',
-                field: 'nominalVoltage',
+                field: 'nominalV',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'UcteXnodeCode',
-                field: 'ucteXnodeCode',
+                id: 'PairingKey',
+                field: 'pairingKey',
                 getQuickFilterText: excludeFromGlobalFilter,
                 ...defaultTextFilterConfig,
             },
