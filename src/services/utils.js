@@ -135,9 +135,7 @@ const downloadFile = (blob, filename, type) => {
 };
 
 function fetchEnv() {
-    return fetch('env.json').then((res) => {
-        return res.json();
-    });
+    return fetch('env.json').then((res) => res.json());
 }
 
 export function fetchIdpSettings() {
@@ -147,7 +145,9 @@ export function fetchIdpSettings() {
 export function fetchAuthorizationCodeFlowFeatureFlag() {
     console.info(`Fetching authorization code flow feature flag...`);
     return fetchEnv()
-        .then((env) => fetch(env.appsMetadataServerUrl + '/authentication.json'))
+        .then((env) =>
+            fetch(env.appsMetadataServerUrl + '/authentication.json')
+        )
         .then((res) => res.json())
         .then((res) => {
             console.log(
