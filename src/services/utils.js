@@ -222,7 +222,5 @@ export function getUrlWithToken(baseUrl) {
 
 export function fetchMapBoxToken() {
     console.info(`Fetching MapBoxToken...`);
-    return fetchEnv().then((res) => {
-        return res.mapBoxToken;
-    });
+    return fetchEnv().then((res) => res.mapBoxToken);
 }
