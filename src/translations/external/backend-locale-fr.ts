@@ -9,6 +9,9 @@ const backend_locale_fr = {
     OpenLoadFlow: 'Open Load Flow',
     Hades2: 'Hades 2',
     DynaFlow: 'Dyna Flow',
+    GridSuiteAndConvergence: 'GridSuite_And_Convergence',
+    Convergence: 'Convergence',
+    FlatDesign: 'Flat_Design',
 };
 
 export default backend_locale_fr;

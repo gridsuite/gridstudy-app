@@ -466,15 +466,15 @@ const NetworkModificationNodeEditor = () => {
             if (
                 study.eventData.headers['updateType'] === 'creatingInProgress'
             ) {
-                messageId = 'network_modifications/creatingModification';
+                messageId = 'network_modifications.creatingModification';
             } else if (
                 study.eventData.headers['updateType'] === 'updatingInProgress'
             ) {
-                messageId = 'network_modifications/updatingModification';
+                messageId = 'network_modifications.updatingModification';
             } else if (
                 study.eventData.headers['updateType'] === 'deletingInProgress'
             ) {
-                messageId = 'network_modifications/deletingModification';
+                messageId = 'network_modifications.deletingModification';
             }
             fillNotification(study, messageId);
         },
@@ -696,7 +696,7 @@ const NetworkModificationNodeEditor = () => {
         // Note: having a unique name is done implicitly in explore-server
         const modificationComputedLabel = intl
             .formatMessage(
-                { id: 'network_modifications/' + modification.messageType },
+                { id: 'network_modifications.' + modification.messageType },
                 {
                     ...modification,
                     ...computeLabel(modification, false),
@@ -998,7 +998,7 @@ const NetworkModificationNodeEditor = () => {
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage
-                        id={'network_modifications/modifications'}
+                        id={'network_modifications.modifications'}
                     />
                 </Typography>
             </Box>
@@ -1018,7 +1018,7 @@ const NetworkModificationNodeEditor = () => {
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage
-                        id={'network_modification/modificationsCount'}
+                        id={'network_modifications.modificationsCount'}
                         values={{
                             count: modifications ? modifications?.length : '',
                             hide: pendingState,

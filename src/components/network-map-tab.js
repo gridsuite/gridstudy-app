@@ -15,7 +15,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import GeoData from './network/geo-data';
-import withBranchMenu from './menus/branch-menu';
+import withOperatingStatusMenu from './menus/operating-status-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
@@ -69,8 +69,6 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
-    /* results*/
-    loadFlowStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -264,7 +262,7 @@ export const NetworkMapTab = ({
         );
     }
 
-    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
+    const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
 
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
@@ -958,7 +956,6 @@ export const NetworkMapTab = ({
             lineFlowMode={lineFlowMode}
             lineFlowColorMode={lineFlowColorMode}
             lineFlowAlertThreshold={lineFlowAlertThreshold}
-            loadFlowStatus={loadFlowStatus}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
@@ -1014,7 +1011,6 @@ NetworkMapTab.propTypes = {
     lineFlowMode: PropTypes.any,
     lineFlowColorMode: PropTypes.any,
     lineFlowAlertThreshold: PropTypes.number,
-    loadFlowStatus: PropTypes.string,
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,

@@ -172,11 +172,10 @@ export default class MapEquipments {
         updatedLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler(
-                    this.intlRef.current.formatMessage({
-                        id: 'MapEquipmentsLoadError',
-                    })
-                );
+                this.errHandler({
+                    messageTxt: error.message,
+                    headerId: 'MapEquipmentsLoadError',
+                });
             }
         });
         updatedHvdcLines.catch((error) => {
@@ -206,7 +205,7 @@ export default class MapEquipments {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
                 (voltageLevel1, voltageLevel2) =>
-                    voltageLevel1.nominalVoltage - voltageLevel2.nominalVoltage
+                    voltageLevel1.nominalV - voltageLevel2.nominalV
             );
 
             this.substationsById.set(substation.id, substation);
@@ -215,7 +214,7 @@ export default class MapEquipments {
                 voltageLevel.substationName = substation.name;
 
                 this.voltageLevelsById.set(voltageLevel.id, voltageLevel);
-                nominalVoltagesSet.add(voltageLevel.nominalVoltage);
+                nominalVoltagesSet.add(voltageLevel.nominalV);
             });
         });
 

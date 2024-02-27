@@ -44,7 +44,7 @@ const styles = {
 };
 
 const voltageLevelComparator = (vl1, vl2) => {
-    return vl1.nominalVoltage < vl2.nominalVoltage;
+    return vl1.nominalV < vl2.nominalV;
 };
 
 const VoltageLevelChoice = ({
@@ -73,7 +73,7 @@ const VoltageLevelChoice = ({
                         .sort(voltageLevelComparator)
                         .map((voltageLevel) => {
                             let color = getNominalVoltageColor(
-                                voltageLevel.nominalVoltage
+                                voltageLevel.nominalV
                             );
                             let colorString =
                                 'rgb(' +
@@ -101,7 +101,7 @@ const VoltageLevelChoice = ({
                                                 backgroundColor: colorString,
                                             }}
                                         >
-                                            {voltageLevel.nominalVoltage}
+                                            {voltageLevel.nominalV}
                                         </Button>
                                     </ListItemIcon>
 

@@ -20,12 +20,16 @@ import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
+import ComputingType from 'components/computing-status/computing-type';
 
 function NetworkAreaDiagramContent(props) {
     const { diagramSizeSetter } = props;
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -85,7 +89,7 @@ function NetworkAreaDiagramContent(props) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                         styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
@@ -95,7 +99,6 @@ function NetworkAreaDiagramContent(props) {
 }
 
 NetworkAreaDiagramContent.propTypes = {
-    loadFlowStatus: PropTypes.any,
     svgType: PropTypes.string,
     svg: PropTypes.string,
     loadingState: PropTypes.bool,

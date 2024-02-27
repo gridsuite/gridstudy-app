@@ -31,10 +31,10 @@ import {
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import {
-    energiseBranchEnd,
-    lockoutBranch,
-    switchOnBranch,
-    tripBranch,
+    energiseEquipmentEnd,
+    lockoutEquipment,
+    switchOnEquipment,
+    tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from '../dialogs/parameters/parameters';
@@ -53,7 +53,7 @@ const styles = {
     },
 };
 
-const withBranchMenu =
+const withOperatingStatusMenu =
     (BaseMenu) =>
     ({
         equipment,
@@ -73,7 +73,7 @@ const withBranchMenu =
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
-        const [branch, setBranch] = useState(null);
+        const [equipmentInfos, setEquipmentInfos] = useState(null);
 
         const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -91,7 +91,7 @@ const withBranchMenu =
                 false
             ).then((value) => {
                 if (value) {
-                    setBranch(value);
+                    setEquipmentInfos(value);
                 }
             });
         }, [studyUuid, currentNode?.id, equipmentType, equipment.id]);
@@ -99,14 +99,19 @@ const withBranchMenu =
         const isNodeEditable = useMemo(
             function () {
                 return (
-                    branch &&
+                    equipmentInfos &&
                     isNodeBuilt(currentNode) &&
                     !isNodeReadOnly(currentNode) &&
                     !isAnyNodeBuilding &&
                     !modificationInProgress
                 );
             },
-            [branch, currentNode, isAnyNodeBuilding, modificationInProgress]
+            [
+                equipmentInfos,
+                currentNode,
+                isAnyNodeBuilding,
+                modificationInProgress,
+            ]
         );
 
         function handleError(error, translationKey) {
@@ -128,30 +133,37 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutBranch(studyUuid, currentNode?.id, branch).catch((error) => {
-                handleError(error, 'UnableToLockout');
-            });
-        }
-
-        function handleTrip() {
-            startModification();
-            tripBranch(studyUuid, currentNode?.id, branch).catch((error) => {
-                handleError(error, 'UnableToTrip');
-            });
-        }
-
-        function handleEnergise(side) {
-            startModification();
-            energiseBranchEnd(studyUuid, currentNode?.id, branch, side).catch(
+            lockoutEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
                 (error) => {
-                    handleError(error, 'UnableToEnergiseOnOneEnd');
+                    handleError(error, 'UnableToLockout');
                 }
             );
         }
 
+        function handleTrip() {
+            startModification();
+            tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
+                (error) => {
+                    handleError(error, 'UnableToTrip');
+                }
+            );
+        }
+
+        function handleEnergise(side) {
+            startModification();
+            energiseEquipmentEnd(
+                studyUuid,
+                currentNode?.id,
+                equipmentInfos,
+                side
+            ).catch((error) => {
+                handleError(error, 'UnableToEnergiseOnOneEnd');
+            });
+        }
+
         function handleSwitchOn() {
             startModification();
-            switchOnBranch(studyUuid, currentNode?.id, branch).catch(
+            switchOnEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
                 (error) => {
                     handleError(error, 'UnableToSwitchOn');
                 }
@@ -159,10 +171,10 @@ const withBranchMenu =
         }
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
-            (equipmentId, equipmentType, dialogTitle) => {
+            (equipmentInfos, equipmentType, dialogTitle) => {
                 handleClose();
                 onOpenDynamicSimulationEventDialog(
-                    equipmentId,
+                    equipmentInfos,
                     equipmentType,
                     dialogTitle
                 );
@@ -178,7 +190,7 @@ const withBranchMenu =
                     top: position[1],
                     left: position[0],
                 }}
-                id="branch-menu"
+                id="operating-status-menu"
                 open={true}
                 onClose={handleClose}
             >
@@ -189,15 +201,17 @@ const withBranchMenu =
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 />
-                {(equipmentType === EQUIPMENT_TYPES.LINE ||
-                    equipmentType ===
-                        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
+                {[
+                    EQUIPMENT_TYPES.LINE,
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+                    EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+                ].includes(equipmentType) && (
                     <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleLockout()}
                         disabled={
                             !isNodeEditable ||
-                            branch.branchStatus === 'PLANNED_OUTAGE'
+                            equipmentInfos.operatingStatus === 'PLANNED_OUTAGE'
                         }
                     >
                         <ListItemIcon>
@@ -220,7 +234,7 @@ const withBranchMenu =
                     onClick={() => handleTrip()}
                     disabled={
                         !isNodeEditable ||
-                        branch.branchStatus === 'FORCED_OUTAGE'
+                        equipmentInfos.operatingStatus === 'FORCED_OUTAGE'
                     }
                 >
                     <ListItemIcon>
@@ -239,14 +253,14 @@ const withBranchMenu =
                 </CustomMenuItem>
                 {enableDeveloperMode && getEventType(equipmentType) && (
                     <DynamicSimulationEventMenuItem
-                        equipmentId={equipment.id}
+                        equipmentInfos={equipment.id}
                         equipmentType={equipmentType}
                         onOpenDynamicSimulationEventDialog={
                             handleOpenDynamicSimulationEventDialog
                         }
                         disabled={
                             !isNodeEditable ||
-                            branch.branchStatus === 'FORCED_OUTAGE'
+                            equipmentInfos.operatingStatus === 'FORCED_OUTAGE'
                         }
                     />
                 )}
@@ -256,8 +270,8 @@ const withBranchMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal1Connected &&
-                                !branch.terminal2Connected)
+                            (equipmentInfos.terminal1Connected &&
+                                !equipmentInfos.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -275,8 +289,8 @@ const withBranchMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: branch?.voltageLevelName1,
-                                                id: branch?.voltageLevelId1,
+                                                name: equipmentInfos?.voltageLevelName1,
+                                                id: equipmentInfos?.voltageLevelId1,
                                             }),
                                         }
                                     )}
@@ -291,8 +305,8 @@ const withBranchMenu =
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal2Connected &&
-                                !branch.terminal1Connected)
+                            (equipmentInfos.terminal2Connected &&
+                                !equipmentInfos.terminal1Connected)
                         }
                     >
                         <ListItemIcon>
@@ -310,8 +324,8 @@ const withBranchMenu =
                                         },
                                         {
                                             substation: getNameOrId({
-                                                name: branch?.voltageLevelName2,
-                                                id: branch?.voltageLevelId2,
+                                                name: equipmentInfos?.voltageLevelName2,
+                                                id: equipmentInfos?.voltageLevelId2,
                                             }),
                                         }
                                     )}
@@ -326,8 +340,8 @@ const withBranchMenu =
                         onClick={() => handleSwitchOn()}
                         disabled={
                             !isNodeEditable ||
-                            (branch.terminal1Connected &&
-                                branch.terminal2Connected)
+                            (equipmentInfos.terminal1Connected &&
+                                equipmentInfos.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -400,7 +414,7 @@ const withBranchMenu =
         );
     };
 
-withBranchMenu.propTypes = {
+withOperatingStatusMenu.propTypes = {
     id: PropTypes.string.isRequired,
     equipmentType: PropTypes.string.isRequired,
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
@@ -415,4 +429,4 @@ withBranchMenu.propTypes = {
     setModificationInProgress: PropTypes.func,
 };
 
-export default withBranchMenu;
+export default withOperatingStatusMenu;
