@@ -83,6 +83,7 @@ export const EquipmentIdSelector = ({
             onChange={(_, data, reason) => handleChange(data, reason)}
             onInputChange={(_, data, reason) => handleChange(data, reason)}
             options={equipmentOptions}
+            data-cy="equipement-id-selector" // Cypress tag for testing
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     label={FieldLabel({

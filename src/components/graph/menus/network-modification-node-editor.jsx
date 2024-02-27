@@ -1104,7 +1104,7 @@ const NetworkModificationNodeEditor = () => {
                     onClick={openNetworkModificationConfiguration}
                     disabled={isAnyNodeBuilding || mapDataLoading}
                 >
-                    <AddIcon />
+                    <AddIcon data-testid="add-modification-icon" />
                 </IconButton>
                 <Tooltip
                     title={<FormattedMessage id={'InsertModificationFrom'} />}
