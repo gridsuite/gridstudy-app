@@ -543,7 +543,7 @@ const TableWrapper = (props) => {
                         props.currentNode?.id,
                         editingData.id,
                         editingData.name,
-                        editingData.countryCode,
+                        editingData.country,
                         false,
                         undefined,
                         propertiesForBackend
