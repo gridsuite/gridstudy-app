@@ -127,10 +127,6 @@ const PagedSensitivityAnalysisResult = ({
             });
     }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, snackError, intl]);
 
-    useEffect(() => {
-        fetchFilterOptions();
-    }, [fetchFilterOptions]);
-
     const fetchResult = useCallback(() => {
         const { colKey, sortWay } = sortConfig || {};
 
@@ -192,9 +188,10 @@ const PagedSensitivityAnalysisResult = ({
             setResult(null);
         }
         if (sensiStatus === RunningStatus.SUCCEED) {
+            fetchFilterOptions();
             fetchResult();
         }
-    }, [sensiStatus, fetchResult]);
+    }, [sensiStatus, fetchResult, fetchFilterOptions]);
 
     return (
         <>
