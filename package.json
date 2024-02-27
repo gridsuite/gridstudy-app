@@ -12,7 +12,7 @@
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
-        "@powsybl/diagram-viewer": "0.1.11",
+        "@powsybl/diagram-viewer": "0.2.0",
         "@reduxjs/toolkit": "^1.2.3",
         "@svgdotjs/svg.js": "^3.0.12",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
@@ -60,6 +60,7 @@
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
         "typescript": "^5.0.4",
+        "uuid": "^3.4.0",
         "yup": "^1.0.0"
     },
     "scripts": {
