@@ -20,7 +20,7 @@ export type FilterSelectorType = {
     column: string;
     dataType: string;
     type: string;
-    value: string;
+    value: string | string[];
 };
 
 export type FilterPropsType = {

@@ -389,6 +389,11 @@ export const getComputedRegulationType = (twt) => {
     }
 };
 
+export const getComputedRegulationTypeId = (twt) => {
+    const regulationType = getComputedRegulationType(twt);
+    return regulationType?.id || null;
+};
+
 export const getComputedRegulationMode = (twt) => {
     const ratioTapChangerValues = twt?.ratioTapChanger;
     if (!ratioTapChangerValues) {
@@ -399,6 +404,16 @@ export const getComputedRegulationMode = (twt) => {
     } else {
         return RATIO_REGULATION_MODES.FIXED_RATIO;
     }
+};
+
+export const getInitialTwtRatioRegulationModeId = (twt) => {
+    // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
+    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
+        return null;
+    }
+    //otherwise, we compute it
+    const computedRegulationMode = getComputedRegulationMode(twt);
+    return computedRegulationMode?.id || null;
 };
 
 export const getComputedPreviousRatioRegulationType = (previousValues) => {

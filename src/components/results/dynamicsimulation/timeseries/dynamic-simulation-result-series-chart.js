@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
-import PlotlySeriesChart from './plot/plotly-series-chart';
+import PlotlySeriesChart from '../plot/plotly-series-chart';
 import {
     Card,
     CardContent,
@@ -19,11 +19,11 @@ import {
     Typography,
 } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
-import TooltipIconButton from './common/tooltip-icon-button';
+import TooltipIconButton from '../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
-import { SeriesType } from './plot/plot-types';
-import { mergeSx } from '../../utils/functions';
+import { SeriesType } from '../plot/plot-types';
+import { mergeSx } from '../../../utils/functions';
 
 const styles = {
     plotScaleButton: (theme) => ({

@@ -15,16 +15,16 @@ import {
     EQUIPMENT_NAME,
     LIMITS,
     PERMANENT_LIMIT,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
+    R,
+    G1,
+    G2,
+    B1,
+    B2,
     TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
+    X,
 } from 'components/utils/field-constants';
 import { FormProvider, useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
@@ -138,20 +138,12 @@ const LineModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
                 ...getCharacteristicsWithOutConnectivityFormData({
-                    seriesResistance: line.seriesResistance?.value ?? null,
-                    seriesReactance: line.seriesReactance?.value ?? null,
-                    shuntConductance1: unitToMicroUnit(
-                        line.shuntConductance1?.value ?? null
-                    ),
-                    shuntSusceptance1: unitToMicroUnit(
-                        line.shuntSusceptance1?.value ?? null
-                    ),
-                    shuntConductance2: unitToMicroUnit(
-                        line.shuntConductance2?.value ?? null
-                    ),
-                    shuntSusceptance2: unitToMicroUnit(
-                        line.shuntSusceptance2?.value ?? null
-                    ),
+                    r: line.r?.value ?? null,
+                    x: line.x?.value ?? null,
+                    g1: unitToMicroUnit(line.g1?.value ?? null),
+                    b1: unitToMicroUnit(line.b1?.value ?? null),
+                    g2: unitToMicroUnit(line.g2?.value ?? null),
+                    b2: unitToMicroUnit(line.b2?.value ?? null),
                 }),
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
@@ -246,12 +238,12 @@ const LineModificationDialog = ({
                 currentNodeUuid,
                 selectedId,
                 sanitizeString(line[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_2]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_2]),
+                characteristics[R],
+                characteristics[X],
+                microUnitToUnit(characteristics[G1]),
+                microUnitToUnit(characteristics[B1]),
+                microUnitToUnit(characteristics[G2]),
+                microUnitToUnit(characteristics[B2]),
                 currentLimits1,
                 currentLimits2,
                 !!editData,
@@ -366,26 +358,18 @@ const LineModificationDialog = ({
     };
 
     const handleLineSegmentsBuildSubmit = (data) => {
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
-            data[TOTAL_RESISTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
-            data[TOTAL_REACTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
+        setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${B1}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
     };
 
     const headerAndTabs = (

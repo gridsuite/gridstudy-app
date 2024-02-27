@@ -15,7 +15,7 @@ import {
     HIGH_VOLTAGE_LIMIT,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
-    NOMINAL_VOLTAGE,
+    NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
@@ -36,7 +36,7 @@ import { FetchStatus } from '../../../../../services/utils';
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [SUBSTATION_ID]: null,
-    [NOMINAL_VOLTAGE]: null,
+    [NOMINAL_V]: null,
     [LOW_VOLTAGE_LIMIT]: null,
     [HIGH_VOLTAGE_LIMIT]: null,
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
@@ -46,7 +46,7 @@ const emptyFormData = {
 const formSchema = yup.object().shape({
     [EQUIPMENT_NAME]: yup.string().nullable(),
     [SUBSTATION_ID]: yup.string().nullable(),
-    [NOMINAL_VOLTAGE]: yup.number().nullable(),
+    [NOMINAL_V]: yup.number().nullable(),
     [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
     [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
@@ -98,7 +98,7 @@ const VoltageLevelModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [SUBSTATION_ID]: editData?.substationId?.value ?? null,
-                [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value ?? null,
+                [NOMINAL_V]: editData?.nominalV?.value ?? null,
                 [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
                 [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
@@ -172,7 +172,7 @@ const VoltageLevelModificationDialog = ({
                 currentNodeUuid,
                 selectedId,
                 voltageLevel[EQUIPMENT_NAME],
-                voltageLevel[NOMINAL_VOLTAGE],
+                voltageLevel[NOMINAL_V],
                 voltageLevel[LOW_VOLTAGE_LIMIT],
                 voltageLevel[HIGH_VOLTAGE_LIMIT],
                 kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
