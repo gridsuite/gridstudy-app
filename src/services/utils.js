@@ -178,9 +178,7 @@ export function fetchAppsAndUrls() {
 export function fetchVersion() {
     console.info(`Fetching global metadata...`);
     return fetchEnv()
-        .then((env) => {
-            return fetch(env.appsMetadataServerUrl + '/version.json');
-        })
+        .then((env) => fetch(env.appsMetadataServerUrl + '/version.json'))
         .then((response) => response.json())
         .catch((reason) => {
             console.error('Error while fetching the version : ' + reason);
