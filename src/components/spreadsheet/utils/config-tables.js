@@ -670,13 +670,8 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
-                id: 'Country1',
-                field: 'country1.countryName',
-                ...defaultTextFilterConfig,
-            },
-            {
-                id: 'Country2',
-                field: 'country2.countryName',
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -1405,18 +1400,8 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
-                id: 'T3WCountry1',
-                field: 'country1.countryName',
-                ...defaultTextFilterConfig,
-            },
-            {
-                id: 'T3WCountry2',
-                field: 'country2.countryName',
-                ...defaultTextFilterConfig,
-            },
-            {
-                id: 'T3WCountry3',
-                field: 'country3.countryName',
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
