@@ -44,32 +44,16 @@ import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { Box } from '@mui/material';
-import { ICellRendererParams } from 'ag-grid-community';
-import { Lens } from '@mui/icons-material';
-import { green, red } from '@mui/material/colors';
 import { LimitViolationResult } from './limit-violation-result';
+import {
+    NumberCellRenderer,
+    StatusCellRender,
+} from '../common/result-cell-renderers';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
 }) => {
-    const styles = {
-        cell: {
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            boxSizing: 'border-box',
-            flex: 1,
-            cursor: 'initial',
-        },
-        succeed: {
-            color: green[500],
-        },
-        fail: {
-            color: red[500],
-        },
-    };
     const intl = useIntl();
     const loadflowResultInvalidations = ['loadflowResult'];
 
@@ -150,33 +134,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         loadflowResultInvalidations
     );
 
-    const StatusCellRender = useCallback(
-        (cellData: ICellRendererParams) => {
-            const status = cellData.value;
-            const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
-            return (
-                <Box sx={styles.cell}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Lens fontSize={'medium'} sx={color} />
-                        <span style={{ marginLeft: '4px' }}>{status}</span>
-                    </div>
-                </Box>
-            );
-        },
-        [styles.cell, styles.fail, styles.succeed]
-    );
-
-    const NumberRenderer = useCallback(
-        (cellData: ICellRendererParams) => {
-            const value = cellData.value;
-            return (
-                <Box sx={styles.cell}>
-                    {!isNaN(value) ? value.toFixed(2) : ''}
-                </Box>
-            );
-        },
-        [styles.cell]
-    );
     const loadFlowLimitViolationsColumns = useMemo(() => {
         switch (tabIndex) {
             case 0:
@@ -200,7 +157,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     { updateFilter, filterSelector },
                     filterEnums,
                     StatusCellRender,
-                    NumberRenderer
+                    NumberCellRenderer
                 );
 
             default:
@@ -214,8 +171,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         sortConfig,
         updateFilter,
         tabIndex,
-        StatusCellRender,
-        NumberRenderer,
     ]);
 
     const resetResultStates = useCallback(

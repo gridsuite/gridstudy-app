@@ -5,57 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import VirtualizedTable from '../../utils/virtualized-table';
 import { useIntl } from 'react-intl';
-import {
-    Box,
-    LinearProgress,
-    Paper,
-    TableCell,
-    Typography,
-} from '@mui/material';
-import Grid from '@mui/material/Grid';
-import { Lens } from '@mui/icons-material';
-import React, { useMemo } from 'react';
-import { green, red } from '@mui/material/colors';
+import { Box, LinearProgress } from '@mui/material';
+import React, { useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
-import { dynamicSimulationResultInvalidations } from './utils/dynamic-simulation-result-utils';
+import {
+    dynamicSimulationResultInvalidations,
+    MEDIUM_COLUMN_WIDTH,
+} from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
 import {
     getNoRowsMessage,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
+import { StatusCellRender } from '../common/result-cell-renderers';
 
 /* must be coherent to LoadFlowResult component */
 const styles = {
-    overlay: {
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    tablePaper: {
-        flexGrow: 1,
-        height: '100px',
-    },
-    cell: {
-        display: 'flex',
-        alignItems: 'center',
-        textAlign: 'center',
-        boxSizing: 'border-box',
-        flex: 1,
-        height: '48px',
-        cursor: 'initial',
-    },
-    succeed: {
-        color: green[500],
-    },
-    fail: {
-        color: red[500],
-    },
     loader: {
         height: '4px',
     },
@@ -63,6 +35,7 @@ const styles = {
 
 const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
     const intl = useIntl();
+    const gridRef = useRef(null);
 
     const [result, isLoading] = useNodeData(
         studyUuid,
@@ -78,22 +51,32 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
             ]
     );
 
-    function StatusCellRender(cellData) {
-        const status = cellData.rowData[cellData.dataKey];
-        const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
-        return (
-            <TableCell component={'div'} id={cellData.dataKey} sx={styles.cell}>
-                <Grid container direction="row" spacing={4} alignItems="center">
-                    <Grid item xs={1}>
-                        <Lens fontSize={'medium'} sx={color} />
-                    </Grid>
-                    <Grid item xs={1}>
-                        {status}
-                    </Grid>
-                </Grid>
-            </TableCell>
-        );
-    }
+    const columnDefs = useMemo(() => {
+        return [
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({
+                    id: 'status',
+                }),
+                field: 'status',
+                width: MEDIUM_COLUMN_WIDTH,
+                cellRenderer: StatusCellRender,
+            }),
+        ];
+    }, [intl]);
+
+    const defaultColDef = useMemo(
+        () => ({
+            filter: true,
+            sortable: true,
+            resizable: true,
+            lockPinned: true,
+            suppressMovable: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+            cellRenderer: DefaultCellRenderer,
+        }),
+        []
+    );
 
     // messages to show when no data
     const dynamicSimulationStatus = useSelector(
@@ -111,6 +94,11 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
         [messages, result, dynamicSimulationStatus, isLoading]
     );
 
+    const rowDataToShow = useMemo(
+        () => (overlayMessage ? [] : result),
+        [result, overlayMessage]
+    );
+
     return (
         <>
             {isLoading && (
@@ -118,31 +106,14 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
                     <LinearProgress />
                 </Box>
             )}
-            {overlayMessage && (
-                <Box sx={styles.overlay}>
-                    <Typography variant={'body2'}>{overlayMessage}</Typography>
-                </Box>
-            )}
-            {!overlayMessage && (
-                <Paper sx={styles.tablePaper}>
-                    {
-                        <VirtualizedTable
-                            rows={result}
-                            sortable
-                            disableHeader={true}
-                            columns={[
-                                {
-                                    label: intl.formatMessage({
-                                        id: 'status',
-                                    }),
-                                    dataKey: 'status',
-                                    cellRenderer: StatusCellRender,
-                                },
-                            ]}
-                        />
-                    }
-                </Paper>
-            )}
+            <CustomAGGrid
+                ref={gridRef}
+                rowData={rowDataToShow}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                overlayNoRowsTemplate={overlayMessage}
+                enableCellTextSelection
+            />
         </>
     );
 };
