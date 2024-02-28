@@ -7,13 +7,13 @@
 
 import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER,
+    ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
     DC_NOMINAL_VOLTAGE,
     DC_RESISTANCE,
     DROOP,
-    MAXIMUM_ACTIVE_POWER,
+    MAX_P,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
@@ -66,7 +66,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
 
     const maximumActivePowerField = (
         <FloatInput
-            name={`${id}.${MAXIMUM_ACTIVE_POWER}`}
+            name={`${id}.${MAX_P}`}
             adornment={ActivePowerAdornment}
             label={'MaximumActivePowerText'}
         />
@@ -100,7 +100,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
 
     const activePowerField = (
         <FloatInput
-            name={`${id}.${ACTIVE_POWER}`}
+            name={`${id}.${ACTIVE_POWER_SETPOINT}`}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
         />

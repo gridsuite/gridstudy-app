@@ -286,7 +286,8 @@ export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';
 
 // VSC
-export const ACTIVE_POWER = 'activePower';
+export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
+export const MAX_P = 'maxP';
 export const REACTIVE_POWER = 'reactivePower';
 export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
 export const DC_RESISTANCE = 'dcResistance';

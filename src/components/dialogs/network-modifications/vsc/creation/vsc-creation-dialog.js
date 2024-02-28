@@ -10,7 +10,7 @@ import { TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ACTIVE_POWER,
+    ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
@@ -21,7 +21,7 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
-    MAXIMUM_ACTIVE_POWER,
+    MAX_P,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
@@ -106,13 +106,13 @@ const VscCreationDialog = ({
             ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, {
                 dcNominalVoltage: hvdcLine.dcNominalVoltage,
                 dcResistance: hvdcLine.dcResistance,
-                maximumActivePower: hvdcLine.maximumActivePower,
+                maxP: hvdcLine.maxP,
                 operatorActivePowerLimitFromSide1ToSide2:
                     hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
                 operatorActivePowerLimitFromSide2ToSide1:
                     hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
                 convertersMode: hvdcLine.convertersMode,
-                activePower: hvdcLine.activePower,
+                activePowerSetpoint: hvdcLine.activePowerSetpoint,
                 angleDroopActivePowerControl:
                     hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
                 p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
@@ -241,11 +241,11 @@ const VscCreationDialog = ({
                 sanitizeString(hvdcLine[EQUIPMENT_NAME]),
                 hvdcLineTab[DC_NOMINAL_VOLTAGE],
                 hvdcLineTab[DC_RESISTANCE],
-                hvdcLineTab[MAXIMUM_ACTIVE_POWER],
+                hvdcLineTab[MAX_P],
                 hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
                 hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
                 hvdcLineTab[CONVERTERS_MODE],
-                hvdcLineTab[ACTIVE_POWER],
+                hvdcLineTab[ACTIVE_POWER_SETPOINT],
                 hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
                 hvdcLineTab[P0],
                 hvdcLineTab[DROOP],
