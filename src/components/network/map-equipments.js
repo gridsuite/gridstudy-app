@@ -178,11 +178,10 @@ export default class MapEquipments {
         updatedLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler(
-                    this.intlRef.current.formatMessage({
-                        id: 'MapEquipmentsLoadError',
-                    })
-                );
+                this.errHandler({
+                    messageTxt: error.message,
+                    headerId: 'MapEquipmentsLoadError',
+                });
             }
         });
         updatedHvdcLines.catch((error) => {
