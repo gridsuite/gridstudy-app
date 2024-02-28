@@ -42,13 +42,21 @@ const styles = {
         color: theme.palette.primary.main,
         display: 'flex',
     }),
-    textInitial: (theme) => ({
+    textInitial: {
         color: 'rgba(91,91,91,255)',
-    }),
+    },
     textAlert: (theme) => ({
         color: theme.palette.error.main,
         display: 'flex',
     }),
+    boxContent: {
+        display: 'flex',
+        alignItems: 'end',
+        justifyContent: 'right',
+        flex: 'auto',
+        flexGrow: '1',
+        whiteSpace: 'pre-wrap',
+    },
 };
 
 const SensitivityParametersSelector = ({
@@ -213,16 +221,7 @@ const SensitivityParametersSelector = ({
                                                 }
                                             ></Tab>
                                         ))}
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                alignItems: 'end',
-                                                justifyContent: 'right',
-                                                flex: 'auto',
-                                                flexGrow: '1',
-                                                whiteSpace: 'pre-wrap',
-                                            }}
-                                        >
+                                        <Box sx={styles.boxContent}>
                                             {launchLoader
                                                 ? renderComputingEventLoading()
                                                 : renderComputingEvent()}
