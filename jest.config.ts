@@ -10,7 +10,7 @@ import type { Config } from 'jest';
 const config: Config = {
     testEnvironment: 'jsdom',
     moduleNameMapper: {
-        '^.+\\.svg$|@powsybl/diagram-viewer': 'jest-svg-transformer', // we expect everything from @powsybl/diagram-viewer is an SVG
+        '^.+\\.svg\?react$|@powsybl/diagram-viewer': 'jest-svg-transformer', // we expect everything from @powsybl/diagram-viewer is an SVG
         '^.+\\.(css|less|scss)$': 'identity-obj-proxy',
     },
     transformIgnorePatterns: ['node_modules/(?!@gridsuite/commons-ui)'], // transform from ESM
