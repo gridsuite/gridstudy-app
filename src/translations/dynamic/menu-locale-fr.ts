@@ -27,7 +27,7 @@ const menu_locale_fr = {
     // Dynamic simulation events with format {eventType}{equipmentType}`
     Disconnect2WTransformer: 'Déclencher le transformateur',
     Disconnect3WTransformer: 'Déclencher le transformateur',
-    DisconnectGenerator: 'Déclencher le group',
+    DisconnectGenerator: 'Déclencher le groupe',
     DisconnectLine: 'Déclencher la ligne',
     DisconnectLoad: 'Déclencher la consommation',
     NodeFaultBus: 'Court-circuit sur le bus',

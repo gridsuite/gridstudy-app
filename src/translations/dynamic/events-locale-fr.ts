@@ -7,12 +7,14 @@
 
 const events_locale_fr = {
     // Used in edition dialog and list of dynamic simulation events with format `Event{eventType}{equipmentType}`
-    EventDisconnect2WTransformer: 'Déclencher transformateur {computedLabel}',
-    EventDisconnect3WTransformer: 'Déclencher transformateur {computedLabel}',
-    EventDisconnectGenerator: 'Déclencher group {computedLabel}',
-    EventDisconnectLine: 'Déclencher ligne {computedLabel}',
-    EventDisconnectLoad: 'Déclencher consommation {computedLabel}',
-    EventNodeFaultBus: 'Court-circuit sur bus {computedLabel}',
+    EventDisconnect2WTransformer:
+        'Déclencher le transformateur {computedLabel}',
+    EventDisconnect3WTransformer:
+        'Déclencher le transformateur {computedLabel}',
+    EventDisconnectGenerator: 'Déclencher le groupe {computedLabel}',
+    EventDisconnectLine: 'Déclencher la ligne {computedLabel}',
+    EventDisconnectLoad: 'Déclencher la consommation {computedLabel}',
+    EventNodeFaultBus: 'Court-circuit sur le bus {computedLabel}',
 };
 
 export default events_locale_fr;
