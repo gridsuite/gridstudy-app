@@ -7,11 +7,11 @@
 
 const events_locale_en = {
     // Used in edition dialog and list of dynamic simulation events with format `Event{eventType}{equipmentType}`
-    EventDisconnectLine: 'Trip line {computedLabel}',
     EventDisconnect2WTransformer: 'Trip transformer {computedLabel}',
     EventDisconnect3WTransformer: 'Trip transformer {computedLabel}',
-    EventDisconnectLoad: 'Trip load {computedLabel}',
     EventDisconnectGenerator: 'Trip generator {computedLabel}',
+    EventDisconnectLine: 'Trip line {computedLabel}',
+    EventDisconnectLoad: 'Trip load {computedLabel}',
     EventNodeFaultBus: 'Node fault on bus {computedLabel}',
 };
 
