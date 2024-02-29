@@ -113,6 +113,8 @@
     "ID": "ID",
     "Name": "Name",
     "Country": "Country",
+    "Country1": "Country 1",
+    "Country2": "Country 2",
     "Properties": "Properties",
     "SubstationId": "Substation ID",
     "VoltageLevelId": "Voltage level ID",
