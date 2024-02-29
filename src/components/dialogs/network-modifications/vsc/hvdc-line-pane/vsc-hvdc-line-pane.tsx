@@ -108,6 +108,24 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         />
     );
 
+    const previousConverterMode = () => {
+        if (
+            previousValues?.convertersMode ===
+            VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.id
+        ) {
+            return intl.formatMessage({
+                id: VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.label,
+            });
+        } else if (
+            previousValues?.convertersMode ===
+            VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.id
+        ) {
+            return intl.formatMessage({
+                id: VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.label,
+            });
+        }
+    };
+
     const converterModeField = (
         <SelectInput
             name={`${id}.${CONVERTERS_MODE}`}
@@ -115,7 +133,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             options={Object.values(VSC_CONVERTER_MODE)}
             size={'small'}
             disableClearable
-            previousValue={previousValues?.convertersMode}
+            previousValue={previousConverterMode()}
         />
     );
 
