@@ -41,6 +41,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { NOMINAL_V } from '../../utils/field-constants';
 
 const generateTapPositions = (params) => {
     return params
@@ -2743,7 +2744,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'NominalV',
-                field: 'nominalVoltage',
+                field: NOMINAL_V,
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
