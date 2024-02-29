@@ -28,8 +28,8 @@ import {
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
+    MAX_Q,
+    MIN_Q,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -250,8 +250,8 @@ const GeneratorModificationDialog = ({
                 ? newRccValues.splice(index, 1)
                 : newRccValues.splice(index, 0, {
                       [P]: null,
-                      [Q_MIN_P]: null,
-                      [Q_MAX_P]: null,
+                      [MIN_Q]: null,
+                      [MAX_Q]: null,
                   });
             return {
                 ...previousValue,

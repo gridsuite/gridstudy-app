@@ -79,8 +79,6 @@ export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
 export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
 export const MIN_Q = 'minQ';
 export const MAX_Q = 'maxQ';
-export const Q_MAX_P = 'maxQ';
-export const Q_MIN_P = 'minQ';
 export const P = 'p';
 
 export const ENABLED = 'enabled';
