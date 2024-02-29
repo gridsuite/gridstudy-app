@@ -25,7 +25,7 @@ import {
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     MIN_ACTIVE_POWER,
-    NOMINAL_VOLTAGE,
+    NOMINAL_V,
     P0,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
@@ -83,9 +83,10 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         REACTIVE_POWER_SET_POINT,
         CONNECTED,
     ],
+
     VOLTAGE_LEVEL: [
         EQUIPMENT_ID,
-        NOMINAL_VOLTAGE,
+        NOMINAL_V,
         LOW_VOLTAGE_LIMIT,
         HIGH_VOLTAGE_LIMIT,
     ],

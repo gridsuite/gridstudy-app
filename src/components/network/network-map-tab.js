@@ -78,8 +78,6 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
-    /* results*/
-    loadFlowStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -987,7 +985,6 @@ export const NetworkMapTab = ({
             lineFlowMode={lineFlowMode}
             lineFlowColorMode={lineFlowColorMode}
             lineFlowAlertThreshold={lineFlowAlertThreshold}
-            loadFlowStatus={loadFlowStatus}
             useName={useName}
             visible={visible}
             disabled={disabled}
@@ -1055,7 +1052,6 @@ NetworkMapTab.propTypes = {
     lineFlowMode: PropTypes.any,
     lineFlowColorMode: PropTypes.any,
     lineFlowAlertThreshold: PropTypes.number,
-    loadFlowStatus: PropTypes.string,
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,

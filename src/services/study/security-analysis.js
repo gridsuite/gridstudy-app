@@ -140,13 +140,6 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchSecurityAnalysisProvider(studyUuid) {
-    console.info('fetch security analysis provider');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
 export function updateSecurityAnalysisProvider(studyUuid, newProvider) {
     console.info('update security analysis provider');
     const url = getStudyUrl(studyUuid) + '/security-analysis/provider';

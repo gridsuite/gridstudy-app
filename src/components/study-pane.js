@@ -109,10 +109,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         changed: false,
     });
 
-    const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
-    );
-
     const oneBusShortCircuitStatus = useSelector(
         (state) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
@@ -217,7 +213,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     setErrorMessage={setErrorMessage}
-                                    loadFlowStatus={loadFlowStatus}
                                 />
                             </Box>
 
@@ -229,7 +224,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
-                                loadFlowStatus={loadFlowStatus}
                                 oneBusShortCircuitStatus={
                                     oneBusShortCircuitStatus
                                 }
@@ -252,7 +246,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     equipmentChanged={tableEquipment.changed}
                     disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
-                    loadFlowStatus={loadFlowStatus}
                 />
             </Paper>
         );
