@@ -41,7 +41,7 @@ interface VscConverterStationPaneProps {
     stationLabel: string;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
-    isModification: boolean;
+    isModification?: boolean;
     previousValues?: ConverterStationElementModificationInfos | null;
     updatePreviousReactiveCapabilityCurveTableConverterStation?: UpdateReactiveCapabilityCurveTable;
 }
@@ -51,7 +51,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     stationLabel,
     currentNode,
     studyUuid,
-    isModification,
+    isModification = false,
     previousValues,
     updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
