@@ -42,7 +42,6 @@ const VscCreationForm: FunctionComponent<VscCreationFormProps> = ({
                     currentNode={currentNode}
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
-                    isModification={false}
                 />
             </Box>
             <Box
@@ -54,7 +53,6 @@ const VscCreationForm: FunctionComponent<VscCreationFormProps> = ({
                     currentNode={currentNode}
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
-                    isModification={false}
                 />
             </Box>
         </>
