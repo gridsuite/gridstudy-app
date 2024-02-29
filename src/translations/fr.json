@@ -123,6 +123,8 @@
     "VoltageLevelIdT3WSide3": "ID Poste 3",
     "NominalVoltageSide1": "Tension nominale 1 (kV)",
     "NominalVoltageSide2": "Tension nominale 2 (kV)",
+    "RatedVoltageSide1": "Tension d'enroulement 1 (kV)",
+    "RatedVoltageSide2": "Tension d'enroulement 2 (kV)",
     "NominalVoltageT3WSide1": "Tension nominale 1 (kV)",
     "NominalVoltageT3WSide2": "Tension nominale 2 (kV)",
     "NominalVoltageT3WSide3": "Tension nominale 3 (kV)",
@@ -146,6 +148,11 @@
     "b1": "Susceptance parallèle 1 (μS)",
     "g2": "Conductance parallèle 2 (μS)",
     "b2": "Susceptance parallèle 2 (μS)",
+    "characteristic": "Carac.",
+    "values": "Valeurs",
+    "seriesResistance": "R (Ω)",
+    "seriesReactance": "X (Ω)",
+    "shuntSusceptance": "B (µS)",
     "ActivePowerControl": "En compensation",
     "DroopColumnName": "Participation (%)",
     "reactivePowerSetpoint": "Q consigne (MVar)",
@@ -328,6 +335,8 @@
     "DynamicSimulationEventCreating": "Création d'un évènement en cours ...",
     "DynamicSimulationEventUpdating": "Mise à jour d'un évènement en cours ...",
     "DynamicSimulationEventDeleting": "Suppression d'un évènement en cours ...",
+    "DynamicSimulationTabTimeSeries": "Courbes",
+    "DynamicSimulationTabStatus": "Statut",
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
@@ -932,6 +941,7 @@
     "ImportFileAlpha": "Dephasage",
 
     "RegulationMode": "Mode de réglage",
+    "RatioRegulationMode": "Mode de réglage régleur",
 
     "FixedTap": "Déphasage constant",
     "CurrentLimiter": "Limitation de courant",
@@ -1241,10 +1251,10 @@
     "ValueMustBeRefWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
     "addNewFormula": "Ajouter une nouvelle formule",
     "byFormulaChangeTypeConfirmation": "Le type va être modifié. Toutes les valeurs des champs seront effacées.",
-    "RatioLowTapPosition": "Prise min du régleur",
+    "RatioLowTapPosition": "Prise min régleur",
     "RatioTapPosition": "Prise courante du régleur",
     "RatioDeadBand": "Bande morte du régleur",
-    "PhaseLowTapPosition": "Prise min du déphaseur",
+    "PhaseLowTapPosition": "Prise min déphaseur",
     "PhaseTapPosition": "Prise courante du déphaseur",
     "PhaseDeadBand": "Bande morte du déphaseur",
     "RatedU1": "Tension d'enroulement 1",
@@ -1330,5 +1340,5 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "    
 }

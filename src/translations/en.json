@@ -123,6 +123,8 @@
     "VoltageLevelIdT3WSide3": "Voltage level ID 3",
     "NominalVoltageSide1": "Nominal voltage 1 (kV)",
     "NominalVoltageSide2": "Nominal voltage 2 (kV)",
+    "RatedVoltageSide1": "Rated voltage 1 (kV)",
+    "RatedVoltageSide2": "Rated voltage 2 (kV)",
     "NominalVoltageT3WSide1": "Nominal voltage 1 (kV)",
     "NominalVoltageT3WSide2": "Nominal voltage 2 (kV)",
     "NominalVoltageT3WSide3": "Nominal voltage 3 (kV)",
@@ -146,6 +148,11 @@
     "b1": "Shunt susceptance 1 (μS)",
     "g2": "Shunt conductance 2 (μS)",
     "b2": "Shunt susceptance 2 (μS)",
+    "characteristic": "Carac.",
+    "values": "Values",
+    "seriesResistance": "R (Ω)",
+    "seriesReactance": "X (Ω)",
+    "shuntSusceptance": "B (µS)",
     "ActivePowerControl": "Active power control",
     "DroopColumnName": "Droop (%)",
     "reactivePowerSetpoint": "target Q (MVar)",
@@ -328,8 +335,8 @@
     "DynamicSimulationEventCreating": "Creating event ...",
     "DynamicSimulationEventUpdating": "Updating event ...",
     "DynamicSimulationEventDeleting": "Deleting event ...",
-
-
+    "DynamicSimulationTabTimeSeries": "Curves",
+    "DynamicSimulationTabTimeStatus": "Status",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
@@ -933,6 +940,7 @@
     "ImportFileAlpha": "ShiftAngle",
 
     "RegulationMode": "Regulation mode",
+    "RatioRegulationMode": "Ratio regulation mode",
 
     "FixedTap": "Fixed tap",
     "CurrentLimiter": "Current limiter",
