@@ -173,14 +173,62 @@ export const formatTwtDataForTable = (twt: any) => {
     return formattedTwt;
 };
 
+const formatGeneratorDataForTable = (generator: any) => {
+    const formattedGenerator = { ...generator };
+
+    const hasDistantRegulation =
+        formattedGenerator.regulatingTerminalVlId ||
+        formattedGenerator.regulatingTerminalConnectableId;
+    const regulationType =
+        formattedGenerator.RegulationTypeText ||
+        (hasDistantRegulation
+            ? REGULATION_TYPES.DISTANT.id
+            : REGULATION_TYPES.LOCAL.id);
+
+    formattedGenerator.RegulationTypeText = regulationType;
+
+    return formattedGenerator;
+};
+
+const formatShuntCompensatorDataForTable = (shuntCompensator: any) => {
+    const formattedCompensator = { ...shuntCompensator };
+
+    if (formattedCompensator.type === undefined) {
+        formattedCompensator.type =
+            formattedCompensator.maxSusceptance > 0
+                ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
+                : SHUNT_COMPENSATOR_TYPES.REACTOR.id;
+    }
+
+    return formattedCompensator;
+};
+
 export const formatFetchedEquipments = (
     equipmentType: string,
     equipments: any
 ) => {
-    if (equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) {
-        return equipments.map(formatTwtDataForTable);
+    if (equipments && equipments?.length > 0) {
+        return equipments.map((equipment: any) => {
+            return formatFetchedEquipment(equipmentType, equipment);
+        });
     }
     return equipments;
+};
+
+export const formatFetchedEquipment = (
+    equipmentType: string,
+    equipment: any
+) => {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            return formatTwtDataForTable(equipment);
+        case EQUIPMENT_TYPES.GENERATOR:
+            return formatGeneratorDataForTable(equipment);
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            return formatShuntCompensatorDataForTable(equipment);
+        default:
+            return equipment;
+    }
 };
 
 export const updateTwtCells = (params: CellEditingStoppedEvent) => {
@@ -379,7 +427,7 @@ export const updateShuntCompensatorCells = (
     }
 };
 
-const deepFindValue = (obj: any, path: any) => {
+export const deepFindValue = (obj: any, path: any) => {
     if (path === undefined) {
         return undefined;
     }

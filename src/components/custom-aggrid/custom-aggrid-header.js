@@ -64,7 +64,7 @@ const CustomHeaderComponent = ({
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
         filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
-        filterOptions = [], // used for autoComplete filter as a UI type (list of possible filters)
+        customFilterOptions = [], // used for autoComplete filter as a UI type (list of possible filters)
         debounceMs = 1000, // used to debounce the api call to not fetch the back end too fast
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
@@ -77,7 +77,8 @@ const CustomHeaderComponent = ({
     } = sortParams;
 
     const isAutoCompleteFilter =
-        filterDataType === FILTER_DATA_TYPES.TEXT && !!filterOptions?.length;
+        filterDataType === FILTER_DATA_TYPES.TEXT &&
+        !!customFilterOptions?.length;
     const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
     const isColumnSorted = sortColKey === field;
 
@@ -305,7 +306,7 @@ const CustomHeaderComponent = ({
                         <Autocomplete
                             multiple
                             value={selectedFilterData || []}
-                            options={filterOptions}
+                            options={customFilterOptions}
                             getOptionLabel={(option) =>
                                 intl.formatMessage({
                                     id: option,
@@ -403,7 +404,7 @@ CustomHeaderComponent.propTypes = {
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
         updateFilter: PropTypes.func,
-        filterOptions: PropTypes.arrayOf(PropTypes.string),
+        customFilterOptions: PropTypes.arrayOf(PropTypes.string),
         filterSelector: PropTypes.array,
         parser: PropTypes.func,
     }),

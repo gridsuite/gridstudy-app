@@ -28,22 +28,40 @@ export const useAggridLocalRowFilter = (
         updateFilterCallback
     );
 
+    const generateEnumFilterModel = useCallback(
+        (filter: FilterSelectorType) => {
+            const filterValue = filter.value as string[];
+            return {
+                filterType: 'text',
+                type: 'customInRange',
+                filter: filterValue,
+            };
+        },
+        []
+    );
+
     const formatCustomFiltersForAgGrid = useCallback(
         (filters: FilterSelectorType[]) => {
             const agGrifFilterModel: FilterModel = {};
             filters.forEach((filter) => {
-                agGrifFilterModel[filter.column] = {
-                    filterType: filter.dataType,
-                    type: filter.type,
-                    filter:
-                        filter.dataType === FILTER_DATA_TYPES.NUMBER
-                            ? Number(filter.value)
-                            : filter.value,
-                };
+                if (Array.isArray(filter.value)) {
+                    //this case means that the filter is an enum
+                    agGrifFilterModel[filter.column] =
+                        generateEnumFilterModel(filter);
+                } else {
+                    agGrifFilterModel[filter.column] = {
+                        filterType: filter.dataType,
+                        type: filter.type,
+                        filter:
+                            filter.dataType === FILTER_DATA_TYPES.NUMBER
+                                ? Number(filter.value)
+                                : filter.value,
+                    };
+                }
             });
             return agGrifFilterModel;
         },
-        []
+        [generateEnumFilterModel]
     );
 
     const setFiltersInAgGrid = useCallback(
