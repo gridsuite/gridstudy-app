@@ -28,6 +28,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { unitToMicroUnit } from '../../../../../utils/unit-converter';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const TwoWindingsTransformerCharacteristicsPane = ({
     id = CHARACTERISTICS,
@@ -132,6 +133,10 @@ const TwoWindingsTransformerCharacteristicsPane = ({
                 {gridItem(ratedVoltage1Field)}
                 {gridItem(ratedVoltage2Field)}
             </Grid>
+            <PropertiesForm
+                networkElementType={'twt'}
+                isModification={isModification}
+            />
         </>
     );
 };

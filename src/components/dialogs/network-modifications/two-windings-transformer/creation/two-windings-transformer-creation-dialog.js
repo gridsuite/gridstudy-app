@@ -102,6 +102,13 @@ import {
     formatTemporaryLimits,
 } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -120,6 +127,7 @@ const emptyFormData = {
     ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -132,6 +140,7 @@ const formSchema = yup
         ...getRatioTapChangerValidationSchema(),
         ...getPhaseTapChangerValidationSchema(),
     })
+    .concat(creationPropertiesSchema)
     .required();
 
 export const TwoWindingsTransformerCreationDialogTab = {
@@ -335,6 +344,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     voltageLevelId:
                         twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
                 }),
+                ...getPropertiesFromModification(twt.properties),
             });
         },
         [reset]
@@ -481,6 +491,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]
                             ?.regulatingTerminalConnectableType,
                 }),
+                ...copyEquipmentPropertiesForCreation(twt),
             });
         },
         [reset]
@@ -713,7 +724,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
                 characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null
+                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
+                toModificationProperties(twt)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
