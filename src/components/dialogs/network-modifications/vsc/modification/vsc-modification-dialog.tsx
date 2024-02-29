@@ -179,7 +179,7 @@ const VscModificationDialog: React.FC<any> = ({
 
                         const previousReactiveCapabilityCurveTable2 =
                             value?.converterStation2
-                                ?.reactiveCapabilityCurveTable;
+                                ?.reactiveCapabilityCurvePoints;
                         if (previousReactiveCapabilityCurveTable2) {
                             setCurrentReactiveCapabilityCurveTable(
                                 previousReactiveCapabilityCurveTable2,
