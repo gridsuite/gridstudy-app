@@ -35,6 +35,7 @@ import { IntegerInput } from '@gridsuite/commons-ui';
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -164,6 +165,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             </Grid>
             <GridSection title={'Coupling_Omnibus'} />
             <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
+            <PropertiesForm networkElementType={'voltageLevel'} />
         </>
     );
 };

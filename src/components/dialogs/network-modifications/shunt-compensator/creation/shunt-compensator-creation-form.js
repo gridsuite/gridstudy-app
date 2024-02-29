@@ -15,6 +15,7 @@ import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -72,6 +73,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
             <Grid container spacing={2}>
                 {gridItem(characteristicsForm, 12)}
             </Grid>
+            <PropertiesForm networkElementType={'shuntCompensator'} />
         </>
     );
 };
