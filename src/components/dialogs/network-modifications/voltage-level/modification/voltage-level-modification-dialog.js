@@ -10,6 +10,7 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
+    ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -32,6 +33,13 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -41,33 +49,36 @@ const emptyFormData = {
     [HIGH_VOLTAGE_LIMIT]: null,
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+    ...emptyProperties,
 };
 
-const formSchema = yup.object().shape({
-    [EQUIPMENT_NAME]: yup.string().nullable(),
-    [SUBSTATION_ID]: yup.string().nullable(),
-    [NOMINAL_V]: yup.number().nullable(),
-    [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
-    [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-        .number()
-        .nullable()
-        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-        .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
-            is: (highShortCircuitCurrentLimit) =>
-                highShortCircuitCurrentLimit != null,
-            then: (schema) =>
-                schema.max(
-                    yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
-                    'ShortCircuitCurrentLimitMinMaxError'
-                ),
-        }),
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-        .number()
-        .nullable()
-        .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero'),
-});
-
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_NAME]: yup.string().nullable(),
+        [SUBSTATION_ID]: yup.string().nullable(),
+        [NOMINAL_V]: yup.number().nullable(),
+        [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
+        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
+        [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
+            .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
+                is: (highShortCircuitCurrentLimit) =>
+                    highShortCircuitCurrentLimit != null,
+                then: (schema) =>
+                    schema.max(
+                        yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
+                        'ShortCircuitCurrentLimitMinMaxError'
+                    ),
+            }),
+        [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero'),
+    })
+    .concat(modificationPropertiesSchema);
 const VoltageLevelModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
@@ -88,8 +99,19 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, resetField } = formMethods;
-
+    const { reset, resetField, getValues } = formMethods;
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
+    );
     useEffect(() => {
         if (editData) {
             if (editData?.equipmentId) {
@@ -105,6 +127,7 @@ const VoltageLevelModificationDialog = ({
                     unitToKiloUnit(editData?.ipMin?.value) ?? null,
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
                     unitToKiloUnit(editData?.ipMax?.value) ?? null,
+                ...getPropertiesFromModification(editData.properties),
             });
         }
     }, [editData, reset]);
@@ -138,7 +161,11 @@ const VoltageLevelModificationDialog = ({
                             }
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
-
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getConcatenatedProperties(voltageLevel),
+                            }));
                             //TODO We display the previous value of the substation id in the substation field because we can't change it
                             // To be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
                             // Note: we use resetField and a defaultValue instead of setValue to not trigger react hook form's dirty flag
@@ -150,13 +177,20 @@ const VoltageLevelModificationDialog = ({
                     .catch(() => {
                         setVoltageLevelInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset(emptyFormData);
                     });
             } else {
                 setVoltageLevelInfos(null);
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, resetField, reset]
+        [
+            studyUuid,
+            currentNodeUuid,
+            resetField,
+            reset,
+            getConcatenatedProperties,
+        ]
     );
 
     useEffect(() => {
@@ -178,7 +212,8 @@ const VoltageLevelModificationDialog = ({
                 kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                toModificationProperties(voltageLevel)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
