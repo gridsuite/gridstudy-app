@@ -53,6 +53,7 @@ export const DynamicSimulationEventDialog = (
         ...dialogProps
     } = props;
 
+    console.log('events', { equipmentId });
     const { snackError } = useSnackMessage();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [event, setEvent] = useState<Event>();
