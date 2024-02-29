@@ -28,12 +28,12 @@ function parseStudyNotification(studyUpdatedForce: StudyUpdated) {
     return [substationsIds, deletedEquipments, collectionElementImpacts];
 }
 
-export type FetchEquipmentsPropsType = {
+type FetchEquipmentsPropsType = {
     studyUuid: UUID;
     currentNodeUuid: UUID;
 };
 
-export type DeletedEquipmentType = {
+type DeletedEquipmentType = {
     equipmentId: string;
     equipmentType: string;
 };
@@ -49,79 +49,71 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
     );
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'study'
-            ) {
-                // study partial update :
-                // loading equipments involved in the study modification and updating the network
-                const [
-                    substationsIds,
-                    deletedEquipments,
-                    collectionElementImpacts,
-                ] = parseStudyNotification(studyUpdatedForce);
+        if (
+            studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
+            'study'
+        ) {
+            // study partial update :
+            // loading equipments involved in the study modification and updating the network
+            const [
+                substationsIds,
+                deletedEquipments,
+                collectionElementImpacts,
+            ] = parseStudyNotification(studyUpdatedForce);
 
-                if (
-                    collectionElementImpacts?.includes(
-                        EQUIPMENT_TYPES.SUBSTATION
-                    )
-                ) {
-                    // We need to reload all the network
-                    fetchAllEquipments(
-                        studyUuid,
-                        currentNodeUuid,
-                        undefined
-                    ).then((values) => {
+            if (
+                collectionElementImpacts?.includes(EQUIPMENT_TYPES.SUBSTATION)
+            ) {
+                // We need to reload all the network
+                fetchAllEquipments(studyUuid, currentNodeUuid, undefined).then(
+                    (values) => {
                         // TODO instead of those two calls, add a way to reloadEquipments
                         // dispatch(reloadEquipments(values))
                         // or call the existing API by equipmentType
                         dispatch(resetEquipments());
                         dispatch(updateEquipments(values));
-                    });
-                    dispatch(setUpdatedSubstationsIds(undefined));
-                } else {
-                    // partial update
-                    if (deletedEquipments?.length > 0) {
-                        // removing deleted equipment from the network
-                        deletedEquipments.forEach(
-                            (deletedEquipment: DeletedEquipmentType) => {
-                                if (
-                                    deletedEquipment?.equipmentId &&
-                                    deletedEquipment?.equipmentType
-                                ) {
-                                    console.info(
-                                        'removing equipment with id=',
-                                        deletedEquipment?.equipmentId,
-                                        ' and type=',
-                                        deletedEquipment?.equipmentType,
-                                        ' from the network'
-                                    );
-                                    // TODO For every deletedEquipment we do a dispatch... eurk
-                                    dispatch(
-                                        deleteEquipment(
-                                            deletedEquipment?.equipmentType,
-                                            deletedEquipment?.equipmentId
-                                        )
-                                    );
-                                }
-                            }
-                        );
-                        dispatch(setDeletedEquipments(deletedEquipments));
                     }
-                    // updating data related to impacted substations
-                    fetchAllEquipments(
-                        studyUuid,
-                        currentNodeUuid,
-                        substationsIds
-                    ).then((values) => {
-                        dispatch(updateEquipments(values));
-                    });
-                    dispatch(setUpdatedSubstationsIds(substationsIds));
+                );
+                dispatch(setUpdatedSubstationsIds(undefined));
+            } else {
+                // partial update
+                if (deletedEquipments?.length > 0) {
+                    // removing deleted equipment from the network
+                    deletedEquipments.forEach(
+                        (deletedEquipment: DeletedEquipmentType) => {
+                            if (
+                                deletedEquipment?.equipmentId &&
+                                deletedEquipment?.equipmentType
+                            ) {
+                                console.info(
+                                    'removing equipment with id=',
+                                    deletedEquipment?.equipmentId,
+                                    ' and type=',
+                                    deletedEquipment?.equipmentType,
+                                    ' from the network'
+                                );
+                                // TODO For every deletedEquipment we do a dispatch... eurk
+                                dispatch(
+                                    deleteEquipment(
+                                        deletedEquipment?.equipmentType,
+                                        deletedEquipment?.equipmentId
+                                    )
+                                );
+                            }
+                        }
+                    );
+                    dispatch(setDeletedEquipments(deletedEquipments));
                 }
+                // updating data related to impacted substations
+                fetchAllEquipments(
+                    studyUuid,
+                    currentNodeUuid,
+                    substationsIds
+                ).then((values) => {
+                    dispatch(updateEquipments(values));
+                });
+                dispatch(setUpdatedSubstationsIds(substationsIds));
             }
         }
     }, [studyUpdatedForce, currentNodeUuid, studyUuid, dispatch]);
-
-    return;
 };
