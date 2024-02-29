@@ -67,7 +67,7 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
                     />
                 </TabPanelLazy>
                 <TabPanelLazy
-                    key={TAB_INDEX_TIME_SERIES}
+                    key={TAB_INDEX_TIME_LINE}
                     selected={tabIndex === TAB_INDEX_TIME_LINE}
                 >
                     <DynamicSimulationResultTimeLine
