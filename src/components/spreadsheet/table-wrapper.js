@@ -69,6 +69,7 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
+    formatFetchedEquipments,
     updateGeneratorCells,
     updateShuntCompensatorCells,
     updateTwtCells,
@@ -80,6 +81,7 @@ import {
     REGULATION_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
+import ComputingType from 'components/computing-status/computing-type';
 import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
@@ -142,6 +144,10 @@ const TableWrapper = (props) => {
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -239,7 +245,7 @@ const TableWrapper = (props) => {
             if (column.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
                 const isValueInvalid =
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                     column.canBeInvalidated;
 
                 column.cellRendererParams = {
@@ -281,14 +287,14 @@ const TableWrapper = (props) => {
             });
         },
         [
-            fluxConvention,
             intl,
             lockedColumnsNames,
-            props.loadFlowStatus,
-            sortConfig,
-            filterSelector,
             onSortChanged,
+            sortConfig,
             updateFilter,
+            filterSelector,
+            loadFlowStatus,
+            fluxConvention,
         ]
     );
 
@@ -300,8 +306,21 @@ const TableWrapper = (props) => {
         [tabIndex]
     );
 
-    const { equipments, errorMessage, isFetching } =
-        useSpreadsheetEquipments(equipmentDefinition);
+    const formatFetchedEquipmentsHandler = useCallback(
+        (fetchedEquipments) => {
+            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
+            return formatFetchedEquipments(
+                equipmentDefinition.type,
+                fetchedEquipments
+            );
+        },
+        [equipmentDefinition.type]
+    );
+
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+        equipmentDefinition,
+        formatFetchedEquipmentsHandler
+    );
 
     useEffect(() => {
         if (errorMessage) {
@@ -956,8 +975,8 @@ const TableWrapper = (props) => {
                             editingDataRef.current.name
                         ),
                         getFieldValue(
-                            editingData.nominalVoltage,
-                            editingDataRef.current.nominalVoltage
+                            editingData.nominalV,
+                            editingDataRef.current.nominalV
                         ),
                         getFieldValue(
                             editingData.lowVoltageLimit,
@@ -1152,8 +1171,10 @@ const TableWrapper = (props) => {
                     true
                 )
                     .then((updatedEquipment) => {
+                        const formattedData =
+                            formatFetchedEquipmentsHandler(updatedEquipment);
                         const transaction = {
-                            update: [updatedEquipment],
+                            update: [formattedData],
                         };
                         gridRef.current.api.applyTransaction(transaction);
                         setLastModifiedEquipment();
@@ -1161,7 +1182,7 @@ const TableWrapper = (props) => {
                             force: true,
                             rowNodes: [
                                 gridRef.current.api.getRowNode(
-                                    updatedEquipment.id
+                                    formattedData.id
                                 ),
                             ],
                         });
@@ -1176,6 +1197,7 @@ const TableWrapper = (props) => {
         props.currentNode.id,
         props.studyUuid,
         studyUpdatedForce,
+        formatFetchedEquipmentsHandler,
     ]);
 
     //this listener is called for each cell modified
@@ -1399,7 +1421,6 @@ TableWrapper.defaultProps = {
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
-    loadFlowStatus: RunningStatus.IDLE,
     disabled: false,
 };
 
@@ -1409,7 +1430,6 @@ TableWrapper.propTypes = {
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
     disabled: PropTypes.bool,
 };
 
