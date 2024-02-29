@@ -962,7 +962,6 @@ export const NetworkMapTab = ({
             anchorEl={ref}
             equipmentId={elementId}
             equipmentType={EQUIPMENT_TYPES.LINE}
-            loadFlowStatus={loadFlowStatus}
         />
     );
 
