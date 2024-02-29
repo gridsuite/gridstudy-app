@@ -26,6 +26,7 @@ import {
     MIN_P,
     MIN_Q,
     MINIMUM_REACTIVE_POWER,
+    PARTICIPATE,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q_PERCENT,
@@ -97,6 +98,8 @@ export const convertCreationFieldFromBackToFront = (
     value: { value: string | number | boolean }
 ) => {
     switch (key) {
+        case PARTICIPATE:
+            return { key: FREQUENCY_REGULATION, value: value };
         case TARGET_V:
             return { key: VOLTAGE_SET_POINT, value: value };
         case TARGET_P:
@@ -117,6 +120,8 @@ export const convertCreationFieldFromFrontToBack = (
     value: string | number | boolean
 ) => {
     switch (key) {
+        case FREQUENCY_REGULATION:
+            return { key: PARTICIPATE, value: value };
         case VOLTAGE_SET_POINT:
             return { key: TARGET_V, value: value };
         case ACTIVE_POWER_SET_POINT:
