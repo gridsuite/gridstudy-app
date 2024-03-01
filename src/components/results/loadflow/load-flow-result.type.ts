@@ -17,10 +17,14 @@ export interface ComponentResult {
     synchronousComponentNum: number;
     status: string;
     iterationCount: number;
-    slackBusId: string;
-    slackBusActivePowerMismatch: number;
+    slackBusResults: SlackBusResult[];
     distributedActivePower: number;
 }
+export interface SlackBusResult {
+    id: string;
+    activePowerMismatch: number;
+}
+
 export interface LoadFlowResult {
     resultUuid: UUID;
     writeTimeStamp: Date;
