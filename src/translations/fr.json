@@ -439,7 +439,7 @@
     "showSpecificParameters": "Paramètres spécifiques",
     "save": "Enregistrer",
     "saveParameters": "Enregistrer des paramètres",
-    "loadParameters": "Paramètres prédéfinis",
+    "settings.button.chooseSettings": "Sélectionner",
     "showSelectDirectoryDialog": "Modifier dossier",
     "showSelectParameterDialog": "Choisir paramètres",
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
