@@ -29,9 +29,9 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 const styles = {
     circularProgress: (theme) => ({
+        display: 'flex',
         marginRight: theme.spacing(1),
         color: theme.palette.primary.main,
-        display: 'flex',
     }),
     errorOutlineIcon: (theme) => ({
         marginRight: theme.spacing(1),
