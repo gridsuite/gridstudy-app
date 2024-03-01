@@ -42,7 +42,8 @@ const dynamic_mapping_models_en = {
     'variables.load_PPu': 'Active power consumed in pu',
     'variables.load_PRefPu': 'Active power consumed at nominal voltage in MW',
     'variables.load_QPu': 'Reactive power consumed in pu',
-    'variables.load_QRefPu': 'Reactive power consumed at nominal voltage in Mvar',
+    'variables.load_QRefPu':
+        'Reactive power consumed at nominal voltage in Mvar',
     'variables.load_running_value': 'Running',
 
     // Bus

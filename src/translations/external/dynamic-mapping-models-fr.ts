@@ -40,9 +40,11 @@ const dynamic_mapping_models_fr = {
 
     // Load
     'variables.load_PPu': 'Puissance active consommée en pu',
-    'variables.load_PRefPu': 'Puissance active soutirée à la tension nominale en MW',
+    'variables.load_PRefPu':
+        'Puissance active soutirée à la tension nominale en MW',
     'variables.load_QPu': 'Puissance réactive consommée en pu',
-    'variables.load_QRefPu': 'Puissance réactive soutirée à la tension nominale en Mvar',
+    'variables.load_QRefPu':
+        'Puissance réactive soutirée à la tension nominale en Mvar',
     'variables.load_running_value': 'load_running_value',
 
     // Bus
