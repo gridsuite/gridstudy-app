@@ -55,6 +55,7 @@ import {
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
+import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -71,6 +72,7 @@ const useDisplayView = (studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
+    const { translate } = LocalizedCountries();
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
@@ -200,7 +202,9 @@ const useDisplayView = (studyUuid, currentNode) => {
                 return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then(
                     (svg) => {
                         let label = getNameOrId(svg.additionalMetadata) ?? id;
-                        const countryName = svg.additionalMetadata?.countryName;
+                        const countryName = translate(
+                            svg.additionalMetadata?.country
+                        );
                         if (countryName) {
                             label += ' - ' + countryName;
                         }
@@ -224,7 +228,9 @@ const useDisplayView = (studyUuid, currentNode) => {
                     (svg) => {
                         let label = getNameOrId(svg.additionalMetadata) ?? id;
                         let substationId = svg.additionalMetadata?.substationId;
-                        const countryName = svg.additionalMetadata?.countryName;
+                        const countryName = translate(
+                            svg.additionalMetadata?.country
+                        );
                         if (countryName) {
                             label += ' - ' + countryName;
                         }
