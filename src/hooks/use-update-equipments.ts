@@ -6,8 +6,12 @@
  */
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ReduxState, StudyUpdated } from '../redux/reducer.type';
-import { UPDATE_TYPE_HEADER } from 'components/study-container';
+import {
+    ReduxState,
+    DeletedEquipment,
+    NetworkImpactsInfos,
+    UpdateTypes,
+} from '../redux/reducer.type';
 import {
     deleteEquipment,
     resetEquipments,
@@ -19,23 +23,17 @@ import { fetchAllEquipments } from 'services/study/network-map';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 
-function parseStudyNotification(studyUpdatedForce: StudyUpdated) {
-    const payload = studyUpdatedForce.eventData.payload;
-    const substationsIds = payload?.impactedSubstationsIds;
-    const deletedEquipments = payload?.deletedEquipments;
-    const collectionElementImpacts = payload?.collectionElementImpacts;
+function parseStudyNotification(payload: NetworkImpactsInfos) {
+    const substationsIds = payload.impactedSubstationsIds;
+    const deletedEquipments = payload.deletedEquipments;
+    const collectionElementImpacts = payload.collectionElementImpacts;
 
-    return [substationsIds, deletedEquipments, collectionElementImpacts];
+    return { substationsIds, deletedEquipments, collectionElementImpacts };
 }
 
 type FetchEquipmentsPropsType = {
     studyUuid: UUID;
     currentNodeUuid: UUID;
-};
-
-type DeletedEquipmentType = {
-    equipmentId: string;
-    equipmentType: string;
 };
 
 /**
@@ -49,17 +47,14 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
     );
 
     useEffect(() => {
-        if (
-            studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
-            'study'
-        ) {
+        if (studyUpdatedForce.type === UpdateTypes.STUDY) {
             // study partial update :
             // loading equipments involved in the study modification and updating the network
-            const [
+            const {
                 substationsIds,
                 deletedEquipments,
                 collectionElementImpacts,
-            ] = parseStudyNotification(studyUpdatedForce);
+            } = parseStudyNotification(studyUpdatedForce.eventData.payload);
 
             if (
                 collectionElementImpacts?.includes(EQUIPMENT_TYPES.SUBSTATION)
@@ -80,7 +75,7 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
                 if (deletedEquipments?.length > 0) {
                     // removing deleted equipment from the network
                     deletedEquipments.forEach(
-                        (deletedEquipment: DeletedEquipmentType) => {
+                        (deletedEquipment: DeletedEquipment) => {
                             if (
                                 deletedEquipment?.equipmentId &&
                                 deletedEquipment?.equipmentType
