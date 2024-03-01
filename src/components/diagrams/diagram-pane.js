@@ -322,6 +322,7 @@ const useDisplayView = (studyUuid, currentNode) => {
             currentNode,
             fetchSvgData,
             dispatch,
+            translate,
         ]
     );
 };
