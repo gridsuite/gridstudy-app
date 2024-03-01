@@ -679,7 +679,7 @@ export const SensitivityAnalysisParameters = ({
                                     setOpenSelectParameterDialog(true)
                                 }
                             >
-                                <FormattedMessage id="loadParameters" />
+                                <FormattedMessage id="settings.button.chooseSettings" />
                             </Button>
                             <Button
                                 onClick={() =>
