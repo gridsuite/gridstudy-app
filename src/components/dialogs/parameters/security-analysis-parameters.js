@@ -344,7 +344,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
             >
                 <LabelledButton
                     callback={() => setOpenSelectParameterDialog(true)}
-                    label="loadParameters"
+                    label="settings.button.chooseSettings"
                 />
                 <LabelledButton
                     callback={() => setOpenCreateParameterDialog(true)}

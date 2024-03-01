@@ -297,7 +297,8 @@ export function createBattery(
     frequencyRegulation,
     droop,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createBatteryUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -336,6 +337,7 @@ export function createBattery(
             reactivePowerSetpoint,
             participate: frequencyRegulation,
             droop,
+            properties,
         }),
     });
 }
@@ -357,7 +359,8 @@ export function modifyBattery(
     isReactiveCapabilityCurveOn,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -388,6 +391,7 @@ export function modifyBattery(
         maximumReactivePower: toModificationOperation(maximumReactivePower),
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -704,7 +708,8 @@ export function createShuntCompensator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -738,6 +743,7 @@ export function createShuntCompensator(
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -754,7 +760,8 @@ export function modifyShuntCompensator(
     shuntCompensatorType,
     voltageLevelId,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -783,6 +790,7 @@ export function modifyShuntCompensator(
             maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
             voltageLevelId: toModificationOperation(voltageLevelId),
+            properties,
         }),
     });
 }
@@ -815,7 +823,8 @@ export function createLine(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -864,6 +873,7 @@ export function createLine(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -882,7 +892,8 @@ export function modifyLine(
     currentLimit1,
     currentLimit2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -913,6 +924,7 @@ export function modifyLine(
             b2: toModificationOperation(b2),
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
+            properties,
         }),
     });
 }
@@ -946,7 +958,8 @@ export function createTwoWindingsTransformer(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -993,6 +1006,7 @@ export function createTwoWindingsTransformer(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -1014,7 +1028,8 @@ export function modifyTwoWindingsTransformer(
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1049,6 +1064,7 @@ export function modifyTwoWindingsTransformer(
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+            properties,
         }),
     });
 }
@@ -1240,6 +1256,7 @@ export function createVoltageLevel({
     couplingDevices,
     isUpdate,
     modificationUuid,
+    properties,
 }) {
     let createVoltageLevelUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1266,6 +1283,7 @@ export function createVoltageLevel({
         sectionCount: sectionCount,
         switchKinds: switchKinds,
         couplingDevices: couplingDevices,
+        properties,
     });
 
     return backendFetchText(createVoltageLevelUrl, {
@@ -1289,7 +1307,8 @@ export function modifyVoltageLevel(
     lowShortCircuitCurrentLimit,
     highShortCircuitCurrentLimit,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1317,6 +1336,7 @@ export function modifyVoltageLevel(
             highVoltageLimit: toModificationOperation(highVoltageLimit),
             ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
             ipMax: toModificationOperation(highShortCircuitCurrentLimit),
+            properties,
         }),
     });
 }
