@@ -438,7 +438,7 @@
     "showSpecificParameters": "Specific settings",
     "save": "Save",
     "saveParameters": "Save settings",
-    "loadParameters": "Choose settings",
+    "settings.button.chooseSettings": "Choose settings",
     "showSelectDirectoryDialog": "Choose folder",
     "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
