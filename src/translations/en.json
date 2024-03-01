@@ -509,7 +509,7 @@
     "ConstantP": "Constant p (MW)",
     "ConstantQ": "Constant q (MVar)",
     "DanglingLines": "Dangling Lines",
-    "UcteXnodeCode": "UCTE Xnode",
+    "PairingKey": "UCTE Xnode",
     "HvdcLines": "HVDC Lines",
     "ConvertersMode": "Converters mode",
     "R": "Resistance",
