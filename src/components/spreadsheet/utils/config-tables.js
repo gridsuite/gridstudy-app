@@ -1417,7 +1417,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'nominalV2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
-                fractionDigits: 0,
+                fractionDigits: 0,   
             },
             {
                 id: 'NominalVT3WSide3',
