@@ -23,7 +23,7 @@ const dynamic_mapping_models_fr = {
     'models.CurrentLimitAutomaton': 'ADA',
     'models.TapChangerBlockingAutomaton': 'Automate de blocage régleur',
     'models.StaticVarCompensator': 'CSPR',
-    'models.DefaultBus': 'Bus (modèle par défaut)',
+    'models.DefaultBus': 'Bus',
 
     // --- variables --- //
     // Generator
@@ -40,9 +40,9 @@ const dynamic_mapping_models_fr = {
 
     // Load
     'variables.load_PPu': 'Puissance active consommée en pu',
-    'variables.load_PRefPu': 'load_PRefPu',
+    'variables.load_PRefPu': 'Puissance active soutirée à la tension nominale en MW',
     'variables.load_QPu': 'Puissance réactive consommée en pu',
-    'variables.load_QRefPu': 'load_QRefPu',
+    'variables.load_QRefPu': 'Puissance réactive soutirée à la tension nominale en Mvar',
     'variables.load_running_value': 'load_running_value',
 
     // Bus
@@ -56,7 +56,7 @@ const dynamic_mapping_models_fr = {
     'variables.SVarC_injector_PInjPu': 'Puissance active injectée en pu',
     'variables.SVarC_injector_QInjPu': 'Puissance réactive injectée en pu',
     'variables.SVarC_injector_UPu': 'Tension nominale en pu',
-    'variables.SVarC_modeHandling_mode_value': 'odeHandling_mode_value',
+    'variables.SVarC_modeHandling_mode_value': 'Mode de régulation',
 
     // --- variableSets --- //
     'variableSets.Generator': 'Groupe',

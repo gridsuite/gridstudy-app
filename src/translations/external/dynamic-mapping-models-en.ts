@@ -23,7 +23,7 @@ const dynamic_mapping_models_en = {
     'models.CurrentLimitAutomaton': 'Current-limiter automaton',
     'models.TapChangerBlockingAutomaton': 'Block tap-changers automaton',
     'models.StaticVarCompensator': 'Static var compensator',
-    'models.DefaultBus': 'Bus (default model)',
+    'models.DefaultBus': 'Bus',
 
     // --- variables --- //
     // Generator
@@ -32,7 +32,7 @@ const dynamic_mapping_models_en = {
     'variables.generator_PGenPu': 'Active power in pu',
     'variables.generator_QGen': 'Reactive power in Mvar',
     'variables.generator_QGenPu': 'Reactive power in pu',
-    'variables.generator_running_value': 'generator_running_value',
+    'variables.generator_running_value': 'Running',
     'variables.generator_UStatorPu':
         'Stator voltage amplitude in pu (base UNom)',
     'variables.voltageRegulator_EfdPu':
@@ -40,10 +40,10 @@ const dynamic_mapping_models_en = {
 
     // Load
     'variables.load_PPu': 'Active power consumed in pu',
-    'variables.load_PRefPu': 'load_PRefPu',
+    'variables.load_PRefPu': 'Active power consumed at nominal voltage in MW',
     'variables.load_QPu': 'Reactive power consumed in pu',
-    'variables.load_QRefPu': 'load_QRefPu',
-    'variables.load_running_value': 'load_running_value',
+    'variables.load_QRefPu': 'Reactive power consumed at nominal voltage in Mvar',
+    'variables.load_running_value': 'Running',
 
     // Bus
     'variables.U_value': 'Bus voltage in kV',
@@ -55,7 +55,7 @@ const dynamic_mapping_models_en = {
     'variables.SVarC_injector_PInjPu': 'Injected P in pu',
     'variables.SVarC_injector_QInjPu': 'Injected Q in pu',
     'variables.SVarC_injector_UPu': 'Nominal voltage in kV',
-    'variables.SVarC_modeHandling_mode_value': 'SVarC_modeHandling_mode_value',
+    'variables.SVarC_modeHandling_mode_value': 'Regulation mode',
 
     // --- variableSets --- //
     'variableSets.Generator': 'Generator',
