@@ -137,12 +137,14 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 id: 'AddRows',
                             })}
                         >
-                            <IconButton
-                                disabled={disableAdd}
-                                onClick={handleAddRowsButton}
-                            >
-                                <AddCircleIcon />
-                            </IconButton>
+                            <span>
+                                <IconButton
+                                    disabled={disableAdd}
+                                    onClick={handleAddRowsButton}
+                                >
+                                    <AddCircleIcon />
+                                </IconButton>
+                            </span>
                         </Tooltip>
                     </TableCell>
                 </TableHead>

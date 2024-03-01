@@ -200,7 +200,7 @@ const TabularCreationForm = () => {
             label="Type"
             options={typesOptions}
             onChangeCallback={handleChange}
-            getOptionLabel={(option) => getTypeLabel(option as string)}
+            getOptionLabel={(option: any) => getTypeLabel(option as string)}
             size={'small'}
             formProps={{ variant: 'filled' }}
         />
