@@ -391,7 +391,7 @@ export const VoltageInitParameters = ({
                                     setOpenSelectParameterDialog(true)
                                 }
                             >
-                                <FormattedMessage id="loadParameters" />
+                                <FormattedMessage id="settings.button.chooseSettings" />
                             </Button>
                             <Button onClick={handleOpenSaveDialog}>
                                 <FormattedMessage id="save" />
