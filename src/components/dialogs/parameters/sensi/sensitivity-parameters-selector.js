@@ -43,7 +43,7 @@ const styles = {
         display: 'flex',
     }),
     textInitial: {
-        color: 'rgba(91,91,91,255)',
+        color: 'grey',
     },
     textAlert: (theme) => ({
         color: theme.palette.error.main,
