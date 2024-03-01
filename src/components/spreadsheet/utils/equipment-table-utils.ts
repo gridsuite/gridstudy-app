@@ -117,11 +117,11 @@ const formatRatioTapChanger = (twt: any) => {
         return twt;
     }
 
-    const regulationType = getComputedRegulationTypeId(twt);
+    const regulationType = getComputedRegulationTypeId(twt) ?? undefined;
     const regulationSide =
         regulationType === REGULATION_TYPES.LOCAL.id
             ? getComputedTapSideId(twt)
-            : null;
+            : undefined;
     const ratioRegulatingTerminal =
         regulationType === REGULATION_TYPES.DISTANT.id
             ? getTapChangerRegulationTerminalValue(twt.ratioTapChanger)
@@ -131,7 +131,8 @@ const formatRatioTapChanger = (twt: any) => {
         ...twt,
         ratioTapChanger: {
             ...twt.ratioTapChanger,
-            regulationMode: getInitialTwtRatioRegulationModeId(twt),
+            regulationMode:
+                getInitialTwtRatioRegulationModeId(twt) ?? undefined,
             regulationType,
             regulationSide,
             ratioRegulatingTerminal,
@@ -144,11 +145,11 @@ const formatPhaseTapChanger = (twt: any) => {
         return twt;
     }
 
-    const regulationType = getComputedPhaseRegulationTypeId(twt);
+    const regulationType = getComputedPhaseRegulationTypeId(twt) ?? undefined;
     const regulationSide =
         regulationType === REGULATION_TYPES.LOCAL.id
             ? getPhaseTapRegulationSideId(twt)
-            : null;
+            : undefined;
     const phaseRegulatingTerminal =
         regulationType === REGULATION_TYPES.DISTANT.id
             ? getTapChangerRegulationTerminalValue(twt.phaseTapChanger)
