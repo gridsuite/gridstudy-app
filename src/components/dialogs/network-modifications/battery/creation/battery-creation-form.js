@@ -28,6 +28,7 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
@@ -135,6 +136,7 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             <Grid container spacing={2} paddingTop={2}>
                 <FrequencyRegulation />
             </Grid>
+            <PropertiesForm networkElementType={'battery'} />
         </>
     );
 };

@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    ADDITIONAL_PROPERTIES,
     CHARACTERISTICS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
@@ -60,6 +61,13 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
     LIMITS_TAB: 1,
@@ -106,6 +114,7 @@ const LineModificationDialog = ({
                 displayConnectivity
             ),
             ...getLimitsEmptyFormData(),
+            ...emptyProperties,
         }),
         [displayConnectivity]
     );
@@ -121,6 +130,7 @@ const LineModificationDialog = ({
             ),
             ...getLimitsValidationSchema(),
         })
+        .concat(modificationPropertiesSchema)
         .required();
 
     const formMethods = useForm({
@@ -128,7 +138,7 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (line, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
@@ -163,6 +173,7 @@ const LineModificationDialog = ({
                               )
                     ),
                 }),
+                ...getPropertiesFromModification(line.properties),
             });
         },
         [reset]
@@ -247,7 +258,8 @@ const LineModificationDialog = ({
                 currentLimits1,
                 currentLimits2,
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                toModificationProperties(line)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -264,6 +276,19 @@ const LineModificationDialog = ({
             currentNode,
             snackError,
         ]
+    );
+
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
     );
 
     const clear = useCallback(() => {
@@ -304,6 +329,8 @@ const LineModificationDialog = ({
                                                 )
                                             ),
                                     }),
+                                    [ADDITIONAL_PROPERTIES]:
+                                        getConcatenatedProperties(line),
                                 }));
                             }
                         }
@@ -312,13 +339,22 @@ const LineModificationDialog = ({
                     .catch(() => {
                         setLineToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset(emptyFormData);
                     });
             } else {
                 setLineToModify(null);
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData]
+        [
+            studyUuid,
+            currentNodeUuid,
+            selectedId,
+            editData,
+            reset,
+            emptyFormData,
+            getConcatenatedProperties,
+        ]
     );
 
     useEffect(() => {
