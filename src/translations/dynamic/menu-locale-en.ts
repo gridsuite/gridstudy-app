@@ -7,18 +7,11 @@
 
 const menu_locale_en = {
     // Used in the right click menus on the map and SLD
-    Disconnect2WTransformer: 'Trip the transformer',
-    Disconnect3WTransformer: 'Trip the transformer',
-    DisconnectGenerator: 'Trip the generator',
-    DisconnectLine: 'Trip the line',
-    DisconnectHvdcLine: 'Trip the HVDC line',
-    DisconnectLoad: 'Trip the load',
     EnergiseOnOneEndLine: 'Energise on one end ({substation})',
     Lockout2WTransformer: 'Lock out the transformer',
     Lockout3WTransformer: 'Lock out the transformer',
     LockoutLine: 'Lock out the line',
     LockoutHvdcLine: 'Lock out the HVDC line',
-    NodeFaultBus: 'Node fault on bus',
     SwitchOnLine: 'Switch on the line',
     Trip2WTransformer: 'Trip the transformer',
     Trip3WTransformer: 'Trip the transformer',
@@ -34,6 +27,14 @@ const menu_locale_en = {
     UnableToTrip3WTransformer: 'Unable to trip the transformer',
     UnableToTripLine: 'Unable to trip the line',
     UnableToTripHvdcLine: 'Unable to trip the HVDC line',
+
+    // Dynamic simulation events with format `{eventType}{equipmentType}`
+    Disconnect2WTransformer: 'Trip the transformer',
+    Disconnect3WTransformer: 'Trip the transformer',
+    DisconnectGenerator: 'Trip the generator',
+    DisconnectLine: 'Trip the line',
+    DisconnectLoad: 'Trip the load',
+    NodeFaultBus: 'Node fault on bus',
 };
 
 export default menu_locale_en;

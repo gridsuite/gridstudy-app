@@ -171,10 +171,10 @@ const withOperatingStatusMenu =
         }
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
-            (equipmentInfos, equipmentType, dialogTitle) => {
+            (equipmentId, equipmentType, dialogTitle) => {
                 handleClose();
                 onOpenDynamicSimulationEventDialog(
-                    equipmentInfos,
+                    equipmentId,
                     equipmentType,
                     dialogTitle
                 );
@@ -254,7 +254,7 @@ const withOperatingStatusMenu =
                 </CustomMenuItem>
                 {enableDeveloperMode && getEventType(equipmentType) && (
                     <DynamicSimulationEventMenuItem
-                        equipmentInfos={equipment.id}
+                        equipmentId={equipment.id}
                         equipmentType={equipmentType}
                         onOpenDynamicSimulationEventDialog={
                             handleOpenDynamicSimulationEventDialog

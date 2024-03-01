@@ -7,18 +7,11 @@
 
 const menu_locale_fr = {
     // Used in the right click menus on the map and SLD
-    Disconnect2WTransformer: 'Déclencher le transformateur',
-    Disconnect3WTransformer: 'Déclencher le transformateur',
-    DisconnectGenerator: 'Déclencher le group',
-    DisconnectLine: 'Déclencher la ligne',
-    DisconnectHvdcLine: 'Déclencher la ligne HVDC',
-    DisconnectLoad: 'Déclencher la consommation',
     EnergiseOnOneEndLine: 'Mettre sous tension à vide depuis {substation}',
     Lockout2WTransformer: 'Consigner le transformateur',
     Lockout3WTransformer: 'Consigner le transformateur',
     LockoutLine: 'Consigner la ligne',
     LockoutHvdcLine: 'Consigner la ligne HVDC',
-    NodeFaultBus: 'Court-circuit sur le bus',
     SwitchOnLine: 'Mettre en service la ligne',
     Trip2WTransformer: 'Déclencher le transformateur',
     Trip3WTransformer: 'Déclencher le transformateur',
@@ -34,6 +27,14 @@ const menu_locale_fr = {
     UnableToTrip3WTransformer: 'Impossible de déclencher le transformateur',
     UnableToTripLine: 'Impossible de déclencher la ligne',
     UnableToTripHvdcLine: 'Impossible de déclencher la ligne HVDC',
+
+    // Dynamic simulation events with format {eventType}{equipmentType}`
+    Disconnect2WTransformer: 'Déclencher le transformateur',
+    Disconnect3WTransformer: 'Déclencher le transformateur',
+    DisconnectGenerator: 'Déclencher le groupe',
+    DisconnectLine: 'Déclencher la ligne',
+    DisconnectLoad: 'Déclencher la consommation',
+    NodeFaultBus: 'Court-circuit sur le bus',
 };
 
 export default menu_locale_fr;

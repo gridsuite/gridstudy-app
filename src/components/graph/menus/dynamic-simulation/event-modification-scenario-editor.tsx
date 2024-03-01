@@ -48,6 +48,7 @@ import {
     isPartial,
     styles,
 } from '../network-modification-node-editor';
+import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -381,7 +382,11 @@ const EventModificationScenarioEditor = () => {
                     onClose={() => handleCloseDialog()}
                     title={intl.formatMessage(
                         {
-                            id: `${editDialogOpen.eventType}/${editDialogOpen.equipmentType}`,
+                            id: `Event${editDialogOpen.eventType}${
+                                EQUIPMENT_TYPE_LABEL_KEYS[
+                                    editDialogOpen.equipmentType
+                                ]
+                            }`,
                         },
                         { computedLabel: '' }
                     )}
