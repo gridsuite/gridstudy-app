@@ -54,12 +54,20 @@ import {
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { createShuntCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getConnectivityWithPositionEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -70,6 +78,7 @@ const formSchema = yup
         ...getConnectivityWithPositionValidationSchema(),
         ...getCharacteristicsFormValidationSchema(),
     })
+    .concat(creationPropertiesSchema)
     .required();
 
 /**
@@ -122,6 +131,7 @@ const ShuntCompensatorCreationDialog = ({
                     sectionCount: shuntCompensator.sectionCount,
                     maximumSectionCount: shuntCompensator.maximumSectionCount,
                 }),
+                ...copyEquipmentPropertiesForCreation(shuntCompensator),
             });
             if (!shuntCompensator.isLinear) {
                 snackWarning({
@@ -152,6 +162,7 @@ const ShuntCompensatorCreationDialog = ({
                     sectionCount: shuntCompensator.sectionCount,
                     maximumSectionCount: shuntCompensator.maximumSectionCount,
                 }),
+                ...getPropertiesFromModification(shuntCompensator.properties),
             });
         },
         [reset]
@@ -202,7 +213,8 @@ const ShuntCompensatorCreationDialog = ({
                     shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
                 ),
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
-                shuntCompensator[CONNECTIVITY]?.[CONNECTED]
+                shuntCompensator[CONNECTIVITY]?.[CONNECTED],
+                toModificationProperties(shuntCompensator)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
