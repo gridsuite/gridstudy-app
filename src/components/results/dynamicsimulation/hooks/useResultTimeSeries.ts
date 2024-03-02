@@ -21,7 +21,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
         fetchDynamicSimulationTimeSeriesMetadata,
         dynamicSimulationResultInvalidations,
         null,
-        (timeseriesMetadatas: TimeSeriesMetadata[]) => ({
+        (timeseriesMetadatas: TimeSeriesMetadata[] | null) => ({
             timeseries: timeseriesMetadatas
                 ? Array(timeseriesMetadatas.length)
                 : undefined,

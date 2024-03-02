@@ -35,7 +35,7 @@ export function fetchDynamicSimulationProviders() {
 export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid: UUID,
     currentNodeUuid: UUID
-): Promise<TimeSeriesMetadata[]> {
+): Promise<TimeSeriesMetadata[] | null> {
     console.info(
         `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -50,7 +50,7 @@ export function fetchDynamicSimulationTimeSeriesMetadata(
 export function fetchDynamicSimulationResultTimeline(
     studyUuid: UUID,
     currentNodeUuid: UUID
-): Promise<TimelineEvent[]> {
+): Promise<TimelineEvent[] | null> {
     console.info(
         `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
