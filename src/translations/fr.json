@@ -340,7 +340,7 @@
     "DynamicSimulationTabTimeSeries": "Courbes",
     "DynamicSimulationTabTimeLine": "Chronologie",
     "DynamicSimulationTabStatus": "Statut",
-    "DynamicSimulationTimeLineEventTime": "Instant",
+    "DynamicSimulationTimeLineEventTime": "Instant (s)",
     "DynamicSimulationTimeLineEventModelName": "Ouvrage/Modèle",
     "DynamicSimulationTimeLineEventModelMessage": "Message",
 

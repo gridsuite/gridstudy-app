@@ -340,7 +340,7 @@
     "DynamicSimulationTabTimeSeries": "Curves",
     "DynamicSimulationTabTimeLine": "Chronology",
     "DynamicSimulationTabStatus": "Status",
-    "DynamicSimulationTimeLineEventTime": "Instant",
+    "DynamicSimulationTimeLineEventTime": "Instant (s)",
     "DynamicSimulationTimeLineEventModelName": "Equipment/Model",
     "DynamicSimulationTimeLineEventModelMessage": "Message",
 

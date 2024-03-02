@@ -61,7 +61,7 @@ const styles = {
     },
 };
 
-const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
+const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
     const intl = useIntl();
 
     const [result, isLoading] = useNodeData(
@@ -118,12 +118,11 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
                     <LinearProgress />
                 </Box>
             )}
-            {overlayMessage && (
+            {overlayMessage ? (
                 <Box sx={styles.overlay}>
                     <Typography variant={'body2'}>{overlayMessage}</Typography>
                 </Box>
-            )}
-            {!overlayMessage && (
+            ) : (
                 <Paper sx={styles.tablePaper}>
                     {
                         <VirtualizedTable
@@ -147,9 +146,9 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
     );
 };
 
-DynamicSimulationResultTable.propTypes = {
+DynamicSimulationResultSynthesis.propTypes = {
     nodeUuid: PropTypes.string,
     studyUuid: PropTypes.string,
 };
 
-export default DynamicSimulationResultTable;
+export default DynamicSimulationResultSynthesis;

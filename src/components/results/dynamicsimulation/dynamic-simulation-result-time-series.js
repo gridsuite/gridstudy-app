@@ -127,12 +127,11 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
                     <LinearProgress />
                 </Box>
             )}
-            {overlayMessage && (
+            {overlayMessage ? (
                 <Box sx={styles.overlay}>
                     <Typography variant={'body2'}>{overlayMessage}</Typography>
                 </Box>
-            )}
-            {!overlayMessage && (
+            ) : (
                 <Box sx={styles.root}>
                     <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                         {/* tab headers */}
@@ -215,7 +214,6 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
                     </Box>
                 </Box>
             )}
-            )
         </>
     );
 };

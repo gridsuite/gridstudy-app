@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -58,7 +58,18 @@ const COL_MESSAGE: TimelineEventKeyType = 'message';
 
 const NumberCellRenderer = (cellData: ICellRendererParams) => {
     const value = cellData.value;
-    return <Box sx={styles.cell}>{!isNaN(value) ? value.toFixed(2) : ''}</Box>;
+    return <Box sx={styles.cell}>{isNaN(value) ? '' : value.toFixed(2)}</Box>;
+};
+
+const defaultColDef = {
+    filter: true,
+    sortable: true,
+    resizable: true,
+    lockPinned: true,
+    suppressMovable: true,
+    wrapHeaderText: true,
+    autoHeaderHeight: true,
+    cellRenderer: DefaultCellRenderer,
 };
 
 type DynamicSimulationResultTimeLineProps = {
@@ -106,14 +117,17 @@ const DynamicSimulationResultTimeLine = ({
     );
 
     // columns are defined from fields in {@link TimelineEvent} types
-    const columnDefs = useMemo(() => {
-        return [
+    const columnDefs = useMemo(
+        () => [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationTimeLineEventTime',
                 }),
                 field: COL_TIME,
                 width: MIN_COLUMN_WIDTH,
+                numeric: true,
+                fractionDigits: 2,
+                filter: 'agNumberColumnFilter',
                 filterParams: {
                     filterDataType: FILTER_DATA_TYPES.NUMBER,
                     filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
@@ -151,21 +165,8 @@ const DynamicSimulationResultTimeLine = ({
                 },
                 ...sortAndFilterProps,
             }),
-        ];
-    }, [intl, sortAndFilterProps]);
-
-    const defaultColDef = useMemo(
-        () => ({
-            filter: true,
-            sortable: true,
-            resizable: true,
-            lockPinned: true,
-            suppressMovable: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-            cellRenderer: DefaultCellRenderer,
-        }),
-        []
+        ],
+        [intl, sortAndFilterProps]
     );
 
     // messages to show when no data
@@ -174,7 +175,7 @@ const DynamicSimulationResultTimeLine = ({
             state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const messages = useIntlResultStatusMessages(intl, true);
-    const overlayNoRowsTemplate = useMemo(
+    const overlayMessage = useMemo(
         () =>
             getNoRowsMessage(
                 messages,
@@ -186,8 +187,8 @@ const DynamicSimulationResultTimeLine = ({
     );
 
     const rowDataToShow = useMemo(
-        () => (overlayNoRowsTemplate ? [] : timeLines),
-        [timeLines, overlayNoRowsTemplate]
+        () => (overlayMessage ? [] : timeLines),
+        [timeLines, overlayMessage]
     );
 
     return (
@@ -202,7 +203,7 @@ const DynamicSimulationResultTimeLine = ({
                 rowData={rowDataToShow}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
-                overlayNoRowsTemplate={overlayNoRowsTemplate}
+                overlayNoRowsTemplate={overlayMessage}
                 enableCellTextSelection
             />
         </>

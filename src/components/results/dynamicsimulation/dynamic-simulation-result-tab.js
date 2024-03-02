@@ -10,7 +10,7 @@ import { Box, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
 import TabPanelLazy from '../common/tab-panel-lazy';
 import DynamicSimulationResultTimeSeries from './dynamic-simulation-result-time-series';
-import DynamicSimulationResultTable from './dynamic-simulation-result-table';
+import DynamicSimulationResultSynthesis from './dynamic-simulation-result-synthesis';
 import DynamicSimulationResultTimeLine from './dynamic-simulation-result-time-line';
 
 const styles = {
@@ -57,29 +57,20 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
                 </Tabs>
             </Box>
             <Box sx={styles.resultContainer}>
-                <TabPanelLazy
-                    key={TAB_INDEX_TIME_SERIES}
-                    selected={tabIndex === TAB_INDEX_TIME_SERIES}
-                >
+                <TabPanelLazy selected={tabIndex === TAB_INDEX_TIME_SERIES}>
                     <DynamicSimulationResultTimeSeries
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                     />
                 </TabPanelLazy>
-                <TabPanelLazy
-                    key={TAB_INDEX_TIME_LINE}
-                    selected={tabIndex === TAB_INDEX_TIME_LINE}
-                >
+                <TabPanelLazy selected={tabIndex === TAB_INDEX_TIME_LINE}>
                     <DynamicSimulationResultTimeLine
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                     />
                 </TabPanelLazy>
-                <TabPanelLazy
-                    key={TAB_INDEX_STATUS}
-                    selected={tabIndex === TAB_INDEX_STATUS}
-                >
-                    <DynamicSimulationResultTable
+                <TabPanelLazy selected={tabIndex === TAB_INDEX_STATUS}>
+                    <DynamicSimulationResultSynthesis
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                     />
