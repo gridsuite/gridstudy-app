@@ -36,7 +36,7 @@ import {
     MIN_COLUMN_WIDTH,
 } from './utils/dynamic-simulation-result-utils';
 import { useNodeData } from '../../study-container';
-import { fetchDynamicSimulationResultTimeLine } from '../../../services/study/dynamic-simulation';
+import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 
 const styles = {
     loader: {
@@ -72,22 +72,22 @@ const defaultColDef = {
     cellRenderer: DefaultCellRenderer,
 };
 
-type DynamicSimulationResultTimeLineProps = {
+type DynamicSimulationResultTimelineProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
 };
 
-const DynamicSimulationResultTimeLine = ({
+const DynamicSimulationResultTimeline = ({
     studyUuid,
     nodeUuid,
-}: DynamicSimulationResultTimeLineProps) => {
+}: DynamicSimulationResultTimelineProps) => {
     const intl = useIntl();
     const gridRef = useRef(null);
 
-    const [timeLines, isLoading] = useNodeData(
+    const [timelines, isLoading] = useNodeData(
         studyUuid,
         nodeUuid,
-        fetchDynamicSimulationResultTimeLine,
+        fetchDynamicSimulationResultTimeline,
         dynamicSimulationResultInvalidations
     );
 
@@ -121,7 +121,7 @@ const DynamicSimulationResultTimeLine = ({
         () => [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({
-                    id: 'DynamicSimulationTimeLineEventTime',
+                    id: 'DynamicSimulationTimelineEventTime',
                 }),
                 field: COL_TIME,
                 width: MIN_COLUMN_WIDTH,
@@ -137,7 +137,7 @@ const DynamicSimulationResultTimeLine = ({
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({
-                    id: 'DynamicSimulationTimeLineEventModelName',
+                    id: 'DynamicSimulationTimelineEventModelName',
                 }),
                 field: COL_MODEL_NAME,
                 width: MEDIUM_COLUMN_WIDTH,
@@ -152,7 +152,7 @@ const DynamicSimulationResultTimeLine = ({
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({
-                    id: 'DynamicSimulationTimeLineEventModelMessage',
+                    id: 'DynamicSimulationTimelineEventModelMessage',
                 }),
                 field: COL_MESSAGE,
                 width: LARGE_COLUMN_WIDTH,
@@ -179,16 +179,16 @@ const DynamicSimulationResultTimeLine = ({
         () =>
             getNoRowsMessage(
                 messages,
-                timeLines,
+                timelines,
                 dynamicSimulationStatus,
                 !isLoading
             ),
-        [messages, timeLines, dynamicSimulationStatus, isLoading]
+        [messages, timelines, dynamicSimulationStatus, isLoading]
     );
 
     const rowDataToShow = useMemo(
-        () => (overlayMessage ? [] : timeLines),
-        [timeLines, overlayMessage]
+        () => (overlayMessage ? [] : timelines),
+        [timelines, overlayMessage]
     );
 
     return (
@@ -210,4 +210,4 @@ const DynamicSimulationResultTimeLine = ({
     );
 };
 
-export default DynamicSimulationResultTimeLine;
+export default DynamicSimulationResultTimeline;
