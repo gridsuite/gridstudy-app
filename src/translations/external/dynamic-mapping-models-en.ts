@@ -9,57 +9,60 @@
 const dynamic_mapping_models_en = {
     // --- models --- //
     'models.GeneratorSynchronousThreeWindings':
-        'Generator Synchronous Three Windings',
+        'Three windings synchronous generator',
     'models.GeneratorSynchronousFourWindings':
-        'Generator Synchronous Four Windings',
+        'Four windings synchronous generator',
     'models.GeneratorSynchronousThreeWindingsProportionalRegulations':
-        'Generator Synchronous Three Windings Proportional Regulations',
+        'Three windings synchronous generator with proportional regulations',
     'models.GeneratorSynchronousFourWindingsProportionalRegulations':
-        'Generator Synchronous Four Windings Proportional Regulations',
-    'models.GeneratorPQ': 'Generator PQ',
-    'models.GeneratorPV': 'Generator PV',
-    'models.LoadAlphaBeta': 'Load Alpha Beta',
-    'models.LoadPQ': 'Load PQ',
-    'models.CurrentLimitAutomaton': 'Current Limit Automaton',
-    'models.TapChangerBlockingAutomaton': 'TapChanger Blocking Automaton',
-    'models.StaticVarCompensator': 'Static Var Compensator',
-    'models.DefaultBus': 'Default Bus',
+        'Four windings synchronous generator with proportional regulations',
+    'models.GeneratorPQ': 'PQ generator',
+    'models.GeneratorPV': 'PV generator',
+    'models.LoadAlphaBeta': 'Voltage-dependent load',
+    'models.LoadPQ': 'PQ load',
+    'models.CurrentLimitAutomaton': 'Current-limiter automaton',
+    'models.TapChangerBlockingAutomaton': 'Block tap-changers automaton',
+    'models.StaticVarCompensator': 'Static var compensator',
+    'models.DefaultBus': 'Bus',
 
     // --- variables --- //
     // Generator
-    'variables.generator_omegaPu': 'generator omegaPu',
-    'variables.generator_PGen': 'generator P Gen',
-    'variables.generator_PGenPu': 'generator P Gen Pu',
-    'variables.generator_QGen': 'generator Q Gen',
-    'variables.generator_QGenPu': 'generator Q Gen Pu',
-    'variables.generator_running_value': 'generator running value',
-    'variables.generator_UStatorPu': 'generator U Stator Pu',
-    'variables.voltageRegulator_EfdPu': 'voltage Regulator Efd Pu',
+    'variables.generator_omegaPu': 'Angular frequency in pu (base omegaNom)',
+    'variables.generator_PGen': 'Active power in MW',
+    'variables.generator_PGenPu': 'Active power in pu',
+    'variables.generator_QGen': 'Reactive power in Mvar',
+    'variables.generator_QGenPu': 'Reactive power in pu',
+    'variables.generator_running_value': 'Running',
+    'variables.generator_UStatorPu':
+        'Stator voltage amplitude in pu (base UNom)',
+    'variables.voltageRegulator_EfdPu':
+        'EfdPu in pu (user-selected base voltage)',
 
     // Load
-    'variables.load_PPu': 'load P Pu',
-    'variables.load_PRefPu': 'load P Ref Pu',
-    'variables.load_QPu': 'load Q Pu',
-    'variables.load_QRefPu': 'load Q Ref Pu',
-    'variables.load_running_value': 'load running value',
+    'variables.load_PPu': 'Active power consumed in pu',
+    'variables.load_PRefPu': 'Active power consumed at nominal voltage in MW',
+    'variables.load_QPu': 'Reactive power consumed in pu',
+    'variables.load_QRefPu':
+        'Reactive power consumed at nominal voltage in Mvar',
+    'variables.load_running_value': 'Running',
 
     // Bus
-    'variables.U_value': 'U value',
-    'variables.Upu_value': 'Upu value',
-    'variables.phi_value': 'phi value',
+    'variables.U_value': 'Bus voltage in kV',
+    'variables.Upu_value': 'Bus voltage in pu',
+    'variables.phi_value': 'Bus phase in degrees',
 
     // StaticVarCompensator
-    'variables.SVarC_injector_BPu': 'SVarC injector B Pu',
-    'variables.SVarC_injector_PInjPu': 'SVarC injector P Inj Pu',
-    'variables.SVarC_injector_QInjPu': 'SVarC injector Q Inj Pu',
-    'variables.SVarC_injector_UPu': 'SVarC injector U Pu',
-    'variables.SVarC_modeHandling_mode_value': 'SVarC mode Handling mode value',
+    'variables.SVarC_injector_BPu': 'Total susceptance in pu (base SNom, UNom)',
+    'variables.SVarC_injector_PInjPu': 'Injected P in pu',
+    'variables.SVarC_injector_QInjPu': 'Injected Q in pu',
+    'variables.SVarC_injector_UPu': 'Nominal voltage in kV',
+    'variables.SVarC_modeHandling_mode_value': 'Regulation mode',
 
     // --- variableSets --- //
     'variableSets.Generator': 'Generator',
-    'variableSets.VoltageRegulator': 'Voltage Regulator',
-    'variableSets.GeneratorPQ': 'Generator PQ',
-    'variableSets.GeneratorPV': 'Generator PV',
+    'variableSets.VoltageRegulator': 'Voltage regulator',
+    'variableSets.GeneratorPQ': 'PQ generator',
+    'variableSets.GeneratorPV': 'PV generator',
 };
 
 export default dynamic_mapping_models_en;

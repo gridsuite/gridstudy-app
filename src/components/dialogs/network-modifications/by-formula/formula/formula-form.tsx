@@ -63,11 +63,11 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             options={equipmentFields}
             label={'EditedField'}
             size={'small'}
-            inputTransform={(value) =>
+            inputTransform={(value: any) =>
                 equipmentFields.find((option) => option?.id === value) || value
             }
-            outputTransform={(option) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option) =>
+            outputTransform={(option: any) => getIdOrValue(option) ?? null}
+            getOptionLabel={(option: any) =>
                 intl.formatMessage({ id: getLabelOrValue(option) })
             }
         />
