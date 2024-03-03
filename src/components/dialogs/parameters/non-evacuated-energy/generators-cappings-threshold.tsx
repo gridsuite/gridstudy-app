@@ -29,7 +29,6 @@ const GeneratorsCappingsThreshold = () => {
                     <FloatInput
                         name={SENSITIVITY_THRESHOLD}
                         label="sensitivityThreshold"
-                        formProps={{ margin: '1' }}
                     />
                 </Grid>
             </Grid>

@@ -15,6 +15,7 @@ import {
     MAX_SUSCEPTANCE,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
+    ADDITIONAL_PROPERTIES,
 } from '../../../../utils/field-constants';
 import {
     getCharacteristicsEmptyFormData,
@@ -39,10 +40,18 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     ...getCharacteristicsEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -51,6 +60,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         ...getCharacteristicsFormValidationSchema(true),
     })
+    .concat(modificationPropertiesSchema)
     .required();
 
 const ShuntCompensatorModificationDialog = ({
@@ -80,6 +90,7 @@ const ShuntCompensatorModificationDialog = ({
     const {
         reset,
         formState: { dirtyFields },
+        getValues,
     } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
@@ -97,9 +108,22 @@ const ShuntCompensatorModificationDialog = ({
                     maximumSectionCount:
                         shuntCompensator.maximumSectionCount?.value ?? null,
                 }),
+                ...getPropertiesFromModification(shuntCompensator.properties),
             });
         },
         [reset]
+    );
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
     );
 
     // If we only change the characteristics choice without changing the corresponding fields,
@@ -148,6 +172,11 @@ const ShuntCompensatorModificationDialog = ({
                         if (shuntCompensator) {
                             setShuntCompensatorInfos(shuntCompensator);
                             setDataFetchStatus(FetchStatus.SUCCEED);
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getConcatenatedProperties(shuntCompensator),
+                            }));
                         }
                         setLoading(false);
                     })
@@ -164,12 +193,19 @@ const ShuntCompensatorModificationDialog = ({
                             setIdExists(true);
                         }
                         setLoading(false);
+                        reset(emptyFormData);
                     });
             } else {
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNode?.id, snackError, studyUuid]
+        [
+            currentNode?.id,
+            snackError,
+            studyUuid,
+            reset,
+            getConcatenatedProperties,
+        ]
     );
 
     useEffect(() => {
@@ -205,7 +241,8 @@ const ShuntCompensatorModificationDialog = ({
                     : null,
                 shuntCompensatorInfos?.voltageLevelId,
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                toModificationProperties(shuntCompensator)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
