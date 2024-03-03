@@ -19,7 +19,7 @@ import { CurrentTreeNode } from '../../../../../redux/reducer.type';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { TextInput } from '@gridsuite/commons-ui';
 import { Box, TextField } from '@mui/material';
-import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
+import { gridItem } from 'components/dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
@@ -72,7 +72,7 @@ export const VscModificationForm: FunctionComponent<
         <TextInput
             name={EQUIPMENT_NAME}
             label={'Name'}
-            formProps={filledTextField}
+            formProps={{ variant: 'filled' }}
             previousValue={vscToModify?.name || ''}
             clearable
         />
