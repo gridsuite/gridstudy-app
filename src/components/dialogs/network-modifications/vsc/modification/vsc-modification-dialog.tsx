@@ -124,7 +124,7 @@ const VscModificationDialog: React.FC<any> = ({
                 setEquipementId(editData.equipmentId);
             }
             reset({
-                [EQUIPMENT_NAME]: editData?.equipmentName ?? '',
+                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 ...getVscHvdcLineModificationTabFormData(
                     HVDC_LINE_TAB,
                     editData
