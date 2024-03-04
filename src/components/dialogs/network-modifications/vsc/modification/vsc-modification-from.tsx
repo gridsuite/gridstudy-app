@@ -117,7 +117,7 @@ export const VscModificationForm: FunctionComponent<
                     currentNode={currentNode}
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
-                    isModification={true}
+                    isModification
                     previousValues={vscToModify?.converterStation1}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={
                         updatePreviousReactiveCapabilityCurveTableConverterStation1
@@ -133,7 +133,7 @@ export const VscModificationForm: FunctionComponent<
                     currentNode={currentNode}
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
-                    isModification={true}
+                    isModification
                     previousValues={vscToModify?.converterStation2}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={
                         updatePreviousReactiveCapabilityCurveTableConverterStation2

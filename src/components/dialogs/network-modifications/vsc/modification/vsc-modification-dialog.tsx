@@ -236,7 +236,6 @@ const VscModificationDialog: React.FC<any> = ({
 
     const onSubmit = (hvdcLine: any) => {
         const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
-        console.log('debug', 'hvdcLineTab', hvdcLineTab);
         const converterStation1 = getConverterStationModificationData(
             hvdcLine[CONVERTER_STATION_1],
             vscToModify?.converterStation1
