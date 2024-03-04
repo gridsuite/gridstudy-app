@@ -28,6 +28,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { unitToMicroUnit } from 'utils/unit-converter';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const styles = {
     h3: {
@@ -43,6 +44,7 @@ const LineCharacteristicsPane = ({
     displayConnectivity,
     lineToModify,
     clearableFields = false,
+    isModification = false,
 }) => {
     const currentNodeUuid = currentNode.id;
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -168,6 +170,10 @@ const LineCharacteristicsPane = ({
                 {gridItem(shuntConductance2Field, 4)}
                 {gridItem(shuntSusceptance2Field, 4)}
             </Grid>
+            <PropertiesForm
+                networkElementType={'line'}
+                isModification={isModification}
+            />
         </>
     );
 };
