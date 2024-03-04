@@ -8,13 +8,13 @@
 import react from '@vitejs/plugin-react';
 import type { PluginOption } from 'vite';
 import { defineConfig } from 'vite';
-import * as path from 'path';
 import eslint from 'vite-plugin-eslint';
+import svgr from 'vite-plugin-svgr';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import * as url from 'node:url';
 import { createRequire } from 'node:module';
-import svgr from 'vite-plugin-svgr';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 const serverSettings = {
     port: 3000,
