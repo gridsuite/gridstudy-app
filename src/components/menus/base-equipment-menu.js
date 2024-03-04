@@ -154,10 +154,11 @@ const BaseEquipmentMenu = ({
     const intl = useIntl();
     const { getNameOrId } = useNameOrId();
 
-    const equipmentsWithBranch = [
+    const displayWithOperatingStatusMenu = [
         EQUIPMENT_TYPES.LINE,
         EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
         EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+        EQUIPMENT_TYPES.HVDC_LINE,
     ];
     const equipmentsNotDeletable = [
         EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
@@ -183,7 +184,9 @@ const BaseEquipmentMenu = ({
                             // Delete button is already in MenuBranch for equipmentsWithBranch
                             // equipmentsNotDeletable deletion is not implemented yet
                             !(
-                                equipmentsWithBranch.includes(equipmentType) ||
+                                displayWithOperatingStatusMenu.includes(
+                                    equipmentType
+                                ) ||
                                 equipmentsNotDeletable.includes(equipmentType)
                             ) && (
                                 <DeleteEquipmentItem

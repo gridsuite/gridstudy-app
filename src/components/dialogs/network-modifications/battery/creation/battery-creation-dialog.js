@@ -59,6 +59,13 @@ import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
 import { createBattery } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -71,6 +78,7 @@ const emptyFormData = {
     [DROOP]: null,
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -86,6 +94,7 @@ const formSchema = yup
         ...getConnectivityWithPositionValidationSchema(),
         ...getFrequencyRegulationSchema(),
     })
+    .concat(creationPropertiesSchema)
     .required();
 
 const BatteryCreationDialog = ({
@@ -134,6 +143,7 @@ const BatteryCreationDialog = ({
                 reactiveCapabilityCurveTable:
                     battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
             }),
+            ...copyEquipmentPropertiesForCreation(battery),
         });
     };
     const searchCopy = useFormSearchCopy({
@@ -173,6 +183,7 @@ const BatteryCreationDialog = ({
                             ? editData?.reactiveCapabilityCurvePoints
                             : [{}, {}],
                 }),
+                ...getPropertiesFromModification(editData.properties),
             });
         }
     }, [editData, reset]);
@@ -215,7 +226,8 @@ const BatteryCreationDialog = ({
                 battery[FREQUENCY_REGULATION],
                 battery[DROOP] ?? null,
                 !!editData,
-                editData?.uuid ?? null
+                editData?.uuid ?? null,
+                toModificationProperties(battery)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

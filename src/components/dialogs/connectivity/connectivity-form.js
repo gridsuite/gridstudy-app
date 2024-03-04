@@ -169,7 +169,7 @@ export const ConnectivityForm = ({
     );
 
     const connectedField = (
-        <SwitchInput name={`${id}.${CONNECTED}`} label="Connected" />
+        <SwitchInput name={`${id}.${CONNECTED}`} label="connected" />
     );
 
     const newBusOrBusbarSectionField = (
