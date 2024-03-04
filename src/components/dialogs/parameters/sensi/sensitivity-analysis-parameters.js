@@ -8,11 +8,12 @@
 import {
     SelectInput,
     SubmitButton,
+    elementType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -49,6 +50,7 @@ import {
     getSensitivityAnalysisParameters,
     setSensitivityAnalysisParameters,
     getSensitivityAnalysisFactorsCount,
+    fetchSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
@@ -66,8 +68,9 @@ import {
     getSensiPstformatNewParams,
     getSensiPSTsFormSchema,
 } from './utils';
-import Alert from '@mui/material/Alert';
 import { mergeSx } from 'components/utils/functions';
+import CreateParameterDialog from '../common/parameters-creation-dialog';
+import DirectoryItemSelector from 'components/directory-item-selector';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -112,26 +115,28 @@ export const SensitivityAnalysisParameters = ({
     useSensitivityAnalysisParameters,
     setHaveDirtyFields,
 }) => {
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
 
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
-    const [providers, provider, updateProvider, resetProvider] =
-        parametersBackend;
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
+        useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
+        useState(false);
+
+    const [providers] = parametersBackend;
+
     const formattedProviders = Object.keys(providers).map((key) => ({
         id: key,
         label: providers[key],
     }));
 
-    const resetSensitivityParametersAndProvider = useCallback(() => {
-        resetProvider();
-    }, [resetProvider]);
-
     const emptyFormData = useMemo(() => {
         return {
-            [PROVIDER]: provider,
+            [PROVIDER]: null,
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,
@@ -141,7 +146,8 @@ export const SensitivityAnalysisParameters = ({
             [PARAMETER_SENSI_PST]: [],
             [PARAMETER_SENSI_NODES]: [],
         };
-    }, [provider]);
+    }, []);
+
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -154,7 +160,7 @@ export const SensitivityAnalysisParameters = ({
         useSensitivityAnalysisParameters;
 
     const resetSensitivityAnalysisParameters = useCallback(() => {
-        setSensitivityAnalysisParameters(studyUuid, emptyFormData)
+        setSensitivityAnalysisParameters(studyUuid, null)
             .then(() => {
                 return getSensitivityAnalysisParameters(studyUuid)
                     .then((params) => setSensitivityAnalysisParams(params))
@@ -171,10 +177,11 @@ export const SensitivityAnalysisParameters = ({
                     headerId: 'paramsChangingError',
                 });
             });
-    }, [studyUuid, emptyFormData, setSensitivityAnalysisParams, snackError]);
+    }, [studyUuid, setSensitivityAnalysisParams, snackError]);
 
-    const formatNewParams = useCallback((newParams, withProvider = true) => {
-        let params = {
+    const formatNewParams = useCallback((newParams) => {
+        return {
+            [PROVIDER]: newParams[PROVIDER],
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
                 newParams[FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD],
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]:
@@ -187,12 +194,6 @@ export const SensitivityAnalysisParameters = ({
             ...getSensiPstformatNewParams(newParams),
             ...getSensiNodesformatNewParams(newParams),
         };
-        return withProvider
-            ? params
-            : {
-                  [PROVIDER]: newParams[PROVIDER],
-                  ...params,
-              };
     }, []);
 
     const formatFilteredParams = useCallback((row) => {
@@ -494,10 +495,7 @@ export const SensitivityAnalysisParameters = ({
                 formatNewParams(newParams)
             )
                 .then(() => {
-                    setSensitivityAnalysisParams(
-                        formatNewParams(newParams, false)
-                    );
-                    updateProvider(newParams[PROVIDER]);
+                    setSensitivityAnalysisParams(formatNewParams(newParams));
                     initRowsCount();
                 })
                 .catch((error) => {
@@ -512,9 +510,40 @@ export const SensitivityAnalysisParameters = ({
             snackError,
             studyUuid,
             formatNewParams,
-            updateProvider,
             initRowsCount,
         ]
+    );
+
+    const handleSensibilityParameter = useCallback(
+        (newParams) => {
+            if (newParams && newParams.length > 0) {
+                setOpenSelectParameterDialog(false);
+                fetchSensitivityAnalysisParameters(newParams[0].id)
+                    .then((parameters) => {
+                        console.info(
+                            'loading the following loadflow parameters : ' +
+                                parameters.uuid
+                        );
+                        reset(
+                            fromSensitivityAnalysisParamsDataToFormValues(
+                                parameters
+                            ),
+                            {
+                                keepDefaultValues: true,
+                            }
+                        );
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [snackError, fromSensitivityAnalysisParamsDataToFormValues, reset]
     );
 
     useEffect(() => {
@@ -533,43 +562,9 @@ export const SensitivityAnalysisParameters = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-        resetSensitivityParametersAndProvider();
         resetSensitivityAnalysisParameters();
         setAnalysisComputeComplexity(0);
-    }, [
-        emptyFormData,
-        reset,
-        resetSensitivityAnalysisParameters,
-        resetSensitivityParametersAndProvider,
-    ]);
-
-    const renderComputingEventLoading = () => {
-        return (
-            <Alert severity={'info'} sx={{ justifyContent: 'center' }}>
-                <FormattedMessage id={'loadingComputing'} />
-            </Alert>
-        );
-    };
-
-    const renderComputingEvent = () => {
-        return (
-            <Alert
-                severity={isMaxReached ? 'error' : 'info'}
-                sx={{ justifyContent: 'center' }}
-            >
-                {analysisComputeComplexity > 999999 ? (
-                    <FormattedMessage id="sensitivityAnalysis.moreThanOneMillionComputations" />
-                ) : (
-                    <FormattedMessage
-                        id={'sensitivityAnalysis.simulatedComputations'}
-                        values={{
-                            count: analysisComputeComplexity.toString(),
-                        }}
-                    />
-                )}
-            </Alert>
-        );
-    };
+    }, [emptyFormData, reset, resetSensitivityAnalysisParameters]);
 
     const isMaxReached = useMemo(
         () => analysisComputeComplexity > numberMax,
@@ -625,14 +620,6 @@ export const SensitivityAnalysisParameters = ({
                         <Grid container paddingTop={4} paddingBottom={2}>
                             <LineSeparator />
                         </Grid>
-                        <Grid container justifyContent={'right'}>
-                            <Grid item marginBottom={-9} width={'300px'}>
-                                {launchLoader
-                                    ? renderComputingEventLoading()
-                                    : renderComputingEvent()}
-                                <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
-                            </Grid>
-                        </Grid>
                         <SensitivityParametersSelector
                             reset={reset}
                             useSensitivityAnalysisParameters={
@@ -640,6 +627,10 @@ export const SensitivityAnalysisParameters = ({
                             }
                             onFormChanged={onFormChanged}
                             onChangeParams={onChangeParams}
+                            launchLoader={launchLoader}
+                            analysisComputeComplexity={
+                                analysisComputeComplexity
+                            }
                         />
                     </Grid>
 
@@ -650,6 +641,20 @@ export const SensitivityAnalysisParameters = ({
                                 paddingBottom: 2,
                             })}
                         >
+                            <Button
+                                onClick={() =>
+                                    setOpenSelectParameterDialog(true)
+                                }
+                            >
+                                <FormattedMessage id="settings.button.chooseSettings" />
+                            </Button>
+                            <Button
+                                onClick={() =>
+                                    setOpenCreateParameterDialog(true)
+                                }
+                            >
+                                <FormattedMessage id="save" />
+                            </Button>
                             <Button onClick={clear}>
                                 <FormattedMessage id="resetToDefault" />
                             </Button>
@@ -664,6 +669,30 @@ export const SensitivityAnalysisParameters = ({
                     </Grid>
                 </Grid>
             </FormProvider>
+            {openCreateParameterDialog && (
+                <CreateParameterDialog
+                    open={openCreateParameterDialog}
+                    onClose={() => setOpenCreateParameterDialog(false)}
+                    parameterValues={() => formatNewParams(getValues())}
+                    parameterFormatter={(newParams) => newParams}
+                    parameterType={elementType.SENSITIVITY_PARAMETERS}
+                />
+            )}
+            {openSelectParameterDialog && (
+                <DirectoryItemSelector
+                    open={openSelectParameterDialog}
+                    onClose={handleSensibilityParameter}
+                    types={[elementType.SENSITIVITY_PARAMETERS]}
+                    title={intl.formatMessage({
+                        id: 'showSelectParameterDialog',
+                    })}
+                    onlyLeaves={true}
+                    multiselect={false}
+                    validationButtonText={intl.formatMessage({
+                        id: 'validate',
+                    })}
+                />
+            )}
         </>
     );
 };

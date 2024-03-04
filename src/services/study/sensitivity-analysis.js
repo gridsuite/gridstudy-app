@@ -92,27 +92,6 @@ export function fetchSensitivityAnalysisFilterOptions(
     return backendFetchJson(url);
 }
 
-export function fetchSensitivityAnalysisProvider(studyUuid) {
-    console.info('fetch sensitivity analysis provider');
-    const url = `${getStudyUrl(studyUuid)}/sensitivity-analysis/provider`;
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function updateSensitivityAnalysisProvider(studyUuid, newProvider) {
-    console.info('update sensitivity analysis provider');
-    const url = `${getStudyUrl(studyUuid)}/sensitivity-analysis/provider`;
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
-}
-
 export function fetchDefaultSensitivityAnalysisProvider() {
     console.info('fetch default sensitivity analysis provider');
     const url = `${PREFIX_STUDY_QUERIES}/v1/sensitivity-analysis-default-provider`;
@@ -123,6 +102,13 @@ export function fetchDefaultSensitivityAnalysisProvider() {
 export function getSensitivityAnalysisParameters(studyUuid) {
     console.info('get sensitivity analysis parameters');
     const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchSensitivityAnalysisParameters(parameterUuid) {
+    console.info('get sensitivity analysis parameters');
+    const url = `${process.env.REACT_APP_API_GATEWAY}/sensitivity-analysis/v1/parameters/${parameterUuid}`;
     console.debug(url);
     return backendFetchJson(url);
 }

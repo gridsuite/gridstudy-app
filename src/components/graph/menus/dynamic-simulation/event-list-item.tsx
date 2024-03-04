@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
+import { Box, Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui';
@@ -17,11 +17,11 @@ import { Theme } from '@mui/material/styles';
 import { Event } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { ReduxState } from '../../../../redux/reducer.type';
 import { ListItemProps } from '@mui/material/ListItem/ListItem';
-import { Box } from '@mui/material';
 import {
     getStartTime,
     getStartTimeUnit,
 } from '../../../dialogs/dynamicsimulation/event/model/event.model';
+import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 
 const styles = {
     listItem: (theme: Theme) => ({
@@ -83,7 +83,11 @@ export const EventListItem = ({
         } as {};
 
         return intl.formatMessage(
-            { id: `${item.eventType}/${item.equipmentType}` },
+            {
+                id: `Event${item.eventType}${
+                    EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]
+                }`,
+            },
             {
                 ...computedValues,
             }

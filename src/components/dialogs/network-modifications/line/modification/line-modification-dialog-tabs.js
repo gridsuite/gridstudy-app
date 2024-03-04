@@ -29,6 +29,7 @@ const LineModificationDialogTabs = ({
                     currentNode={currentNode}
                     lineToModify={lineToModify}
                     clearableFields={true}
+                    isModification={true}
                 />
             </Box>
 

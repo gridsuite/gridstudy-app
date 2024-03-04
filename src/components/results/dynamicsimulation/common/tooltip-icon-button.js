@@ -17,13 +17,15 @@ const TooltipIconButton = ({
 }) => {
     return (
         <Tooltip title={toolTip}>
-            <IconButton
-                size={'medium'}
-                onClick={onClick}
-                children={children}
-                disabled={disabled}
-                {...props}
-            />
+            <span>
+                <IconButton
+                    size={'medium'}
+                    onClick={onClick}
+                    children={children}
+                    disabled={disabled}
+                    {...props}
+                />
+            </span>
         </Tooltip>
     );
 };
