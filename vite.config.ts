@@ -46,6 +46,7 @@ export default defineConfig({
         reactVirtualized(),
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
     ],
+    base: './',
     server: serverSettings, // for npm run start
     preview: serverSettings, // for npm run serve (use local build)
     build: {
