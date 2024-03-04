@@ -1082,6 +1082,7 @@
     "sensitivityAnalysis.simulatedComputations": "{count, plural, =0 {0 calcul} =1 {1 calcul} other {# calculs}}",
     "sensitivityAnalysis.moreThanOneMillionComputations": "999 999+ calculs",
     "sensitivityAnalysis.maximumSimulatedComputations": "500 000 max",
+    "sensitivityAnalysis.separator": "  |  ",
     "loadingComputing": "Evaluation en cours...",
 
     "ConnectionName": "Nom départ",
