@@ -68,7 +68,6 @@ import {
     getSensiPstformatNewParams,
     getSensiPSTsFormSchema,
 } from './utils';
-import Alert from '@mui/material/Alert';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import DirectoryItemSelector from 'components/directory-item-selector';
@@ -567,34 +566,6 @@ export const SensitivityAnalysisParameters = ({
         setAnalysisComputeComplexity(0);
     }, [emptyFormData, reset, resetSensitivityAnalysisParameters]);
 
-    const renderComputingEventLoading = () => {
-        return (
-            <Alert severity={'info'} sx={{ justifyContent: 'center' }}>
-                <FormattedMessage id={'loadingComputing'} />
-            </Alert>
-        );
-    };
-
-    const renderComputingEvent = () => {
-        return (
-            <Alert
-                severity={isMaxReached ? 'error' : 'info'}
-                sx={{ justifyContent: 'center' }}
-            >
-                {analysisComputeComplexity > 999999 ? (
-                    <FormattedMessage id="sensitivityAnalysis.moreThanOneMillionComputations" />
-                ) : (
-                    <FormattedMessage
-                        id={'sensitivityAnalysis.simulatedComputations'}
-                        values={{
-                            count: analysisComputeComplexity.toString(),
-                        }}
-                    />
-                )}
-            </Alert>
-        );
-    };
-
     const isMaxReached = useMemo(
         () => analysisComputeComplexity > numberMax,
         [analysisComputeComplexity]
@@ -649,14 +620,6 @@ export const SensitivityAnalysisParameters = ({
                         <Grid container paddingTop={4} paddingBottom={2}>
                             <LineSeparator />
                         </Grid>
-                        <Grid container justifyContent={'right'}>
-                            <Grid item marginBottom={-9} width={'300px'}>
-                                {launchLoader
-                                    ? renderComputingEventLoading()
-                                    : renderComputingEvent()}
-                                <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
-                            </Grid>
-                        </Grid>
                         <SensitivityParametersSelector
                             reset={reset}
                             useSensitivityAnalysisParameters={
@@ -664,6 +627,10 @@ export const SensitivityAnalysisParameters = ({
                             }
                             onFormChanged={onFormChanged}
                             onChangeParams={onChangeParams}
+                            launchLoader={launchLoader}
+                            analysisComputeComplexity={
+                                analysisComputeComplexity
+                            }
                         />
                     </Grid>
 
