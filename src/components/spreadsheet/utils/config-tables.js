@@ -43,6 +43,7 @@ import {
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 import { NOMINAL_V } from '../../utils/field-constants';
+import CountryCellRenderer from '../country-cell-render';
 
 const generateTapPositions = (params) => {
     return params
@@ -299,11 +300,7 @@ export const TABLES_DEFINITIONS = {
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
-                cellRenderer: (props) => {
-                    const { translate } = LocalizedCountries();
-                    const countryName = translate(props.value);
-                    return <span>{countryName}</span>;
-                },
+                cellRenderer: CountryCellRenderer,
                 valueSetter: (params) => {
                     params.data.country = params?.newValue?.countryCode;
                     return params;
@@ -363,8 +360,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -519,13 +517,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country1',
-                field: 'country1.countryName',
+                field: 'country1',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
-                field: 'country2.countryName',
+                field: 'country2',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageSide1',
@@ -675,8 +675,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageSide1',
@@ -1405,8 +1406,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageT3WSide1',
@@ -1832,8 +1834,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2447,8 +2450,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2555,8 +2559,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2742,8 +2747,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2823,8 +2829,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3059,13 +3066,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country1',
-                field: 'country1.countryName',
+                field: 'country1',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
-                field: 'country2.countryName',
+                field: 'country2',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'R',
@@ -3159,8 +3168,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3243,8 +3253,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3341,8 +3352,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3445,8 +3457,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultTextFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
