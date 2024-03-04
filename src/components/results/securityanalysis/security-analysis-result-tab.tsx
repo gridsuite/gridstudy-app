@@ -105,19 +105,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const resultType = useMemo(() => {
         if (tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
-        }
-
-        if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
+        } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
             return RESULT_TYPE.NMK_CONTINGENCIES;
         } else {
             return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
         }
     }, [tabIndex, nmkType]);
 
-    const columnToFieldMapping = useMemo(
-        () => getColumnToFieldMapping(resultType),
-        [resultType]
-    );
+    const columnToFieldMapping = getColumnToFieldMapping(resultType);
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         columnToFieldMapping,
