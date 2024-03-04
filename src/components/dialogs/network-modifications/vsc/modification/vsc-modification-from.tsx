@@ -33,12 +33,8 @@ interface VscModificationFormProps {
     vscToModify: VscModificationInfo | null;
     setTabIndex: React.Dispatch<React.SetStateAction<number>>;
     tabIndexesWithError: number[];
-    updatePreviousReactiveCapabilityCurveTableConverterStation1:
-        | UpdateReactiveCapabilityCurveTable
-        | undefined;
-    updatePreviousReactiveCapabilityCurveTableConverterStation2:
-        | UpdateReactiveCapabilityCurveTable
-        | undefined;
+    updatePreviousReactiveCapabilityCurveTableConverterStation1?: UpdateReactiveCapabilityCurveTable;
+    updatePreviousReactiveCapabilityCurveTableConverterStation2?: UpdateReactiveCapabilityCurveTable;
 }
 
 export const VscModificationForm: FunctionComponent<
