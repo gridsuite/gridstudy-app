@@ -9,57 +9,62 @@
 const dynamic_mapping_models_fr = {
     // --- models --- //
     'models.GeneratorSynchronousThreeWindings':
-        'Generator Synchronous Three Windings',
+        'Machine synchrone trois enroulements',
     'models.GeneratorSynchronousFourWindings':
-        'Generator Synchronous Four Windings',
+        'Machine synchrone quatre enroulements',
     'models.GeneratorSynchronousThreeWindingsProportionalRegulations':
-        'Generator Synchronous Three Windings Proportional Regulations',
+        'Machine synchrone trois enroulements avec régulations proportionnelles',
     'models.GeneratorSynchronousFourWindingsProportionalRegulations':
-        'Generator Synchronous Four Windings Proportional Regulations',
-    'models.GeneratorPQ': 'Generator PQ',
-    'models.GeneratorPV': 'Generator PV',
-    'models.LoadAlphaBeta': 'Load Alpha Beta',
-    'models.LoadPQ': 'Load PQ',
-    'models.CurrentLimitAutomaton': 'Current Limit Automaton',
-    'models.TapChangerBlockingAutomaton': 'TapChanger Blocking Automaton',
-    'models.StaticVarCompensator': 'Static Var Compensator',
-    'models.DefaultBus': 'Default Bus',
+        'Machine synchrone quatre enroulements avec régulations proportionnelles',
+    'models.GeneratorPQ': 'Groupe PQ',
+    'models.GeneratorPV': 'Groupe PV',
+    'models.LoadAlphaBeta': 'Consommation dépendante à la tension',
+    'models.LoadPQ': 'Consommation fixe PQ',
+    'models.CurrentLimitAutomaton': 'ADA',
+    'models.TapChangerBlockingAutomaton': 'Automate de blocage régleur',
+    'models.StaticVarCompensator': 'CSPR',
+    'models.DefaultBus': 'Bus',
 
     // --- variables --- //
     // Generator
-    'variables.generator_omegaPu': 'generator omegaPu',
-    'variables.generator_PGen': 'generator P Gen',
-    'variables.generator_PGenPu': 'generator P Gen Pu',
-    'variables.generator_QGen': 'generator Q Gen',
-    'variables.generator_QGenPu': 'generator Q Gen Pu',
-    'variables.generator_running_value': 'generator running value',
-    'variables.generator_UStatorPu': 'generator U Stator Pu',
-    'variables.voltageRegulator_EfdPu': 'voltage Regulator Efd Pu',
+    'variables.generator_omegaPu': 'Fréquence angulaire en pu (base omegaNom)',
+    'variables.generator_PGen': 'Puissance active en MW',
+    'variables.generator_PGenPu': 'Puissance active en pu',
+    'variables.generator_QGen': 'Puissance réactive en Mvar',
+    'variables.generator_QGenPu': 'Puissance réactive en pu',
+    'variables.generator_running_value': 'generator_running_value',
+    'variables.generator_UStatorPu':
+        'Module de la tension stator en pu (base UNom)',
+    'variables.voltageRegulator_EfdPu':
+        'EfdPu en pu (tension de base sélectionnée)',
 
     // Load
-    'variables.load_PPu': 'load P Pu',
-    'variables.load_PRefPu': 'load P Ref Pu',
-    'variables.load_QPu': 'load Q Pu',
-    'variables.load_QRefPu': 'load Q Ref Pu',
-    'variables.load_running_value': 'load running value',
+    'variables.load_PPu': 'Puissance active consommée en pu',
+    'variables.load_PRefPu':
+        'Puissance active soutirée à la tension nominale en MW',
+    'variables.load_QPu': 'Puissance réactive consommée en pu',
+    'variables.load_QRefPu':
+        'Puissance réactive soutirée à la tension nominale en Mvar',
+    'variables.load_running_value': 'load_running_value',
 
     // Bus
-    'variables.U_value': 'U value',
-    'variables.Upu_value': 'Upu value',
-    'variables.phi_value': 'phi value',
+    'variables.U_value': 'Tension du noeud en kV',
+    'variables.Upu_value': 'Tension du noeud en pu',
+    'variables.phi_value': 'Phase du noeud en degrés',
 
     // StaticVarCompensator
-    'variables.SVarC_injector_BPu': 'SVarC injector B Pu',
-    'variables.SVarC_injector_PInjPu': 'SVarC injector P Inj Pu',
-    'variables.SVarC_injector_QInjPu': 'SVarC injector Q Inj Pu',
-    'variables.SVarC_injector_UPu': 'SVarC injector U Pu',
-    'variables.SVarC_modeHandling_mode_value': 'SVarC mode Handling mode value',
+    'variables.SVarC_injector_BPu':
+        'Susceptance totale en pu (base SNom, UNom)',
+    'variables.SVarC_injector_PInjPu': 'Puissance active injectée en pu',
+    'variables.SVarC_injector_QInjPu': 'Puissance réactive injectée en pu',
+    'variables.SVarC_injector_UPu': 'Tension nominale en pu',
+    'variables.SVarC_modeHandling_mode_value': 'Mode de régulation',
 
     // --- variableSets --- //
-    'variableSets.Generator': 'Generator',
-    'variableSets.VoltageRegulator': 'Voltage Regulator',
-    'variableSets.GeneratorPQ': 'Generator PQ',
-    'variableSets.GeneratorPV': 'Generator PV',
+    'variableSets.Generator': 'Groupe',
+    'variableSets.VoltageRegulator': 'Régulation de tension',
+    'variableSets.GeneratorPQ': 'Groupe PQ',
+    'variableSets.GeneratorPV': 'Groupe PV',
 };
 
 export default dynamic_mapping_models_fr;
