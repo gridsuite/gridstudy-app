@@ -26,9 +26,9 @@ import { UUID } from 'crypto';
 function parseStudyNotification(payload: NetworkImpactsInfos) {
     const substationsIds = payload.impactedSubstationsIds;
     const deletedEquipments = payload.deletedEquipments;
-    const collectionElementImpacts = payload.collectionElementImpacts;
+    const impactedElementTypes = payload.impactedElementTypes;
 
-    return { substationsIds, deletedEquipments, collectionElementImpacts };
+    return { substationsIds, deletedEquipments, impactedElementTypes };
 }
 
 type FetchEquipmentsPropsType = {
@@ -50,15 +50,10 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
         if (studyUpdatedForce.type === UpdateTypes.STUDY) {
             // study partial update :
             // loading equipments involved in the study modification and updating the network
-            const {
-                substationsIds,
-                deletedEquipments,
-                collectionElementImpacts,
-            } = parseStudyNotification(studyUpdatedForce.eventData.payload);
+            const { substationsIds, deletedEquipments, impactedElementTypes } =
+                parseStudyNotification(studyUpdatedForce.eventData.payload);
 
-            if (
-                collectionElementImpacts?.includes(EQUIPMENT_TYPES.SUBSTATION)
-            ) {
+            if (impactedElementTypes?.includes(EQUIPMENT_TYPES.SUBSTATION)) {
                 // We need to reload all the network
                 fetchAllEquipments(studyUuid, currentNodeUuid, undefined).then(
                     (values) => {

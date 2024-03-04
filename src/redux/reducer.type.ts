@@ -56,7 +56,7 @@ export interface DeletedEquipment {
 export interface NetworkImpactsInfos {
     impactedSubstationsIds: UUID[];
     deletedEquipments: DeletedEquipment[];
-    collectionElementImpacts: string[];
+    impactedElementTypes: string[];
 }
 
 // EventData
