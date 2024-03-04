@@ -27,6 +27,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
     REACTIVE_LIMITS,
+    ADDITIONAL_PROPERTIES,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
 import BatteryModificationForm from './battery-modification-form';
@@ -55,6 +56,13 @@ import {
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -64,6 +72,7 @@ const emptyFormData = {
     [REACTIVE_POWER_SET_POINT]: null,
     ...getReactiveLimitsEmptyFormData(),
     ...getFrequencyRegulationEmptyFormData(true),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -87,6 +96,7 @@ const formSchema = yup
         ...getReactiveLimitsSchema(true),
         ...getFrequencyRegulationSchema(true),
     })
+    .concat(modificationPropertiesSchema)
     .required();
 
 const BatteryModificationDialog = ({
@@ -110,6 +120,19 @@ const BatteryModificationDialog = ({
     });
 
     const { reset, getValues, setValue } = formMethods;
+
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
+    );
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
@@ -142,6 +165,7 @@ const BatteryModificationDialog = ({
                               )
                             : [getRowEmptyFormData(), getRowEmptyFormData()],
                 }),
+                ...getPropertiesFromModification(editData.properties),
             });
         },
         [reset]
@@ -240,12 +264,18 @@ const BatteryModificationDialog = ({
                                 reactiveCapabilityCurveTable:
                                     previousReactiveCapabilityCurveTable,
                             });
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getConcatenatedProperties(value),
+                            }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
                         setBatteryToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset(emptyFormData);
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -258,6 +288,8 @@ const BatteryModificationDialog = ({
             getValues,
             setValue,
             setValuesAndEmptyOthers,
+            reset,
+            getConcatenatedProperties,
         ]
     );
 
@@ -299,7 +331,8 @@ const BatteryModificationDialog = ({
                 isReactiveCapabilityCurveOn
                     ? null
                     : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null
+                isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null,
+                toModificationProperties(battery)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
