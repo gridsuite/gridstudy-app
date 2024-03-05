@@ -21,7 +21,6 @@ import {
 import {
     ActivePowerAdornment,
     gridItem,
-    gridItemWithTooltip,
     GridSection,
     OhmAdornment,
     VoltageAdornment,
@@ -158,23 +157,19 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         ) {
             return intl.formatMessage({ id: 'Off' });
         }
-        return intl.formatMessage({ id: 'NoModification' });
+        return null;
     };
 
-    function getAngleDroopActivePowerControl() {
+    function getAngleDroopActivePowerControlField() {
         if (isEquipementModification) {
-            return gridItemWithTooltip(
+            return (
                 <CheckboxNullableInput
                     name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
                     label={'angleDroopActivePowerControlLabel'}
                     previousValue={previousAngleDropPowerControl()}
                     id={undefined}
                     formProps={undefined}
-                />,
-                intl.formatMessage({
-                    id: 'NoModification',
-                }),
-                4
+                />
             );
         } else {
             return (
@@ -186,7 +181,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         }
     }
 
-    const AngleDroopActivePowerControl = getAngleDroopActivePowerControl();
+    const AngleDroopActivePowerControl = getAngleDroopActivePowerControlField();
 
     const p0Field = (
         <FloatInput
