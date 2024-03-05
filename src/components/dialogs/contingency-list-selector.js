@@ -103,9 +103,6 @@ const ContingencyListSelector = (props) => {
     }, [props.open, props.studyUuid, currentNode, checkedContingencyListUuids]);
 
     useEffect(() => {
-        if (!props.open) {
-            return;
-        }
         if (
             favoriteContingencyListUuids &&
             favoriteContingencyListUuids.length > 0
@@ -139,12 +136,7 @@ const ContingencyListSelector = (props) => {
         } else {
             setContingencyList([]);
         }
-    }, [
-        props.open,
-        favoriteContingencyListUuids,
-        setContingencyList,
-        snackError,
-    ]);
+    }, [favoriteContingencyListUuids, snackError]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null
