@@ -36,6 +36,7 @@ import {
     VOLTAGE_LEVEL,
     X,
     R,
+    ADDITIONAL_PROPERTIES,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -109,6 +110,13 @@ import {
     fetchVoltageLevelsListInfos,
 } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -116,6 +124,7 @@ const emptyFormData = {
     ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -127,6 +136,7 @@ const formSchema = yup
         ...getRatioTapChangerModificationValidationSchema(),
         ...getPhaseTapChangerModificationValidationSchema(),
     })
+    .concat(modificationPropertiesSchema)
     .required();
 
 export const TwoWindingsTransformerModificationDialogTab = {
@@ -170,7 +180,7 @@ const TwoWindingsTransformerModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const computeRatioTapChangerRegulationMode = (
         ratioTapChangerFormValues
@@ -321,6 +331,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     voltageLevelId:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId?.value,
                 }),
+                ...getPropertiesFromModification(twt.properties),
             });
         },
         [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
@@ -627,7 +638,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTap,
                 phaseTap,
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                toModificationProperties(twt)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -690,6 +702,19 @@ const TwoWindingsTransformerModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
+    );
+
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -739,6 +764,8 @@ const TwoWindingsTransformerModificationDialog = ({
                                             twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                                         ),
                                     }),
+                                    [ADDITIONAL_PROPERTIES]:
+                                        getConcatenatedProperties(twt),
                                 }));
                             }
                         }
@@ -753,7 +780,14 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset]
+        [
+            studyUuid,
+            currentNodeUuid,
+            selectedId,
+            editData,
+            reset,
+            getConcatenatedProperties,
+        ]
     );
 
     useEffect(() => {

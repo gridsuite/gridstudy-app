@@ -12,6 +12,7 @@ import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const ShuntCompensatorModificationForm = ({
     shuntCompensatorInfos,
@@ -57,6 +58,10 @@ const ShuntCompensatorModificationForm = ({
             <Grid container spacing={2}>
                 {gridItem(characteristicsForm, 12)}
             </Grid>
+            <PropertiesForm
+                networkElementType={'shuntCompensator'}
+                isModification={true}
+            />
         </>
     );
 };

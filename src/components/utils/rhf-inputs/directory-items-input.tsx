@@ -154,16 +154,18 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
                         <Tooltip
                             title={intl.formatMessage({ id: 'chooseElement' })}
                         >
-                            <IconButton
-                                sx={styles.addDirectoryElements}
-                                size={'small'}
-                                disabled={disable}
-                                onClick={() =>
-                                    setDirectoryItemSelectorOpen(true)
-                                }
-                            >
-                                <FolderIcon />
-                            </IconButton>
+                            <span>
+                                <IconButton
+                                    sx={styles.addDirectoryElements}
+                                    size={'small'}
+                                    disabled={disable}
+                                    onClick={() =>
+                                        setDirectoryItemSelectorOpen(true)
+                                    }
+                                >
+                                    <FolderIcon />
+                                </IconButton>
+                            </span>
                         </Tooltip>
                     </Grid>
                 </Grid>

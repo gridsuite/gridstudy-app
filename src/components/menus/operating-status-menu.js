@@ -171,10 +171,10 @@ const withOperatingStatusMenu =
         }
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
-            (equipmentInfos, equipmentType, dialogTitle) => {
+            (equipmentId, equipmentType, dialogTitle) => {
                 handleClose();
                 onOpenDynamicSimulationEventDialog(
-                    equipmentInfos,
+                    equipmentId,
                     equipmentType,
                     dialogTitle
                 );
@@ -205,6 +205,7 @@ const withOperatingStatusMenu =
                     EQUIPMENT_TYPES.LINE,
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                     EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+                    EQUIPMENT_TYPES.HVDC_LINE,
                 ].includes(equipmentType) && (
                     <CustomMenuItem
                         sx={styles.menuItem}
@@ -253,7 +254,7 @@ const withOperatingStatusMenu =
                 </CustomMenuItem>
                 {enableDeveloperMode && getEventType(equipmentType) && (
                     <DynamicSimulationEventMenuItem
-                        equipmentInfos={equipment.id}
+                        equipmentId={equipment.id}
                         equipmentType={equipmentType}
                         onOpenDynamicSimulationEventDialog={
                             handleOpenDynamicSimulationEventDialog
