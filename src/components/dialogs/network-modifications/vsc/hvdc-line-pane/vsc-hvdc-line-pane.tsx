@@ -151,13 +151,8 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         ) {
             return intl.formatMessage({ id: 'On' });
         }
-        if (
-            previousValues?.hvdcAngleDroopActivePowerControl?.isEnabled ===
-            false
-        ) {
-            return intl.formatMessage({ id: 'Off' });
-        }
-        return null;
+
+        return intl.formatMessage({ id: 'Off' });
     };
 
     function getAngleDroopActivePowerControlField() {
