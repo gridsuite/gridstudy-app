@@ -55,6 +55,7 @@ import {
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
+import { UpdateTypes } from 'redux/reducer.type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -794,7 +795,8 @@ export function DiagramPane({
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
             } else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'study'
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                UpdateTypes.STUDY
             ) {
                 // FM if we want to reload data more precisely we need more information from notifications
                 updateDiagramsByCurrentNode();
