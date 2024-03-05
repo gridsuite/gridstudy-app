@@ -441,7 +441,7 @@ export const formatcomponentResult = (componentResults: ComponentResult[]) => {
             iterationCount: componentResult.iterationCount,
             id: componentResult.slackBusResults
                 ?.map((slackBus) => slackBus.id)
-                .join(', '),
+                .join('| '),
             activePowerMismatch: componentResult.slackBusResults
                 ?.map((slackBus) => slackBus.activePowerMismatch)
                 .reduce((prev, current) => prev + current, 0),
