@@ -11,6 +11,7 @@ import {
     PREFIX_STUDY_QUERIES,
 } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { getSortValue } from 'hooks/use-aggrid-sort';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
@@ -40,14 +41,6 @@ export function getLoadFlowParameters(studyUuid) {
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
     return backendFetchJson(getLfParams);
-}
-
-export function getLoadFlowProvider(studyUuid) {
-    console.info('get load flow provider');
-    const getLoadFlowProviderUrl =
-        getStudyUrl(studyUuid) + '/loadflow/provider';
-    console.debug(getLoadFlowProviderUrl);
-    return backendFetchText(getLoadFlowProviderUrl);
 }
 
 export function setLoadFlowProvider(studyUuid, newProvider) {
@@ -103,15 +96,47 @@ export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchLoadFlowResult(studyUuid, currentNodeUuid) {
+export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
     console.info(
         `Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
+    const { sort, filters } = queryParams || {};
+    const params = new URLSearchParams({});
+
+    if (sort?.colKey && sort?.sortWay) {
+        params.append('sort', `${sort.colKey},${getSortValue(sort.sortWay)}`);
+    }
+
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
+    }
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/loadflow/result';
-    console.debug(url);
-    return backendFetchJson(url);
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendFetchJson(urlWithParams);
+}
+
+export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
+    console.info(`Fetching limit violations ...`);
+    const { sort, filters } = queryParams || {};
+    const params = new URLSearchParams({});
+
+    if (sort?.colKey && sort?.sortWay) {
+        params.append('sort', `${sort.colKey},${getSortValue(sort.sortWay)}`);
+    }
+
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
+    }
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/limit-violations';
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendFetchJson(urlWithParams);
 }
 
 export function invalidateLoadFlowStatus(studyUuid) {

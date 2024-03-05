@@ -14,7 +14,7 @@ import {
     HIGH_VOLTAGE_LIMIT,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
-    NOMINAL_VOLTAGE,
+    NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
@@ -35,6 +35,7 @@ import { IntegerInput } from '@gridsuite/commons-ui';
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -89,7 +90,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const nominalVoltageField = (
         <FloatInput
-            name={NOMINAL_VOLTAGE}
+            name={NOMINAL_V}
             label={'NominalVoltage'}
             adornment={VoltageAdornment}
         />
@@ -164,6 +165,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             </Grid>
             <GridSection title={'Coupling_Omnibus'} />
             <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
+            <PropertiesForm networkElementType={'voltageLevel'} />
         </>
     );
 };

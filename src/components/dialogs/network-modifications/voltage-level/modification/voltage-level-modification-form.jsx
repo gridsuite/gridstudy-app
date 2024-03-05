@@ -14,7 +14,7 @@ import {
     HIGH_VOLTAGE_LIMIT,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
-    NOMINAL_VOLTAGE,
+    NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import { TextInput } from '@gridsuite/commons-ui';
@@ -28,6 +28,7 @@ import {
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
     const voltageLevelIdField = (
@@ -77,11 +78,11 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
 
     const nominalVoltageField = (
         <FloatInput
-            name={NOMINAL_VOLTAGE}
+            name={NOMINAL_V}
             label={'NominalVoltage'}
             adornment={VoltageAdornment}
             clearable
-            previousValue={voltageLevelInfos?.nominalVoltage}
+            previousValue={voltageLevelInfos?.nominalV}
         />
     );
 
@@ -143,6 +144,10 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
                 {gridItem(lowShortCircuitCurrentLimitField, 4)}
                 {gridItem(highShortCircuitCurrentLimitField, 4)}
             </Grid>
+            <PropertiesForm
+                networkElementType={'voltageLevel'}
+                isModification={true}
+            />
         </>
     );
 };

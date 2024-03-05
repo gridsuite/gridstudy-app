@@ -18,24 +18,25 @@ import {
     ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
+    B,
     PHASE_TAP_CHANGER,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
+    RATED_U1,
+    RATED_U2,
     RATIO_TAP_CHANGER,
     REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
+    X,
+    R,
+    ADDITIONAL_PROPERTIES,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -109,6 +110,13 @@ import {
     fetchVoltageLevelsListInfos,
 } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -116,6 +124,7 @@ const emptyFormData = {
     ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
+    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -127,6 +136,7 @@ const formSchema = yup
         ...getRatioTapChangerModificationValidationSchema(),
         ...getPhaseTapChangerModificationValidationSchema(),
     })
+    .concat(modificationPropertiesSchema)
     .required();
 
 export const TwoWindingsTransformerModificationDialogTab = {
@@ -170,7 +180,7 @@ const TwoWindingsTransformerModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const computeRatioTapChangerRegulationMode = (
         ratioTapChangerFormValues
@@ -223,16 +233,12 @@ const TwoWindingsTransformerModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: twt.equipmentName?.value,
                 ...getCharacteristicsFormData({
-                    seriesResistance: twt.seriesResistance?.value,
-                    seriesReactance: twt.seriesReactance?.value,
-                    magnetizingConductance: unitToMicroUnit(
-                        twt.magnetizingConductance?.value
-                    ),
-                    magnetizingSusceptance: unitToMicroUnit(
-                        twt.magnetizingSusceptance?.value
-                    ),
-                    ratedVoltage1: twt.ratedVoltage1?.value,
-                    ratedVoltage2: twt.ratedVoltage2?.value,
+                    r: twt.r?.value,
+                    x: twt.x?.value,
+                    g: unitToMicroUnit(twt.g?.value),
+                    b: unitToMicroUnit(twt.b?.value),
+                    ratedU1: twt.ratedU1?.value,
+                    ratedU2: twt.ratedU2?.value,
                     ratedS: twt.ratedS?.value,
                 }),
                 ...getLimitsFormData({
@@ -325,6 +331,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     voltageLevelId:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId?.value,
                 }),
+                ...getPropertiesFromModification(twt.properties),
             });
         },
         [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
@@ -619,23 +626,20 @@ const TwoWindingsTransformerModificationDialog = ({
                 currentNodeUuid,
                 selectedId,
                 toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
-                toModificationOperation(characteristics[SERIES_RESISTANCE]),
-                toModificationOperation(characteristics[SERIES_REACTANCE]),
-                toModificationOperation(
-                    microUnitToUnit(characteristics[MAGNETIZING_CONDUCTANCE])
-                ),
-                toModificationOperation(
-                    microUnitToUnit(characteristics[MAGNETIZING_SUSCEPTANCE])
-                ),
+                toModificationOperation(characteristics[R]),
+                toModificationOperation(characteristics[X]),
+                toModificationOperation(microUnitToUnit(characteristics[G])),
+                toModificationOperation(microUnitToUnit(characteristics[B])),
                 toModificationOperation(characteristics[RATED_S]),
-                toModificationOperation(characteristics[RATED_VOLTAGE_1]),
-                toModificationOperation(characteristics[RATED_VOLTAGE_2]),
+                toModificationOperation(characteristics[RATED_U1]),
+                toModificationOperation(characteristics[RATED_U2]),
                 currentLimits1,
                 currentLimits2,
                 ratioTap,
                 phaseTap,
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                toModificationProperties(twt)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -698,6 +702,19 @@ const TwoWindingsTransformerModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
+    );
+
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -747,6 +764,8 @@ const TwoWindingsTransformerModificationDialog = ({
                                             twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                                         ),
                                     }),
+                                    [ADDITIONAL_PROPERTIES]:
+                                        getConcatenatedProperties(twt),
                                 }));
                             }
                         }
@@ -761,7 +780,14 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset]
+        [
+            studyUuid,
+            currentNodeUuid,
+            selectedId,
+            editData,
+            reset,
+            getConcatenatedProperties,
+        ]
     );
 
     useEffect(() => {

@@ -112,7 +112,8 @@ export const TWTRegulatingTerminalEditor = forwardRef(
             setOpenTWTRegulatingTerminalPopup,
         ] = useState(true);
 
-        const isRatioTapChanger = colDef.field === 'RatioRegulatingTerminal';
+        const isRatioTapChanger =
+            colDef.field === 'ratioTapChanger.ratioRegulatingTerminal';
 
         const tapChangerType = isRatioTapChanger
             ? 'ratioTapChanger'

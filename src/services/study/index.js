@@ -183,14 +183,6 @@ export function searchEquipmentsInfos(
     );
 }
 
-export function fetchLimitViolations(studyUuid, currentNodeUuid) {
-    console.info(`Fetching limit violations ...`);
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/limit-violations';
-    return backendFetchJson(url);
-}
-
 export function fetchContingencyCount(
     studyUuid,
     currentNodeUuid,

@@ -9,22 +9,23 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    ADDITIONAL_PROPERTIES,
     CHARACTERISTICS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     EQUIPMENT_NAME,
     LIMITS,
     PERMANENT_LIMIT,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
-    SHUNT_CONDUCTANCE_1,
-    SHUNT_CONDUCTANCE_2,
-    SHUNT_SUSCEPTANCE_1,
-    SHUNT_SUSCEPTANCE_2,
+    R,
+    G1,
+    G2,
+    B1,
+    B2,
     TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
+    X,
 } from 'components/utils/field-constants';
 import { FormProvider, useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
@@ -60,6 +61,13 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import {
+    emptyProperties,
+    getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
     LIMITS_TAB: 1,
@@ -106,6 +114,7 @@ const LineModificationDialog = ({
                 displayConnectivity
             ),
             ...getLimitsEmptyFormData(),
+            ...emptyProperties,
         }),
         [displayConnectivity]
     );
@@ -121,6 +130,7 @@ const LineModificationDialog = ({
             ),
             ...getLimitsValidationSchema(),
         })
+        .concat(modificationPropertiesSchema)
         .required();
 
     const formMethods = useForm({
@@ -128,7 +138,7 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (line, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
@@ -138,20 +148,12 @@ const LineModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
                 ...getCharacteristicsWithOutConnectivityFormData({
-                    seriesResistance: line.seriesResistance?.value ?? null,
-                    seriesReactance: line.seriesReactance?.value ?? null,
-                    shuntConductance1: unitToMicroUnit(
-                        line.shuntConductance1?.value ?? null
-                    ),
-                    shuntSusceptance1: unitToMicroUnit(
-                        line.shuntSusceptance1?.value ?? null
-                    ),
-                    shuntConductance2: unitToMicroUnit(
-                        line.shuntConductance2?.value ?? null
-                    ),
-                    shuntSusceptance2: unitToMicroUnit(
-                        line.shuntSusceptance2?.value ?? null
-                    ),
+                    r: line.r?.value ?? null,
+                    x: line.x?.value ?? null,
+                    g1: unitToMicroUnit(line.g1?.value ?? null),
+                    b1: unitToMicroUnit(line.b1?.value ?? null),
+                    g2: unitToMicroUnit(line.g2?.value ?? null),
+                    b2: unitToMicroUnit(line.b2?.value ?? null),
                 }),
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
@@ -171,6 +173,7 @@ const LineModificationDialog = ({
                               )
                     ),
                 }),
+                ...getPropertiesFromModification(line.properties),
             });
         },
         [reset]
@@ -246,16 +249,17 @@ const LineModificationDialog = ({
                 currentNodeUuid,
                 selectedId,
                 sanitizeString(line[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_1]),
-                microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_2]),
-                microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_2]),
+                characteristics[R],
+                characteristics[X],
+                microUnitToUnit(characteristics[G1]),
+                microUnitToUnit(characteristics[B1]),
+                microUnitToUnit(characteristics[G2]),
+                microUnitToUnit(characteristics[B2]),
                 currentLimits1,
                 currentLimits2,
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                toModificationProperties(line)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -272,6 +276,19 @@ const LineModificationDialog = ({
             currentNode,
             snackError,
         ]
+    );
+
+    const getConcatenatedProperties = useCallback(
+        (equipment) => {
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            return mergeModificationAndEquipmentProperties(
+                modificationProperties,
+                equipment
+            );
+        },
+        [getValues]
     );
 
     const clear = useCallback(() => {
@@ -312,6 +329,8 @@ const LineModificationDialog = ({
                                                 )
                                             ),
                                     }),
+                                    [ADDITIONAL_PROPERTIES]:
+                                        getConcatenatedProperties(line),
                                 }));
                             }
                         }
@@ -320,13 +339,22 @@ const LineModificationDialog = ({
                     .catch(() => {
                         setLineToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        reset(emptyFormData);
                     });
             } else {
                 setLineToModify(null);
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData]
+        [
+            studyUuid,
+            currentNodeUuid,
+            selectedId,
+            editData,
+            reset,
+            emptyFormData,
+            getConcatenatedProperties,
+        ]
     );
 
     useEffect(() => {
@@ -366,26 +394,18 @@ const LineModificationDialog = ({
     };
 
     const handleLineSegmentsBuildSubmit = (data) => {
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
-            data[TOTAL_RESISTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
-            data[TOTAL_REACTANCE],
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
-        setValue(
-            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
-            data[TOTAL_SUSCEPTANCE] / 2,
-            { shouldDirty: true }
-        );
+        setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${X}`, data[TOTAL_REACTANCE], {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${B1}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
+        setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
+            shouldDirty: true,
+        });
     };
 
     const headerAndTabs = (
