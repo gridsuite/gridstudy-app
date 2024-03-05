@@ -44,10 +44,12 @@ import {
     formatNewParams,
     fromVoltageInitParamsDataToFormValues,
 } from './voltage-init-utils';
-import DirectoryItemSelector from 'components/directory-item-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { mergeSx } from 'components/utils/functions';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -436,6 +438,9 @@ export const VoltageInitParameters = ({
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

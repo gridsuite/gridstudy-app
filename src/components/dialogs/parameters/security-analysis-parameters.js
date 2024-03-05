@@ -24,9 +24,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { inputAdornment } from './util/make-component-utils';
 import { mergeSx } from '../../utils/functions';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import DirectoryItemSelector from '../../directory-item-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchSecurityAnalysisParameters } from '../../../services/security-analysis';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 const formatValues = (values, isDivision) => {
     let result = {};
@@ -384,6 +386,9 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

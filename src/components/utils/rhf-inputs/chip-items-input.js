@@ -14,10 +14,10 @@ import {
     MidFormError,
     OverflowableText,
     useSnackMessage,
+    RawReadOnlyInput,
 } from '@gridsuite/commons-ui';
 import React, { useCallback, useState } from 'react';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
-import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { isFieldRequired } from '../utils';
 
 const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
@@ -46,7 +46,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
             if (getValues(name).find((v) => v === value) !== undefined) {
                 snackError({
                     messageTxt: '',
-                    headerId: 'ElementAlreadyUsed',
+                    headerId: 'directory_items_input/ElementAlreadyUsed',
                 });
             } else {
                 append(value);

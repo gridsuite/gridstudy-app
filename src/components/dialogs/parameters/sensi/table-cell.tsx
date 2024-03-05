@@ -6,7 +6,7 @@
  */
 
 import { TableCell } from '@mui/material';
-import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import React from 'react';
 import {
     SelectInput,
@@ -14,6 +14,8 @@ import {
     FloatInput,
     TextInput,
 } from '@gridsuite/commons-ui';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 function EditableTableCell(
     arrayFormName: string,
@@ -44,6 +46,9 @@ function EditableTableCell(
                     label={undefined}
                     itemFilter={undefined}
                     onRowChanged={handleDirectoryItemsChange}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
             {column.menuItems && (

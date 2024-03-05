@@ -71,7 +71,9 @@ import {
 import Alert from '@mui/material/Alert';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import DirectoryItemSelector from 'components/directory-item-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -724,6 +726,9 @@ export const SensitivityAnalysisParameters = ({
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>
