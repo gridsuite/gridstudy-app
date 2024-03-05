@@ -28,7 +28,11 @@ import { ReduxState } from 'redux/reducer.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
+import {
+    getPrimarySort,
+    SORT_WAYS,
+    useAgGridSort,
+} from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import {
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
@@ -82,8 +86,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         colKey: getIdType(tabIndex),
         sortWay: SORT_WAYS.desc,
-        secColKey: getIdType(tabIndex),
-        secSortWay: SORT_WAYS.desc,
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
@@ -118,9 +120,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return fetchLimitViolations(studyUuid, nodeUuid, {
             sort: {
                 colKey: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[
-                    sortConfig.colKey
+                    getPrimarySort(sortConfig).colKey
                 ],
-                sortWay: sortConfig.sortWay,
+                sortWay: getPrimarySort(sortConfig).sortWay,
             },
             filters: updatedFilters,
         });

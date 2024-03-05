@@ -8,7 +8,7 @@
 import { ColDef } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { FilterSelectorType } from 'hooks/use-aggrid-row-filter';
-import { SortConfigType } from 'hooks/use-aggrid-sort';
+import { ColumnSortConfig } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
 
 export interface ComponentResult {
@@ -29,7 +29,7 @@ export interface LoadFlowResult {
 
 export type QueryParamsType = Record<
     string,
-    string | number | SortConfigType | FilterSelectorType[]
+    string | number | ColumnSortConfig | FilterSelectorType[]
 >;
 
 export enum LimitTypes {

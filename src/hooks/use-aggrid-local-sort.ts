@@ -8,21 +8,22 @@
 import { AgGridReact } from 'ag-grid-react';
 import { useCallback, useEffect } from 'react';
 import {
-    SortConfigType,
+    ColumnSortConfig,
     SortPropsType,
     getSortValue,
     useAgGridSort,
+    getPrimarySort,
 } from './use-aggrid-sort';
 
 export const useAgGridLocalSort = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
-    initSortConfig: SortConfigType
+    initSortConfig: ColumnSortConfig
 ): SortPropsType => {
     const { onSortChanged, sortConfig, initSort } =
         useAgGridSort(initSortConfig);
 
     const setSortInAgGrid = useCallback(
-        (sortConfig: SortConfigType) => {
+        (sortConfig: ColumnSortConfig) => {
             gridRef.current?.columnApi?.applyColumnState({
                 state: [
                     {
@@ -37,7 +38,7 @@ export const useAgGridLocalSort = (
     );
 
     useEffect(() => {
-        setSortInAgGrid(sortConfig);
+        setSortInAgGrid(getPrimarySort(sortConfig));
     }, [sortConfig, setSortInAgGrid]);
 
     return { onSortChanged, sortConfig, initSort };

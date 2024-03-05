@@ -11,8 +11,11 @@ import {
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getSortValue } from '../../hooks/use-aggrid-sort';
-import { isBlankOrEmpty } from '../../components/utils/validation-functions';
+import {
+    getPrimarySort,
+    getSecondarySort,
+    getSortValue,
+} from '../../hooks/use-aggrid-sort';
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(
@@ -122,13 +125,17 @@ export function fetchShortCircuitAnalysisPagedResults({
     urlSearchParams.append('page', page);
 
     if (sort) {
-        const { colKey, sortWay, secColKey, secSortWay } = sort;
-        urlSearchParams.append('sort', `${colKey},${getSortValue(sortWay)}`);
+        const primarySort = getPrimarySort(sort);
+        urlSearchParams.append(
+            'sort',
+            `${primarySort.colKey},${getSortValue(primarySort.sortWay)}`
+        );
 
-        if (!isBlankOrEmpty(secColKey)) {
+        const secSort = getSecondarySort(sort);
+        if (secSort !== undefined) {
             urlSearchParams.append(
                 'sort',
-                `${secColKey},${getSortValue(secSortWay)}`
+                `${secSort.colKey},${getSortValue(secSort.sortWay)}`
             );
         }
     }

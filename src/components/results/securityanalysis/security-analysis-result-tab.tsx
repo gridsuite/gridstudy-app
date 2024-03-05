@@ -40,7 +40,11 @@ import {
     getIdType,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import {
+    getPrimarySort,
+    SORT_WAYS,
+    useAgGridSort,
+} from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
@@ -100,8 +104,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
         colKey: getIdType(tabIndex, nmkType),
         sortWay: SORT_WAYS.asc,
-        secColKey: '',
-        secSortWay: SORT_WAYS.asc,
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
@@ -134,12 +136,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             }
 
             if (sortConfig) {
-                const { sortWay, colKey, secSortWay, secColKey } = sortConfig;
+                const { colKey, sortWay, secondary } =
+                    getPrimarySort(sortConfig);
                 queryParams['sort'] = {
                     colKey: FROM_COLUMN_TO_FIELD[colKey],
                     sortWay,
-                    secColKey: FROM_COLUMN_TO_FIELD[secColKey],
-                    secSortWay,
+                    secondary: secondary,
                 };
             }
 

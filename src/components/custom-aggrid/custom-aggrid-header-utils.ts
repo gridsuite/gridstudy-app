@@ -7,6 +7,7 @@
 
 import { CustomColDef, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
+import { getPrimarySort, getSecondarySort } from '../../hooks/use-aggrid-sort';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
@@ -30,11 +31,15 @@ export const makeAgGridCustomHeaderColumn = ({
 
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;
-    const isCurrentColumnSorted = sortConfig?.colKey === field;
-    const isColumnSecondarySorted = sortConfig?.secColKey === field;
+    const primarySortConfig =
+        sortConfig !== undefined ? getPrimarySort(sortConfig) : undefined;
+    const secondarySortConfig =
+        sortConfig !== undefined ? getSecondarySort(sortConfig) : undefined;
+    const isSorted = primarySortConfig?.colKey === field;
+    const isSecondarySorted = secondarySortConfig?.colKey === field;
 
     let minWidth = 75;
-    if (isSortable && (isCurrentColumnSorted || isColumnSecondarySorted)) {
+    if (isSortable && (isSorted || isSecondarySorted)) {
         minWidth += 30;
     }
     if (isFilterable) {
@@ -52,26 +57,8 @@ export const makeAgGridCustomHeaderColumn = ({
             isSortable,
             sortParams: {
                 sortConfig,
-                onSortChanged: (newSortValue: number = 0) => {
-                    if (sortConfig !== undefined) {
-                        if (secondarySort) {
-                            // only the secondary sort changed
-                            onSortChanged(
-                                sortConfig.colKey,
-                                sortConfig.sortWay,
-                                field,
-                                newSortValue
-                            );
-                        } else {
-                            // only the primary sort changed
-                            onSortChanged(
-                                field,
-                                newSortValue,
-                                sortConfig.secColKey,
-                                sortConfig.secSortWay
-                            );
-                        }
-                    }
+                onSortWayChanged: (newSortWayValue: number = 0) => {
+                    onSortChanged(field, newSortWayValue, secondarySort);
                 },
             },
             isFilterable,

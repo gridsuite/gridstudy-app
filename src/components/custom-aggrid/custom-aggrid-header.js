@@ -20,7 +20,11 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
+import {
+    getPrimarySort,
+    getSecondarySort,
+    SORT_WAYS as SORT_WAY,
+} from '../../hooks/use-aggrid-sort';
 import {
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
@@ -72,20 +76,19 @@ const CustomHeaderComponent = ({
     } = filterParams;
 
     const {
-        sortConfig: {
-            colKey: sortColKey,
-            sortWay,
-            secColKey: secSortColKey,
-            secSortWay,
-        } = {}, // used to get sort data
-        onSortChanged = () => {}, // used to handle sort change
+        sortConfig, // used to get sort data
+        onSortWayChanged = () => {}, // used to handle sort change
     } = sortParams;
 
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT && !!filterOptions?.length;
     const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
-    const isColumnSorted = sortColKey === field;
-    const isColumnSecSorted = secSortColKey === field;
+    const primarySortConfig =
+        sortConfig !== undefined ? getPrimarySort(sortConfig) : undefined;
+    const secondarySortConfig =
+        sortConfig !== undefined ? getSecondarySort(sortConfig) : undefined;
+    const isColumnSorted = primarySortConfig?.colKey === field;
+    const isColumnSecSorted = secondarySortConfig?.colKey === field;
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -153,30 +156,36 @@ const CustomHeaderComponent = ({
         });
     };
 
-    const handleSortChange = useCallback(() => {
-        let newSort;
+    const handleSortWayChange = useCallback(() => {
+        let newSortWay;
         if (isColumnSorted) {
             // primary sort changed
-            if (sortWay < 0) {
-                newSort = SORT_WAY.asc;
+            if (primarySortConfig.sortWay < 0) {
+                newSortWay = SORT_WAY.asc;
             } else {
-                newSort = SORT_WAY.desc;
+                newSortWay = SORT_WAY.desc;
             }
-        } else if (isColumnSecSorted) {
+        } else if (secondarySortConfig && isColumnSecSorted) {
             // secondary sort changed
-            if (secSortWay < 0) {
-                newSort = SORT_WAY.asc;
+            if (secondarySortConfig.sortWay < 0) {
+                newSortWay = SORT_WAY.asc;
             } else {
-                newSort = SORT_WAY.desc;
+                newSortWay = SORT_WAY.desc;
             }
         } else {
-            newSort = SORT_WAY.asc;
+            newSortWay = SORT_WAY.asc;
         }
 
-        if (typeof onSortChanged === 'function') {
-            onSortChanged(newSort);
+        if (typeof onSortWayChanged === 'function') {
+            onSortWayChanged(newSortWay);
         }
-    }, [isColumnSorted, isColumnSecSorted, onSortChanged, sortWay, secSortWay]);
+    }, [
+        isColumnSorted,
+        isColumnSecSorted,
+        onSortWayChanged,
+        primarySortConfig,
+        secondarySortConfig,
+    ]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
@@ -239,7 +248,7 @@ const CustomHeaderComponent = ({
                             height: '100%',
                             overflow: 'hidden',
                         }}
-                        {...(isSortable && { onClick: handleSortChange })}
+                        {...(isSortable && { onClick: handleSortWayChange })}
                     >
                         <Grid item sx={styles.displayName}>
                             {displayName}
@@ -249,7 +258,8 @@ const CustomHeaderComponent = ({
                                 {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {sortWay === SORT_WAY.asc ? (
+                                            {primarySortConfig.sortWay ===
+                                            SORT_WAY.asc ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
@@ -264,7 +274,8 @@ const CustomHeaderComponent = ({
                                 {isColumnSecSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {secSortWay === SORT_WAY.asc ? (
+                                            {secondarySortConfig?.sortWay ===
+                                            SORT_WAY.asc ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
