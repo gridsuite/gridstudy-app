@@ -41,7 +41,6 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { LocalizedCountries } from 'components/utils/localized-countries-hook';
 import { NOMINAL_V } from '../../utils/field-constants';
 import CountryCellRenderer from '../country-cell-render';
 
