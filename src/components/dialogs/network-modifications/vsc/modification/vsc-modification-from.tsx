@@ -23,7 +23,8 @@ import { gridItem } from 'components/dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
-import { UpdateReactiveCapabilityCurveTable } from '../converter-station/converter-station-utils';
+import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
+
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -33,8 +34,7 @@ interface VscModificationFormProps {
     vscToModify: VscModificationInfo | null;
     setTabIndex: React.Dispatch<React.SetStateAction<number>>;
     tabIndexesWithError: number[];
-    updatePreviousReactiveCapabilityCurveTableConverterStation1?: UpdateReactiveCapabilityCurveTable;
-    updatePreviousReactiveCapabilityCurveTableConverterStation2?: UpdateReactiveCapabilityCurveTable;
+    updatePreviousReactiveCapabilityCurveTableConverterStation: UpdateReactiveCapabilityCurveTableConverterStation;
 }
 
 export const VscModificationForm: FunctionComponent<
@@ -47,8 +47,7 @@ export const VscModificationForm: FunctionComponent<
     equipmentId,
     vscToModify,
     tabIndexesWithError,
-    updatePreviousReactiveCapabilityCurveTableConverterStation1 = undefined,
-    updatePreviousReactiveCapabilityCurveTableConverterStation2 = undefined,
+    updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
     const vscIdField = (
         <TextField
@@ -116,7 +115,9 @@ export const VscModificationForm: FunctionComponent<
                     isModification
                     previousValues={vscToModify?.converterStation1}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={
-                        updatePreviousReactiveCapabilityCurveTableConverterStation1
+                        (action, index) => {
+                            updatePreviousReactiveCapabilityCurveTableConverterStation(action, index, 'converterStation1')
+                        }
                     }
                 />
             </Box>
@@ -132,7 +133,9 @@ export const VscModificationForm: FunctionComponent<
                     isModification
                     previousValues={vscToModify?.converterStation2}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={
-                        updatePreviousReactiveCapabilityCurveTableConverterStation2
+                        (action, index) => {
+                            updatePreviousReactiveCapabilityCurveTableConverterStation(action, index, 'converterStation2')
+                        }
                     }
                 />
             </Box>

@@ -311,30 +311,14 @@ const VscModificationDialog: React.FC<any> = ({
         };
     };
 
-    const updatePreviousReactiveCapabilityCurveTableConverterStation1 = (
+    const updatePreviousReactiveCapabilityCurveTableConverterStation = (
         action: string,
-        index: number
+        index: number,
+        converterStationName: 'converterStation1' | 'converterStation2'
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
-                previousValue?.converterStation1?.reactiveCapabilityCurveTable;
-            return updateConverterStationCapabilityCurveTable(
-                newRccValues,
-                action,
-                index,
-                previousValue
-            );
-        });
-    };
-
-    const updatePreviousReactiveCapabilityCurveTableConverterStation2 = (
-        action: string,
-        index: number
-    ) => {
-        setVcsToModify((previousValue: VscModificationInfo | null) => {
-            const newRccValues =
-                previousValue?.converterStation2?.reactiveCapabilityCurveTable;
-
+                previousValue?.[converterStationName]?.reactiveCapabilityCurveTable;
             return updateConverterStationCapabilityCurveTable(
                 newRccValues,
                 action,
@@ -393,11 +377,8 @@ const VscModificationDialog: React.FC<any> = ({
                         setTabIndex={setTabIndex}
                         vscToModify={vscToModify}
                         tabIndexesWithError={[]}
-                        updatePreviousReactiveCapabilityCurveTableConverterStation1={
-                            updatePreviousReactiveCapabilityCurveTableConverterStation1
-                        }
-                        updatePreviousReactiveCapabilityCurveTableConverterStation2={
-                            updatePreviousReactiveCapabilityCurveTableConverterStation2
+                        updatePreviousReactiveCapabilityCurveTableConverterStation={
+                            updatePreviousReactiveCapabilityCurveTableConverterStation
                         }
                     ></VscModificationForm>
                 )}

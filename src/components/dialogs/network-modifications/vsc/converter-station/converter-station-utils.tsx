@@ -49,7 +49,13 @@ import { toModificationOperation } from '../../../../utils/utils';
 
 export type UpdateReactiveCapabilityCurveTable = (
     action: string,
-    index: number
+    index: number,
+) => void;
+
+export type UpdateReactiveCapabilityCurveTableConverterStation = (
+    action: string,
+    index: number,
+    converterStationName: 'converterStation1' | 'converterStation2',
 ) => void;
 
 export interface ReactiveCapabilityCurvePointsData {

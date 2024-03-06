@@ -32,9 +32,11 @@ import Grid from '@mui/material/Grid';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
-import { ConverterStationElementModificationInfos } from './converter-station-utils';
+import {
+    ConverterStationElementModificationInfos, UpdateReactiveCapabilityCurveTable,
+    UpdateReactiveCapabilityCurveTableConverterStation
+} from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
-import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 
 interface VscConverterStationPaneProps {
     id: string;
