@@ -112,10 +112,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }, [tabIndex, nmkType]);
 
-    const columnToFieldMapping = getColumnToFieldMapping(resultType);
-
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        columnToFieldMapping,
+        getColumnToFieldMapping(resultType),
         () => {
             setPage(0);
         }
@@ -138,6 +136,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
             if (sortConfig) {
                 const { sortWay, colKey } = sortConfig;
+                const columnToFieldMapping =
+                    getColumnToFieldMapping(resultType);
                 queryParams['sort'] = {
                     colKey: columnToFieldMapping[colKey],
                     sortWay,
@@ -154,15 +154,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams
             );
         },
-        [
-            page,
-            tabIndex,
-            rowsPerPage,
-            sortConfig,
-            filterSelector,
-            columnToFieldMapping,
-            resultType,
-        ]
+        [page, tabIndex, rowsPerPage, sortConfig, filterSelector, resultType]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(

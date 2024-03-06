@@ -594,23 +594,6 @@ export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
     'securityAnalysisResult',
 ];
 
-export enum RESULT_TYPE {
-    N = 'N',
-    NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
-    NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
-}
-
-export const getColumnToFieldMapping = (resultType: RESULT_TYPE) => {
-    switch (resultType) {
-        case RESULT_TYPE.N:
-            return FROM_COLUMN_TO_FIELD_N;
-        case RESULT_TYPE.NMK_CONTINGENCIES:
-            return FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES;
-        case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
-            return FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS;
-    }
-};
-
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
     status: 'result.status',
@@ -654,6 +637,23 @@ export enum NMK_TYPE {
     CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
     CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
 }
+
+export enum RESULT_TYPE {
+    N = 'N',
+    NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
+    NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
+}
+
+export const getColumnToFieldMapping = (resultType: RESULT_TYPE) => {
+    switch (resultType) {
+        case RESULT_TYPE.N:
+            return FROM_COLUMN_TO_FIELD_N;
+        case RESULT_TYPE.NMK_CONTINGENCIES:
+            return FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES;
+        case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
+            return FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS;
+    }
+};
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
