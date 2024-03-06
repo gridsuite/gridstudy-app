@@ -338,7 +338,11 @@
     "DynamicSimulationEventUpdating": "Updating event ...",
     "DynamicSimulationEventDeleting": "Deleting event ...",
     "DynamicSimulationTabTimeSeries": "Curves",
-    "DynamicSimulationTabTimeStatus": "Status",
+    "DynamicSimulationTabTimeline": "Chronology",
+    "DynamicSimulationTabStatus": "Status",
+    "DynamicSimulationTimelineEventTime": "Instant (s)",
+    "DynamicSimulationTimelineEventModelName": "Equipment/Model",
+    "DynamicSimulationTimelineEventModelMessage": "Message",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",

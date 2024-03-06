@@ -102,6 +102,7 @@ import {
 import {
     fetchAuthorizationCodeFlowFeatureFlag,
     fetchDefaultParametersValues,
+    fetchIdpSettings,
 } from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import { defaultOptionalServicesState } from 'redux/reducer';
@@ -410,7 +411,7 @@ const App = () => {
                 return initializeAuthenticationProd(
                     dispatch,
                     initialMatchSilentRenewCallbackUrl != null,
-                    fetch('idpSettings.json'),
+                    fetchIdpSettings(),
                     fetchValidateUser,
                     authorizationCodeFlowEnabled,
                     initialMatchSigninCallbackUrl != null
