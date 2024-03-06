@@ -241,8 +241,9 @@ const VscModificationDialog: React.FC<any> = ({
         [
             studyUuid,
             currentNodeUuid,
-            getValues,
             setValue,
+            getValues,
+            snackError,
             setValuesAndEmptyOthers,
         ]
     );
