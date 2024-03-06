@@ -33,7 +33,7 @@ const styles = {
     },
 };
 
-const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
+const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
     const intl = useIntl();
     const gridRef = useRef(null);
 
@@ -118,9 +118,9 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
     );
 };
 
-DynamicSimulationResultTable.propTypes = {
+DynamicSimulationResultSynthesis.propTypes = {
     nodeUuid: PropTypes.string,
     studyUuid: PropTypes.string,
 };
 
-export default DynamicSimulationResultTable;
+export default DynamicSimulationResultSynthesis;
