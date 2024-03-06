@@ -137,7 +137,7 @@ const getTwtRatioRegulationModeId = (twt) => {
         return twt.ratioTapChanger.regulationMode;
     }
     // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
-    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
+    if (!twt?.ratioTapChanger?.hasLoadTapChangingCapabilities) {
         return null;
     }
     //otherwise, we compute it
@@ -155,11 +155,11 @@ const hasTwtRatioTapChanger = (params) => {
 };
 
 const isTwtRatioOnload = (params) => {
-    const loadTapChangingCapabilities =
-        params.data?.ratioTapChanger?.loadTapChangingCapabilities;
+    const hasLoadTapChangingCapabilities =
+        params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities;
     return (
-        loadTapChangingCapabilities === true ||
-        loadTapChangingCapabilities === 1
+        hasLoadTapChangingCapabilities === true ||
+        hasLoadTapChangingCapabilities === 1
     );
 };
 
@@ -766,10 +766,11 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChangingCapabilities',
-                field: 'ratioTapChanger.loadTapChangingCapabilities',
+                id: 'HasLoadTapChangingCapabilities',
+                field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
                 valueGetter: (params) =>
-                    params?.data?.ratioTapChanger?.loadTapChangingCapabilities,
+                    params?.data?.ratioTapChanger
+                        ?.hasLoadTapChangingCapabilities,
                 cellRenderer: BooleanCellRenderer,
                 editable: (params) =>
                     isEditable(params) && hasTwtRatioTapChanger(params),
@@ -778,7 +779,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data.ratioTapChanger || {}),
-                        loadTapChangingCapabilities: params.newValue,
+                        hasLoadTapChangingCapabilities: params.newValue,
                         regulationMode: !!params.newValue
                             ? getTwtRatioRegulationModeId(params.data) ||
                               RATIO_REGULATION_MODES.FIXED_RATIO.id
@@ -790,9 +791,9 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.ratioTapChanger
-                                ?.loadTapChangingCapabilities != null
+                                ?.hasLoadTapChangingCapabilities != null
                                 ? +params.data?.ratioTapChanger
-                                      ?.loadTapChangingCapabilities
+                                      ?.hasLoadTapChangingCapabilities
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -829,7 +830,7 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn:
-                            'ratioTapChanger.loadTapChangingCapabilities',
+                            'ratioTapChanger.hasLoadTapChangingCapabilities',
                         columnValue: 1,
                     },
                 },
@@ -1481,8 +1482,8 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging1Capabilities',
-                field: 'loadTapChanging1Capabilities',
+                id: 'HasLoadTapChanging1Capabilities',
+                field: 'hasLoadTapChanging1Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1530,8 +1531,8 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging2Capabilities',
-                field: 'loadTapChanging2Capabilities',
+                id: 'HasLoadTapChanging2Capabilities',
+                field: 'hasLoadTapChanging2Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1579,8 +1580,8 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging3Capabilities',
-                field: 'loadTapChanging3Capabilities',
+                id: 'HasLoadTapChanging3Capabilities',
+                field: 'hasLoadTapChanging3Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,

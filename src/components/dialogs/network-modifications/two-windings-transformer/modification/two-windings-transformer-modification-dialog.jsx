@@ -259,7 +259,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getRatioTapChangerFormData({
                     enabled: isRatioTapChangerEnabled(twt),
-                    loadTapChangingCapabilities:
+                    hasLoadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
                         ]?.value ?? null,
@@ -447,7 +447,7 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const fillRatioTapChangerRegulationAttributes = useCallback(
         (ratioTap, ratioTapChangerFormValues, twtToModify) => {
-            const loadTapChangingCapabilities =
+            const hasLoadTapChangingCapabilities =
                 ratioTapChangerFormValues?.[LOAD_TAP_CHANGING_CAPABILITIES] ??
                 twtToModify?.[RATIO_TAP_CHANGER]?.[
                     LOAD_TAP_CHANGING_CAPABILITIES
@@ -455,7 +455,7 @@ const TwoWindingsTransformerModificationDialog = ({
             const regulationType =
                 ratioTapChangerFormValues?.[REGULATION_TYPE] ??
                 getComputedPreviousRatioRegulationType(twtToModify);
-            if (loadTapChangingCapabilities) {
+            if (hasLoadTapChangingCapabilities) {
                 ratioTap.regulationType = toModificationOperation(
                     ratioTapChangerFormValues?.[REGULATION_TYPE]
                 );
@@ -751,7 +751,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     }),
                                     ...getRatioTapChangerFormData({
                                         enabled: !!twt.ratioTapChanger,
-                                        loadTapChangingCapabilities: null,
+                                        hasLoadTapChangingCapabilities: null,
                                         regulationSide: null,
                                         steps: addSelectedFieldToRows(
                                             twt?.[RATIO_TAP_CHANGER]?.[STEPS]

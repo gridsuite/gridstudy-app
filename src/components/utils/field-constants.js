@@ -98,7 +98,7 @@ export const STEPS_ALPHA = 'alpha';
 
 //tab ratio_tap_changer
 export const RATIO_TAP_CHANGER = 'ratioTapChanger';
-export const LOAD_TAP_CHANGING_CAPABILITIES = 'loadTapChangingCapabilities';
+export const LOAD_TAP_CHANGING_CAPABILITIES = 'hasLoadTapChangingCapabilities';
 export const TARGET_V = 'targetV';
 
 //tab phase_tap_changer
