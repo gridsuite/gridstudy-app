@@ -49,6 +49,8 @@ import { Box } from '@mui/system';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
+import RunningStatus from 'components/utils/running-status';
+import ComputingType from 'components/computing-status/computing-type';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -96,7 +98,9 @@ export const NetworkMapTab = ({
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
-
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
@@ -992,10 +996,10 @@ export const NetworkMapTab = ({
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, 'substation')
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.SUBSTATION)
             }
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, 'line')
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
@@ -1013,6 +1017,7 @@ export const NetworkMapTab = ({
             renderPopover={renderLinePopover}
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
+            areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
         />
     );
 
