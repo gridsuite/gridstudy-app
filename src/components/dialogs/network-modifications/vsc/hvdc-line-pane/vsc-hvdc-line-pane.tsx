@@ -192,7 +192,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             name={`${id}.${DROOP}`}
             label={'droopLabel'}
             previousValue={
-                previousValues?.hvdcAngleDroopActivePowerControl.droop
+                previousValues?.hvdcAngleDroopActivePowerControl?.droop
             }
         />
     );
