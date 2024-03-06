@@ -7,7 +7,8 @@
 
 import { backendFetchJson, getRequestParamFromList } from './utils';
 
-const PREFIX_DIRECTORY_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/directory`;
+const PREFIX_DIRECTORY_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/directory';
 
 export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');

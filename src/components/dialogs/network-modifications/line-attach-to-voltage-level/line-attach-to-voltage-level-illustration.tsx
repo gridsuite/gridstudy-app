@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { ReactComponent as LineSplitDiagram } from '../../../../images/network-modifications/illustrations/line-attach-to-voltage-level.svg';
+import LineSplitDiagram from '../../../../images/network-modifications/illustrations/line-attach-to-voltage-level.svg?react';
 import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
 
 const replacedTexts = [
