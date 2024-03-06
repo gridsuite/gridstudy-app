@@ -12,6 +12,24 @@ const backend_locale_en = {
     GridSuiteAndConvergence: 'GridSuite_And_Convergence',
     Convergence: 'Convergence',
     FlatDesign: 'Flat_Design',
+
+    // Security analysis and Shortcircuit analysis results
+    ACTIVE_POWER: 'Active power',
+    APPARENT_POWER: 'Apparent power',
+    CONVERGED: 'Converged',
+    CURRENT: 'Current',
+    FAILED: 'Failed',
+    HIGH_SHORT_CIRCUIT_CURRENT: 'Isc max',
+    HIGH_VOLTAGE: 'High voltage',
+    LOW_SHORT_CIRCUIT_CURRENT: 'Isc min',
+    LOW_VOLTAGE: 'Low voltage',
+    MAX_ITERATION_REACHED: 'Maximum number of iterations reached',
+    NO_CALCULATION: 'No calculation',
+    ONE: 'Side 1',
+    OTHER: 'Other',
+    SINGLE_PHASE: 'Single-phase',
+    THREE_PHASE: 'Three-phase',
+    TWO: 'Side 2',
 };
 
 export default backend_locale_en;

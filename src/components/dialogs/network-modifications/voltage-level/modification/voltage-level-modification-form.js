@@ -28,6 +28,7 @@ import {
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
+import PropertiesForm from '../../common/properties/properties-form';
 
 const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
     const voltageLevelIdField = (
@@ -143,6 +144,10 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
                 {gridItem(lowShortCircuitCurrentLimitField, 4)}
                 {gridItem(highShortCircuitCurrentLimitField, 4)}
             </Grid>
+            <PropertiesForm
+                networkElementType={'voltageLevel'}
+                isModification={true}
+            />
         </>
     );
 };
