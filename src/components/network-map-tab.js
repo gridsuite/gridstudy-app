@@ -712,9 +712,7 @@ export const NetworkMapTab = ({
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
-                    updatedSubstationsToSend,
-                    setUpdatedLines,
-                    currentNodeAtReloadCalling
+                    updatedSubstationsToSend
                 );
 
             updatedSubstations.then((values) => {
