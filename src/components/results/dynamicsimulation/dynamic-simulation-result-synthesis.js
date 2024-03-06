@@ -7,18 +7,36 @@
 
 import VirtualizedTable from '../../utils/virtualized-table';
 import { useIntl } from 'react-intl';
-import { Box, LinearProgress, Paper, TableCell } from '@mui/material';
+import {
+    Box,
+    LinearProgress,
+    Paper,
+    TableCell,
+    Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Lens } from '@mui/icons-material';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { green, red } from '@mui/material/colors';
 import PropTypes from 'prop-types';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
-import { dynamicSimulationResultInvalidations } from './dynamic-simulation-result.type';
+import { dynamicSimulationResultInvalidations } from './utils/dynamic-simulation-result-utils';
+import { useSelector } from 'react-redux';
+import ComputingType from '../../computing-status/computing-type';
+import {
+    getNoRowsMessage,
+    useIntlResultStatusMessages,
+} from '../../utils/aggrid-rows-handler';
 
 /* must be coherent to LoadFlowResult component */
 const styles = {
+    overlay: {
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     tablePaper: {
         flexGrow: 1,
         height: '100px',
@@ -43,7 +61,7 @@ const styles = {
     },
 };
 
-const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
+const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
     const intl = useIntl();
 
     const [result, isLoading] = useNodeData(
@@ -52,11 +70,12 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
         fetchDynamicSimulationStatus,
         dynamicSimulationResultInvalidations,
         null,
-        (status) => [
-            {
-                status: status,
-            },
-        ]
+        (status) =>
+            status && [
+                {
+                    status,
+                },
+            ]
     );
 
     function StatusCellRender(cellData) {
@@ -76,10 +95,34 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
         );
     }
 
+    // messages to show when no data
+    const dynamicSimulationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+    );
+    const messages = useIntlResultStatusMessages(intl, true);
+    const overlayMessage = useMemo(
+        () =>
+            getNoRowsMessage(
+                messages,
+                result,
+                dynamicSimulationStatus,
+                !isLoading
+            ),
+        [messages, result, dynamicSimulationStatus, isLoading]
+    );
+
     return (
         <>
-            <Box sx={styles.loader}>{isLoading && <LinearProgress />}</Box>
-            {result && (
+            {isLoading && (
+                <Box sx={styles.loader}>
+                    <LinearProgress />
+                </Box>
+            )}
+            {overlayMessage ? (
+                <Box sx={styles.overlay}>
+                    <Typography variant={'body2'}>{overlayMessage}</Typography>
+                </Box>
+            ) : (
                 <Paper sx={styles.tablePaper}>
                     {
                         <VirtualizedTable
@@ -103,9 +146,9 @@ const DynamicSimulationResultTable = ({ nodeUuid, studyUuid }) => {
     );
 };
 
-DynamicSimulationResultTable.propTypes = {
+DynamicSimulationResultSynthesis.propTypes = {
     nodeUuid: PropTypes.string,
     studyUuid: PropTypes.string,
 };
 
-export default DynamicSimulationResultTable;
+export default DynamicSimulationResultSynthesis;
