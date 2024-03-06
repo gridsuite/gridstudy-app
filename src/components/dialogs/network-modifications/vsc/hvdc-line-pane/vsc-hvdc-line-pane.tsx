@@ -120,7 +120,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.id
         ) {
             return intl.formatMessage({
-                id: VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.label,
+                id: VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.label,
             });
         }
     };
