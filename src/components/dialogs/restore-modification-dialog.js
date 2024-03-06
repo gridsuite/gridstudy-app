@@ -65,11 +65,7 @@ const RestoreModificationDialog = ({
     const intl = useIntl();
 
     const [stashedModifications, setStashedModifications] = useState([]);
-    const [selectedItems, setSelectedItems] = useState(new Set());
-    const [
-        toggleSelectAllStashedModifications,
-        setToggleSelectAllStashedModifications,
-    ] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
         useState(false);
 
@@ -78,9 +74,9 @@ const RestoreModificationDialog = ({
     };
 
     const handleDelete = () => {
-        const selectedModificationsUuidsToDelete = [
-            ...selectedItems.values(),
-        ].map((item) => item.uuid);
+        const selectedModificationsUuidsToDelete = [...selectedItems].map(
+            (item) => item.uuid
+        );
         setOpenDeleteConfirmationPopup(false);
         deleteModifications(
             studyUuid,
@@ -91,9 +87,9 @@ const RestoreModificationDialog = ({
     };
 
     const handleRestore = () => {
-        const selectedModificationsUuidToRestore = [
-            ...selectedItems.values(),
-        ].map((item) => item.uuid);
+        const selectedModificationsUuidToRestore = [...selectedItems].map(
+            (item) => item.uuid
+        );
 
         restoreModifications(
             studyUuid,
@@ -104,8 +100,10 @@ const RestoreModificationDialog = ({
     };
 
     const handleSelectAll = useCallback(() => {
-        setToggleSelectAllStashedModifications((prev) => !prev);
-    }, []);
+        setSelectedItems((oldValues) =>
+            oldValues.length === 0 ? stashedModifications : []
+        );
+    }, [stashedModifications]);
 
     useEffect(() => {
         setStashedModifications(modifToRestore);
@@ -146,7 +144,7 @@ const RestoreModificationDialog = ({
                                         color={'primary'}
                                         edge="start"
                                         checked={
-                                            selectedItems.size ===
+                                            selectedItems.length ===
                                             stashedModifications.length
                                         }
                                         onClick={handleSelectAll}
@@ -161,6 +159,7 @@ const RestoreModificationDialog = ({
                                 <CheckboxList
                                     sx={styles.list}
                                     onChecked={setSelectedItems}
+                                    checkedValues={selectedItems}
                                     values={stashedModifications}
                                     itemComparator={(a, b) => a.uuid === b.uuid}
                                     itemRenderer={(props) => (
@@ -176,9 +175,6 @@ const RestoreModificationDialog = ({
                                             {...props}
                                         />
                                     )}
-                                    toggleSelectAll={
-                                        toggleSelectAllStashedModifications
-                                    }
                                 />
                                 {provided.placeholder}
                             </Box>
@@ -190,14 +186,14 @@ const RestoreModificationDialog = ({
                 <CancelButton onClick={handleClose} />
                 <Button
                     onClick={() => setOpenDeleteConfirmationPopup(true)}
-                    disabled={!selectedItems.size}
+                    disabled={!selectedItems.length}
                 >
                     <FormattedMessage id="DeleteRows" />
                 </Button>
                 <Button
                     variant="outlined"
                     onClick={handleRestore}
-                    disabled={!selectedItems.size}
+                    disabled={!selectedItems.length}
                 >
                     <FormattedMessage id="button.restore" />
                 </Button>
@@ -208,7 +204,7 @@ const RestoreModificationDialog = ({
                         <FormattedMessage
                             id="DeleteModificationText"
                             values={{
-                                numberToDelete: selectedItems.size,
+                                numberToDelete: selectedItems.length,
                             }}
                         />
                     }

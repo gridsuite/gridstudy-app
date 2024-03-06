@@ -171,8 +171,7 @@ const NetworkModificationNodeEditor = () => {
     const currentNodeIdRef = useRef(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedItems, setSelectedItems] = useState(new Set());
-    const [toggleSelectAll, setToggleSelectAll] = useState();
+    const [selectedItems, setSelectedItems] = useState([]);
     const [copiedModifications, setCopiedModifications] = useState([]);
     const [copyInfos, setCopyInfos] = useState(null);
     const copyInfosRef = useRef();
@@ -662,7 +661,7 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const doDeleteModification = useCallback(() => {
-        const selectedModificationsUuid = [...selectedItems.values()].map(
+        const selectedModificationsUuid = [...selectedItems].map(
             (item) => item.uuid
         );
         stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
@@ -747,7 +746,7 @@ const NetworkModificationNodeEditor = () => {
         snackInfo({
             headerId: 'infoCreateModificationsMsg',
             headerValues: {
-                nbModifications: selectedItems.size,
+                nbModifications: selectedItems.length,
                 studyDirectory: studyDirName,
             },
         });
@@ -766,7 +765,7 @@ const NetworkModificationNodeEditor = () => {
     const selectedModificationsIds = useCallback(() => {
         const allModificationsIds = modifications.map((m) => m.uuid);
         // sort the selected modifications in the same order as they appear in the whole modifications list
-        return Array.from(selectedItems)
+        return selectedItems
             .sort(
                 (a, b) =>
                     allModificationsIds.indexOf(a.uuid) -
@@ -873,8 +872,10 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const toggleSelectAllModifications = useCallback(() => {
-        setToggleSelectAll((oldVal) => !oldVal);
-    }, []);
+        setSelectedItems((oldVal) =>
+            oldVal.length === 0 ? modifications : []
+        );
+    }, [modifications]);
 
     const renderDialog = () => {
         return subMenuItemsList
@@ -948,6 +949,7 @@ const NetworkModificationNodeEditor = () => {
                             <CheckboxList
                                 sx={styles.list}
                                 onChecked={setSelectedItems}
+                                checkedValues={selectedItems}
                                 values={modifications}
                                 itemComparator={(a, b) => a.uuid === b.uuid}
                                 itemRenderer={(props) => (
@@ -961,7 +963,6 @@ const NetworkModificationNodeEditor = () => {
                                         {...props}
                                     />
                                 )}
-                                toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
                         </Box>
@@ -1066,9 +1067,9 @@ const NetworkModificationNodeEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={isChecked(selectedItems.size)}
+                    checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(
-                        selectedItems.size,
+                        selectedItems.length,
                         modifications?.length
                     )}
                     disableRipple
@@ -1105,7 +1106,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             sx={styles.toolbarIcon}
                             disabled={
-                                !(selectedItems?.size > 0) ||
+                                !(selectedItems?.length > 0) ||
                                 saveInProgress === true
                             }
                         >
@@ -1118,7 +1119,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        selectedItems.size === 0 ||
+                        selectedItems.length === 0 ||
                         isAnyNodeBuilding ||
                         mapDataLoading ||
                         !currentNode
@@ -1131,7 +1132,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        selectedItems.size === 0 ||
+                        selectedItems.length === 0 ||
                         isAnyNodeBuilding ||
                         mapDataLoading
                     }
@@ -1171,7 +1172,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        !(selectedItems?.size > 0) ||
+                        selectedItems.length === 0 ||
                         isAnyNodeBuilding ||
                         mapDataLoading ||
                         !currentNode

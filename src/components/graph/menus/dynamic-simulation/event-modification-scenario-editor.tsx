@@ -68,8 +68,7 @@ const EventModificationScenarioEditor = () => {
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedItems, setSelectedItems] = useState<Set<Event>>(new Set());
-    const [toggleSelectAll, setToggleSelectAll] = useState<boolean>(false);
+    const [selectedItems, setSelectedItems] = useState<Event[]>([]);
 
     const [editDialogOpen, setEditDialogOpen] = useState<
         | {
@@ -217,7 +216,7 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
-        const selectedEvents = [...selectedItems.values()];
+        const selectedEvents = [...selectedItems];
         deleteDynamicSimulationEvents(
             studyUuid ?? '',
             currentNode.id,
@@ -239,8 +238,10 @@ const EventModificationScenarioEditor = () => {
     };
 
     const toggleSelectAllEvents = useCallback(() => {
-        setToggleSelectAll((oldVal: boolean) => !oldVal);
-    }, []);
+        setSelectedItems((oldVals: Event[]) =>
+            oldVals.length === 0 ? events : []
+        );
+    }, [events]);
 
     const isLoading = () => {
         return (
@@ -255,8 +256,8 @@ const EventModificationScenarioEditor = () => {
             <CheckboxList
                 className={styles.list}
                 onChecked={setSelectedItems}
+                checkedValues={selectedItems}
                 values={events}
-                initialSelection={[]}
                 itemComparator={(a, b) => a.uuid === b.uuid}
                 itemRenderer={(props: any) => (
                     <EventListItem
@@ -267,7 +268,6 @@ const EventModificationScenarioEditor = () => {
                         {...props}
                     />
                 )}
-                toggleSelectAll={toggleSelectAll}
             />
         );
     };
@@ -347,9 +347,9 @@ const EventModificationScenarioEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={isChecked(selectedItems.size)}
+                    checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(
-                        selectedItems.size,
+                        selectedItems.length,
                         events?.length
                     )}
                     disableRipple
@@ -361,7 +361,7 @@ const EventModificationScenarioEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        !(selectedItems?.size > 0) ||
+                        selectedItems.length === 0 ||
                         isAnyNodeBuilding ||
                         !currentNode
                     }
