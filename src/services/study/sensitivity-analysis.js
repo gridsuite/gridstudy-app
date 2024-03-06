@@ -106,6 +106,13 @@ export function getSensitivityAnalysisParameters(studyUuid) {
     return backendFetchJson(url);
 }
 
+export function fetchSensitivityAnalysisParameters(parameterUuid) {
+    console.info('get sensitivity analysis parameters');
+    const url = `${process.env.REACT_APP_API_GATEWAY}/sensitivity-analysis/v1/parameters/${parameterUuid}`;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function setSensitivityAnalysisParameters(studyUuid, newParams) {
     console.info('set sensitivity analysis parameters');
     const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
