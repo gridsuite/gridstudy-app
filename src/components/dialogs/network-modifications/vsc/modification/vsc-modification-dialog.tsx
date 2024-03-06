@@ -63,6 +63,7 @@ import {
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-utils';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const formSchema = yup
     .object()
@@ -101,7 +102,7 @@ const VscModificationDialog: React.FC<any> = ({
         VSC_MODIFICATION_TABS.HVDC_LINE_TAB
     );
 
-    const [equipementId, setEquipementId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
+    const [equipmentId, setEquipmentId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
     const [vscToModify, setVcsToModify] = useState<VscModificationInfo | null>(
         null
     );
@@ -110,7 +111,7 @@ const VscModificationDialog: React.FC<any> = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-
+    const { snackError } = useSnackMessage();
     const { reset, getValues, setValue, handleSubmit } = formMethods;
 
     const open = useOpenShortWaitFetching({
@@ -123,7 +124,7 @@ const VscModificationDialog: React.FC<any> = ({
     const fromEditDataToFormValues = useCallback(
         (editData: any) => {
             if (editData?.equipmentId) {
-                setEquipementId(editData.equipmentId);
+                setEquipmentId(editData.equipmentId);
             }
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
@@ -224,9 +225,13 @@ const VscModificationDialog: React.FC<any> = ({
                         });
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch((_) => {
+                    .catch((error) => {
                         setVcsToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'VscModificationError',
+                        });
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -242,10 +247,8 @@ const VscModificationDialog: React.FC<any> = ({
         ]
     );
     useEffect(() => {
-        if (equipementId) {
-            onEquipmentIdChange(equipementId);
-        }
-    }, [equipementId, onEquipmentIdChange]);
+        onEquipmentIdChange(equipmentId);
+    }, [equipmentId, onEquipmentIdChange]);
 
     const onSubmit = (hvdcLine: any) => {
         const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
@@ -261,7 +264,7 @@ const VscModificationDialog: React.FC<any> = ({
         modifyVsc(
             studyUuid,
             currentNode.id,
-            equipementId,
+            equipmentId,
             sanitizeString(hvdcLine[EQUIPMENT_NAME]),
             hvdcLineTab[DC_NOMINAL_VOLTAGE],
             hvdcLineTab[DC_RESISTANCE],
@@ -362,7 +365,7 @@ const VscModificationDialog: React.FC<any> = ({
                 }}
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={equipementId != null}
+                showNodeNotBuiltWarning={equipmentId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
@@ -370,22 +373,22 @@ const VscModificationDialog: React.FC<any> = ({
                 }
                 {...dialogProps}
             >
-                {equipementId === null && (
+                {equipmentId === null && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        defaultValue={equipementId}
-                        setSelectedId={setEquipementId}
+                        defaultValue={equipmentId}
+                        setSelectedId={setEquipmentId}
                         equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
                         fillerHeight={17}
                     />
                 )}
-                {equipementId !== null && (
+                {equipmentId !== null && (
                     <VscModificationForm
                         tabIndex={tabIndex}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        equipmentId={equipementId}
+                        equipmentId={equipmentId}
                         setTabIndex={setTabIndex}
                         vscToModify={vscToModify}
                         tabIndexesWithError={[]}
@@ -401,9 +404,5 @@ const VscModificationDialog: React.FC<any> = ({
         </FormProvider>
     );
 };
-
-function snackError(arg0: { messageTxt: any; headerId: string }) {
-    throw new Error('Function not implemented.\n' + arg0.messageTxt);
-}
 
 export default VscModificationDialog;

@@ -69,26 +69,8 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
                 [CONVERTERS_MODE]: yup.string().nullable(),
                 [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean().nullable(),
                 [ACTIVE_POWER]: yup.number().nullable().nullable(),
-                [P0]: yup
-                    .number()
-                    .nullable()
-                    .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
-                        is: (
-                            angleDroopActivePowerControl: boolean,
-                            droop: number
-                        ) => angleDroopActivePowerControl || droop,
-                        then: (schema) => schema.nullable(),
-                    }),
-                [DROOP]: yup
-                    .number()
-                    .nullable()
-                    .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
-                        is: (
-                            angleDroopActivePowerControl: boolean,
-                            p0: number
-                        ) => angleDroopActivePowerControl || p0,
-                        then: (schema) => schema.nullable(),
-                    }),
+                [P0]: yup.number().nullable(),
+                [DROOP]: yup.number().nullable(),
             },
             [[P0, DROOP]]
         ),
