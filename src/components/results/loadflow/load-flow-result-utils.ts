@@ -427,6 +427,7 @@ export const loadFlowResultColumnsDefinition = (
             fractionDigits: 2,
             filterProps,
             filterParams: numericFilterParams,
+            cellRenderer: numberRenderer,
         }),
     ];
 };
