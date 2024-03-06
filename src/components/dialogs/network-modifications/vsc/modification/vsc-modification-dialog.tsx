@@ -35,6 +35,7 @@ import {
     P0,
     Q_MAX_P,
     Q_MIN_P,
+    REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
 } from '../../../../utils/field-constants';
@@ -59,6 +60,7 @@ import { VscModificationInfo } from 'services/network-modification-types';
 import {
     REMOVE,
     setCurrentReactiveCapabilityCurveTable,
+    setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-utils';
 
@@ -195,6 +197,17 @@ const VscModificationDialog: React.FC<any> = ({
                                 setValue
                             );
                         }
+
+                        setSelectedReactiveLimits(
+                            `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                            value.converterStation1?.minMaxReactiveLimits,
+                            setValue
+                        );
+                        setSelectedReactiveLimits(
+                            `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                            value.converterStation2?.minMaxReactiveLimits,
+                            setValue
+                        );
 
                         setVcsToModify({
                             ...value,
