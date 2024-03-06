@@ -42,5 +42,5 @@ export const StatusCellRender = (cellData: ICellRendererParams) => {
 
 export const NumberCellRenderer = (cellData: ICellRendererParams) => {
     const value = cellData.value;
-    return <Box sx={styles.cell}>{!isNaN(value) ? value.toFixed(2) : ''}</Box>;
+    return <Box sx={styles.cell}>{isNaN(value) ? '' : value.toFixed(2)}</Box>;
 };

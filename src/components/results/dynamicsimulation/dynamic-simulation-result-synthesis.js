@@ -7,7 +7,7 @@
 
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
@@ -26,16 +26,25 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { StatusCellRender } from '../common/result-cell-renderers';
 
-/* must be coherent to LoadFlowResult component */
 const styles = {
     loader: {
         height: '4px',
     },
 };
 
+const defaultColDef = {
+    filter: true,
+    sortable: true,
+    resizable: true,
+    lockPinned: true,
+    suppressMovable: true,
+    wrapHeaderText: true,
+    autoHeaderHeight: true,
+    cellRenderer: DefaultCellRenderer,
+};
+
 const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
     const intl = useIntl();
-    const gridRef = useRef(null);
 
     const [result, isLoading] = useNodeData(
         studyUuid,
@@ -51,8 +60,8 @@ const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
             ]
     );
 
-    const columnDefs = useMemo(() => {
-        return [
+    const columnDefs = useMemo(
+        () => [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({
                     id: 'status',
@@ -61,21 +70,8 @@ const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
                 width: MEDIUM_COLUMN_WIDTH,
                 cellRenderer: StatusCellRender,
             }),
-        ];
-    }, [intl]);
-
-    const defaultColDef = useMemo(
-        () => ({
-            filter: true,
-            sortable: true,
-            resizable: true,
-            lockPinned: true,
-            suppressMovable: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-            cellRenderer: DefaultCellRenderer,
-        }),
-        []
+        ],
+        [intl]
     );
 
     // messages to show when no data
@@ -107,7 +103,6 @@ const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
                 </Box>
             )}
             <CustomAGGrid
-                ref={gridRef}
                 rowData={rowDataToShow}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}

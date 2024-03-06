@@ -16,7 +16,6 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { ICellRendererParams } from 'ag-grid-community';
 import {
     getNoRowsMessage,
     useIntlResultStatusMessages,
@@ -37,29 +36,17 @@ import {
 } from './utils/dynamic-simulation-result-utils';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
+import { NumberCellRenderer } from '../common/result-cell-renderers';
 
 const styles = {
     loader: {
         height: '4px',
-    },
-    cell: {
-        display: 'flex',
-        alignItems: 'center',
-        textAlign: 'center',
-        boxSizing: 'border-box',
-        flex: 1,
-        cursor: 'initial',
     },
 };
 
 const COL_TIME: TimelineEventKeyType = 'time';
 const COL_MODEL_NAME: TimelineEventKeyType = 'modelName';
 const COL_MESSAGE: TimelineEventKeyType = 'message';
-
-const NumberCellRenderer = (cellData: ICellRendererParams) => {
-    const value = cellData.value;
-    return <Box sx={styles.cell}>{isNaN(value) ? '' : value.toFixed(2)}</Box>;
-};
 
 const defaultColDef = {
     filter: true,
