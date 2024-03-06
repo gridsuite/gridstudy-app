@@ -1630,7 +1630,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode1',
-                field: 'regulatingMode1',
+                field: 'regulationModeName1',
                 ...defaultTextFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1680,7 +1680,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode2',
-                field: 'regulatingMode2',
+                field: 'regulationModeName2',
                 ...defaultTextFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1730,7 +1730,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode3',
-                field: 'regulatingMode3',
+                field: 'regulationModeName3',
                 ...defaultNumericFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
