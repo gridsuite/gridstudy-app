@@ -144,11 +144,11 @@ const ContingencyListSelector = (props) => {
         saveFavorite(
             contingencyList
                 .map((e) => e.id)
-                .filter((item) => !toRemove.include(item))
+                .filter((item) => !toRemove.includes(item))
         );
 
         setCheckedContingencyList((oldCheked) =>
-            oldCheked.filter((item) => !toRemove.include(item))
+            oldCheked.filter((item) => !toRemove.includes(item))
         );
     };
 
