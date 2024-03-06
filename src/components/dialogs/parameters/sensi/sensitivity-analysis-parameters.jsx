@@ -74,28 +74,6 @@ import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
-export const useGetSensitivityAnalysisParameters = () => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const { snackError } = useSnackMessage();
-    const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
-        useState(null);
-
-    useEffect(() => {
-        if (studyUuid) {
-            getSensitivityAnalysisParameters(studyUuid)
-                .then((params) => setSensitivityAnalysisParams(params))
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
-        }
-    }, [studyUuid, snackError]);
-
-    return [sensitivityAnalysisParams, setSensitivityAnalysisParams];
-};
-
 const formSchema = yup
     .object()
     .shape({
@@ -114,7 +92,6 @@ const formSchema = yup
 const numberMax = 500000;
 export const SensitivityAnalysisParameters = ({
     parametersBackend,
-    useSensitivityAnalysisParameters,
     setHaveDirtyFields,
 }) => {
     const intl = useIntl();
@@ -124,12 +101,11 @@ export const SensitivityAnalysisParameters = ({
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
+    const [providers, , , , params, ,] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] =
         useState(false);
-
-    const [providers] = parametersBackend;
 
     const formattedProviders = Object.keys(providers).map((key) => ({
         id: key,
@@ -157,9 +133,8 @@ export const SensitivityAnalysisParameters = ({
 
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
-
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
-        useSensitivityAnalysisParameters;
+        useState(params);
 
     const resetSensitivityAnalysisParameters = useCallback(() => {
         setSensitivityAnalysisParameters(studyUuid, null)
@@ -612,21 +587,13 @@ export const SensitivityAnalysisParameters = ({
                             <Grid container paddingTop={1} paddingBottom={1}>
                                 <LineSeparator />
                             </Grid>
-                            <SensitivityAnalysisFields
-                                reset={reset}
-                                useSensitivityAnalysisParameters={
-                                    useSensitivityAnalysisParameters
-                                }
-                            />
+                            <SensitivityAnalysisFields reset={reset} />
                         </Grid>
                         <Grid container paddingTop={4} paddingBottom={2}>
                             <LineSeparator />
                         </Grid>
                         <SensitivityParametersSelector
                             reset={reset}
-                            useSensitivityAnalysisParameters={
-                                useSensitivityAnalysisParameters
-                            }
                             onFormChanged={onFormChanged}
                             onChangeParams={onChangeParams}
                             launchLoader={launchLoader}

@@ -1,7 +1,7 @@
 import { UUID } from 'crypto';
 import { backendFetchJson } from './utils';
 
-const PREFIX_CASE_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/case`;
+const PREFIX_CASE_QUERIES = import.meta.env.VITE_API_GATEWAY + '/case';
 
 export function createCase(selectedFile: File): Promise<UUID> {
     const createCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases';

@@ -12,8 +12,14 @@ import {
     getRequestParamFromList,
 } from './utils';
 import { getStudyUrlWithNodeUuid } from './study';
+import { UUID } from 'crypto';
+import {
+    TimelineEvent,
+    TimeSeriesMetadata,
+} from '../components/results/dynamicsimulation/types/dynamic-simulation-result.type';
 
-const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/dynamic-simulation`;
+const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/dynamic-simulation';
 
 // -- Parameters API - BEGIN
 function getDynamicSimulationUrl() {
@@ -23,6 +29,35 @@ function getDynamicSimulationUrl() {
 export function fetchDynamicSimulationProviders() {
     console.info('fetch dynamic simulation providers');
     const url = getDynamicSimulationUrl() + 'providers';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationTimeSeriesMetadata(
+    studyUuid: UUID,
+    currentNodeUuid: UUID
+): Promise<TimeSeriesMetadata[] | null> {
+    console.info(
+        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeseries/metadata';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationResultTimeline(
+    studyUuid: UUID,
+    currentNodeUuid: UUID
+): Promise<TimelineEvent[] | null> {
+    console.info(
+        `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeline';
     console.debug(url);
     return backendFetchJson(url);
 }
