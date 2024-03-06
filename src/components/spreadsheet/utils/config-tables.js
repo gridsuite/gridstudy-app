@@ -1490,7 +1490,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingRatio1',
-                field: 'regulatingRatio1',
+                field: 'isRegulatingRatio1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1539,7 +1539,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingRatio2',
-                field: 'regulatingRatio2',
+                field: 'isRegulatingRatio2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1588,7 +1588,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingRatio3',
-                field: 'regulatingRatio3',
+                field: 'isRegulatingRatio3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1637,7 +1637,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingPhase1',
-                field: 'regulatingPhase1',
+                field: 'isRegulatingPhase1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1687,7 +1687,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingPhase2',
-                field: 'regulatingPhase2',
+                field: 'isRegulatingPhase2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1737,7 +1737,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingPhase3',
-                field: 'regulatingPhase3',
+                field: 'isRegulatingPhase3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
