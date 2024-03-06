@@ -25,7 +25,6 @@ import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
 
-
 interface VscModificationFormProps {
     tabIndex: number;
     studyUuid: UUID;
@@ -114,11 +113,16 @@ export const VscModificationForm: FunctionComponent<
                     stationLabel={'converterStation1'}
                     isModification
                     previousValues={vscToModify?.converterStation1}
-                    updatePreviousReactiveCapabilityCurveTableConverterStation={
-                        (action, index) => {
-                            updatePreviousReactiveCapabilityCurveTableConverterStation(action, index, 'converterStation1')
-                        }
-                    }
+                    updatePreviousReactiveCapabilityCurveTableConverterStation={(
+                        action,
+                        index
+                    ) => {
+                        updatePreviousReactiveCapabilityCurveTableConverterStation(
+                            action,
+                            index,
+                            'converterStation1'
+                        );
+                    }}
                 />
             </Box>
             <Box
@@ -132,11 +136,16 @@ export const VscModificationForm: FunctionComponent<
                     stationLabel={'converterStation2'}
                     isModification
                     previousValues={vscToModify?.converterStation2}
-                    updatePreviousReactiveCapabilityCurveTableConverterStation={
-                        (action, index) => {
-                            updatePreviousReactiveCapabilityCurveTableConverterStation(action, index, 'converterStation2')
-                        }
-                    }
+                    updatePreviousReactiveCapabilityCurveTableConverterStation={(
+                        action,
+                        index
+                    ) => {
+                        updatePreviousReactiveCapabilityCurveTableConverterStation(
+                            action,
+                            index,
+                            'converterStation2'
+                        );
+                    }}
                 />
             </Box>
         </>

@@ -225,9 +225,10 @@ export const calculateCurvePointsToStore = (
     }
 };
 
-export function setSelectedReactiveLimits(id, minMaxReactiveLimits, setValue){
+export function setSelectedReactiveLimits(id, minMaxReactiveLimits, setValue) {
     setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');
 }
+
 export function setCurrentReactiveCapabilityCurveTable(
     previousReactiveCapabilityCurveTable,
     fieldKey,

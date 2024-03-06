@@ -33,8 +33,8 @@ import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import {
-    ConverterStationElementModificationInfos, UpdateReactiveCapabilityCurveTable,
-    UpdateReactiveCapabilityCurveTableConverterStation
+    ConverterStationElementModificationInfos,
+    UpdateReactiveCapabilityCurveTable,
 } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 

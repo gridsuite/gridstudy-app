@@ -318,7 +318,8 @@ const VscModificationDialog: React.FC<any> = ({
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
-                previousValue?.[converterStationName]?.reactiveCapabilityCurveTable;
+                previousValue?.[converterStationName]
+                    ?.reactiveCapabilityCurveTable;
             return updateConverterStationCapabilityCurveTable(
                 newRccValues,
                 action,
