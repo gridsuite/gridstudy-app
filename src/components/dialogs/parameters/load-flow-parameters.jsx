@@ -21,7 +21,7 @@ import {
     FlatParameters,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { LocalizedCountries } from '../../utils/localized-countries-hook';
+import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import {
     PARAM_DEVELOPER_MODE,
@@ -34,7 +34,7 @@ import DirectoryItemSelector from '../../directory-item-selector';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
 
 const CountrySelector = ({ value, label, callback }) => {
-    const { translate, countryCodes } = LocalizedCountries();
+    const { translate, countryCodes } = useLocalizedCountries();
 
     return (
         <>

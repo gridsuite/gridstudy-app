@@ -12,8 +12,10 @@ import {
 } from './utils';
 import { UUID } from 'crypto';
 
-const PREFIX_EXPLORE_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/explore`;
-const PREFIX_DIRECTORY_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/directory`;
+const PREFIX_EXPLORE_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/explore';
+const PREFIX_DIRECTORY_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/directory';
 
 export function fetchElementsMetadata(
     ids: UUID[],
