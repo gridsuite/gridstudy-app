@@ -279,9 +279,7 @@ const TableWrapper = (props) => {
         const generatedTableColumns =
             TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
         return generatedTableColumns.filter(
-            (column) =>
-                column.customFilterParams &&
-                column.customFilterParams.isEnum === true
+            ({ customFilterParams }) => customFilterParams?.isEnum
         );
     }, [tabIndex]);
 
@@ -289,19 +287,15 @@ const TableWrapper = (props) => {
         if (!equipments) {
             return {};
         }
-        const enumFilterColumns = getEnumFilterColumns();
-        const filterEnums = {};
-        enumFilterColumns.forEach((column) => {
-            const columnValues = new Set();
-            equipments.forEach((equipment) => {
+        return getEnumFilterColumns().reduce((filterEnums, column) => {
+            const columnValues = equipments.reduce((values, equipment) => {
                 const columnValue = deepFindValue(equipment, column.field);
-                if (columnValue !== null && columnValue !== undefined) {
-                    columnValues.add(columnValue);
-                }
-            });
-            filterEnums[column.field] = Array.from(columnValues);
-        });
-        return filterEnums;
+                return columnValue != null ? values.add(columnValue) : values;
+            }, new Set());
+
+            filterEnums[column.field] = [...columnValues];
+            return filterEnums;
+        }, {});
     }, [getEnumFilterColumns, equipments]);
 
     const filterEnums = useMemo(
