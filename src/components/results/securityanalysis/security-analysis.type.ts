@@ -8,14 +8,9 @@
 import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { SortConfigType, SortPropsType } from '../../../hooks/use-aggrid-sort';
-import {
-    FilterEnumsType,
-    FilterPropsType,
-    FilterSelectorType,
-} from '../../../hooks/use-aggrid-row-filter';
+import { SortConfigType } from '../../../hooks/use-aggrid-sort';
+import { FilterSelectorType } from '../../../hooks/use-aggrid-row-filter';
 import { UUID } from 'crypto';
-import { RESULT_TYPE } from './security-analysis-result-utils';
 
 export interface LimitViolation {
     subjectId?: string;

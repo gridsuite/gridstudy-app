@@ -18,7 +18,8 @@ import {
     TimeSeriesMetadata,
 } from '../components/results/dynamicsimulation/types/dynamic-simulation-result.type';
 
-const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/dynamic-simulation`;
+const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/dynamic-simulation';
 
 // -- Parameters API - BEGIN
 function getDynamicSimulationUrl() {

@@ -7,7 +7,8 @@
 
 import { backendFetchJson } from './utils';
 
-const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/security-analysis`;
+const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/security-analysis';
 
 function getSecurityAnalysisUrl() {
     return `${PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES}/v1/`;
