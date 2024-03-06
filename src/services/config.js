@@ -7,7 +7,7 @@
 import { getAppName } from '../utils/config-params';
 import { backendFetch, backendFetchJson } from './utils';
 
-const PREFIX_CONFIG_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/config`;
+const PREFIX_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/config';
 
 export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
