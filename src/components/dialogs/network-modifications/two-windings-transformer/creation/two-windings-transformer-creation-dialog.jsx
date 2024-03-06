@@ -639,7 +639,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
                 ratioTap = {
                     ...ratioTapChangerFormValues,
-                    regulating: computeRatioTapChangerRegulating(
+                    isRegulating: computeRatioTapChangerRegulating(
                         ratioTapChangerFormValues
                     ),
                     regulatingTerminalId: getRegulatingValue(
@@ -667,7 +667,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
-                    regulating: computePhaseTapChangerRegulating(
+                    isRegulating: computePhaseTapChangerRegulating(
                         phaseTapChangerFormValues
                     ),
                     regulationValue: computePhaseTapChangerRegulationValue(

@@ -459,7 +459,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTap.regulationType = toModificationOperation(
                     ratioTapChangerFormValues?.[REGULATION_TYPE]
                 );
-                ratioTap.regulating = toModificationOperation(
+                ratioTap.isRegulating = toModificationOperation(
                     ratioTapChangerFormValues?.[REGULATION_MODE]
                         ? computeRatioTapChangerRegulating(
                               ratioTapChangerFormValues
