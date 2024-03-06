@@ -8,7 +8,8 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { getToken, getUrlWithToken, getWsBase } from './utils';
 
-const PREFIX_DIRECTORY_NOTIFICATION_WS = `${process.env.REACT_APP_WS_GATEWAY}/directory-notification`;
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
 
 export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls

@@ -163,6 +163,7 @@ export function setShortCircuitParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
 export function invalidateShortCircuitStatus(studyUuid) {
     console.info('invalidate short circuit status');
     const invalidateShortCircuitStatusUrl =
@@ -176,7 +177,7 @@ export function invalidateShortCircuitStatus(studyUuid) {
 export function fetchShortCircuitFaultTypes() {
     console.info('Fetch short-circuit fault types');
     const getShortCircuitParams =
-        process.env.REACT_APP_API_GATEWAY + '/shortcircuit/v1/fault-types';
+        import.meta.env.VITE_API_GATEWAY + '/shortcircuit/v1/fault-types';
     console.debug(getShortCircuitParams);
     return backendFetchJson(getShortCircuitParams);
 }
@@ -184,7 +185,7 @@ export function fetchShortCircuitFaultTypes() {
 export function fetchShortCircuitLimitViolationTypes() {
     console.info('Fetch short-circuit limit violation types');
     const getShortCircuitParams =
-        process.env.REACT_APP_API_GATEWAY +
+        import.meta.env.VITE_API_GATEWAY +
         '/shortcircuit/v1/limit-violation-types';
     console.debug(getShortCircuitParams);
     return backendFetchJson(getShortCircuitParams);
