@@ -200,31 +200,27 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         const totalInjection = calculateTotal(reactiveSlacks, false);
         const totalConsumption = calculateTotal(reactiveSlacks, true);
         return (
-            <>
-                <Stack
-                    direction={'row'}
-                    gap={1}
-                    marginBottom={2}
-                    marginTop={1.5}
-                    marginLeft={2}
-                >
-                    <>
-                        <Typography sx={styles.typography}>
-                            <FormattedMessage id="TotalInjection" />
-                        </Typography>
-                        <Typography sx={styles.totalTypography}>
-                            {totalInjection.toFixed(2)}
-                        </Typography>
+            <Stack
+                direction={'row'}
+                gap={1}
+                marginBottom={2}
+                marginTop={1.5}
+                marginLeft={2}
+            >
+                <Typography sx={styles.typography}>
+                    <FormattedMessage id="TotalInjection" />
+                </Typography>
+                <Typography sx={styles.totalTypography}>
+                    {totalInjection.toFixed(2)} MVar
+                </Typography>
 
-                        <Typography sx={styles.secondTypography}>
-                            <FormattedMessage id="TotalConsumption" />
-                        </Typography>
-                        <Typography sx={styles.totalTypography}>
-                            {totalConsumption.toFixed(2)}
-                        </Typography>
-                    </>
-                </Stack>
-            </>
+                <Typography sx={styles.secondTypography}>
+                    <FormattedMessage id="TotalConsumption" />
+                </Typography>
+                <Typography sx={styles.totalTypography}>
+                    {totalConsumption.toFixed(2)} MVar
+                </Typography>
+            </Stack>
         );
     }
 

@@ -8,19 +8,31 @@
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, LinearProgress } from '@mui/material';
+import { Box, LinearProgress, Typography } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
 import DraggableTab from './common/draggable-tab/draggable-tab';
 import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
+import { useSelector } from 'react-redux';
+import ComputingType from '../../computing-status/computing-type';
+import {
+    getNoRowsMessage,
+    useIntlResultStatusMessages,
+} from '../../utils/aggrid-rows-handler';
 
 const styles = {
     root: {
         height: '100%',
+    },
+    overlay: {
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     addButton: (theme) => ({
         borderRadius: '50%',
@@ -92,10 +104,34 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
         setSelectedIndex(newTabIndex);
     };
 
+    // messages to show when no data
+    const dynamicSimulationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+    );
+    const messages = useIntlResultStatusMessages(intl, true);
+    const overlayMessage = useMemo(
+        () =>
+            getNoRowsMessage(
+                messages,
+                result?.timeseriesMetadatas,
+                dynamicSimulationStatus,
+                !isLoading
+            ),
+        [messages, result, dynamicSimulationStatus, isLoading]
+    );
+
     return (
         <>
-            <Box sx={styles.loader}>{isLoading && <LinearProgress />}</Box>
-            {result && (
+            {isLoading && (
+                <Box sx={styles.loader}>
+                    <LinearProgress />
+                </Box>
+            )}
+            {overlayMessage ? (
+                <Box sx={styles.overlay}>
+                    <Typography variant={'body2'}>{overlayMessage}</Typography>
+                </Box>
+            ) : (
                 <Box sx={styles.root}>
                     <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                         {/* tab headers */}
@@ -152,6 +188,7 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
                             <AddIcon />
                         </TooltipIconButton>
                     </Box>
+
                     {/* tab contents */}
                     <Box
                         sx={{

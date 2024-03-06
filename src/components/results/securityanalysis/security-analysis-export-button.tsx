@@ -53,11 +53,11 @@ export const SecurityAnalysisExportButton: FunctionComponent<
             'APPARENT_POWER',
             'MAX_ITERATION_REACHED',
             'OTHER',
-            'SOLVER_FAILED',
             'CONVERGED',
             'FAILED',
             'ONE',
             'TWO',
+            'NO_CALCULATION',
         ];
 
         enumValuesToTranslate.forEach((value) => {
