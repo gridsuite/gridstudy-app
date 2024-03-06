@@ -13,8 +13,7 @@ import {
     getRequestParamFromList,
 } from '../utils';
 
-export const PREFIX_STUDY_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/study';
+export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 export const getStudyUrl = (studyUuid) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}`;

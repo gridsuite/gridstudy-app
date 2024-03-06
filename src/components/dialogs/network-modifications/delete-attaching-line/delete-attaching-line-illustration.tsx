@@ -7,7 +7,7 @@
 
 import React, { FC } from 'react';
 import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
-import { ReactComponent as DeleteAttachingLine } from '../../../../images/network-modifications/illustrations/delete-attaching-line-illustration.svg';
+import DeleteAttachingLine from '../../../../images/network-modifications/illustrations/delete-attaching-line-illustration.svg?react';
 
 const replacedTexts = [
     {

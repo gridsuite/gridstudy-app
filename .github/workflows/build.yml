@@ -21,8 +21,9 @@ jobs:
                 NODE_OPTIONS: "--max_old_space_size=4096"
               run: |
                   npm install
-                  npm run-script build
-                  npm run-script test
+                  npm run lint
+                  npm run test
+                  npm run build
 
             - name: Build and publish Docker image - Main
               if: github.ref == 'refs/heads/main'
