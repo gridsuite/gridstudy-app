@@ -291,7 +291,6 @@ export const PSTS = 'psts';
 
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
-export const MAX_P = 'maxP';
 export const REACTIVE_POWER = 'reactivePower';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
     'operatorActivePowerLimitSide1';
