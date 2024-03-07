@@ -1769,6 +1769,70 @@ export function createVsc(
     });
 }
 
+export function modifyVsc(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    dcNominalVoltage,
+    dcResistance,
+    maximumActivePower,
+    operatorActivePowerLimitSide1,
+    operatorActivePowerLimitSide2,
+    convertersMode,
+    activePower,
+    angleDroopActivePowerControl,
+    p0,
+    droop,
+    converterStation1,
+    converterStation2,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating Vsc modification');
+    } else {
+        console.info('Creating Vsc modification');
+    }
+
+    const vscModification = {
+        type: MODIFICATION_TYPES.VSC_MODIFICATION.type,
+        equipmentId: id,
+        equipmentName: toModificationOperation(name),
+        dcNominalVoltage: toModificationOperation(dcNominalVoltage),
+        dcResistance: toModificationOperation(dcResistance),
+        maximumActivePower: toModificationOperation(maximumActivePower),
+        operatorActivePowerLimitFromSide1ToSide2: toModificationOperation(
+            operatorActivePowerLimitSide1
+        ),
+        operatorActivePowerLimitFromSide2ToSide1: toModificationOperation(
+            operatorActivePowerLimitSide2
+        ),
+        convertersMode: toModificationOperation(convertersMode),
+        activePower: toModificationOperation(activePower),
+        angleDroopActivePowerControl: toModificationOperation(
+            angleDroopActivePowerControl
+        ),
+        p0: toModificationOperation(p0),
+        droop: toModificationOperation(droop),
+        converterStation1: converterStation1,
+        converterStation2: converterStation2,
+    }; //FIXME add missing informations
+
+    return backendFetchText(modificationUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vscModification),
+    });
+}
 export function modifyByFormula(
     studyUuid,
     currentNodeUuid,
