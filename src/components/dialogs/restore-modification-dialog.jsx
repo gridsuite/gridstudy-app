@@ -74,7 +74,7 @@ const RestoreModificationDialog = ({
     };
 
     const handleDelete = () => {
-        const selectedModificationsUuidsToDelete = [...selectedItems].map(
+        const selectedModificationsUuidsToDelete = selectedItems.map(
             (item) => item.uuid
         );
         setOpenDeleteConfirmationPopup(false);
@@ -87,7 +87,7 @@ const RestoreModificationDialog = ({
     };
 
     const handleRestore = () => {
-        const selectedModificationsUuidToRestore = [...selectedItems].map(
+        const selectedModificationsUuidToRestore = selectedItems.map(
             (item) => item.uuid
         );
 
