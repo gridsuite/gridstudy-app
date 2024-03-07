@@ -33,8 +33,8 @@ import {
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P,
     P0,
-    Q_MAX_P,
-    Q_MIN_P,
+    MAX_Q,
+    MIN_Q,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
@@ -302,8 +302,8 @@ const VscModificationDialog: React.FC<any> = ({
             ? newRccValues.splice(index, 1)
             : newRccValues.splice(index, 0, {
                   [P]: null,
-                  [Q_MIN_P]: null,
-                  [Q_MAX_P]: null,
+                  [MIN_Q]: null,
+                  [MAX_Q]: null,
               });
         return {
             ...previousValue,
