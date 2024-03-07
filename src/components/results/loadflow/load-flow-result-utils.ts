@@ -121,6 +121,8 @@ export const getIdType = (index: number): string => {
             return 'overload';
         case 1:
             return 'subjectId';
+        case 2:
+            return 'connectedComponentNum';
         default:
             return '';
     }
