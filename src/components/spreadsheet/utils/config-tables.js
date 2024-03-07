@@ -1877,7 +1877,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1885,7 +1885,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -1893,10 +1893,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.activePowerControlOn != null
-                                ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1933,15 +1931,14 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1965,7 +1962,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2132,8 +2129,8 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'transientReactance',
-                field: 'generatorShortCircuit.transientReactance',
+                id: 'directTransX',
+                field: 'generatorShortCircuit.directTransX',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
@@ -2144,8 +2141,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.generatorShortCircuit
-                                ?.transientReactance || 0,
+                            params.data?.generatorShortCircuit?.directTransX ||
+                            0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2153,11 +2150,11 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 valueGetter: (params) =>
-                    params.data?.generatorShortCircuit?.transientReactance,
+                    params.data?.generatorShortCircuit?.directTransX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
-                        transientReactance: params.newValue,
+                        directTransX: params.newValue,
                     };
                     return params;
                 },
@@ -2166,8 +2163,8 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'stepUpTransformerReactance',
-                field: 'generatorShortCircuit.stepUpTransformerReactance',
+                id: 'stepUpTransformerX',
+                field: 'generatorShortCircuit.stepUpTransformerX',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
@@ -2179,7 +2176,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.generatorShortCircuit
-                                ?.stepUpTransformerReactance || 0,
+                                ?.stepUpTransformerX || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2187,12 +2184,11 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 valueGetter: (params) =>
-                    params.data?.generatorShortCircuit
-                        ?.stepUpTransformerReactance,
+                    params.data?.generatorShortCircuit?.stepUpTransformerX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
-                        stepUpTransformerReactance: params.newValue,
+                        stepUpTransformerX: params.newValue,
                     };
                     return params;
                 },
@@ -2852,7 +2848,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2860,7 +2856,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -2868,10 +2864,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.activePowerControlOn != null
-                                ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -2908,15 +2902,14 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2939,7 +2932,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,

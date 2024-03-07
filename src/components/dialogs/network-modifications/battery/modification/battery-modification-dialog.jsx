@@ -21,8 +21,8 @@ import {
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     P,
-    Q_MAX_P,
-    Q_MIN_P,
+    MAX_Q,
+    MIN_Q,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
@@ -141,12 +141,10 @@ const BatteryModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
-                [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
-                [ACTIVE_POWER_SET_POINT]:
-                    editData?.activePowerSetpoint?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]:
-                    editData?.reactivePowerSetpoint?.value ?? null,
+                [MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
+                [MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
+                [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
+                [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
                 ...getReactiveLimitsFormData({
@@ -154,10 +152,8 @@ const BatteryModificationDialog = ({
                         ?.reactiveCapabilityCurve?.value
                         ? 'CURVE'
                         : 'MINMAX',
-                    maximumReactivePower:
-                        editData?.maximumReactivePower?.value ?? null,
-                    minimumReactivePower:
-                        editData?.minimumReactivePower?.value ?? null,
+                    maximumReactivePower: editData?.maxQ?.value ?? null,
+                    minimumReactivePower: editData?.minQ?.value ?? null,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurvePoints?.length > 0
                             ? completeReactiveCapabilityCurvePointsData(
@@ -195,8 +191,8 @@ const BatteryModificationDialog = ({
                 ? newRccValues.splice(index, 1)
                 : newRccValues.splice(index, 0, {
                       [P]: null,
-                      [Q_MIN_P]: null,
-                      [Q_MAX_P]: null,
+                      [MIN_Q]: null,
+                      [MAX_Q]: null,
                   });
             return {
                 ...previousValue,

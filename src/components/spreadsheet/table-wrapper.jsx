@@ -928,16 +928,15 @@ const TableWrapper = (props) => {
                                 ?.forcedOutageRate
                         ),
                         getFieldValue(
-                            editingData?.generatorShortCircuit
-                                ?.transientReactance,
+                            editingData?.generatorShortCircuit?.directTransX,
                             editingDataRef.current?.generatorShortCircuit
-                                ?.transientReactance
+                                ?.directTransX
                         ),
                         getFieldValue(
                             editingData?.generatorShortCircuit
-                                ?.stepUpTransformerReactance,
+                                ?.stepUpTransformerX,
                             editingDataRef.current?.generatorShortCircuit
-                                ?.stepUpTransformerReactance
+                                ?.stepUpTransformerX
                         ),
                         getFieldValue(
                             editingData?.regulatingTerminalVlId ||
@@ -955,10 +954,9 @@ const TableWrapper = (props) => {
                         regulatingTerminalVlIdFieldValue,
                         undefined,
                         getFieldValue(
-                            editingData?.activePowerControl
-                                ?.activePowerControlOn,
+                            editingData?.activePowerControl?.participate,
                             editingDataRef.current?.activePowerControl
-                                ?.activePowerControlOn
+                                ?.participate
                         ),
                         getFieldValue(
                             editingData?.activePowerControl?.droop,
@@ -1028,14 +1026,13 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControl
-                                ?.activePowerControlOn,
+                            editingData.activePowerControl?.participate,
                             editingDataRef.current.activePowerControl
-                                ?.activePowerControlOn != null
+                                ?.participate != null
                                 ? +editingDataRef.current.activePowerControl
-                                      .activePowerControlOn
+                                      .participate
                                 : editingDataRef.current.activePowerControl
-                                      ?.activePowerControlOn
+                                      ?.participate
                         ),
                         getFieldValue(
                             editingData.activePowerControl?.droop,

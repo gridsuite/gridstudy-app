@@ -28,8 +28,8 @@ import {
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
+    MAX_Q,
+    MIN_Q,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -165,17 +165,14 @@ const GeneratorModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
-                [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
-                [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
-                [RATED_NOMINAL_POWER]:
-                    editData?.ratedNominalPower?.value ?? null,
-                [ACTIVE_POWER_SET_POINT]:
-                    editData?.activePowerSetpoint?.value ?? null,
+                [MAXIMUM_ACTIVE_POWER]: editData?.maxP?.value ?? null,
+                [MINIMUM_ACTIVE_POWER]: editData?.minP?.value ?? null,
+                [RATED_NOMINAL_POWER]: editData?.ratedS?.value ?? null,
+                [ACTIVE_POWER_SET_POINT]: editData?.targetP?.value ?? null,
                 [VOLTAGE_REGULATION]:
                     editData?.voltageRegulationOn?.value ?? null,
-                [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]:
-                    editData?.reactivePowerSetpoint?.value ?? null,
+                [VOLTAGE_SET_POINT]: editData?.targetV?.value ?? null,
+                [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData?.plannedActivePowerSetPoint?.value ?? null,
                 [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
@@ -184,10 +181,9 @@ const GeneratorModificationDialog = ({
                 [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
-                [TRANSIENT_REACTANCE]:
-                    editData?.transientReactance?.value ?? null,
+                [TRANSIENT_REACTANCE]: editData?.directTransX?.value ?? null,
                 [TRANSFORMER_REACTANCE]:
-                    editData?.stepUpTransformerReactance?.value ?? null,
+                    editData?.stepUpTransformerX?.value ?? null,
                 [VOLTAGE_REGULATION_TYPE]:
                     editData?.voltageRegulationType?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,
@@ -196,10 +192,8 @@ const GeneratorModificationDialog = ({
                         ?.reactiveCapabilityCurve?.value
                         ? 'CURVE'
                         : 'MINMAX',
-                    maximumReactivePower:
-                        editData?.maximumReactivePower?.value ?? null,
-                    minimumReactivePower:
-                        editData?.minimumReactivePower?.value ?? null,
+                    maximumReactivePower: editData?.maxQ?.value ?? null,
+                    minimumReactivePower: editData?.minQ?.value ?? null,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurvePoints?.length > 0
                             ? completeReactiveCapabilityCurvePointsData(
@@ -256,8 +250,8 @@ const GeneratorModificationDialog = ({
                 ? newRccValues.splice(index, 1)
                 : newRccValues.splice(index, 0, {
                       [P]: null,
-                      [Q_MIN_P]: null,
-                      [Q_MAX_P]: null,
+                      [MIN_Q]: null,
+                      [MAX_Q]: null,
                   });
             return {
                 ...previousValue,
