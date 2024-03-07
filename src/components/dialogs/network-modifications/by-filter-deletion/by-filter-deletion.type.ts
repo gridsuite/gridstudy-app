@@ -22,7 +22,7 @@ export interface ByFilterDeletionEditData {
 }
 
 export interface ByFilterDeletionFormData {
-    type: keyof typeof EQUIPMENT_TYPES | null;
+    type: string | null;
     filters: Filter[];
 }
 

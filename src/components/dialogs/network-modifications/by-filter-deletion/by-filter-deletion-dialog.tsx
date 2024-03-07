@@ -8,11 +8,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
-    TYPE,
     FILTERS,
     ID,
     NAME,
     SPECIFIC_METADATA,
+    TYPE,
 } from '../../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -82,7 +82,7 @@ const ByFilterDeletionDialog: FunctionComponent<
 
     const formMethods = useForm<ByFilterDeletionFormData>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<ByFilterDeletionFormData>(formSchema),
     });
 
     const { reset } = formMethods;
