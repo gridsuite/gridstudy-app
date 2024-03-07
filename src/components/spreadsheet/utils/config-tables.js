@@ -3106,7 +3106,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'OprFromCS2toCS1',
-                field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
+                field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
