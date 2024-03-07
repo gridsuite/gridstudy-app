@@ -91,7 +91,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             if (column && colDefinedMinWidth && finished) {
                 const newWidth = column?.getActualWidth();
                 if (newWidth < colDefinedMinWidth) {
-                    column?.setActualWidth(colDefinedMinWidth);
+                    column?.setActualWidth(colDefinedMinWidth, params.source);
                 }
             }
         };
