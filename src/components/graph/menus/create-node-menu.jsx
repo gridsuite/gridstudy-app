@@ -190,7 +190,7 @@ const CreateNodeMenu = ({
     }
 
     function isNodeRestorationAllowed() {
-        return !isAnyNodeBuilding && !mapDataLoading && !disableRestoreNodes;
+        return !isAnyNodeBuilding && !disableRestoreNodes;
     }
 
     function isNodeAlreadySelectedForCut() {
