@@ -53,9 +53,7 @@ const ReactiveLimitsForm = ({
             name={`${id}.${MINIMUM_REACTIVE_POWER}`}
             label={'MinimumReactivePower'}
             adornment={ReactivePowerAdornment}
-            previousValue={
-                equipmentToModify?.minMaxReactiveLimits?.minimumReactivePower
-            }
+            previousValue={equipmentToModify?.minMaxReactiveLimits?.minQ}
             clearable={true}
         />
     );
@@ -65,9 +63,7 @@ const ReactiveLimitsForm = ({
             name={`${id}.${MAXIMUM_REACTIVE_POWER}`}
             label={'MaximumReactivePower'}
             adornment={ReactivePowerAdornment}
-            previousValue={
-                equipmentToModify?.minMaxReactiveLimits?.maximumReactivePower
-            }
+            previousValue={equipmentToModify?.minMaxReactiveLimits?.maxQ}
             clearable={true}
         />
     );
