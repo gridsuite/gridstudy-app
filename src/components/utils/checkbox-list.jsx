@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { List } from '@mui/material';
 
@@ -21,15 +20,12 @@ const CheckboxList = ({
     itemComparator = defaultComparator,
     ...props
 }) => {
-    const valuesRef = useRef();
-    valuesRef.current = values;
-
     const isChecked = (item) =>
         checkedValues.some((checkedItem) => itemComparator(checkedItem, item));
 
     const handleToggle = (clickedItem) => {
         const newCheckedValues = [...checkedValues];
-        const valueToDeleteIndex = [...checkedValues].findIndex((item) =>
+        const valueToDeleteIndex = checkedValues.findIndex((item) =>
             itemComparator(item, clickedItem)
         );
 
@@ -39,7 +35,7 @@ const CheckboxList = ({
             newCheckedValues.push(clickedItem);
         }
 
-        onChecked([...newCheckedValues]);
+        onChecked(newCheckedValues);
     };
 
     return (
