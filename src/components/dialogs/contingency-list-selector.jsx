@@ -13,6 +13,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
+import CheckboxList from 'components/utils/checkbox-list';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
@@ -25,7 +26,6 @@ import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
-import CheckboxList from 'components/utils/checkbox-list';
 
 function makeButton(onClick, message, disabled) {
     return (
