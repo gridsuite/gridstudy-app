@@ -146,7 +146,7 @@ const GeneratorModificationForm = ({
             label={'TransientReactanceForm'}
             adornment={OhmAdornment}
             previousValue={
-                generatorToModify?.generatorShortCircuit?.transientReactance
+                generatorToModify?.generatorShortCircuit?.directTransX
             }
             clearable={true}
         />
@@ -159,12 +159,11 @@ const GeneratorModificationForm = ({
             adornment={OhmAdornment}
             previousValue={
                 isNaN(
-                    generatorToModify?.generatorShortCircuit
-                        ?.stepUpTransformerReactance
+                    generatorToModify?.generatorShortCircuit?.stepUpTransformerX
                 )
                     ? null
                     : generatorToModify?.generatorShortCircuit
-                          ?.stepUpTransformerReactance
+                          ?.stepUpTransformerX
             }
             clearable={true}
         />
