@@ -138,6 +138,10 @@ function fetchEnv() {
     return fetch('env.json').then((res) => res.json());
 }
 
+export function fetchIdpSettings() {
+    return fetch('idpSettings.json');
+}
+
 export function fetchAuthorizationCodeFlowFeatureFlag() {
     console.info(`Fetching authorization code flow feature flag...`);
     return fetchEnv()
@@ -216,9 +220,5 @@ export function getUrlWithToken(baseUrl) {
 
 export function fetchMapBoxToken() {
     console.info(`Fetching MapBoxToken...`);
-    return fetch('env.json')
-        .then((res) => res.json())
-        .then((res) => {
-            return res.mapBoxToken;
-        });
+    return fetchEnv().then((res) => res.mapBoxToken);
 }
