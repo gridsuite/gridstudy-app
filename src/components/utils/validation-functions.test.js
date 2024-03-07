@@ -417,8 +417,7 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
     // Not enough points
     expect(checkReactiveCapabilityCurve([]).length).not.toBe(0);
     expect(
-        checkReactiveCapabilityCurve([{ p: '0', minQ: '0', maxQ: '0' }])
-            .length
+        checkReactiveCapabilityCurve([{ p: '0', minQ: '0', maxQ: '0' }]).length
     ).not.toBe(0);
 
     // Not unique P values
