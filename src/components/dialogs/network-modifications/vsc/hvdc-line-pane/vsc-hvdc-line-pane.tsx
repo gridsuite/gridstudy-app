@@ -10,8 +10,8 @@ import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
-    DC_NOMINAL_VOLTAGE,
-    DC_RESISTANCE,
+    NOMINAL_V,
+    R,
     DROOP,
     MAX_P,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
@@ -50,7 +50,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
 
     const dcNominalVoltageField = (
         <FloatInput
-            name={`${id}.${DC_NOMINAL_VOLTAGE}`}
+            name={`${id}.${NOMINAL_V}`}
             adornment={VoltageAdornment}
             label={'dcNominalVoltageLabel'}
         />
@@ -58,7 +58,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
 
     const dcResistanceField = (
         <FloatInput
-            name={`${id}.${DC_RESISTANCE}`}
+            name={`${id}.${R}`}
             adornment={OhmAdornment}
             label={'dcResistanceLabel'}
         />

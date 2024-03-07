@@ -10,8 +10,8 @@ import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
-    DC_NOMINAL_VOLTAGE,
-    DC_RESISTANCE,
+    NOMINAL_V,
+    R,
     DROOP,
     MAX_P,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
@@ -23,8 +23,8 @@ export function getVscHvdcLinePaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [DC_NOMINAL_VOLTAGE]: yup.number().nullable().required(),
-                [DC_RESISTANCE]: yup.number().nullable().required(),
+                [NOMINAL_V]: yup.number().nullable().required(),
+                [R]: yup.number().nullable().required(),
                 [MAX_P]: yup.number().nullable().required(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
@@ -60,8 +60,8 @@ export function getVscHvdcLinePaneSchema(id: string) {
 export function getVscHvdcLinePaneEmptyFormData(id: string) {
     return {
         [id]: {
-            [DC_NOMINAL_VOLTAGE]: null,
-            [DC_RESISTANCE]: null,
+            [NOMINAL_V]: null,
+            [R]: null,
             [MAX_P]: null,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: null,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
@@ -74,8 +74,8 @@ export function getVscHvdcLinePaneEmptyFormData(id: string) {
     };
 }
 export interface hvdcLineTabEditData {
-    dcNominalVoltage: number;
-    dcResistance: number;
+    nominalV: number;
+    r: number;
     maxP: number;
     operatorActivePowerLimitFromSide1ToSide2?: number | null;
     operatorActivePowerLimitFromSide2ToSide1?: number | null;
@@ -92,8 +92,8 @@ export function getVscHvdcLineTabFormData(
 ) {
     return {
         [id]: {
-            [DC_NOMINAL_VOLTAGE]: hvdcLine.dcNominalVoltage,
-            [DC_RESISTANCE]: hvdcLine.dcResistance,
+            [NOMINAL_V]: hvdcLine.nominalV,
+            [R]: hvdcLine.r,
             [MAX_P]: hvdcLine.maxP,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]:
                 hvdcLine?.operatorActivePowerLimitFromSide1ToSide2,

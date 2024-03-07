@@ -289,8 +289,6 @@ export const PSTS = 'psts';
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
 export const MAX_P = 'maxP';
 export const REACTIVE_POWER = 'reactivePower';
-export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
-export const DC_RESISTANCE = 'dcResistance';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
     'operatorActivePowerLimitSide1';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 =
