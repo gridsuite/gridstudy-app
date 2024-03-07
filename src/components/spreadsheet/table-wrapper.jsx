@@ -287,15 +287,19 @@ const TableWrapper = (props) => {
         if (!equipments) {
             return {};
         }
-        return getEnumFilterColumns().reduce((filterEnums, column) => {
-            const columnValues = equipments.reduce((values, equipment) => {
-                const columnValue = deepFindValue(equipment, column.field);
-                return columnValue != null ? values.add(columnValue) : values;
-            }, new Set());
-
-            filterEnums[column.field] = [...columnValues];
-            return filterEnums;
-        }, {});
+        const filterEnums = {};
+        getEnumFilterColumns().forEach((column) => {
+            filterEnums[column.field] = [
+                ...new Set(
+                    equipments
+                        .map((equipment) =>
+                            deepFindValue(equipment, column.field)
+                        )
+                        .filter((value) => value != null)
+                ),
+            ];
+        });
+        return filterEnums;
     }, [getEnumFilterColumns, equipments]);
 
     const filterEnums = useMemo(
