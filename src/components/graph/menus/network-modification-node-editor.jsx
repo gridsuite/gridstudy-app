@@ -661,7 +661,7 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const doDeleteModification = useCallback(() => {
-        const selectedModificationsUuid = [...selectedItems].map(
+        const selectedModificationsUuid = selectedItems.map(
             (item) => item.uuid
         );
         stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
