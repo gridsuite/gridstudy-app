@@ -64,7 +64,7 @@ const ContingencyListSelector = (props) => {
         props.onStart(checkedContingencyList.map((c) => c.id));
     };
 
-    const saveFavorite = (newList) => {
+    const saveFavorites = (newList) => {
         updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
             .then()
             .catch((error) => {
@@ -140,26 +140,27 @@ const ContingencyListSelector = (props) => {
         setFavoriteSelectorOpen(true);
     };
 
-    const removeFromFavorite = (toRemove) => {
-        saveFavorite(
+    const removeFromFavorites = (toRemove) => {
+        const toRemoveIdsSet = new Set(toRemove.map((e) => e.id));
+        saveFavorites(
             contingencyList
                 .map((e) => e.id)
-                .filter((item) => !toRemove.includes(item))
+                .filter((id) => !toRemoveIdsSet.has(id))
         );
 
         setCheckedContingencyList((oldCheked) =>
-            oldCheked.filter((item) => !toRemove.includes(item))
+            oldCheked.filter((item) => !toRemoveIdsSet.has(item.id))
         );
     };
 
     const addFavorites = (favorites) => {
         if (favorites && favorites.length > 0) {
             // avoid duplicates here
-            const newFavorites = new Set([
+            const newFavoriteIdsSet = new Set([
                 ...favoriteContingencyListUuids,
                 ...favorites.map((item) => item.id),
             ]);
-            saveFavorite(Array.from([...newFavorites]));
+            saveFavorites(Array.from([...newFavoriteIdsSet]));
         }
         setFavoriteSelectorOpen(false);
     };
@@ -170,7 +171,7 @@ const ContingencyListSelector = (props) => {
                 {makeButton(handleClose, 'close', false)}
                 {makeButton(handleAddFavorite, 'AddContingencyList', false)}
                 {makeButton(
-                    () => removeFromFavorite(checkedContingencyList),
+                    () => removeFromFavorites(checkedContingencyList),
                     'DeleteContingencyList',
                     checkedContingencyList.length === 0
                 )}
@@ -216,7 +217,7 @@ const ContingencyListSelector = (props) => {
                                         onClick={() => handleToggle(item)}
                                         removeFromList={(e) => {
                                             e.stopPropagation();
-                                            removeFromFavorite([item.id]);
+                                            removeFromFavorites([item]);
                                         }}
                                     />
                                 )}
