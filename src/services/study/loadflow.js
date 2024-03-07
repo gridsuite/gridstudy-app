@@ -11,7 +11,6 @@ import {
     PREFIX_STUDY_QUERIES,
 } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getSortValue } from 'hooks/use-aggrid-sort';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
@@ -104,7 +103,7 @@ export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
     const params = new URLSearchParams({});
 
     if (sort?.colKey && sort?.sortWay) {
-        params.append('sort', `${sort.colKey},${getSortValue(sort.sortWay)}`);
+        params.append('sort', `${sort.colKey},${sort.sortWay}`);
     }
 
     if (filters?.length) {
@@ -124,7 +123,7 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
     const params = new URLSearchParams({});
 
     if (sort?.colKey && sort?.sortWay) {
-        params.append('sort', `${sort.colKey},${getSortValue(sort.sortWay)}`);
+        params.append('sort', `${sort.colKey},${sort.sortWay}`);
     }
 
     if (filters?.length) {

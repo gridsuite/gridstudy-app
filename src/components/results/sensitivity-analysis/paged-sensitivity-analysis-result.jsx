@@ -26,6 +26,7 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
+import { getParentSort } from '../../../hooks/use-aggrid-sort';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -128,13 +129,14 @@ const PagedSensitivityAnalysisResult = ({
     }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, snackError, intl]);
 
     const fetchResult = useCallback(() => {
-        const { colKey, sortWay } = sortConfig || {};
+        const { sort, colId } = getParentSort(sortConfig);
 
         const sortSelector =
-            colKey && sortWay
+            colId && sort
                 ? {
                       sortKeysWithWeightAndDirection: {
-                          [DATA_KEY_TO_SORT_KEY[colKey]]: sortWay,
+                          [DATA_KEY_TO_SORT_KEY[colId]]:
+                              sort === 'desc' ? -1 : 1,
                       },
                   }
                 : {};

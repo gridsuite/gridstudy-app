@@ -38,7 +38,11 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import {
+    getParentSort,
+    SORT_WAYS,
+    useAgGridSort,
+} from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     useAggridRowFilter,
@@ -96,8 +100,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         ? SORT_WAYS.desc
         : SORT_WAYS.asc;
     const { onSortChanged, sortConfig } = useAgGridSort({
-        colKey: defaultSortKey,
-        sortWay: defaultSortWay,
+        colId: defaultSortKey,
+        sort: defaultSortWay,
     });
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
@@ -132,15 +136,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        const { colKey, sortWay } = sortConfig || {};
+        const { sort, colId } = getParentSort(sortConfig);
 
         const selector = {
             page,
             size: rowsPerPage,
             filter: filterSelector,
             sort: {
-                colKey: fromFrontColumnToBackKeys[colKey],
-                sortWay,
+                colKey: fromFrontColumnToBackKeys[colId],
+                sortWay: sort,
             },
         };
 

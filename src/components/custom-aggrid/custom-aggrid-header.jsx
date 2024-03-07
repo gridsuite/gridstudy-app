@@ -72,7 +72,7 @@ const CustomHeaderComponent = ({
     } = filterParams;
 
     const {
-        sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
+        sortConfig, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
 
@@ -80,7 +80,8 @@ const CustomHeaderComponent = ({
         filterDataType === FILTER_DATA_TYPES.TEXT &&
         !!customFilterOptions?.length;
     const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
-    const isColumnSorted = sortColKey === field;
+    const columnSort = sortConfig?.find((value) => value.colId === field);
+    const isColumnSorted = !!columnSort;
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -153,7 +154,7 @@ const CustomHeaderComponent = ({
         if (!isColumnSorted) {
             newSort = SORT_WAY.asc;
         } else {
-            if (sortWay < 0) {
+            if (columnSort.sort === SORT_WAY.desc) {
                 newSort = SORT_WAY.asc;
             } else {
                 newSort = SORT_WAY.desc;
@@ -163,7 +164,7 @@ const CustomHeaderComponent = ({
         if (typeof onSortChanged === 'function') {
             onSortChanged(newSort);
         }
-    }, [isColumnSorted, onSortChanged, sortWay]);
+    }, [isColumnSorted, onSortChanged, columnSort?.sort]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
@@ -236,7 +237,8 @@ const CustomHeaderComponent = ({
                                 {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {sortWay === SORT_WAY.asc ? (
+                                            {columnSort.sort ===
+                                            SORT_WAY.asc ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
@@ -386,13 +388,12 @@ CustomHeaderComponent.propTypes = {
     displayName: PropTypes.string.isRequired,
     isSortable: PropTypes.bool,
     sortParams: PropTypes.shape({
-        sortConfig: PropTypes.shape({
-            colKey: PropTypes.string,
-            sortWay: PropTypes.number,
-            selector: PropTypes.shape({
-                sortKeysWithWeightAndDirection: PropTypes.object,
-            }),
-        }),
+        sortConfig: PropTypes.arrayOf(
+            PropTypes.shape({
+                colId: PropTypes.string,
+                sort: PropTypes.string,
+            })
+        ),
         onSortChanged: PropTypes.func,
     }),
     isFilterable: PropTypes.bool,

@@ -40,7 +40,11 @@ import {
     getColumnToFieldMapping,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import {
+    getParentSort,
+    SORT_WAYS,
+    useAgGridSort,
+} from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
@@ -98,8 +102,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colKey: getIdType(tabIndex, nmkType),
-        sortWay: SORT_WAYS.asc,
+        colId: getIdType(tabIndex, nmkType),
+        sort: SORT_WAYS.asc,
     });
 
     const resultType = useMemo(() => {
@@ -135,12 +139,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             }
 
             if (sortConfig) {
-                const { sortWay, colKey } = sortConfig;
+                const { sort, colId } = getParentSort(sortConfig);
                 const columnToFieldMapping =
                     getColumnToFieldMapping(resultType);
                 queryParams['sort'] = {
-                    colKey: columnToFieldMapping[colKey],
-                    sortWay,
+                    colId: columnToFieldMapping[colId],
+                    sort,
                 };
             }
 

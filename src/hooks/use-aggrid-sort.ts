@@ -8,47 +8,57 @@
 import { useCallback, useState } from 'react';
 
 export type SortConfigType = {
-    colKey: string;
-    sortWay: number;
+    colId: string;
+    sort: 'asc' | 'desc';
+    children?: boolean;
 };
 
 export type SortPropsType = {
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig: SortConfigType;
+    onSortChanged: (sortConfig: SortConfigType) => void;
+    sortConfig: SortConfigType[];
     initSort?: (colKey: string) => void;
 };
 
 export const SORT_WAYS = {
-    asc: 1,
-    desc: -1,
+    asc: 'asc' as const,
+    desc: 'desc' as const,
 };
 
-export const getSortValue = (sortWay: number) => {
-    if (sortWay > 0) {
-        return 'asc';
-    } else {
-        return 'desc';
+export function getParentSort(sortConfig: SortConfigType[]): SortConfigType {
+    const parentSort = sortConfig.find((sort) => !sort.children);
+    if (!parentSort) {
+        console.error('No parent sort, should not be possible');
     }
-};
+    return parentSort!;
+}
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType
 ): SortPropsType => {
-    const { colKey: initColKey, sortWay: initSortWay } = initSortConfig;
-
-    const [sortConfig, setSortConfig] = useState<SortConfigType>({
-        colKey: initColKey,
-        sortWay: initSortWay,
-    });
+    const [sortConfig, setSortConfig] = useState<SortConfigType[]>([
+        initSortConfig,
+    ]);
 
     const onSortChanged = useCallback(
-        (colKey: string, sortWay: number) => setSortConfig({ colKey, sortWay }),
-        []
+        (newSortConfig: SortConfigType) => {
+            setSortConfig(
+                sortConfig
+                    // for now, we can have only one parent sort and one children sort
+                    .filter(
+                        (sort) =>
+                            (sort.children ?? false) !==
+                            (newSortConfig.children ?? false)
+                    )
+                    .concat(newSortConfig)
+            );
+        },
+        [sortConfig]
     );
 
     const initSort = useCallback(
-        (colKey: string) => setSortConfig({ colKey, sortWay: initSortWay }),
-        [initSortWay]
+        (colKey: string) =>
+            setSortConfig([{ colId: colKey, sort: initSortConfig.sort }]),
+        [initSortConfig.sort]
     );
 
     return { onSortChanged, sortConfig, initSort };

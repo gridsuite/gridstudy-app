@@ -92,8 +92,8 @@ const DynamicSimulationResultTimeline = ({
     );
 
     const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
-        colKey: COL_TIME,
-        sortWay: SORT_WAYS.asc,
+        colId: COL_TIME,
+        sort: SORT_WAYS.asc,
     });
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {

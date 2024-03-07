@@ -14,7 +14,7 @@ export const makeAgGridCustomHeaderColumn = ({
     filterParams, // filterParams: Parameters for the column's filtering functionality
     ...props // agGrid column props
 }: CustomColDef) => {
-    const { headerName, field = '', fractionDigits, numeric } = props;
+    const { headerName, field = '', fractionDigits, numeric, children } = props;
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
@@ -24,7 +24,9 @@ export const makeAgGridCustomHeaderColumn = ({
 
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;
-    const isCurrentColumnSorted = sortConfig?.colKey === field;
+    const isCurrentColumnSorted = !!sortConfig?.find(
+        (value) => value.colId === field
+    );
 
     let minWidth = 75;
     if (isSortable && isCurrentColumnSorted) {
@@ -45,8 +47,12 @@ export const makeAgGridCustomHeaderColumn = ({
             isSortable,
             sortParams: {
                 sortConfig,
-                onSortChanged: (newSortValue: number = 0) => {
-                    onSortChanged(field, newSortValue);
+                onSortChanged: (newSortValue: 'asc' | 'desc') => {
+                    onSortChanged({
+                        colId: field,
+                        sort: newSortValue,
+                        children: children,
+                    });
                 },
             },
             isFilterable,

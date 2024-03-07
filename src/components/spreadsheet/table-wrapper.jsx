@@ -232,8 +232,8 @@ const TableWrapper = (props) => {
     const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
         gridRef,
         {
-            colKey: defaultSortColKey,
-            sortWay: SORT_WAYS.asc,
+            colId: defaultSortColKey,
+            sort: SORT_WAYS.asc,
         }
     );
 
