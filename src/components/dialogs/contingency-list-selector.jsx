@@ -148,8 +148,8 @@ const ContingencyListSelector = (props) => {
                 .filter((id) => !toRemoveIdsSet.has(id))
         );
 
-        setCheckedContingencyList((oldCheked) =>
-            oldCheked.filter((item) => !toRemoveIdsSet.has(item.id))
+        setCheckedContingencyList((oldChecked) =>
+            oldChecked.filter((item) => !toRemoveIdsSet.has(item.id))
         );
     };
 
