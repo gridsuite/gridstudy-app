@@ -28,7 +28,6 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
-    MAXIMUM_ACTIVE_POWER,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P,
@@ -38,6 +37,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
+    MAX_P,
 } from '../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -269,7 +269,7 @@ const VscModificationDialog: React.FC<any> = ({
             sanitizeString(hvdcLine[EQUIPMENT_NAME]),
             hvdcLineTab[NOMINAL_V],
             hvdcLineTab[R],
-            hvdcLineTab[MAXIMUM_ACTIVE_POWER],
+            hvdcLineTab[MAX_P],
             hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
             hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
             hvdcLineTab[CONVERTERS_MODE],
