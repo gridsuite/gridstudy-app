@@ -173,13 +173,12 @@ const GeneratorCreationDialog = ({
             [PLANNED_OUTAGE_RATE]:
                 generator.generatorStartup?.plannedOutageRate,
             [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
-            [FREQUENCY_REGULATION]:
-                generator.activePowerControl?.activePowerControlOn,
+            [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
             [DROOP]: generator.activePowerControl?.droop,
             [TRANSIENT_REACTANCE]:
-                generator.generatorShortCircuit?.transientReactance,
+                generator.generatorShortCircuit?.directTransX,
             [TRANSFORMER_REACTANCE]:
-                generator.generatorShortCircuit?.stepUpTransformerReactance,
+                generator.generatorShortCircuit?.stepUpTransformerX,
             [VOLTAGE_REGULATION_TYPE]:
                 generator?.regulatingTerminalId ||
                 generator?.regulatingTerminalConnectableId
@@ -193,11 +192,9 @@ const GeneratorCreationDialog = ({
                     ? 'MINMAX'
                     : 'CURVE',
                 minimumReactivePower:
-                    generator?.minMaxReactiveLimits?.minimumReactivePower ??
-                    null,
+                    generator?.minMaxReactiveLimits?.minQ ?? null,
                 maximumReactivePower:
-                    generator?.minMaxReactiveLimits?.maximumReactivePower ??
-                    null,
+                    generator?.minMaxReactiveLimits?.maxQ ?? null,
                 reactiveCapabilityCurveTable:
                     generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
             }),
@@ -234,13 +231,13 @@ const GeneratorCreationDialog = ({
                 [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData.equipmentName ?? '',
                 [ENERGY_SOURCE]: editData.energySource,
-                [MAXIMUM_ACTIVE_POWER]: editData.maxActivePower,
-                [MINIMUM_ACTIVE_POWER]: editData.minActivePower,
-                [RATED_NOMINAL_POWER]: editData.ratedNominalPower,
-                [ACTIVE_POWER_SET_POINT]: editData.activePowerSetpoint,
+                [MAXIMUM_ACTIVE_POWER]: editData.maxP,
+                [MINIMUM_ACTIVE_POWER]: editData.minP,
+                [RATED_NOMINAL_POWER]: editData.ratedS,
+                [ACTIVE_POWER_SET_POINT]: editData.targetP,
                 [VOLTAGE_REGULATION]: editData.voltageRegulationOn,
-                [VOLTAGE_SET_POINT]: editData.voltageSetpoint,
-                [REACTIVE_POWER_SET_POINT]: editData.reactivePowerSetpoint,
+                [VOLTAGE_SET_POINT]: editData.targetV,
+                [REACTIVE_POWER_SET_POINT]: editData.targetQ,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData.plannedActivePowerSetPoint,
                 [MARGINAL_COST]: editData.marginalCost,
@@ -248,8 +245,8 @@ const GeneratorCreationDialog = ({
                 [FORCED_OUTAGE_RATE]: editData.forcedOutageRate,
                 [FREQUENCY_REGULATION]: editData.participate,
                 [DROOP]: editData.droop,
-                [TRANSIENT_REACTANCE]: editData.transientReactance,
-                [TRANSFORMER_REACTANCE]: editData.stepUpTransformerReactance,
+                [TRANSIENT_REACTANCE]: editData.directTransX,
+                [TRANSFORMER_REACTANCE]: editData.stepUpTransformerX,
                 [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
                     ? REGULATION_TYPES.DISTANT.id
                     : REGULATION_TYPES.LOCAL.id,
@@ -257,8 +254,8 @@ const GeneratorCreationDialog = ({
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice:
                         editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
-                    minimumReactivePower: editData?.minimumReactivePower,
-                    maximumReactivePower: editData?.maximumReactivePower,
+                    minimumReactivePower: editData?.minQ,
+                    maximumReactivePower: editData?.maxQ,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurve
                             ? editData?.reactiveCapabilityCurvePoints
