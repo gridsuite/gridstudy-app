@@ -789,6 +789,7 @@
     "DuplicatedPropsError": "Propriétés dupliquées : chaque propriété doit être unique",
     "FillAllFields": "Veuillez remplir tous les champs",
     "ModifySubstation": "Modifier un site",
+    "ModifyVsc": "Modifier une VSC",
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
