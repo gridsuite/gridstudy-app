@@ -14,8 +14,8 @@ export const makeAgGridCustomHeaderColumn = ({
     filterParams, // filterParams: Parameters for the column's filtering functionality
     ...props // agGrid column props
 }: CustomColDef) => {
-    const { headerName, field = '', fractionDigits, numeric, children } = props;
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
+    const { headerName, field = '', fractionDigits, numeric } = props;
+    const { onSortChanged = () => {}, sortConfig, children } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
 
