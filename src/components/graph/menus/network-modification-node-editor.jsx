@@ -517,6 +517,13 @@ const NetworkModificationNodeEditor = () => {
         });
     }, [studyUuid]);
 
+    const updateSelectedItems = useCallback((modifications) => {
+        const toKeepIdsSet = new Set(modifications.map((e) => e.uuid));
+        setSelectedItems((oldselectedItems) =>
+            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid))
+        );
+    }, []);
+
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
@@ -528,12 +535,12 @@ const NetworkModificationNodeEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    setModifications(
-                        res.filter(
-                            (networkModification) =>
-                                networkModification.stashed === false
-                        )
+                    const liveModifications = res.filter(
+                        (networkModification) =>
+                            networkModification.stashed === false
                     );
+                    updateSelectedItems(liveModifications);
+                    setModifications(liveModifications);
                     setModificationsToRestore(
                         res.filter(
                             (networkModification) =>
@@ -552,7 +559,14 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
+    }, [
+        currentNode?.type,
+        currentNode.id,
+        studyUuid,
+        updateSelectedItems,
+        snackError,
+        dispatch,
+    ]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);

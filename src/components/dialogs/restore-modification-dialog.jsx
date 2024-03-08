@@ -22,6 +22,7 @@ import {
 } from 'services/study/network-modifications';
 import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
+import { isPartial } from 'components/graph/menus/network-modification-node-editor';
 
 const styles = {
     text: (theme) => ({
@@ -70,6 +71,7 @@ const RestoreModificationDialog = ({
         useState(false);
 
     const handleClose = () => {
+        setSelectedItems([]);
         onClose();
     };
 
@@ -147,6 +149,10 @@ const RestoreModificationDialog = ({
                                             selectedItems.length ===
                                             stashedModifications.length
                                         }
+                                        indeterminate={isPartial(
+                                            selectedItems.length,
+                                            stashedModifications?.length
+                                        )}
                                         onClick={handleSelectAll}
                                         disableRipple
                                     />

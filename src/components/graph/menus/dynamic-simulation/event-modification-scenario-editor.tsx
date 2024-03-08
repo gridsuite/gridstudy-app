@@ -129,6 +129,13 @@ const EventModificationScenarioEditor = () => {
         [fillNotification]
     );
 
+    const updateSelectedItems = useCallback((events: Event[]) => {
+        const toKeepIdsSet = new Set(events.map((e) => e.uuid));
+        setSelectedItems((oldselectedItems) =>
+            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid))
+        );
+    }, []);
+
     const doFetchEvents = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
@@ -140,6 +147,7 @@ const EventModificationScenarioEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
+                    updateSelectedItems(res);
                     // sort by start time
                     const sortedEvents = res.sort(
                         (a, b) => getStartTime(a) - getStartTime(b)
@@ -157,7 +165,14 @@ const EventModificationScenarioEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
+    }, [
+        currentNode?.type,
+        currentNode.id,
+        studyUuid,
+        updateSelectedItems,
+        snackError,
+        dispatch,
+    ]);
 
     useEffect(() => {
         // first time with currentNode initialized then fetch events
