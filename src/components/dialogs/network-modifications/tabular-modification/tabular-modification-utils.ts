@@ -41,7 +41,7 @@ import {
     G2,
     B2,
     STEP_UP_TRANSFORMER_REACTANCE,
-    SUBSTATION_COUNTRY,
+    COUNTRY,
     TARGET_P,
     TARGET_Q,
     TARGET_V,
@@ -104,7 +104,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         CONNECTED1,
         CONNECTED2,
     ],
-    SUBSTATION: [EQUIPMENT_ID, SUBSTATION_COUNTRY],
+    SUBSTATION: [EQUIPMENT_ID, COUNTRY],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
