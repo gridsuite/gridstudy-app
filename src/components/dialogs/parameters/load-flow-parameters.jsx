@@ -173,7 +173,13 @@ function makeComponentsFor(
     provider
 ) {
     return Object.keys(defParams).map((key) => (
-        <Grid container spacing={1} paddingTop={1} key={key}>
+        <Grid
+            container
+            spacing={1}
+            paddingTop={1}
+            key={key}
+            justifyContent={'space-between'}
+        >
             {makeComponentFor(
                 defParams[key],
                 key,
@@ -590,6 +596,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         paddingRight: 2,
                         height: 'fit-content',
                     }}
+                    justifyContent={'space-between'}
                 >
                     <DropDown
                         value={provider}
