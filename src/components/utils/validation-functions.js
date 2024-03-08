@@ -181,7 +181,7 @@ export function validateField(value, toValidate, disabled = false) {
  * Checks if the provided reactive capabilty curve is valid. Returns a list of
  * errors if any, or an empty array otherwise.
  * @param reactiveCapabilityCurve an array of reactive capability curve points of
- * this format : [{ p: '', qminP: '', qmaxP: '' }, { p: '', qminP: '', qmaxP: '' }]
+ * this format : [{ p: '', minQ: '', maxQ: '' }, { p: '', minQ: '', maxQ: '' }]
  * @returns An array of error messages. If there is no error, returns an empty array.
  */
 export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
@@ -224,7 +224,7 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
 
     // Each qMin must be inferior or equal to qMax
     for (let element of reactiveCapabilityCurve) {
-        if (!validateValueIsLessThanOrEqualTo(element.qminP, element.qmaxP)) {
+        if (!validateValueIsLessThanOrEqualTo(element.minQ, element.maxQ)) {
             errorMessages.push(
                 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
             );

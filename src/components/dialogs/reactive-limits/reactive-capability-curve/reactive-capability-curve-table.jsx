@@ -14,7 +14,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import { ErrorInput } from '@gridsuite/commons-ui';
-import { P, Q_MAX_P, Q_MIN_P } from 'components/utils/field-constants';
+import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
 import { MidFormError } from '@gridsuite/commons-ui';
 import { INSERT, REMOVE } from './reactive-capability-utils';
 
@@ -33,8 +33,8 @@ export const ReactiveCapabilityCurveTable = ({
         }
         insert(rows.length - 1, {
             [P]: null,
-            [Q_MIN_P]: null,
-            [Q_MAX_P]: null,
+            [MIN_Q]: null,
+            [MAX_Q]: null,
         });
     };
 

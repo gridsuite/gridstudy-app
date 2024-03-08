@@ -32,12 +32,12 @@ import {
 } from './security-analysis.type';
 import {
     DEFAULT_PAGE_COUNT,
-    FROM_COLUMN_TO_FIELD,
     NMK_TYPE,
     RESULT_TYPE,
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     getIdType,
+    getColumnToFieldMapping,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -102,8 +102,18 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         sortWay: SORT_WAYS.asc,
     });
 
+    const resultType = useMemo(() => {
+        if (tabIndex === N_RESULTS_TAB_INDEX) {
+            return RESULT_TYPE.N;
+        } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
+            return RESULT_TYPE.NMK_CONTINGENCIES;
+        } else {
+            return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
+        }
+    }, [tabIndex, nmkType]);
+
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        FROM_COLUMN_TO_FIELD,
+        getColumnToFieldMapping(resultType),
         () => {
             setPage(0);
         }
@@ -114,13 +124,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             if (tabIndex === LOGS_TAB_INDEX) {
                 return Promise.resolve();
             }
-
-            const resultType =
-                tabIndex === N_RESULTS_TAB_INDEX
-                    ? RESULT_TYPE.N
-                    : nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                    ? RESULT_TYPE.NMK_CONTINGENCIES
-                    : RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
 
             const queryParams: QueryParamsType = {
                 resultType,
@@ -133,8 +136,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
             if (sortConfig) {
                 const { sortWay, colKey } = sortConfig;
+                const columnToFieldMapping =
+                    getColumnToFieldMapping(resultType);
                 queryParams['sort'] = {
-                    colKey: FROM_COLUMN_TO_FIELD[colKey],
+                    colKey: columnToFieldMapping[colKey],
                     sortWay,
                 };
             }
@@ -149,7 +154,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams
             );
         },
-        [nmkType, page, tabIndex, rowsPerPage, sortConfig, filterSelector]
+        [page, tabIndex, rowsPerPage, sortConfig, filterSelector, resultType]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
@@ -233,18 +238,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             securityAnalysisStatus === RunningStatus.RUNNING || isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
-
-    const resultType = useMemo(() => {
-        if (tabIndex === N_RESULTS_TAB_INDEX) {
-            return RESULT_TYPE.N;
-        }
-
-        if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
-            return RESULT_TYPE.NMK_CONTINGENCIES;
-        } else {
-            return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
-        }
-    }, [tabIndex, nmkType]);
 
     const columnDefs = useSecurityAnalysisColumnsDefs(
         {
