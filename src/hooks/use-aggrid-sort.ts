@@ -17,6 +17,7 @@ export type SortPropsType = {
     onSortChanged: (sortConfig: SortConfigType) => void;
     sortConfig: SortConfigType[];
     initSort?: (colKey: string) => void;
+    children?: boolean;
 };
 
 export const SORT_WAYS = {
