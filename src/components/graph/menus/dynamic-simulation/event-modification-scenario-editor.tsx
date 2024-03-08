@@ -49,6 +49,7 @@ import {
     styles,
 } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
+import { areUuidsEqual } from 'components/utils/utils';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -273,7 +274,7 @@ const EventModificationScenarioEditor = () => {
                 onChecked={setSelectedItems}
                 checkedValues={selectedItems}
                 values={events}
-                itemComparator={(a, b) => a.uuid === b.uuid}
+                itemComparator={areUuidsEqual}
                 itemRenderer={(props: any) => (
                     <EventListItem
                         key={props.item.equipmentId}

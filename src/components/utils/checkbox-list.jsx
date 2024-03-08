@@ -7,17 +7,14 @@
 
 import PropTypes from 'prop-types';
 import { List } from '@mui/material';
-
-function defaultComparator(a, b) {
-    return a.id === b.id;
-}
+import { areIdsEqual } from './utils';
 
 const CheckboxList = ({
     itemRenderer,
     values,
     onChecked,
     checkedValues,
-    itemComparator = defaultComparator,
+    itemComparator = areIdsEqual,
     ...props
 }) => {
     const isChecked = (item) =>

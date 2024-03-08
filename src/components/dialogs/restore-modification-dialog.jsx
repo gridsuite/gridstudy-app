@@ -23,6 +23,7 @@ import {
 import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { isPartial } from 'components/graph/menus/network-modification-node-editor';
+import { areUuidsEqual } from 'components/utils/utils';
 
 const styles = {
     text: (theme) => ({
@@ -167,7 +168,7 @@ const RestoreModificationDialog = ({
                                     onChecked={setSelectedItems}
                                     checkedValues={selectedItems}
                                     values={stashedModifications}
-                                    itemComparator={(a, b) => a.uuid === b.uuid}
+                                    itemComparator={areUuidsEqual}
                                     itemRenderer={(props) => (
                                         <ModificationListItem
                                             key={props.item.uuid}

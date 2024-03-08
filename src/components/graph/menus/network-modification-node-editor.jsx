@@ -85,6 +85,7 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { fetchPath } from '../../../services/directory';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
+import { areUuidsEqual } from 'components/utils/utils';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -971,7 +972,7 @@ const NetworkModificationNodeEditor = () => {
                                 onChecked={setSelectedItems}
                                 checkedValues={selectedItems}
                                 values={modifications}
-                                itemComparator={(a, b) => a.uuid === b.uuid}
+                                itemComparator={areUuidsEqual}
                                 itemRenderer={(props) => (
                                     <ModificationListItem
                                         key={props.item.uuid}
