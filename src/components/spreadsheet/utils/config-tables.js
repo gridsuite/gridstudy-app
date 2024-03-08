@@ -41,6 +41,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { NOMINAL_V } from '../../utils/field-constants';
 
 const generateTapPositions = (params) => {
     return params
@@ -293,13 +294,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'countryName',
+                field: 'country.countryName',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
                 valueSetter: (params) => {
-                    params.data.countryCode = params?.newValue?.countryCode;
-                    params.data.countryName = params?.newValue?.countryName;
+                    params.data.countryCode =
+                        params?.newValue?.country?.countryCode;
+                    params.data.countryName =
+                        params?.newValue?.country?.countryName;
                     return params;
                 },
                 ...defaultTextFilterConfig,
@@ -353,6 +356,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'SubstationId',
                 field: 'substationId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -507,6 +515,16 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country1',
+                field: 'country1.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country2',
+                field: 'country2.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
@@ -650,6 +668,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelIdSide2',
                 field: 'voltageLevelId2',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -1378,6 +1401,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalVoltageT3WSide1',
                 field: 'nominalVoltage1',
                 numeric: true,
@@ -1800,6 +1828,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
@@ -1844,7 +1877,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1852,7 +1885,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -1860,10 +1893,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.activePowerControlOn != null
-                                ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1900,15 +1931,14 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1932,7 +1962,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2099,8 +2129,8 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'transientReactance',
-                field: 'generatorShortCircuit.transientReactance',
+                id: 'directTransX',
+                field: 'generatorShortCircuit.directTransX',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
@@ -2111,8 +2141,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.generatorShortCircuit
-                                ?.transientReactance || 0,
+                            params.data?.generatorShortCircuit?.directTransX ||
+                            0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2120,11 +2150,11 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 valueGetter: (params) =>
-                    params.data?.generatorShortCircuit?.transientReactance,
+                    params.data?.generatorShortCircuit?.directTransX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
-                        transientReactance: params.newValue,
+                        directTransX: params.newValue,
                     };
                     return params;
                 },
@@ -2133,8 +2163,8 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'stepUpTransformerReactance',
-                field: 'generatorShortCircuit.stepUpTransformerReactance',
+                id: 'stepUpTransformerX',
+                field: 'generatorShortCircuit.stepUpTransformerX',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
@@ -2146,7 +2176,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.generatorShortCircuit
-                                ?.stepUpTransformerReactance || 0,
+                                ?.stepUpTransformerX || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2154,12 +2184,11 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 valueGetter: (params) =>
-                    params.data?.generatorShortCircuit
-                        ?.stepUpTransformerReactance,
+                    params.data?.generatorShortCircuit?.stepUpTransformerX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
-                        stepUpTransformerReactance: params.newValue,
+                        stepUpTransformerX: params.newValue,
                     };
                     return params;
                 },
@@ -2410,6 +2439,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
@@ -2510,6 +2544,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -2695,8 +2734,13 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
-                field: 'nominalVoltage',
+                field: NOMINAL_V,
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
@@ -2771,6 +2815,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
@@ -2799,7 +2848,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2807,7 +2856,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -2815,10 +2864,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.activePowerControlOn != null
-                                ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -2855,15 +2902,14 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2886,7 +2932,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -3002,6 +3048,16 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country1',
+                field: 'country1.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country2',
+                field: 'country2.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'R',
                 field: 'r',
                 numeric: true,
@@ -3092,6 +3148,11 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
@@ -3168,6 +3229,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'Country',
+                field: 'country.countryName',
                 ...defaultTextFilterConfig,
             },
             {
@@ -3264,15 +3330,20 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
-                field: 'nominalVoltage',
+                field: NOMINAL_V,
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'UcteXnodeCode',
-                field: 'ucteXnodeCode',
+                id: 'PairingKey',
+                field: 'pairingKey',
                 getQuickFilterText: excludeFromGlobalFilter,
                 ...defaultTextFilterConfig,
             },
@@ -3363,17 +3434,17 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'Country',
+                field: 'country.countryName',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
                 ...defaultNumericFilterConfig,
-            },
-            {
-                id: 'Country',
-                field: 'countryName',
-                ...defaultTextFilterConfig,
             },
         ],
     },

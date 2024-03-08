@@ -286,18 +286,19 @@ export function createBattery(
     connectionDirection,
     connectionPosition,
     connected,
-    minActivePower,
-    maxActivePower,
+    minP,
+    maxP,
     isReactiveCapabilityCurveOn,
-    minimumReactivePower,
-    maximumReactivePower,
+    minQ,
+    maxQ,
     reactiveCapabilityCurve,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
-    frequencyRegulation,
+    targetP,
+    targetQ,
+    participate,
     droop,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createBatteryUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -326,16 +327,17 @@ export function createBattery(
             connectionDirection,
             connectionPosition,
             connected,
-            minActivePower,
-            maxActivePower,
+            minP,
+            maxP,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-            minimumReactivePower,
-            maximumReactivePower,
+            minQ,
+            maxQ,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-            activePowerSetpoint,
-            reactivePowerSetpoint,
-            participate: frequencyRegulation,
+            targetP,
+            targetQ,
+            participate,
             droop,
+            properties,
         }),
     });
 }
@@ -345,19 +347,20 @@ export function modifyBattery(
     currentNodeUuid,
     batteryId,
     name,
-    minimumActivePower,
-    maximumActivePower,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
+    minP,
+    maxP,
+    targetP,
+    targetQ,
     voltageLevelId,
     busOrBusbarSectionId,
     modificationId,
-    frequencyRegulation,
+    participate,
     droop,
     isReactiveCapabilityCurveOn,
-    maximumReactivePower,
-    minimumReactivePower,
-    reactiveCapabilityCurve
+    maxQ,
+    minQ,
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -376,18 +379,19 @@ export function modifyBattery(
         equipmentName: toModificationOperation(name),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-        minActivePower: toModificationOperation(minimumActivePower),
-        maxActivePower: toModificationOperation(maximumActivePower),
-        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        reactivePowerSetpoint: toModificationOperation(reactivePowerSetpoint),
+        minP: toModificationOperation(minP),
+        maxP: toModificationOperation(maxP),
+        targetP: toModificationOperation(targetP),
+        targetQ: toModificationOperation(targetQ),
         reactiveCapabilityCurve: toModificationOperation(
             isReactiveCapabilityCurveOn
         ),
-        participate: toModificationOperation(frequencyRegulation),
+        participate: toModificationOperation(participate),
         droop: toModificationOperation(droop),
-        maximumReactivePower: toModificationOperation(maximumReactivePower),
-        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        maxQ: toModificationOperation(maxQ),
+        minQ: toModificationOperation(minQ),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -503,13 +507,13 @@ export function modifyGenerator(
     generatorId,
     name,
     energySource,
-    minimumActivePower,
-    maximumActivePower,
-    ratedNominalPower,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
+    minP,
+    maxP,
+    ratedS,
+    targetP,
+    targetQ,
     voltageRegulation,
-    voltageSetpoint,
+    targetV,
     voltageLevelId,
     busOrBusbarSectionId,
     modificationId,
@@ -518,17 +522,17 @@ export function modifyGenerator(
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
-    transientReactance,
-    transformerReactance,
+    directTransX,
+    stepUpTransformerX,
     voltageRegulationType,
     regulatingTerminalId,
     regulatingTerminalType,
     regulatingTerminalVlId,
     isReactiveCapabilityCurveOn,
-    frequencyRegulation,
+    participate,
     droop,
-    maximumReactivePower,
-    minimumReactivePower,
+    maxQ,
+    minQ,
     reactiveCapabilityCurve,
     properties
 ) {
@@ -548,15 +552,13 @@ export function modifyGenerator(
         equipmentId: generatorId,
         equipmentName: toModificationOperation(name),
         energySource: toModificationOperation(energySource),
-        minActivePower: toModificationOperation(minimumActivePower),
-        maxActivePower: toModificationOperation(maximumActivePower),
-        ratedNominalPower: toModificationOperation(ratedNominalPower),
-        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        reactivePowerSetpoint: toModificationUnsetOperation(
-            reactivePowerSetpoint
-        ),
+        minP: toModificationOperation(minP),
+        maxP: toModificationOperation(maxP),
+        ratedS: toModificationOperation(ratedS),
+        targetP: toModificationOperation(targetP),
+        targetQ: toModificationUnsetOperation(targetQ),
         voltageRegulationOn: toModificationOperation(voltageRegulation),
-        voltageSetpoint: toModificationUnsetOperation(voltageSetpoint),
+        targetV: toModificationUnsetOperation(targetV),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
@@ -566,9 +568,8 @@ export function modifyGenerator(
         marginalCost: toModificationOperation(marginalCost),
         plannedOutageRate: toModificationOperation(plannedOutageRate),
         forcedOutageRate: toModificationOperation(forcedOutageRate),
-        transientReactance: toModificationOperation(transientReactance),
-        stepUpTransformerReactance:
-            toModificationOperation(transformerReactance),
+        directTransX: toModificationOperation(directTransX),
+        stepUpTransformerX: toModificationOperation(stepUpTransformerX),
         voltageRegulationType: toModificationOperation(voltageRegulationType),
         regulatingTerminalId: toModificationOperation(regulatingTerminalId),
         regulatingTerminalType: toModificationOperation(regulatingTerminalType),
@@ -576,10 +577,10 @@ export function modifyGenerator(
         reactiveCapabilityCurve: toModificationOperation(
             isReactiveCapabilityCurveOn
         ),
-        participate: toModificationOperation(frequencyRegulation),
+        participate: toModificationOperation(participate),
         droop: toModificationOperation(droop),
-        maximumReactivePower: toModificationOperation(maximumReactivePower),
-        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        maxQ: toModificationOperation(maxQ),
+        minQ: toModificationOperation(minQ),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         properties,
     };
@@ -599,13 +600,13 @@ export function createGenerator(
     id,
     name,
     energySource,
-    minActivePower,
-    maxActivePower,
-    ratedNominalPower,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
+    minP,
+    maxP,
+    ratedS,
+    targetP,
+    targetQ,
     voltageRegulationOn,
-    voltageSetpoint,
+    targetV,
     qPercent,
     voltageLevelId,
     busOrBusbarSectionId,
@@ -615,16 +616,16 @@ export function createGenerator(
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
-    transientReactance,
-    transformerReactance,
+    directTransX,
+    stepUpTransformerX,
     regulatingTerminalId,
     regulatingTerminalType,
     regulatingTerminalVlId,
     isReactiveCapabilityCurveOn,
-    frequencyRegulation,
+    participate,
     droop,
-    maximumReactivePower,
-    minimumReactivePower,
+    maxQ,
+    minQ,
     reactiveCapabilityCurve,
     connectionDirection,
     connectionName,
@@ -654,13 +655,13 @@ export function createGenerator(
             equipmentId: id,
             equipmentName: name,
             energySource: energySource,
-            minActivePower: minActivePower,
-            maxActivePower: maxActivePower,
-            ratedNominalPower: ratedNominalPower,
-            activePowerSetpoint: activePowerSetpoint,
-            reactivePowerSetpoint: reactivePowerSetpoint,
+            minP: minP,
+            maxP: maxP,
+            ratedS: ratedS,
+            targetP: targetP,
+            targetQ: targetQ,
             voltageRegulationOn: voltageRegulationOn,
-            voltageSetpoint: voltageSetpoint,
+            targetV: targetV,
             qPercent: qPercent,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
@@ -668,16 +669,16 @@ export function createGenerator(
             marginalCost: marginalCost,
             plannedOutageRate: plannedOutageRate,
             forcedOutageRate: forcedOutageRate,
-            transientReactance: transientReactance,
-            stepUpTransformerReactance: transformerReactance,
+            directTransX: directTransX,
+            stepUpTransformerX: stepUpTransformerX,
             regulatingTerminalId: regulatingTerminalId,
             regulatingTerminalType: regulatingTerminalType,
             regulatingTerminalVlId: regulatingTerminalVlId,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-            participate: frequencyRegulation,
+            participate: participate,
             droop: droop,
-            maximumReactivePower: maximumReactivePower,
-            minimumReactivePower: minimumReactivePower,
+            maxQ: maxQ,
+            minQ: minQ,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
@@ -704,7 +705,8 @@ export function createShuntCompensator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -738,6 +740,7 @@ export function createShuntCompensator(
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -754,7 +757,8 @@ export function modifyShuntCompensator(
     shuntCompensatorType,
     voltageLevelId,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -783,6 +787,7 @@ export function modifyShuntCompensator(
             maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
             voltageLevelId: toModificationOperation(voltageLevelId),
+            properties,
         }),
     });
 }
@@ -815,7 +820,8 @@ export function createLine(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -864,6 +870,7 @@ export function createLine(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -882,7 +889,8 @@ export function modifyLine(
     currentLimit1,
     currentLimit2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -913,6 +921,7 @@ export function modifyLine(
             b2: toModificationOperation(b2),
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
+            properties,
         }),
     });
 }
@@ -946,7 +955,8 @@ export function createTwoWindingsTransformer(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -993,6 +1003,7 @@ export function createTwoWindingsTransformer(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -1014,7 +1025,8 @@ export function modifyTwoWindingsTransformer(
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1049,6 +1061,7 @@ export function modifyTwoWindingsTransformer(
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+            properties,
         }),
     });
 }
@@ -1240,6 +1253,7 @@ export function createVoltageLevel({
     couplingDevices,
     isUpdate,
     modificationUuid,
+    properties,
 }) {
     let createVoltageLevelUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1266,6 +1280,7 @@ export function createVoltageLevel({
         sectionCount: sectionCount,
         switchKinds: switchKinds,
         couplingDevices: couplingDevices,
+        properties,
     });
 
     return backendFetchText(createVoltageLevelUrl, {
@@ -1289,7 +1304,8 @@ export function modifyVoltageLevel(
     lowShortCircuitCurrentLimit,
     highShortCircuitCurrentLimit,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1317,6 +1333,7 @@ export function modifyVoltageLevel(
             highVoltageLimit: toModificationOperation(highVoltageLimit),
             ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
             ipMax: toModificationOperation(highShortCircuitCurrentLimit),
+            properties,
         }),
     });
 }

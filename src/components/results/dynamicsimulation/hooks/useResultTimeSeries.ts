@@ -5,18 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useNodeData } from '../../../study-container';
-import {
-    fetchDynamicSimulationResultTimeSeries,
-    fetchDynamicSimulationTimeSeriesMetadata,
-} from '../../../../services/study/dynamic-simulation';
+import { fetchDynamicSimulationResultTimeSeries } from '../../../../services/study/dynamic-simulation';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { UUID } from 'crypto';
-import {
-    dynamicSimulationResultInvalidations,
-    TimeSeriesMetadata,
-} from '../dynamic-simulation-result.type';
+import { TimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
+import { dynamicSimulationResultInvalidations } from '../utils/dynamic-simulation-result-utils';
+import { fetchDynamicSimulationTimeSeriesMetadata } from '../../../../services/dynamic-simulation';
 
 const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
     const [result, isLoading] = useNodeData(
@@ -25,7 +21,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
         fetchDynamicSimulationTimeSeriesMetadata,
         dynamicSimulationResultInvalidations,
         null,
-        (timeseriesMetadatas: TimeSeriesMetadata[]) => ({
+        (timeseriesMetadatas: TimeSeriesMetadata[] | null) => ({
             timeseries: timeseriesMetadatas
                 ? Array(timeseriesMetadatas.length)
                 : undefined,

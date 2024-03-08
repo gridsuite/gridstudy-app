@@ -59,8 +59,6 @@ export const ShortCircuitExportButton: FunctionComponent<
             'CURRENT',
             'LOW_VOLTAGE',
             'HIGH_VOLTAGE',
-            'LOW_VOLTAGE_ANGLE',
-            'HIGH_VOLTAGE_ANGLE',
             'LOW_SHORT_CIRCUIT_CURRENT',
             'HIGH_SHORT_CIRCUIT_CURRENT',
             'OTHER',

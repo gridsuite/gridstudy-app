@@ -44,13 +44,13 @@ import { MODIFICATION_TYPES } from '../../../../utils/modification-type';
 
 interface ReactiveCapabilityCurvePointsData {
     p?: number | null;
-    qmaxP?: number | null;
-    qminP?: number | null;
+    maxQ?: number | null;
+    minQ?: number | null;
 }
 
 interface MinMaxReactiveLimitsData {
-    minMaxReactiveLimits: number | null;
-    maximumReactivePower: number | null;
+    minQ: number | null;
+    maxQ: number | null;
 }
 
 interface ConnectablePositionInfos {
@@ -75,8 +75,8 @@ interface ConverterStationInterfaceEditData {
     connected?: boolean | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: boolean;
-    minimumReactivePower: number | null;
-    maximumReactivePower: number | null;
+    minQ: number | null;
+    maxQ: number | null;
 }
 
 export interface ConverterStationElementInfos {
@@ -164,10 +164,10 @@ export function getConverterStationCreationData(converterStation: any) {
             converterStation[CONNECTIVITY]?.[CONNECTION_POSITION],
         connected: converterStation[CONNECTIVITY]?.[CONNECTED],
         reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-        minimumReactivePower: isReactiveCapabilityCurveOn
+        minQ: isReactiveCapabilityCurveOn
             ? null
             : reactiveLimits[MINIMUM_REACTIVE_POWER],
-        maximumReactivePower: isReactiveCapabilityCurveOn
+        maxQ: isReactiveCapabilityCurveOn
             ? null
             : reactiveLimits[MAXIMUM_REACTIVE_POWER],
         reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
@@ -215,8 +215,8 @@ function getConverterStationReactiveLimits(
           })
         : getReactiveLimitsFormData({
               reactiveCapabilityCurveChoice: 'MINMAX',
-              minimumReactivePower: converterStation.minimumReactivePower,
-              maximumReactivePower: converterStation.maximumReactivePower,
+              minimumReactivePower: converterStation.minQ,
+              maximumReactivePower: converterStation.maxQ,
               reactiveCapabilityCurveTable: [
                   getRowEmptyFormData(),
                   getRowEmptyFormData(),
@@ -252,11 +252,9 @@ export function getConverterStationFromSearchCopy(
                 reactiveCapabilityCurveChoice:
                     converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                 minimumReactivePower:
-                    converterStation?.minMaxReactiveLimits
-                        ?.minMaxReactiveLimits,
+                    converterStation?.minMaxReactiveLimits?.minQ,
                 maximumReactivePower:
-                    converterStation?.minMaxReactiveLimits
-                        ?.maximumReactivePower,
+                    converterStation?.minMaxReactiveLimits?.maxQ,
                 reactiveCapabilityCurveTable:
                     converterStation.reactiveCapabilityCurvePoints ?? null,
             }),

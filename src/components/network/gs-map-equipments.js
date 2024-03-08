@@ -14,7 +14,6 @@ import {
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
 } from '../../services/study/network';
-import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import { MapEquipments } from '@powsybl/diagram-viewer';
 
 export default class GSMapEquipments extends MapEquipments {
@@ -110,27 +109,22 @@ export default class GSMapEquipments extends MapEquipments {
         currentNode,
         substationsIds
     ) {
-        const substationsIdsToFetch =
-            substationsIds?.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
-                ? undefined
-                : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
-
         const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch,
+            substationsIds,
             true
         );
         const updatedLines = fetchLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch,
+            substationsIds,
             true
         );
         const updatedHvdcLines = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch,
+            substationsIds,
             true
         );
         updatedSubstations.catch((error) => {

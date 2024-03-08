@@ -33,21 +33,18 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
                     <FloatInput
                         name={FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD}
                         label="flowFlowSensitivityValueThreshold"
-                        formProps={{ margin: '1' }}
                     />
                 </Grid>
                 <Grid item xs={4}>
                     <FloatInput
                         name={ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD}
                         label="angleFlowSensitivityValueThreshold"
-                        formProps={{ margin: '1' }}
                     />
                 </Grid>
                 <Grid item xs={4}>
                     <FloatInput
                         name={FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD}
                         label="flowVoltageSensitivityValueThreshold"
-                        formProps={{ margin: '1' }}
                     />
                 </Grid>
             </Grid>
