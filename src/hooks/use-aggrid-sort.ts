@@ -78,38 +78,20 @@ export const useAgGridSort = (
 
     const onSortChanged = useCallback(
         (colKey: string, sortWay: number, secondary: boolean) => {
-            const primarySort = getPrimarySort(sortConfig);
-            const secondarySort = getSecondarySort(sortConfig);
-
-            if (secondary) {
-                setSortConfig([
-                    primarySort,
-                    {
-                        colKey: colKey,
-                        sortWay: sortWay,
-                        secondary: true,
-                    },
-                ]);
-            } else {
-                if (secondarySort) {
-                    setSortConfig([
-                        {
-                            colKey: colKey,
-                            sortWay: sortWay,
-                            secondary: false,
-                        },
-                        secondarySort,
-                    ]);
-                } else {
-                    setSortConfig([
-                        {
-                            colKey: colKey,
-                            sortWay: sortWay,
-                            secondary: false,
-                        },
-                    ]);
-                }
-            }
+            setSortConfig(
+                sortConfig
+                    .map((sort) =>
+                        sort.secondary === undefined
+                            ? {
+                                  colKey: sort.colKey,
+                                  sortWay: sort.sortWay,
+                                  secondary: false,
+                              }
+                            : sort
+                    )
+                    .filter((sort) => sort.secondary !== secondary)
+                    .concat({ colKey, sortWay, secondary })
+            );
         },
         [sortConfig]
     );
