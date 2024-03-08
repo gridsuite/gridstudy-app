@@ -120,6 +120,9 @@ export function fetchShortCircuitAnalysisPagedResults({
     urlSearchParams.append('page', page);
 
     if (sort) {
+        sort.map((value) =>
+            urlSearchParams.append('sort', `${value.colId},${value.sort}`)
+        );
         const { colKey, sortWay } = sort;
         urlSearchParams.append('sort', `${colKey},${sortWay}`);
     }
