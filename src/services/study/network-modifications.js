@@ -1774,13 +1774,13 @@ export function modifyVsc(
     currentNodeUuid,
     id,
     name,
-    dcNominalVoltage,
-    dcResistance,
-    maximumActivePower,
+    nominalV,
+    r,
+    maxP,
     operatorActivePowerLimitSide1,
     operatorActivePowerLimitSide2,
     convertersMode,
-    activePower,
+    activePowerSetpoint,
     angleDroopActivePowerControl,
     p0,
     droop,
@@ -1804,9 +1804,9 @@ export function modifyVsc(
         type: MODIFICATION_TYPES.VSC_MODIFICATION.type,
         equipmentId: id,
         equipmentName: toModificationOperation(name),
-        dcNominalVoltage: toModificationOperation(dcNominalVoltage),
-        dcResistance: toModificationOperation(dcResistance),
-        maximumActivePower: toModificationOperation(maximumActivePower),
+        nominalV: toModificationOperation(nominalV),
+        r: toModificationOperation(r),
+        maxP: toModificationOperation(maxP),
         operatorActivePowerLimitFromSide1ToSide2: toModificationOperation(
             operatorActivePowerLimitSide1
         ),
@@ -1814,7 +1814,7 @@ export function modifyVsc(
             operatorActivePowerLimitSide2
         ),
         convertersMode: toModificationOperation(convertersMode),
-        activePower: toModificationOperation(activePower),
+        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
         angleDroopActivePowerControl: toModificationOperation(
             angleDroopActivePowerControl
         ),

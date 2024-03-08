@@ -63,7 +63,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             name={`${id}.${NOMINAL_V}`}
             adornment={VoltageAdornment}
             label={'dcNominalVoltageLabel'}
-            previousValue={previousValues?.dcNominalVoltage}
+            previousValue={previousValues?.nominalV}
         />
     );
 
@@ -72,7 +72,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             name={`${id}.${R}`}
             adornment={OhmAdornment}
             label={'dcResistanceLabel'}
-            previousValue={previousValues?.dcResistance}
+            previousValue={previousValues?.r}
         />
     );
 
@@ -81,7 +81,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             name={`${id}.${MAX_P}`}
             adornment={ActivePowerAdornment}
             label={'MaximumActivePowerText'}
-            previousValue={previousValues?.maximumActivePower}
+            previousValue={previousValues?.maxP}
         />
     );
 
@@ -141,7 +141,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             name={`${id}.${ACTIVE_POWER_SETPOINT}`}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={previousValues?.activePower}
+            previousValue={previousValues?.activePowerSetpoint}
         />
     );
 
