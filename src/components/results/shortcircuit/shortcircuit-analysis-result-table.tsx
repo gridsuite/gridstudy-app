@@ -143,10 +143,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-                sortProps: sortProps,
+                sortProps: { ...sortProps, children: true },
                 filterProps: filterProps,
                 filterParams: textFilterParams,
-                children: true,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
