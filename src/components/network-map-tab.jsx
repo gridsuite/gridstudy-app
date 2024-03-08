@@ -276,12 +276,6 @@ export const NetworkMapTab = ({
         EQUIPMENT_TYPES.VOLTAGE_LEVEL
     );
 
-    const MenuHvdcLine = withEquipmentMenu(
-        BaseEquipmentMenu,
-        'hvdc-line-menus',
-        EQUIPMENT_TYPES.HVDC_LINE
-    );
-
     function showEquipmentMenu(equipment, x, y, type) {
         setEquipmentMenu({
             position: [x, y],
@@ -909,14 +903,14 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE &&
+                {(equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE ||
+                    equipmentMenu.equipmentType ===
+                        EQUIPMENT_TYPES.HVDC_LINE) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.HVDC_LINE &&
-                    withEquipment(MenuHvdcLine)}
                 {equipmentMenu.equipmentType === EQUIPMENT_TYPES.SUBSTATION &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType ===
