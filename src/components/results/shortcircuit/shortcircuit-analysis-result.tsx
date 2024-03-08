@@ -134,7 +134,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
         const backSortConfig = sortConfig.map((sort) => ({
             ...sort,
-            colKey: fromFrontColumnToBackKeys[sort.colId],
+            colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
         const selector = {
