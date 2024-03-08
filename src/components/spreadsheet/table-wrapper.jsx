@@ -69,6 +69,8 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
+    deepFindValue,
+    formatFetchedEquipment,
     formatFetchedEquipments,
     updateGeneratorCells,
     updateShuntCompensatorCells,
@@ -238,6 +240,73 @@ const TableWrapper = (props) => {
     const { updateFilter, filterSelector, initFilters } =
         useAggridLocalRowFilter(gridRef, equipementFiltersSelectorKeys);
 
+    const equipmentDefinition = useMemo(
+        () => ({
+            type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+        }),
+        [tabIndex]
+    );
+
+    const formatFetchedEquipmentHandler = useCallback(
+        (fetchedEquipment) => {
+            return formatFetchedEquipment(
+                equipmentDefinition.type,
+                fetchedEquipment
+            );
+        },
+        [equipmentDefinition.type]
+    );
+
+    const formatFetchedEquipmentsHandler = useCallback(
+        (fetchedEquipments) => {
+            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
+            return formatFetchedEquipments(
+                equipmentDefinition.type,
+                fetchedEquipments
+            );
+        },
+        [equipmentDefinition.type]
+    );
+
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+        equipmentDefinition,
+        formatFetchedEquipmentsHandler
+    );
+
+    // Function to get the columns that have isEnum filter set to true in customFilterParams
+    const getEnumFilterColumns = useCallback(() => {
+        const generatedTableColumns =
+            TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
+        return generatedTableColumns.filter(
+            ({ customFilterParams }) => customFilterParams?.isEnum
+        );
+    }, [tabIndex]);
+
+    const generateEquipmentsFilterEnums = useCallback(() => {
+        if (!equipments) {
+            return {};
+        }
+        const filterEnums = {};
+        getEnumFilterColumns().forEach((column) => {
+            filterEnums[column.field] = [
+                ...new Set(
+                    equipments
+                        .map((equipment) =>
+                            deepFindValue(equipment, column.field)
+                        )
+                        .filter((value) => value != null)
+                ),
+            ];
+        });
+        return filterEnums;
+    }, [getEnumFilterColumns, equipments]);
+
+    const filterEnums = useMemo(
+        () => generateEquipmentsFilterEnums(),
+        [generateEquipmentsFilterEnums]
+    );
+
     const enrichColumn = useCallback(
         (column) => {
             column.headerName = intl.formatMessage({ id: column.id });
@@ -282,6 +351,7 @@ const TableWrapper = (props) => {
                 },
                 filterParams: {
                     ...column?.customFilterParams,
+                    filterEnums,
                 },
                 ...column,
             });
@@ -295,31 +365,8 @@ const TableWrapper = (props) => {
             filterSelector,
             loadFlowStatus,
             fluxConvention,
+            filterEnums,
         ]
-    );
-
-    const equipmentDefinition = useMemo(
-        () => ({
-            type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
-            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
-        }),
-        [tabIndex]
-    );
-
-    const formatFetchedEquipmentsHandler = useCallback(
-        (fetchedEquipments) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(
-                equipmentDefinition.type,
-                fetchedEquipments
-            );
-        },
-        [equipmentDefinition.type]
-    );
-
-    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
-        equipmentDefinition,
-        formatFetchedEquipmentsHandler
     );
 
     useEffect(() => {
@@ -543,7 +590,7 @@ const TableWrapper = (props) => {
                         props.currentNode?.id,
                         editingData.id,
                         editingData.name,
-                        editingData.countryCode,
+                        editingData.country,
                         false,
                         undefined,
                         propertiesForBackend
@@ -1169,7 +1216,7 @@ const TableWrapper = (props) => {
                 )
                     .then((updatedEquipment) => {
                         const formattedData =
-                            formatFetchedEquipmentsHandler(updatedEquipment);
+                            formatFetchedEquipmentHandler(updatedEquipment);
                         const transaction = {
                             update: [formattedData],
                         };
@@ -1194,7 +1241,7 @@ const TableWrapper = (props) => {
         props.currentNode.id,
         props.studyUuid,
         studyUpdatedForce,
-        formatFetchedEquipmentsHandler,
+        formatFetchedEquipmentHandler,
     ]);
 
     //this listener is called for each cell modified

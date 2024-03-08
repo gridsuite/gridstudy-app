@@ -790,6 +790,7 @@
     "DuplicatedPropsError": "Duplicated properties: each property must be unique",
     "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
+    "ModifyVsc": "Modify VSC",
     "SubstationModificationError": "Error while modifying substation",
 
     "CreateVoltageLevel": "Create a voltage level",

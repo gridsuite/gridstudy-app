@@ -5,74 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import List from '@mui/material/List';
 import PropTypes from 'prop-types';
+import { List } from '@mui/material';
+import { areIdsEqual } from './utils';
 
 const CheckboxList = ({
     itemRenderer,
-    toggleSelectAll,
     values,
     onChecked,
-    initialSelection,
-    itemComparator = (a, b) => a.id === b.id,
+    checkedValues,
+    itemComparator = areIdsEqual,
     ...props
 }) => {
-    const [checked, setChecked] = useState(new Set(initialSelection));
+    const isChecked = (item) =>
+        checkedValues.some((checkedItem) => itemComparator(checkedItem, item));
 
-    useEffect(() => {
-        const newChecked = new Set(
-            [...checked].filter((element) => {
-                return values.some((existingValue) =>
-                    itemComparator(existingValue, element)
-                );
-            })
+    const handleToggle = (clickedItem) => {
+        const newCheckedValues = [...checkedValues];
+        const valueToDeleteIndex = checkedValues.findIndex((item) =>
+            itemComparator(item, clickedItem)
         );
-        if (newChecked.size !== checked.size) {
-            setChecked(newChecked);
+
+        if (valueToDeleteIndex > -1) {
+            newCheckedValues.splice(valueToDeleteIndex, 1);
+        } else {
+            newCheckedValues.push(clickedItem);
         }
-    }, [values, checked, setChecked, itemComparator]);
 
-    const refVals = useRef();
-    refVals.current = { values, onChecked };
-
-    useEffect(() => {
-        if (toggleSelectAll === undefined) {
-            return;
-        }
-        setChecked((oldVals) => {
-            return oldVals.size > 0
-                ? new Set()
-                : new Set(refVals.current.values);
-        });
-    }, [toggleSelectAll]);
-
-    const handleToggle = useCallback(
-        (value) => {
-            const newChecked = new Set(checked);
-            const valueToDelete = [...checked].find((e) =>
-                itemComparator(e, value)
-            );
-
-            const isValueDeleted = newChecked.delete(valueToDelete);
-            if (!isValueDeleted) {
-                newChecked.add(value);
-            }
-            setChecked(newChecked);
-
-            if (onChecked) {
-                onChecked([...newChecked]);
-            }
-        },
-        [checked, onChecked, itemComparator]
-    );
-
-    useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
-
-    const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
-        return Array.from(checkedSet).some((element) =>
-            itemComparator(element, checkBoxToCheck)
-        );
+        onChecked(newCheckedValues);
     };
 
     return (
@@ -81,7 +41,7 @@ const CheckboxList = ({
                 itemRenderer({
                     item,
                     index,
-                    checked: isCheckboxInCheckedSet(checked, item),
+                    checked: isChecked(item),
                     handleToggle,
                 })
             )}
@@ -92,9 +52,9 @@ const CheckboxList = ({
 export default CheckboxList;
 
 CheckboxList.propTypes = {
-    initialSelection: PropTypes.array,
     itemRenderer: PropTypes.func.isRequired,
     onChecked: PropTypes.func.isRequired,
-    toggleSelectAll: PropTypes.bool,
+    checkedValues: PropTypes.array.isRequired,
     values: PropTypes.array,
+    itemComparator: PropTypes.func,
 };
