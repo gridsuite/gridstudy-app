@@ -26,7 +26,7 @@ export const makeAgGridCustomHeaderColumn = ({
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
 
-    const filterOptions =
+    const customFilterOptions =
         filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
 
     const isSortable = !!sortProps;
@@ -65,10 +65,11 @@ export const makeAgGridCustomHeaderColumn = ({
             filterParams: {
                 ...filterParams,
                 filterSelector,
-                filterOptions,
+                customFilterOptions,
                 updateFilter,
             },
         },
+        filterParams: props?.agGridFilterParams || undefined,
         ...props,
     };
 };

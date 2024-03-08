@@ -15,7 +15,6 @@ import {
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
 } from '../../services/study/network';
-import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -143,27 +142,22 @@ export default class MapEquipments {
         currentNode,
         substationsIds
     ) {
-        const substationsIdsToFetch =
-            substationsIds?.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
-                ? undefined
-                : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
-
         const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch,
+            substationsIds,
             true
         );
         const updatedLines = fetchLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch,
+            substationsIds,
             true
         );
         const updatedHvdcLines = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch,
+            substationsIds,
             true
         );
         updatedSubstations.catch((error) => {

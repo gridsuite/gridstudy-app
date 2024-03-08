@@ -7,26 +7,36 @@
 
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getComputedLanguage } from '../../utils/language';
+import localizedCountries from 'localized-countries';
+import countriesFr from 'localized-countries/data/fr';
+import countriesEn from 'localized-countries/data/en';
 
-export const LocalizedCountries = () => {
+export const useLocalizedCountries = () => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const englishCountriesModule = require('localized-countries')(
-        require('localized-countries/data/en')
-    );
+    const [localizedCountriesModule, setLocalizedCountriesModule] = useState();
 
-    const localizedCountriesModule = useMemo(() => {
-        try {
-            return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
+    //TODO FM this is disgusting, can we make it better ?
+    useEffect(() => {
+        const lang = getComputedLanguage(languageLocal).substr(0, 2);
+        let localizedCountriesResult;
+        // vite does not support ESM dynamic imports on node_modules, so we have to imports the languages before and do this
+        // https://github.com/vitejs/vite/issues/14102
+        if (lang === 'fr') {
+            localizedCountriesResult = localizedCountries(countriesFr);
+        } else if (lang === 'en') {
+            localizedCountriesResult = localizedCountries(countriesEn);
+        } else {
+            console.warn(
+                'Unsupported language "' +
+                    lang +
+                    '" for countries translation, we use english as default'
             );
-        } catch (error) {
-            // fallback to english if no localised list found
-            return englishCountriesModule;
+            localizedCountriesResult = localizedCountries(countriesEn);
         }
-    }, [languageLocal, englishCountriesModule]);
+        setLocalizedCountriesModule(localizedCountriesResult);
+    }, [languageLocal]);
 
     const countryCodes = useMemo(
         () =>
@@ -36,9 +46,13 @@ export const LocalizedCountries = () => {
         [localizedCountriesModule]
     );
 
-    const translate = (countryCode) => {
-        return localizedCountriesModule.get(countryCode);
-    };
+    const translate = useCallback(
+        (countryCode) =>
+            localizedCountriesModule
+                ? localizedCountriesModule.get(countryCode)
+                : '',
+        [localizedCountriesModule]
+    );
 
     return { translate, countryCodes };
 };

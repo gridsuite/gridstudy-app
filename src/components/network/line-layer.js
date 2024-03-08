@@ -6,8 +6,8 @@
  */
 
 import { CompositeLayer, TextLayer, IconLayer } from 'deck.gl';
-import PadlockIcon from '../../images/lock_black_24dp.svg';
-import BoltIcon from '../../images/bolt_black_24dp.svg';
+import PadlockIcon from '../../images/lock_black_24dp.svg?react';
+import BoltIcon from '../../images/bolt_black_24dp.svg?react';
 import { PathStyleExtension } from '@deck.gl/extensions';
 import ArrowLayer, { ArrowDirection } from './layers/arrow-layer';
 import ParallelPathLayer from './layers/parallel-path-layer';

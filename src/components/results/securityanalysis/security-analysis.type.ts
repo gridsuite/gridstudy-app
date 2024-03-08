@@ -9,9 +9,7 @@ import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
 import { ColumnSortConfig } from '../../../hooks/use-aggrid-sort';
-import {
-    FilterSelectorType,
-} from '../../../hooks/use-aggrid-row-filter';
+import { FilterSelectorType } from '../../../hooks/use-aggrid-row-filter';
 import { UUID } from 'crypto';
 
 export interface LimitViolation {

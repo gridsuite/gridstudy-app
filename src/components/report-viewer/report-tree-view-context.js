@@ -11,7 +11,7 @@ import { createContext } from 'react';
 
 const ReportTreeViewContext = createContext({});
 
-if (process.env.NODE_ENV !== 'production') {
+if (import.meta.env.DEV) {
     ReportTreeViewContext.displayName = 'ReportTreeViewContext';
 }
 
