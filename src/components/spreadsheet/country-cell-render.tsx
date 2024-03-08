@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { LocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import React from 'react';
 
 interface CountryCellRendererProps {
@@ -12,7 +12,7 @@ interface CountryCellRendererProps {
 }
 
 const CountryCellRenderer: React.FC<CountryCellRendererProps> = ({ value }) => {
-    const { translate } = LocalizedCountries();
+    const { translate } = useLocalizedCountries();
     const countryName = translate(value);
     return <span>{countryName}</span>;
 };

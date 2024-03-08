@@ -418,6 +418,7 @@ export const reducer = createReducer(initialState, {
     [STUDY_UPDATED]: (state, action) => {
         state.studyUpdated = {
             force: 1 - state.studyUpdated.force,
+            type: action.eventData.headers.updateType,
             eventData: action.eventData,
         };
     },

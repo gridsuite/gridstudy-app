@@ -14,6 +14,6 @@ declare module 'ag-grid-community' {
         numeric?: boolean;
         fractionDigits?: number;
         crossValidation?: CrossValidationOptions;
-        displayConversionMode?: DISPLAY_CONVERSION_MODE;
+        displayConversionMode?: DISPLAY_CONVERSION;
     }
 }
