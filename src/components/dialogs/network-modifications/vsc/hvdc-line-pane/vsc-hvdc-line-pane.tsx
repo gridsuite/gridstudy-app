@@ -29,12 +29,22 @@ import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import React, { FunctionComponent, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { VscModificationInfo } from 'services/network-modification-types';
+import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
+import { useIntl } from 'react-intl';
 
 interface VscHvdcLinePaneProps {
     id: string;
+    isEquipementModification?: boolean;
+    previousValues?: VscModificationInfo | null;
 }
 
-const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
+const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
+    id,
+    isEquipementModification = false,
+    previousValues,
+}) => {
+    const intl = useIntl();
     const { trigger } = useFormContext();
 
     const angleDroopWatch = useWatch({
@@ -53,6 +63,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${DC_NOMINAL_VOLTAGE}`}
             adornment={VoltageAdornment}
             label={'dcNominalVoltageLabel'}
+            previousValue={previousValues?.dcNominalVoltage}
         />
     );
 
@@ -61,6 +72,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${DC_RESISTANCE}`}
             adornment={OhmAdornment}
             label={'dcResistanceLabel'}
+            previousValue={previousValues?.dcResistance}
         />
     );
 
@@ -69,6 +81,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${MAXIMUM_ACTIVE_POWER}`}
             adornment={ActivePowerAdornment}
             label={'MaximumActivePowerText'}
+            previousValue={previousValues?.maximumActivePower}
         />
     );
 
@@ -77,6 +90,9 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${OPERATOR_ACTIVE_POWER_LIMIT_SIDE1}`}
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide1Label'}
+            previousValue={
+                previousValues?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2
+            }
         />
     );
 
@@ -85,8 +101,29 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${OPERATOR_ACTIVE_POWER_LIMIT_SIDE2}`}
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide2Label'}
+            previousValue={
+                previousValues?.hvdcOperatorActivePowerRange?.oprFromCS2toCS1
+            }
         />
     );
+
+    const previousConverterMode = () => {
+        if (
+            previousValues?.convertersMode ===
+            VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.id
+        ) {
+            return intl.formatMessage({
+                id: VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.label,
+            });
+        } else if (
+            previousValues?.convertersMode ===
+            VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.id
+        ) {
+            return intl.formatMessage({
+                id: VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.label,
+            });
+        }
+    };
 
     const converterModeField = (
         <SelectInput
@@ -95,6 +132,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             options={Object.values(VSC_CONVERTER_MODE)}
             size={'small'}
             disableClearable
+            previousValue={previousConverterMode()}
         />
     );
 
@@ -103,26 +141,60 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             name={`${id}.${ACTIVE_POWER}`}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={previousValues?.activePower}
         />
     );
 
-    const AngleDroopActivePowerControl = (
-        <SwitchInput
-            name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
-            label={'angleDroopActivePowerControlLabel'}
-        />
-    );
+    const previousAngleDropPowerControl = () => {
+        if (
+            previousValues?.hvdcAngleDroopActivePowerControl?.isEnabled === true
+        ) {
+            return intl.formatMessage({ id: 'On' });
+        }
+
+        return intl.formatMessage({ id: 'Off' });
+    };
+
+    function getAngleDroopActivePowerControlField() {
+        if (isEquipementModification) {
+            return (
+                <CheckboxNullableInput
+                    name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
+                    label={'angleDroopActivePowerControlLabel'}
+                    previousValue={previousAngleDropPowerControl()}
+                    id={undefined}
+                    formProps={undefined}
+                />
+            );
+        } else {
+            return (
+                <SwitchInput
+                    name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
+                    label={'angleDroopActivePowerControlLabel'}
+                />
+            );
+        }
+    }
+
+    const AngleDroopActivePowerControl = getAngleDroopActivePowerControlField();
 
     const p0Field = (
         <FloatInput
             name={`${id}.${P0}`}
             label={'p0Label'}
             adornment={ActivePowerAdornment}
+            previousValue={previousValues?.hvdcAngleDroopActivePowerControl?.p0}
         />
     );
 
     const droopField = (
-        <FloatInput name={`${id}.${DROOP}`} label={'droopLabel'} />
+        <FloatInput
+            name={`${id}.${DROOP}`}
+            label={'droopLabel'}
+            previousValue={
+                previousValues?.hvdcAngleDroopActivePowerControl?.droop
+            }
+        />
     );
 
     return (
