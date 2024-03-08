@@ -26,6 +26,7 @@ import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -42,6 +43,8 @@ const ContingencyListSelector = (props) => {
     const favoriteContingencyListUuids = useSelector(
         (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]
     );
+
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [contingencyList, setContingencyList] = useState([]);
 
@@ -78,10 +81,10 @@ const ContingencyListSelector = (props) => {
     useEffect(() => {
         setSimulatedContingencyCount(null);
         var discardResult = false;
-        if (props.currentNodeUuid !== null) {
+        if (isNodeBuilt(currentNode) && props.open) {
             fetchContingencyCount(
                 props.studyUuid,
-                props.currentNodeUuid,
+                currentNode.id,
                 checkedContingencyList.map((c) => c.id)
             ).then((contingencyCount) => {
                 if (!discardResult) {
@@ -92,7 +95,7 @@ const ContingencyListSelector = (props) => {
         return () => {
             discardResult = true;
         };
-    }, [props.studyUuid, props.currentNodeUuid, checkedContingencyList]);
+    }, [props.open, props.studyUuid, currentNode, checkedContingencyList]);
 
     useEffect(() => {
         if (
@@ -128,7 +131,7 @@ const ContingencyListSelector = (props) => {
         } else {
             setContingencyList([]);
         }
-    }, [favoriteContingencyListUuids, setContingencyList, snackError]);
+    }, [favoriteContingencyListUuids, snackError]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null
