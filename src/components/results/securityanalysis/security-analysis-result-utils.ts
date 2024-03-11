@@ -346,8 +346,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             fractionDigits: 2,
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -355,12 +355,22 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -458,8 +468,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             fractionDigits: 2,
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -467,12 +477,22 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
