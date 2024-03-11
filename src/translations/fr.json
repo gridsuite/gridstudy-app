@@ -467,7 +467,7 @@
     "synchronousComponentNum": "Numéro de composante synchrone",
     "status": "Statut",
     "iterationCount": "Nombre d'itérations",
-    "slackBusId": "ID du nœud bilan",
+    "slackBusId": "ID nœuds bilans",
     "slackBusActivePowerMismatch": "Écart de puissance active au nœud bilan (MW)",
 
     "isOk": "Ok",

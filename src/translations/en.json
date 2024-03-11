@@ -466,7 +466,7 @@
     "synchronousComponentNum": "Synchronous component number",
     "status": "Status",
     "iterationCount": "Iteration count",
-    "slackBusId": "Slack bus id",
+    "slackBusId": "Slack bus ids",
     "slackBusActivePowerMismatch": "Slack bus active power mismatch (MW)",
 
     "isOk": "Ok",
