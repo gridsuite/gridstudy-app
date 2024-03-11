@@ -26,7 +26,7 @@ import { mergeSx } from '../../utils/functions';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { fetchSecurityAnalysisParameters } from '../../../services/security-analysis';
-import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 
 const formatValues = (values, isDivision) => {
     let result = {};
@@ -367,7 +367,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                         return { ...params };
                     }}
                     parameterFormatter={(newParams) => newParams}
-                    parameterType={elementType.SECURITY_ANALYSIS_PARAMETERS}
+                    parameterType={ElementType.SECURITY_ANALYSIS_PARAMETERS}
                 />
             )}
 
@@ -375,7 +375,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                 <DirectoryItemSelector
                     open={openSelectParameterDialog}
                     onClose={handleLoadParameter}
-                    types={[elementType.SECURITY_ANALYSIS_PARAMETERS]}
+                    types={[ElementType.SECURITY_ANALYSIS_PARAMETERS]}
                     title={intl.formatMessage({
                         id: 'showSelectParameterDialog',
                     })}

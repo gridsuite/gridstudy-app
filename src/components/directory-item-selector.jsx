@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     getFileIcon,
-    elementType,
+    ElementType,
     useSnackMessage,
     TreeViewFinder,
 } from '@gridsuite/commons-ui';
@@ -47,7 +47,7 @@ const DirectoryItemSelector = (props) => {
     const openRef = useRef();
     openRef.current = props.open;
     const contentFilter = useCallback(
-        () => new Set([elementType.DIRECTORY, ...props.types]),
+        () => new Set([ElementType.DIRECTORY, ...props.types]),
         [props.types]
     );
 
@@ -59,11 +59,11 @@ const DirectoryItemSelector = (props) => {
                 specificMetadata: e.specificMetadata,
                 icon: getFileIcon(e.type, styles.icon),
                 children:
-                    e.type === elementType.DIRECTORY
+                    e.type === ElementType.DIRECTORY
                         ? convertChildren(e.children)
                         : undefined,
                 childrenCount:
-                    e.type === elementType.DIRECTORY
+                    e.type === ElementType.DIRECTORY
                         ? e.subdirectoriesCount
                         : undefined,
             };
@@ -78,13 +78,13 @@ const DirectoryItemSelector = (props) => {
                     name: e.elementName,
                     icon: getFileIcon(e.type, styles.icon),
                     children:
-                        e.type === elementType.DIRECTORY
+                        e.type === ElementType.DIRECTORY
                             ? convertChildren(
                                   nodeMap.current[e.elementUuid].children
                               )
                             : undefined,
                     childrenCount:
-                        e.type === elementType.DIRECTORY
+                        e.type === ElementType.DIRECTORY
                             ? e.subdirectoriesCount
                             : undefined,
                 };
@@ -152,7 +152,7 @@ const DirectoryItemSelector = (props) => {
                             const children = itemFilter
                                 ? childrenWithMetada.filter((val) => {
                                       // Accept every directories
-                                      if (val.type === elementType.DIRECTORY) {
+                                      if (val.type === ElementType.DIRECTORY) {
                                           return true;
                                       }
                                       // otherwise filter with the custon itemFilter func

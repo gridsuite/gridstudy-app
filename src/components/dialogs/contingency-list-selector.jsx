@@ -20,7 +20,7 @@ import Grid from '@mui/material/Grid';
 import DirectoryItemSelector from '../directory-item-selector';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 import { updateConfigParameter } from '../../services/config';
@@ -38,7 +38,7 @@ function makeButton(onClick, message, disabled) {
     );
 }
 
-const CONTINGENCY_TYPES = [elementType.CONTINGENCY_LIST];
+const CONTINGENCY_TYPES = [ElementType.CONTINGENCY_LIST];
 const ContingencyListSelector = (props) => {
     const favoriteContingencyListUuids = useSelector(
         (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]

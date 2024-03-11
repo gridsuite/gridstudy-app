@@ -17,7 +17,7 @@ import {
 } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import {
-    elementType,
+    ElementType,
     FlatParameters,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -661,14 +661,14 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => params}
                     parameterFormatter={(newParams) => newParams}
-                    parameterType={elementType.LOADFLOW_PARAMETERS}
+                    parameterType={ElementType.LOADFLOW_PARAMETERS}
                 />
             )}
             {openSelectParameterDialog && (
                 <DirectoryItemSelector
                     open={openSelectParameterDialog}
                     onClose={handleLoadParameter}
-                    types={[elementType.LOADFLOW_PARAMETERS]}
+                    types={[ElementType.LOADFLOW_PARAMETERS]}
                     title={intl.formatMessage({
                         id: 'showSelectParameterDialog',
                     })}

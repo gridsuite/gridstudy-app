@@ -20,7 +20,7 @@ import {
     formatPercentageValue,
     isValidPercentage,
 } from '../../percentage-area/percentage-area-utils';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '@gridsuite/commons-ui';
@@ -52,7 +52,7 @@ const GenerationDispatchForm = () => {
                 <DirectoryItemsInput
                     name={GENERATORS_WITH_FIXED_ACTIVE_POWER}
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
-                    elementType={elementType.FILTER}
+                    elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
                 />
             </Grid>
@@ -89,7 +89,7 @@ const GenerationDispatchForm = () => {
                 <DirectoryItemsInput
                     name={GENERATORS_WITHOUT_OUTAGE}
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
-                    elementType={elementType.FILTER}
+                    elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
                 />
             </Grid>

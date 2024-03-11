@@ -6,7 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import DirectoryItemSelector from '../directory-item-selector';
 import { CopyType } from '../graph/menus/network-modification-node-editor';
 import { copyOrMoveModifications } from '../../services/study';
@@ -61,7 +61,7 @@ const ImportModificationDialog: FunctionComponent<
         <DirectoryItemSelector
             open={open}
             onClose={processSelectedElements}
-            types={[elementType.MODIFICATION]}
+            types={[ElementType.MODIFICATION]}
             multiselect={true}
             title={intl.formatMessage({
                 id: 'ModificationsSelection',

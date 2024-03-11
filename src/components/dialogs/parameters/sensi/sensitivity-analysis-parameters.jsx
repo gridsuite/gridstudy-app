@@ -8,7 +8,7 @@
 import {
     SelectInput,
     SubmitButton,
-    elementType,
+    ElementType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
@@ -642,14 +642,14 @@ export const SensitivityAnalysisParameters = ({
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => formatNewParams(getValues())}
                     parameterFormatter={(newParams) => newParams}
-                    parameterType={elementType.SENSITIVITY_PARAMETERS}
+                    parameterType={ElementType.SENSITIVITY_PARAMETERS}
                 />
             )}
             {openSelectParameterDialog && (
                 <DirectoryItemSelector
                     open={openSelectParameterDialog}
                     onClose={handleSensibilityParameter}
-                    types={[elementType.SENSITIVITY_PARAMETERS]}
+                    types={[ElementType.SENSITIVITY_PARAMETERS]}
                     title={intl.formatMessage({
                         id: 'showSelectParameterDialog',
                     })}
