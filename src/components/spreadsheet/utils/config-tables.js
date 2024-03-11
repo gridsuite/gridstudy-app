@@ -42,6 +42,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { NOMINAL_V } from '../../utils/field-constants';
+import CountryCellRenderer from '../country-cell-render';
 
 const generateTapPositions = (params) => {
     return params
@@ -318,15 +319,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
+                cellRenderer: CountryCellRenderer,
                 valueSetter: (params) => {
-                    params.data.countryCode =
-                        params?.newValue?.country?.countryCode;
-                    params.data.countryName =
-                        params?.newValue?.country?.countryName;
+                    params.data.country = params?.newValue?.countryCode;
                     return params;
                 },
                 ...defaultEnumFilterConfig,
@@ -384,8 +383,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -540,13 +540,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country1',
-                field: 'country1.countryName',
+                field: 'country1',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
-                field: 'country2.countryName',
+                field: 'country2',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageSide1',
@@ -696,8 +698,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageSide1',
@@ -1426,8 +1429,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageT3WSide1',
@@ -1853,8 +1857,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2458,8 +2463,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2566,8 +2572,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2749,8 +2756,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2830,8 +2838,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3063,13 +3072,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country1',
-                field: 'country1.countryName',
+                field: 'country1',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
-                field: 'country2.countryName',
+                field: 'country2',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'R',
@@ -3163,8 +3174,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3247,8 +3259,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3345,8 +3358,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3449,8 +3463,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
