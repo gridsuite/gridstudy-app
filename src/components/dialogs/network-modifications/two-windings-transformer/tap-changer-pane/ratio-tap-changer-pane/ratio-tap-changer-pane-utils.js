@@ -57,17 +57,17 @@ const ratioTapChangerValidationSchema = (id) => ({
             .string()
             .nullable()
             .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES], {
-                is: (enabled, loadTapChangingCapabilities) =>
-                    enabled && loadTapChangingCapabilities,
+                is: (enabled, hasLoadTapChangingCapabilities) =>
+                    enabled && hasLoadTapChangingCapabilities,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_TYPE]: yup
             .string()
             .nullable()
             .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE], {
-                is: (enabled, loadTapChangingCapabilities, regulationMode) =>
+                is: (enabled, hasLoadTapChangingCapabilities, regulationMode) =>
                     enabled &&
-                    loadTapChangingCapabilities &&
+                    hasLoadTapChangingCapabilities &&
                     regulationMode ===
                         RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
                 then: (schema) => schema.required(),
@@ -85,12 +85,12 @@ const ratioTapChangerValidationSchema = (id) => ({
                 {
                     is: (
                         enabled,
-                        loadTapChangingCapabilities,
+                        hasLoadTapChangingCapabilities,
                         regulationMode,
                         regulationType
                     ) =>
                         enabled &&
-                        loadTapChangingCapabilities &&
+                        hasLoadTapChangingCapabilities &&
                         regulationMode ===
                             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
                         regulationType === REGULATION_TYPES.LOCAL.id,
@@ -108,9 +108,9 @@ const ratioTapChangerValidationSchema = (id) => ({
                         .positive('TargetVoltageMustBeGreaterThanZero'),
             })
             .when([REGULATION_MODE, LOAD_TAP_CHANGING_CAPABILITIES], {
-                is: (regulationMode, loadTapChangingCapabilities) => {
+                is: (regulationMode, hasLoadTapChangingCapabilities) => {
                     return (
-                        loadTapChangingCapabilities === true &&
+                        hasLoadTapChangingCapabilities === true &&
                         regulationMode ===
                             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
                     );
@@ -199,12 +199,12 @@ const ratioTapChangerValidationSchema = (id) => ({
                 {
                     is: (
                         enabled,
-                        loadTapChangingCapabilities,
+                        hasLoadTapChangingCapabilities,
                         regulationMode,
                         regulationType
                     ) =>
                         enabled &&
-                        loadTapChangingCapabilities &&
+                        hasLoadTapChangingCapabilities &&
                         regulationMode ===
                             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
                         regulationType === REGULATION_TYPES.DISTANT.id,
@@ -229,12 +229,12 @@ const ratioTapChangerValidationSchema = (id) => ({
                 {
                     is: (
                         enabled,
-                        loadTapChangingCapabilities,
+                        hasLoadTapChangingCapabilities,
                         regulationMode,
                         regulationType
                     ) =>
                         enabled &&
-                        loadTapChangingCapabilities &&
+                        hasLoadTapChangingCapabilities &&
                         regulationMode ===
                             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
                         regulationType === REGULATION_TYPES.DISTANT.id,
@@ -339,7 +339,7 @@ export const getRatioTapChangerEmptyFormData = (id = RATIO_TAP_CHANGER) => {
 export const getRatioTapChangerFormData = (
     {
         enabled = false,
-        loadTapChangingCapabilities = false,
+        hasLoadTapChangingCapabilities = false,
         regulationMode = null,
         regulationType = null,
         regulationSide = SIDE.SIDE1.id,
@@ -357,7 +357,7 @@ export const getRatioTapChangerFormData = (
 ) => ({
     [id]: {
         [ENABLED]: enabled,
-        [LOAD_TAP_CHANGING_CAPABILITIES]: loadTapChangingCapabilities,
+        [LOAD_TAP_CHANGING_CAPABILITIES]: hasLoadTapChangingCapabilities,
         [REGULATION_MODE]: regulationMode,
         [REGULATION_TYPE]: regulationType,
         [REGULATION_SIDE]: regulationSide,
@@ -408,7 +408,7 @@ export const getComputedRegulationMode = (twt) => {
 
 export const getInitialTwtRatioRegulationModeId = (twt) => {
     // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
-    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
+    if (!twt?.ratioTapChanger?.hasLoadTapChangingCapabilities) {
         return null;
     }
     //otherwise, we compute it

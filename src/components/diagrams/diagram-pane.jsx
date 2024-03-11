@@ -55,6 +55,7 @@ import {
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UpdateTypes } from 'redux/reducer.type';
 
 // Returns a callback that returns a promise
@@ -201,15 +202,12 @@ const useDisplayView = (studyUuid, currentNode) => {
                 return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then(
                     (svg) => {
                         let label = getNameOrId(svg.additionalMetadata) ?? id;
-                        const countryName = svg.additionalMetadata?.countryName;
-                        if (countryName) {
-                            label += ' - ' + countryName;
-                        }
                         return {
                             id: id,
                             nodeId: currentNode.id,
                             state: state,
                             name: label,
+                            country: svg.additionalMetadata?.country,
                             fetchSvg: () =>
                                 fetchSvgData(svgUrl, DiagramType.SUBSTATION),
                             svgType: DiagramType.SUBSTATION,
@@ -225,15 +223,12 @@ const useDisplayView = (studyUuid, currentNode) => {
                     (svg) => {
                         let label = getNameOrId(svg.additionalMetadata) ?? id;
                         let substationId = svg.additionalMetadata?.substationId;
-                        const countryName = svg.additionalMetadata?.countryName;
-                        if (countryName) {
-                            label += ' - ' + countryName;
-                        }
                         return {
                             id: id,
                             nodeId: currentNode.id,
                             state: state,
                             name: label,
+                            country: svg.additionalMetadata?.country,
                             fetchSvg: () =>
                                 fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL),
                             svgType: DiagramType.VOLTAGE_LEVEL,
@@ -357,6 +352,7 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
+    const { translate } = useLocalizedCountries();
 
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.
@@ -1026,6 +1022,12 @@ export function DiagramPane({
         ]
     );
 
+    const getDiagramTitle = (diagramView) => {
+        return diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
+            ? diagramView.name + ' - ' + translate(diagramView.country)
+            : diagramView.name;
+    };
+
     /**
      * RENDER
      */
@@ -1075,7 +1077,7 @@ export function DiagramPane({
                             <Diagram
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
-                                diagramTitle={diagramView.name}
+                                diagramTitle={getDiagramTitle(diagramView)}
                                 warningToDisplay={handleWarningToDisplay(
                                     diagramView
                                 )}
@@ -1146,7 +1148,7 @@ export function DiagramPane({
                                         <ArrowUpwardIcon />
                                     )
                                 }
-                                label={diagramView.name}
+                                label={getDiagramTitle(diagramView)}
                                 onClick={() =>
                                     handleOpenDiagramView(
                                         diagramView.id,

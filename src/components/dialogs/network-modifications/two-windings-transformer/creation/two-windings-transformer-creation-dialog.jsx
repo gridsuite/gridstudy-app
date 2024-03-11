@@ -312,7 +312,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getRatioTapChangerFormData({
                     enabled:
                         twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    loadTapChangingCapabilities:
+                    hasLoadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
                         ],
@@ -405,7 +405,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getRatioTapChangerFormData({
                     enabled:
                         twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    loadTapChangingCapabilities:
+                    hasLoadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
                         ],
@@ -639,7 +639,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
                 ratioTap = {
                     ...ratioTapChangerFormValues,
-                    regulating: computeRatioTapChangerRegulating(
+                    isRegulating: computeRatioTapChangerRegulating(
                         ratioTapChangerFormValues
                     ),
                     regulatingTerminalId: getRegulatingValue(
@@ -667,7 +667,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
-                    regulating: computePhaseTapChangerRegulating(
+                    isRegulating: computePhaseTapChangerRegulating(
                         phaseTapChangerFormValues
                     ),
                     regulationValue: computePhaseTapChangerRegulationValue(
