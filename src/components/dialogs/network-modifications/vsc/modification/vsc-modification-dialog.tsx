@@ -228,10 +228,7 @@ const VscModificationDialog: React.FC<any> = ({
                     .catch((error) => {
                         setVcsToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'VscModificationError',
-                        });
+                        reset(emptyFormData);
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -241,9 +238,9 @@ const VscModificationDialog: React.FC<any> = ({
         [
             studyUuid,
             currentNodeUuid,
+            reset,
             setValue,
             getValues,
-            snackError,
             setValuesAndEmptyOthers,
         ]
     );
