@@ -75,9 +75,7 @@ export function fetchSecurityAnalysisResult(
 
     const params = new URLSearchParams({ resultType });
 
-    if (sort?.colKey && sort?.sortWay) {
-        params.append('sort', `${sort.colId},${sort.sort}`);
-    }
+    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));

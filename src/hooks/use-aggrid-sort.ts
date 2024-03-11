@@ -25,6 +25,7 @@ export const SORT_WAYS = {
     desc: 'desc' as const,
 };
 
+//TODO FM delete
 export function getParentSort(sortConfig: SortConfigType[]): SortConfigType {
     const parentSort = sortConfig.find((sort) => !sort.children);
     if (!parentSort) {

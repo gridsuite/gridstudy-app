@@ -122,9 +122,7 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});
 
-    if (sort?.colKey && sort?.sortWay) {
-        params.append('sort', `${sort.colKey},${sort.sortWay}`);
-    }
+    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));

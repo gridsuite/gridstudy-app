@@ -28,7 +28,7 @@ import { ReduxState } from 'redux/reducer.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { getParentSort, SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
+import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import {
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
@@ -113,14 +113,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                           value: limitTypeValues,
                       },
                   ];
-        const parentSort = getParentSort(sortConfig);
         return fetchLimitViolations(studyUuid, nodeUuid, {
-            sort: {
-                colKey: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[
-                    parentSort.colId
-                ],
-                sortWay: parentSort.sort,
-            },
+            sort: sortConfig.map((sort) => ({
+                ...sort,
+                colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
+            })),
             filters: updatedFilters,
         });
     }, [studyUuid, nodeUuid, sortConfig, filterSelector, tabIndex]);

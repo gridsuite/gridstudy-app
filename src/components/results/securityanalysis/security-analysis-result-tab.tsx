@@ -138,14 +138,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams['size'] = rowsPerPage;
             }
 
-            if (sortConfig) {
-                const { sort, colId } = getParentSort(sortConfig);
+            if (sortConfig?.length) {
                 const columnToFieldMapping =
                     getColumnToFieldMapping(resultType);
-                queryParams['sort'] = {
-                    colId: columnToFieldMapping[colId],
-                    sort,
-                };
+                queryParams['sort'] = sortConfig.map((sort) => ({
+                    ...sort,
+                    colId: columnToFieldMapping[sort.colId],
+                }));
             }
 
             if (filterSelector) {
