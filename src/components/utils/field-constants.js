@@ -51,13 +51,17 @@ export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
 export const MAX_ACTIVE_POWER = 'maxActivePower';
 export const MIN_ACTIVE_POWER = 'minActivePower';
+export const MAX_P = 'maxP';
+export const MIN_P = 'minP';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
+export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
+export const TARGET_Q = 'targetQ';
 export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
 export const VOLTAGE_SET_POINT = 'voltageSetpoint';
-export const TRANSIENT_REACTANCE = 'transientReactance';
+export const TRANSIENT_REACTANCE = 'directTransX';
 export const Q_PERCENT = 'qPercent';
 export const FREQUENCY_REGULATION = 'frequencyRegulation';
 export const PARTICIPATE = 'participate';
@@ -73,12 +77,12 @@ export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
 export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
-export const Q_MAX_P = 'qmaxP';
-export const Q_MIN_P = 'qminP';
+export const MIN_Q = 'minQ';
+export const MAX_Q = 'maxQ';
 export const P = 'p';
 
 export const ENABLED = 'enabled';
-export const REGULATING = 'regulating';
+export const REGULATING = 'isRegulating';
 export const REGULATION_TYPE = 'regulationType';
 export const TARGET_DEADBAND = 'targetDeadband';
 export const LOW_TAP_POSITION = 'lowTapPosition';
@@ -98,7 +102,7 @@ export const STEPS_ALPHA = 'alpha';
 
 //tab ratio_tap_changer
 export const RATIO_TAP_CHANGER = 'ratioTapChanger';
-export const LOAD_TAP_CHANGING_CAPABILITIES = 'loadTapChangingCapabilities';
+export const LOAD_TAP_CHANGING_CAPABILITIES = 'hasLoadTapChangingCapabilities';
 export const TARGET_V = 'targetV';
 
 //tab phase_tap_changer
@@ -169,7 +173,7 @@ export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
-export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerReactance';
+export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
 export const REGULATING_TERMINAL = 'regulatingTerminal';
 export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
 export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
@@ -323,8 +327,6 @@ export const OPERATOR = 'operator';
 export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
 export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
 export const EQUIPMENT_FIELD = 'equipmentField';
-
-export const SUBSTATION_COUNTRY = 'substationCountry';
 
 // non evacuated energy
 export const GENERATION_STAGES_KIND = 'energySource';
