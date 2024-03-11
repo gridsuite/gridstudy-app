@@ -141,7 +141,10 @@ const styles = {
                 : lighten(theme.palette.background.paper, 0.2),
         height: '100%',
         paddingTop: 6,
-        paddingBottom: 2,
+        paddingBottom: {
+            xs: 13,
+            md: 5,
+        },
         paddingLeft: 8,
         paddingRight: 8,
     }),
