@@ -41,7 +41,6 @@ import {
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import {
-    getParentSort,
     SORT_WAYS,
     useAgGridSort,
 } from '../../../hooks/use-aggrid-sort';

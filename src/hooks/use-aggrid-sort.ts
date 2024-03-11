@@ -25,15 +25,6 @@ export const SORT_WAYS = {
     desc: 'desc' as const,
 };
 
-//TODO FM delete
-export function getParentSort(sortConfig: SortConfigType[]): SortConfigType {
-    const parentSort = sortConfig.find((sort) => !sort.children);
-    if (!parentSort) {
-        console.error('No parent sort, should not be possible');
-    }
-    return parentSort!;
-}
-
 export const useAgGridSort = (
     initSortConfig: SortConfigType
 ): SortPropsType => {
