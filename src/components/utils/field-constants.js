@@ -82,7 +82,7 @@ export const MAX_Q = 'maxQ';
 export const P = 'p';
 
 export const ENABLED = 'enabled';
-export const REGULATING = 'regulating';
+export const REGULATING = 'isRegulating';
 export const REGULATION_TYPE = 'regulationType';
 export const TARGET_DEADBAND = 'targetDeadband';
 export const LOW_TAP_POSITION = 'lowTapPosition';
@@ -102,7 +102,7 @@ export const STEPS_ALPHA = 'alpha';
 
 //tab ratio_tap_changer
 export const RATIO_TAP_CHANGER = 'ratioTapChanger';
-export const LOAD_TAP_CHANGING_CAPABILITIES = 'loadTapChangingCapabilities';
+export const LOAD_TAP_CHANGING_CAPABILITIES = 'hasLoadTapChangingCapabilities';
 export const TARGET_V = 'targetV';
 
 //tab phase_tap_changer
