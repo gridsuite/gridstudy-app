@@ -7,13 +7,13 @@
 
 import yup from '../../../../utils/yup-config';
 import {
-    ACTIVE_POWER,
+    ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
-    DC_NOMINAL_VOLTAGE,
-    DC_RESISTANCE,
+    NOMINAL_V,
+    R,
     DROOP,
-    MAXIMUM_ACTIVE_POWER,
+    MAX_P,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
@@ -23,14 +23,14 @@ export function getVscHvdcLinePaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [DC_NOMINAL_VOLTAGE]: yup.number().nullable().required(),
-                [DC_RESISTANCE]: yup.number().nullable().required(),
-                [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+                [NOMINAL_V]: yup.number().nullable().required(),
+                [R]: yup.number().nullable().required(),
+                [MAX_P]: yup.number().nullable().required(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
                 [CONVERTERS_MODE]: yup.string().required(),
                 [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean(),
-                [ACTIVE_POWER]: yup.number().nullable().required(),
+                [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
                 [P0]: yup
                     .number()
                     .nullable()
@@ -61,14 +61,14 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [DC_NOMINAL_VOLTAGE]: yup.number().nullable(),
-                [DC_RESISTANCE]: yup.number().nullable(),
-                [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+                [NOMINAL_V]: yup.number().nullable(),
+                [R]: yup.number().nullable(),
+                [MAX_P]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
                 [CONVERTERS_MODE]: yup.string().nullable(),
                 [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean().nullable(),
-                [ACTIVE_POWER]: yup.number().nullable().nullable(),
+                [ACTIVE_POWER_SETPOINT]: yup.number().nullable().nullable(),
                 [P0]: yup.number().nullable(),
                 [DROOP]: yup.number().nullable(),
             },
@@ -82,13 +82,13 @@ export function getVscHvdcLinePaneEmptyFormData(
 ) {
     return {
         [id]: {
-            [DC_NOMINAL_VOLTAGE]: null,
-            [DC_RESISTANCE]: null,
-            [MAXIMUM_ACTIVE_POWER]: null,
+            [NOMINAL_V]: null,
+            [R]: null,
+            [MAX_P]: null,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: null,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
             [CONVERTERS_MODE]: null,
-            [ACTIVE_POWER]: null,
+            [ACTIVE_POWER_SETPOINT]: null,
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: isModification ? null : false,
             [P0]: null,
             [DROOP]: null,
@@ -96,13 +96,13 @@ export function getVscHvdcLinePaneEmptyFormData(
     };
 }
 export interface hvdcLineTabEditData {
-    dcNominalVoltage: number;
-    dcResistance: number;
-    maximumActivePower: number;
+    nominalV: number;
+    r: number;
+    maxP: number;
     operatorActivePowerLimitFromSide1ToSide2?: number | null;
     operatorActivePowerLimitFromSide2ToSide1?: number | null;
     convertersMode: string;
-    activePower: number;
+    activePowerSetpoint: number;
     angleDroopActivePowerControl: boolean;
     p0?: number | null;
     droop?: number | null;
@@ -114,15 +114,15 @@ export function getVscHvdcLineTabFormData(
 ) {
     return {
         [id]: {
-            [DC_NOMINAL_VOLTAGE]: hvdcLine.dcNominalVoltage,
-            [DC_RESISTANCE]: hvdcLine.dcResistance,
-            [MAXIMUM_ACTIVE_POWER]: hvdcLine.maximumActivePower,
+            [NOMINAL_V]: hvdcLine.nominalV,
+            [R]: hvdcLine.r,
+            [MAX_P]: hvdcLine.maxP,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]:
                 hvdcLine?.operatorActivePowerLimitFromSide1ToSide2,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]:
                 hvdcLine?.operatorActivePowerLimitFromSide2ToSide1,
             [CONVERTERS_MODE]: hvdcLine.convertersMode,
-            [ACTIVE_POWER]: hvdcLine.activePower,
+            [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]:
                 hvdcLine.angleDroopActivePowerControl,
             [P0]: hvdcLine?.p0,
@@ -137,9 +137,9 @@ export function getVscHvdcLineModificationTabFormData(
 ) {
     return {
         [id]: {
-            [DC_NOMINAL_VOLTAGE]: hvdcLine?.dcNominalVoltage?.value ?? null,
-            [DC_RESISTANCE]: hvdcLine?.dcResistance?.value ?? null,
-            [MAXIMUM_ACTIVE_POWER]: hvdcLine?.maximumActivePower?.value ?? null,
+            [NOMINAL_V]: hvdcLine?.nominalV?.value ?? null,
+            [R]: hvdcLine?.r?.value ?? null,
+            [MAX_P]: hvdcLine?.maxP?.value ?? null,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]:
                 hvdcLine?.operatorActivePowerLimitFromSide1ToSide2?.value ??
                 null,
@@ -147,7 +147,8 @@ export function getVscHvdcLineModificationTabFormData(
                 hvdcLine?.operatorActivePowerLimitFromSide2ToSide1?.value ??
                 null,
             [CONVERTERS_MODE]: hvdcLine?.convertersMode?.value ?? null,
-            [ACTIVE_POWER]: hvdcLine?.activePower?.value ?? null,
+            [ACTIVE_POWER_SETPOINT]:
+                hvdcLine?.activePowerSetpoint?.value ?? null,
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]:
                 hvdcLine?.angleDroopActivePowerControl?.value ?? null,
             [P0]: hvdcLine?.p0?.value ?? null,
