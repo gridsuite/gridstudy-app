@@ -96,6 +96,8 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             }
         };
 
+        const gridOptions = { suppressCellFocus: true };
+
         return (
             <Box
                 sx={mergeSx(
@@ -115,6 +117,8 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     }
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     onColumnResized={onColumnResized}
+                    enableCellTextSelection
+                    gridOptions={gridOptions}
                     {...props}
                 />
             </Box>
