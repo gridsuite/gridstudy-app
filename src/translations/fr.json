@@ -629,7 +629,7 @@
     "BY_FORMULA": "Par formule",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
-    "BY_TABLE": "Par table",
+    "BY_TABLE": "Par tableau",
     "TabularModification": "Modification tabulaire",
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
