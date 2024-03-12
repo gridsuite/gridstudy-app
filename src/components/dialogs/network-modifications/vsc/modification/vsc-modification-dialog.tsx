@@ -17,18 +17,17 @@ import { sanitizeString } from '../../../dialogUtils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
-    ACTIVE_POWER,
+    ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
-    DC_NOMINAL_VOLTAGE,
-    DC_RESISTANCE,
+    NOMINAL_V,
+    R,
     DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
-    MAXIMUM_ACTIVE_POWER,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P,
@@ -38,6 +37,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
+    MAX_P,
 } from '../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -268,13 +268,13 @@ const VscModificationDialog: React.FC<any> = ({
             currentNode.id,
             equipmentId,
             sanitizeString(hvdcLine[EQUIPMENT_NAME]),
-            hvdcLineTab[DC_NOMINAL_VOLTAGE],
-            hvdcLineTab[DC_RESISTANCE],
-            hvdcLineTab[MAXIMUM_ACTIVE_POWER],
+            hvdcLineTab[NOMINAL_V],
+            hvdcLineTab[R],
+            hvdcLineTab[MAX_P],
             hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
             hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
             hvdcLineTab[CONVERTERS_MODE],
-            hvdcLineTab[ACTIVE_POWER],
+            hvdcLineTab[ACTIVE_POWER_SETPOINT],
             hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
             hvdcLineTab[P0],
             hvdcLineTab[DROOP],
