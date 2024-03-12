@@ -228,7 +228,6 @@ const VscModificationDialog: React.FC<any> = ({
                     .catch((error) => {
                         setVcsToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        reset(emptyFormData);
                     });
             } else {
                 setValuesAndEmptyOthers();
