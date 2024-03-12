@@ -61,6 +61,18 @@ const styles = {
 
 const gridOptions = { suppressCellFocus: true };
 
+// We have to define a minWidth to column to activate this feature
+const onColumnResized = (params: ColumnResizedEvent) => {
+    const { column, finished } = params;
+    const colDefinedMinWidth = column?.getColDef()?.minWidth;
+    if (column && colDefinedMinWidth && finished) {
+        const newWidth = column?.getActualWidth();
+        if (newWidth < colDefinedMinWidth) {
+            column?.setActualWidth(colDefinedMinWidth);
+        }
+    }
+};
+
 export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
     (props, ref) => {
         const {
@@ -85,18 +97,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             },
             [intl]
         );
-
-        // We have to define a minWidth to column to activate this feature
-        const onColumnResized = (params: ColumnResizedEvent) => {
-            const { column, finished } = params;
-            const colDefinedMinWidth = column?.getColDef()?.minWidth;
-            if (column && colDefinedMinWidth && finished) {
-                const newWidth = column?.getActualWidth();
-                if (newWidth < colDefinedMinWidth) {
-                    column?.setActualWidth(colDefinedMinWidth);
-                }
-            }
-        };
 
         return (
             <Box
