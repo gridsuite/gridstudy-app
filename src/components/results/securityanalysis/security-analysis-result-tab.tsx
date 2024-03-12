@@ -40,10 +40,7 @@ import {
     getColumnToFieldMapping,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import {
-    SORT_WAYS,
-    useAgGridSort,
-} from '../../../hooks/use-aggrid-sort';
+import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';

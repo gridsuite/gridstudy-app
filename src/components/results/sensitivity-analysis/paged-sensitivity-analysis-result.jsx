@@ -128,19 +128,18 @@ const PagedSensitivityAnalysisResult = ({
     }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, snackError, intl]);
 
     const fetchResult = useCallback(() => {
-
-        const sortSelector =
-            sortConfig?.length
-                ? {
-                    sortKeysWithWeightAndDirection: {
-                        sortConfig
-                        .reduce((acc, value) => ({
-                            ...acc,
-                            [DATA_KEY_TO_SORT_KEY[value.colId]]: value.sort === 'desc' ? -1 : 1
-                        }), {})
-                    }
-                }
-                : {};
+        const sortSelector = sortConfig?.length
+            ? {
+                  sortKeysWithWeightAndDirection: sortConfig.reduce(
+                      (acc, value) => ({
+                          ...acc,
+                          [DATA_KEY_TO_SORT_KEY[value.colId]]:
+                              value.sort === 'desc' ? -1 : 1,
+                      }),
+                      {}
+                  ),
+              }
+            : {};
 
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
