@@ -88,6 +88,11 @@ export const findIndexesOfDuplicateFieldValues = (values, fieldName) => {
 export const areIdsEqual = (val1, val2) => {
     return val1.id === val2.id;
 };
+
+export const areUuidsEqual = (val1, val2) => {
+    return val1.uuid === val2.uuid;
+};
+
 export const getObjectId = (object) => {
     return typeof object === 'string' ? object : object?.id ?? null;
 };
