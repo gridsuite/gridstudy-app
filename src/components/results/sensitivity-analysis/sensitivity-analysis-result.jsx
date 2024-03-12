@@ -81,7 +81,10 @@ const SensitivityAnalysisResult = ({
                     sortParams: {
                         sortConfig,
                         onSortChanged: (newSortValue) =>
-                            onSortChanged(field, newSortValue),
+                            onSortChanged({
+                                colId: field,
+                                sort: newSortValue,
+                            }),
                     },
                     isFilterable: !!filterProps && !!filterOptions.length, // Filter should have options
                     filterParams: {
