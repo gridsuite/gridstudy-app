@@ -225,9 +225,12 @@ const VscModificationDialog: React.FC<any> = ({
                         });
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch((error) => {
-                        setVcsToModify(null);
+                    .catch((_error) => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setVcsToModify(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -237,9 +240,11 @@ const VscModificationDialog: React.FC<any> = ({
         [
             studyUuid,
             currentNodeUuid,
-            reset,
             setValue,
             getValues,
+            editData?.equipmentId,
+            equipmentId,
+            reset,
             setValuesAndEmptyOthers,
         ]
     );
