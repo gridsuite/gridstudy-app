@@ -108,7 +108,9 @@ export function getSensitivityAnalysisParameters(studyUuid) {
 
 export function fetchSensitivityAnalysisParameters(parameterUuid) {
     console.info('get sensitivity analysis parameters');
-    const url = `${process.env.REACT_APP_API_GATEWAY}/sensitivity-analysis/v1/parameters/${parameterUuid}`;
+    const url = `${
+        import.meta.env.VITE_API_GATEWAY
+    }/sensitivity-analysis/v1/parameters/${parameterUuid}`;
     console.debug(url);
     return backendFetchJson(url);
 }
