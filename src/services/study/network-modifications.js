@@ -1105,7 +1105,7 @@ export function createSubstation(
     currentNodeUuid,
     substationId,
     substationName,
-    substationCountry,
+    country,
     isUpdate = false,
     modificationUuid,
     properties
@@ -1118,7 +1118,7 @@ export function createSubstation(
         type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
         equipmentId: substationId,
         equipmentName: substationName,
-        substationCountry: substationCountry === '' ? null : substationCountry,
+        country: country === '' ? null : country,
         properties,
     });
 
@@ -1204,7 +1204,7 @@ export function modifySubstation(
     currentNodeUuid,
     id,
     name,
-    substationCountry,
+    country,
     isUpdate = false,
     modificationUuid,
     properties
@@ -1230,7 +1230,7 @@ export function modifySubstation(
             type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
             equipmentId: id,
             equipmentName: toModificationOperation(name),
-            substationCountry: toModificationOperation(substationCountry),
+            country: toModificationOperation(country),
             properties: properties,
         }),
     });
@@ -1715,13 +1715,13 @@ export function createVsc(
     currentNodeUuid,
     id,
     name,
-    dcNominalVoltage,
-    dcResistance,
-    maximumActivePower,
+    nominalV,
+    r,
+    maxP,
     operatorActivePowerLimitSide1,
     operatorActivePowerLimitSide2,
     convertersMode,
-    activePower,
+    activePowerSetpoint,
     angleDroopActivePowerControl,
     p0,
     droop,
@@ -1745,13 +1745,13 @@ export function createVsc(
         type: MODIFICATION_TYPES.VSC_CREATION.type,
         equipmentId: id,
         equipmentName: name,
-        dcNominalVoltage: dcNominalVoltage,
-        dcResistance: dcResistance,
-        maximumActivePower: maximumActivePower,
+        nominalV: nominalV,
+        r: r,
+        maxP: maxP,
         operatorActivePowerLimitFromSide1ToSide2: operatorActivePowerLimitSide1,
         operatorActivePowerLimitFromSide2ToSide1: operatorActivePowerLimitSide2,
         convertersMode: convertersMode,
-        activePower: activePower,
+        activePowerSetpoint: activePowerSetpoint,
         angleDroopActivePowerControl: angleDroopActivePowerControl,
         p0: p0,
         droop: droop,
@@ -1769,6 +1769,70 @@ export function createVsc(
     });
 }
 
+export function modifyVsc(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    operatorActivePowerLimitSide1,
+    operatorActivePowerLimitSide2,
+    convertersMode,
+    activePowerSetpoint,
+    angleDroopActivePowerControl,
+    p0,
+    droop,
+    converterStation1,
+    converterStation2,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating Vsc modification');
+    } else {
+        console.info('Creating Vsc modification');
+    }
+
+    const vscModification = {
+        type: MODIFICATION_TYPES.VSC_MODIFICATION.type,
+        equipmentId: id,
+        equipmentName: toModificationOperation(name),
+        nominalV: toModificationOperation(nominalV),
+        r: toModificationOperation(r),
+        maxP: toModificationOperation(maxP),
+        operatorActivePowerLimitFromSide1ToSide2: toModificationOperation(
+            operatorActivePowerLimitSide1
+        ),
+        operatorActivePowerLimitFromSide2ToSide1: toModificationOperation(
+            operatorActivePowerLimitSide2
+        ),
+        convertersMode: toModificationOperation(convertersMode),
+        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
+        angleDroopActivePowerControl: toModificationOperation(
+            angleDroopActivePowerControl
+        ),
+        p0: toModificationOperation(p0),
+        droop: toModificationOperation(droop),
+        converterStation1: converterStation1,
+        converterStation2: converterStation2,
+    }; //FIXME add missing informations
+
+    return backendFetchText(modificationUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vscModification),
+    });
+}
 export function modifyByFormula(
     studyUuid,
     currentNodeUuid,

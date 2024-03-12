@@ -111,4 +111,10 @@ export const MODIFICATION_TYPES = {
     TABULAR_CREATION: {
         type: 'TABULAR_CREATION',
     },
+    VSC_MODIFICATION: {
+        type: 'VSC_MODIFICATION',
+    },
+    CONVERTER_STATION_MODIFICATION: {
+        type: 'CONVERTER_STATION_MODIFICATION',
+    },
 };
