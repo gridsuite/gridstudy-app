@@ -252,24 +252,14 @@ const NetworkModificationNodeEditor = () => {
             label: 'menu.create',
             subItems: [
                 {
-                    id: MODIFICATION_TYPES.BATTERY_CREATION.type,
-                    label: 'BATTERY',
-                    action: () => adapt(BatteryCreationDialog),
+                    id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
+                    label: 'SUBSTATION',
+                    action: () => adapt(SubstationCreationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.LOAD_CREATION.type,
-                    label: 'LOAD',
-                    action: () => adapt(LoadCreationDialog),
-                },
-                {
-                    id: 'GENERATOR_CREATION',
-                    label: 'GENERATOR',
-                    action: () => adapt(GeneratorCreationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
-                    label: 'ShuntCompensator',
-                    action: () => adapt(ShuntCompensatorCreationDialog),
+                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
+                    label: 'VOLTAGE_LEVEL',
+                    action: () => adapt(VoltageLevelCreationDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.LINE_CREATION.type,
@@ -283,14 +273,24 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(TwoWindingsTransformerCreationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
-                    label: 'VOLTAGE_LEVEL',
-                    action: () => adapt(VoltageLevelCreationDialog),
+                    id: 'GENERATOR_CREATION',
+                    label: 'GENERATOR',
+                    action: () => adapt(GeneratorCreationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-                    label: 'SUBSTATION',
-                    action: () => adapt(SubstationCreationDialog),
+                    id: MODIFICATION_TYPES.LOAD_CREATION.type,
+                    label: 'LOAD',
+                    action: () => adapt(LoadCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.BATTERY_CREATION.type,
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
+                    label: 'ShuntCompensator',
+                    action: () => adapt(ShuntCompensatorCreationDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.VSC_CREATION.type,
@@ -309,24 +309,14 @@ const NetworkModificationNodeEditor = () => {
             label: 'ModifyFromMenu',
             subItems: [
                 {
-                    id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
-                    label: 'BATTERY',
-                    action: () => adapt(BatteryModificationDialog),
+                    id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+                    label: 'SUBSTATION',
+                    action: () => adapt(SubstationModificationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
-                    label: 'LOAD',
-                    action: () => adapt(LoadModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
-                    label: 'GENERATOR',
-                    action: () => adapt(GeneratorModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
-                    label: 'ShuntCompensator',
-                    action: () => adapt(ShuntCompensatorModificationDialog),
+                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+                    label: 'VOLTAGE_LEVEL',
+                    action: () => adapt(VoltageLevelModificationDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
@@ -341,14 +331,29 @@ const NetworkModificationNodeEditor = () => {
                         adapt(TwoWindingsTransformerModificationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-                    label: 'VoltageLevel',
-                    action: () => adapt(VoltageLevelModificationDialog),
+                    id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
+                    label: 'GENERATOR',
+                    action: () => adapt(GeneratorModificationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
-                    label: 'SUBSTATION',
-                    action: () => adapt(SubstationModificationDialog),
+                    id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
+                    label: 'LOAD',
+                    action: () => adapt(LoadModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
+                    label: 'ShuntCompensator',
+                    action: () => adapt(ShuntCompensatorModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
+                    label: 'VSC',
+                    action: () => adapt(VscModificationDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
@@ -359,11 +364,6 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                     label: 'BY_FORMULA',
                     action: () => adapt(ByFormulaDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
-                    label: 'VSC',
-                    action: () => adapt(VscModificationDialog),
                 },
             ],
         },
