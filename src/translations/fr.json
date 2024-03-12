@@ -1148,6 +1148,7 @@
     "securityAnalysis.toolTip.highVoltage": "L'aggravation de contrainte en tension haute peut être calculée en pourcentage ou en définie en valeur absolue par rapport à la valeur calculée en N. La valeur prise en compte sera la plus conservative des deux. Par exemple, si l'aggravation en pourcentage correspond à 1 kV et celle renseignée en absolu est de 2 kV, alors la contrainte en tension haute réapparaitra en N-k pour une élévation de tension de plus de 1 kV par rapport à la valeur calculée en N.",
     "menu.create": "Créer",
     "menu.createMultiple": "Créer plusieurs ouvrages",
+    "menu.modifyMultiple": "Modifier plusieurs ouvrages",
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",
     "GenerationAndLoad": "Production et consommation",

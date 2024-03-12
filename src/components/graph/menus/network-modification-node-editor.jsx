@@ -373,6 +373,22 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
+            id: 'EDIT_MULTIPLE',
+            label: 'menu.modifyMultiple',
+            subItems: [
+                {
+                    id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+                    label: 'BY_TABLE',
+                    action: () => adapt(TabularModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
+                    label: 'BY_FORMULA',
+                    action: () => adapt(ByFormulaDialog),
+                },
+            ],
+        },
+        {
             id: 'EQUIPMENT_DELETION',
             label: 'DeleteContingencyList',
             subItems: [
