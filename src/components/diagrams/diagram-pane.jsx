@@ -20,18 +20,18 @@ import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import {
-    useDiagram,
-    ViewState,
-    DiagramType,
-    DEFAULT_WIDTH_SUBSTATION,
-    DEFAULT_WIDTH_VOLTAGE_LEVEL,
+    DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM,
     DEFAULT_HEIGHT_SUBSTATION,
     DEFAULT_HEIGHT_VOLTAGE_LEVEL,
     DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM,
-    DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM,
-    MAP_BOTTOM_OFFSET,
+    DEFAULT_WIDTH_SUBSTATION,
+    DEFAULT_WIDTH_VOLTAGE_LEVEL,
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
+    DiagramType,
+    MAP_BOTTOM_OFFSET,
     NoSvg,
+    useDiagram,
+    ViewState,
 } from './diagram-common';
 import { makeDiagramSorter } from './diagram-utils';
 import {
@@ -56,7 +56,7 @@ import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { UpdateTypes } from 'redux/reducer.type';
+import { UpdateTypes } from '../../redux/reducer.type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -1064,10 +1064,10 @@ export function DiagramPane({
                         >
                             {
                                 /*
-                                We put a space (a separator) before the first right aligned diagram.
-                                This space takes all the remaining space on screen and "pushes" the right aligned
-                                diagrams to the right of the screen.
-                                */
+                We put a space (a separator) before the first right aligned diagram.
+                This space takes all the remaining space on screen and "pushes" the right aligned
+                diagrams to the right of the screen.
+                */
                                 array[index]?.align === 'right' &&
                                     (index === 0 ||
                                         array[index - 1]?.align === 'left') && (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadEquipments } from 'redux/actions';
+import { loadEquipments } from '../../redux/actions';
 
 export const useSpreadsheetEquipments = (
     equipment,
