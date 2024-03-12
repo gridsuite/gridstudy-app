@@ -623,7 +623,7 @@
     "HVDC_CONVERTER_STATION": "HVDC Converter Station",
     "LCC_CONVERTER_STATION": "Lcc Converter Station",
     "VSC_CONVERTER_STATION": "Vsc Converter Station",
-    "VSC": "Vsc",
+    "VSC": "HVDC line (VSC)",
     "BUS": "Bus",
     "BUSBAR_SECTION": "Bus bar section",
     "BY_FORMULA": "By formula",
