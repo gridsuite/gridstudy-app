@@ -7,7 +7,6 @@
 
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import {
-    ACTIVE_POWER_SET_POINT,
     CONNECTED,
     CONNECTED1,
     CONNECTED2,
@@ -20,21 +19,19 @@ import {
     G,
     B,
     MARGINAL_COST,
-    MAX_ACTIVE_POWER,
+    MAX_P,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
-    MIN_ACTIVE_POWER,
+    MIN_P,
     NOMINAL_V,
     P0,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q0,
-    RATED_NOMINAL_POWER,
     RATED_S,
     RATED_U1,
     RATED_U2,
-    REACTIVE_POWER_SET_POINT,
     SECTION_COUNT,
     R,
     X,
@@ -44,10 +41,12 @@ import {
     G2,
     B2,
     STEP_UP_TRANSFORMER_REACTANCE,
-    SUBSTATION_COUNTRY,
+    COUNTRY,
+    TARGET_P,
+    TARGET_Q,
+    TARGET_V,
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION_ON,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { toModificationOperation } from 'components/utils/utils';
@@ -60,13 +59,13 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     GENERATOR: [
         EQUIPMENT_ID,
         ENERGY_SOURCE,
-        MIN_ACTIVE_POWER,
-        MAX_ACTIVE_POWER,
-        ACTIVE_POWER_SET_POINT,
-        RATED_NOMINAL_POWER,
-        REACTIVE_POWER_SET_POINT,
+        MIN_P,
+        MAX_P,
+        TARGET_P,
+        RATED_S,
+        TARGET_Q,
         VOLTAGE_REGULATION_ON,
-        VOLTAGE_SET_POINT,
+        TARGET_V,
         CONNECTED,
         TRANSIENT_REACTANCE,
         STEP_UP_TRANSFORMER_REACTANCE,
@@ -75,15 +74,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         PLANNED_OUTAGE_RATE,
         FORCED_OUTAGE_RATE,
     ],
-    BATTERY: [
-        EQUIPMENT_ID,
-        MIN_ACTIVE_POWER,
-        ACTIVE_POWER_SET_POINT,
-        MAX_ACTIVE_POWER,
-        REACTIVE_POWER_SET_POINT,
-        CONNECTED,
-    ],
-
+    BATTERY: [EQUIPMENT_ID, MIN_P, TARGET_P, MAX_P, TARGET_Q, CONNECTED],
     VOLTAGE_LEVEL: [
         EQUIPMENT_ID,
         NOMINAL_V,
@@ -113,7 +104,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         CONNECTED1,
         CONNECTED2,
     ],
-    SUBSTATION: [EQUIPMENT_ID, SUBSTATION_COUNTRY],
+    SUBSTATION: [EQUIPMENT_ID, COUNTRY],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {

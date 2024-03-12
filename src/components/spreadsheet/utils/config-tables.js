@@ -42,6 +42,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { NOMINAL_V } from '../../utils/field-constants';
+import CountryCellRenderer from '../country-cell-render';
 
 const generateTapPositions = (params) => {
     return params
@@ -98,6 +99,30 @@ const defaultTextFilterConfig = {
     },
 };
 
+/**
+ * Default configuration for an enum filter
+ * a new filter option is added to the default ag-grid filter
+ */
+const defaultEnumFilterConfig = {
+    filter: 'agTextColumnFilter',
+    agGridFilterParams: {
+        filterOptions: [
+            {
+                displayKey: 'customInRange',
+                displayName: 'customInRange',
+                predicate: ([filterValue], cellValue) => {
+                    // We receive here the filter enum values as a string (filterValue)
+                    return filterValue.includes(cellValue);
+                },
+            },
+        ],
+    },
+    customFilterParams: {
+        filterDataType: FILTER_DATA_TYPES.TEXT,
+        isEnum: true,
+    },
+};
+
 const defaultNumericFilterConfig = {
     filter: 'agNumberColumnFilter',
     customFilterParams: {
@@ -137,7 +162,7 @@ const getTwtRatioRegulationModeId = (twt) => {
         return twt.ratioTapChanger.regulationMode;
     }
     // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
-    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
+    if (!twt?.ratioTapChanger?.hasLoadTapChangingCapabilities) {
         return null;
     }
     //otherwise, we compute it
@@ -155,11 +180,11 @@ const hasTwtRatioTapChanger = (params) => {
 };
 
 const isTwtRatioOnload = (params) => {
-    const loadTapChangingCapabilities =
-        params.data?.ratioTapChanger?.loadTapChangingCapabilities;
+    const hasLoadTapChangingCapabilities =
+        params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities;
     return (
-        loadTapChangingCapabilities === true ||
-        loadTapChangingCapabilities === 1
+        hasLoadTapChangingCapabilities === true ||
+        hasLoadTapChangingCapabilities === 1
     );
 };
 
@@ -294,18 +319,16 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
+                field: 'country',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
                 cellEditor: SelectCountryField,
+                cellRenderer: CountryCellRenderer,
                 valueSetter: (params) => {
-                    params.data.countryCode =
-                        params?.newValue?.country?.countryCode;
-                    params.data.countryName =
-                        params?.newValue?.country?.countryName;
+                    params.data.country = params?.newValue?.countryCode;
                     return params;
                 },
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
             },
             {
                 id: 'Properties',
@@ -360,8 +383,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -516,13 +540,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country1',
-                field: 'country1.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country1',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
-                field: 'country2.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country2',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageSide1',
@@ -672,8 +698,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalVoltageSide1',
@@ -766,10 +793,11 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChangingCapabilities',
-                field: 'ratioTapChanger.loadTapChangingCapabilities',
+                id: 'HasLoadTapChangingCapabilities',
+                field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
                 valueGetter: (params) =>
-                    params?.data?.ratioTapChanger?.loadTapChangingCapabilities,
+                    params?.data?.ratioTapChanger
+                        ?.hasLoadTapChangingCapabilities,
                 cellRenderer: BooleanCellRenderer,
                 editable: (params) =>
                     isEditable(params) && hasTwtRatioTapChanger(params),
@@ -778,7 +806,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data.ratioTapChanger || {}),
-                        loadTapChangingCapabilities: params.newValue,
+                        hasLoadTapChangingCapabilities: params.newValue,
                         regulationMode: !!params.newValue
                             ? getTwtRatioRegulationModeId(params.data) ||
                               RATIO_REGULATION_MODES.FIXED_RATIO.id
@@ -790,9 +818,9 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.ratioTapChanger
-                                ?.loadTapChangingCapabilities != null
+                                ?.hasLoadTapChangingCapabilities != null
                                 ? +params.data?.ratioTapChanger
-                                      ?.loadTapChangingCapabilities
+                                      ?.hasLoadTapChangingCapabilities
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -829,11 +857,11 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn:
-                            'ratioTapChanger.loadTapChangingCapabilities',
+                            'ratioTapChanger.hasLoadTapChangingCapabilities',
                         columnValue: 1,
                     },
                 },
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
             },
             {
                 id: 'TargetVPoint',
@@ -891,7 +919,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioRegulationTypeText',
                 field: 'ratioTapChanger.regulationType',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 valueGetter: (params) =>
                     params.data?.ratioTapChanger?.regulationType,
                 valueSetter: (params) => {
@@ -919,7 +947,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioRegulatedSide',
                 field: 'ratioTapChanger.regulationSide',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 valueGetter: (params) =>
                     params.data?.ratioTapChanger?.regulationSide,
                 valueSetter: (params) => {
@@ -1056,7 +1084,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode',
                 field: 'phaseTapChanger.regulationMode',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.regulationMode,
                 valueSetter: (params) => {
@@ -1145,7 +1173,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseRegulationTypeText',
                 field: 'phaseTapChanger.regulationType',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 valueGetter: (params) =>
                     params.data?.phaseTapChanger?.regulationType,
                 valueSetter: (params) => {
@@ -1173,7 +1201,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseRegulatedSide',
                 field: 'phaseTapChanger.regulationSide',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 valueGetter: (params) =>
                     params.data?.phaseTapChanger?.regulationSide,
                 valueSetter: (params) => {
@@ -1402,26 +1430,27 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
-                id: 'NominalVoltageT3WSide1',
-                field: 'nominalVoltage1',
+                id: 'NominalVT3WSide1',
+                field: 'nominalV1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageT3WSide2',
-                field: 'nominalVoltage2',
+                id: 'NominalVT3WSide2',
+                field: 'nominalV2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageT3WSide3',
-                field: 'nominalVoltage3',
+                id: 'NominalVT3WSide3',
+                field: 'nominalV3',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
@@ -1481,15 +1510,15 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging1Capabilities',
-                field: 'loadTapChanging1Capabilities',
+                id: 'HasLoadTapChanging1Capabilities',
+                field: 'hasLoadTapChanging1Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingRatio1',
-                field: 'regulatingRatio1',
+                field: 'isRegulatingRatio1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1530,15 +1559,15 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging2Capabilities',
-                field: 'loadTapChanging2Capabilities',
+                id: 'HasLoadTapChanging2Capabilities',
+                field: 'hasLoadTapChanging2Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingRatio2',
-                field: 'regulatingRatio2',
+                field: 'isRegulatingRatio2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1579,15 +1608,15 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging3Capabilities',
-                field: 'loadTapChanging3Capabilities',
+                id: 'HasLoadTapChanging3Capabilities',
+                field: 'hasLoadTapChanging3Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingRatio3',
-                field: 'regulatingRatio3',
+                field: 'isRegulatingRatio3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1629,14 +1658,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode1',
-                field: 'regulatingMode1',
-                ...defaultTextFilterConfig,
+                field: 'regulationModeName1',
+                ...defaultEnumFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingPhase1',
-                field: 'regulatingPhase1',
+                field: 'isRegulatingPhase1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1679,14 +1708,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode2',
-                field: 'regulatingMode2',
-                ...defaultTextFilterConfig,
+                field: 'regulationModeName2',
+                ...defaultEnumFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingPhase2',
-                field: 'regulatingPhase2',
+                field: 'isRegulatingPhase2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1729,14 +1758,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode3',
-                field: 'regulatingMode3',
-                ...defaultNumericFilterConfig,
+                field: 'regulationModeName3',
+                ...defaultEnumFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingPhase3',
-                field: 'regulatingPhase3',
+                field: 'isRegulatingPhase3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1829,8 +1858,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -1842,7 +1872,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'energySource',
                 field: 'energySource',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1877,7 +1907,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -1885,7 +1915,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -1893,10 +1923,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.activePowerControlOn != null
-                                ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -1933,15 +1961,14 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1965,7 +1992,7 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2132,8 +2159,8 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'transientReactance',
-                field: 'generatorShortCircuit.transientReactance',
+                id: 'directTransX',
+                field: 'generatorShortCircuit.directTransX',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
@@ -2144,8 +2171,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.generatorShortCircuit
-                                ?.transientReactance || 0,
+                            params.data?.generatorShortCircuit?.directTransX ||
+                            0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2153,11 +2180,11 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 valueGetter: (params) =>
-                    params.data?.generatorShortCircuit?.transientReactance,
+                    params.data?.generatorShortCircuit?.directTransX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
-                        transientReactance: params.newValue,
+                        directTransX: params.newValue,
                     };
                     return params;
                 },
@@ -2166,8 +2193,8 @@ export const TABLES_DEFINITIONS = {
                 },
             },
             {
-                id: 'stepUpTransformerReactance',
-                field: 'generatorShortCircuit.stepUpTransformerReactance',
+                id: 'stepUpTransformerX',
+                field: 'generatorShortCircuit.stepUpTransformerX',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
@@ -2179,7 +2206,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.generatorShortCircuit
-                                ?.stepUpTransformerReactance || 0,
+                                ?.stepUpTransformerX || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2187,12 +2214,11 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 valueGetter: (params) =>
-                    params.data?.generatorShortCircuit
-                        ?.stepUpTransformerReactance,
+                    params.data?.generatorShortCircuit?.stepUpTransformerX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
-                        stepUpTransformerReactance: params.newValue,
+                        stepUpTransformerX: params.newValue,
                     };
                     return params;
                 },
@@ -2348,15 +2374,9 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulationTypeText',
                 field: 'RegulationTypeText',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                valueGetter: (params) =>
-                    params.data.RegulationTypeText ??
-                    (params.data?.regulatingTerminalVlId ||
-                    params.data?.regulatingTerminalConnectableId
-                        ? REGULATION_TYPES.DISTANT.id
-                        : REGULATION_TYPES.LOCAL.id),
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
                     return {
@@ -2423,7 +2443,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'loadType',
                 field: 'type',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2444,8 +2464,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2552,8 +2573,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2620,13 +2642,9 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Type',
                 field: 'type',
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                valueGetter: (params) =>
-                    params?.data?.maxSusceptance > 0
-                        ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
-                        : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
                     return {
@@ -2739,8 +2757,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2820,8 +2839,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -2852,7 +2872,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControl.activePowerControlOn',
+                field: 'activePowerControl.participate',
                 cellRenderer: BooleanCellRenderer,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2860,7 +2880,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.activePowerControl = {
                         ...(params.data.activePowerControl || {}),
-                        activePowerControlOn: params.newValue,
+                        participate: params.newValue,
                     };
 
                     return params;
@@ -2868,10 +2888,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.activePowerControl
-                                ?.activePowerControlOn != null
-                                ? +params.data?.activePowerControl
-                                      ?.activePowerControlOn
+                            params.data?.activePowerControl?.participate != null
+                                ? +params.data?.activePowerControl?.participate
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -2908,15 +2926,14 @@ export const TABLES_DEFINITIONS = {
                 },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'activePowerControl.activePowerControlOn',
+                        dependencyColumn: 'activePowerControl.participate',
                         columnValue: 1,
                     },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'minActivePower',
+                id: 'minP',
                 field: 'minP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -2939,7 +2956,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'maxActivePower',
+                id: 'maxP',
                 field: 'maxP',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -3040,7 +3057,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'convertersMode',
                 columnWidth: LARGE_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
-                ...defaultTextFilterConfig,
+                ...defaultEnumFilterConfig,
             },
             {
                 id: 'ConverterStationId1',
@@ -3056,13 +3073,15 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country1',
-                field: 'country1.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country1',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
-                field: 'country2.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country2',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'R',
@@ -3099,7 +3118,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'OprFromCS2toCS1',
-                field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
+                field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 1,
@@ -3156,8 +3175,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3240,8 +3260,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3338,8 +3359,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',
@@ -3442,8 +3464,9 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'Country',
-                field: 'country.countryName',
-                ...defaultTextFilterConfig,
+                field: 'country',
+                ...defaultEnumFilterConfig,
+                cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'NominalV',

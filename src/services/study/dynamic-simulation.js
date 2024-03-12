@@ -76,21 +76,6 @@ export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationTimeSeriesMetadata(
-    studyUuid,
-    currentNodeUuid
-) {
-    console.info(
-        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/dynamic-simulation/result/timeseries/metadata';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function fetchDynamicSimulationResultTimeSeries(
     studyUuid,
     currentNodeUuid,
@@ -112,20 +97,6 @@ export function fetchDynamicSimulationResultTimeSeries(
         currentNodeUuid
     )}/dynamic-simulation/result/timeseries?${urlSearchParams}`;
 
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchDynamicSimulationResultTimeLine(
-    studyUuid,
-    currentNodeUuid
-) {
-    console.info(
-        `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/dynamic-simulation/result/timeline';
     console.debug(url);
     return backendFetchJson(url);
 }

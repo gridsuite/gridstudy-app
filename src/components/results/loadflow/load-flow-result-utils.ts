@@ -6,6 +6,7 @@
  */
 
 import {
+    ComponentResult,
     LimitTypes,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
@@ -96,8 +97,8 @@ export const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
     status: 'status',
     synchronousComponentNum: 'synchronousComponentNum',
     iterationCount: 'iterationCount',
-    slackBusId: 'slackBusId',
-    slackBusActivePowerMismatch: 'slackBusActivePowerMismatch',
+    id: 'id',
+    activePowerMismatch: 'activePowerMismatch',
     distributedActivePower: 'distributedActivePower',
 };
 
@@ -121,7 +122,7 @@ export const getIdType = (index: number): string => {
         case 1:
             return 'subjectId';
         case 2:
-            return 'slackBusId';
+            return 'connectedComponentNum';
         default:
             return '';
     }
@@ -415,8 +416,7 @@ export const loadFlowResultColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'slackBusId' }),
-            field: 'slackBusId',
-            sortProps,
+            field: 'id',
             filterProps,
             filterParams: textFilterParams,
         }),
@@ -424,13 +424,31 @@ export const loadFlowResultColumnsDefinition = (
             headerName: intl.formatMessage({
                 id: 'slackBusActivePowerMismatch',
             }),
-            field: 'slackBusActivePowerMismatch',
+            field: 'activePowerMismatch',
             numeric: true,
             fractionDigits: 2,
-            sortProps,
             filterProps,
             filterParams: numericFilterParams,
             cellRenderer: numberRenderer,
         }),
     ];
+};
+
+export const formatcomponentResult = (componentResults: ComponentResult[]) => {
+    return componentResults?.map((componentResult) => {
+        return {
+            componentResultUuid: componentResult.componentResultUuid,
+            connectedComponentNum: componentResult.connectedComponentNum,
+            synchronousComponentNum: componentResult.synchronousComponentNum,
+            status: componentResult.status,
+            iterationCount: componentResult.iterationCount,
+            id: componentResult.slackBusResults
+                ?.map((slackBus) => slackBus.id)
+                .join('| '),
+            activePowerMismatch: componentResult.slackBusResults
+                ?.map((slackBus) => slackBus.activePowerMismatch)
+                .reduce((prev, current) => prev + current, 0),
+            distributedActivePower: componentResult.distributedActivePower,
+        };
+    });
 };

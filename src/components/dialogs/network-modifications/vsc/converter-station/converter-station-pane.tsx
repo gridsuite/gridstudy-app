@@ -31,12 +31,21 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { TextField } from '@mui/material';
+import {
+    ConverterStationElementModificationInfos,
+    UpdateReactiveCapabilityCurveTable,
+} from './converter-station-utils';
+import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 
 interface VscConverterStationPaneProps {
     id: string;
     stationLabel: string;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
+    isModification?: boolean;
+    previousValues?: ConverterStationElementModificationInfos | null;
+    updatePreviousReactiveCapabilityCurveTableConverterStation?: UpdateReactiveCapabilityCurveTable;
 }
 
 const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
@@ -44,6 +53,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     stationLabel,
     currentNode,
     studyUuid,
+    isModification = false,
+    previousValues,
+    updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
@@ -74,7 +86,18 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     }, [studyUuid, currentNodeUuid]);
 
-    const generatorIdField = (
+    const generatorIdField = isModification ? (
+        <TextField
+            size="small"
+            fullWidth
+            label={'ID'}
+            value={previousValues?.id || ''}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+        />
+    ) : (
         <TextInput
             name={`${id}.${CONVERTER_STATION_ID}`}
             label={'converterStationId'}
@@ -85,10 +108,11 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
             label={'converterStationName'}
+            previousValue={previousValues?.name ?? ''}
         />
     );
 
-    const connectivityForm = (
+    const connectivityForm = isModification ? null : (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
             voltageLevelOptions={voltageLevelOptions}
@@ -103,6 +127,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${LOSS_FACTOR}`}
             label={'lossFactorLabel'}
             adornment={percentageTextField}
+            previousValue={previousValues?.lossFactor}
         />
     );
 
@@ -111,10 +136,20 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${REACTIVE_POWER}`}
             adornment={ReactivePowerAdornment}
             label={'ReactivePowerText'}
+            previousValue={previousValues?.reactivePowerSetpoint ?? undefined}
         />
     );
 
-    const voltageRegulation = (
+    const voltageRegulationOn = previousValues?.voltageRegulationOn ?? null;
+    const voltageRegulation = isModification ? (
+        <CheckboxNullableInput
+            name={`${id}.${VOLTAGE_REGULATION_ON}`}
+            label={'VoltageRegulationText'}
+            previousValue={voltageRegulationOn}
+            id={undefined}
+            formProps={undefined}
+        />
+    ) : (
         <SwitchInput
             name={`${id}.${VOLTAGE_REGULATION_ON}`}
             label={'VoltageRegulationText'}
@@ -126,6 +161,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             name={`${id}.${VOLTAGE}`}
             adornment={VoltageAdornment}
             label={'VoltageText'}
+            previousValue={previousValues?.voltageSetpoint || undefined}
         />
     );
 
@@ -137,10 +173,14 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
                 {gridItem(generatorNameField, 4)}
             </Grid>
 
-            <GridSection title={'Connectivity'} />
-            <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
-            </Grid>
+            {!isModification && (
+                <>
+                    <GridSection title={'Connectivity'} />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivityForm, 12)}
+                    </Grid>
+                </>
+            )}
 
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
@@ -148,7 +188,13 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             </Grid>
 
             <GridSection title="ReactiveLimits" />
-            <ReactiveLimitsForm id={`${id}.${REACTIVE_LIMITS}`} />
+            <ReactiveLimitsForm
+                id={`${id}.${REACTIVE_LIMITS}`}
+                equipmentToModify={previousValues as any}
+                updatePreviousReactiveCapabilityCurveTable={
+                    updatePreviousReactiveCapabilityCurveTableConverterStation as any
+                }
+            />
 
             <GridSection title={'Setpoints'} />
             <Grid container spacing={2}>

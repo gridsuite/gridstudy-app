@@ -7,7 +7,8 @@
 import { UUID } from 'crypto';
 import { backendFetchJson } from './utils';
 
-export const PREFIX_VOLTAGE_INIT_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/voltage-init`;
+export const PREFIX_VOLTAGE_INIT_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/voltage-init';
 
 export function getVoltageInitUrl() {
     return `${PREFIX_VOLTAGE_INIT_QUERIES}/v1/`;

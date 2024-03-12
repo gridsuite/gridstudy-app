@@ -8,7 +8,8 @@ import { APP_NAME } from '../utils/config-params';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { getUrlWithToken, getWsBase } from './utils';
 
-const PREFIX_CONFIG_NOTIFICATION_WS = `${process.env.REACT_APP_WS_GATEWAY}/config-notification`;
+const PREFIX_CONFIG_NOTIFICATION_WS =
+    import.meta.env.VITE_WS_GATEWAY + '/config-notification';
 
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = getWsBase();
