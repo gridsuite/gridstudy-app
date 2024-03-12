@@ -588,7 +588,6 @@
     "Fictitious": "Fictitious",
     "ActivePowerText": "Active power",
     "ReactivePowerText": "Reactive power",
-    "VoltageLevel": "Voltage level",
     "BusBarBus": "Bus bar section / bus",
     "Buses": "Buses",
     "Magnitude": "Voltage magnitude",
