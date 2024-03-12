@@ -12,6 +12,9 @@ import {
 } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
+const GET_PARAMETERS_PREFIX =
+    import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
+
 export function startSensitivityAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         `Running sensi on ${studyUuid} and node ${currentNodeUuid} ...`
@@ -108,9 +111,7 @@ export function getSensitivityAnalysisParameters(studyUuid) {
 
 export function fetchSensitivityAnalysisParameters(parameterUuid) {
     console.info('get sensitivity analysis parameters');
-    const url = `${
-        import.meta.env.VITE_API_GATEWAY
-    }/sensitivity-analysis/v1/parameters/${parameterUuid}`;
+    const url = `${GET_PARAMETERS_PREFIX}/${parameterUuid}`;
     console.debug(url);
     return backendFetchJson(url);
 }
