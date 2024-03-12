@@ -305,6 +305,11 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
+            id: 'CREATE_MULTIPLE',
+            label: 'menu.createMultiple',
+            action: () => adapt(TabularCreationDialog),
+        },
+        {
             id: 'EDIT',
             label: 'ModifyFromMenu',
             subItems: [

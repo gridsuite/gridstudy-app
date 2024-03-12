@@ -1145,6 +1145,7 @@
     "securityAnalysis.toolTip.lowVoltage": "For low voltage violations, the value of the threshold can be either proportional or absolute. If both values are defined, the smallest value is used. For example, if the proportional value corresponds to 1 kV and the absolute value is 2 kV, a 200 kV low voltage preexisting violation will be displayed in the post-contingency state only if the new value is below 199 kV.",
     "securityAnalysis.toolTip.highVoltage": "For high voltage violations, the value of the threshold can be either proportional or absolute. If both values are defined, the smallest value is used. For example, if the proportional value corresponds to 1 kV and the absolute value is 2 kV, a 250 kV high voltage preexisting violation will be displayed in the post-contingency state only if the new value is above 251 kV.",
     "menu.create": "Create",
+    "menu.createMultiple": "Create multiple equipment",
     "ShuntCompensator": "Shunt compensator",
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
