@@ -162,7 +162,7 @@ const getTwtRatioRegulationModeId = (twt) => {
         return twt.ratioTapChanger.regulationMode;
     }
     // if onLoadTapChangingCapabilities is set to false or undefined, we set the regulation mode to null
-    if (!twt?.ratioTapChanger?.loadTapChangingCapabilities) {
+    if (!twt?.ratioTapChanger?.hasLoadTapChangingCapabilities) {
         return null;
     }
     //otherwise, we compute it
@@ -180,11 +180,11 @@ const hasTwtRatioTapChanger = (params) => {
 };
 
 const isTwtRatioOnload = (params) => {
-    const loadTapChangingCapabilities =
-        params.data?.ratioTapChanger?.loadTapChangingCapabilities;
+    const hasLoadTapChangingCapabilities =
+        params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities;
     return (
-        loadTapChangingCapabilities === true ||
-        loadTapChangingCapabilities === 1
+        hasLoadTapChangingCapabilities === true ||
+        hasLoadTapChangingCapabilities === 1
     );
 };
 
@@ -793,10 +793,11 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChangingCapabilities',
-                field: 'ratioTapChanger.loadTapChangingCapabilities',
+                id: 'HasLoadTapChangingCapabilities',
+                field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
                 valueGetter: (params) =>
-                    params?.data?.ratioTapChanger?.loadTapChangingCapabilities,
+                    params?.data?.ratioTapChanger
+                        ?.hasLoadTapChangingCapabilities,
                 cellRenderer: BooleanCellRenderer,
                 editable: (params) =>
                     isEditable(params) && hasTwtRatioTapChanger(params),
@@ -805,7 +806,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data.ratioTapChanger || {}),
-                        loadTapChangingCapabilities: params.newValue,
+                        hasLoadTapChangingCapabilities: params.newValue,
                         regulationMode: !!params.newValue
                             ? getTwtRatioRegulationModeId(params.data) ||
                               RATIO_REGULATION_MODES.FIXED_RATIO.id
@@ -817,9 +818,9 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.ratioTapChanger
-                                ?.loadTapChangingCapabilities != null
+                                ?.hasLoadTapChangingCapabilities != null
                                 ? +params.data?.ratioTapChanger
-                                      ?.loadTapChangingCapabilities
+                                      ?.hasLoadTapChangingCapabilities
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -856,7 +857,7 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn:
-                            'ratioTapChanger.loadTapChangingCapabilities',
+                            'ratioTapChanger.hasLoadTapChangingCapabilities',
                         columnValue: 1,
                     },
                 },
@@ -1434,22 +1435,22 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: CountryCellRenderer,
             },
             {
-                id: 'NominalVoltageT3WSide1',
-                field: 'nominalVoltage1',
+                id: 'NominalVT3WSide1',
+                field: 'nominalV1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageT3WSide2',
-                field: 'nominalVoltage2',
+                id: 'NominalVT3WSide2',
+                field: 'nominalV2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageT3WSide3',
-                field: 'nominalVoltage3',
+                id: 'NominalVT3WSide3',
+                field: 'nominalV3',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
@@ -1509,15 +1510,15 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging1Capabilities',
-                field: 'loadTapChanging1Capabilities',
+                id: 'HasLoadTapChanging1Capabilities',
+                field: 'hasLoadTapChanging1Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingRatio1',
-                field: 'regulatingRatio1',
+                field: 'isRegulatingRatio1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1558,15 +1559,15 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging2Capabilities',
-                field: 'loadTapChanging2Capabilities',
+                id: 'HasLoadTapChanging2Capabilities',
+                field: 'hasLoadTapChanging2Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingRatio2',
-                field: 'regulatingRatio2',
+                field: 'isRegulatingRatio2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1607,15 +1608,15 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'LoadTapChanging3Capabilities',
-                field: 'loadTapChanging3Capabilities',
+                id: 'HasLoadTapChanging3Capabilities',
+                field: 'hasLoadTapChanging3Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingRatio3',
-                field: 'regulatingRatio3',
+                field: 'isRegulatingRatio3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1657,14 +1658,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode1',
-                field: 'regulatingMode1',
+                field: 'regulationModeName1',
                 ...defaultEnumFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingPhase1',
-                field: 'regulatingPhase1',
+                field: 'isRegulatingPhase1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1707,14 +1708,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode2',
-                field: 'regulatingMode2',
+                field: 'regulationModeName2',
                 ...defaultEnumFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingPhase2',
-                field: 'regulatingPhase2',
+                field: 'isRegulatingPhase2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1757,14 +1758,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode3',
-                field: 'regulatingMode3',
+                field: 'regulationModeName3',
                 ...defaultEnumFilterConfig,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingPhase3',
-                field: 'regulatingPhase3',
+                field: 'isRegulatingPhase3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,

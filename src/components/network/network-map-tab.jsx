@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import NetworkMap from './network/network-map';
+import { NetworkMap, GeoData } from '@powsybl/diagram-viewer';
 import React, {
     useCallback,
     useEffect,
@@ -14,37 +14,48 @@ import React, {
     useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import GeoData from './network/geo-data';
-import withOperatingStatusMenu from './menus/operating-status-menu';
-import BaseEquipmentMenu from './menus/base-equipment-menu';
-import withEquipmentMenu from './menus/equipment-menu';
-import VoltageLevelChoice from './voltage-level-choice';
-import NominalVoltageFilter from './network/nominal-voltage-filter';
+import withOperatingStatusMenu from '../menus/operating-status-menu';
+import BaseEquipmentMenu from '../menus/base-equipment-menu';
+import withEquipmentMenu from '../menus/equipment-menu';
+import VoltageLevelChoice from '../voltage-level-choice';
+import NominalVoltageFilter from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
+import {
+    PARAM_MAP_BASEMAP,
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_USE_NAME,
+} from '../../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
     isNodeRenamed,
     isSameNodeAndBuilt,
-} from './graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../redux/actions';
-import MapEquipments from './network/map-equipments';
+} from '../graph/util/model-functions';
+import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
-import { UPDATE_TYPE_HEADER } from './study-container';
-import SubstationModificationDialog from './dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
-import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
-import { deleteEquipment } from '../services/study/network-modifications';
-import EquipmentDeletionDialog from './dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import { UPDATE_TYPE_HEADER } from '../study-container';
+import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
+import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import LineModificationDialog from '../dialogs/network-modifications/line/modification/line-modification-dialog';
+import { deleteEquipment } from '../../services/study/network-modifications';
+import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import {
     fetchLinePositions,
     fetchSubstationPositions,
-} from '../services/study/geo-data';
+} from '../../services/study/geo-data';
 import { Box } from '@mui/system';
+import { useMapBoxToken } from './network-map/use-mapbox-token';
+import EquipmentPopover from '../tooltips/equipment-popover';
+import { useTheme } from '@emotion/react';
+import RunningStatus from 'components/utils/running-status';
+import ComputingType from 'components/computing-status/computing-type';
 
 const INITIAL_POSITION = [0, 0];
+const INITIAL_ZOOM = 9;
+const LABELS_ZOOM_THRESHOLD = 9;
+const ARROWS_ZOOM_THRESHOLD = 7;
 
 const styles = {
     divNominalVoltageFilter: {
@@ -84,9 +95,18 @@ export const NetworkMapTab = ({
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
+    const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
+
+    const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel?.treeNodes.find(
@@ -101,6 +121,7 @@ export const NetworkMapTab = ({
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] =
         useState(false);
     const [isInitialized, setInitialized] = useState(false);
+    const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
 
@@ -678,7 +699,7 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        new MapEquipments(
+        new GSMapEquipments(
             studyUuid,
             currentNode?.id,
             snackError,
@@ -937,42 +958,64 @@ export const NetworkMapTab = ({
         );
     }
 
+    const renderLinePopover = (elementId, ref) => (
+        <EquipmentPopover
+            studyUuid={studyUuid}
+            anchorEl={ref}
+            equipmentId={elementId}
+            equipmentType={EQUIPMENT_TYPES.LINE}
+        />
+    );
+
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
+            geoData={geoData}
             updatedLines={[
                 ...(updatedLines ?? []),
                 ...(updatedHvdcLines ?? []),
             ]}
-            geoData={geoData}
             displayOverlayLoader={!basicDataReady && mapDataLoading}
             filteredNominalVoltages={filteredNominalVoltages}
-            labelsZoomThreshold={9}
-            arrowsZoomThreshold={7}
+            labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
+            arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
             initialPosition={INITIAL_POSITION}
-            initialZoom={1}
+            initialZoom={INITIAL_ZOOM}
             lineFullPath={lineFullPath}
             lineParallelPath={lineParallelPath}
             lineFlowMode={lineFlowMode}
             lineFlowColorMode={lineFlowColorMode}
             lineFlowAlertThreshold={lineFlowAlertThreshold}
-            onSubstationClick={openVoltageLevel}
-            onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
-            }
-            onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE)
-            }
+            useName={useName}
             visible={visible}
+            disabled={disabled}
+            onSubstationClick={openVoltageLevel}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.SUBSTATION)
             }
+            onLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
+            }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
-            disabled={disabled}
-            onReloadMapClick={updateMapEquipmentsAndGeoData}
+            mapBoxToken={mapBoxToken}
+            centerOnSubstation={centerOnSubstation}
+            isManualRefreshBackdropDisplayed={
+                mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
+            }
+            // only 2 things need this to ensure the map keeps the correct size:
+            // - changing study display mode because it changes the map container size
+            //   programmatically
+            // - changing visible when the map provider is changed in the settings because
+            //   it causes a render with the map container having display:none
+            onManualRefreshClick={updateMapEquipmentsAndGeoData}
+            triggerMapResizeOnChange={[studyDisplayMode, visible]}
+            renderPopover={renderLinePopover}
+            mapLibrary={basemap}
+            mapTheme={theme?.palette.mode}
+            areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
         />
     );
 
