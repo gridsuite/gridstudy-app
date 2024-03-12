@@ -11,9 +11,9 @@ import {
 } from 'components/utils/validation-functions';
 import yup from 'components/utils/yup-config';
 import {
+    MAX_Q,
+    MIN_Q,
     P,
-    Q_MAX_P,
-    Q_MIN_P,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from 'components/utils/field-constants';
@@ -23,13 +23,13 @@ export const REMOVE = 'REMOVE';
 
 const getCreationRowSchema = () =>
     yup.object().shape({
-        [Q_MAX_P]: yup.number().nullable().required(),
-        [Q_MIN_P]: yup
+        [MAX_Q]: yup.number().nullable().required(),
+        [MIN_Q]: yup
             .number()
             .nullable()
             .required()
             .max(
-                yup.ref(Q_MAX_P),
+                yup.ref(MAX_Q),
                 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
             ),
         [P]: yup.number().nullable().required(),
@@ -37,15 +37,15 @@ const getCreationRowSchema = () =>
 
 const getModificationRowSchema = () =>
     yup.object().shape({
-        [Q_MAX_P]: yup.number().nullable(),
-        [Q_MIN_P]: yup
+        [MAX_Q]: yup.number().nullable(),
+        [MIN_Q]: yup
             .number()
             .nullable()
-            .when([Q_MAX_P], {
+            .when([MAX_Q], {
                 is: (value) => value != null,
                 then: (schema) =>
                     schema.max(
-                        yup.ref(Q_MAX_P),
+                        yup.ref(MAX_Q),
                         'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
                     ),
             }),
@@ -54,8 +54,8 @@ const getModificationRowSchema = () =>
 
 export const getRowEmptyFormData = () => ({
     [P]: null,
-    [Q_MAX_P]: null,
-    [Q_MIN_P]: null,
+    [MAX_Q]: null,
+    [MIN_Q]: null,
 });
 
 export const getReactiveCapabilityCurveEmptyFormData = (
@@ -162,11 +162,11 @@ export const completeReactiveCapabilityCurvePointsData = (
         if (!(P in rcc)) {
             rcc[P] = null;
         }
-        if (!(Q_MAX_P in rcc)) {
-            rcc[Q_MAX_P] = null;
+        if (!(MAX_Q in rcc)) {
+            rcc[MAX_Q] = null;
         }
-        if (!(Q_MIN_P in rcc)) {
-            rcc[Q_MIN_P] = null;
+        if (!(MIN_Q in rcc)) {
+            rcc[MIN_Q] = null;
         }
         return rcc;
     });
@@ -176,8 +176,8 @@ export const completeReactiveCapabilityCurvePointsData = (
 export const insertEmptyRowAtSecondToLastIndex = (table) => {
     table.splice(table.length - 1, 0, {
         [P]: null,
-        [Q_MAX_P]: null,
-        [Q_MIN_P]: null,
+        [MAX_Q]: null,
+        [MIN_Q]: null,
     });
 };
 
@@ -188,7 +188,7 @@ export const calculateCurvePointsToStore = (
     if (
         reactiveCapabilityCurve.every(
             (point) =>
-                point.p == null && point.qminP == null && point.qmaxP == null
+                point.p == null && point.minQ == null && point.maxQ == null
         )
     ) {
         return null;
@@ -201,14 +201,14 @@ export const calculateCurvePointsToStore = (
                     oldP:
                         equipmentToModify.reactiveCapabilityCurveTable?.[index]
                             ?.p ?? null,
-                    qminP: point?.qminP,
-                    oldQminP:
+                    minQ: point?.minQ,
+                    oldMinQ:
                         equipmentToModify.reactiveCapabilityCurveTable?.[index]
-                            ?.qminP ?? null,
-                    qmaxP: point?.qmaxP,
-                    oldQmaxP:
+                            ?.minQ ?? null,
+                    maxQ: point?.maxQ,
+                    oldMaxQ:
                         equipmentToModify.reactiveCapabilityCurveTable?.[index]
-                            ?.qmaxP ?? null,
+                            ?.maxQ ?? null,
                 };
                 pointsToStore.push(pointToStore);
             }
@@ -217,10 +217,48 @@ export const calculateCurvePointsToStore = (
             (point) =>
                 point.p != null ||
                 point.oldP != null ||
-                point.qmaxP != null ||
-                point.oldQmaxP != null ||
-                point.qminP != null ||
-                point.oldQminP != null
+                point.maxQ != null ||
+                point.oldMaxQ != null ||
+                point.minQ != null ||
+                point.oldMinQ != null
         );
     }
 };
+
+export function setSelectedReactiveLimits(id, minMaxReactiveLimits, setValue) {
+    setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');
+}
+
+export function setCurrentReactiveCapabilityCurveTable(
+    previousReactiveCapabilityCurveTable,
+    fieldKey,
+    getValues,
+    setValue
+) {
+    if (previousReactiveCapabilityCurveTable) {
+        const currentReactiveCapabilityCurveTable = getValues(fieldKey);
+
+        const sizeDiff =
+            previousReactiveCapabilityCurveTable.length -
+            currentReactiveCapabilityCurveTable.length;
+
+        // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+        if (sizeDiff > 0) {
+            for (let i = 0; i < sizeDiff; i++) {
+                insertEmptyRowAtSecondToLastIndex(
+                    currentReactiveCapabilityCurveTable
+                );
+            }
+            setValue(fieldKey, currentReactiveCapabilityCurveTable, {
+                shouldValidate: true,
+            });
+        } else if (sizeDiff < 0) {
+            // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+            for (let i = 0; i > sizeDiff; i--) {
+                insertEmptyRowAtSecondToLastIndex(
+                    previousReactiveCapabilityCurveTable
+                );
+            }
+        }
+    }
+}

@@ -7,7 +7,8 @@
 
 import { backendFetch } from './utils';
 
-const PREFIX_USER_ADMIN_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/user-admin`;
+const PREFIX_USER_ADMIN_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/user-admin';
 
 export function fetchValidateUser(user) {
     const sub = user?.profile?.sub;
