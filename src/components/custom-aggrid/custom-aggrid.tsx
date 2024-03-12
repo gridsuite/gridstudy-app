@@ -59,6 +59,8 @@ const styles = {
     }),
 };
 
+const gridOptions = { suppressCellFocus: true };
+
 export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
     (props, ref) => {
         const {
@@ -95,8 +97,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                 }
             }
         };
-
-        const gridOptions = { suppressCellFocus: true };
 
         return (
             <Box
