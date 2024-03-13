@@ -1063,7 +1063,6 @@
     "MonitoredVoltageLevels": "Supervised voltage levels",
     "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
     "PSTS": "PSTs",
-    "ElementAlreadyUsed": "This element is already used",
     "Active": "Active",
     "sensitivityAnalysis.simulatedComputations": "{count, plural, =0 {0 computation} =1 {1 computation} other {# computations}}",
     "sensitivityAnalysis.moreThanOneMillionComputations": "999 999+ computations",
