@@ -66,8 +66,8 @@ export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
         : side === BranchSide.TWO
-        ? intl.formatMessage({ id: 'Side2' })
-        : undefined;
+          ? intl.formatMessage({ id: 'Side2' })
+          : undefined;
 };
 export const convertLimitName = (limitName: string | null, intl: IntlShape) => {
     return limitName === PERMANENT_LIMIT_NAME
