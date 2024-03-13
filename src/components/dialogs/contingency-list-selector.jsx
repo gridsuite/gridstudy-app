@@ -17,7 +17,6 @@ import CheckboxList from 'components/utils/checkbox-list';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
-import DirectoryItemSelector from '../directory-item-selector';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
@@ -25,6 +24,9 @@ import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 function makeButton(onClick, message, disabled) {
@@ -244,6 +246,9 @@ const ContingencyListSelector = (props) => {
                 onClose={addFavorites}
                 types={CONTINGENCY_TYPES}
                 title={intl.formatMessage({ id: 'ContingencyListsSelection' })}
+                fetchDirectoryContent={fetchDirectoryContent}
+                fetchRootFolders={fetchRootFolders}
+                fetchElementsInfos={fetchElementsMetadata}
             />
         </>
     );
