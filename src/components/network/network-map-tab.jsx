@@ -1016,6 +1016,11 @@ export const NetworkMapTab = ({
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
+            onDrawModeChanged={(evt) => {
+                // closeEquipmentMenu();
+                // closeChoiceVoltageLevelMenu();
+                console.log('debug', 'Draw mode changed', evt);
+            }}
         />
     );
 
