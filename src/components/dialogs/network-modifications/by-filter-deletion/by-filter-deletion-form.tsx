@@ -17,7 +17,11 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { getIdOrValue } from '../../commons/utils';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import {
+    fetchDirectoryContent,
+    fetchPath,
+    fetchRootFolders,
+} from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
 const ByFilterDeletionForm = () => {
@@ -67,6 +71,7 @@ const ByFilterDeletionForm = () => {
                 fetchDirectoryContent={fetchDirectoryContent}
                 fetchRootFolders={fetchRootFolders}
                 fetchElementsInfos={fetchElementsMetadata}
+                fetchDirectoryElementPath={fetchPath}
             />
         );
     }, [equipmentTypeWatch]);

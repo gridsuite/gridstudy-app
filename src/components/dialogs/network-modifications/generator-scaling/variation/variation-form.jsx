@@ -26,6 +26,7 @@ import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 import { fetchElementsMetadata } from 'services/explore';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchPath } from '../../../../../services/directory.js';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
@@ -133,6 +134,7 @@ const VariationForm = ({ name, index }) => {
             fetchDirectoryContent={fetchDirectoryContent}
             fetchRootFolders={fetchRootFolders}
             fetchElementsInfos={fetchElementsMetadata}
+            fetchDirectoryElementPath={fetchPath}
         />
     );
 
