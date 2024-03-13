@@ -11,10 +11,10 @@ import { backendFetchJson, getQueryParamsList } from '../utils';
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
     currentNodeUuid,
-    hvdcLineId
+    hvdcLineId,
 ) {
     console.info(
-        `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`,
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
@@ -31,7 +31,7 @@ export function fetchHvdcLineWithShuntCompensators(
 
 export function fetchAllEquipments(studyUuid, currentNodeUuid, substationsIds) {
     console.info(
-        `Fetching all equipments of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching all equipments of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`,
     );
 
     const fetchEquipmentsUrl =
@@ -48,16 +48,16 @@ export function fetchVoltageLevelEquipments(
     currentNodeUuid,
     substationsIds,
     voltageLevelId,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
 ) {
     console.info(
-        `Fetching equipments of study '${studyUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
+        `Fetching equipments of study '${studyUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`,
     );
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
+            inUpstreamBuiltParentNode,
         );
     }
 
@@ -78,10 +78,10 @@ export function fetchEquipmentsIds(
     currentNodeUuid,
     substationsIds,
     equipmentType,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
 ) {
     console.info(
-        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`,
     );
     let urlSearchParams = new URLSearchParams();
 
@@ -97,7 +97,7 @@ export function fetchEquipmentsIds(
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
+            inUpstreamBuiltParentNode,
         );
         fetchEquipmentsUrl =
             fetchEquipmentsUrl + '&' + urlSearchParams.toString();
@@ -109,10 +109,10 @@ export function fetchEquipmentsIds(
 export function fetchLineOrTransformer(
     studyUuid,
     currentNodeUuid,
-    equipmentId
+    equipmentId,
 ) {
     console.info(
-        `Fetching specific equipment '${equipmentId}' of type branch-or-3wt of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type branch-or-3wt of study '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', true);
@@ -128,7 +128,7 @@ export function fetchLineOrTransformer(
 
 export function fetchAllCountries(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
 
     const fetchCountriesUrl =

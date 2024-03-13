@@ -78,33 +78,33 @@ const RestoreModificationDialog = ({
 
     const handleDelete = () => {
         const selectedModificationsUuidsToDelete = selectedItems.map(
-            (item) => item.uuid
+            (item) => item.uuid,
         );
         setOpenDeleteConfirmationPopup(false);
         deleteModifications(
             studyUuid,
             currentNode.id,
-            selectedModificationsUuidsToDelete
+            selectedModificationsUuidsToDelete,
         );
         handleClose();
     };
 
     const handleRestore = () => {
         const selectedModificationsUuidToRestore = selectedItems.map(
-            (item) => item.uuid
+            (item) => item.uuid,
         );
 
         restoreModifications(
             studyUuid,
             currentNode.id,
-            selectedModificationsUuidToRestore
+            selectedModificationsUuidToRestore,
         );
         handleClose();
     };
 
     const handleSelectAll = useCallback(() => {
         setSelectedItems((oldValues) =>
-            oldValues.length === 0 ? stashedModifications : []
+            oldValues.length === 0 ? stashedModifications : [],
         );
     }, [stashedModifications]);
 
@@ -152,7 +152,7 @@ const RestoreModificationDialog = ({
                                         }
                                         indeterminate={isPartial(
                                             selectedItems.length,
-                                            stashedModifications?.length
+                                            stashedModifications?.length,
                                         )}
                                         onClick={handleSelectAll}
                                         disableRipple

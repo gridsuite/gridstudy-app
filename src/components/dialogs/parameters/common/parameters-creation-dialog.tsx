@@ -101,11 +101,11 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
                     parameterFormatter(parameterValues()),
                     values.name,
                     parameterType,
-                    defaultFolder.id
+                    defaultFolder.id,
                 );
             }
         },
-        [defaultFolder.id, parameterType, parameterValues, parameterFormatter]
+        [defaultFolder.id, parameterType, parameterValues, parameterFormatter],
     );
 
     const handleChangeFolder = () => {

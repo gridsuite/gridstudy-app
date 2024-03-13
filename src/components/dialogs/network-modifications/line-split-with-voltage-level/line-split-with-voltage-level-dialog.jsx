@@ -134,12 +134,12 @@ const LineSplitWithVoltageLevelDialog = ({
                 newVoltageLevel.busbarSections = buildNewBusbarSections(
                     newVoltageLevel?.equipmentId,
                     newVoltageLevel?.sectionCount,
-                    newVoltageLevel?.busbarCount
+                    newVoltageLevel?.busbarCount,
                 );
                 setNewVoltageLevel(newVoltageLevel);
             }
         },
-        [reset]
+        [reset],
     );
 
     useEffect(() => {
@@ -166,7 +166,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 lineSplit[LINE1_ID],
                 sanitizeString(lineSplit[LINE1_NAME]),
                 lineSplit[LINE2_ID],
-                sanitizeString(lineSplit[LINE2_NAME])
+                sanitizeString(lineSplit[LINE2_NAME]),
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -174,7 +174,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]
+        [currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid],
     );
 
     const clear = useCallback(() => {
@@ -186,9 +186,9 @@ const LineSplitWithVoltageLevelDialog = ({
             fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
                 (values) => {
                     setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id)),
                     );
-                }
+                },
             );
         }
     }, [studyUuid, currentNode?.id]);
@@ -229,7 +229,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 preparedVoltageLevel.busbarSections = buildNewBusbarSections(
                     preparedVoltageLevel.equipmentId,
                     preparedVoltageLevel.sectionCount,
-                    preparedVoltageLevel.busbarCount
+                    preparedVoltageLevel.busbarCount,
                 );
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
@@ -241,7 +241,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 const newVoltageLevelOptions = getNewVoltageLevelOptions(
                     formattedVoltageLevel,
                     oldVoltageLevelId,
-                    voltageLevelOptions
+                    voltageLevelOptions,
                 );
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
@@ -254,16 +254,16 @@ const LineSplitWithVoltageLevelDialog = ({
                     {
                         shouldValidate: true,
                         shouldDirty: true,
-                    }
+                    },
                 );
             });
         },
-        [setValue, newVoltageLevel, voltageLevelOptions]
+        [setValue, newVoltageLevel, voltageLevelOptions],
     );
 
     const onVoltageLevelChange = useCallback(() => {
         const currentVoltageLevelId = getValues(
-            `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`
+            `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
         );
         if (
             newVoltageLevel &&

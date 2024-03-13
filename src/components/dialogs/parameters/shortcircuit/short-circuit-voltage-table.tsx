@@ -29,7 +29,7 @@ const VoltageTable: FunctionComponent<VoltageTableProps> = ({
                         : [420, 245, 165, 99, 69.3, 49.5, 22],
             },
         ],
-        [voltageProfileMode, intl]
+        [voltageProfileMode, intl],
     );
     return (
         <Table>

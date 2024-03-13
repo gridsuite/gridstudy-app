@@ -102,7 +102,7 @@ const ExportDialog = ({
             const downloadUrl = getExportUrl(
                 studyUuid,
                 nodeUuid,
-                selectedFormat
+                selectedFormat,
             );
             let suffix;
             if (Object.keys(currentParameters).length > 0) {
@@ -117,7 +117,7 @@ const ExportDialog = ({
             onClick(downloadUrl + (suffix ? suffix : ''));
         } else {
             setExportStudyErr(
-                intl.formatMessage({ id: 'exportStudyErrorMsg' })
+                intl.formatMessage({ id: 'exportStudyErrorMsg' }),
             );
         }
     };
@@ -171,7 +171,7 @@ const ExportDialog = ({
                             .filter(
                                 (format) =>
                                     // Hide the CGMES item while waiting for the Fix of getIdentifiable on the back end
-                                    format !== CGMES
+                                    format !== CGMES,
                             )
                             .map((formatKey) => (
                                 <MenuItem key={formatKey} value={formatKey}>

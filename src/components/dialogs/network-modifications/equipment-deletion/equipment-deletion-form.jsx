@@ -68,7 +68,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
             EQUIPMENT_TYPES.BUSBAR_SECTION,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType),
         );
     }, []);
 
@@ -84,7 +84,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 currentNode?.id,
                 undefined,
                 watchType,
-                true
+                true,
             )
                 .then((vals) => {
                     // check race condition here
@@ -130,7 +130,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                     studyUuid,
                     currentNode?.id,
                     watchEquipmentId,
-                    watchEquipmentId === editedIdRef.current ? editData : null
+                    watchEquipmentId === editedIdRef.current ? editData : null,
                 );
             } else {
                 setValue(DELETION_SPECIFIC_DATA, null);

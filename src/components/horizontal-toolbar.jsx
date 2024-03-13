@@ -49,11 +49,11 @@ export function HorizontalToolbar() {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isModificationsDrawerOpen = useSelector(
-        (state) => state.isModificationsDrawerOpen
+        (state) => state.isModificationsDrawerOpen,
     );
 
     const isEventScenarioDrawerOpen = useSelector(
-        (state) => state.isEventScenarioDrawerOpen
+        (state) => state.isEventScenarioDrawerOpen,
     );
 
     const toggleModificationsDrawer = () => {

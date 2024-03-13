@@ -9,7 +9,7 @@ export const useMapBoxToken = () => {
 
     useEffect(() => {
         fetchMapBoxToken().then((token) =>
-            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN)
+            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN),
         );
     }, []);
 

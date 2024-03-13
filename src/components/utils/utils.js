@@ -100,7 +100,7 @@ export const getObjectId = (object) => {
 export const buildNewBusbarSections = (
     equipmentId,
     sectionCount,
-    busbarCount
+    busbarCount,
 ) => {
     const newBusbarSections = [];
     for (let i = 0; i < busbarCount; i++) {
@@ -210,7 +210,7 @@ export function calculateReactance(distance, linearReactance) {
 export const computeSwitchedOnValue = (
     sectionCount,
     maximumSectionCount,
-    linkedSwitchedOnValue
+    linkedSwitchedOnValue,
 ) => {
     return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
 };
@@ -263,17 +263,17 @@ export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
 export function getNewVoltageLevelOptions(
     formattedVoltageLevel,
     oldVoltageLevelId,
-    voltageLevelOptions
+    voltageLevelOptions,
 ) {
     const newVoltageLevelOptions =
         formattedVoltageLevel.id === oldVoltageLevelId
             ? voltageLevelOptions.filter(
-                  (vl) => vl.id !== formattedVoltageLevel.id
+                  (vl) => vl.id !== formattedVoltageLevel.id,
               )
             : voltageLevelOptions.filter(
                   (vl) =>
                       vl.id !== formattedVoltageLevel.id &&
-                      vl.id !== oldVoltageLevelId
+                      vl.id !== oldVoltageLevelId,
               );
     newVoltageLevelOptions.push(formattedVoltageLevel);
 

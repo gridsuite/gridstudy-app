@@ -76,7 +76,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const [tabIndex, setTabIndex] = useState(0);
     const [hasFilter, setHasFilter] = useState<boolean>(false);
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
+        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW],
     );
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
@@ -85,7 +85,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        mappingFields(tabIndex)
+        mappingFields(tabIndex),
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
@@ -98,7 +98,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
         const initialFilters = filterSelector || [];
         const existingFilterIndex = initialFilters.findIndex(
-            (f) => f.column === 'limitType'
+            (f) => f.column === 'limitType',
         );
         const updatedFilters =
             existingFilterIndex !== -1 &&
@@ -147,7 +147,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         studyUuid,
         nodeUuid,
         fetchResult,
-        loadflowResultInvalidations
+        loadflowResultInvalidations,
     );
 
     const StatusCellRender = useCallback(
@@ -163,7 +163,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Box>
             );
         },
-        [styles.cell, styles.fail, styles.succeed]
+        [styles.cell, styles.fail, styles.succeed],
     );
 
     const NumberRenderer = useCallback(
@@ -175,7 +175,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 </Box>
             );
         },
-        [styles.cell]
+        [styles.cell],
     );
     const loadFlowLimitViolationsColumns = useMemo(() => {
         switch (tabIndex) {
@@ -184,14 +184,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     intl,
                     { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
-                    filterEnums
+                    filterEnums,
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
                     intl,
                     { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
-                    filterEnums
+                    filterEnums,
                 );
             case 2:
                 return loadFlowResultColumnsDefinition(
@@ -200,7 +200,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     { updateFilter, filterSelector },
                     filterEnums,
                     StatusCellRender,
-                    NumberRenderer
+                    NumberRenderer,
                 );
 
             default:
@@ -226,7 +226,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 initSort(defaultSortColKey);
             }
         },
-        [initSort, initFilters, setResult]
+        [initSort, initFilters, setResult],
     );
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {

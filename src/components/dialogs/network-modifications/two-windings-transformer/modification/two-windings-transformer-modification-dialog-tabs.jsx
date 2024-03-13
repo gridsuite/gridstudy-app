@@ -45,14 +45,14 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     }
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
+                        TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB,
                     )}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
+                        TwoWindingsTransformerModificationDialogTab.LIMITS_TAB,
                     )}
                 />
                 <Tab
@@ -61,7 +61,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     }
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
+                        TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB,
                     )}
                     disabled={!ratioTapChangerEnabledWatch}
                 />
@@ -71,7 +71,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     }
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB
+                        TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB,
                     )}
                     disabled={!phaseTapChangerEnabledWatch}
                 />

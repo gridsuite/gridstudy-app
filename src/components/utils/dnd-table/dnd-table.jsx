@@ -65,11 +65,11 @@ function MultiCheckbox({
 
     const allRowSelected = useMemo(
         () => arrayToWatch.every((row) => row[SELECTED]),
-        [arrayToWatch]
+        [arrayToWatch],
     );
     const someRowSelected = useMemo(
         () => arrayToWatch.some((row) => row[SELECTED]),
-        [arrayToWatch]
+        [arrayToWatch],
     );
 
     return (
@@ -199,7 +199,7 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues
+                              previousValues,
                           )
                         : disabled
                 }
@@ -209,7 +209,7 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues
+                              previousValues,
                           )
                         : undefined
                 }
@@ -389,7 +389,7 @@ const DndTable = ({
                                     />
                                 </TableCell>
                                 {columnsDefinition.map((column) =>
-                                    renderTableCell(row.id, index, column)
+                                    renderTableCell(row.id, index, column),
                                 )}
                             </TableRow>
                         )}

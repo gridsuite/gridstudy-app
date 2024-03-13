@@ -20,7 +20,7 @@ export const getWsBase = () =>
 
 export const getRequestParamFromList = (params, paramName) => {
     return new URLSearchParams(
-        params?.length ? params.map((param) => [paramName, param]) : []
+        params?.length ? params.map((param) => [paramName, param]) : [],
     );
 };
 
@@ -49,7 +49,7 @@ const handleError = (response) => {
                     ' ' +
                     errorJson.error +
                     ', message : ' +
-                    errorJson.message
+                    errorJson.message,
             );
             error.status = errorJson.status;
         } else {
@@ -59,7 +59,7 @@ const handleError = (response) => {
                     ' ' +
                     response.statusText +
                     ', message : ' +
-                    text
+                    text,
             );
             error.status = response.status;
         }
@@ -75,7 +75,7 @@ export const getToken = () => {
 const prepareRequest = (init, token) => {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
-            'Argument 2 of backendFetch is not an object' + typeof init
+            'Argument 2 of backendFetch is not an object' + typeof init,
         );
     }
     const initCopy = Object.assign({}, init);
@@ -87,7 +87,7 @@ const prepareRequest = (init, token) => {
 
 const safeFetch = (url, initCopy) => {
     return fetch(url, initCopy).then((response) =>
-        response.ok ? response : handleError(response)
+        response.ok ? response : handleError(response),
     );
 };
 
@@ -104,7 +104,7 @@ export const backendFetchText = (url, init, token) => {
 export const backendFetchJson = (url, init, token) => {
     const initCopy = prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) =>
-        safeResponse.status === 204 ? null : safeResponse.json()
+        safeResponse.status === 204 ? null : safeResponse.json(),
     );
 };
 
@@ -146,7 +146,7 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
     console.info(`Fetching authorization code flow feature flag...`);
     return fetchEnv()
         .then((env) =>
-            fetch(env.appsMetadataServerUrl + '/authentication.json')
+            fetch(env.appsMetadataServerUrl + '/authentication.json'),
         )
         .then((res) => res.json())
         .then((res) => {
@@ -155,14 +155,14 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
                     res.authorizationCodeFlowFeatureFlag
                         ? 'enabled'
                         : 'disabled'
-                }`
+                }`,
             );
             return res.authorizationCodeFlowFeatureFlag;
         })
         .catch((error) => {
             console.error(error);
             console.warn(
-                `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`
+                `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`,
             );
             return false;
         });
@@ -189,12 +189,12 @@ export function fetchVersion() {
 export const fetchDefaultParametersValues = () => {
     return fetchAppsAndUrls().then((res) => {
         console.info(
-            'fecthing default parameters values from apps-metadata file'
+            'fecthing default parameters values from apps-metadata file',
         );
         const studyMetadata = res.find((metadata) => metadata.name === 'Study');
         if (!studyMetadata) {
             return Promise.reject(
-                'Study entry could not be found in metadatas'
+                'Study entry could not be found in metadatas',
             );
         }
 

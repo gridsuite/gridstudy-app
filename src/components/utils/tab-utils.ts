@@ -19,7 +19,7 @@ const styles = {
 
 export function getTabIndicatorStyle<T extends number | string>(
     tabIndexesWithError: T[],
-    index: T
+    index: T,
 ) {
     return tabIndexesWithError.includes(index)
         ? styles.tabWithErrorIndicator
@@ -28,7 +28,7 @@ export function getTabIndicatorStyle<T extends number | string>(
 
 export function getTabStyle<T extends number | string>(
     tabIndexesWithError: T[],
-    index: T
+    index: T,
 ) {
     return tabIndexesWithError.includes(index)
         ? styles.tabWithError

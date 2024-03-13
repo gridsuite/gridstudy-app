@@ -184,7 +184,7 @@ const NetworkModificationNodeEditor = () => {
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
     const [editDataFetchStatus, setEditDataFetchStatus] = useState(
-        FetchStatus.IDLE
+        FetchStatus.IDLE,
     );
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
@@ -448,7 +448,7 @@ const NetworkModificationNodeEditor = () => {
             currentMenuItem.subItems === undefined
                 ? [...actions, currentMenuItem]
                 : [...actions, ...currentMenuItem.subItems],
-        []
+        [],
     );
 
     const fillNotification = useCallback(
@@ -460,10 +460,10 @@ const NetworkModificationNodeEditor = () => {
                 addNotification([
                     study.eventData.headers['parentNode'],
                     ...study.eventData.headers['nodes'],
-                ])
+                ]),
             );
         },
-        [dispatch]
+        [dispatch],
     );
 
     const manageNotification = useCallback(
@@ -484,7 +484,7 @@ const NetworkModificationNodeEditor = () => {
             }
             fillNotification(study, messageId);
         },
-        [fillNotification]
+        [fillNotification],
     );
 
     const dofetchNetworkModificationsToRestore = useCallback(() => {
@@ -521,7 +521,7 @@ const NetworkModificationNodeEditor = () => {
     const updateSelectedItems = useCallback((modifications) => {
         const toKeepIdsSet = new Set(modifications.map((e) => e.uuid));
         setSelectedItems((oldselectedItems) =>
-            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid))
+            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid)),
         );
     }, []);
 
@@ -538,15 +538,15 @@ const NetworkModificationNodeEditor = () => {
                 if (currentNode.id === currentNodeIdRef.current) {
                     const liveModifications = res.filter(
                         (networkModification) =>
-                            networkModification.stashed === false
+                            networkModification.stashed === false,
                     );
                     updateSelectedItems(liveModifications);
                     setModifications(liveModifications);
                     setModificationsToRestore(
                         res.filter(
                             (networkModification) =>
-                                networkModification.stashed === true
-                        )
+                                networkModification.stashed === true,
+                        ),
                     );
                 }
             })
@@ -600,7 +600,7 @@ const NetworkModificationNodeEditor = () => {
                     copyInfosRef.current &&
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
-                            nodeId === copyInfosRef.current.originNodeUuid
+                            nodeId === copyInfosRef.current.originNodeUuid,
                     )
                 ) {
                     // Must clean modifications clipboard if the origin Node is removed
@@ -616,7 +616,7 @@ const NetworkModificationNodeEditor = () => {
 
             if (
                 UPDATE_TYPE.includes(
-                    studyUpdatedForce.eventData.headers['updateType']
+                    studyUpdatedForce.eventData.headers['updateType'],
                 )
             ) {
                 dispatch(setModificationsInProgress(true));
@@ -637,7 +637,7 @@ const NetworkModificationNodeEditor = () => {
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
                         ...studyUpdatedForce.eventData.headers['nodes'],
-                    ])
+                    ]),
                 );
             }
         }
@@ -683,14 +683,14 @@ const NetworkModificationNodeEditor = () => {
 
     const doDeleteModification = useCallback(() => {
         const selectedModificationsUuid = selectedItems.map(
-            (item) => item.uuid
+            (item) => item.uuid,
         );
         stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
                     copiedModifications.some((aCopiedModification) =>
-                        selectedModificationsUuid.includes(aCopiedModification)
+                        selectedModificationsUuid.includes(aCopiedModification),
                     )
                 ) {
                     cleanClipboard();
@@ -720,7 +720,7 @@ const NetworkModificationNodeEditor = () => {
                 {
                     ...modification,
                     ...computeLabel(modification, false),
-                }
+                },
             )
             .trim();
         return {
@@ -756,11 +756,11 @@ const NetworkModificationNodeEditor = () => {
             { id: 'SaveModificationDescription' },
             {
                 nodePath: studyFullName + ':' + currentNode.data.label,
-            }
+            },
         );
 
         const modificationPropsList = [...selectedItems].map((modification) =>
-            buildModificationCreationProps(modification, description)
+            buildModificationCreationProps(modification, description),
         );
 
         setSaveInProgress(true);
@@ -790,7 +790,7 @@ const NetworkModificationNodeEditor = () => {
             .sort(
                 (a, b) =>
                     allModificationsIds.indexOf(a.uuid) -
-                    allModificationsIds.indexOf(b.uuid)
+                    allModificationsIds.indexOf(b.uuid),
             )
             .map((m) => m.uuid);
     }, [modifications, selectedItems]);
@@ -817,7 +817,7 @@ const NetworkModificationNodeEditor = () => {
                 studyUuid,
                 currentNode.id,
                 copiedModifications,
-                copyInfos
+                copyInfos,
             ).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
@@ -829,7 +829,7 @@ const NetworkModificationNodeEditor = () => {
                 studyUuid,
                 currentNode.id,
                 copiedModifications,
-                copyInfos
+                copyInfos,
             ).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
@@ -894,7 +894,7 @@ const NetworkModificationNodeEditor = () => {
 
     const toggleSelectAllModifications = useCallback(() => {
         setSelectedItems((oldVal) =>
-            oldVal.length === 0 ? modifications : []
+            oldVal.length === 0 ? modifications : [],
         );
     }, [modifications]);
 
@@ -920,7 +920,7 @@ const NetworkModificationNodeEditor = () => {
             res.splice(
                 destination ? destination.index : modifications.length,
                 0,
-                item
+                item,
             );
 
             /* doing the local change before update to server */
@@ -929,7 +929,7 @@ const NetworkModificationNodeEditor = () => {
                 studyUuid,
                 currentNode.id,
                 item.uuid,
-                before
+                before,
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -938,13 +938,13 @@ const NetworkModificationNodeEditor = () => {
                 setModifications(modifications); // rollback
             });
         },
-        [modifications, studyUuid, currentNode?.id, snackError]
+        [modifications, studyUuid, currentNode?.id, snackError],
     );
 
     const isLoading = () => {
         return (
             notificationIdList.filter(
-                (notification) => notification === currentNode?.id
+                (notification) => notification === currentNode?.id,
             ).length > 0
         );
     };
@@ -1091,7 +1091,7 @@ const NetworkModificationNodeEditor = () => {
                     checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(
                         selectedItems.length,
-                        modifications?.length
+                        modifications?.length,
                     )}
                     disableRipple
                     onClick={toggleSelectAllModifications}

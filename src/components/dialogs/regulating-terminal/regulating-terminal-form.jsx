@@ -69,7 +69,7 @@ const RegulatingTerminalForm = ({
                 currentNodeUuid,
                 undefined,
                 watchVoltageLevelId,
-                true
+                true,
             ).then((values) => {
                 setEquipmentsOptions(values);
             });
@@ -119,7 +119,8 @@ const RegulatingTerminalForm = ({
                                 if (
                                     params.inputValue !== '' &&
                                     !options.find(
-                                        (opt) => opt?.[ID] === params.inputValue
+                                        (opt) =>
+                                            opt?.[ID] === params.inputValue,
                                     )
                                 ) {
                                     filtered.push({
@@ -185,7 +186,7 @@ const RegulatingTerminalForm = ({
                                 if (
                                     params.inputValue !== '' &&
                                     !options.find(
-                                        (opt) => opt?.id === params.inputValue
+                                        (opt) => opt?.id === params.inputValue,
                                     )
                                 ) {
                                     filtered.push({

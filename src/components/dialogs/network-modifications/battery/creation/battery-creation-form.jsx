@@ -38,9 +38,9 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
+                        values.sort((a, b) => a.id.localeCompare(b.id)),
                     );
-                }
+                },
             );
         }
     }, [studyUuid, currentNodeUuid]);

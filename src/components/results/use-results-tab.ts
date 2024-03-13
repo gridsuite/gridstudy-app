@@ -39,7 +39,7 @@ export type ResultTabIndexRedirection =
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>,
-    view: string
+    view: string,
 ): Dispatch<SetStateAction<Boolean>> => {
     const [redirectionLock, setRedirectionLock] =
         useResultsTabRedirectionLock();
@@ -58,7 +58,7 @@ const useResultsTabRedirectionLock = (): [
     Dispatch<SetStateAction<Boolean>>,
 ] => {
     const lastCompletedComputation: string = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation
+        (state: ReduxState) => state.lastCompletedComputation,
     );
     const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
 
@@ -74,7 +74,7 @@ const useResultsTabRedirectionLock = (): [
 //the list of services must also be passed as parameter because its content is dynamic depending on the state of the application (e.g. developer mode disabled)
 export const computingTypeToRootTabRedirection = (
     computingType: ComputingType,
-    availableServices?: IService[]
+    availableServices?: IService[],
 ): ResultTabIndexRedirection => {
     return availableServices
         ? availableServices
@@ -84,7 +84,7 @@ export const computingTypeToRootTabRedirection = (
 };
 
 export const computingTypeToShortcircuitTabRedirection = (
-    computingType: ComputingType | undefined
+    computingType: ComputingType | undefined,
 ): ResultTabIndexRedirection => {
     switch (computingType) {
         case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:

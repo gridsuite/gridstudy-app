@@ -52,7 +52,7 @@ export const getTwoWindingsTransformerFormData = (
         connectivity1 = null,
         connectivity2 = null,
     },
-    id = CHARACTERISTICS
+    id = CHARACTERISTICS,
 ) =>
     getCharacteristicsFormData(
         {
@@ -67,5 +67,5 @@ export const getTwoWindingsTransformerFormData = (
         {
             [CONNECTIVITY_1]: connectivity1,
             [CONNECTIVITY_2]: connectivity2,
-        }
+        },
     );

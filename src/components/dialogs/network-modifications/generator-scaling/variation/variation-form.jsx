@@ -33,7 +33,7 @@ const VariationForm = ({ name, index }) => {
     const { snackError } = useSnackMessage();
     const filterFieldName = useMemo(
         () => `${name}.${index}.${FILTERS}`,
-        [name, index]
+        [name, index],
     );
 
     const variationMode = useWatch({
@@ -57,7 +57,7 @@ const VariationForm = ({ name, index }) => {
                 .then((results) => {
                     const newFilters = filters.map((filter) => {
                         const filterWithMetadata = results.find(
-                            (f) => f.elementUuid === filter.id
+                            (f) => f.elementUuid === filter.id,
                         );
                         if (filterWithMetadata) {
                             return {
@@ -78,7 +78,7 @@ const VariationForm = ({ name, index }) => {
                     });
                 });
         },
-        [filterFieldName, filters, setValue, snackError]
+        [filterFieldName, filters, setValue, snackError],
     );
 
     useEffect(() => {
@@ -111,7 +111,7 @@ const VariationForm = ({ name, index }) => {
                     return (
                         value?.specificMetadata?.type === IDENTIFIER_LIST &&
                         value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                            (fil) => !!fil.distributionKey
+                            (fil) => !!fil.distributionKey,
                         )
                     );
                 }
@@ -119,7 +119,7 @@ const VariationForm = ({ name, index }) => {
 
             return true;
         },
-        [variationMode]
+        [variationMode],
     );
 
     const filtersField = (

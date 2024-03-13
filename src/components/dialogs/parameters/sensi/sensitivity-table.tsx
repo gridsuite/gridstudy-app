@@ -93,7 +93,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                 }
             }
         },
-        [onChangeParams, onFormChanged, getValues]
+        [onChangeParams, onFormChanged, getValues],
     );
 
     const handleDeleteButton = useCallback(
@@ -111,7 +111,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             }
             isFormChanged && onFormChanged(true);
         },
-        [arrayFormName, getValues, onFormChanged, remove]
+        [arrayFormName, getValues, onFormChanged, remove],
     );
 
     return (
@@ -160,7 +160,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 disableDelete={disableDelete}
                                 fetchCount={fetchCount}
                             />
-                        )
+                        ),
                     )}
                 </TableBody>
             </Table>

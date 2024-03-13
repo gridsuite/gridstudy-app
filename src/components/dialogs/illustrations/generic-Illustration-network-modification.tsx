@@ -54,7 +54,7 @@ const GenericIllustrationNetworkModification: React.FC<
          */
         function updateOpacity(
             cssProperty: string,
-            svgElt: HTMLElement | null
+            svgElt: HTMLElement | null,
         ) {
             if (!!svgElt) {
                 const eltCssText = svgElt.style.cssText;
@@ -63,11 +63,11 @@ const GenericIllustrationNetworkModification: React.FC<
                     svgElt.style.cssText =
                         eltCssText.substring(
                             0,
-                            indexOpacity + cssProperty.length
+                            indexOpacity + cssProperty.length,
                         ) +
                         (theme === LIGHT_THEME ? '0' : '1') +
                         eltCssText.substring(
-                            indexOpacity + cssProperty.length + 1
+                            indexOpacity + cssProperty.length + 1,
                         );
                 } else {
                     svgElt.style.cssText =
@@ -77,7 +77,7 @@ const GenericIllustrationNetworkModification: React.FC<
         }
         updateOpacity(
             'fill-opacity: ',
-            document.getElementById(backgroundElementId)
+            document.getElementById(backgroundElementId),
         );
     }, [backgroundElementId, theme]);
 

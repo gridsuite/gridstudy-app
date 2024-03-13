@@ -10,7 +10,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startVoltageInit(studyUuid, currentNodeUuid) {
     console.info(
-        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
 
     const startVoltageInitUrl =
@@ -22,7 +22,7 @@ export function startVoltageInit(studyUuid, currentNodeUuid) {
 
 export function stopVoltageInit(studyUuid, currentNodeUuid) {
     console.info(
-        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
     const stopVoltageInitUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -33,7 +33,7 @@ export function stopVoltageInit(studyUuid, currentNodeUuid) {
 
 export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -44,7 +44,7 @@ export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
 
 export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +

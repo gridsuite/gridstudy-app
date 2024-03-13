@@ -99,10 +99,10 @@ export const NetworkMapTab = ({
     const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOADFLOW],
     );
     const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
+        (state) => state.networkModificationTreeModel,
     );
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
 
@@ -110,7 +110,7 @@ export const NetworkMapTab = ({
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel?.treeNodes.find(
-            (node) => node?.data?.label === 'Root'
+            (node) => node?.data?.label === 'Root',
         );
         return rootNode?.id;
     }, [treeModel]);
@@ -148,7 +148,7 @@ export const NetworkMapTab = ({
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
-        (state) => state[PARAM_MAP_MANUAL_REFRESH]
+        (state) => state[PARAM_MAP_MANUAL_REFRESH],
     );
     const refIsMapManualRefreshEnabled = useRef();
     refIsMapManualRefreshEnabled.current = mapManualRefresh;
@@ -156,13 +156,13 @@ export const NetworkMapTab = ({
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
     const isMapEquipmentsInitialized = useSelector(
-        (state) => state.isMapEquipmentsInitialized
+        (state) => state.isMapEquipmentsInitialized,
     );
 
     const deletedEquipments = useSelector((state) => state.deletedEquipments);
 
     const updatedSubstationsIds = useSelector(
-        (state) => state.updatedSubstationsIds
+        (state) => state.updatedSubstationsIds,
     );
     const [isUpdatedSubstationsApplied, setIsUpdatedSubstationsApplied] =
         useState(false);
@@ -257,7 +257,7 @@ export const NetworkMapTab = ({
             setModificationDialogOpen(true);
             closeEquipmentMenu();
         },
-        []
+        [],
     );
 
     const handleOpenDeletionDialog = useCallback(
@@ -266,7 +266,7 @@ export const NetworkMapTab = ({
             setDeletionDialogOpen(true);
             closeEquipmentMenu();
         },
-        []
+        [],
     );
 
     function withEquipment(Menu, props) {
@@ -288,19 +288,19 @@ export const NetworkMapTab = ({
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
         'substation-menus',
-        EQUIPMENT_TYPES.SUBSTATION
+        EQUIPMENT_TYPES.SUBSTATION,
     );
 
     const MenuVoltageLevel = withEquipmentMenu(
         BaseEquipmentMenu,
         'voltage-level-menus',
-        EQUIPMENT_TYPES.VOLTAGE_LEVEL
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL,
     );
 
     const MenuHvdcLine = withEquipmentMenu(
         BaseEquipmentMenu,
         'hvdc-line-menus',
-        EQUIPMENT_TYPES.HVDC_LINE
+        EQUIPMENT_TYPES.HVDC_LINE,
     );
 
     function showEquipmentMenu(equipment, x, y, type) {
@@ -336,7 +336,7 @@ export const NetworkMapTab = ({
                 // only hvdc line with LCC requires a Dialog (to select MCS)
                 handleOpenDeletionDialog(
                     equipmentId,
-                    EQUIPMENT_TYPES.HVDC_LINE
+                    EQUIPMENT_TYPES.HVDC_LINE,
                 );
             } else {
                 deleteEquipment(
@@ -344,7 +344,7 @@ export const NetworkMapTab = ({
                     currentNode?.id,
                     equipmentType,
                     equipmentId,
-                    undefined
+                    undefined,
                 ).catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -360,7 +360,7 @@ export const NetworkMapTab = ({
             snackError,
             handleOpenDeletionDialog,
             mapEquipments?.hvdcLinesById,
-        ]
+        ],
     );
 
     function closeChoiceVoltageLevelMenu() {
@@ -381,7 +381,7 @@ export const NetworkMapTab = ({
             setChoiceVoltageLevelsSubstationId(idSubstation);
             setPosition([x, y]);
         },
-        []
+        [],
     );
 
     const getEquipmentsNotFoundIds = useCallback(
@@ -390,11 +390,11 @@ export const NetworkMapTab = ({
                 .filter(
                     (s) =>
                         !foundEquipmentPositions.has(s.id) ||
-                        temporaryGeoDataIdsRef.current.has(s.id)
+                        temporaryGeoDataIdsRef.current.has(s.id),
                 )
                 .map((s) => s.id);
         },
-        []
+        [],
     );
 
     const latLonEqual = (coordinate1, coordinate2) => {
@@ -409,22 +409,22 @@ export const NetworkMapTab = ({
             return (
                 latLonEqual(
                     substationPos1?.coordinate,
-                    substationPos2?.coordinate
+                    substationPos2?.coordinate,
                 ) && substationPos1?.country === substationPos2?.country
             );
         },
-        []
+        [],
     );
 
     const linePositionsAreEqual = useCallback((linePos1, linePos2) => {
         return (
             latLonEqual(
                 linePos1?.coordinates?.[0],
-                linePos2?.coordinates?.[0]
+                linePos2?.coordinates?.[0],
             ) &&
             latLonEqual(
                 linePos1?.coordinates?.[1],
-                linePos2?.coordinates?.[1]
+                linePos2?.coordinates?.[1],
             ) &&
             linePos1?.country1 === linePos2?.country1 &&
             linePos1?.country2 === linePos2?.country2 &&
@@ -442,10 +442,10 @@ export const NetworkMapTab = ({
             return fetchEquipmentCB(
                 studyUuid,
                 currentNodeRef.current?.id,
-                notFoundEquipmentsIds
+                notFoundEquipmentsIds,
             );
         },
-        [studyUuid]
+        [studyUuid],
     );
 
     const updateSubstationsTemporaryGeoData = useCallback(
@@ -469,7 +469,7 @@ export const NetworkMapTab = ({
             // If a substation position is requested but not present in the fetched results, its position will be deleted in updateSubstationPositions() and we have to flag here that a position has changed
             requestedPositions
                 .filter(
-                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id)
+                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id),
                 )
                 .forEach((id) => {
                     if (geoDataRef.current.substationPositionsById.get(id)) {
@@ -479,7 +479,7 @@ export const NetworkMapTab = ({
 
             return someDataHasChanged;
         },
-        [substationPositionsAreEqual]
+        [substationPositionsAreEqual],
     );
 
     const updateLinesTemporaryGeoData = useCallback(
@@ -488,7 +488,7 @@ export const NetworkMapTab = ({
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
                 const linePosition = geoDataRef.current.linePositionsById.get(
-                    pos.id
+                    pos.id,
                 );
                 if (
                     !(linePosition && linePositionsAreEqual(linePosition, pos))
@@ -501,7 +501,7 @@ export const NetworkMapTab = ({
             // If a line position is requested but not present in the fetched results, its position will be deleted in updateLinePositions() and we have to flag here that a position has changed
             requestedPositions
                 .filter(
-                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id)
+                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id),
                 )
                 .forEach((id) => {
                     if (geoDataRef.current.linePositionsById.get(id)) {
@@ -510,7 +510,7 @@ export const NetworkMapTab = ({
                 });
             return someDataHasChanged;
         },
-        [linePositionsAreEqual]
+        [linePositionsAreEqual],
     );
 
     const checkNodeConsistency = (node) => {
@@ -524,29 +524,29 @@ export const NetworkMapTab = ({
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
             geoDataRef.current.substationPositionsById,
-            mapEquipments.substations
+            mapEquipments.substations,
         );
 
         const notFoundLineIds = lineFullPath
             ? getEquipmentsNotFoundIds(
                   geoDataRef.current.linePositionsById,
-                  mapEquipments.lines
+                  mapEquipments.lines,
               )
             : [];
 
         if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
             console.info(
-                `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
+                `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`,
             );
             dispatch(setMapDataLoading(true));
             const missingSubstationPositions = getMissingEquipmentsPositions(
                 notFoundSubstationIds,
-                fetchSubstationPositions
+                fetchSubstationPositions,
             );
 
             const missingLinesPositions = getMissingEquipmentsPositions(
                 notFoundLineIds,
-                fetchLinePositions
+                fetchLinePositions,
             );
 
             const nodeBeforeFetch = currentNodeRef.current;
@@ -561,11 +561,11 @@ export const NetworkMapTab = ({
                     const substationsDataChanged =
                         updateSubstationsTemporaryGeoData(
                             notFoundSubstationIds,
-                            fetchedSubstationPositions
+                            fetchedSubstationPositions,
                         );
                     const linesDataChanged = updateLinesTemporaryGeoData(
                         notFoundLineIds,
-                        fetchedLinePositions
+                        fetchedLinePositions,
                     );
 
                     // If no geo data has changed, we avoid to trigger a new render.
@@ -575,22 +575,22 @@ export const NetworkMapTab = ({
                         const newGeoData = new GeoData(
                             substationsDataChanged
                                 ? new Map(
-                                      geoDataRef.current.substationPositionsById
+                                      geoDataRef.current.substationPositionsById,
                                   )
                                 : geoDataRef.current.substationPositionsById,
                             // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
                             linesDataChanged ||
                             (!lineFullPath && substationsDataChanged)
                                 ? new Map(geoDataRef.current.linePositionsById)
-                                : geoDataRef.current.linePositionsById
+                                : geoDataRef.current.linePositionsById,
                         );
                         newGeoData.updateSubstationPositions(
                             notFoundSubstationIds,
-                            fetchedSubstationPositions
+                            fetchedSubstationPositions,
                         );
                         newGeoData.updateLinePositions(
                             notFoundLineIds,
-                            fetchedLinePositions
+                            fetchedLinePositions,
                         );
                         setGeoData(newGeoData);
                         geoDataRef.current = newGeoData;
@@ -633,12 +633,12 @@ export const NetworkMapTab = ({
 
         const substationPositionsDone = fetchSubstationPositions(
             studyUuid,
-            rootNodeId
+            rootNodeId,
         ).then((data) => {
             console.info(`Received substations of study '${studyUuid}'...`);
             const newGeoData = new GeoData(
                 new Map(),
-                geoDataRef.current?.linePositionsById || new Map()
+                geoDataRef.current?.linePositionsById || new Map(),
             );
             newGeoData.setSubstationPositions(data);
             setGeoData(newGeoData);
@@ -651,7 +651,7 @@ export const NetworkMapTab = ({
                   console.info(`Received lines of study '${studyUuid}'...`);
                   const newGeoData = new GeoData(
                       geoDataRef.current?.substationPositionsById || new Map(),
-                      new Map()
+                      new Map(),
                   );
                   newGeoData.setLinePositions(data);
                   setGeoData(newGeoData);
@@ -704,7 +704,7 @@ export const NetworkMapTab = ({
             currentNode?.id,
             snackError,
             dispatch,
-            intlRef
+            intlRef,
         );
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
@@ -733,7 +733,7 @@ export const NetworkMapTab = ({
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
-                    updatedSubstationsToSend
+                    updatedSubstationsToSend,
                 );
 
             updatedSubstations.then((values) => {
@@ -743,7 +743,7 @@ export const NetworkMapTab = ({
                 ) {
                     mapEquipments.updateSubstations(
                         mapEquipments.checkAndGetValues(values),
-                        isFullReload
+                        isFullReload,
                     );
                 }
             });
@@ -751,7 +751,7 @@ export const NetworkMapTab = ({
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateLines(
                         mapEquipments.checkAndGetValues(values),
-                        isFullReload
+                        isFullReload,
                     );
                     setUpdatedLines(values);
                 }
@@ -760,7 +760,7 @@ export const NetworkMapTab = ({
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateHvdcLines(
                         mapEquipments.checkAndGetValues(values),
-                        isFullReload
+                        isFullReload,
                     );
                     setUpdatedHvdcLines(values);
                 }
@@ -780,7 +780,7 @@ export const NetworkMapTab = ({
             mapEquipments,
             studyUuid,
             updatedSubstationsIds,
-        ]
+        ],
     );
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
@@ -815,7 +815,7 @@ export const NetworkMapTab = ({
             deletedEquipments.forEach((deletedEquipment) => {
                 mapEquipments.removeEquipment(
                     deletedEquipment?.equipmentType,
-                    deletedEquipment?.equipmentId
+                    deletedEquipment?.equipmentId,
                 );
             });
         }
@@ -916,7 +916,7 @@ export const NetworkMapTab = ({
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
         choiceVoltageLevelsSubstation = mapEquipments?.getSubstation(
-            choiceVoltageLevelsSubstationId
+            choiceVoltageLevelsSubstationId,
         );
     }
 

@@ -43,7 +43,7 @@ export interface CrossValidationOptions {
 const updateCellValue = (
     colId: string,
     value: any,
-    cellEditingParams: CellEditingStoppedEvent
+    cellEditingParams: CellEditingStoppedEvent,
 ) => {
     const columnState = cellEditingParams.columnApi.getColumnState();
     if (columnState.find(({ colId: columnId }: any) => columnId === colId)) {
@@ -83,7 +83,7 @@ export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
                     : null;
             rowNode.setDataValue(
                 'RegulatingTerminalGenerator',
-                regulatingTerminalGenerator
+                regulatingTerminalGenerator,
             );
         }
         params.api.flashCells({
@@ -205,7 +205,7 @@ const formatShuntCompensatorDataForTable = (shuntCompensator: any) => {
 
 export const formatFetchedEquipments = (
     equipmentType: string,
-    equipments: any
+    equipments: any,
 ) => {
     if (equipments && equipments?.length > 0) {
         return equipments.map((equipment: any) => {
@@ -217,7 +217,7 @@ export const formatFetchedEquipments = (
 
 export const formatFetchedEquipment = (
     equipmentType: string,
-    equipment: any
+    equipment: any,
 ) => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
@@ -251,7 +251,7 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                 updateCellValue(
                     'ratioTapChanger.ratioRegulatingTerminal',
                     null,
-                    params
+                    params,
                 );
             }
             break;
@@ -269,7 +269,7 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                 updateCellValue(
                     'phaseTapChanger.phaseRegulatingTerminal',
                     null,
-                    params
+                    params,
                 );
             }
             break;
@@ -309,7 +309,7 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
 };
 
 export const updateShuntCompensatorCells = (
-    params: CellEditingStoppedEvent
+    params: CellEditingStoppedEvent,
 ) => {
     const colId = params.column.getColId();
     const maxSusceptance = params.data.maxSusceptance;
@@ -340,16 +340,16 @@ export const updateShuntCompensatorCells = (
             updateCellValue(
                 'maxQAtNominalV',
                 computeMaxQAtNominalV(maxSusceptance, nominalVoltage),
-                params
+                params,
             );
             updateCellValue(
                 'switchedOnQAtNominalV',
                 computeSwitchedOnValue(
                     sectionCount,
                     maximumSectionCount,
-                    maxQAtNominalV
+                    maxQAtNominalV,
                 ),
-                params
+                params,
             );
         }
         updateCellValue(
@@ -357,9 +357,9 @@ export const updateShuntCompensatorCells = (
             computeSwitchedOnValue(
                 sectionCount,
                 maximumSectionCount,
-                maxSusceptance
+                maxSusceptance,
             ),
-            params
+            params,
         );
         if (maxSusceptance < 0 && type !== SHUNT_COMPENSATOR_TYPES.REACTOR.id) {
             updateCellValue('type', SHUNT_COMPENSATOR_TYPES.REACTOR.id, params);
@@ -370,7 +370,7 @@ export const updateShuntCompensatorCells = (
             updateCellValue(
                 'type',
                 SHUNT_COMPENSATOR_TYPES.CAPACITOR.id,
-                params
+                params,
             );
         }
         params.context.lastEditedField = 'maxSusceptance';
@@ -380,29 +380,29 @@ export const updateShuntCompensatorCells = (
             computeSwitchedOnValue(
                 sectionCount,
                 maximumSectionCount,
-                maxQAtNominalV
+                maxQAtNominalV,
             ),
-            params
+            params,
         );
         const maxSusceptance = computeMaxSusceptance(
             maxQAtNominalV,
-            nominalVoltage
+            nominalVoltage,
         );
         updateCellValue(
             'maxSusceptance',
             type === SHUNT_COMPENSATOR_TYPES.REACTOR.id
                 ? -maxSusceptance
                 : maxSusceptance,
-            params
+            params,
         );
         updateCellValue(
             'switchedOnSusceptance',
             computeSwitchedOnValue(
                 sectionCount,
                 maximumSectionCount,
-                maxSusceptance
+                maxSusceptance,
             ),
-            params
+            params,
         );
         params.context.lastEditedField = 'maxQAtNominalV';
     } else if (colId === 'sectionCount' || colId === 'maximumSectionCount') {
@@ -411,18 +411,18 @@ export const updateShuntCompensatorCells = (
             computeSwitchedOnValue(
                 sectionCount,
                 maximumSectionCount,
-                maxQAtNominalV
+                maxQAtNominalV,
             ),
-            params
+            params,
         );
         updateCellValue(
             'switchedOnSusceptance',
             computeSwitchedOnValue(
                 sectionCount,
                 maximumSectionCount,
-                maxSusceptance
+                maxSusceptance,
             ),
-            params
+            params,
         );
     }
 };
@@ -470,7 +470,7 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
     ) {
         let originalValue = deepFindValue(
             gridContext.dataToModify,
-            colDef.field
+            colDef.field,
         );
         originalValue =
             colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
@@ -487,7 +487,7 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
         } else if (colDef.crossValidation?.requiredOn) {
             const isConditionFulfiled = checkCrossValidationRequiredOn(
                 gridContext.dynamicValidation,
-                colDef
+                colDef,
             );
             if (!isConditionFulfiled) {
                 return false;
@@ -518,7 +518,7 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
 
 export const checkValidationsAndRefreshCells = (
     gridApi: GridApi,
-    gridContext: any
+    gridContext: any,
 ) => {
     const updatedErrors = { ...gridContext.editErrors };
     const columnsWithCrossValidation =
@@ -554,12 +554,12 @@ export const checkValidationsAndRefreshCells = (
 
 const checkCrossValidationRequiredOn = (
     dynamicValidation: DynamicValidation,
-    colDef: ColDef
+    colDef: ColDef,
 ) => {
     const requiredOn = colDef?.crossValidation?.requiredOn ?? {};
     let dependencyValue = deepFindValue(
         dynamicValidation,
-        requiredOn?.dependencyColumn
+        requiredOn?.dependencyColumn,
     );
     if (typeof dependencyValue === 'boolean') {
         dependencyValue = dependencyValue ? 1 : 0;

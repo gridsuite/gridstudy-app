@@ -46,7 +46,7 @@ const PagedSensitivityAnalysisResult = ({
     const [options, setOptions] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const sensiStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS],
     );
 
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
@@ -88,7 +88,7 @@ const PagedSensitivityAnalysisResult = ({
         (_, newPage) => {
             setPage(newPage);
         },
-        [setPage]
+        [setPage],
     );
 
     const handleChangeRowsPerPage = useCallback(
@@ -96,7 +96,7 @@ const PagedSensitivityAnalysisResult = ({
             setRowsPerPage(parseInt(event.target.value, 10));
             setPage(0);
         },
-        [setPage]
+        [setPage],
     );
 
     const handleUpdateFilter = useCallback(
@@ -104,7 +104,7 @@ const PagedSensitivityAnalysisResult = ({
             setPage(0);
             updateFilter(field, value);
         },
-        [setPage, updateFilter]
+        [setPage, updateFilter],
     );
 
     const fetchFilterOptions = useCallback(() => {

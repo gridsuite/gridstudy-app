@@ -21,7 +21,7 @@ const FilterPanel = ({ filtersDef = [], updateFilter, rowFilters }) => {
                         <Autocomplete
                             value={
                                 rowFilters?.find(
-                                    (rowFilter) => rowFilter.field === field
+                                    (rowFilter) => rowFilter.field === field,
                                 )?.value || ''
                             }
                             isOptionEqualToValue={(option, value) =>
@@ -53,13 +53,13 @@ FilterPanel.propTypes = {
             field: PropTypes.string.isRequired,
             options: PropTypes.array.isRequired,
             label: PropTypes.string.isRequired,
-        })
+        }),
     ).isRequired,
     rowFilters: PropTypes.arrayOf(
         PropTypes.shape({
             field: PropTypes.string.isRequired,
             value: PropTypes.string.isRequired,
-        })
+        }),
     ).isRequired,
     updateFilter: PropTypes.func.isRequired,
 };

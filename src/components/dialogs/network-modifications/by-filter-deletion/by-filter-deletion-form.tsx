@@ -33,7 +33,7 @@ const ByFilterDeletionForm = () => {
         () => (rt: { id: string; label: string } | string) => {
             return intl.formatMessage({ id: getIdOrValue(rt) });
         },
-        [intl]
+        [intl],
     );
 
     const typesOptions = useMemo(() => {
@@ -46,7 +46,7 @@ const ByFilterDeletionForm = () => {
             EQUIPMENT_TYPES.BUSBAR_SECTION,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType),
         );
     }, []);
 

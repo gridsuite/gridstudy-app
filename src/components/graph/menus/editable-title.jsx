@@ -26,7 +26,7 @@ const styles = {
         color: theme.palette.getContrastText(
             theme.palette.mode === 'light'
                 ? darken(theme.palette.background.paper, 0.1)
-                : lighten(theme.palette.background.paper, 0.2)
+                : lighten(theme.palette.background.paper, 0.2),
         ),
         display: 'flex',
         alignItems: 'center',

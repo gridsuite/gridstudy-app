@@ -56,14 +56,14 @@ export const SwitchesBetweenSections = () => {
             });
             setValue(SWITCH_KINDS, data[SWITCH_KINDS]);
         },
-        [intl, setValue]
+        [intl, setValue],
     );
 
     const handleCreateSwitchesDialog = useCallback(
         (data) => {
             setSwitchesKinds(data);
         },
-        [setSwitchesKinds]
+        [setSwitchesKinds],
     );
 
     const sectionCountRef = useRef(watchSectionCount);
@@ -78,7 +78,7 @@ export const SwitchesBetweenSections = () => {
             let list = [];
             if (watchSectionCount) {
                 list = Array(watchSectionCount - 1).fill(
-                    initialKindDisconnector
+                    initialKindDisconnector,
                 );
             }
             const data = { switchKinds: list };

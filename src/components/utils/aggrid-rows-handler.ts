@@ -15,7 +15,7 @@ export function getNoRowsMessage(
     messages: RunningStatusMessage,
     rows: any[] | undefined,
     status: string,
-    isDataReady?: boolean
+    isDataReady?: boolean,
 ): string | undefined {
     switch (status) {
         case RunningStatus.IDLE:
@@ -43,7 +43,7 @@ export function getRows(rows: any[] | undefined, status: string): any[] {
 }
 export const useIntlResultStatusMessages = (
     intl: IntlShape,
-    hasNoData: boolean = false
+    hasNoData: boolean = false,
 ) => {
     const specificMessage = useCallback(():
         | { noData: string }

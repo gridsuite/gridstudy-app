@@ -107,7 +107,7 @@ export const getGenerationStagesDefinitionFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .min(1, 'NoGeneratorsFilterGiven'),
             [GENERATION_STAGES_PERCENT_MAXP_1]: yup
@@ -125,12 +125,12 @@ export const getGenerationStagesDefinitionFormSchema = () => ({
                 .min(0, 'NormalizedPercentage')
                 .max(100, 'NormalizedPercentage')
                 .required(),
-        })
+        }),
     ),
 });
 
 export const getGenerationStagesDefinitionParams = (
-    params: IStagesDefinition
+    params: IStagesDefinition,
 ) => {
     return {
         [STAGES_DEFINITION]: params[STAGES_DEFINITION].map(
@@ -152,7 +152,7 @@ export const getGenerationStagesDefinitionParams = (
                         generationStage[GENERATION_STAGES_PERCENT_MAXP_3],
                     ],
                 };
-            }
+            },
         ),
     };
 };
@@ -164,13 +164,13 @@ export const getGenerationStagesSelectionFormSchema = () => ({
             yup.object().shape({
                 [NAME]: yup.string().required(),
                 [ACTIVATED]: yup.boolean().required(),
-            })
+            }),
         )
         .min(1, 'NoSimulatedStageGiven'),
 });
 
 export const getGenerationStagesSelectionParams = (
-    params: IStagesSelection
+    params: IStagesSelection,
 ) => {
     return {
         [STAGES_SELECTION]: params[STAGES_SELECTION].map(
@@ -183,7 +183,7 @@ export const getGenerationStagesSelectionParams = (
                         generationStageSelection[PMAX_PERCENTS_INDEX],
                     [ACTIVATED]: generationStageSelection[ACTIVATED],
                 };
-            }
+            },
         ),
     };
 };
@@ -203,7 +203,7 @@ export const getGeneratorsCappingsFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -211,13 +211,13 @@ export const getGeneratorsCappingsFormSchema = () => ({
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
             [ACTIVATED]: yup.boolean().required(),
-        })
+        }),
     ),
 });
 
 export const getGeneratorsCappingsParams = (
     sensitivityThreshold: number,
-    params: IGeneratorsCappings
+    params: IGeneratorsCappings,
 ) => {
     return {
         [SENSITIVITY_THRESHOLD]: sensitivityThreshold,
@@ -236,7 +236,7 @@ export const getGeneratorsCappingsParams = (
                     }),
                     [ACTIVATED]: generatorsCapping[ACTIVATED],
                 };
-            }
+            },
         ),
     };
 };
@@ -250,7 +250,7 @@ export const getMonitoredBranchesFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -284,7 +284,7 @@ export const getMonitoredBranchesFormSchema = () => ({
                 .min(0, 'CoefficientMustBeGreaterOrEqualToZero')
                 .required(),
             [ACTIVATED]: yup.boolean().required(),
-        })
+        }),
     ),
 });
 
@@ -313,7 +313,7 @@ export const getMonitoredBranchesParams = (params: IMonitoredBranches) => {
                         monitoredBranches[MONITORED_BRANCHES_COEFF_N_1],
                     [ACTIVATED]: monitoredBranches[ACTIVATED],
                 };
-            }
+            },
         ),
     };
 };
@@ -327,7 +327,7 @@ export const getContingenciesFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -335,7 +335,7 @@ export const getContingenciesFormSchema = () => ({
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
             [ACTIVATED]: yup.boolean().required(),
-        })
+        }),
     ),
 });
 
@@ -349,7 +349,7 @@ export const getContingenciesParams = (params: IContingencies) => {
                             [CONTAINER_ID]: container[ID],
                             [CONTAINER_NAME]: container[NAME],
                         };
-                    }
+                    },
                 ),
                 [ACTIVATED]: contingencies[ACTIVATED],
             };

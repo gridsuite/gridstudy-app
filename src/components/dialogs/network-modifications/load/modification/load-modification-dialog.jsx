@@ -103,7 +103,7 @@ const LoadModificationDialog = ({
                 ...getPropertiesFromModification(load.properties),
             });
         },
-        [reset]
+        [reset],
     );
 
     useEffect(() => {
@@ -116,14 +116,14 @@ const LoadModificationDialog = ({
         (equipment) => {
             // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
             const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
+                `${ADDITIONAL_PROPERTIES}`,
             );
             return mergeModificationAndEquipmentProperties(
                 modificationProperties,
-                equipment
+                equipment,
             );
         },
-        [getValues]
+        [getValues],
     );
 
     const onEquipmentIdChange = useCallback(
@@ -139,7 +139,7 @@ const LoadModificationDialog = ({
                     EQUIPMENT_TYPES.LOAD,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
                 )
                     .then((load) => {
                         if (load) {
@@ -161,7 +161,13 @@ const LoadModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getConcatenatedProperties, editData]
+        [
+            studyUuid,
+            currentNodeUuid,
+            reset,
+            getConcatenatedProperties,
+            editData,
+        ],
     );
 
     useEffect(() => {
@@ -184,7 +190,7 @@ const LoadModificationDialog = ({
                 undefined,
                 !!editData,
                 editData ? editData.uuid : undefined,
-                toModificationProperties(load)
+                toModificationProperties(load),
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -192,7 +198,7 @@ const LoadModificationDialog = ({
                 });
             });
         },
-        [selectedId, editData, studyUuid, currentNodeUuid, snackError]
+        [selectedId, editData, studyUuid, currentNodeUuid, snackError],
     );
 
     const clear = useCallback(() => {

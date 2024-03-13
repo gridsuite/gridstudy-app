@@ -32,7 +32,7 @@ const CurveSelector = forwardRef((props, ref) => {
     const modelFilterRef = useRef();
 
     const [equipmentType, setEquipmentType] = useState(
-        EQUIPMENT_TYPES.GENERATOR
+        EQUIPMENT_TYPES.GENERATOR,
     );
 
     const handleChangeEquipmentType = useCallback((newEquipmentType) => {
@@ -52,7 +52,7 @@ const CurveSelector = forwardRef((props, ref) => {
                 },
             },
         }),
-        []
+        [],
     );
 
     return (
@@ -94,7 +94,7 @@ const CurveSelector = forwardRef((props, ref) => {
                 <ModelFilter
                     ref={modelFilterRef}
                     equipmentType={getReferencedEquipmentTypeForModel(
-                        equipmentType
+                        equipmentType,
                     )}
                 />
             </Grid>

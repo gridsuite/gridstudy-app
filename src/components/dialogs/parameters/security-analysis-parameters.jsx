@@ -40,7 +40,7 @@ const formatValues = (values, isDivision) => {
             ...result,
             [key]: isProportionalSAParam(key)
                 ? roundToDefaultPrecision(
-                      isDivision ? value / 100 : value * 100
+                      isDivision ? value / 100 : value * 100,
                   )
                 : value,
         };
@@ -82,18 +82,18 @@ const SecurityAnalysisFields = ({
         (e) => {
             checkValue(e, positiveDoubleValue, true);
         },
-        [checkValue, positiveDoubleValue]
+        [checkValue, positiveDoubleValue],
     );
     const checkDoubleValue = useCallback(
         (e) => {
             checkValue(e, positiveDoubleValue, false);
         },
-        [checkValue, positiveDoubleValue]
+        [checkValue, positiveDoubleValue],
     );
 
     const formatedValues = useCallback(
         (values) => formatValues(values, true),
-        []
+        [],
     );
 
     const updateValue = useCallback(
@@ -113,7 +113,7 @@ const SecurityAnalysisFields = ({
                 }
             }
         },
-        [initValue, callback, values, formatedValues]
+        [initValue, callback, values, formatedValues],
     );
 
     return (
@@ -196,7 +196,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
     // TODO: remove this when DynaFlow is supported
     // DynaFlow is not supported at the moment for security analysis
     const securityAnalysisProvider = Object.fromEntries(
-        Object.entries(providers).filter(([key]) => !key.includes('DynaFlow'))
+        Object.entries(providers).filter(([key]) => !key.includes('DynaFlow')),
     );
 
     const resetSAParametersAndProvider = useCallback(() => {
@@ -264,7 +264,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                     .then((parameters) => {
                         console.info(
                             'loading the following security analysis parameters : ' +
-                                parameters.uuid
+                                parameters.uuid,
                         );
                         updateParameters({ ...parameters });
                     })
@@ -278,7 +278,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, updateParameters]
+        [snackError, updateParameters],
     );
 
     return (
@@ -341,7 +341,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                 container
                 sx={mergeSx(
                     styles.controlParametersItem,
-                    styles.marginTopButton
+                    styles.marginTopButton,
                 )}
             >
                 <LabelledButton

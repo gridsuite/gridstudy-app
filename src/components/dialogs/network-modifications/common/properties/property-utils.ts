@@ -55,7 +55,7 @@ const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
 };
 
 export const fetchPredefinedProperties = (
-    networkElementType: string
+    networkElementType: string,
 ): Promise<PredefinedProperties | undefined> => {
     return fetchAppsAndUrls().then((res: [Metadata]) => {
         const studyMetadata = res.filter(isStudyMetadata);
@@ -84,7 +84,7 @@ export const initializedProperty = (): Property => {
 };
 
 export const getPropertiesFromModification = (
-    properties: Property[] | undefined
+    properties: Property[] | undefined,
 ): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: properties
@@ -102,7 +102,7 @@ export const getPropertiesFromModification = (
 };
 
 export const copyEquipmentPropertiesForCreation = (
-    equipmentInfos: Equipment
+    equipmentInfos: Equipment,
 ): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: equipmentInfos.properties
@@ -127,7 +127,7 @@ export const copyEquipmentPropertiesForCreation = (
  */
 export const mergeModificationAndEquipmentProperties = (
     modificationProperties: Property[],
-    equipment: Equipment
+    equipment: Equipment,
 ): Property[] => {
     const newModificationProperties = new Map<string, Property>();
     for (const property of modificationProperties) {
@@ -164,7 +164,7 @@ export const mergeModificationAndEquipmentProperties = (
 
 export const toModificationProperties = (properties: Properties) => {
     const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
-        (p: Property) => p.value !== null || p[DELETION_MARK]
+        (p: Property) => p.value !== null || p[DELETION_MARK],
     );
     return filteredProperties?.length === 0 ? undefined : filteredProperties;
 };
@@ -179,10 +179,10 @@ export const creationPropertiesSchema = yup.object({
                 [PREVIOUS_VALUE]: yup.string().nullable(),
                 [DELETION_MARK]: yup.boolean().required(),
                 [ADDED]: yup.boolean().required(),
-            })
+            }),
         )
         .test('checkUniqueProperties', 'DuplicatedPropsError', (values) =>
-            checkUniquePropertyNames(values)
+            checkUniquePropertyNames(values),
         ),
 });
 
@@ -198,17 +198,17 @@ export const modificationPropertiesSchema = yup.object({
                     .when([PREVIOUS_VALUE, DELETION_MARK], {
                         is: (
                             previousValue: string | null,
-                            deletionMark: boolean
+                            deletionMark: boolean,
                         ) => previousValue === null && !deletionMark,
                         then: (schema) => schema.required(),
                     }),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
                 [DELETION_MARK]: yup.boolean().required(),
                 [ADDED]: yup.boolean().required(),
-            })
+            }),
         )
         .test('checkUniqueProperties', 'DuplicatedPropsError', (values) =>
-            checkUniquePropertyNames(values)
+            checkUniquePropertyNames(values),
         ),
 });
 
@@ -217,7 +217,7 @@ const checkUniquePropertyNames = (
         | {
               name: string;
           }[]
-        | undefined
+        | undefined,
 ) => {
     if (properties === undefined) {
         return true;

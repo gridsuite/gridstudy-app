@@ -37,20 +37,20 @@ export type UseAggridRowFilterOutputType = {
 
 const removeElementFromArrayWithFieldValue = (
     filtersArrayToRemoveFieldValueFrom: FilterType[],
-    field: string
+    field: string,
 ) => {
     return filtersArrayToRemoveFieldValueFrom.filter(
-        (f: FilterType) => f.field !== field
+        (f: FilterType) => f.field !== field,
     );
 };
 
 const changeValueFromArrayWithFieldValue = (
     filtersArrayToModify: FilterType[],
     field: string,
-    newData: FilterDataType
+    newData: FilterDataType,
 ) => {
     const filterIndex = filtersArrayToModify.findIndex(
-        (f: FilterType) => f.field === field
+        (f: FilterType) => f.field === field,
     );
     if (filterIndex === -1) {
         return [
@@ -69,7 +69,7 @@ const changeValueFromArrayWithFieldValue = (
 
 export const useAggridRowFilter = (
     filterSelectorKeys: Record<string, string>,
-    updateFilterCallback?: () => void
+    updateFilterCallback?: () => void,
 ): UseAggridRowFilterOutputType => {
     const [filters, setFilters] = useState<FilterType[]>([]);
 
@@ -81,13 +81,13 @@ export const useAggridRowFilter = (
                 if (!data.value) {
                     updatedFilters = removeElementFromArrayWithFieldValue(
                         oldRowFilters,
-                        field
+                        field,
                     );
                 } else {
                     updatedFilters = changeValueFromArrayWithFieldValue(
                         oldRowFilters,
                         field,
-                        data
+                        data,
                     );
                 }
 
@@ -96,7 +96,7 @@ export const useAggridRowFilter = (
                 return updatedFilters;
             });
         },
-        [updateFilterCallback]
+        [updateFilterCallback],
     );
 
     const filterSelector: FilterSelectorType[] | null = useMemo(() => {
@@ -105,7 +105,7 @@ export const useAggridRowFilter = (
                 selector[filterSelectorKeys[field]] = data;
                 return selector;
             },
-            {}
+            {},
         );
 
         const resultKeys = Object.keys(result);

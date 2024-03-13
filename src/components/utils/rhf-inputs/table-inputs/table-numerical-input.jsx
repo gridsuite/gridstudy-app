@@ -41,7 +41,7 @@ export const TableNumericalInput = ({
             (previousValue === Number.MAX_VALUE
                 ? validateValueIsANumber(value)
                 : previousValue !== undefined && previousValue !== value),
-        [isClearable, previousValue, value]
+        [isClearable, previousValue, value],
     );
 
     const outputTransform = (value) => {

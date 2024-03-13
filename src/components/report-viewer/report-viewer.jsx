@@ -50,7 +50,7 @@ export default function ReportViewer({
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
     const [selectedSeverity, setSelectedSeverity] = useState(
-        LogReportItem.getDefaultSeverityFilter()
+        LogReportItem.getDefaultSeverityFilter(),
     );
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] =
         useState(undefined);
@@ -73,7 +73,7 @@ export default function ReportViewer({
                     'The number (%s) being greater than %s only the first %s subreports will be displayed',
                     logReport.getSubReports().length,
                     maxSubReports,
-                    maxSubReports
+                    maxSubReports,
                 );
             }
             return (
@@ -90,7 +90,7 @@ export default function ReportViewer({
                 </ReportItem>
             );
         },
-        [maxSubReports]
+        [maxSubReports],
     );
 
     /**
@@ -122,7 +122,7 @@ export default function ReportViewer({
                 return nodeReportPromise(
                     reportTreeData.current[nodeId].getKey(),
                     reportTreeData.current[nodeId].getId(),
-                    severityList
+                    severityList,
                 );
             } else if (
                 reportTreeData.current[nodeId].getType() ===
@@ -132,10 +132,10 @@ export default function ReportViewer({
             }
             return subReportPromise(
                 reportTreeData.current[nodeId].getId(),
-                severityList
+                severityList,
             );
         },
-        [nodeReportPromise, globalReportPromise, subReportPromise]
+        [nodeReportPromise, globalReportPromise, subReportPromise],
     );
 
     const buildLogReport = useCallback((jsonData) => {
@@ -184,7 +184,7 @@ export default function ReportViewer({
                     setWaitingLoadReport(false);
                 });
         },
-        [snackError, getFetchPromise, buildLogReport]
+        [snackError, getFetchPromise, buildLogReport],
     );
 
     useEffect(() => {
@@ -200,8 +200,8 @@ export default function ReportViewer({
         setLogs(rootReport.current.getAllLogs());
         setSelectedSeverity(
             LogReportItem.getDefaultSeverityFilter(
-                rootReport.current.getAllSeverityList()
-            )
+                rootReport.current.getAllSeverityList(),
+            ),
         );
     }, [jsonReportTree, createReporterItem]);
 
@@ -224,7 +224,7 @@ export default function ReportViewer({
     const selectNode = (nodeId) => {
         if (selectedNode !== nodeId) {
             const updatedSeverityList = LogReportItem.getDefaultSeverityFilter(
-                reportTreeData.current[nodeId].getAllSeverityList()
+                reportTreeData.current[nodeId].getAllSeverityList(),
             );
             setSelectedSeverity(updatedSeverityList);
             refreshNode(nodeId, updatedSeverityList);
@@ -241,7 +241,7 @@ export default function ReportViewer({
         () => ({
             isHighlighted: (reportId) => highlightedReportId === reportId,
         }),
-        [highlightedReportId]
+        [highlightedReportId],
     );
 
     const onRowClick = (data) => {

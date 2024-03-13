@@ -27,7 +27,7 @@ interface UseComputingStatusProps {
         completions: string[],
         resultConversion: (x: string) => RunningStatus,
         computingType: ComputingType,
-        optionalServiceAvailabilityStatus?: OptionalServicesStatus
+        optionalServiceAvailabilityStatus?: OptionalServicesStatus,
     ): void;
 }
 
@@ -42,7 +42,7 @@ function isWorthUpdate(
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
     nodeUuid: UUID,
-    invalidations: string[]
+    invalidations: string[],
 ): boolean {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
@@ -94,11 +94,11 @@ export const useComputingStatus: UseComputingStatusProps = (
     completions,
     resultConversion,
     computingType,
-    optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
+    optionalServiceAvailabilityStatus = OptionalServicesStatus.Up,
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
+        (state: ReduxState) => state.studyUpdated,
     );
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
@@ -110,9 +110,9 @@ export const useComputingStatus: UseComputingStatusProps = (
             [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
             completions.includes(
                 lastUpdateRef.current?.studyUpdatedForce.eventData?.headers
-                    ?.updateType ?? ''
+                    ?.updateType ?? '',
             ),
-        [completions]
+        [completions],
     );
 
     const update = useCallback(() => {
@@ -137,7 +137,7 @@ export const useComputingStatus: UseComputingStatusProps = (
             .catch(() => {
                 if (!canceledRequest) {
                     dispatch(
-                        setComputingStatus(computingType, RunningStatus.FAILED)
+                        setComputingStatus(computingType, RunningStatus.FAILED),
                     );
                 }
             });
@@ -171,7 +171,7 @@ export const useComputingStatus: UseComputingStatusProps = (
             lastUpdateRef,
             nodeUuidRef,
             nodeUuid,
-            invalidations
+            invalidations,
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (isUpdateForUs) {

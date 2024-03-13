@@ -14,7 +14,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     console.info(
-        `Running non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`
+        `Running non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`,
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -26,11 +26,11 @@ export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
 
 export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     console.info(
-        `Stopping non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`
+        `Stopping non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`,
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
     )}/non-evacuated-energy/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
@@ -38,11 +38,11 @@ export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
 
 export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching non evacuated energy analysis status on ${studyUuid} and node ${currentNodeUuid} ...`
+        `Fetching non evacuated energy analysis status on ${studyUuid} and node ${currentNodeUuid} ...`,
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
     )}/non-evacuated-energy/status`;
     console.debug(url);
     return backendFetchText(url);
@@ -50,12 +50,12 @@ export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid) {
 
 export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching non evacuated energy analysis result on ${studyUuid} and node ${currentNodeUuid}  ...`
+        `Fetching non evacuated energy analysis result on ${studyUuid} and node ${currentNodeUuid}  ...`,
     );
 
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
     )}/non-evacuated-energy/result`;
     console.debug(url);
     return backendFetchJson(url);

@@ -58,15 +58,15 @@ const GeneratorModificationForm = ({
             fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
+                        values.sort((a, b) => a.id.localeCompare(b.id)),
                     );
-                }
+                },
             );
         }
     }, [studyUuid, currentNodeUuid]);
 
     const energySourceLabelId = getEnergySourceLabel(
-        generatorToModify?.energySource
+        generatorToModify?.energySource,
     );
     const previousEnergySourceLabel = energySourceLabelId
         ? intl.formatMessage({
@@ -159,7 +159,8 @@ const GeneratorModificationForm = ({
             adornment={OhmAdornment}
             previousValue={
                 isNaN(
-                    generatorToModify?.generatorShortCircuit?.stepUpTransformerX
+                    generatorToModify?.generatorShortCircuit
+                        ?.stepUpTransformerX,
                 )
                     ? null
                     : generatorToModify?.generatorShortCircuit

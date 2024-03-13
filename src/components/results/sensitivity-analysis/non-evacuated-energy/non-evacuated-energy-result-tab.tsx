@@ -54,14 +54,14 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<
 
     const nonEvacuatedEnergyStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
     );
 
     const [nonEvacuatedEnergyResult] = useNodeData(
         studyUuid,
         nodeUuid,
         fetchNonEvacuatedEnergyResult,
-        NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS
+        NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS,
     );
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {

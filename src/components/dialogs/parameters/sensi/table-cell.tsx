@@ -21,7 +21,7 @@ function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
     column: any,
-    onRowChanged: (a: boolean, source: string) => void
+    onRowChanged: (a: boolean, source: string) => void,
 ) {
     const handleDirectoryItemsChange = () => {
         onRowChanged(true, 'directory');

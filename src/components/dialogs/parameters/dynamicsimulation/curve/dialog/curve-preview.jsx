@@ -87,8 +87,8 @@ const CurvePreview = forwardRef((props, ref) => {
                                     (elem) =>
                                         elem.equipmentId ===
                                             curve.equipmentId &&
-                                        elem.variableId === curve.variableId
-                                )
+                                        elem.variableId === curve.variableId,
+                                ),
                         );
                         return [...prev, ...notYetAddedCurves];
                     });
@@ -107,8 +107,8 @@ const CurvePreview = forwardRef((props, ref) => {
                                         elem.equipmentId ===
                                             selectedElem.equipmentId &&
                                         elem.variableId ===
-                                            selectedElem.variableId
-                                )
+                                            selectedElem.variableId,
+                                ),
                         );
                         return remainingRows;
                     });
@@ -118,7 +118,7 @@ const CurvePreview = forwardRef((props, ref) => {
                 },
             },
         }),
-        [rowData]
+        [rowData],
     );
 
     return (

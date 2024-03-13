@@ -65,7 +65,7 @@ const RatioTapChangerPane = ({
     };
 
     const getRatioTapChangerRegulationModeLabel = (
-        ratioTapChangerFormValues
+        ratioTapChangerFormValues,
     ) => {
         if (!ratioTapChangerFormValues) {
             return null;
@@ -170,7 +170,7 @@ const RatioTapChangerPane = ({
             size={'small'}
             disabled={!ratioTapChangerEnabledWatcher}
             previousValue={getRatioTapChangerRegulationModeLabel(
-                previousValues?.[RATIO_TAP_CHANGER]
+                previousValues?.[RATIO_TAP_CHANGER],
             )}
         />
     );
@@ -184,7 +184,7 @@ const RatioTapChangerPane = ({
             size={'small'}
             previousValue={getRegulationTypeLabel(
                 previousValues,
-                previousValues?.[RATIO_TAP_CHANGER]
+                previousValues?.[RATIO_TAP_CHANGER],
             )}
         />
     );
@@ -198,7 +198,7 @@ const RatioTapChangerPane = ({
             size={'small'}
             previousValue={getTapSideLabel(
                 previousValues,
-                previousValues?.[RATIO_TAP_CHANGER]
+                previousValues?.[RATIO_TAP_CHANGER],
             )}
         />
     );
@@ -241,7 +241,7 @@ const RatioTapChangerPane = ({
                 previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId
             }
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                previousValues?.[RATIO_TAP_CHANGER]
+                previousValues?.[RATIO_TAP_CHANGER],
             )}
         />
     );

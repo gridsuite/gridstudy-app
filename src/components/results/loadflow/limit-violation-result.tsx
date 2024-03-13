@@ -43,7 +43,7 @@ export const LimitViolationResult: FunctionComponent<
     const gridRef = useRef();
 
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
+        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW],
     );
 
     const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] =
@@ -74,7 +74,7 @@ export const LimitViolationResult: FunctionComponent<
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
-        []
+        [],
     );
 
     const onRowDataUpdated = useCallback((params: any) => {
@@ -91,7 +91,7 @@ export const LimitViolationResult: FunctionComponent<
                 };
             }
         },
-        [theme.selectedRow.background]
+        [theme.selectedRow.background],
     );
 
     const onGridReady = useCallback(({ api }: GridReadyEvent) => {
@@ -104,7 +104,7 @@ export const LimitViolationResult: FunctionComponent<
             messages,
             result,
             loadFlowStatus,
-            !isLoadingResult
+            !isLoadingResult,
         );
         const rowsToShow = getRows(result, loadFlowStatus);
 

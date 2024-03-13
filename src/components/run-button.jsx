@@ -28,12 +28,12 @@ const RunButton = ({
                 activeRunnables.map((k) => [
                     k,
                     intl.formatMessage({ id: runnables[k].messageId }),
-                ])
+                ]),
             ),
-        [intl, runnables, activeRunnables]
+        [intl, runnables, activeRunnables],
     );
     const [selectedRunnable, setSelectedRunnable] = React.useState(
-        activeRunnables[0]
+        activeRunnables[0],
     );
 
     function getOptions() {
@@ -100,7 +100,7 @@ RunButton.propTypes = {
             messageId: PropTypes.string.isRequired,
             startComputation: PropTypes.func,
             actionOnRunnable: PropTypes.func.isRequired,
-        }).isRequired
+        }).isRequired,
     ).isRequired,
     activeRunnables: PropTypes.arrayOf(PropTypes.string).isRequired,
     getStatus: PropTypes.func.isRequired,

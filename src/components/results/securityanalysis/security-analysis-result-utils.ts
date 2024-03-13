@@ -55,7 +55,7 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
 
 export const flattenNmKResultsContingencies = (
     intl: IntlShape,
-    result: ConstraintsFromContingencyItem[] = []
+    result: ConstraintsFromContingencyItem[] = [],
 ) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
@@ -101,7 +101,7 @@ export const flattenNmKResultsContingencies = (
                             : limitViolation?.acceptableDuration,
                 });
             });
-        }
+        },
     );
 
     return rows;
@@ -109,7 +109,7 @@ export const flattenNmKResultsContingencies = (
 
 export const flattenNmKResultsConstraints = (
     intl: IntlShape,
-    result: ContingenciesFromConstraintItem[] = []
+    result: ContingenciesFromConstraintItem[] = [],
 ) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
@@ -122,7 +122,7 @@ export const flattenNmKResultsConstraints = (
                     rows.push({
                         contingencyId: contingency.contingencyId,
                         contingencyEquipmentsIds: contingency.elements?.map(
-                            (element) => element.id
+                            (element) => element.id,
                         ),
                         status: contingency.status
                             ? intl.formatMessage({
@@ -148,7 +148,7 @@ export const flattenNmKResultsConstraints = (
                         loading: limitViolation.loading,
                         linkedElementId: subjectId,
                     });
-                }
+                },
             );
         }
     });
@@ -160,7 +160,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
 ): ColDef[] => [
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -275,7 +275,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -388,7 +388,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -497,7 +497,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
 
 export const handlePostSortRows = (params: PostSortRowsParams) => {
     const isFromContingency = !params.nodes.find(
-        (node) => Object.keys(node.data).length === 1
+        (node) => Object.keys(node.data).length === 1,
     );
 
     const agGridRows = params.nodes;
@@ -543,7 +543,7 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 // We can use this custom hook for fetching enums for AutoComplete filter
 export const useFetchFiltersEnums = (
     hasResult: boolean = false,
-    setFilter: (value: boolean) => void
+    setFilter: (value: boolean) => void,
 ): { error: boolean; loading: boolean; result: FilterEnumsType } => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -577,7 +577,7 @@ export const useFetchFiltersEnums = (
                         });
                         setFilter(true);
                         setLoading(false);
-                    }
+                    },
                 )
                 .catch((err) => {
                     setFilter(false);

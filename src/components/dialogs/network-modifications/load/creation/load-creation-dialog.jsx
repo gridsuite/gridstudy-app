@@ -133,7 +133,7 @@ const LoadCreationDialog = ({
                 ...getPropertiesFromModification(load.properties),
             });
         },
-        [reset]
+        [reset],
     );
 
     const searchCopy = useFormSearchCopy({
@@ -169,7 +169,7 @@ const LoadCreationDialog = ({
                 sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null,
                 load.connectivity?.connected,
-                toModificationProperties(load)
+                toModificationProperties(load),
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -177,7 +177,7 @@ const LoadCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError],
     );
 
     const clear = useCallback(() => {

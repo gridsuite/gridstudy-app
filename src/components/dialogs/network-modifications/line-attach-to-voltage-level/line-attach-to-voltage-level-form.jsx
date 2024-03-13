@@ -143,7 +143,7 @@ const LineAttachToVoltageLevelForm = ({
                         <Typography align="left">
                             <FormattedMessage id="NewVoltageLevel" />
                         </Typography>
-                    </Button>
+                    </Button>,
                 )}
             </Grid>
             <GridSection title="AttachedLine" />
@@ -158,7 +158,7 @@ const LineAttachToVoltageLevelForm = ({
                         <Typography align="left">
                             <FormattedMessage id="AttachedLine" />
                         </Typography>
-                    </Button>
+                    </Button>,
                 )}
             </Grid>
             <GridSection title="Line1" />

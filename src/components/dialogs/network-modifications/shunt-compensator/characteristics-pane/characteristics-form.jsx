@@ -71,22 +71,22 @@ export const CharacteristicsForm = ({
     }, [previousValues]);
     const currentSectionCount = useMemo(
         () => sectionCount ?? previousValues?.sectionCount,
-        [sectionCount, previousValues]
+        [sectionCount, previousValues],
     );
 
     const currentMaximumSectionCount = useMemo(
         () => maximumSectionCount ?? previousValues?.maximumSectionCount,
-        [maximumSectionCount, previousValues]
+        [maximumSectionCount, previousValues],
     );
 
     const currentMaxQAtNominalV = useMemo(
         () => maxQAtNominalV ?? previousMaxQAtNominalV,
-        [maxQAtNominalV, previousMaxQAtNominalV]
+        [maxQAtNominalV, previousMaxQAtNominalV],
     );
 
     const currentMaxSusceptance = useMemo(
         () => maxSusceptance ?? previousMaxSusceptance,
-        [maxSusceptance, previousMaxSusceptance]
+        [maxSusceptance, previousMaxSusceptance],
     );
 
     const maximumSectionCountField = (
@@ -141,7 +141,7 @@ export const CharacteristicsForm = ({
                               : SHUNT_COMPENSATOR_TYPES.REACTOR.label,
                   })
                 : '',
-        [previousValues?.bperSection, intl]
+        [previousValues?.bperSection, intl],
     );
 
     const shuntCompensatorTypeField = (
@@ -199,13 +199,13 @@ export const CharacteristicsForm = ({
                     SWITCHED_ON_FIELD,
                     (currentLinkedSwitchedOnValue /
                         currentMaximumSectionCount) *
-                        currentSectionCount
+                        currentSectionCount,
                 );
             } else {
                 setValue(SWITCHED_ON_FIELD, null);
             }
         },
-        [currentSectionCount, currentMaximumSectionCount, setValue]
+        [currentSectionCount, currentMaximumSectionCount, setValue],
     );
 
     useEffect(() => {
@@ -214,14 +214,14 @@ export const CharacteristicsForm = ({
         ) {
             handleSwitchedOnValue(
                 currentMaxQAtNominalV,
-                SWITCHED_ON_Q_AT_NOMINAL_V
+                SWITCHED_ON_Q_AT_NOMINAL_V,
             );
         } else if (
             characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
         ) {
             handleSwitchedOnValue(
                 currentMaxSusceptance,
-                SWITCHED_ON_SUSCEPTANCE
+                SWITCHED_ON_SUSCEPTANCE,
             );
         }
     }, [

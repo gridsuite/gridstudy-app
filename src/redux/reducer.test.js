@@ -31,7 +31,7 @@ test('reducer.RESET_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     };
 
     expect(reducer(initialState, resetNetworkAreaDiagramDepth())).toEqual(
-        expectedState
+        expectedState,
     );
 });
 
@@ -40,7 +40,7 @@ test('reducer.INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     const expectedState = { networkAreaDiagramDepth: 13 };
 
     expect(reducer(initialState, incrementNetworkAreaDiagramDepth())).toEqual(
-        expectedState
+        expectedState,
     );
 });
 
@@ -49,14 +49,14 @@ test('reducer.DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     const expectedState = { networkAreaDiagramDepth: 11 };
 
     expect(reducer(initialState, decrementNetworkAreaDiagramDepth())).toEqual(
-        expectedState
+        expectedState,
     );
 
     const initialState2 = { networkAreaDiagramDepth: 0 };
     const expectedState2 = { networkAreaDiagramDepth: 0 };
 
     expect(reducer(initialState2, decrementNetworkAreaDiagramDepth())).toEqual(
-        expectedState2
+        expectedState2,
     );
 });
 
@@ -70,8 +70,8 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
     expect(
         reducer(
             initialState,
-            setFullScreenDiagram(3, DiagramType.VOLTAGE_LEVEL)
-        )
+            setFullScreenDiagram(3, DiagramType.VOLTAGE_LEVEL),
+        ),
     ).toEqual(expectedState);
 
     // Changing the fullscreen diagram
@@ -83,7 +83,10 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
     };
 
     expect(
-        reducer(initialState2, setFullScreenDiagram(12, DiagramType.SUBSTATION))
+        reducer(
+            initialState2,
+            setFullScreenDiagram(12, DiagramType.SUBSTATION),
+        ),
     ).toEqual(expectedState2);
 
     // Removing the fullscreen
@@ -96,7 +99,7 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
     const expectedState3 = { fullScreenDiagram: { id: null } };
 
     expect(reducer(initialState3, setFullScreenDiagram(null))).toEqual(
-        expectedState3
+        expectedState3,
     );
 });
 
@@ -114,7 +117,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState, openDiagram(65, DiagramType.SUBSTATION))
+        reducer(initialState, openDiagram(65, DiagramType.SUBSTATION)),
     ).toEqual(expectedState);
 
     // Open a SLD that is already opened
@@ -139,7 +142,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState2, openDiagram(174, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState2, openDiagram(174, DiagramType.VOLTAGE_LEVEL)),
     ).toEqual(expectedState2);
 
     // Open a SLD that is already minimized
@@ -173,7 +176,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState3, openDiagram(34, DiagramType.SUBSTATION))
+        reducer(initialState3, openDiagram(34, DiagramType.SUBSTATION)),
     ).toEqual(expectedState3);
 
     // Open a SLD that is already pinned
@@ -198,7 +201,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState4, openDiagram(99, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState4, openDiagram(99, DiagramType.VOLTAGE_LEVEL)),
     ).toEqual(expectedState4);
 
     // Open a SLD when a NAD with the same ID is already opened
@@ -227,7 +230,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState5, openDiagram(50, DiagramType.SUBSTATION))
+        reducer(initialState5, openDiagram(50, DiagramType.SUBSTATION)),
     ).toEqual(expectedState5);
 
     // Open a SLD when there are other opened and pinned SLD
@@ -306,7 +309,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState6, openDiagram(107, DiagramType.SUBSTATION))
+        reducer(initialState6, openDiagram(107, DiagramType.SUBSTATION)),
     ).toEqual(expectedState6);
 
     // Open a SLD in fullscreen instead of another diagram
@@ -347,7 +350,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState7, openDiagram(503, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState7, openDiagram(503, DiagramType.VOLTAGE_LEVEL)),
     ).toEqual(expectedState7);
 });
 
@@ -365,7 +368,10 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     };
 
     expect(
-        reducer(initialState, openDiagram(37, DiagramType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState,
+            openDiagram(37, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState);
 
     // Open a NAD that is already opened
@@ -391,8 +397,8 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState2,
-            openDiagram(18, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            openDiagram(18, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState2);
 
     // Open a NAD that is already minimized
@@ -418,8 +424,8 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState3,
-            openDiagram(51, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            openDiagram(51, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState3);
 
     // Open a NAD when another NAD is already open
@@ -450,8 +456,8 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState4,
-            openDiagram(22, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            openDiagram(22, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState4);
 
     // Open a NAD when another NAD is already minimized
@@ -482,8 +488,8 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState5,
-            openDiagram(44, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            openDiagram(44, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState5);
 
     // Open a NAD when there is no other NAD and an SLD is in fullscreen
@@ -519,8 +525,8 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState6,
-            openDiagram(28, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            openDiagram(28, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState6);
 
     // Open a NAD when there is another opened NAD and an SLD is in fullscreen
@@ -566,8 +572,8 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState7,
-            openDiagram(39, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            openDiagram(39, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState7);
 
     // Open a NAD when there is another NAD in fullscreen
@@ -606,8 +612,8 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState8,
-            openDiagram(79, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            openDiagram(79, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState8);
 });
 
@@ -617,7 +623,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const expectedState = { diagramStates: [] };
 
     expect(
-        reducer(initialState, minimizeDiagram(1, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState, minimizeDiagram(1, DiagramType.VOLTAGE_LEVEL)),
     ).toEqual(expectedState);
 
     // Try to minimize a nonexistant SLD (bis)
@@ -641,7 +647,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState2, minimizeDiagram(33, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState2, minimizeDiagram(33, DiagramType.VOLTAGE_LEVEL)),
     ).toEqual(expectedState2);
 
     // Minimize an open SLD
@@ -665,7 +671,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState3, minimizeDiagram(7, DiagramType.SUBSTATION))
+        reducer(initialState3, minimizeDiagram(7, DiagramType.SUBSTATION)),
     ).toEqual(expectedState3);
 
     // Minimize a pinned SLD
@@ -709,7 +715,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState4, minimizeDiagram(47, DiagramType.SUBSTATION))
+        reducer(initialState4, minimizeDiagram(47, DiagramType.SUBSTATION)),
     ).toEqual(expectedState4);
 
     // Minimize an already minimized SLD
@@ -753,7 +759,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState5, minimizeDiagram(1, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState5, minimizeDiagram(1, DiagramType.VOLTAGE_LEVEL)),
     ).toEqual(expectedState5);
 });
 
@@ -831,8 +837,8 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState,
-            minimizeDiagram(200, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            minimizeDiagram(200, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState);
 });
 
@@ -868,7 +874,7 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState, togglePinDiagram(1, DiagramType.SUBSTATION))
+        reducer(initialState, togglePinDiagram(1, DiagramType.SUBSTATION)),
     ).toEqual(expectedState);
 
     // Pin a SLD
@@ -902,7 +908,7 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState2, togglePinDiagram(2, DiagramType.SUBSTATION))
+        reducer(initialState2, togglePinDiagram(2, DiagramType.SUBSTATION)),
     ).toEqual(expectedState2);
 
     // Unpin a SLD when no other SLD is already open
@@ -946,7 +952,7 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState3, togglePinDiagram(32, DiagramType.SUBSTATION))
+        reducer(initialState3, togglePinDiagram(32, DiagramType.SUBSTATION)),
     ).toEqual(expectedState3);
 
     // Unpin a SLD when there is already another opened SLD
@@ -1010,7 +1016,7 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     };
 
     expect(
-        reducer(initialState4, togglePinDiagram(40, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState4, togglePinDiagram(40, DiagramType.VOLTAGE_LEVEL)),
     ).toEqual(expectedState4);
 });
 
@@ -1048,8 +1054,8 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState,
-            togglePinDiagram(1, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            togglePinDiagram(1, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState);
 
     // Unpin a NAD
@@ -1095,8 +1101,8 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState2,
-            togglePinDiagram(3, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            togglePinDiagram(3, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState2);
 
     // Pin a NAD
@@ -1142,8 +1148,8 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState3,
-            togglePinDiagram(3, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            togglePinDiagram(3, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState3);
 });
 
@@ -1169,7 +1175,7 @@ test('reducer.CLOSE_DIAGRAM', () => {
     };
 
     expect(
-        reducer(initialState, closeDiagram(6, DiagramType.SUBSTATION))
+        reducer(initialState, closeDiagram(6, DiagramType.SUBSTATION)),
     ).toEqual(expectedState);
 
     // Close a SLD
@@ -1198,7 +1204,7 @@ test('reducer.CLOSE_DIAGRAM', () => {
     };
 
     expect(
-        reducer(initialState2, closeDiagram(54, DiagramType.SUBSTATION))
+        reducer(initialState2, closeDiagram(54, DiagramType.SUBSTATION)),
     ).toEqual(expectedState2);
 
     // Close a NAD
@@ -1239,8 +1245,8 @@ test('reducer.CLOSE_DIAGRAM', () => {
     expect(
         reducer(
             initialState3,
-            closeDiagram(64, DiagramType.NETWORK_AREA_DIAGRAM)
-        )
+            closeDiagram(64, DiagramType.NETWORK_AREA_DIAGRAM),
+        ),
     ).toEqual(expectedState3);
 });
 
@@ -1296,7 +1302,7 @@ test('reducer.CLOSE_DIAGRAMS', () => {
     };
 
     expect(reducer(initialState, closeDiagrams([6, 10, 30, 455]))).toEqual(
-        expectedState
+        expectedState,
     );
 });
 

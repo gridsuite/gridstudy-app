@@ -79,7 +79,7 @@ type ParameterLineProps = BaseParameterLineProps &
  */
 export const ParamLine: FunctionComponent<ParameterLineProps> = (
     props,
-    context
+    context,
 ) => {
     switch (props.type) {
         case ParameterType.Switch:
@@ -108,7 +108,7 @@ const ParamLineSwitch: FunctionComponent<
     BaseParameterLineProps & SwitchParameterLineProps
 > = (props, context) => {
     const [parameterValue, handleChangeParameterValue] = useParameterState(
-        props.param_name_id
+        props.param_name_id,
     );
 
     return (
@@ -135,7 +135,7 @@ const ParamLineDropdown: FunctionComponent<
     BaseParameterLineProps & DropDownParameterLineProps
 > = (props, context) => {
     const [parameterValue, handleChangeParameterValue] = useParameterState(
-        props.param_name_id
+        props.param_name_id,
     );
 
     return (
@@ -163,7 +163,7 @@ const ParamLineDropdown: FunctionComponent<
                             <MenuItem key={key} value={key}>
                                 <FormattedMessage id={value} />
                             </MenuItem>
-                        )
+                        ),
                     )}
                 </Select>
             </Grid>
@@ -176,7 +176,7 @@ const ParamLineSlider: FunctionComponent<
     BaseParameterLineProps & SliderParameterLineProps
 > = (props, context) => {
     const [parameterValue, handleChangeParameterValue] = useParameterState(
-        props.param_name_id
+        props.param_name_id,
     );
     const [sliderValue, setSliderValue] = useState(Number(parameterValue));
 

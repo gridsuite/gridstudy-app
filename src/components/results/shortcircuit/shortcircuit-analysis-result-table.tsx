@@ -239,7 +239,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 analysisType === ShortCircuitAnalysisType.ALL_BUSES
                     ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
                     : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
-            ]
+            ],
     );
 
     const messages = useIntlResultStatusMessages(intl, true);
@@ -252,7 +252,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 };
             }
         },
-        [theme.selectedRow.background]
+        [theme.selectedRow.background],
     );
 
     const defaultColDef = useMemo(
@@ -262,7 +262,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
-        []
+        [],
     );
 
     const onGridReady = useCallback(
@@ -272,7 +272,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 onGridColumnsChanged && onGridColumnsChanged(params);
             }
         },
-        [onGridColumnsChanged]
+        [onGridColumnsChanged],
     );
 
     const handleRowDataUpdated = useCallback(
@@ -281,7 +281,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 onRowDataUpdated(params);
             }
         },
-        [onRowDataUpdated]
+        [onRowDataUpdated],
     );
 
     const getCurrent = useCallback(
@@ -294,7 +294,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             }
             return current;
         },
-        [analysisType]
+        [analysisType],
     );
 
     const flattenResult = useCallback(
@@ -367,11 +367,11 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                             limitType: '', // we have to add this otherwise it's automatically filtered
                         });
                     });
-                }
+                },
             );
             return rows;
         },
-        [getCurrent, intl]
+        [getCurrent, intl],
     );
     const rows = useMemo(() => flattenResult(result), [flattenResult, result]);
 
@@ -379,7 +379,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         messages,
         rows,
         shortCircuitAnalysisStatus,
-        !isFetching
+        !isFetching,
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 

@@ -97,7 +97,7 @@ const useEditBuffer = () => {
         (field, value) => {
             data.current[field] = value;
         },
-        [data]
+        [data],
     );
 
     const resetBuffer = useCallback(() => {
@@ -148,17 +148,17 @@ const TableWrapper = (props) => {
     const { snackError } = useSnackMessage();
 
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOADFLOW],
     );
 
     const allDisplayedColumnsNames = useSelector(
-        (state) => state.allDisplayedColumnsNames
+        (state) => state.allDisplayedColumnsNames,
     );
     const allLockedColumnsNames = useSelector(
-        (state) => state.allLockedColumnsNames
+        (state) => state.allLockedColumnsNames,
     );
     const allReorderedTableDefinitionIndexes = useSelector(
-        (state) => state.allReorderedTableDefinitionIndexes
+        (state) => state.allReorderedTableDefinitionIndexes,
     );
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
@@ -182,7 +182,7 @@ const TableWrapper = (props) => {
 
     const isLockedColumnNamesEmpty = useMemo(
         () => lockedColumnsNames.size === 0,
-        [lockedColumnsNames.size]
+        [lockedColumnsNames.size],
     );
 
     const globalFilterRef = useRef();
@@ -224,7 +224,7 @@ const TableWrapper = (props) => {
 
     const defaultSortColKey = useMemo(() => {
         const defaultSortCol = columnData.find(
-            (column) => column.isDefaultSort
+            (column) => column.isDefaultSort,
         );
         return defaultSortCol?.field;
     }, [columnData]);
@@ -234,7 +234,7 @@ const TableWrapper = (props) => {
         {
             colKey: defaultSortColKey,
             sortWay: SORT_WAYS.asc,
-        }
+        },
     );
 
     const { updateFilter, filterSelector, initFilters } =
@@ -245,17 +245,17 @@ const TableWrapper = (props) => {
             type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
             fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
         }),
-        [tabIndex]
+        [tabIndex],
     );
 
     const formatFetchedEquipmentHandler = useCallback(
         (fetchedEquipment) => {
             return formatFetchedEquipment(
                 equipmentDefinition.type,
-                fetchedEquipment
+                fetchedEquipment,
             );
         },
-        [equipmentDefinition.type]
+        [equipmentDefinition.type],
     );
 
     const formatFetchedEquipmentsHandler = useCallback(
@@ -263,15 +263,15 @@ const TableWrapper = (props) => {
             //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
             return formatFetchedEquipments(
                 equipmentDefinition.type,
-                fetchedEquipments
+                fetchedEquipments,
             );
         },
-        [equipmentDefinition.type]
+        [equipmentDefinition.type],
     );
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         equipmentDefinition,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
     );
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
@@ -279,7 +279,7 @@ const TableWrapper = (props) => {
         const generatedTableColumns =
             TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
         return generatedTableColumns.filter(
-            ({ customFilterParams }) => customFilterParams?.isEnum
+            ({ customFilterParams }) => customFilterParams?.isEnum,
         );
     }, [tabIndex]);
 
@@ -293,9 +293,9 @@ const TableWrapper = (props) => {
                 ...new Set(
                     equipments
                         .map((equipment) =>
-                            deepFindValue(equipment, column.field)
+                            deepFindValue(equipment, column.field),
                         )
-                        .filter((value) => value != null)
+                        .filter((value) => value != null),
                 ),
             ];
         });
@@ -304,7 +304,7 @@ const TableWrapper = (props) => {
 
     const filterEnums = useMemo(
         () => generateEquipmentsFilterEnums(),
-        [generateEquipmentsFilterEnums]
+        [generateEquipmentsFilterEnums],
     );
 
     const enrichColumn = useCallback(
@@ -366,7 +366,7 @@ const TableWrapper = (props) => {
             loadFlowStatus,
             fluxConvention,
             filterEnums,
-        ]
+        ],
     );
 
     useEffect(() => {
@@ -403,7 +403,7 @@ const TableWrapper = (props) => {
             setTabIndex(value);
             cleanTableState();
         },
-        [cleanTableState]
+        [cleanTableState],
     );
     useEffect(() => {
         gridRef.current?.api?.showLoadingOverlay();
@@ -412,7 +412,7 @@ const TableWrapper = (props) => {
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         const newSelectedColumns = new Set(
-            allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []
+            allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [],
         );
         setSelectedColumnsNames(newSelectedColumns);
     }, [tabIndex, allDisplayedColumnsNames]);
@@ -420,7 +420,7 @@ const TableWrapper = (props) => {
     useEffect(() => {
         const allLockedTemp = allLockedColumnsNames[tabIndex];
         setLockedColumnsNames(
-            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
+            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []),
         );
     }, [tabIndex, allLockedColumnsNames]);
 
@@ -430,8 +430,8 @@ const TableWrapper = (props) => {
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
                 : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map(
-                      (item) => item.id
-                  )
+                      (item) => item.id,
+                  ),
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
@@ -448,7 +448,7 @@ const TableWrapper = (props) => {
             //calculate row index to scroll to
             //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
             const selectedRow = gridRef.current?.api?.getRowNode(
-                props.equipmentId
+                props.equipmentId,
             );
             if (selectedRow) {
                 gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
@@ -484,7 +484,7 @@ const TableWrapper = (props) => {
     const handleGridReady = useCallback(() => {
         if (globalFilterRef.current) {
             gridRef.current?.api?.setQuickFilter(
-                globalFilterRef.current.getFilterValue()
+                globalFilterRef.current.getFilterValue(),
             );
         }
         scrollToEquipmentIndex();
@@ -526,9 +526,9 @@ const TableWrapper = (props) => {
             if (event.finished && event.column) {
                 const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
                     reorderedTableDefinitionIndexes.indexOf(
-                        event.column.colDef.id
+                        event.column.colDef.id,
                     ),
-                    1
+                    1,
                 );
                 const destinationIndex = isEditColumnVisible()
                     ? event.toIndex - 1
@@ -537,16 +537,16 @@ const TableWrapper = (props) => {
                 reorderedTableDefinitionIndexes.splice(
                     destinationIndex,
                     0,
-                    reorderedItem
+                    reorderedItem,
                 );
                 setReorderedTableDefinitionIndexes(
-                    reorderedTableDefinitionIndexes
+                    reorderedTableDefinitionIndexes,
                 );
 
                 updateConfigParameter(
                     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                         TABLES_NAMES[tabIndex],
-                    JSON.stringify(reorderedTableDefinitionIndexes)
+                    JSON.stringify(reorderedTableDefinitionIndexes),
                 ).catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -558,7 +558,7 @@ const TableWrapper = (props) => {
                     columnData.findIndex((obj) => {
                         return obj.id === event.column.colDef.id;
                     }),
-                    1
+                    1,
                 );
                 columnData.splice(event.toIndex, 0, reorderedColDef);
                 setColumnData(columnData);
@@ -570,7 +570,7 @@ const TableWrapper = (props) => {
             reorderedTableDefinitionIndexes,
             snackError,
             tabIndex,
-        ]
+        ],
     );
 
     const getFieldValue = useCallback((newField, oldField) => {
@@ -583,7 +583,7 @@ const TableWrapper = (props) => {
                 case EQUIPMENT_TYPES.SUBSTATION:
                     const propertiesForBackend = formatPropertiesForBackend(
                         editingDataRef.current.properties ?? {},
-                        editingData.properties ?? {}
+                        editingData.properties ?? {},
                     );
                     return modifySubstation(
                         props.studyUuid,
@@ -593,7 +593,7 @@ const TableWrapper = (props) => {
                         editingData.country,
                         false,
                         undefined,
-                        propertiesForBackend
+                        propertiesForBackend,
                     );
                 case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
@@ -602,24 +602,24 @@ const TableWrapper = (props) => {
                         editingData.id,
                         getFieldValue(
                             editingData.name,
-                            editingDataRef.current.name
+                            editingDataRef.current.name,
                         ),
                         getFieldValue(
                             editingData.type,
-                            editingDataRef.current.type
+                            editingDataRef.current.type,
                         ),
                         getFieldValue(
                             editingData.p0,
-                            editingDataRef.current.p0
+                            editingDataRef.current.p0,
                         ),
                         getFieldValue(
                             editingData.q0,
-                            editingDataRef.current.q0
+                            editingDataRef.current.q0,
                         ),
                         undefined,
                         undefined,
                         false,
-                        undefined
+                        undefined,
                     );
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                     let ratioTap = null;
@@ -634,16 +634,16 @@ const TableWrapper = (props) => {
                                         editingDataRef.current
                                             .ratioTapChanger?.[
                                             LOAD_TAP_CHANGING_CAPABILITIES
-                                        ]
-                                    )
+                                        ],
+                                    ),
                                 ),
                             [TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
                                     editingData.ratioTapChanger?.[TAP_POSITION],
                                     editingDataRef.current.ratioTapChanger?.[
                                         TAP_POSITION
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [LOW_TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
@@ -652,16 +652,16 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.ratioTapChanger?.[
                                         LOW_TAP_POSITION
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [REGULATING]: toModificationOperation(
                                 getFieldValue(
                                     editingData.ratioTapChanger?.[REGULATING],
                                     editingDataRef.current.ratioTapChanger?.[
                                         REGULATING
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [REGULATION_TYPE]: toModificationOperation(
                                 getFieldValue(
@@ -670,8 +670,8 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.ratioTapChanger?.[
                                         REGULATION_TYPE
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [REGULATION_SIDE]: toModificationOperation(
                                 getFieldValue(
@@ -680,8 +680,8 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.ratioTapChanger?.[
                                         REGULATION_SIDE
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             regulatingTerminalId: toModificationOperation(
                                 getFieldValue(
@@ -689,8 +689,8 @@ const TableWrapper = (props) => {
                                         ?.regulatingTerminalConnectableId,
                                     editingDataRef.current.ratioTapChanger?.[
                                         'regulatingTerminalConnectableId'
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             regulatingTerminalType: toModificationOperation(
                                 getFieldValue(
@@ -698,8 +698,8 @@ const TableWrapper = (props) => {
                                         ?.regulatingTerminalConnectableType,
                                     editingDataRef.current.ratioTapChanger?.[
                                         'regulatingTerminalConnectableType'
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             regulatingTerminalVlId: toModificationOperation(
                                 getFieldValue(
@@ -707,16 +707,16 @@ const TableWrapper = (props) => {
                                         ?.regulatingTerminalVlId,
                                     editingDataRef.current.ratioTapChanger?.[
                                         'regulatingTerminalVlId'
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [TARGET_V]: toModificationOperation(
                                 getFieldValue(
                                     editingData.ratioTapChanger?.[TARGET_V],
                                     editingDataRef.current.ratioTapChanger?.[
                                         TARGET_V
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [TARGET_DEADBAND]: toModificationOperation(
                                 getFieldValue(
@@ -725,8 +725,8 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.ratioTapChanger?.[
                                         TARGET_DEADBAND
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             steps: null,
                         };
@@ -741,16 +741,16 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.phaseTapChanger?.[
                                         REGULATION_MODE
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
                                     editingData.phaseTapChanger?.[TAP_POSITION],
                                     editingDataRef.current.phaseTapChanger?.[
                                         TAP_POSITION
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [LOW_TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
@@ -759,8 +759,8 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.phaseTapChanger?.[
                                         LOW_TAP_POSITION
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [REGULATION_TYPE]: toModificationOperation(
                                 getFieldValue(
@@ -769,8 +769,8 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.phaseTapChanger?.[
                                         REGULATION_TYPE
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             [REGULATION_SIDE]: toModificationOperation(
                                 getFieldValue(
@@ -779,8 +779,8 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.phaseTapChanger?.[
                                         REGULATION_SIDE
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             regulatingTerminalId: toModificationOperation(
                                 getFieldValue(
@@ -788,8 +788,8 @@ const TableWrapper = (props) => {
                                         ?.regulatingTerminalConnectableId,
                                     editingDataRef.current.phaseTapChanger?.[
                                         'regulatingTerminalConnectableId'
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             regulatingTerminalType: toModificationOperation(
                                 getFieldValue(
@@ -797,8 +797,8 @@ const TableWrapper = (props) => {
                                         ?.regulatingTerminalConnectableType,
                                     editingDataRef.current.phaseTapChanger?.[
                                         'regulatingTerminalConnectableType'
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             regulatingTerminalVlId: toModificationOperation(
                                 getFieldValue(
@@ -806,16 +806,16 @@ const TableWrapper = (props) => {
                                         ?.regulatingTerminalVlId,
                                     editingDataRef.current.phaseTapChanger?.[
                                         'regulatingTerminalVlId'
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                             regulationValue: toModificationOperation(
                                 getFieldValue(
                                     editingData.phaseTapChanger
                                         ?.regulationValue,
                                     editingDataRef.current.phaseTapChanger
-                                        ?.regulationValue
-                                )
+                                        ?.regulationValue,
+                                ),
                             ),
                             [TARGET_DEADBAND]: toModificationOperation(
                                 getFieldValue(
@@ -824,8 +824,8 @@ const TableWrapper = (props) => {
                                     ],
                                     editingDataRef.current.phaseTapChanger?.[
                                         TARGET_DEADBAND
-                                    ]
-                                )
+                                    ],
+                                ),
                             ),
                         };
                     }
@@ -837,71 +837,71 @@ const TableWrapper = (props) => {
                             sanitizeString(
                                 getFieldValue(
                                     editingData?.name,
-                                    editingDataRef.current?.name
-                                )
-                            )
+                                    editingDataRef.current?.name,
+                                ),
+                            ),
                         ),
                         toModificationOperation(
                             getFieldValue(
                                 editingData.r,
-                                editingDataRef.current.r
-                            )
+                                editingDataRef.current.r,
+                            ),
                         ),
                         toModificationOperation(
                             getFieldValue(
                                 editingData.x,
-                                editingDataRef.current.x
-                            )
+                                editingDataRef.current.x,
+                            ),
                         ),
                         toModificationOperation(
                             getFieldValue(
                                 editingData.g,
-                                editingDataRef.current.g
-                            )
+                                editingDataRef.current.g,
+                            ),
                         ),
                         toModificationOperation(
                             getFieldValue(
                                 editingData.b,
-                                editingDataRef.current.b
-                            )
+                                editingDataRef.current.b,
+                            ),
                         ),
                         toModificationOperation(
                             getFieldValue(
                                 editingData.ratedS,
-                                editingDataRef.current.ratedS
-                            )
+                                editingDataRef.current.ratedS,
+                            ),
                         ),
                         toModificationOperation(
                             getFieldValue(
                                 editingData.ratedU1,
-                                editingDataRef.current.ratedU1
-                            )
+                                editingDataRef.current.ratedU1,
+                            ),
                         ),
                         toModificationOperation(
                             getFieldValue(
                                 editingData.ratedU2,
-                                editingDataRef.current.ratedU2
-                            )
+                                editingDataRef.current.ratedU2,
+                            ),
                         ),
                         undefined,
                         undefined,
                         ratioTap,
                         phaseTap,
                         false,
-                        undefined
+                        undefined,
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
                     const regulatingTerminalConnectableIdFieldValue =
                         getFieldValue(
                             editingData.regulatingTerminalConnectableId,
                             editingDataRef.current
-                                ?.regulatingTerminalConnectableId
+                                ?.regulatingTerminalConnectableId,
                         );
                     const regulatingTerminalConnectableTypeFieldValue =
                         getFieldValue(
                             editingData.regulatingTerminalConnectableType,
                             editingDataRef.current
-                                ?.regulatingTerminalConnectableType
+                                ?.regulatingTerminalConnectableType,
                         );
                     const regulatingTerminalVlIdFieldValue =
                         regulatingTerminalConnectableIdFieldValue !== null ||
@@ -914,36 +914,36 @@ const TableWrapper = (props) => {
                         editingData.id,
                         getFieldValue(
                             editingData.name,
-                            editingDataRef.current.name
+                            editingDataRef.current.name,
                         ),
                         getFieldValue(
                             editingData.energySource,
-                            editingDataRef.current.energySource
+                            editingDataRef.current.energySource,
                         ),
                         getFieldValue(
                             editingData.minP,
-                            editingDataRef.current.minP
+                            editingDataRef.current.minP,
                         ),
                         getFieldValue(
                             editingData.maxP,
-                            editingDataRef.current.maxP
+                            editingDataRef.current.maxP,
                         ),
                         undefined,
                         getFieldValue(
                             editingData.targetP,
-                            editingDataRef.current.targetP
+                            editingDataRef.current.targetP,
                         ),
                         getFieldValue(
                             editingData.targetQ,
-                            editingDataRef.current.targetQ
+                            editingDataRef.current.targetQ,
                         ),
                         getFieldValue(
                             editingData.voltageRegulatorOn,
-                            editingDataRef.current.voltageRegulatorOn
+                            editingDataRef.current.voltageRegulatorOn,
                         ),
                         getFieldValue(
                             editingData.targetV,
-                            editingDataRef.current.targetV
+                            editingDataRef.current.targetV,
                         ),
                         undefined,
                         undefined,
@@ -951,39 +951,39 @@ const TableWrapper = (props) => {
                         getFieldValue(
                             editingData?.coordinatedReactiveControl?.qPercent,
                             editingDataRef.current?.coordinatedReactiveControl
-                                ?.qPercent
+                                ?.qPercent,
                         ),
                         getFieldValue(
                             editingData?.generatorStartup
                                 ?.plannedActivePowerSetPoint,
                             editingDataRef.current?.generatorStartup
-                                ?.plannedActivePowerSetPoint
+                                ?.plannedActivePowerSetPoint,
                         ),
                         getFieldValue(
                             editingData?.generatorStartup?.marginalCost,
                             editingDataRef.current?.generatorStartup
-                                ?.marginalCost
+                                ?.marginalCost,
                         ),
                         getFieldValue(
                             editingData?.generatorStartup?.plannedOutageRate,
                             editingDataRef.current?.generatorStartup
-                                ?.plannedOutageRate
+                                ?.plannedOutageRate,
                         ),
                         getFieldValue(
                             editingData?.generatorStartup?.forcedOutageRate,
                             editingDataRef.current?.generatorStartup
-                                ?.forcedOutageRate
+                                ?.forcedOutageRate,
                         ),
                         getFieldValue(
                             editingData?.generatorShortCircuit?.directTransX,
                             editingDataRef.current?.generatorShortCircuit
-                                ?.directTransX
+                                ?.directTransX,
                         ),
                         getFieldValue(
                             editingData?.generatorShortCircuit
                                 ?.stepUpTransformerX,
                             editingDataRef.current?.generatorShortCircuit
-                                ?.stepUpTransformerX
+                                ?.stepUpTransformerX,
                         ),
                         getFieldValue(
                             editingData?.regulatingTerminalVlId ||
@@ -994,7 +994,7 @@ const TableWrapper = (props) => {
                                 editingDataRef.current
                                     ?.regulatingTerminalConnectableId
                                 ? REGULATION_TYPES.DISTANT.id
-                                : REGULATION_TYPES.LOCAL.id
+                                : REGULATION_TYPES.LOCAL.id,
                         ),
                         regulatingTerminalConnectableIdFieldValue,
                         regulatingTerminalConnectableTypeFieldValue,
@@ -1003,12 +1003,12 @@ const TableWrapper = (props) => {
                         getFieldValue(
                             editingData?.activePowerControl?.participate,
                             editingDataRef.current?.activePowerControl
-                                ?.participate
+                                ?.participate,
                         ),
                         getFieldValue(
                             editingData?.activePowerControl?.droop,
-                            editingDataRef.current?.activePowerControl?.droop
-                        )
+                            editingDataRef.current?.activePowerControl?.droop,
+                        ),
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -1017,32 +1017,32 @@ const TableWrapper = (props) => {
                         editingData.id,
                         getFieldValue(
                             editingData.name,
-                            editingDataRef.current.name
+                            editingDataRef.current.name,
                         ),
                         getFieldValue(
                             editingData.nominalV,
-                            editingDataRef.current.nominalV
+                            editingDataRef.current.nominalV,
                         ),
                         getFieldValue(
                             editingData.lowVoltageLimit,
-                            editingDataRef.current.lowVoltageLimit
+                            editingDataRef.current.lowVoltageLimit,
                         ),
                         getFieldValue(
                             editingData.highVoltageLimit,
-                            editingDataRef.current.highVoltageLimit
+                            editingDataRef.current.highVoltageLimit,
                         ),
                         getFieldValue(
                             editingData.identifiableShortCircuit?.ipMin,
                             editingDataRef.current.identifiableShortCircuit
-                                ?.ipMin
+                                ?.ipMin,
                         ),
                         getFieldValue(
                             editingData.identifiableShortCircuit?.ipMax,
                             editingDataRef.current.identifiableShortCircuit
-                                ?.ipMax
+                                ?.ipMax,
                         ),
                         false,
-                        undefined
+                        undefined,
                     );
                 case EQUIPMENT_TYPES.BATTERY:
                     return modifyBattery(
@@ -1051,23 +1051,23 @@ const TableWrapper = (props) => {
                         editingData.id,
                         getFieldValue(
                             editingData.name,
-                            editingDataRef.current.name
+                            editingDataRef.current.name,
                         ),
                         getFieldValue(
                             editingData.minP,
-                            editingDataRef.current.minP
+                            editingDataRef.current.minP,
                         ),
                         getFieldValue(
                             editingData.maxP,
-                            editingDataRef.current.maxP
+                            editingDataRef.current.maxP,
                         ),
                         getFieldValue(
                             editingData.targetP,
-                            editingDataRef.current.targetP
+                            editingDataRef.current.targetP,
                         ),
                         getFieldValue(
                             editingData.targetQ,
-                            editingDataRef.current.targetQ
+                            editingDataRef.current.targetQ,
                         ),
                         undefined,
                         undefined,
@@ -1079,12 +1079,12 @@ const TableWrapper = (props) => {
                                 ? +editingDataRef.current.activePowerControl
                                       .participate
                                 : editingDataRef.current.activePowerControl
-                                      ?.participate
+                                      ?.participate,
                         ),
                         getFieldValue(
                             editingData.activePowerControl?.droop,
-                            editingDataRef.current.activePowerControl?.droop
-                        )
+                            editingDataRef.current.activePowerControl?.droop,
+                        ),
                     );
                 case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
                     return modifyShuntCompensator(
@@ -1093,47 +1093,47 @@ const TableWrapper = (props) => {
                         editingData.id,
                         getFieldValue(
                             editingData.name,
-                            editingDataRef.current.name
+                            editingDataRef.current.name,
                         ),
                         getFieldValue(
                             editingData.maximumSectionCount,
-                            editingDataRef.current.maximumSectionCount
+                            editingDataRef.current.maximumSectionCount,
                         ),
                         getFieldValue(
                             editingData.sectionCount,
-                            editingDataRef.current.sectionCount
+                            editingDataRef.current.sectionCount,
                         ),
                         context.lastEditedField === 'maxSusceptance'
                             ? getFieldValue(
                                   editingData.maxSusceptance,
-                                  editingDataRef.current.maxSusceptance
+                                  editingDataRef.current.maxSusceptance,
                               )
                             : null,
                         context.lastEditedField === 'maxQAtNominalV'
                             ? getFieldValue(
                                   editingData.maxQAtNominalV,
-                                  editingDataRef.current.maxQAtNominalV
+                                  editingDataRef.current.maxQAtNominalV,
                               )
                             : null,
                         getFieldValue(
                             editingData.type,
                             editingDataRef.current.maxSusceptance > 0
                                 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
-                                : SHUNT_COMPENSATOR_TYPES.REACTOR.id
+                                : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
                         ),
                         editingData.voltageLevelId,
                         false,
-                        undefined
+                        undefined,
                     );
                 default:
                     return requestNetworkChange(
                         props.studyUuid,
                         props.currentNode?.id,
-                        groovyCr
+                        groovyCr,
                     );
             }
         },
-        [props.currentNode?.id, props.studyUuid, getFieldValue]
+        [props.currentNode?.id, props.studyUuid, getFieldValue],
     );
 
     const validateEdit = useCallback(
@@ -1163,7 +1163,7 @@ const TableWrapper = (props) => {
             const editPromise = buildEditPromise(
                 editingData,
                 groovyCr,
-                params.context
+                params.context,
             );
             Promise.resolve(editPromise)
                 .then(() => {
@@ -1193,7 +1193,7 @@ const TableWrapper = (props) => {
             rollbackEdit,
             snackError,
             tabIndex,
-        ]
+        ],
     );
 
     // After the modification has been applied, we need to update the equipment data in the grid
@@ -1212,7 +1212,7 @@ const TableWrapper = (props) => {
                     lastModifiedEquipment.metadata.equipmentType,
                     EQUIPMENT_INFOS_TYPES.TAB.type,
                     lastModifiedEquipment.id,
-                    true
+                    true,
                 )
                     .then((updatedEquipment) => {
                         const formattedData =
@@ -1226,7 +1226,7 @@ const TableWrapper = (props) => {
                             force: true,
                             rowNodes: [
                                 gridRef.current.api.getRowNode(
-                                    formattedData.id
+                                    formattedData.id,
                                 ),
                             ],
                         });
@@ -1269,7 +1269,7 @@ const TableWrapper = (props) => {
                 checkValidationsAndRefreshCells(params.api, params.context);
             }
         },
-        [addDataToBuffer]
+        [addDataToBuffer],
     );
 
     const handleCellEditingStarted = useCallback((params) => {
@@ -1286,7 +1286,7 @@ const TableWrapper = (props) => {
                 validateEdit(params);
             }
         },
-        [priorValuesBuffer, rollbackEdit, validateEdit]
+        [priorValuesBuffer, rollbackEdit, validateEdit],
     );
 
     const addEditColumn = useCallback(
@@ -1329,13 +1329,13 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData?.id, handleSubmitEditing, rollbackEdit, tabIndex]
+        [editingData?.id, handleSubmitEditing, rollbackEdit, tabIndex],
     );
 
     const generateTableColumns = useCallback(
         (tabIndex) => {
             const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(
-                tabIndex
+                tabIndex,
             )
                 .columns.filter((c) => {
                     return selectedColumnsNames.has(c.id);
@@ -1362,7 +1362,7 @@ const TableWrapper = (props) => {
             isEditColumnVisible,
             reorderedTableDefinitionIndexes,
             selectedColumnsNames,
-        ]
+        ],
     );
 
     useEffect(() => {

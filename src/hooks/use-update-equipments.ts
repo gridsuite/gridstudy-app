@@ -43,7 +43,7 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
     const { studyUuid, currentNodeUuid } = props;
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
+        (state: ReduxState) => state.studyUpdated,
     );
 
     useEffect(() => {
@@ -62,7 +62,7 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
                         // or call the existing API by equipmentType
                         dispatch(resetEquipments());
                         dispatch(updateEquipments(values));
-                    }
+                    },
                 );
                 dispatch(setUpdatedSubstationsIds(undefined));
             } else {
@@ -80,17 +80,17 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
                                     deletedEquipment?.equipmentId,
                                     ' and type=',
                                     deletedEquipment?.equipmentType,
-                                    ' from the network'
+                                    ' from the network',
                                 );
                                 // TODO For every deletedEquipment we do a dispatch... eurk
                                 dispatch(
                                     deleteEquipment(
                                         deletedEquipment?.equipmentType,
-                                        deletedEquipment?.equipmentId
-                                    )
+                                        deletedEquipment?.equipmentId,
+                                    ),
                                 );
                             }
-                        }
+                        },
                     );
                     dispatch(setDeletedEquipments(deletedEquipments));
                 }
@@ -98,7 +98,7 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
                 fetchAllEquipments(
                     studyUuid,
                     currentNodeUuid,
-                    substationsIds
+                    substationsIds,
                 ).then((values) => {
                     dispatch(updateEquipments(values));
                 });

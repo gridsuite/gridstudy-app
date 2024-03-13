@@ -61,7 +61,7 @@ const EquipmentPopover = ({
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.TOOLTIP.type,
                 equipmentId,
-                true
+                true,
             ).then((value) => {
                 setEquipmentInfo(value);
             });
@@ -118,7 +118,9 @@ const EquipmentPopover = ({
                                 </TableCell>
                                 <TableCell sx={styles.tableCells}>
                                     {formatValue(
-                                        Math.round(currentLimits.permanentLimit)
+                                        Math.round(
+                                            currentLimits.permanentLimit,
+                                        ),
                                     )}
                                 </TableCell>
                                 <TableCell
@@ -138,15 +140,15 @@ const EquipmentPopover = ({
                                                       currentLimits.permanentLimit
                                                 : (Math.abs(equipmentInfo.i2) *
                                                       100) /
-                                                      currentLimits.permanentLimit
-                                        )
+                                                      currentLimits.permanentLimit,
+                                        ),
                                     )}
                                 </TableCell>
                                 <TableCell sx={styles.tableCells}>
                                     {formatValue(
                                         side === '1'
                                             ? equipmentInfo.voltageLevelId1
-                                            : equipmentInfo.voltageLevelId2
+                                            : equipmentInfo.voltageLevelId2,
                                     )}
                                 </TableCell>
                             </TableRow>
@@ -162,14 +164,14 @@ const EquipmentPopover = ({
                                         >
                                             <TableCell sx={styles.tableCells}>
                                                 {formatValue(
-                                                    temporaryLimit.name
+                                                    temporaryLimit.name,
                                                 )}
                                             </TableCell>
                                             <TableCell sx={styles.tableCells}>
                                                 {formatValue(
                                                     Math.round(
-                                                        temporaryLimit.value
-                                                    )
+                                                        temporaryLimit.value,
+                                                    ),
                                                 )}
                                             </TableCell>
                                             <TableCell
@@ -185,31 +187,31 @@ const EquipmentPopover = ({
                                                     ? formatValue(
                                                           Math.round(
                                                               (Math.abs(
-                                                                  equipmentInfo.i1
+                                                                  equipmentInfo.i1,
                                                               ) *
                                                                   100) /
-                                                                  temporaryLimit.value
-                                                          )
+                                                                  temporaryLimit.value,
+                                                          ),
                                                       )
                                                     : formatValue(
                                                           Math.round(
                                                               (Math.abs(
-                                                                  equipmentInfo.i2
+                                                                  equipmentInfo.i2,
                                                               ) *
                                                                   100) /
-                                                                  temporaryLimit.value
-                                                          )
+                                                                  temporaryLimit.value,
+                                                          ),
                                                       )}
                                             </TableCell>
                                             <TableCell sx={styles.tableCells}>
                                                 {formatValue(
                                                     side === '1'
                                                         ? equipmentInfo.voltageLevelId1
-                                                        : equipmentInfo.voltageLevelId2
+                                                        : equipmentInfo.voltageLevelId2,
                                                 )}
                                             </TableCell>
                                         </TableRow>
-                                    )
+                                    ),
                             )}
                     </>
                 )}
@@ -264,11 +266,11 @@ const EquipmentPopover = ({
 
     const renderVoltageLevelCharacteristics = (
         equipmentInfo,
-        equipmentType
+        equipmentType,
     ) => {
         const renderShuntSusceptanceRow = (
             voltageLevelId,
-            susceptanceValue
+            susceptanceValue,
         ) => (
             <TableRow>
                 {renderTableCell({ value: voltageLevelId, isLabel: false })}
@@ -285,17 +287,17 @@ const EquipmentPopover = ({
                 {equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ? (
                     renderShuntSusceptanceRow(
                         equipmentInfo.voltageLevelId2,
-                        equipmentInfo?.b
+                        equipmentInfo?.b,
                     )
                 ) : (
                     <>
                         {renderShuntSusceptanceRow(
                             equipmentInfo.voltageLevelId1,
-                            equipmentInfo.b1
+                            equipmentInfo.b1,
                         )}
                         {renderShuntSusceptanceRow(
                             equipmentInfo.voltageLevelId2,
-                            equipmentInfo?.b2
+                            equipmentInfo?.b2,
                         )}
                     </>
                 )}
@@ -364,11 +366,11 @@ const EquipmentPopover = ({
                                             </TableHead>
                                             <TableBody>
                                                 {renderCommonCharacteristics(
-                                                    equipmentInfo
+                                                    equipmentInfo,
                                                 )}
                                                 {renderVoltageLevelCharacteristics(
                                                     equipmentInfo,
-                                                    equipmentType
+                                                    equipmentType,
                                                 )}
                                             </TableBody>
                                         </Table>
@@ -393,14 +395,14 @@ const EquipmentPopover = ({
                                                         sx={styles.tableCells}
                                                     >
                                                         {formatValue(
-                                                            equipmentInfo.voltageLevelId1
+                                                            equipmentInfo.voltageLevelId1,
                                                         )}
                                                     </TableCell>
                                                     <TableCell
                                                         sx={styles.tableCells}
                                                     >
                                                         {formatValue(
-                                                            equipmentInfo.voltageLevelId2
+                                                            equipmentInfo.voltageLevelId2,
                                                         )}
                                                     </TableCell>
                                                 </TableRow>
@@ -423,13 +425,13 @@ const EquipmentPopover = ({
                                                                     RunningStatus.SUCCEED
                                                                         ? 1
                                                                         : 0.2,
-                                                            }
+                                                            },
                                                         )}
                                                     >
                                                         {formatValue(
                                                             Math.round(
-                                                                equipmentInfo.i1
-                                                            )
+                                                                equipmentInfo.i1,
+                                                            ),
                                                         )}
                                                     </TableCell>
                                                     <TableCell
@@ -441,13 +443,13 @@ const EquipmentPopover = ({
                                                                     RunningStatus.SUCCEED
                                                                         ? 1
                                                                         : 0.2,
-                                                            }
+                                                            },
                                                         )}
                                                     >
                                                         {formatValue(
                                                             Math.round(
-                                                                equipmentInfo.i2
-                                                            )
+                                                                equipmentInfo.i2,
+                                                            ),
                                                         )}
                                                     </TableCell>
                                                 </TableRow>
@@ -497,11 +499,11 @@ const EquipmentPopover = ({
                                             <TableBody>
                                                 {generateRows(
                                                     equipmentInfo.currentLimits1,
-                                                    '1'
+                                                    '1',
                                                 )}
                                                 {generateRows(
                                                     equipmentInfo.currentLimits2,
-                                                    '2'
+                                                    '2',
                                                 )}
                                             </TableBody>
                                         </Table>

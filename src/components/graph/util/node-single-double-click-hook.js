@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 export function useNodeSingleAndDoubleClick(
     actionSimpleClick,
     actionDoubleClick,
-    delay = 250
+    delay = 250,
 ) {
     const [clickEvent, setClickEvent] = useState({ count: 0 });
 

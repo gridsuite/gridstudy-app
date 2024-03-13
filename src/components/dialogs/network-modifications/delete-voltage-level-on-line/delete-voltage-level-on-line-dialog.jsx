@@ -88,7 +88,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 [REPLACING_LINE_1_NAME]: editData.replacingLine1Name,
             });
         },
-        [reset]
+        [reset],
     );
 
     useEffect(() => {
@@ -106,7 +106,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 formData[LINE_TO_ATTACH_TO_1_ID],
                 formData[LINE_TO_ATTACH_TO_2_ID],
                 formData[REPLACING_LINE_1_ID],
-                sanitizeString(formData[REPLACING_LINE_1_NAME])
+                sanitizeString(formData[REPLACING_LINE_1_NAME]),
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -114,7 +114,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid],
     );
 
     const clear = useCallback(() => {

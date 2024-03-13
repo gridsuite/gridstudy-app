@@ -37,7 +37,7 @@ export function getVscHvdcLinePaneSchema(id: string) {
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
                         is: (
                             angleDroopActivePowerControl: boolean,
-                            droop: number
+                            droop: number,
                         ) => angleDroopActivePowerControl || droop,
                         then: (schema) => schema.required(),
                     }),
@@ -47,12 +47,12 @@ export function getVscHvdcLinePaneSchema(id: string) {
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
                         is: (
                             angleDroopActivePowerControl: boolean,
-                            p0: number
+                            p0: number,
                         ) => angleDroopActivePowerControl || p0,
                         then: (schema) => schema.required(),
                     }),
             },
-            [[P0, DROOP]]
+            [[P0, DROOP]],
         ),
     };
 }
@@ -72,13 +72,13 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
                 [P0]: yup.number().nullable(),
                 [DROOP]: yup.number().nullable(),
             },
-            [[P0, DROOP]]
+            [[P0, DROOP]],
         ),
     };
 }
 export function getVscHvdcLinePaneEmptyFormData(
     id: string,
-    isModification: boolean
+    isModification: boolean,
 ) {
     return {
         [id]: {
@@ -110,7 +110,7 @@ export interface hvdcLineTabEditData {
 
 export function getVscHvdcLineTabFormData(
     id: string,
-    hvdcLine: hvdcLineTabEditData
+    hvdcLine: hvdcLineTabEditData,
 ) {
     return {
         [id]: {
@@ -133,7 +133,7 @@ export function getVscHvdcLineTabFormData(
 
 export function getVscHvdcLineModificationTabFormData(
     id: string,
-    hvdcLine: any
+    hvdcLine: any,
 ) {
     return {
         [id]: {

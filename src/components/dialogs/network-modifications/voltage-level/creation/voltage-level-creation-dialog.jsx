@@ -97,7 +97,7 @@ const formSchema = yup
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
             .max(
                 yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
-                'ShortCircuitCurrentLimitMinMaxError'
+                'ShortCircuitCurrentLimitMinMaxError',
             ),
         [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
@@ -123,13 +123,13 @@ const formSchema = yup
                 yup.object().shape({
                     [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
                     [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
-                })
+                }),
             )
             .test('coupling-omnibus-between-sections', (values) =>
                 controlCouplingOmnibusBetweenSections(
                     values,
-                    'CouplingOmnibusBetweenSameBusbar'
-                )
+                    'CouplingOmnibusBetweenSameBusbar',
+                ),
             ),
     })
     .concat(creationPropertiesSchema);
@@ -172,12 +172,12 @@ const VoltageLevelCreationDialog = ({
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     fromCopy
                         ? voltageLevel.identifiableShortCircuit?.ipMin
-                        : voltageLevel.ipMin
+                        : voltageLevel.ipMin,
                 ),
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     fromCopy
                         ? voltageLevel.identifiableShortCircuit?.ipMax
-                        : voltageLevel.ipMax
+                        : voltageLevel.ipMax,
                 ),
                 [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
                 [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
@@ -201,7 +201,7 @@ const VoltageLevelCreationDialog = ({
                 });
             }
         },
-        [intl, reset, snackWarning]
+        [intl, reset, snackWarning],
     );
 
     const searchCopy = useFormSearchCopy({
@@ -230,10 +230,10 @@ const VoltageLevelCreationDialog = ({
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 ipMin: kiloUnitToUnit(
-                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT],
                 ),
                 ipMax: kiloUnitToUnit(
-                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT],
                 ),
                 busbarCount: voltageLevel[BUS_BAR_COUNT],
                 sectionCount: voltageLevel[SECTION_COUNT],
@@ -252,7 +252,13 @@ const VoltageLevelCreationDialog = ({
                 });
             });
         },
-        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]
+        [
+            onCreateVoltageLevel,
+            studyUuid,
+            currentNodeUuid,
+            editData,
+            snackError,
+        ],
     );
 
     const clear = useCallback(() => {

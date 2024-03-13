@@ -49,13 +49,13 @@ type oneBusShortcircuitAnalysisLoader = [
 
 export function useOneBusShortcircuitAnalysisLoader(
     diagramId: string,
-    nodeId: UUID
+    nodeId: UUID,
 ): oneBusShortcircuitAnalysisLoader {
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
+        (state: ReduxState) => state.studyUpdated,
     );
     const oneBusShortCircuitAnalysisDiagram = useSelector(
-        (state: ReduxState) => state.oneBusShortCircuitAnalysisDiagram
+        (state: ReduxState) => state.oneBusShortCircuitAnalysisDiagram,
     );
 
     const dispatch = useDispatch();
@@ -73,7 +73,7 @@ export function useOneBusShortcircuitAnalysisLoader(
         () =>
             diagramId === oneBusShortCircuitAnalysisDiagram?.diagramId &&
             nodeId === oneBusShortCircuitAnalysisDiagram?.nodeId,
-        [nodeId, diagramId, oneBusShortCircuitAnalysisDiagram]
+        [nodeId, diagramId, oneBusShortCircuitAnalysisDiagram],
     );
 
     const oneBusShortcircuitAnalysisLoaderMessage =

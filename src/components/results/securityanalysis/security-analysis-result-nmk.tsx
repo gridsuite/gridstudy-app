@@ -53,13 +53,13 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             isFromContingency
                 ? flattenNmKResultsContingencies(
                       intl,
-                      content as ConstraintsFromContingencyItem[]
+                      content as ConstraintsFromContingencyItem[],
                   )
                 : flattenNmKResultsConstraints(
                       intl,
-                      content as ContingenciesFromConstraintItem[]
+                      content as ContingenciesFromConstraintItem[],
                   ),
-        [content, intl, isFromContingency]
+        [content, intl, isFromContingency],
     );
 
     const getRowStyle = useCallback(
@@ -73,7 +73,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 };
             }
         },
-        [isFromContingency, theme.selectedRow.background]
+        [isFromContingency, theme.selectedRow.background],
     );
 
     const agGridProps = {

@@ -4,11 +4,11 @@ import { loadEquipments } from '../../redux/actions';
 
 export const useSpreadsheetEquipments = (
     equipment,
-    formatFetchedEquipments
+    formatFetchedEquipments,
 ) => {
     const dispatch = useDispatch();
     const equipments = useSelector(
-        (state) => state.spreadsheetNetwork[equipment.type]
+        (state) => state.spreadsheetNetwork[equipment.type],
     );
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -23,8 +23,8 @@ export const useSpreadsheetEquipments = (
             setIsFetching(true);
             Promise.all(
                 equipment.fetchers.map((fetcher) =>
-                    fetcher(studyUuid, currentNode.id)
-                )
+                    fetcher(studyUuid, currentNode.id),
+                ),
             )
                 .then((results) => {
                     let fetchedEquipments = results.flat();

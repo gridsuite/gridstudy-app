@@ -40,7 +40,7 @@ function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
                         setRowNumber(
                             !event.target.value
                                 ? 0
-                                : parseInt(event.target.value)
+                                : parseInt(event.target.value),
                         );
                     }}
                 />

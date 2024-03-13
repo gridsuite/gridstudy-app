@@ -16,7 +16,7 @@ export interface IOptionalService {
     status: OptionalServicesStatus;
 }
 export const getOptionalServiceByServerName = (
-    serverName: string
+    serverName: string,
 ): OptionalServicesNames | undefined => {
     switch (serverName) {
         case 'security-analysis-server':

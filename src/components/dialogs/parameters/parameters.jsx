@@ -256,7 +256,7 @@ export const useParametersBackend = (
     backendUpdateProvider,
     backendFetchParameters,
     backendUpdateParameters,
-    backendFetchSpecificParameters
+    backendFetchSpecificParameters,
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
@@ -288,12 +288,12 @@ export const useParametersBackend = (
                 });
             });
         },
-        [backendUpdateParameters, snackError, type]
+        [backendUpdateParameters, snackError, type],
     );
 
     const debouncedBackendUpdateParameters = useDebounce(
         backendUpdateParametersCb,
-        1000
+        1000,
     );
 
     const updateProvider = useCallback(
@@ -309,7 +309,7 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [type, backendUpdateProvider, studyUuid, snackError]
+        [type, backendUpdateProvider, studyUuid, snackError],
     );
 
     const resetProvider = useCallback(() => {
@@ -348,7 +348,7 @@ export const useParametersBackend = (
                 debouncedBackendUpdateParameters(
                     studyUuid,
                     newParams,
-                    oldParams
+                    oldParams,
                 );
             }
         },
@@ -357,7 +357,7 @@ export const useParametersBackend = (
             backendUpdateParameters,
             currentParams,
             studyUuid,
-        ]
+        ],
     );
 
     const resetParameters = useCallback(
@@ -392,7 +392,7 @@ export const useParametersBackend = (
             backendFetchParameters,
             snackError,
             setParams,
-        ]
+        ],
     );
 
     useEffect(() => {
@@ -542,12 +542,12 @@ export function useParameterState(paramName) {
                 });
             });
         },
-        [paramGlobalState, snackError]
+        [paramGlobalState, snackError],
     );
 
     const debouncedBackendupdateConfigParameterCb = useDebounce(
         backendupdateConfigParameterCb,
-        1000
+        1000,
     );
 
     const handleChangeParamLocalState = useCallback(
@@ -555,7 +555,7 @@ export function useParameterState(paramName) {
             setParamLocalState(value);
             debouncedBackendupdateConfigParameterCb(paramName, value);
         },
-        [debouncedBackendupdateConfigParameterCb, paramName]
+        [debouncedBackendupdateConfigParameterCb, paramName],
     );
 
     return [paramLocalState, handleChangeParamLocalState];

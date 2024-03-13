@@ -108,7 +108,7 @@ const LineSplitWithVoltageLevelForm = ({
                         <Typography align="left">
                             <FormattedMessage id="NewVoltageLevel" />
                         </Typography>
-                    </Button>
+                    </Button>,
                 )}
             </Grid>
             <GridSection title="Line1" />

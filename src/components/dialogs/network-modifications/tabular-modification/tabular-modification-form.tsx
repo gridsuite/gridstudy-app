@@ -55,7 +55,7 @@ const TabularModificationForm = () => {
                       id: 'linearShuntCompensators',
                   })
                 : intl.formatMessage({ id: type }),
-        [intl]
+        [intl],
     );
 
     const handleComplete = useCallback(
@@ -70,7 +70,7 @@ const TabularModificationForm = () => {
                     (modification) =>
                         modification.maxSusceptance &&
                         (modification.shuntCompensatorType ||
-                            modification.maxQAtNominalV)
+                            modification.maxQAtNominalV),
                 )
             ) {
                 snackWarning({
@@ -78,7 +78,7 @@ const TabularModificationForm = () => {
                 });
             }
         },
-        [clearErrors, setValue, snackWarning]
+        [clearErrors, setValue, snackWarning],
     );
 
     const watchType = useWatch({
@@ -145,7 +145,7 @@ const TabularModificationForm = () => {
                     const transformedHeader = TABULAR_MODIFICATION_FIELDS[
                         getValues(TYPE)
                     ]?.find(
-                        (field) => intl.formatMessage({ id: field }) === header
+                        (field) => intl.formatMessage({ id: field }) === header,
                     );
                     return transformedHeader ?? header;
                 },
@@ -165,7 +165,7 @@ const TabularModificationForm = () => {
     const typesOptions = useMemo(() => {
         //only available types for tabular modification
         return Object.keys(TABULAR_MODIFICATION_FIELDS).filter(
-            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
+            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES],
         );
     }, []);
 
@@ -196,7 +196,7 @@ const TabularModificationForm = () => {
             autoHeaderHeight: true,
             cellRenderer: DefaultCellRenderer,
         }),
-        []
+        [],
     );
 
     const columnDefs = useMemo(() => {

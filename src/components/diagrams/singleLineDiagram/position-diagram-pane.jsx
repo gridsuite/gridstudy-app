@@ -31,7 +31,7 @@ const PositionDiagramPane = ({
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
     const componentLibrary = useSelector(
-        (state) => state[PARAM_COMPONENT_LIBRARY]
+        (state) => state[PARAM_COMPONENT_LIBRARY],
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
@@ -52,7 +52,7 @@ const PositionDiagramPane = ({
                 diagonalName,
                 componentLibrary,
                 SLD_DISPLAY_MODE.FEEDER_POSITION,
-                language
+                language,
             ),
         [
             studyUuid,
@@ -63,7 +63,7 @@ const PositionDiagramPane = ({
             diagonalName,
             componentLibrary,
             language,
-        ]
+        ],
     );
 
     useEffect(() => {

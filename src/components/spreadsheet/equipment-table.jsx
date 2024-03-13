@@ -41,7 +41,7 @@ export const EquipmentTable = ({
                 };
             }
         },
-        [theme.palette.primary.main]
+        [theme.palette.primary.main],
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
@@ -61,7 +61,7 @@ export const EquipmentTable = ({
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
         }),
-        []
+        [],
     );
 
     const gridContext = useMemo(() => {
@@ -82,7 +82,7 @@ export const EquipmentTable = ({
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
-        []
+        [],
     );
 
     const rowsToShow = useMemo(() => {

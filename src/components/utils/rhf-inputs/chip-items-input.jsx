@@ -52,7 +52,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                 append(value);
             }
         },
-        [append, getValues, snackError, name]
+        [append, getValues, snackError, name],
     );
 
     const keyPress = (e) => {
@@ -105,7 +105,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                             !isFieldRequired(
                                 name,
                                 validationSchema,
-                                getValues()
+                                getValues(),
                             )
                         }
                     />

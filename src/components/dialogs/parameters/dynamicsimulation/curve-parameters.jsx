@@ -35,7 +35,7 @@ export const formSchema = yup.object().shape({
             yup.object().shape({
                 [EQUIPMENT_ID]: yup.string().required(),
                 [VARIABLE_ID]: yup.string().required(),
-            })
+            }),
         )
         .nullable(),
 });
@@ -72,8 +72,8 @@ const CurveParameters = ({ path }) => {
                     !rowData.find(
                         (elem) =>
                             elem[EQUIPMENT_ID] === curve[EQUIPMENT_ID] &&
-                            elem[VARIABLE_ID] === curve[VARIABLE_ID]
-                    )
+                            elem[VARIABLE_ID] === curve[VARIABLE_ID],
+                    ),
             );
 
             // add new curves via provided method by hook
@@ -81,7 +81,7 @@ const CurveParameters = ({ path }) => {
 
             setOpen((prevState) => !prevState);
         },
-        [append, rowData]
+        [append, rowData],
     );
 
     const handleAdd = useCallback(() => {
@@ -96,8 +96,8 @@ const CurveParameters = ({ path }) => {
             rowData.findIndex(
                 (row) =>
                     elem[EQUIPMENT_ID] === row[EQUIPMENT_ID] &&
-                    elem[VARIABLE_ID] === row[VARIABLE_ID]
-            )
+                    elem[VARIABLE_ID] === row[VARIABLE_ID],
+            ),
         );
 
         // remove curves via provided method by hook

@@ -19,7 +19,7 @@ import {
  */
 const CustomContent = React.forwardRef(function CustomContent(
     props: TreeItemContentProps,
-    ref
+    ref,
 ) {
     const {
         classes,
@@ -44,19 +44,19 @@ const CustomContent = React.forwardRef(function CustomContent(
     const icon = iconProp || expansionIcon || displayIcon;
 
     const handleMouseDown = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
         preventSelection(event);
     };
 
     const handleExpansionClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
         handleExpansion(event);
     };
 
     const handleSelectionClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
         handleSelection(event);
     };
@@ -91,7 +91,7 @@ const CustomContent = React.forwardRef(function CustomContent(
 
 const CustomTreeItem = React.forwardRef(function CustomTreeItem(
     props: TreeItemProps,
-    ref: React.Ref<HTMLLIElement>
+    ref: React.Ref<HTMLLIElement>,
 ) {
     return <TreeItem ContentComponent={CustomContent} {...props} ref={ref} />;
 });

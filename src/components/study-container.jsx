@@ -62,7 +62,7 @@ function isWorthUpdate(
     lastUpdateRef,
     nodeUuidRef,
     nodeUuid,
-    invalidations
+    invalidations,
 ) {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
@@ -102,7 +102,7 @@ export function useNodeData(
     fetcher,
     invalidations,
     defaultValue,
-    resultConversion
+    resultConversion,
 ) {
     const [result, setResult] = useState(defaultValue);
     const [isPending, setIsPending] = useState(false);
@@ -139,7 +139,7 @@ export function useNodeData(
             lastUpdateRef,
             nodeUuidRef,
             nodeUuid,
-            invalidations
+            invalidations,
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
@@ -173,8 +173,8 @@ function useStudy(studyUuidRequest) {
                     setErrMessage(
                         intlRef.current.formatMessage(
                             { id: 'studyNotFound' },
-                            { studyUuid: studyUuidRequest }
-                        )
+                            { studyUuid: studyUuidRequest },
+                        ),
                     );
                 } else {
                     setErrMessage(error.message);
@@ -202,7 +202,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const intlRef = useIntlRef();
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
-        decodeURIComponent(useParams().studyUuid)
+        decodeURIComponent(useParams().studyUuid),
     );
 
     const [studyName, setStudyName] = useState();
@@ -220,7 +220,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
     const studyIndexationStatus = useSelector(
-        (state) => state.studyIndexationStatus
+        (state) => state.studyIndexationStatus,
     );
     const studyIndexationStatusRef = useRef();
     studyIndexationStatusRef.current = studyIndexationStatus;
@@ -247,7 +247,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const wsRef = useRef();
 
     const isLimitReductionModified = useSelector(
-        (state) => state.limitReductionModified
+        (state) => state.limitReductionModified,
     );
 
     const displayErrorNotifications = useCallback(
@@ -310,7 +310,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 });
             }
         },
-        [snackError, userName]
+        [snackError, userName],
     );
 
     const connectNotifications = useCallback(
@@ -354,7 +354,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications]
+        [dispatch, displayErrorNotifications],
     );
 
     const fetchStudyPath = useCallback(() => {
@@ -376,7 +376,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 document.title = computePageTitle(
                     initialTitle,
                     studyName,
-                    parentDirectoriesNames
+                    parentDirectoriesNames,
                 );
             })
             .catch((error) => {
@@ -425,7 +425,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     // or renamed)
                     if (
                         studyParentDirectoriesUuidsRef.current.includes(
-                            eventData.headers['directoryUuid']
+                            eventData.headers['directoryUuid'],
                         )
                     ) {
                         fetchStudyPath();
@@ -452,7 +452,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const loadTree = useCallback(
         (initIndexationStatus) => {
             console.info(
-                `Loading network modification tree of study '${studyUuid}'...`
+                `Loading network modification tree of study '${studyUuid}'...`,
             );
 
             const networkModificationTree =
@@ -471,8 +471,8 @@ export function StudyContainer({ view, onChangeTab }) {
                                 networkModificationTreeModel.setCaseName(res);
                                 dispatch(
                                     loadNetworkModificationTreeSuccess(
-                                        networkModificationTreeModel
-                                    )
+                                        networkModificationTreeModel,
+                                    ),
                                 );
                             }
                         })
@@ -501,7 +501,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     // To get positions we must get the node from the model class
                     const ModelFirstSelectedNode = {
                         ...networkModificationTreeModel.treeNodes.find(
-                            (node) => node.id === firstSelectedNode.id
+                            (node) => node.id === firstSelectedNode.id,
                         ),
                     };
                     dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
@@ -513,11 +513,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     });
                 })
                 .finally(() =>
-                    console.debug('Network modification tree loading finished')
+                    console.debug('Network modification tree loading finished'),
                 );
             // Note: studyUuid and dispatch don't change
         },
-        [studyUuid, dispatch, snackError, snackWarning]
+        [studyUuid, dispatch, snackError, snackWarning],
     );
 
     const checkStudyIndexation = useCallback(() => {
@@ -596,14 +596,14 @@ export function StudyContainer({ view, onChangeTab }) {
                                     setErrorMessage(
                                         intlRef.current.formatMessage({
                                             id: 'invalidStudyError',
-                                        })
+                                        }),
                                     );
                                 } else {
                                     // unknown error when trying to recreate network from study case
                                     setErrorMessage(
                                         intlRef.current.formatMessage({
                                             id: 'networkRecreationError',
-                                        })
+                                        }),
                                     );
                                 }
                             });
@@ -614,11 +614,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     setErrorMessage(
                         intlRef.current.formatMessage({
                             id: 'checkNetworkExistenceError',
-                        })
+                        }),
                     );
                 });
         },
-        [studyUuid, checkStudyIndexation, loadTree, snackWarning, intlRef]
+        [studyUuid, checkStudyIndexation, loadTree, snackWarning, intlRef],
     );
 
     useEffect(() => {
@@ -652,8 +652,8 @@ export function StudyContainer({ view, onChangeTab }) {
                 setStudyIndexationStatus(
                     studyUpdatedForce.eventData.headers?.[
                         HEADER_INDEXATION_STATUS
-                    ]
-                )
+                    ],
+                ),
             );
             if (
                 studyUpdatedForce.eventData.headers?.[

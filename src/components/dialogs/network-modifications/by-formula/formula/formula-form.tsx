@@ -89,7 +89,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         const newVal = value ?? null;
         return (
             OPERATOR_OPTIONS.find(
-                (option) => option?.id === getIdOrValue(value)
+                (option) => option?.id === getIdOrValue(value),
             ) || newVal
         );
     };

@@ -20,7 +20,7 @@ export const getStudyUrl = (studyUuid) =>
 
 export const getStudyUrlWithNodeUuid = (studyUuid, nodeUuid) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(
-        studyUuid
+        studyUuid,
     )}/nodes/${encodeURIComponent(nodeUuid)}`;
 
 export const fetchStudy = (studyUuid) => {
@@ -41,10 +41,10 @@ export function getNetworkAreaDiagramUrl(
     studyUuid,
     currentNodeUuid,
     voltageLevelsIds,
-    depth
+    depth,
 ) {
     console.info(
-        `Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`,
     );
     return (
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -62,7 +62,7 @@ export function fetchParentNodesReport(
     nodeUuid,
     nodeOnlyReport,
     severityFilterList,
-    reportType
+    reportType,
 ) {
     console.info(
         'get node report with its parent for : ' +
@@ -72,7 +72,7 @@ export function fetchParentNodesReport(
             ' in study ' +
             studyUuid +
             ' for ' +
-            reportType
+            reportType,
     );
 
     let url =
@@ -94,7 +94,7 @@ export function fetchNodeReport(
     nodeUuid,
     reportId,
     severityFilterList,
-    reportType
+    reportType,
 ) {
     console.info(
         'get report for node : ' +
@@ -102,7 +102,7 @@ export function fetchNodeReport(
             ' in study ' +
             studyUuid +
             ' for ' +
-            reportType
+            reportType,
     );
 
     let url =
@@ -123,13 +123,13 @@ export function fetchSubReport(
     studyUuid,
     nodeUuid,
     reportId,
-    severityFilterList
+    severityFilterList,
 ) {
     console.info(
         'get subReport with Id : ' +
             reportId +
             ' with severities ' +
-            severityFilterList
+            severityFilterList,
     );
 
     let url =
@@ -146,7 +146,7 @@ export function fetchSubReport(
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) =>
-        response.status === 204 ? null : response.json()
+        response.status === 204 ? null : response.json(),
     );
 }
 
@@ -156,11 +156,11 @@ export function searchEquipmentsInfos(
     searchTerm,
     getUseNameParameterKey,
     inUpstreamBuiltParentNode,
-    equipmentType
+    equipmentType,
 ) {
     console.info(
         "Fetching equipments infos matching with '%s' term ... ",
-        searchTerm
+        searchTerm,
     );
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
@@ -168,7 +168,7 @@ export function searchEquipmentsInfos(
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
+            inUpstreamBuiltParentNode,
         );
     }
     if (equipmentType !== undefined) {
@@ -179,22 +179,22 @@ export function searchEquipmentsInfos(
             '/nodes/' +
             encodeURIComponent(nodeUuid) +
             '/search?' +
-            urlSearchParams.toString()
+            urlSearchParams.toString(),
     );
 }
 
 export function fetchContingencyCount(
     studyUuid,
     currentNodeUuid,
-    contingencyListNames
+    contingencyListNames,
 ) {
     console.info(
-        `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`,
     );
 
     const contingencyListNamesParams = getRequestParamFromList(
         contingencyListNames,
-        'contingencyListName'
+        'contingencyListName',
     );
     const urlSearchParams = new URLSearchParams(contingencyListNamesParams);
 
@@ -212,7 +212,7 @@ export function copyOrMoveModifications(
     studyUuid,
     targetNodeId,
     modificationToCutUuidList,
-    copyInfos
+    copyInfos,
 ) {
     console.info(copyInfos.copyType + ' modifications');
     const copyOrMoveModificationUrl =
@@ -255,7 +255,7 @@ export function getAvailableComponentLibraries() {
 
 export function unbuildNode(studyUuid, currentNodeUuid) {
     console.info(
-        'Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
+        'Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...',
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/unbuild';
@@ -265,7 +265,7 @@ export function unbuildNode(studyUuid, currentNodeUuid) {
 
 export function buildNode(studyUuid, currentNodeUuid) {
     console.info(
-        'Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
+        'Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...',
     );
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/build';
     console.debug(url);
@@ -307,7 +307,7 @@ export function getOptionalServices() {
 export function getServersInfos() {
     console.info('get backend servers informations');
     return backendFetchJson(
-        PREFIX_STUDY_QUERIES + '/v1/servers/about?view=study'
+        PREFIX_STUDY_QUERIES + '/v1/servers/about?view=study',
     ).catch((reason) => {
         console.error('Error while fetching the servers infos : ' + reason);
         return reason;

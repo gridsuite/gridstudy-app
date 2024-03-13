@@ -47,7 +47,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     }
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
+                        TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB,
                     )}
                     onClick={() => setDialogWidth('xl')}
                 />
@@ -55,7 +55,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     label={<FormattedMessage id="LimitsTab" />}
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
+                        TwoWindingsTransformerCreationDialogTab.LIMITS_TAB,
                     )}
                     onClick={() => setDialogWidth('xl')}
                 />
@@ -66,7 +66,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     }
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB
+                        TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB,
                     )}
                     disabled={!ratioTapChangerEnabledWatch}
                 />
@@ -77,7 +77,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     }
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB
+                        TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB,
                     )}
                     disabled={!phaseTapChangerEnabledWatch}
                 />

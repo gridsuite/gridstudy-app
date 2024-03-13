@@ -110,7 +110,7 @@ const DynamicSimulationParametersSelector = (props) => {
             };
             updateDynamicSimulationParameters(
                 studyUuid,
-                newDynamicSimulationParams
+                newDynamicSimulationParams,
             )
                 .then(() => {
                     // start computation
@@ -123,7 +123,7 @@ const DynamicSimulationParametersSelector = (props) => {
                     });
                 });
         },
-        [studyUuid, onStart, snackError, dynamicSimulationParams]
+        [studyUuid, onStart, snackError, dynamicSimulationParams],
     );
 
     const makeButton = (onClick, message, disabled) => {

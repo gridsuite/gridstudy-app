@@ -103,7 +103,7 @@ type PaginationProps = {
     page?: number;
     onPageChange?: (
         event: React.MouseEvent<HTMLButtonElement> | null,
-        page: number
+        page: number,
     ) => void;
     onRowsPerPageChange?: React.ChangeEventHandler<
         HTMLTextAreaElement | HTMLInputElement
@@ -111,7 +111,7 @@ type PaginationProps = {
 };
 
 export type SubjectIdRendererType = (
-    cellData: ICellRendererParams
+    cellData: ICellRendererParams,
 ) => React.JSX.Element | undefined;
 
 export interface SecurityAnalysisNmkResult {

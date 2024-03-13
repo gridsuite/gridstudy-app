@@ -20,10 +20,10 @@ interface ExpertFilter {
 export function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
+    filter: ExpertFilter, // at moment only ExpertFilter but in futur may add others filter types to compose a union type
 ) {
     console.info(
-        `Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
 
     const evaluateFilterUrl =

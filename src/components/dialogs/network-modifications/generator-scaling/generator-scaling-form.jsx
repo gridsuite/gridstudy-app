@@ -34,7 +34,7 @@ const GeneratorScalingForm = () => {
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
             initialValue={getVariationEmptyForm(
-                VARIATION_MODES.PROPORTIONAL_TO_PMAX.id
+                VARIATION_MODES.PROPORTIONAL_TO_PMAX.id,
             )}
         />
     );

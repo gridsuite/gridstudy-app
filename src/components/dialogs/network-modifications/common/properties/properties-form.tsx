@@ -36,7 +36,7 @@ const PropertiesForm = ({
     });
     const { getValues, setValue } = useFormContext();
     const [predefinedProperties, setPredefinedProperties] = useState(
-        {} as PredefinedProperties
+        {} as PredefinedProperties,
     );
 
     useEffect(() => {
@@ -55,7 +55,7 @@ const PropertiesForm = ({
             }
             return false;
         },
-        [getValues, watchProps]
+        [getValues, watchProps],
     );
 
     const deleteCallback = useCallback(
@@ -74,7 +74,7 @@ const PropertiesForm = ({
                 setValue(
                     `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
                     false,
-                    { shouldDirty: true }
+                    { shouldDirty: true },
                 );
                 canRemoveLine = false;
             } else {
@@ -86,7 +86,7 @@ const PropertiesForm = ({
                     setValue(
                         `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
                         true,
-                        { shouldDirty: true }
+                        { shouldDirty: true },
                     );
                     canRemoveLine = false;
                 }
@@ -94,7 +94,7 @@ const PropertiesForm = ({
             // otherwise just delete the line
             return canRemoveLine;
         },
-        [getValues, setValue]
+        [getValues, setValue],
     );
 
     const modificationProperties = isModification

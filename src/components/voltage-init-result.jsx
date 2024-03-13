@@ -81,7 +81,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const { snackError } = useSnackMessage();
 
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
-        !result || !result.modificationsGroupUuid
+        !result || !result.modificationsGroupUuid,
     );
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] =
@@ -106,7 +106,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             lockPinned: true,
             wrapHeaderText: true,
         }),
-        []
+        [],
     );
     const onRowDataUpdated = useCallback((params) => {
         if (params.api) {
@@ -188,11 +188,11 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                       .filter((reactiveSlack) =>
                           isPositive
                               ? reactiveSlack.slack > 0
-                              : reactiveSlack.slack < 0
+                              : reactiveSlack.slack < 0,
                       )
                       .reduce(
                           (sum, reactiveSlack) => sum + reactiveSlack.slack,
-                          0
+                          0,
                       )
                 : 0;
         };

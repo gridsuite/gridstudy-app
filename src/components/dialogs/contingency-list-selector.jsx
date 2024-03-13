@@ -42,7 +42,7 @@ function makeButton(onClick, message, disabled) {
 const CONTINGENCY_TYPES = [elementType.CONTINGENCY_LIST];
 const ContingencyListSelector = (props) => {
     const favoriteContingencyListUuids = useSelector(
-        (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]
+        (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS],
     );
 
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -86,7 +86,7 @@ const ContingencyListSelector = (props) => {
             fetchContingencyCount(
                 props.studyUuid,
                 currentNode.id,
-                checkedContingencyList.map((c) => c.id)
+                checkedContingencyList.map((c) => c.id),
             ).then((contingencyCount) => {
                 if (!discardResult) {
                     setSimulatedContingencyCount(contingencyCount);
@@ -120,8 +120,8 @@ const ContingencyListSelector = (props) => {
                             .sort((a, b) =>
                                 a.name
                                     .toLowerCase()
-                                    .localeCompare(b.name.toLowerCase())
-                            )
+                                    .localeCompare(b.name.toLowerCase()),
+                            ),
                     );
                 })
                 .catch(() => {
@@ -149,11 +149,11 @@ const ContingencyListSelector = (props) => {
         saveFavorites(
             contingencyList
                 .map((e) => e.id)
-                .filter((id) => !toRemoveIdsSet.has(id))
+                .filter((id) => !toRemoveIdsSet.has(id)),
         );
 
         setCheckedContingencyList((oldChecked) =>
-            oldChecked.filter((item) => !toRemoveIdsSet.has(item.id))
+            oldChecked.filter((item) => !toRemoveIdsSet.has(item.id)),
         );
     };
 
@@ -177,12 +177,12 @@ const ContingencyListSelector = (props) => {
                 {makeButton(
                     () => removeFromFavorites(checkedContingencyList),
                     'DeleteContingencyList',
-                    checkedContingencyList.length === 0
+                    checkedContingencyList.length === 0,
                 )}
                 {makeButton(
                     handleStart,
                     'Execute',
-                    simulatedContingencyCount === 0
+                    simulatedContingencyCount === 0,
                 )}
             </Grid>
         );

@@ -25,7 +25,7 @@ import {
 const characteristicsValidationSchema = (
     id,
     displayConnectivity,
-    modification
+    modification,
 ) => ({
     [id]: yup.object().shape({
         [R]: modification
@@ -48,12 +48,12 @@ const characteristicsValidationSchema = (
 export const getCharacteristicsValidationSchema = (
     id,
     displayConnectivity,
-    modification = false
+    modification = false,
 ) => {
     return characteristicsValidationSchema(
         id,
         displayConnectivity,
-        modification
+        modification,
     );
 };
 
@@ -74,7 +74,7 @@ const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
 
 export const getCharacteristicsEmptyFormData = (
     id = CHARACTERISTICS,
-    displayConnectivity = true
+    displayConnectivity = true,
 ) => {
     return characteristicsEmptyFormData(id, displayConnectivity);
 };
@@ -90,7 +90,7 @@ export const getCharacteristicsFormData = (
         connectivity1 = null,
         connectivity2 = null,
     },
-    id = CHARACTERISTICS
+    id = CHARACTERISTICS,
 ) => ({
     [id]: {
         [R]: r,
@@ -106,7 +106,7 @@ export const getCharacteristicsFormData = (
 
 export const getCharacteristicsWithOutConnectivityFormData = (
     { r = null, x = null, g1 = null, b1 = null, g2 = null, b2 = null },
-    id = CHARACTERISTICS
+    id = CHARACTERISTICS,
 ) => ({
     [id]: {
         [R]: r,

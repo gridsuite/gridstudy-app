@@ -65,7 +65,7 @@ export function startLoadFlow(studyUuid, currentNodeUuid, limitReduction) {
             ' and node ' +
             currentNodeUuid +
             ' with limit reduction ' +
-            limitReduction
+            limitReduction,
     );
     const startLoadFlowUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -77,7 +77,7 @@ export function startLoadFlow(studyUuid, currentNodeUuid, limitReduction) {
 
 export function stopLoadFlow(studyUuid, currentNodeUuid) {
     console.info(
-        `Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
     const stopLoadFlowUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
@@ -87,7 +87,7 @@ export function stopLoadFlow(studyUuid, currentNodeUuid) {
 
 export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -98,7 +98,7 @@ export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
 
 export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
     console.info(
-        `Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`,
     );
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});

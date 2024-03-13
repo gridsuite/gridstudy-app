@@ -24,7 +24,7 @@ const styles = {
 };
 
 export const ImportParameters: FunctionComponent<ImportParametersProps> = (
-    props
+    props,
 ) => {
     const { formatWithParameters, onChange, currentParameters } = props;
 

@@ -21,7 +21,7 @@ export const formSchema = yup.object().shape({
             if (startTime) {
                 return schema.min(
                     startTime,
-                    'DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime'
+                    'DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime',
                 );
             }
         }),

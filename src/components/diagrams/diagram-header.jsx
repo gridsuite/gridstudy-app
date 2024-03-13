@@ -69,11 +69,11 @@ const DiagramHeader = (props) => {
     const { onMinimize, onTogglePin, onClose } = props;
     const handleMinimize = useCallback(
         () => onMinimize && onMinimize(),
-        [onMinimize]
+        [onMinimize],
     );
     const handleTogglePin = useCallback(
         () => onTogglePin && onTogglePin(),
-        [onTogglePin]
+        [onTogglePin],
     );
     const handleClose = useCallback(() => onClose && onClose(), [onClose]);
 
@@ -87,8 +87,8 @@ const DiagramHeader = (props) => {
             state.diagramStates.find(
                 (diagram) =>
                     diagram.svgType === props?.svgType &&
-                    diagram.id === props?.diagramId
-            )?.needsToBlink
+                    diagram.id === props?.diagramId,
+            )?.needsToBlink,
     );
 
     useEffect(() => {

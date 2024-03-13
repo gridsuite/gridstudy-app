@@ -25,7 +25,7 @@ export function toNumber(value) {
     }
     console.error(
         'Error while trying to convert a value to Number. Value :',
-        value
+        value,
     );
     return NaN;
 }
@@ -137,7 +137,7 @@ export function validateField(value, toValidate, disabled = false) {
             !isValueBlankOrEmpty &&
             !validateValueIsLessThanOrEqualTo(
                 value,
-                toValidate.valueLessThanOrEqualTo
+                toValidate.valueLessThanOrEqualTo,
             )
         ) {
             return makeErrorRecord(toValidate.errorMsgId);
@@ -149,7 +149,7 @@ export function validateField(value, toValidate, disabled = false) {
             !isValueBlankOrEmpty &&
             !validateValueIsGreaterThanOrEqualTo(
                 value,
-                toValidate.valueGreaterThanOrEqualTo
+                toValidate.valueGreaterThanOrEqualTo,
             )
         ) {
             return makeErrorRecord(toValidate.errorMsgId);
@@ -197,7 +197,7 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
         .map((element) =>
             // Note : convertion toNumber is necessary here to prevent corner cases like if
             // two values are "-0" and "0", which would be considered different by the Set below.
-            validateValueIsANumber(element.p) ? toNumber(element.p) : null
+            validateValueIsANumber(element.p) ? toNumber(element.p) : null,
         )
         .filter((p) => p !== null);
     const setOfPs = [...new Set(everyValidP)];
@@ -213,11 +213,11 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
         const pAreInRange = everyValidP.filter(
             (p) =>
                 validateValueIsLessThanOrEqualTo(minP, p) &&
-                validateValueIsLessThanOrEqualTo(p, maxP)
+                validateValueIsLessThanOrEqualTo(p, maxP),
         );
         if (pAreInRange.length !== everyValidP.length) {
             errorMessages.push(
-                'ReactiveCapabilityCurveCreationErrorPOutOfRange'
+                'ReactiveCapabilityCurveCreationErrorPOutOfRange',
             );
         }
     }
@@ -226,7 +226,7 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
     for (let element of reactiveCapabilityCurve) {
         if (!validateValueIsLessThanOrEqualTo(element.minQ, element.maxQ)) {
             errorMessages.push(
-                'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+                'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence',
             );
             break;
         }

@@ -74,7 +74,7 @@ const SubstationCreationDialog = ({
                 [COUNTRY]: substation.country,
                 ...copyEquipmentPropertiesForCreation(substation),
             },
-            { keepDefaultValues: true }
+            { keepDefaultValues: true },
         );
     };
 
@@ -111,7 +111,7 @@ const SubstationCreationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData ? editData.uuid : undefined,
-                toModificationProperties(substation)
+                toModificationProperties(substation),
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -119,7 +119,7 @@ const SubstationCreationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid],
     );
 
     const open = useOpenShortWaitFetching({

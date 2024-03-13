@@ -47,7 +47,7 @@ import CountryCellRenderer from '../country-cell-render';
 const generateTapPositions = (params) => {
     return params
         ? Array.from(
-              Array(params.highTapPosition - params.lowTapPosition + 1).keys()
+              Array(params.highTapPosition - params.lowTapPosition + 1).keys(),
           )
         : [];
 };
@@ -264,7 +264,7 @@ const generateEditableNumericColumnDefinition = (
     minExpression,
     maxExpression,
     excludeFromGlobalFilter,
-    extraDef
+    extraDef,
 ) => {
     return {
         id: id,
@@ -414,7 +414,7 @@ export const TABLES_DEFINITIONS = {
                 true,
                 undefined,
                 'highVoltageLimit',
-                excludeFromGlobalFilter
+                excludeFromGlobalFilter,
             ),
             generateEditableNumericColumnDefinition(
                 'HighVoltageLimitkV',
@@ -424,7 +424,7 @@ export const TABLES_DEFINITIONS = {
                 true,
                 'lowVoltageLimit',
                 undefined,
-                excludeFromGlobalFilter
+                excludeFromGlobalFilter,
             ),
             {
                 id: 'IpMin',
@@ -438,7 +438,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: unitToKiloUnit(
-                            params.data?.identifiableShortCircuit?.ipMin
+                            params.data?.identifiableShortCircuit?.ipMin,
                         ),
                         gridContext: params.context,
                         gridApi: params.api,
@@ -448,7 +448,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 valueGetter: (params) =>
                     unitToKiloUnit(
-                        params.data?.identifiableShortCircuit?.ipMin
+                        params.data?.identifiableShortCircuit?.ipMin,
                     ),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
@@ -476,7 +476,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: unitToKiloUnit(
-                            params.data?.identifiableShortCircuit?.ipMax
+                            params.data?.identifiableShortCircuit?.ipMax,
                         ),
                         gridContext: params.context,
                         gridApi: params.api,
@@ -486,7 +486,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 valueGetter: (params) =>
                     unitToKiloUnit(
-                        params.data?.identifiableShortCircuit?.ipMax
+                        params.data?.identifiableShortCircuit?.ipMax,
                     ),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
@@ -850,7 +850,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: () => {
                     return {
                         values: Object.values(RATIO_REGULATION_MODES).map(
-                            (regulationMode) => regulationMode.id
+                            (regulationMode) => regulationMode.id,
                         ),
                     };
                 },
@@ -937,7 +937,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         values: [
                             ...Object.values(REGULATION_TYPES).map(
-                                (type) => type.id
+                                (type) => type.id,
                             ),
                         ],
                     };
@@ -1019,7 +1019,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data?.ratioTapChanger
+                            params.data?.ratioTapChanger,
                         ),
                     };
                 },
@@ -1042,7 +1042,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig,
                 valueGetter: (params) =>
                     computeHighTapPosition(
-                        params?.data?.ratioTapChanger?.steps
+                        params?.data?.ratioTapChanger?.steps,
                     ),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1066,7 +1066,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data?.ratioTapChanger
+                            params.data?.ratioTapChanger,
                         ),
                     };
                 },
@@ -1102,7 +1102,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: () => {
                     return {
                         values: Object.values(PHASE_REGULATION_MODES).map(
-                            (regulationMode) => regulationMode.id
+                            (regulationMode) => regulationMode.id,
                         ),
                     };
                 },
@@ -1191,7 +1191,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         values: [
                             ...Object.values(REGULATION_TYPES).map(
-                                (type) => type.id
+                                (type) => type.id,
                             ),
                         ],
                     };
@@ -1275,7 +1275,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data?.phaseTapChanger
+                            params.data?.phaseTapChanger,
                         ),
                     };
                 },
@@ -1298,7 +1298,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig,
                 valueGetter: (params) =>
                     computeHighTapPosition(
-                        params?.data?.phaseTapChanger?.steps
+                        params?.data?.phaseTapChanger?.steps,
                     ),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1321,7 +1321,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data?.phaseTapChanger
+                            params.data?.phaseTapChanger,
                         ),
                     };
                 },
@@ -1552,7 +1552,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data.ratioTapChanger1
+                            params.data.ratioTapChanger1,
                         ),
                     };
                 },
@@ -1601,7 +1601,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data.ratioTapChanger2
+                            params.data.ratioTapChanger2,
                         ),
                     };
                 },
@@ -1650,7 +1650,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data.ratioTapChanger3
+                            params.data.ratioTapChanger3,
                         ),
                     };
                 },
@@ -1691,7 +1691,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data.phaseTapChanger1
+                            params.data.phaseTapChanger1,
                         ),
                     };
                 },
@@ -1741,7 +1741,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data.phaseTapChanger1
+                            params.data.phaseTapChanger1,
                         ),
                     };
                 },
@@ -1791,7 +1791,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         values: generateTapPositions(
-                            params.data.phaseTapChanger3
+                            params.data.phaseTapChanger3,
                         ),
                     };
                 },
@@ -1880,7 +1880,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: () => {
                     return {
                         values: ENERGY_SOURCES.map(
-                            (energySource) => energySource.id
+                            (energySource) => energySource.id,
                         ),
                     };
                 },
@@ -2382,7 +2382,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         values: [
                             ...Object.values(REGULATION_TYPES).map(
-                                (type) => type.id
+                                (type) => type.id,
                             ),
                         ],
                     };
@@ -2650,7 +2650,7 @@ export const TABLES_DEFINITIONS = {
                     return {
                         values: [
                             ...Object.values(SHUNT_COMPENSATOR_TYPES).map(
-                                (shuntType) => shuntType.id
+                                (shuntType) => shuntType.id,
                             ),
                         ],
                     };
@@ -3491,23 +3491,23 @@ export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((cols) => new Set(cols.map((c) => c.id)));
 
 export const TABLES_COLUMNS_NAMES_JSON = TABLES_COLUMNS_NAMES.map((cols) =>
-    JSON.stringify([...cols])
+    JSON.stringify([...cols]),
 );
 
 export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map(
-    (table) => table.name
+    (table) => table.name,
 );
 
 export const TABLES_NAMES_INDEXES = new Map(
-    Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index])
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index]),
 );
 
 export const TABLES_DEFINITION_TYPES = new Map(
-    Object.values(TABLES_DEFINITIONS).map((table) => [table.type, table])
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.type, table]),
 );
 
 export const TABLES_DEFINITION_INDEXES = new Map(
-    Object.values(TABLES_DEFINITIONS).map((table) => [table.index, table])
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.index, table]),
 );
 
 function generateTapRequest(type, leg) {

@@ -34,9 +34,9 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
             fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
+                        values.sort((a, b) => a.id.localeCompare(b.id)),
                     );
-                }
+                },
             );
         }
     }, [studyUuid, currentNodeUuid]);
@@ -47,7 +47,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
             currentNodeUuid,
             undefined,
             'LINE',
-            true
+            true,
         ).then((values) => {
             setLinesIds(values?.sort((a, b) => a.localeCompare(b)));
         });

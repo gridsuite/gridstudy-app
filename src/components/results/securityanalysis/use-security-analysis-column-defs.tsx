@@ -35,7 +35,7 @@ type UseSecurityAnalysisColumnsDefsProps = (
     filterProps: FilterPropsType,
     filterEnums: FilterEnumsType,
     resultType: RESULT_TYPE,
-    openVoltageLevelDiagram: (id: string) => void
+    openVoltageLevelDiagram: (id: string) => void,
 ) => ColDef<any>[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps =
@@ -44,13 +44,13 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
         filterProps,
         filterEnums,
         resultType,
-        openVoltageLevelDiagram
+        openVoltageLevelDiagram,
     ) => {
         const intl = useIntl();
         const { snackError } = useSnackMessage();
         const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
         const currentNode = useSelector(
-            (state: ReduxState) => state.currentTreeNode
+            (state: ReduxState) => state.currentTreeNode,
         );
 
         const nodeUuid = currentNode.id;
@@ -93,7 +93,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                             .finally(() => {
                                 if (!vlId) {
                                     console.error(
-                                        `Impossible to open the SLD for equipment ID '${row.subjectId}'`
+                                        `Impossible to open the SLD for equipment ID '${row.subjectId}'`,
                                     );
                                     snackError({
                                         messageId: 'NetworkElementNotFound',
@@ -110,7 +110,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     }
                 }
             },
-            [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
+            [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid, intl],
         );
 
         // for nmk views, custom view for subjectId cell
@@ -131,7 +131,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     );
                 }
             },
-            [onClickNmKConstraint]
+            [onClickNmKConstraint],
         );
 
         const columnDefs = useMemo(() => {
@@ -142,7 +142,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         SubjectIdRenderer,
                         filterProps,
                         sortProps,
-                        filterEnums
+                        filterEnums,
                     );
                 case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                     return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -150,14 +150,14 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         SubjectIdRenderer,
                         filterProps,
                         sortProps,
-                        filterEnums
+                        filterEnums,
                     );
                 case RESULT_TYPE.N:
                     return securityAnalysisTableNColumnsDefinition(
                         intl,
                         sortProps,
                         filterProps,
-                        filterEnums
+                        filterEnums,
                     );
             }
         }, [

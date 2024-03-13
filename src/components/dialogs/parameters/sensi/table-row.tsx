@@ -53,8 +53,8 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
                     arrayFormName,
                     index,
                     column,
-                    handleRowChanged
-                )
+                    handleRowChanged,
+                ),
             )}
             {!disableDelete && (
                 <TableCell sx={{ width: '5rem', textAlign: 'center' }}>

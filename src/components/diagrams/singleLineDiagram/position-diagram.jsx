@@ -107,7 +107,7 @@ const PositionDiagram = forwardRef((props, ref) => {
                 0,
                 viewboxMaxWidth,
                 viewboxMaxHeight,
-                selectionBackColor //arrows color
+                selectionBackColor, //arrows color
             );
 
             setServerHeight(sldViewer.getHeight());
@@ -170,7 +170,7 @@ const PositionDiagram = forwardRef((props, ref) => {
                     sx={mergeSx(
                         styles.divDiagram,
                         styles.divSingleLineDiagram,
-                        styles.divDiagramReadOnly
+                        styles.divDiagramReadOnly,
                     )}
                 />
             </Box>

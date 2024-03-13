@@ -25,7 +25,7 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
         (filterValue) => {
             gridRef.current?.api?.setQuickFilter(filterValue);
         },
-        [gridRef]
+        [gridRef],
     );
 
     const resetFilter = useCallback(() => {
@@ -45,14 +45,14 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
                 getFilterValue: getFilterValue,
             };
         },
-        [getFilterValue, resetFilter]
+        [getFilterValue, resetFilter],
     );
 
     const handleChangeFilter = useCallback(
         (event) => {
             applyQuickFilter(event.target.value);
         },
-        [applyQuickFilter]
+        [applyQuickFilter],
     );
 
     return (

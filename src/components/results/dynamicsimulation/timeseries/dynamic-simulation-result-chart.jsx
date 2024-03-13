@@ -102,7 +102,7 @@ const DynamicSimulationResultChart = ({
             }),
             intl.formatMessage({ id: 'DynamicSimulationSeriesListRightAxis' }),
         ],
-        [intl]
+        [intl],
     );
 
     // store the previous layout when scaling in order to restore later
@@ -162,10 +162,10 @@ const DynamicSimulationResultChart = ({
                             },
                         };
                     });
-                }
+                },
             );
         },
-        [loadTimeSeries]
+        [loadTimeSeries],
     );
 
     const handleLeftAxisSelected = useCallback(
@@ -178,12 +178,12 @@ const DynamicSimulationResultChart = ({
                 });
             });
         },
-        [selectSeries]
+        [selectSeries],
     );
 
     const debouncedHandleLeftAxisSelected = useDebounce(
         handleLeftAxisSelected,
-        500
+        500,
     );
 
     const handleRightAxisSelected = useCallback(
@@ -196,12 +196,12 @@ const DynamicSimulationResultChart = ({
                 });
             });
         },
-        [selectSeries]
+        [selectSeries],
     );
 
     const debouncedHandleRightAxisSelected = useDebounce(
         handleRightAxisSelected,
-        500
+        500,
     );
 
     const items = useMemo(() => {
@@ -301,7 +301,7 @@ const DynamicSimulationResultChart = ({
             // set the current plot id in scaling
             setPlotIdScale(plotScale ? plotId : undefined);
         },
-        [prevLayoutRef]
+        [prevLayoutRef],
     );
 
     const handleClose = useCallback(
@@ -313,7 +313,7 @@ const DynamicSimulationResultChart = ({
                     ? -1
                     : index === plots.length - 1
                       ? newPlots.length - 1
-                      : index
+                      : index,
             ); // get the next item in new plots
             setPlots(newPlots);
             if (newPlots.length === 0) {
@@ -321,7 +321,7 @@ const DynamicSimulationResultChart = ({
                 setPlotIncId(0);
             }
         },
-        [plots]
+        [plots],
     );
 
     const handleBreakpointChange = (breakpoint, cols) => {
@@ -575,7 +575,7 @@ DynamicSimulationResultChart.propTypes = {
     timeseriesMetadatas: PropTypes.arrayOf(
         PropTypes.shape({
             name: PropTypes.string.isRequired,
-        })
+        }),
     ),
     selected: PropTypes.bool.isRequired,
     loadTimeSeries: PropTypes.func,

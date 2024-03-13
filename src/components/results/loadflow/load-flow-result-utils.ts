@@ -44,7 +44,7 @@ import {
 const PERMANENT_LIMIT_NAME = 'permanent';
 
 export const convertMillisecondsToMinutesSeconds = (
-    durationInMilliseconds: number
+    durationInMilliseconds: number,
 ): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
 
@@ -143,7 +143,7 @@ export const mappingFields = (index: number): Record<string, string> => {
 
 export const makeData = (
     overloadedEquipments: OverloadedEquipmentFromBack[],
-    intl: IntlShape
+    intl: IntlShape,
 ): OverloadedEquipment[] => {
     return overloadedEquipments.map((overloadedEquipment) => {
         return {
@@ -168,7 +168,7 @@ export const makeData = (
 // We can use this custom hook for fetching enums for AutoComplete filter
 export const useFetchFiltersEnums = (
     hasResult: boolean = false,
-    setFilter: (value: boolean) => void
+    setFilter: (value: boolean) => void,
 ): { error: boolean; loading: boolean; result: FilterEnumsType } => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -202,7 +202,7 @@ export const useFetchFiltersEnums = (
                         });
                         setFilter(true);
                         setLoading(false);
-                    }
+                    },
                 )
                 .catch((err) => {
                     setFilter(false);
@@ -219,7 +219,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
 ): ColDef[] => {
     const convertLimitNameFrontToBack = (limitName: string) => {
         const limitNameMapping = {
@@ -328,7 +328,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -378,7 +378,7 @@ export const loadFlowResultColumnsDefinition = (
     filterProps: FilterPropsType,
     filterEnums: FilterEnumsType,
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
-    numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
+    numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element,
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({

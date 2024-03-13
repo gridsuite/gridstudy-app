@@ -40,7 +40,7 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
                     FORMULAS,
                     getValues(FORMULAS).map(() => ({
                         ...getFormulaInitialValue(),
-                    }))
+                    })),
                 );
             }}
         />

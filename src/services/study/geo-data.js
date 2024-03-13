@@ -11,10 +11,10 @@ import { getStudyUrlWithNodeUuid } from './index';
 export function fetchSubstationPositions(
     studyUuid,
     currentNodeUuid,
-    substationsIds
+    substationsIds,
 ) {
     console.info(
-        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
+        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`,
     );
 
     const paramsList =
@@ -32,7 +32,7 @@ export function fetchSubstationPositions(
 
 export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
     console.info(
-        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
+        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`,
     );
 
     const paramsList =

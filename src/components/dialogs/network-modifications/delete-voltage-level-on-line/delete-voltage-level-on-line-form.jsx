@@ -28,14 +28,14 @@ const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode }) => {
             currentNode.id,
             undefined,
             'LINE',
-            true
+            true,
         ).then((values) => {
             setLinesOptions(
                 values
                     .sort((a, b) => a.localeCompare(b))
                     .map((value) => {
                         return { id: value };
-                    })
+                    }),
             );
         });
     }, [studyUuid, currentNode?.id]);

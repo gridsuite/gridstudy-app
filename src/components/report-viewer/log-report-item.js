@@ -100,7 +100,7 @@ export default class LogReportItem {
         this.key = jsonReport.reportKey;
         this.log = LogReportItem.resolveTemplateMessage(
             jsonReport.defaultMessage,
-            jsonReport.values
+            jsonReport.values,
         );
         this.reportId = reportId;
         this.severity = this.initSeverity(jsonReport.values.reportSeverity);

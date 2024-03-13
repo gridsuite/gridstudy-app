@@ -73,7 +73,7 @@ const VoltageLevelChoice = ({
                         .sort(voltageLevelComparator)
                         .map((voltageLevel) => {
                             let color = getNominalVoltageColor(
-                                voltageLevel.nominalV
+                                voltageLevel.nominalV,
                             );
                             let colorString =
                                 'rgb(' +

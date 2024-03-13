@@ -21,7 +21,7 @@ export const useNameOrId = () => {
             }
             return null;
         },
-        [useName]
+        [useName],
     );
 
     const getUseNameParameterKey = useCallback(() => {

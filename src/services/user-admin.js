@@ -15,8 +15,9 @@ export function fetchValidateUser(user) {
     if (!sub) {
         return Promise.reject(
             new Error(
-                'Error : Fetching access for missing user.profile.sub : ' + user
-            )
+                'Error : Fetching access for missing user.profile.sub : ' +
+                    user,
+            ),
         );
     }
 
@@ -30,7 +31,7 @@ export function fetchValidateUser(user) {
         {
             method: 'head',
         },
-        user?.id_token
+        user?.id_token,
     )
         .then((response) => {
             //if the response is ok, the responseCode will be either 200 or 204 otherwise it's a Http error and it will be caught

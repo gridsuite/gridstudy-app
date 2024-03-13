@@ -112,7 +112,7 @@ const PhaseTapChangerPaneSteps = ({
                         id: 'ImportFileResistance',
                     })
                 ],
-                0
+                0,
             ),
             [STEPS_REACTANCE]: parseIntData(
                 val[
@@ -120,7 +120,7 @@ const PhaseTapChangerPaneSteps = ({
                         id: 'ImportFileReactance',
                     })
                 ],
-                0
+                0,
             ),
             [STEPS_CONDUCTANCE]: parseIntData(
                 val[
@@ -128,7 +128,7 @@ const PhaseTapChangerPaneSteps = ({
                         id: 'ImportFileConductance',
                     })
                 ],
-                0
+                0,
             ),
             [STEPS_SUSCEPTANCE]: parseIntData(
                 val[
@@ -136,10 +136,10 @@ const PhaseTapChangerPaneSteps = ({
                         id: 'ImportFileSusceptance',
                     })
                 ],
-                0
+                0,
             ),
             [STEPS_RATIO]: isNaN(
-                parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
+                parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
             )
                 ? 1
                 : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
@@ -149,8 +149,8 @@ const PhaseTapChangerPaneSteps = ({
                         intl.formatMessage({
                             id: 'ImportFileAlpha',
                         })
-                    ]
-                )
+                    ],
+                ),
             )
                 ? 1
                 : parseFloat(
@@ -158,7 +158,7 @@ const PhaseTapChangerPaneSteps = ({
                           intl.formatMessage({
                               id: 'ImportFileAlpha',
                           })
-                      ]
+                      ],
                   ),
         };
     };

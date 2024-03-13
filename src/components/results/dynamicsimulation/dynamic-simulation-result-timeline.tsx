@@ -88,7 +88,7 @@ const DynamicSimulationResultTimeline = ({
         studyUuid,
         nodeUuid,
         fetchDynamicSimulationResultTimeline,
-        dynamicSimulationResultInvalidations
+        dynamicSimulationResultInvalidations,
     );
 
     const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
@@ -113,7 +113,7 @@ const DynamicSimulationResultTimeline = ({
                 filterSelector,
             },
         }),
-        [onSortChanged, sortConfig, updateFilter, filterSelector]
+        [onSortChanged, sortConfig, updateFilter, filterSelector],
     );
 
     // columns are defined from fields in {@link TimelineEvent} types
@@ -166,13 +166,13 @@ const DynamicSimulationResultTimeline = ({
                 ...sortAndFilterProps,
             }),
         ],
-        [intl, sortAndFilterProps]
+        [intl, sortAndFilterProps],
     );
 
     // messages to show when no data
     const dynamicSimulationStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+            state.computingStatus[ComputingType.DYNAMIC_SIMULATION],
     );
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(
@@ -181,14 +181,14 @@ const DynamicSimulationResultTimeline = ({
                 messages,
                 timelines,
                 dynamicSimulationStatus,
-                !isLoading
+                !isLoading,
             ),
-        [messages, timelines, dynamicSimulationStatus, isLoading]
+        [messages, timelines, dynamicSimulationStatus, isLoading],
     );
 
     const rowDataToShow = useMemo(
         () => (overlayMessage ? [] : timelines),
-        [timelines, overlayMessage]
+        [timelines, overlayMessage],
     );
 
     return (

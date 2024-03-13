@@ -338,7 +338,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             cellRenderer: DefaultCellRenderer,
             suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
         }),
-        []
+        [],
     );
 
     const onRowDataUpdated = useCallback((params: any) => {
@@ -355,7 +355,7 @@ const VoltageInitModificationDialog: FunctionComponent<
         (currentTab: number) => {
             const prepareGridData = (
                 currentTab: number,
-                editData: EditData
+                editData: EditData,
             ) => {
                 let rowData: any[] = [];
                 let columnDefs: any[] = [];
@@ -419,7 +419,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                                         m.reactivePowerSetpoint;
                                 }
                                 rowData.push(row);
-                            }
+                            },
                         );
                     } else if (
                         currentTab ===
@@ -442,7 +442,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                                         m.reactivePowerSetpoint;
                                 }
                                 rowData.push(row);
-                            }
+                            },
                         );
                     } else if (
                         currentTab === EquipmentTypeTabs.SHUNT_COMPENSATOR_TAB
@@ -463,7 +463,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                                     row[CONNECT] = m.connect;
                                 }
                                 rowData.push(row);
-                            }
+                            },
                         );
                     }
                 }
@@ -472,7 +472,7 @@ const VoltageInitModificationDialog: FunctionComponent<
 
             const { rowData, columnDefs, tableName } = prepareGridData(
                 currentTab,
-                editData
+                editData,
             );
 
             return (
@@ -513,7 +513,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             shuntCompensatorsColumnDefs,
             defaultColDef,
             onRowDataUpdated,
-        ]
+        ],
     );
 
     const open: boolean = useOpenShortWaitFetching({

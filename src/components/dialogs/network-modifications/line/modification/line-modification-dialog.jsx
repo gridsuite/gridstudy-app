@@ -101,7 +101,7 @@ const LineModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);
     const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB
+        LineCreationDialogTab.CHARACTERISTICS_TAB,
     );
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
         useState(false);
@@ -111,12 +111,12 @@ const LineModificationDialog = ({
             [EQUIPMENT_NAME]: '',
             ...getCharacteristicsEmptyFormData(
                 CHARACTERISTICS,
-                displayConnectivity
+                displayConnectivity,
             ),
             ...getLimitsEmptyFormData(),
             ...emptyProperties,
         }),
-        [displayConnectivity]
+        [displayConnectivity],
     );
 
     const formSchema = yup
@@ -126,7 +126,7 @@ const LineModificationDialog = ({
             ...getCharacteristicsValidationSchema(
                 CHARACTERISTICS,
                 displayConnectivity,
-                true
+                true,
             ),
             ...getLimitsValidationSchema(),
         })
@@ -162,21 +162,21 @@ const LineModificationDialog = ({
                         updatedTemporaryLimits1
                             ? updatedTemporaryLimits1
                             : formatTemporaryLimits(
-                                  line.currentLimits1?.temporaryLimits
-                              )
+                                  line.currentLimits1?.temporaryLimits,
+                              ),
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
                         updatedTemporaryLimits2
                             ? updatedTemporaryLimits2
                             : formatTemporaryLimits(
-                                  line.currentLimits2?.temporaryLimits
-                              )
+                                  line.currentLimits2?.temporaryLimits,
+                              ),
                     ),
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
         },
-        [reset]
+        [reset],
     );
 
     useEffect(() => {
@@ -185,20 +185,20 @@ const LineModificationDialog = ({
                 editData,
                 updateTemporaryLimits(
                     formatTemporaryLimits(
-                        editData.currentLimits1?.temporaryLimits
+                        editData.currentLimits1?.temporaryLimits,
                     ),
                     formatTemporaryLimits(
-                        lineToModify?.currentLimits1?.temporaryLimits
-                    )
+                        lineToModify?.currentLimits1?.temporaryLimits,
+                    ),
                 ),
                 updateTemporaryLimits(
                     formatTemporaryLimits(
-                        editData.currentLimits2?.temporaryLimits
+                        editData.currentLimits2?.temporaryLimits,
                     ),
                     formatTemporaryLimits(
-                        lineToModify?.currentLimits2?.temporaryLimits
-                    )
-                )
+                        lineToModify?.currentLimits2?.temporaryLimits,
+                    ),
+                ),
             );
         }
     }, [fromEditDataToFormValues, editData, lineToModify]);
@@ -209,11 +209,11 @@ const LineModificationDialog = ({
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS],
                 ),
                 lineToModify?.currentLimits1?.temporaryLimits,
                 editData?.currentLimits1?.temporaryLimits,
-                currentNode
+                currentNode,
             );
             let currentLimits1 = null;
             if (
@@ -227,11 +227,11 @@ const LineModificationDialog = ({
             }
             const temporaryLimits2 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS],
                 ),
                 lineToModify?.currentLimits2?.temporaryLimits,
                 editData?.currentLimits2?.temporaryLimits,
-                currentNode
+                currentNode,
             );
             let currentLimits2 = null;
             if (
@@ -259,7 +259,7 @@ const LineModificationDialog = ({
                 currentLimits2,
                 !!editData,
                 editData?.uuid,
-                toModificationProperties(line)
+                toModificationProperties(line),
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -275,20 +275,20 @@ const LineModificationDialog = ({
             editData,
             currentNode,
             snackError,
-        ]
+        ],
     );
 
     const getConcatenatedProperties = useCallback(
         (equipment) => {
             const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
+                `${ADDITIONAL_PROPERTIES}`,
             );
             return mergeModificationAndEquipmentProperties(
                 modificationProperties,
-                equipment
+                equipment,
             );
         },
-        [getValues]
+        [getValues],
     );
 
     const clear = useCallback(() => {
@@ -305,7 +305,7 @@ const LineModificationDialog = ({
                     EQUIPMENT_TYPES.LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
                 )
                     .then((line) => {
                         if (line) {
@@ -318,15 +318,15 @@ const LineModificationDialog = ({
                                             addSelectedFieldToRows(
                                                 formatTemporaryLimits(
                                                     line.currentLimits1
-                                                        ?.temporaryLimits
-                                                )
+                                                        ?.temporaryLimits,
+                                                ),
                                             ),
                                         temporaryLimits2:
                                             addSelectedFieldToRows(
                                                 formatTemporaryLimits(
                                                     line.currentLimits2
-                                                        ?.temporaryLimits
-                                                )
+                                                        ?.temporaryLimits,
+                                                ),
                                             ),
                                     }),
                                     [ADDITIONAL_PROPERTIES]:
@@ -354,7 +354,7 @@ const LineModificationDialog = ({
             reset,
             emptyFormData,
             getConcatenatedProperties,
-        ]
+        ],
     );
 
     useEffect(() => {

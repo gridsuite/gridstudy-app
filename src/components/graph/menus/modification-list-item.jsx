@@ -73,7 +73,7 @@ export const ModificationListItem = ({
 
     const toggle = useCallback(
         () => handleToggle(modif),
-        [modif, handleToggle]
+        [modif, handleToggle],
     );
 
     useEffect(() => {
@@ -92,7 +92,7 @@ export const ModificationListItem = ({
             {
                 ...modif,
                 ...computedLabelValues,
-            }
+            },
         );
     }, [modif, intl, computedLabelValues]);
 

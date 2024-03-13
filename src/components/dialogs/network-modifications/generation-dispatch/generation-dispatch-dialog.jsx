@@ -46,7 +46,7 @@ const getGeneratorsFiltersSchema = (id) => ({
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
-        })
+        }),
     ),
 });
 
@@ -59,7 +59,7 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .min(1),
             [FREQUENCY_RESERVE]: yup
@@ -68,7 +68,7 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
                 .min(0)
                 .max(100)
                 .required(),
-        })
+        }),
     ),
 });
 
@@ -80,7 +80,7 @@ const getSubstationsGeneratorsOrderingSchema = (id) => ({
                 .of(yup.string().required())
                 .min(1)
                 .required(),
-        })
+        }),
     ),
 });
 
@@ -98,7 +98,7 @@ const formSchema = yup
         ...getGeneratorsFiltersSchema(GENERATORS_WITH_FIXED_ACTIVE_POWER),
         ...getGeneratorsFrequencyReserveSchema(GENERATORS_FREQUENCY_RESERVES),
         ...getSubstationsGeneratorsOrderingSchema(
-            SUBSTATIONS_GENERATORS_ORDERING
+            SUBSTATIONS_GENERATORS_ORDERING,
         ),
     })
     .required();
@@ -130,14 +130,14 @@ const GenerationDispatchDialog = ({
                 [GENERATORS_WITH_FIXED_ACTIVE_POWER]:
                     generation.generatorsWithFixedSupply,
                 [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(
-                    generation.generatorsFrequencyReserve
+                    generation.generatorsFrequencyReserve,
                 ),
                 [SUBSTATIONS_GENERATORS_ORDERING]: addSelectedFieldToRows(
-                    generation.substationsGeneratorsOrdering
+                    generation.substationsGeneratorsOrdering,
                 ),
             });
         },
-        [reset]
+        [reset],
     );
 
     useEffect(() => {
@@ -157,7 +157,7 @@ const GenerationDispatchDialog = ({
                 generation[GENERATORS_WITHOUT_OUTAGE],
                 generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
                 generation[GENERATORS_FREQUENCY_RESERVES],
-                generation[SUBSTATIONS_GENERATORS_ORDERING]
+                generation[SUBSTATIONS_GENERATORS_ORDERING],
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -165,7 +165,7 @@ const GenerationDispatchDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError],
     );
 
     const clear = useCallback(() => {

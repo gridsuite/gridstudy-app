@@ -30,7 +30,7 @@ export const ComputationReportViewer: FunctionComponent<
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
+        (state: ReduxState) => state.currentTreeNode,
     );
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
@@ -47,7 +47,7 @@ export const ComputationReportViewer: FunctionComponent<
             }
             return singleReport;
         },
-        [currentNode?.data.label]
+        [currentNode?.data.label],
     );
 
     useEffect(() => {
@@ -62,7 +62,7 @@ export const ComputationReportViewer: FunctionComponent<
                 currentNode.id.toString(),
                 true,
                 LogReportItem.getDefaultSeverityList(),
-                reportType
+                reportType,
             )
                 .then((fetchedReport) => {
                     setReport(makeReport(fetchedReport));
@@ -83,27 +83,27 @@ export const ComputationReportViewer: FunctionComponent<
 
     const subReportPromise = (
         reportId: string,
-        severityFilterList: string[]
+        severityFilterList: string[],
     ) => {
         return fetchSubReport(
             studyUuid.toString(),
             currentNode.id.toString(),
             reportId,
-            severityFilterList
+            severityFilterList,
         );
     };
 
     const nodeReportPromise = (
         nodeId: string,
         reportId: string,
-        severityFilterList: string[]
+        severityFilterList: string[],
     ) => {
         return fetchNodeReport(
             studyUuid.toString(),
             nodeId,
             reportId,
             severityFilterList,
-            reportType
+            reportType,
         );
     };
 

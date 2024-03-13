@@ -113,7 +113,7 @@ const SetPointsForm = ({
                     ) : (
                         <FormattedMessage id={'NoModification'} />
                     ),
-                    4
+                    4,
                 )}
 
                 {voltageRegulationFields}

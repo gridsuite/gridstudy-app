@@ -53,7 +53,7 @@ export const ReportViewerTab = ({
     const intl = useIntl();
 
     const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
+        (state) => state.networkModificationTreeModel,
     );
 
     const [report, setReport] = useState(null);
@@ -67,13 +67,13 @@ export const ReportViewerTab = ({
 
     const nodesNames = useMemo(() => {
         return new Map(
-            treeModel.treeNodes.map((node) => [node.id, node.data.label])
+            treeModel.treeNodes.map((node) => [node.id, node.data.label]),
         );
     }, [treeModel]);
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel.treeNodes.find(
-            (node) => node?.data?.label === 'Root'
+            (node) => node?.data?.label === 'Root',
         );
         return rootNode?.id;
     }, [treeModel]);
@@ -87,7 +87,7 @@ export const ReportViewerTab = ({
             }
             return report;
         },
-        [nodesNames, rootNodeId]
+        [nodesNames, rootNodeId],
     );
 
     const makeSingleReport = useCallback(
@@ -106,7 +106,7 @@ export const ReportViewerTab = ({
                 };
             }
         },
-        [setNodeName]
+        [setNodeName],
     );
 
     const fetchAndProcessReport = useCallback(
@@ -121,7 +121,7 @@ export const ReportViewerTab = ({
                 currentNode.id,
                 nodeOnlyReport,
                 LogReportItem.getDefaultSeverityList(),
-                REPORT_TYPES.NETWORK_MODIFICATION
+                REPORT_TYPES.NETWORK_MODIFICATION,
             )
                 .then((fetchedReport) => {
                     setReport(makeSingleReport(fetchedReport));
@@ -138,7 +138,7 @@ export const ReportViewerTab = ({
                     setWaitingLoadReport(false);
                 });
         },
-        [nodeOnlyReport, snackError, makeSingleReport]
+        [nodeOnlyReport, snackError, makeSingleReport],
     );
 
     // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
@@ -158,7 +158,7 @@ export const ReportViewerTab = ({
             nodeId,
             reportId,
             severityFilterList,
-            REPORT_TYPES.NETWORK_MODIFICATION
+            REPORT_TYPES.NETWORK_MODIFICATION,
         );
     };
 
@@ -168,7 +168,7 @@ export const ReportViewerTab = ({
             currentNode.id,
             false,
             severityFilterList,
-            REPORT_TYPES.NETWORK_MODIFICATION
+            REPORT_TYPES.NETWORK_MODIFICATION,
         );
     };
 
@@ -177,7 +177,7 @@ export const ReportViewerTab = ({
             studyId,
             currentNode.id,
             reportId,
-            severityFilterList
+            severityFilterList,
         );
     };
 

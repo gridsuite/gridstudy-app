@@ -125,7 +125,7 @@ const VoltageLimitsParameters = () => {
         const newRowData = {};
         newRowData[SELECTED] = false;
         VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS.forEach(
-            (column) => (newRowData[column.dataKey] = column.initialValue)
+            (column) => (newRowData[column.dataKey] = column.initialValue),
         );
         return newRowData;
     }, [VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS]);
@@ -136,7 +136,7 @@ const VoltageLimitsParameters = () => {
         const newRowData = {};
         newRowData[SELECTED] = false;
         VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS.forEach(
-            (column) => (newRowData[column.dataKey] = column.initialValue)
+            (column) => (newRowData[column.dataKey] = column.initialValue),
         );
         return newRowData;
     }, [VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS]);

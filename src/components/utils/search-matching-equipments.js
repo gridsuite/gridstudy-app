@@ -17,7 +17,7 @@ export const useSearchMatchingEquipments = (
     nodeUuid,
     inUpstreamBuiltParentNode,
     equipmentType,
-    makeItems = getEquipmentsInfosForSearchBar
+    makeItems = getEquipmentsInfosForSearchBar,
 ) => {
     const { snackError } = useSnackMessage();
     const [equipmentsFound, setEquipmentsFound] = useState([]);
@@ -33,7 +33,7 @@ export const useSearchMatchingEquipments = (
                 searchTerm,
                 getUseNameParameterKey,
                 inUpstreamBuiltParentNode,
-                equipmentType
+                equipmentType,
             )
                 .then((infos) => {
                     if (searchTerm === lastSearchTermRef.current) {
@@ -56,12 +56,12 @@ export const useSearchMatchingEquipments = (
             snackError,
             getNameOrId,
             getUseNameParameterKey,
-        ]
+        ],
     );
 
     const debouncedSearchMatchingEquipments = useDebounce(
         searchMatchingEquipments,
-        SEARCH_FETCH_TIMEOUT_MILLIS
+        SEARCH_FETCH_TIMEOUT_MILLIS,
     );
 
     useEffect(() => {

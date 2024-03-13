@@ -28,7 +28,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
     const handleFilterOptions = useCallback(
         (
             options: ({ id: string; label: string } | string)[],
-            state: FilterOptionsState<string | { id: string; label: string }>
+            state: FilterOptionsState<string | { id: string; label: string }>,
         ) => {
             if (state.inputValue?.startsWith('#')) {
                 const keyword = state.inputValue?.substring(1);
@@ -39,13 +39,13 @@ const ReferenceAutocompleteInput: FunctionComponent<{
                     intl
                         .formatMessage({ id: state.getOptionLabel(option) })
                         .toLowerCase()
-                        .startsWith(keyword.toLowerCase())
+                        .startsWith(keyword.toLowerCase()),
                 );
             }
 
             return options;
         },
-        [intl]
+        [intl],
     );
 
     const inputTransform = (value: { id: string; label: string } | string) =>
@@ -83,7 +83,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
                 options: ({ id: string; label: string } | string)[],
                 state: FilterOptionsState<
                     string | { id: string; label: string }
-                >
+                >,
             ) => handleFilterOptions(options, state)}
             formProps={{
                 helperText: intl.formatMessage({

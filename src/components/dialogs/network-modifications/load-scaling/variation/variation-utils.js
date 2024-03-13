@@ -36,7 +36,7 @@ export const getVariationSchema = () =>
                         [SPECIFIC_METADATA]: yup.object().shape({
                             [TYPE]: yup.string(),
                         }),
-                    })
+                    }),
                 )
                 .required()
                 .min(1, 'FieldIsRequired'),

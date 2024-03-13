@@ -88,7 +88,7 @@ const formSchema = yup
                 then: (schema) =>
                     schema.max(
                         yup.ref(MAXIMUM_ACTIVE_POWER),
-                        'MinActivePowerMustBeLessOrEqualToMaxActivePower'
+                        'MinActivePowerMustBeLessOrEqualToMaxActivePower',
                     ),
             }),
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
@@ -124,14 +124,14 @@ const BatteryModificationDialog = ({
     const getConcatenatedProperties = useCallback(
         (equipment) => {
             const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
+                `${ADDITIONAL_PROPERTIES}`,
             );
             return mergeModificationAndEquipmentProperties(
                 modificationProperties,
-                equipment
+                equipment,
             );
         },
-        [getValues]
+        [getValues],
     );
 
     const fromEditDataToFormValues = useCallback(
@@ -157,14 +157,14 @@ const BatteryModificationDialog = ({
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurvePoints?.length > 0
                             ? completeReactiveCapabilityCurvePointsData(
-                                  editData?.reactiveCapabilityCurvePoints
+                                  editData?.reactiveCapabilityCurvePoints,
                               )
                             : [getRowEmptyFormData(), getRowEmptyFormData()],
                 }),
                 ...getPropertiesFromModification(editData.properties),
             });
         },
-        [reset]
+        [reset],
     );
 
     useEffect(() => {
@@ -178,10 +178,10 @@ const BatteryModificationDialog = ({
         (customData = {}, keepDefaultValues = false) => {
             reset(
                 { ...emptyFormData, ...customData },
-                { keepDefaultValues: keepDefaultValues }
+                { keepDefaultValues: keepDefaultValues },
             );
         },
-        [reset]
+        [reset],
     );
 
     const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
@@ -211,7 +211,7 @@ const BatteryModificationDialog = ({
                     EQUIPMENT_TYPES.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
                 )
                     .then((value) => {
                         if (value) {
@@ -224,7 +224,7 @@ const BatteryModificationDialog = ({
                             if (previousReactiveCapabilityCurveTable) {
                                 const currentReactiveCapabilityCurveTable =
                                     getValues(
-                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     );
 
                                 const sizeDiff =
@@ -235,25 +235,27 @@ const BatteryModificationDialog = ({
                                 if (sizeDiff > 0) {
                                     for (let i = 0; i < sizeDiff; i++) {
                                         insertEmptyRowAtSecondToLastIndex(
-                                            currentReactiveCapabilityCurveTable
+                                            currentReactiveCapabilityCurveTable,
                                         );
                                     }
                                     setValue(
                                         `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                        currentReactiveCapabilityCurveTable
+                                        currentReactiveCapabilityCurveTable,
                                     );
                                 } else if (sizeDiff < 0) {
                                     // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
                                     for (let i = 0; i > sizeDiff; i--) {
                                         insertEmptyRowAtSecondToLastIndex(
-                                            previousReactiveCapabilityCurveTable
+                                            previousReactiveCapabilityCurveTable,
                                         );
                                     }
                                 }
                             }
                             setValue(
                                 `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
-                                value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
+                                value?.minMaxReactiveLimits
+                                    ? 'MINMAX'
+                                    : 'CURVE',
                             );
                             setBatteryToModify({
                                 ...value,
@@ -286,7 +288,7 @@ const BatteryModificationDialog = ({
             setValuesAndEmptyOthers,
             reset,
             getConcatenatedProperties,
-        ]
+        ],
     );
 
     useEffect(() => {
@@ -300,7 +302,7 @@ const BatteryModificationDialog = ({
             const reactiveLimits = battery[REACTIVE_LIMITS];
             const buildCurvePointsToStore = calculateCurvePointsToStore(
                 reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
-                batteryToModify
+                batteryToModify,
             );
 
             const isReactiveCapabilityCurveOn =
@@ -328,7 +330,7 @@ const BatteryModificationDialog = ({
                     ? null
                     : reactiveLimits[MINIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null,
-                toModificationProperties(battery)
+                toModificationProperties(battery),
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -343,7 +345,7 @@ const BatteryModificationDialog = ({
             currentNodeUuid,
             editData?.uuid,
             snackError,
-        ]
+        ],
     );
 
     const open = useOpenShortWaitFetching({

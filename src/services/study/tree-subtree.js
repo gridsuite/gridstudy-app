@@ -12,7 +12,7 @@ export function copySubtree(
     sourceStudyUuid,
     targetStudyUuid,
     nodeToCopyUuid,
-    referenceNodeUuid
+    referenceNodeUuid,
 ) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyUuid) +
@@ -53,7 +53,7 @@ export function cutTreeNode(
     studyUuid,
     nodeToCutUuid,
     referenceNodeUuid,
-    insertMode
+    insertMode,
 ) {
     const nodeCutUrl =
         getStudyUrl(studyUuid) +
@@ -78,7 +78,7 @@ export function copyTreeNode(
     targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
-    insertMode
+    insertMode,
 ) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyId) +
@@ -193,7 +193,7 @@ export function restoreStashedNodes(studyUuid, nodeToRestoreIds, anchorNodeId) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append(
         'ids',
-        nodeToRestoreIds.map((id) => encodeURIComponent(id))
+        nodeToRestoreIds.map((id) => encodeURIComponent(id)),
     );
     urlSearchParams.append('anchorNodeId', encodeURIComponent(anchorNodeId));
 
@@ -201,7 +201,7 @@ export function restoreStashedNodes(studyUuid, nodeToRestoreIds, anchorNodeId) {
         'Restoring nodes %s under nodes %s of study : %s',
         nodeToRestoreIds,
         nodeToRestoreIds,
-        studyUuid
+        studyUuid,
     );
     const url =
         getStudyUrl(studyUuid) +
@@ -222,7 +222,7 @@ export function deleteStashedNodes(studyUuid, nodeToDeleteIds) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append(
         'ids',
-        nodeToDeleteIds.map((id) => encodeURIComponent(id))
+        nodeToDeleteIds.map((id) => encodeURIComponent(id)),
     );
     urlSearchParams.append('deleteChildren', true);
 

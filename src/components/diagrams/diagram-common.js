@@ -222,35 +222,35 @@ export const useDiagram = () => {
         (id, type) => {
             dispatch(openDiagram(id, type));
         },
-        [dispatch]
+        [dispatch],
     );
 
     const togglePinDiagramView = useCallback(
         (id, type) => {
             dispatch(togglePinDiagram(id, type));
         },
-        [dispatch]
+        [dispatch],
     );
 
     const minimizeDiagramView = useCallback(
         (id, type) => {
             dispatch(minimizeDiagram(id, type));
         },
-        [dispatch]
+        [dispatch],
     );
 
     const closeDiagramView = useCallback(
         (id, type) => {
             dispatch(closeDiagram(id, type));
         },
-        [dispatch]
+        [dispatch],
     );
 
     const closeDiagramViews = useCallback(
         (idsToRemove) => {
             dispatch(closeDiagrams(idsToRemove));
         },
-        [dispatch]
+        [dispatch],
     );
 
     return {

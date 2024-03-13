@@ -19,7 +19,7 @@ export type DynamicSimulationBasicEventFormProps = {
 };
 
 export const DynamicSimulationEventForm = (
-    props: DynamicSimulationBasicEventFormProps
+    props: DynamicSimulationBasicEventFormProps,
 ) => {
     const { equipmentId, equipmentType, eventDefinition, event } = props;
 
@@ -60,7 +60,7 @@ export const DynamicSimulationEventForm = (
                         : false;
 
                     const propertyValue = event?.properties.find(
-                        (elem) => elem.name === propertyName
+                        (elem) => elem.name === propertyName,
                     )?.value;
 
                     // compatibility check between event property and equipment type to show or not
@@ -78,9 +78,9 @@ export const DynamicSimulationEventForm = (
                                     ? intl.formatMessage({
                                           id: propertyValue,
                                       })
-                                    : propertyValue
+                                    : propertyValue,
                             ),
-                            12
+                            12,
                         )
                     );
                 })}

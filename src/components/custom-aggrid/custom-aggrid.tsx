@@ -81,7 +81,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     defaultMessage: params.defaultValue,
                 });
             },
-            [intl]
+            [intl],
         );
 
         // We have to define a minWidth to column to activate this feature
@@ -101,7 +101,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                 sx={mergeSx(
                     styles.grid,
                     shouldHidePinnedHeaderRightBorder && styles.noBorderRight,
-                    showOverlay && styles.overlayBackground
+                    showOverlay && styles.overlayBackground,
                 )}
                 className={theme.aggrid}
             >
@@ -119,5 +119,5 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                 />
             </Box>
         );
-    }
+    },
 );

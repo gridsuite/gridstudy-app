@@ -111,7 +111,7 @@ export const getSensiHVDCsFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -128,7 +128,7 @@ export const getSensiHVDCsFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -139,11 +139,11 @@ export const getSensiHVDCsFormSchema = () => ({
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                })
+                }),
             ),
 
             [ACTIVATED]: yup.boolean().required(),
-        })
+        }),
     ),
 });
 
@@ -166,7 +166,7 @@ export const getSensiHvdcformatNewParams = (newParams: INewParamsHvdc) => {
                                 [CONTAINER_ID]: container[ID],
                                 [CONTAINER_NAME]: container[NAME],
                             };
-                        }
+                        },
                     ),
                     [SENSITIVITY_TYPE]: sensitivityHVDCs[SENSITIVITY_TYPE],
                     [CONTINGENCIES]: sensitivityHVDCs[CONTINGENCIES].map(
@@ -175,11 +175,11 @@ export const getSensiHvdcformatNewParams = (newParams: INewParamsHvdc) => {
                                 [CONTAINER_ID]: container[ID],
                                 [CONTAINER_NAME]: container[NAME],
                             };
-                        }
+                        },
                     ),
                     [ACTIVATED]: sensitivityHVDCs[ACTIVATED],
                 };
-            }
+            },
         ),
     };
 };
@@ -193,7 +193,7 @@ export const getSensiInjectionsFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -206,7 +206,7 @@ export const getSensiInjectionsFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -217,15 +217,15 @@ export const getSensiInjectionsFormSchema = () => ({
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                })
+                }),
             ),
             [ACTIVATED]: yup.boolean().required(),
-        })
+        }),
     ),
 });
 
 export const getSensiInjectionsformatNewParams = (
-    newParams: INewParamsInjections
+    newParams: INewParamsInjections,
 ) => {
     return {
         [PARAMETER_SENSI_INJECTION]: newParams.sensitivityInjection.map(
@@ -245,7 +245,7 @@ export const getSensiInjectionsformatNewParams = (
                                 [CONTAINER_ID]: container[ID],
                                 [CONTAINER_NAME]: container[NAME],
                             };
-                        }
+                        },
                     ),
                     [CONTINGENCIES]: sensitivityInjections[CONTINGENCIES].map(
                         (container) => {
@@ -253,11 +253,11 @@ export const getSensiInjectionsformatNewParams = (
                                 [CONTAINER_ID]: container[ID],
                                 [CONTAINER_NAME]: container[NAME],
                             };
-                        }
+                        },
                     ),
                     [ACTIVATED]: sensitivityInjections[ACTIVATED],
                 };
-            }
+            },
         ),
     };
 };
@@ -271,7 +271,7 @@ export const getSensiInjectionsSetFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -284,7 +284,7 @@ export const getSensiInjectionsSetFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -299,10 +299,10 @@ export const getSensiInjectionsSetFormSchema = () => ({
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                })
+                }),
             ),
             [ACTIVATED]: yup.boolean().nullable(),
-        })
+        }),
     ),
 });
 
@@ -351,23 +351,23 @@ interface IRowNewParams {
 export const getGenericRowNewParams = (newRowParams: IRowNewParams) => {
     return {
         [MONITORED_BRANCHES]: newRowParams[MONITORED_BRANCHES].map(
-            (container) => container[ID]
+            (container) => container[ID],
         ),
         [INJECTIONS]: newRowParams[INJECTIONS]?.map(
-            (container) => container[ID]
+            (container) => container[ID],
         ),
         [HVDC_LINES]: newRowParams[HVDC_LINES]?.map(
-            (container) => container[ID]
+            (container) => container[ID],
         ),
         [PSTS]: newRowParams[PSTS]?.map((container) => container[ID]),
         [CONTINGENCIES]: newRowParams[CONTINGENCIES]?.map(
-            (container) => container[ID]
+            (container) => container[ID],
         ),
     };
 };
 
 export const getSensiInjectionsSetformatNewParams = (
-    newParams: INewParamsInjectionsSet
+    newParams: INewParamsInjectionsSet,
 ) => {
     return {
         [PARAMETER_SENSI_INJECTIONS_SET]:
@@ -388,7 +388,7 @@ export const getSensiInjectionsSetformatNewParams = (
                                     [CONTAINER_ID]: container[ID],
                                     [CONTAINER_NAME]: container[NAME],
                                 };
-                            }
+                            },
                         ),
                         [DISTRIBUTION_TYPE]:
                             sensitivityInjectionSet[DISTRIBUTION_TYPE],
@@ -402,7 +402,7 @@ export const getSensiInjectionsSetformatNewParams = (
                         }),
                         [ACTIVATED]: sensitivityInjectionSet[ACTIVATED],
                     };
-                }
+                },
             ),
     };
 };
@@ -414,22 +414,22 @@ export const getSensiNodesFormSchema = () => ({
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                })
+                }),
             ),
             [EQUIPMENTS_IN_VOLTAGE_REGULATION]: yup.array().of(
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                })
+                }),
             ),
             [CONTINGENCIES]: yup.array().of(
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                })
+                }),
             ),
             [ACTIVATED]: yup.boolean().required(),
-        })
+        }),
     ),
 });
 
@@ -460,11 +460,11 @@ export const getSensiNodesformatNewParams = (newParams: INewParamsNodes) => {
                                 [CONTAINER_ID]: container[ID],
                                 [CONTAINER_NAME]: container[NAME],
                             };
-                        }
+                        },
                     ),
                     [ACTIVATED]: sensitivityNode[ACTIVATED],
                 };
-            }
+            },
         ),
     };
 };
@@ -478,7 +478,7 @@ export const getSensiPSTsFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -495,7 +495,7 @@ export const getSensiPSTsFormSchema = () => ({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .required()
                 .when([ACTIVATED], {
@@ -506,10 +506,10 @@ export const getSensiPSTsFormSchema = () => ({
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                })
+                }),
             ),
             [ACTIVATED]: yup.boolean().required(),
-        })
+        }),
     ),
 });
 
@@ -539,11 +539,11 @@ export const getSensiPstformatNewParams = (newParams: INewParamsPst) => {
                                 [CONTAINER_ID]: container[ID],
                                 [CONTAINER_NAME]: container[NAME],
                             };
-                        }
+                        },
                     ),
                     [ACTIVATED]: sensitivityPSTs[ACTIVATED],
                 };
-            }
+            },
         ),
     };
 };

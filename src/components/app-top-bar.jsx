@@ -111,10 +111,10 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const networkAreaDiagramNbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels
+        (state) => state.networkAreaDiagramNbVoltageLevels,
     );
     const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth
+        (state) => state.networkAreaDiagramDepth,
     );
 
     const centerOnSubstationCB = useCallback(
@@ -133,7 +133,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                     EQUIPMENT_TYPES.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.LIST.type,
                     element.id,
-                    true
+                    true,
                 ).then((vl) => vl.substationId);
             }
             substationIdPromise.then((substationId) => {
@@ -142,7 +142,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 e.stopPropagation();
             });
         },
-        [dispatch, props, studyUuid, currentNode]
+        [dispatch, props, studyUuid, currentNode],
     );
 
     const openNetworkAreaDiagramCB = useCallback(
@@ -151,7 +151,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
             props.onClose && props.onClose();
             e.stopPropagation();
         },
-        [dispatch, props]
+        [dispatch, props],
     );
 
     if (
@@ -206,7 +206,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const studyIndexationStatus = useSelector(
-        (state) => state.studyIndexationStatus
+        (state) => state.studyIndexationStatus,
     );
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
@@ -233,11 +233,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             } else {
                 openDiagramView(
                     optionInfos.voltageLevelId,
-                    DiagramType.VOLTAGE_LEVEL
+                    DiagramType.VOLTAGE_LEVEL,
                 );
             }
         },
-        [onChangeTab, openDiagramView]
+        [onChangeTab, openDiagramView],
     );
 
     useEffect(() => {

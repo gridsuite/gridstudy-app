@@ -57,7 +57,7 @@ export const useGetVoltageInitParameters = () => {
     const [voltageInitParams, setVoltageInitParams] = useState(null);
 
     const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit
+        OptionalServicesNames.VoltageInit,
     );
 
     useEffect(() => {
@@ -93,12 +93,12 @@ const formSchema = yup.object().shape({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .min(1, 'FilterInputMinError'),
             [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
             [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
-        })
+        }),
     ),
     [VOLTAGE_LIMITS_DEFAULT]: yup.array().of(
         yup.object().shape({
@@ -108,7 +108,7 @@ const formSchema = yup.object().shape({
                     yup.object().shape({
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
-                    })
+                    }),
                 )
                 .min(1, 'FilterInputMinError'),
             [LOW_VOLTAGE_LIMIT]: yup
@@ -131,25 +131,25 @@ const formSchema = yup.object().shape({
                         !isBlankOrEmpty(context.parent[LOW_VOLTAGE_LIMIT])
                     );
                 }),
-        })
+        }),
     ),
     [FIXED_GENERATORS]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
-        })
+        }),
     ),
     [VARIABLE_TRANSFORMERS]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
-        })
+        }),
     ),
     [VARIABLE_SHUNT_COMPENSATORS]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
-        })
+        }),
     ),
 });
 
@@ -165,7 +165,7 @@ export const VoltageInitParameters = ({
     const intl = useIntl();
 
     const [tabValue, setTabValue] = useState(
-        TAB_VALUES.voltageLimitsParamsTabValue
+        TAB_VALUES.voltageLimitsParamsTabValue,
     );
 
     const emptyFormData = useMemo(() => {
@@ -226,7 +226,7 @@ export const VoltageInitParameters = ({
                 });
             onValidationError();
         },
-        [setVoltageInitParams, snackError, studyUuid]
+        [setVoltageInitParams, snackError, studyUuid],
     );
 
     useEffect(() => {
@@ -261,13 +261,13 @@ export const VoltageInitParameters = ({
                     .then((parameters) => {
                         console.info(
                             'loading the following voltage init parameters : ' +
-                                parameters.uuid
+                                parameters.uuid,
                         );
                         reset(
                             fromVoltageInitParamsDataToFormValues(parameters),
                             {
                                 keepDefaultValues: true,
-                            }
+                            },
                         );
                     })
                     .catch((error) => {
@@ -280,7 +280,7 @@ export const VoltageInitParameters = ({
             }
             setOpenSelectParameterDialog(false);
         },
-        [reset, snackError]
+        [reset, snackError],
     );
 
     const handleOpenSaveDialog = useCallback(() => {
@@ -327,7 +327,7 @@ export const VoltageInitParameters = ({
                             TabIndicatorProps={{
                                 sx: getTabIndicatorStyle(
                                     tabIndexesWithError,
-                                    tabValue
+                                    tabValue,
                                 ),
                             }}
                         >
@@ -336,7 +336,7 @@ export const VoltageInitParameters = ({
                                 value={TAB_VALUES.voltageLimitsParamsTabValue}
                                 sx={getTabStyle(
                                     tabIndexesWithError,
-                                    TAB_VALUES.voltageLimitsParamsTabValue
+                                    TAB_VALUES.voltageLimitsParamsTabValue,
                                 )}
                             />
                             <Tab
@@ -348,7 +348,7 @@ export const VoltageInitParameters = ({
                                 }
                                 sx={getTabStyle(
                                     tabIndexesWithError,
-                                    TAB_VALUES.equipmentSelectionParamsTabValue
+                                    TAB_VALUES.equipmentSelectionParamsTabValue,
                                 )}
                             />
                         </Tabs>
@@ -405,7 +405,7 @@ export const VoltageInitParameters = ({
                                 variant="outlined"
                                 onClick={handleSubmit(
                                     onSubmit,
-                                    onValidationError
+                                    onValidationError,
                                 )}
                             />
                         </DialogActions>

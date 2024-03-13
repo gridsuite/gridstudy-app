@@ -34,7 +34,7 @@ const CheckboxNullableInput = ({
                 onChange(true);
             }
         },
-        [onChange, value]
+        [onChange, value],
     );
 
     return (

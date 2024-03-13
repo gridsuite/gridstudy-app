@@ -25,7 +25,7 @@ export interface GetCaseImportParametersReturn {
 }
 
 export function getCaseImportParameters(
-    caseUuid: UUID
+    caseUuid: UUID,
 ): Promise<GetCaseImportParametersReturn> {
     console.info(`get import parameters for case '${caseUuid}' ...`);
     const getExportFormatsUrl =

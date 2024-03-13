@@ -37,7 +37,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const intl = useIntl();
 
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
+        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW],
     );
 
     const gridRef = useRef();
@@ -62,7 +62,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
-        []
+        [],
     );
 
     const onRowDataUpdated = useCallback((params: any) => {
@@ -81,7 +81,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                 };
             }
         },
-        [theme.selectedRow.background]
+        [theme.selectedRow.background],
     );
 
     const onGridReady = useCallback(({ api }: GridReadyEvent) => {
@@ -93,7 +93,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             messages,
             result?.componentResults,
             loadFlowStatus,
-            result?.componentResults && !isLoadingResult
+            result?.componentResults && !isLoadingResult,
         );
         const formatedResult = formatcomponentResult(result?.componentResults);
         const rowsToShow = getRows(formatedResult, loadFlowStatus);

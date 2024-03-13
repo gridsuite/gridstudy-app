@@ -34,7 +34,7 @@ const CheckboxSelect = ({
 }) => {
     const intl = useIntl();
     const [selectedOptions, setSelectedOptions] = useState(
-        initialSelectedOptions ?? []
+        initialSelectedOptions ?? [],
     );
 
     // used to reset internal state when initial selected value changed
@@ -66,14 +66,14 @@ const CheckboxSelect = ({
             // propagate by callback
             onChange && onChange(newSelectedOptions);
         },
-        [options, onChange]
+        [options, onChange],
     );
 
     const getOptionLabel = useCallback(
         (option) => {
             return defaultGetOptionLabel(option);
         },
-        [defaultGetOptionLabel]
+        [defaultGetOptionLabel],
     );
 
     return (
@@ -88,7 +88,7 @@ const CheckboxSelect = ({
                     return getOptionLabel(selectedOptions[0]);
                 } else if (selectedOptions.length > 1) {
                     return `${getOptionLabel(
-                        selectedOptions[selectedOptions.length - 1]
+                        selectedOptions[selectedOptions.length - 1],
                     )} ...`;
                 }
                 return '';

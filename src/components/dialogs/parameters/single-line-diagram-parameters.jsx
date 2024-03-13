@@ -38,9 +38,9 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
         () =>
             Array.from(componentLibraries).reduce(
                 (prev, val, idx) => ({ ...prev, [val]: val }),
-                {}
+                {},
             ),
-        [componentLibraries]
+        [componentLibraries],
     );
 
     return (

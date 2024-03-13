@@ -31,7 +31,7 @@ interface BusMenuProps {
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: string,
-        dialogTitle: string
+        dialogTitle: string,
     ) => void;
     position: [number, number];
     onClose: () => void;
@@ -62,7 +62,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 
     // to check is node editable
     const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
+        (state: ReduxState) => state.currentTreeNode,
     );
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isNodeEditable = useMemo(
@@ -70,16 +70,16 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             isNodeBuilt(currentNode) &&
             !isNodeReadOnly(currentNode) &&
             !isAnyNodeBuilding,
-        [currentNode, isAnyNodeBuilding]
+        [currentNode, isAnyNodeBuilding],
     );
 
     const computationStarting = useSelector(
-        (state: ReduxState) => state.computationStarting
+        (state: ReduxState) => state.computationStarting,
     );
 
     const oneBusShortcircuitAnalysisState = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS],
     );
 
     const handleClickRunShortcircuitAnalysis = useCallback(() => {
@@ -93,10 +93,10 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             onOpenDynamicSimulationEventDialog(
                 equipmentId,
                 equipmentType,
-                dialogTitle
+                dialogTitle,
             );
         },
-        [onClose, onOpenDynamicSimulationEventDialog]
+        [onClose, onOpenDynamicSimulationEventDialog],
     );
 
     return (

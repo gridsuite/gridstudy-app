@@ -36,7 +36,7 @@ export const CustomNestedMenuItem = (props) => {
                 isSubMenuActive
                     ? styles.highlightedParentLine
                     : styles.highlightedLine,
-                sx
+                sx,
             )}
             {...other}
         >

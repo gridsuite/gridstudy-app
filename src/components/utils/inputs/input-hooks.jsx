@@ -175,7 +175,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                             setError(
                                 intl.formatMessage({
                                     id: 'nodeNameAlreadyUsed',
-                                })
+                                }),
                             );
                             setIsValidName(false);
                         } else {
@@ -193,7 +193,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                 setChecking(undefined);
             }
         },
-        [studyUuid, intl, defaultValue, snackError]
+        [studyUuid, intl, defaultValue, snackError],
     );
     const debouncedValidName = useDebounce(validName, 700);
 
@@ -207,7 +207,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
             setAdornment(undefined);
         } else {
             setAdornment(
-                inputAdornment(<CheckIcon style={{ color: 'green' }} />)
+                inputAdornment(<CheckIcon style={{ color: 'green' }} />),
             );
         }
     }, [checking, isValidName]);
@@ -260,7 +260,7 @@ export const useDirectoryElements = ({
             inputForm?.setHasChanged(arr.length > 0);
             setValues(arr);
         },
-        [inputForm, values]
+        [inputForm, values],
     );
 
     const addElements = useCallback(
@@ -285,7 +285,7 @@ export const useDirectoryElements = ({
 
             setDirectoryItemSelectorOpen(false);
         },
-        [values, snackError, inputForm]
+        [values, snackError, inputForm],
     );
 
     const field = useMemo(() => {
@@ -294,7 +294,7 @@ export const useDirectoryElements = ({
                 <FormControl
                     sx={mergeSx(
                         styles.formDirectoryElements1,
-                        errorMsg && styles.formDirectoryElementsError
+                        errorMsg && styles.formDirectoryElementsError,
                     )}
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
@@ -414,7 +414,7 @@ export const useCSVPicker = ({
                             setFileError(
                                 intl.formatMessage({
                                     id: 'InvalidRuleHeader',
-                                })
+                                }),
                             );
                         }
 
@@ -422,8 +422,8 @@ export const useCSVPicker = ({
                             setFileError(
                                 intl.formatMessage(
                                     { id: 'TapPositionValueError' },
-                                    { value: maxTapNumber }
-                                )
+                                    { value: maxTapNumber },
+                                ),
                             );
                         }
                     }}

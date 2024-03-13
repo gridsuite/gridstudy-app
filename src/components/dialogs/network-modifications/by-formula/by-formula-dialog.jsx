@@ -112,10 +112,10 @@ const ByFormulaDialog = ({
         (data) => {
             const formulas = data[FORMULAS].map((formula) => {
                 const fieldOrValue1 = getFieldOrValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_1]
+                    formula[REFERENCE_FIELD_OR_VALUE_1],
                 );
                 const fieldOrValue2 = getFieldOrValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_2]
+                    formula[REFERENCE_FIELD_OR_VALUE_2],
                 );
                 return {
                     fieldOrValue1,
@@ -129,7 +129,7 @@ const ByFormulaDialog = ({
                 data[EQUIPMENT_TYPE_FIELD],
                 formulas,
                 !!editData,
-                editData?.uuid ?? null
+                editData?.uuid ?? null,
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -137,7 +137,7 @@ const ByFormulaDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid],
     );
 
     return (

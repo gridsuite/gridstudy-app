@@ -24,11 +24,11 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
         plotRef.current.resizeHandler();
     }, 500);
     const resizeObserverRef = useRef(
-        new ResizeObserver(debouncedResizeHandler)
+        new ResizeObserver(debouncedResizeHandler),
     );
 
     const [layout, setLayout] = useState(
-        JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
+        JSON.parse(JSON.stringify(defaultLayout)), // deep clone can be done by lodash
     );
 
     // force refresh Plot in mutable layout but not work???
@@ -80,8 +80,8 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
                     }),
                     {
                         yaxis: 'y2',
-                    }
-                )
+                    },
+                ),
             ),
         ];
     }, [leftSeries, rightSeries, makeGetMarker]);
@@ -94,11 +94,11 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
                     PlotEvents.ON_RELAYOUT,
                     groupId,
                     id,
-                    eventData
+                    eventData,
                 );
             }
         },
-        [sync, groupId, id]
+        [sync, groupId, id],
     );
 
     const syncOnRelayout = useCallback(
@@ -135,7 +135,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
                 // setRevision((prev) => prev + 1);
             }
         },
-        [groupId, id]
+        [groupId, id],
     );
 
     useEffect(() => {
@@ -147,7 +147,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
             if (sync) {
                 eventCenter.removeListener(
                     PlotEvents.ON_RELAYOUT,
-                    syncOnRelayout
+                    syncOnRelayout,
                 );
             }
         };

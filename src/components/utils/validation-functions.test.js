@@ -137,14 +137,14 @@ test('validation-functions.validateValueIsLessThan', () => {
 test('validation-functions.validateField.isFieldRequired', () => {
     expect(validateField(500, { isFieldRequired: true }).error).toBe(false);
     expect(
-        validateField(0, { isFieldRequired: true, isFieldNumeric: true }).error
+        validateField(0, { isFieldRequired: true, isFieldNumeric: true }).error,
     ).toBe(false);
     expect(validateField('hello', { isFieldRequired: true }).error).toBe(false);
     expect(validateField('', { isFieldRequired: true }).error).toBe(true);
     expect(validateField(' ', { isFieldRequired: true }).error).toBe(true);
     expect(validateField(null, { isFieldRequired: true }).error).toBe(true);
     expect(validateField(undefined, { isFieldRequired: true }).error).toBe(
-        true
+        true,
     );
 });
 
@@ -155,102 +155,103 @@ test('validation-functions.validateField.isFieldNumeric', () => {
     expect(validateField('hello', { isFieldNumeric: true }).error).toBe(true);
     expect(validateField('', { isFieldNumeric: true }).error).toBe(false); // If the field is not required, there should be no validation error
     expect(
-        validateField('', { isFieldRequired: true, isFieldNumeric: true }).error
+        validateField('', { isFieldRequired: true, isFieldNumeric: true })
+            .error,
     ).toBe(true);
     expect(
         validateField(' ', { isFieldRequired: true, isFieldNumeric: true })
-            .error
+            .error,
     ).toBe(true);
     expect(
         validateField(null, { isFieldRequired: true, isFieldNumeric: true })
-            .error
+            .error,
     ).toBe(true);
     expect(
         validateField(undefined, {
             isFieldRequired: true,
             isFieldNumeric: true,
-        }).error
+        }).error,
     ).toBe(true);
 });
 
 test('validation-functions.validateField.valueGreaterThanOrEqualTo', () => {
     expect(validateField(500, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
-        false
+        false,
     );
     expect(validateField(500, { valueGreaterThanOrEqualTo: 0 }).error).toBe(
-        false
+        false,
     );
     expect(validateField(0, { valueGreaterThanOrEqualTo: 0 }).error).toBe(
-        false
+        false,
     );
     expect(validateField(0, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
-        true
+        true,
     );
     expect(validateField(-500, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
-        true
+        true,
     );
     expect(validateField(-500, { valueGreaterThanOrEqualTo: 0 }).error).toBe(
-        true
+        true,
     );
     expect(validateField(0, { valueGreaterThanOrEqualTo: -10 }).error).toBe(
-        false
+        false,
     );
     expect(
         validateField('', {
             valueGreaterThanOrEqualTo: 2,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField('', {
             valueGreaterThanOrEqualTo: 3,
             isFieldRequired: true,
-        }).error
+        }).error,
     ).toBe(true);
     expect(
         validateField(' ', {
             valueGreaterThanOrEqualTo: 2,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField(' ', {
             valueGreaterThanOrEqualTo: 3,
             isFieldRequired: true,
-        }).error
+        }).error,
     ).toBe(true);
     expect(
         validateField(null, {
             valueGreaterThanOrEqualTo: 2,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField(null, {
             valueGreaterThanOrEqualTo: 3,
             isFieldRequired: true,
-        }).error
+        }).error,
     ).toBe(true);
     expect(
         validateField(undefined, {
             valueGreaterThanOrEqualTo: 2,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField(undefined, {
             valueGreaterThanOrEqualTo: 3,
             isFieldRequired: true,
-        }).error
+        }).error,
     ).toBe(true);
 });
 
 test('validation-functions.validateField.valueLessThanOrEqualTo', () => {
     expect(validateField(-600, { valueLessThanOrEqualTo: 10 }).error).toBe(
-        false
+        false,
     );
     expect(validateField(-600, { valueLessThanOrEqualTo: 0 }).error).toBe(
-        false
+        false,
     );
     expect(validateField(0, { valueLessThanOrEqualTo: -10 }).error).toBe(true);
     expect(validateField(600, { valueLessThanOrEqualTo: 10 }).error).toBe(true);
@@ -261,47 +262,47 @@ test('validation-functions.validateField.valueLessThanOrEqualTo', () => {
         validateField('', {
             valueLessThanOrEqualTo: 20,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField('', { valueLessThanOrEqualTo: 20, isFieldRequired: true })
-            .error
+            .error,
     ).toBe(true);
     expect(
         validateField(' ', {
             valueLessThanOrEqualTo: 20,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField(' ', {
             valueLessThanOrEqualTo: 20,
             isFieldRequired: true,
-        }).error
+        }).error,
     ).toBe(true);
     expect(
         validateField(null, {
             valueLessThanOrEqualTo: 20,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField(null, {
             valueLessThanOrEqualTo: 20,
             isFieldRequired: true,
-        }).error
+        }).error,
     ).toBe(true);
     expect(
         validateField(undefined, {
             valueLessThanOrEqualTo: 20,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField(undefined, {
             valueLessThanOrEqualTo: 20,
             isFieldRequired: true,
-        }).error
+        }).error,
     ).toBe(true);
 });
 
@@ -314,30 +315,30 @@ test('validation-functions.validateField.valueLessThan', () => {
     expect(validateField(-600, { valueLessThan: 0 }).error).toBe(false);
     expect(validateField(0, { valueLessThan: -10 }).error).toBe(true);
     expect(
-        validateField('', { valueLessThan: 6, isFieldRequired: false }).error
+        validateField('', { valueLessThan: 6, isFieldRequired: false }).error,
     ).toBe(false);
     expect(
-        validateField('', { valueLessThan: 6, isFieldRequired: true }).error
+        validateField('', { valueLessThan: 6, isFieldRequired: true }).error,
     ).toBe(true);
     expect(
-        validateField(' ', { valueLessThan: 6, isFieldRequired: false }).error
+        validateField(' ', { valueLessThan: 6, isFieldRequired: false }).error,
     ).toBe(false);
     expect(
-        validateField(' ', { valueLessThan: 6, isFieldRequired: true }).error
+        validateField(' ', { valueLessThan: 6, isFieldRequired: true }).error,
     ).toBe(true);
     expect(
-        validateField(null, { valueLessThan: 6, isFieldRequired: false }).error
+        validateField(null, { valueLessThan: 6, isFieldRequired: false }).error,
     ).toBe(false);
     expect(
-        validateField(null, { valueLessThan: 6, isFieldRequired: true }).error
+        validateField(null, { valueLessThan: 6, isFieldRequired: true }).error,
     ).toBe(true);
     expect(
         validateField(undefined, { valueLessThan: 6, isFieldRequired: false })
-            .error
+            .error,
     ).toBe(false);
     expect(
         validateField(undefined, { valueLessThan: 6, isFieldRequired: true })
-            .error
+            .error,
     ).toBe(true);
 });
 
@@ -350,35 +351,37 @@ test('validation-functions.validateField.valueGreaterThan', () => {
     expect(validateField(-600, { valueGreaterThan: 0 }).error).toBe(true);
     expect(validateField(0, { valueGreaterThan: -10 }).error).toBe(false);
     expect(
-        validateField('', { valueGreaterThan: 2, isFieldRequired: false }).error
+        validateField('', { valueGreaterThan: 2, isFieldRequired: false })
+            .error,
     ).toBe(false);
     expect(
-        validateField('', { valueGreaterThan: 2, isFieldRequired: true }).error
+        validateField('', { valueGreaterThan: 2, isFieldRequired: true }).error,
     ).toBe(true);
     expect(
         validateField(' ', { valueGreaterThan: 2, isFieldRequired: false })
-            .error
+            .error,
     ).toBe(false);
     expect(
-        validateField(' ', { valueGreaterThan: 2, isFieldRequired: true }).error
+        validateField(' ', { valueGreaterThan: 2, isFieldRequired: true })
+            .error,
     ).toBe(true);
     expect(
         validateField(null, { valueGreaterThan: 2, isFieldRequired: false })
-            .error
+            .error,
     ).toBe(false);
     expect(
         validateField(null, { valueGreaterThan: 2, isFieldRequired: true })
-            .error
+            .error,
     ).toBe(true);
     expect(
         validateField(undefined, {
             valueGreaterThan: 2,
             isFieldRequired: false,
-        }).error
+        }).error,
     ).toBe(false);
     expect(
         validateField(undefined, { valueGreaterThan: 2, isFieldRequired: true })
-            .error
+            .error,
     ).toBe(true);
 });
 
@@ -390,20 +393,20 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
         checkReactiveCapabilityCurve([
             { p: '0', minQ: '0', maxQ: '0' },
             { p: '10', minQ: '0', maxQ: '0' },
-        ]).length
+        ]).length,
     ).toBe(0);
     expect(
         checkReactiveCapabilityCurve([
             { p: '-10', minQ: '-5', maxQ: '-2' },
             { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).toBe(0);
     expect(
         checkReactiveCapabilityCurve([
             { p: '-10', minQ: '-5', maxQ: '-2' },
             { p: '0', minQ: '0', maxQ: '0' },
             { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).toBe(0);
     expect(
         checkReactiveCapabilityCurve([
@@ -411,13 +414,13 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
             { p: '0', minQ: '0,8', maxQ: '1' },
             { p: '-3', minQ: '-6.5', maxQ: '-2' },
             { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).toBe(0);
 
     // Not enough points
     expect(checkReactiveCapabilityCurve([]).length).not.toBe(0);
     expect(
-        checkReactiveCapabilityCurve([{ p: '0', minQ: '0', maxQ: '0' }]).length
+        checkReactiveCapabilityCurve([{ p: '0', minQ: '0', maxQ: '0' }]).length,
     ).not.toBe(0);
 
     // Not unique P values
@@ -425,32 +428,32 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
         checkReactiveCapabilityCurve([
             { p: '10', minQ: '-5', maxQ: '-2' },
             { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
             { p: '-10', minQ: '-5', maxQ: '-2' },
             { p: '-0', minQ: '0', maxQ: '0' },
             { p: '0', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
             { p: '-0', minQ: '0', maxQ: '0' },
             { p: '0', minQ: '0', maxQ: '0' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
             { p: '0', minQ: '0', maxQ: '0' },
             { p: '0.0', minQ: '0', maxQ: '0' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
             { p: ',0', minQ: '0', maxQ: '0' },
             { p: '0', minQ: '0', maxQ: '0' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
 
     // Pmin and Pmax values are not in the begining and end of the array
@@ -459,7 +462,7 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
             { p: '0', minQ: '-5', maxQ: '-2' },
             { p: '-10', minQ: '0', maxQ: '0' },
             { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
 
     // P values between Pmin and Pmax are below Pmin or above Pmax
@@ -468,14 +471,14 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
             { p: '-10', minQ: '-5', maxQ: '-2' },
             { p: '260', minQ: '0', maxQ: '0' },
             { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
             { p: '-10', minQ: '-5', maxQ: '-2' },
             { p: '-20', minQ: '0', maxQ: '0' },
             { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
+        ]).length,
     ).not.toBe(0);
 });
 
@@ -484,6 +487,6 @@ test('validation-functions.validateField.forceValidation', () => {
     expect(validateField(600, { valueLessThan: 10 }, true).error).toBe(false);
     expect(
         validateField(600, { valueLessThan: 10, forceValidation: true }, true)
-            .error
+            .error,
     ).toBe(true);
 });

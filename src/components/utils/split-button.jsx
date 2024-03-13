@@ -142,7 +142,7 @@ const SplitButton = ({
 }) => {
     const [open, setOpen] = React.useState(false);
     const computationStarting = useSelector(
-        (state) => state.computationStarting
+        (state) => state.computationStarting,
     );
 
     const anchorRef = React.useRef(null);
@@ -261,7 +261,7 @@ const SplitButton = ({
                                             onClick={(event) =>
                                                 handleMenuItemClick(
                                                     event,
-                                                    index
+                                                    index,
                                                 )
                                             }
                                         >

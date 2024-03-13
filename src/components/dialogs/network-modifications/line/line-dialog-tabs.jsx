@@ -26,14 +26,14 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
                     label={<FormattedMessage id="LineCharacteristicsTab" />}
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        LineCreationDialogTab.CHARACTERISTICS_TAB
+                        LineCreationDialogTab.CHARACTERISTICS_TAB,
                     )}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
                     sx={getTabStyle(
                         tabIndexesWithError,
-                        LineCreationDialogTab.LIMITS_TAB
+                        LineCreationDialogTab.LIMITS_TAB,
                     )}
                 />
             </Tabs>
