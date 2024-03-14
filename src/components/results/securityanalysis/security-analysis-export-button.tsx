@@ -19,6 +19,7 @@ import { useIntl } from 'react-intl';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
 import { downloadZipFile } from 'services/utils';
 import { RESULT_TYPE } from './security-analysis-result-utils';
+import { PERMANENT_LIMIT_NAME } from '../common/utils';
 
 interface SecurityAnalysisExportButtonProps {
     studyUuid: UUID;
@@ -44,7 +45,11 @@ export const SecurityAnalysisExportButton: FunctionComponent<
     }, [nodeUuid, resultType]);
 
     const enumValueTranslations = useMemo(() => {
-        const returnedValue: Record<string, string> = {};
+        const returnedValue: Record<string, string> = {
+            [PERMANENT_LIMIT_NAME]: intl.formatMessage({
+                id: 'PermanentLimitName',
+            }),
+        };
         const enumValuesToTranslate = [
             'CURRENT',
             'HIGH_VOLTAGE',
