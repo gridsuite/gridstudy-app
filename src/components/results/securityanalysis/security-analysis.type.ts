@@ -47,7 +47,7 @@ export interface SecurityAnalysisNmkTableRow {
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;
-    limitName?: string;
+    limitName?: string | null;
     limitType?: string;
     linkedElementId?: string;
     loading?: number;
