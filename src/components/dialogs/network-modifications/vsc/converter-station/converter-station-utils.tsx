@@ -79,9 +79,9 @@ export interface ConverterStationInterfaceEditData {
     equipmentId: string;
     equipmentName: string | null;
     lossFactor: number;
-    reactivePower?: number;
+    reactivePowerSetpoint?: number;
     voltageRegulationOn: boolean;
-    voltage?: number | null;
+    voltageSetpoint?: number | null;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
     busbarSectionName?: string;
@@ -101,9 +101,9 @@ export interface ConverterStationModificationInterfaceEditData {
     equipmentId: string;
     equipmentName: AttributeModification<string> | null;
     lossFactor: AttributeModification<number> | null;
-    reactivePower?: AttributeModification<number>;
+    reactivePowerSetpoint?: AttributeModification<number>;
     voltageRegulationOn: AttributeModification<boolean>;
-    voltage?: AttributeModification<number> | null;
+    voltageSetpoint?: AttributeModification<number> | null;
     voltageLevelId: AttributeModification<string> | null;
     busOrBusbarSectionId: AttributeModification<string> | null;
     busbarSectionName?: AttributeModification<string> | null;
@@ -113,8 +113,8 @@ export interface ConverterStationModificationInterfaceEditData {
     connected?: AttributeModification<boolean> | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
-    minimumReactivePower: AttributeModification<number> | null;
-    maximumReactivePower: AttributeModification<number> | null;
+    minQ: AttributeModification<number> | null;
+    maxQ: AttributeModification<number> | null;
 }
 
 export interface ConverterStationElementInfos {
@@ -126,7 +126,7 @@ export interface ConverterStationElementInfos {
     voltageRegulatorOn: boolean;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    nominalVoltage: number;
+    nominalV: number;
     terminalConnected: boolean;
     p: number | null;
     q: number | null;
@@ -214,9 +214,9 @@ export function getConverterStationCreationData(converterStation: any) {
         equipmentId: converterStation[CONVERTER_STATION_ID],
         equipmentName: converterStation[CONVERTER_STATION_NAME],
         lossFactor: converterStation[LOSS_FACTOR],
-        reactivePower: converterStation[REACTIVE_POWER],
+        reactivePowerSetpoint: converterStation[REACTIVE_POWER],
         voltageRegulationOn: converterStation[VOLTAGE_REGULATION_ON],
-        voltage: converterStation[VOLTAGE],
+        voltageSetpoint: converterStation[VOLTAGE],
         voltageLevelId: converterStation[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
         busOrBusbarSectionId:
             converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
@@ -263,13 +263,13 @@ export function getConverterStationModificationData(
             converterStation[CONVERTER_STATION_NAME]
         ),
         lossFactor: toModificationOperation(converterStation[LOSS_FACTOR]),
-        reactivePower: toModificationOperation(
+        reactivePowerSetpoint: toModificationOperation(
             converterStation[REACTIVE_POWER]
         ),
         voltageRegulationOn: toModificationOperation(
             converterStation[VOLTAGE_REGULATION_ON]
         ),
-        voltage: toModificationOperation(converterStation[VOLTAGE]),
+        voltageSetpoint: toModificationOperation(converterStation[VOLTAGE]),
         voltageLevelId: toModificationOperation(
             converterStation[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]
         ),
@@ -304,9 +304,9 @@ export function getConverterStationFormEditData(
             [CONVERTER_STATION_ID]: converterStation.equipmentId,
             [CONVERTER_STATION_NAME]: converterStation?.equipmentName ?? '',
             [LOSS_FACTOR]: converterStation.lossFactor,
-            [REACTIVE_POWER]: converterStation?.reactivePower,
+            [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint,
             [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulationOn,
-            [VOLTAGE]: converterStation?.voltage,
+            [VOLTAGE]: converterStation?.voltageSetpoint,
             ...getConnectivityFormData({
                 voltageLevelId: converterStation.voltageLevelId,
                 busbarSectionId: converterStation.busOrBusbarSectionId,
@@ -331,10 +331,11 @@ export function getConverterStationModificationFormEditData(
             [CONVERTER_STATION_NAME]:
                 converterStation?.equipmentName?.value ?? '',
             [LOSS_FACTOR]: converterStation?.lossFactor?.value ?? null,
-            [REACTIVE_POWER]: converterStation?.reactivePower?.value ?? null,
+            [REACTIVE_POWER]:
+                converterStation?.reactivePowerSetpoint?.value ?? null,
             [VOLTAGE_REGULATION_ON]:
                 converterStation?.voltageRegulationOn?.value ?? null,
-            [VOLTAGE]: converterStation?.voltage?.value ?? null,
+            [VOLTAGE]: converterStation?.voltageSetpoint?.value ?? null,
             ...getConnectivityFormData({
                 voltageLevelId: converterStation?.voltageLevelId?.value ?? null,
                 busbarSectionId:
@@ -383,10 +384,8 @@ function getConverterStationModificationReactiveLimits(
                 ?.reactiveCapabilityCurve?.value
                 ? 'CURVE'
                 : 'MINMAX',
-            maximumReactivePower:
-                converterStationEditData?.maximumReactivePower?.value ?? null,
-            minimumReactivePower:
-                converterStationEditData?.minimumReactivePower?.value ?? null,
+            maximumReactivePower: converterStationEditData?.maxQ?.value ?? null,
+            minimumReactivePower: converterStationEditData?.minQ?.value ?? null,
             reactiveCapabilityCurveTable:
                 converterStationEditData?.reactiveCapabilityCurvePoints
                     ?.length > 0
