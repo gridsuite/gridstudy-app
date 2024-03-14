@@ -35,6 +35,7 @@ export default defineConfig((config) => ({
         react(),
         eslint({
             failOnWarning: config.mode !== 'development',
+            lintOnStart: config.command === 'serve',
         }),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         reactVirtualized(),
