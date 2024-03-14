@@ -1,0 +1,13 @@
+root: true
+
+ignorePatterns:
+    - "**/node_modules/**"
+    - build
+
+extends:
+    - react-app
+    - plugin:prettier/recommended
+
+rules:
+    prettier/prettier: warn
+    curly: error
