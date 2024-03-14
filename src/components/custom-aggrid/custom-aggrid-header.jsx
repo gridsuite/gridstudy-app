@@ -69,6 +69,7 @@ const CustomHeaderComponent = ({
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
         parser, // Used to convert the value displayed in the table into its actual value
+        isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
 
     const {
@@ -79,7 +80,8 @@ const CustomHeaderComponent = ({
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
         !!customFilterOptions?.length;
-    const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
+    const isNumberInput =
+        filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const isColumnSorted = sortColKey === field;
 
     /* Filter should be activated for current column and
@@ -364,13 +366,13 @@ const CustomHeaderComponent = ({
                                     id: 'filter.filterOoo',
                                 })}
                                 inputProps={{
-                                    type: isNumberFilter
+                                    type: isNumberInput
                                         ? FILTER_DATA_TYPES.NUMBER
                                         : FILTER_DATA_TYPES.TEXT,
                                 }}
                                 sx={mergeSx(
                                     styles.input,
-                                    isNumberFilter && styles.noArrows
+                                    isNumberInput && styles.noArrows
                                 )}
                             />
                         </Grid>
