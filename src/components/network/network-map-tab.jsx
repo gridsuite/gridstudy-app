@@ -51,7 +51,6 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
-import FilterCreationPanel from './filter-creation-panel';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -92,6 +91,7 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     setErrorMessage,
+    onDrawModeChanged,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1020,7 +1020,7 @@ export const NetworkMapTab = ({
             onDrawModeChanged={(evt) => {
                 // closeEquipmentMenu();
                 // closeChoiceVoltageLevelMenu();
-                console.log('debug', 'Draw mode changed', evt);
+                onDrawModeChanged(evt);
             }}
         />
     );
@@ -1081,6 +1081,7 @@ NetworkMapTab.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
+    onDrawModeChanged: PropTypes.func,
 };
 
 export default NetworkMapTab;

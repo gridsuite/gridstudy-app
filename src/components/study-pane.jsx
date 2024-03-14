@@ -215,6 +215,13 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                         onChangeTab={props.onChangeTab}
                                         showInSpreadsheet={showInSpreadsheet}
                                         setErrorMessage={setErrorMessage}
+                                        onDrawModeChanged={(drawMode) => {
+                                            console.log(
+                                                'debug',
+                                                'drawMode',
+                                                drawMode
+                                            );
+                                        }}
                                     ></NetworkMapTab>
                                 </Box>
                                 <Box
