@@ -36,10 +36,12 @@ import {
 } from '@gridsuite/commons-ui';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import Chip from '@mui/material/Chip';
-import DirectoryItemSelector from '../../directory-item-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { useCSVReader } from 'react-papaparse';
 import { isNodeExists } from '../../../services/study';
 import { mergeSx } from '../functions';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -270,7 +272,7 @@ export const useDirectoryElements = ({
                 if (values.find((v) => v.id === elementRest.id) !== undefined) {
                     snackError({
                         messageTxt: '',
-                        headerId: 'ElementAlreadyUsed',
+                        headerId: 'directory_items_input/ElementAlreadyUsed',
                     });
                 } else {
                     elementsToAdd.push(elementRest);
@@ -356,6 +358,9 @@ export const useDirectoryElements = ({
                     equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
                     itemFilter={itemFilter}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             </>
         );
