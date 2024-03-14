@@ -11,7 +11,7 @@ import { MODIFICATION_TYPES } from '../../utils/modification-type';
 export const useModificationLabelComputer = () => {
     const intl = useIntl();
 
-    const getBranchStatusModificationValues = (modification, withFormat) => {
+    const getOperatingStatusModificationValues = (modification, withFormat) => {
         return {
             action: modification.action,
             energizedEnd: modification.energizedVoltageLevelId,
@@ -88,7 +88,7 @@ export const useModificationLabelComputer = () => {
 
         switch (modif.messageType) {
             case MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type:
-                return getBranchStatusModificationValues(
+                return getOperatingStatusModificationValues(
                     modificationValues,
                     withFormat
                 );
