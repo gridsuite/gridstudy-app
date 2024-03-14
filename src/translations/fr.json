@@ -995,7 +995,7 @@
     "cancelCutNetworkModificationSubtree": "Annuler couper le sous arbre",
     "removeNetworkModificationSubtree": "Supprimer le sous arbre",
     "restoreNodes": "Restaurer des nœuds",
-    "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer\u0a00:",
+    "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer\u00a0:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Veuillez sélectionner un nœuds à supprimer} =1 {Un nœud ou sous-arbre va être définitivement supprimé.} other {# nœuds ou sous-arbres vont être définitivement supprimés.}}",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
