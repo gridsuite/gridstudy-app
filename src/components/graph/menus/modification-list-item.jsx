@@ -7,7 +7,7 @@
 
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
