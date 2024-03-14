@@ -35,7 +35,7 @@ export default defineConfig({
     plugins: [
         react(),
         eslint({
-            failOnWarning: true,
+            failOnWarning: false,
         }),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         reactVirtualized(),

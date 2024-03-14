@@ -51,6 +51,7 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
+import FilterCreationPanel from './filter-creation-panel';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -64,13 +65,13 @@ const styles = {
         bottom: '30px',
         zIndex: 0,
         '&:hover': {
-            zIndex: 1,
+            zIndex: 2,
         },
     },
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
-        zIndex: 1,
+        zIndex: 2,
     },
 };
 
@@ -1041,6 +1042,23 @@ export const NetworkMapTab = ({
             <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
+            {/* <div
+                style={{
+                    position: 'absolute',
+                    height: '100%',
+                    width: '20px',
+                    zIndex: 1,
+                    backgroundColor: 'black',
+                    float: 'right', // Add this line to position it to the right side
+                    display: 'flex',
+                }}
+            >
+                <div>
+                    {intlRef.current.formatMessage({
+                        id: 'loadingGeoData',
+                    })}
+                </div>
+            </div> */}
             {renderMap()}
             {renderEquipmentMenu()}
             {modificationDialogOpen && renderModificationDialog()}

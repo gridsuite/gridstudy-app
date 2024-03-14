@@ -34,6 +34,7 @@ import TableWrapper from './spreadsheet/table-wrapper';
 import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
+import FilterCreationPanel from './network/filter-creation-panel';
 
 const styles = {
     map: {
@@ -68,6 +69,7 @@ const styles = {
         bottom: 0,
         left: 0,
         right: 0,
+        width: '80%',
     },
     table: {
         display: 'flex',
@@ -190,30 +192,41 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                         : '100%',
                             }}
                         >
-                            <Box sx={styles.mapBelowDiagrams}>
-                                {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
-                                <NetworkMapTab
-                                    /* TODO do we move redux param to container */
-                                    studyUuid={studyUuid}
-                                    visible={
-                                        props.view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
-                                    }
-                                    lineFullPath={lineFullPath}
-                                    lineParallelPath={lineParallelPath}
-                                    lineFlowMode={lineFlowMode}
-                                    lineFlowColorMode={lineFlowColorMode}
-                                    lineFlowAlertThreshold={
-                                        lineFlowAlertThreshold
-                                    }
-                                    openVoltageLevel={openVoltageLevel}
-                                    /* TODO verif tableEquipment*/
-                                    currentNode={currentNode}
-                                    onChangeTab={props.onChangeTab}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    setErrorMessage={setErrorMessage}
-                                />
+                            <Box>
+                                <Box sx={styles.mapBelowDiagrams}>
+                                    <NetworkMapTab
+                                        /* TODO do we move redux param to container */
+                                        studyUuid={studyUuid}
+                                        visible={
+                                            props.view === StudyView.MAP &&
+                                            studyDisplayMode !==
+                                                STUDY_DISPLAY_MODE.TREE
+                                        }
+                                        lineFullPath={lineFullPath}
+                                        lineParallelPath={lineParallelPath}
+                                        lineFlowMode={lineFlowMode}
+                                        lineFlowColorMode={lineFlowColorMode}
+                                        lineFlowAlertThreshold={
+                                            lineFlowAlertThreshold
+                                        }
+                                        openVoltageLevel={openVoltageLevel}
+                                        /* TODO verif tableEquipment*/
+                                        currentNode={currentNode}
+                                        onChangeTab={props.onChangeTab}
+                                        showInSpreadsheet={showInSpreadsheet}
+                                        setErrorMessage={setErrorMessage}
+                                    ></NetworkMapTab>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        width: '20%',
+                                        position: 'absolute',
+                                        top: '0',
+                                        right: '0',
+                                    }}
+                                >
+                                    <FilterCreationPanel></FilterCreationPanel>
+                                </Box>
                             </Box>
 
                             <DiagramPane
