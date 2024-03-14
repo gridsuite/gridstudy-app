@@ -65,36 +65,25 @@ export const ModificationListItem = ({
     ...props
 }) => {
     const intl = useIntl();
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
-    const [computedLabelValues, setComputedLabelValues] = useState();
     const { computeLabel } = useModificationLabelComputer();
 
     const toggle = useCallback(
         () => handleToggle(modif),
         [modif, handleToggle]
     );
-
-    useEffect(() => {
-        if (!studyUuid || !currentNode || !modif) {
-            return;
-        }
-        setComputedLabelValues(computeLabel(modif));
-    }, [modif, studyUuid, currentNode, setComputedLabelValues, computeLabel]);
-
     const getLabel = useCallback(() => {
-        if (!modif || !computedLabelValues) {
+        if (!modif) {
             return null;
         }
         return intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
             {
                 ...modif,
-                ...computedLabelValues,
+                ...computeLabel(modif),
             }
         );
-    }, [modif, intl, computedLabelValues]);
+    }, [computeLabel, modif, intl]);
 
     const [hover, setHover] = useState(false);
 
