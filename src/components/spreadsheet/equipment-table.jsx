@@ -118,7 +118,6 @@ export const EquipmentTable = ({
             getRowStyle={getRowStyle}
             columnDefs={columnData}
             defaultColDef={defaultColDef}
-            enableCellTextSelection={true}
             undoRedoCellEditing={true}
             onCellEditingStarted={handleCellEditingStarted}
             onCellEditingStopped={handleCellEditingStopped}
