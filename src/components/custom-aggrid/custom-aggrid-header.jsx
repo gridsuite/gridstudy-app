@@ -26,6 +26,7 @@ import {
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const styles = {
     iconSize: {
@@ -69,12 +70,15 @@ const CustomHeaderComponent = ({
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
         parser, // Used to convert the value displayed in the table into its actual value
+        isCountry, // Used to translate the countries options in the filter
     } = filterParams;
 
     const {
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
+
+    const { translate } = useLocalizedCountries();
 
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
@@ -184,6 +188,16 @@ const CustomHeaderComponent = ({
             setSelectedFilterComparator(filterComparators[0]);
         }
     }, [selectedFilterComparator, filterComparators]);
+
+    const getOptionLabelHandler = (option) => {
+        if (isCountry) {
+            return translate(option);
+        }
+        return intl.formatMessage({
+            id: option,
+            defaultMessage: option,
+        });
+    };
 
     return (
         <Grid
@@ -308,10 +322,7 @@ const CustomHeaderComponent = ({
                             value={selectedFilterData || []}
                             options={customFilterOptions}
                             getOptionLabel={(option) =>
-                                intl.formatMessage({
-                                    id: option,
-                                    defaultMessage: option,
-                                })
+                                getOptionLabelHandler(option)
                             }
                             onChange={handleFilterAutoCompleteChange}
                             size="small"
