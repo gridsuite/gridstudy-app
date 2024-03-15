@@ -42,6 +42,10 @@ const styles = {
             {
                 visibility: 'hidden',
             },
+        //removes border on focused cell - using "suppressCellFocus" Aggrid option causes side effects and breaks field edition
+        '& .ag-cell-focus, .ag-cell': {
+            border: 'none !important',
+        },
     }),
     noBorderRight: {
         // hides right border for header of "Edit" column due to column being pinned
@@ -58,8 +62,6 @@ const styles = {
         },
     }),
 };
-
-const gridOptions = { suppressCellFocus: true };
 
 // We have to define a minWidth to column to activate this feature
 const onColumnResized = (params: ColumnResizedEvent) => {
@@ -118,7 +120,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     onColumnResized={onColumnResized}
                     enableCellTextSelection
-                    gridOptions={gridOptions}
                     {...props}
                 />
             </Box>
