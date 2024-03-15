@@ -142,7 +142,7 @@ export const styles = {
     scrollableGrid: (theme) => ({
         overflowY: 'auto',
         overflowX: 'hidden',
-        maxHeight: '85%',
+        maxHeight: '85%', // TODO This needs to be refactored
         paddingRight: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(1),
