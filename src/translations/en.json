@@ -737,7 +737,7 @@
     "BatteryModificationError": "Error while modifying battery",
     "ModifyLine": "Modify line",
     "CreateLine": "Create line",
-    "CreateVsc": "Create VSC",
+    "CreateVsc": "Create HVDC line (VSC)",
     "Characteristics": "Characteristics",
     "Side": "Side",
     "Side1": "Side 1",
@@ -789,7 +789,7 @@
     "DuplicatedPropsError": "Duplicated properties: each property must be unique",
     "FillAllFields": "Please fill all fields",
     "ModifySubstation": "Modify substation",
-    "ModifyVsc": "Modify VSC",
+    "ModifyVsc": "Modify HVDC line (VSC)",
     "SubstationModificationError": "Error while modifying substation",
 
     "CreateVoltageLevel": "Create a voltage level",
