@@ -30,8 +30,10 @@ import {
 import { ParameterType, ParamLine, ParameterGroup } from './widget';
 import { mergeSx } from '../../utils/functions';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import DirectoryItemSelector from '../../directory-item-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -684,6 +686,9 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

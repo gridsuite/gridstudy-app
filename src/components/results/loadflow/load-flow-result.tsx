@@ -26,6 +26,7 @@ import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
+import { formatcomponentResult } from './load-flow-result-utils';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -94,8 +95,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             loadFlowStatus,
             result?.componentResults && !isLoadingResult
         );
-
-        const rowsToShow = getRows(result?.componentResults, loadFlowStatus);
+        const formatedResult = formatcomponentResult(result?.componentResults);
+        const rowsToShow = getRows(formatedResult, loadFlowStatus);
         return (
             <>
                 <Box sx={{ height: '4px' }}>
@@ -113,7 +114,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
-                    enableCellTextSelection={true}
                     skipColumnHeaders={false}
                 />
             </>

@@ -7,13 +7,13 @@
 
 import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER,
+    ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
-    DC_NOMINAL_VOLTAGE,
-    DC_RESISTANCE,
+    NOMINAL_V,
+    R,
     DROOP,
-    MAXIMUM_ACTIVE_POWER,
+    MAX_P,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
@@ -60,28 +60,28 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
 
     const dcNominalVoltageField = (
         <FloatInput
-            name={`${id}.${DC_NOMINAL_VOLTAGE}`}
+            name={`${id}.${NOMINAL_V}`}
             adornment={VoltageAdornment}
             label={'dcNominalVoltageLabel'}
-            previousValue={previousValues?.dcNominalVoltage}
+            previousValue={previousValues?.nominalV}
         />
     );
 
     const dcResistanceField = (
         <FloatInput
-            name={`${id}.${DC_RESISTANCE}`}
+            name={`${id}.${R}`}
             adornment={OhmAdornment}
             label={'dcResistanceLabel'}
-            previousValue={previousValues?.dcResistance}
+            previousValue={previousValues?.r}
         />
     );
 
     const maximumActivePowerField = (
         <FloatInput
-            name={`${id}.${MAXIMUM_ACTIVE_POWER}`}
+            name={`${id}.${MAX_P}`}
             adornment={ActivePowerAdornment}
             label={'MaximumActivePowerText'}
-            previousValue={previousValues?.maximumActivePower}
+            previousValue={previousValues?.maxP}
         />
     );
 
@@ -138,10 +138,10 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
 
     const activePowerField = (
         <FloatInput
-            name={`${id}.${ACTIVE_POWER}`}
+            name={`${id}.${ACTIVE_POWER_SETPOINT}`}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={previousValues?.activePower}
+            previousValue={previousValues?.activePowerSetpoint}
         />
     );
 
