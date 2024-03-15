@@ -15,7 +15,7 @@ import {
     fetchPath,
     fetchRootFolders,
 } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
+import { createFilter, fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import { ParameterType } from 'components/dialogs/parameters/widget';
@@ -77,16 +77,45 @@ const FilterCreationPanel: React.FC = () => {
         resolver: yupResolver(formSchema),
     });
 
-    const handleValidationButtonClick = () => {
-        // get the form data
-        const formData = formMethods.getValues();
-        console.log('debug', 'formData', formData);
-    };
-
     const [defaultFolder, setDefaultFolder] = useState<Identifier>({
         id: null,
         name: null,
     });
+
+    const handleValidationButtonClick = () => {
+        // get the form data
+        const formData = formMethods.getValues();
+        console.log('debug', 'formData', formData);
+        console.log('debug', 'defaultFolder', defaultFolder);
+        const filterData = {
+            type: 'IDENTIFIER_LIST',
+            equipmentType: 'VOLTAGE_LEVEL',
+            filterEquipmentsAttributes: [
+                {
+                    equipmentID: 'fds',
+                },
+                {
+                    equipmentID: 'sf',
+                },
+                {
+                    equipmentID: 'fes',
+                },
+            ],
+        };
+        //create the filter
+        createFilter(
+            filterData,
+            formData[NAME],
+            'description',
+            defaultFolder.id?.toString() ?? ''
+        )
+            .then((res) => {
+                console.log('debug', 'createFilter', res);
+            })
+            .catch((err) => {
+                console.error('debug', 'createFilter', err);
+            });
+    };
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchPath(studyUuid).then((res) => {
             if (res) {
