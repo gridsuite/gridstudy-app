@@ -86,7 +86,7 @@ const SensitivityAnalysisResult = ({
                     isFilterable: !!filterProps && !!filterOptions.length, // Filter should have options
                     filterParams: {
                         filterSelector,
-                        filterOptions,
+                        customFilterOptions: filterOptions,
                         updateFilter,
                     },
                 },
