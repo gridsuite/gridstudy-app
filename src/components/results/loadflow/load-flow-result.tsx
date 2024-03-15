@@ -114,7 +114,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
-                    enableCellTextSelection={true}
                     skipColumnHeaders={false}
                 />
             </>
