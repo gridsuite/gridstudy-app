@@ -184,10 +184,6 @@ const SensitivityAnalysisResult = ({
         []
     );
 
-    const gridOptions = {
-        suppressMultiSort: true,
-    };
-
     const handleGridReady = useCallback(
         (params) => {
             if (params.api) {
@@ -221,7 +217,6 @@ const SensitivityAnalysisResult = ({
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
                 onGridReady={handleGridReady}
-                gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
                 {...props}
