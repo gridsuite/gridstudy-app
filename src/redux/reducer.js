@@ -92,6 +92,8 @@ import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
     LOADFLOW_RESULT_FILTER,
+    SECURITY_ANALYSIS_RESULT_N_FILTER,
+    SECURITY_ANALYSIS_RESULT_N_K_FILTER,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -244,6 +246,8 @@ const initialState = {
     loadflowCurrentLimitViolationFilter: [],
     loadflowVoltageLimitViolationFilter: [],
     loadflowResultFilter: [],
+    securityAnalysisResultNFilter: [],
+    securityAnalysisResultNKFilter: [],
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1054,6 +1058,14 @@ export const reducer = createReducer(initialState, {
     },
     [LOADFLOW_RESULT_FILTER]: (state, action) => {
         state.loadflowResultFilter = action.loadflowResultFilter;
+    },
+    [SECURITY_ANALYSIS_RESULT_N_FILTER]: (state, action) => {
+        state.securityAnalysisResultNFilter =
+            action.securityAnalysisResultNFilter;
+    },
+    [SECURITY_ANALYSIS_RESULT_N_K_FILTER]: (state, action) => {
+        state.securityAnalysisResultNKFilter =
+            action.securityAnalysisResultNKFilter;
     },
 });
 

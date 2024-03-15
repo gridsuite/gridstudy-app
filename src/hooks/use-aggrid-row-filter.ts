@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction } from 'redux';
 
 type FilterDataType = { value: string; type: string; dataType: string };
 
-type FilterType = {
+/* type FilterType = {
     field: string;
     data: FilterDataType;
-};
+}; */
 
 export type FilterEnumsType = Record<string, string[] | null>;
 
@@ -38,33 +38,27 @@ export type UseAggridRowFilterOutputType = {
 };
 
 const removeElementFromArrayWithFieldValue = (
-    filtersArrayToRemoveFieldValueFrom: FilterType[],
+    filtersArrayToRemoveFieldValueFrom: FilterSelectorType[],
     field: string
 ) => {
     return filtersArrayToRemoveFieldValueFrom.filter(
-        (f: FilterType) => f.field !== field
+        (f: FilterSelectorType) => f.column !== field
     );
 };
 
 const changeValueFromArrayWithFieldValue = (
-    filtersArrayToModify: FilterType[],
+    filtersArrayToModify: FilterSelectorType[],
     field: string,
-    newData: FilterDataType
+    newData: FilterSelectorType
 ) => {
     const filterIndex = filtersArrayToModify.findIndex(
-        (f: FilterType) => f.field === field
+        (f: FilterSelectorType) => f.column === field
     );
     if (filterIndex === -1) {
-        return [
-            ...filtersArrayToModify,
-            {
-                field,
-                data: newData,
-            },
-        ];
+        return [...filtersArrayToModify, newData];
     } else {
         const updatedArray = [...filtersArrayToModify];
-        updatedArray[filterIndex].data = newData;
+        updatedArray[filterIndex] = newData;
         return updatedArray;
     }
 };
@@ -77,9 +71,9 @@ export const useAggridRowFilter = (
 ): UseAggridRowFilterOutputType => {
     const dispatch = useDispatch();
     const filterStore = useSelector((state: any) => state[filterTab]);
-    const [filters, setFilters] = useState<FilterType[]>([]);
+    const [filters, setFilters] = useState<FilterSelectorType[]>(filterStore);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (filterStore?.length) {
             const filterState: FilterType[] = filterStore.map(
                 (element: FilterSelectorType) => {
@@ -95,9 +89,9 @@ export const useAggridRowFilter = (
             );
             setFilters(filterState);
         }
-    }, [filterStore]);
+    }, [filterStore]); */
 
-    const transformFilter = useCallback(
+    /*  const transformFilter = useCallback(
         (filters: FilterType[]) => {
             const result = filters.reduce(
                 (selector: Record<string, FilterDataType>, { field, data }) => {
@@ -127,24 +121,30 @@ export const useAggridRowFilter = (
             });
         },
         [filterSelectorKeys]
-    );
+    ); */
 
     const updateFilter = useCallback(
         (field: string, data: FilterDataType): void => {
-            let filter: FilterType[] = [];
-            setFilters((oldRowFilters: FilterType[]) => {
+            const newFilter = {
+                column: filterSelectorKeys[field],
+                dataType: data.dataType,
+                type: data.type,
+                value: data.value,
+            };
+            let filter: FilterSelectorType[] = [];
+            setFilters((oldRowFilters: FilterSelectorType[]) => {
                 let updatedFilters;
 
                 if (!data.value) {
                     updatedFilters = removeElementFromArrayWithFieldValue(
                         oldRowFilters,
-                        field
+                        filterSelectorKeys[field]
                     );
                 } else {
                     updatedFilters = changeValueFromArrayWithFieldValue(
                         oldRowFilters,
-                        field,
-                        data
+                        filterSelectorKeys[field],
+                        newFilter
                     );
                 }
 
@@ -152,18 +152,17 @@ export const useAggridRowFilter = (
                 filter = updatedFilters;
                 return updatedFilters;
             });
-            const newFilterValue = transformFilter(filter);
-            setFilterStore && dispatch(setFilterStore(newFilterValue || []));
+            setFilterStore && dispatch(setFilterStore(filter || []));
         },
-        [updateFilterCallback, dispatch, transformFilter, setFilterStore]
+        [filterSelectorKeys, updateFilterCallback, dispatch, setFilterStore]
     );
 
     const filterSelector: FilterSelectorType[] | null = useMemo(() => {
         if (filterStore?.length) {
             return filterStore;
         }
-        return transformFilter(filters);
-    }, [filters, filterStore, transformFilter]);
+        return filters;
+    }, [filters, filterStore]);
 
     const initFilters = useCallback(() => {
         setFilters([]);

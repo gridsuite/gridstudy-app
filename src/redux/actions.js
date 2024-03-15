@@ -723,3 +723,27 @@ export function setLoadflowResultFilter(loadflowResultFilter) {
         loadflowResultFilter: loadflowResultFilter,
     };
 }
+
+export const SECURITY_ANALYSIS_RESULT_N_FILTER =
+    'SECURITY_ANALYSIS_RESULT_N_FILTER';
+
+export function setSecurityAnalysisResultNFilter(
+    securityAnalysisResultNFilter
+) {
+    return {
+        type: SECURITY_ANALYSIS_RESULT_N_FILTER,
+        securityAnalysisResultNFilter: securityAnalysisResultNFilter,
+    };
+}
+
+export const SECURITY_ANALYSIS_RESULT_N_K_FILTER =
+    'SECURITY_ANALYSIS_RESULT_N_K_FILTER';
+
+export function setSecurityAnalysisResultNKFilter(
+    securityAnalysisResultNKFilter
+) {
+    return {
+        type: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
+        securityAnalysisResultNKFilter: securityAnalysisResultNKFilter,
+    };
+}

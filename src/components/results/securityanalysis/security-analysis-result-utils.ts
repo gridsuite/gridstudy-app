@@ -43,6 +43,10 @@ import {
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import {
+    setSecurityAnalysisResultNFilter,
+    setSecurityAnalysisResultNKFilter,
+} from '../../../redux/actions';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -174,6 +178,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -185,6 +190,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterEnums,
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -201,6 +207,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -214,6 +221,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -227,6 +235,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -240,6 +249,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -256,6 +266,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             parser: parseDuration,
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -267,6 +278,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterEnums,
         },
+        filterTab: SECURITY_ANALYSIS_RESULT_N_FILTER,
     }),
 ];
 
@@ -594,6 +606,10 @@ export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
     'securityAnalysisResult',
 ];
 
+const SECURITY_ANALYSIS_RESULT_N_FILTER = 'securityAnalysisResultNFilter';
+
+const SECURITY_ANALYSIS_RESULT_N_K_FILTER = 'securityAnalysisResultNKFilter';
+
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
     status: 'result.status',
@@ -667,3 +683,25 @@ export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
 };
 
 export const MAX_INT32: number = 2147483647;
+
+export const mappingTabs = (index: number): string => {
+    switch (index) {
+        case 0:
+            return SECURITY_ANALYSIS_RESULT_N_FILTER;
+        case 1:
+            return SECURITY_ANALYSIS_RESULT_N_K_FILTER;
+        default:
+            return '';
+    }
+};
+
+export const mappingActions = (index: number): any => {
+    switch (index) {
+        case 0:
+            return setSecurityAnalysisResultNFilter;
+        case 1:
+            return setSecurityAnalysisResultNKFilter;
+        default:
+            return '';
+    }
+};

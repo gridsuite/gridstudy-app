@@ -38,6 +38,8 @@ import {
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     getIdType,
     getColumnToFieldMapping,
+    mappingTabs,
+    mappingActions,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -114,6 +116,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         getColumnToFieldMapping(resultType),
+        mappingTabs(tabIndex),
+        mappingActions(tabIndex),
         () => {
             setPage(0);
         }
