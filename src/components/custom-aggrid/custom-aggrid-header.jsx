@@ -26,6 +26,7 @@ import {
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
+import { useSelector } from 'react-redux';
 
 const styles = {
     iconSize: {
@@ -60,6 +61,7 @@ const CustomHeaderComponent = ({
     sortParams = {},
     isFilterable = false,
     filterParams = {},
+    filterTab = {},
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -70,7 +72,7 @@ const CustomHeaderComponent = ({
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
         parser, // Used to convert the value displayed in the table into its actual value
     } = filterParams;
-
+    const filterStore = useSelector((state) => state[filterTab]);
     const {
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
@@ -174,16 +176,24 @@ const CustomHeaderComponent = ({
     }, []);
 
     useEffect(() => {
-        if (!filterSelector) {
-            setSelectedFilterData(undefined);
-        }
-    }, [filterSelector]);
-
-    useEffect(() => {
         if (!selectedFilterComparator) {
             setSelectedFilterComparator(filterComparators[0]);
         }
     }, [selectedFilterComparator, filterComparators]);
+
+    useEffect(() => {
+        if (!filterSelector) {
+            setSelectedFilterData(undefined);
+        } else {
+            const filterObject = filterStore?.find(
+                (filter) => filter.column === field
+            );
+            if (filterObject) {
+                setSelectedFilterData(filterObject.value);
+                setSelectedFilterComparator(filterObject.type);
+            }
+        }
+    }, [filterSelector, filterStore, field]);
 
     return (
         <Grid

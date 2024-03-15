@@ -61,7 +61,7 @@ export interface LimitViolationResultProps extends LoadflowResultTap {
 
 export interface OverloadedEquipment {
     overload: number;
-    name: string;
+    subjectId: string;
     value: number;
     actualOverloadDuration: number | null;
     upComingOverloadDuration: number | null;

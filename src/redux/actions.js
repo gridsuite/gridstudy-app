@@ -688,3 +688,38 @@ export function setLastCompletedComputation(lastCompletedComputation) {
         lastCompletedComputation: lastCompletedComputation,
     };
 }
+
+export const LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER =
+    'LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER';
+
+export function setLoadflowCurrentLimitViolationFilter(
+    loadflowCurrentLimitViolationFilter
+) {
+    return {
+        type: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+        loadflowCurrentLimitViolationFilter:
+            loadflowCurrentLimitViolationFilter,
+    };
+}
+
+export const LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER =
+    'LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER';
+
+export function setLoadflowVoltageLimitViolationFilter(
+    loadflowVoltageLimitViolationFilter
+) {
+    return {
+        type: LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
+        loadflowVoltageLimitViolationFilter:
+            loadflowVoltageLimitViolationFilter,
+    };
+}
+
+export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
+
+export function setLoadflowResultFilter(loadflowResultFilter) {
+    return {
+        type: LOADFLOW_RESULT_FILTER,
+        loadflowResultFilter: loadflowResultFilter,
+    };
+}

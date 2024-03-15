@@ -37,7 +37,9 @@ import {
     loadFlowResultColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
+    mappingActions,
     mappingFields,
+    mappingTabs,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import {
@@ -85,7 +87,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        mappingFields(tabIndex)
+        mappingFields(tabIndex),
+        mappingTabs(tabIndex),
+        mappingActions(tabIndex)
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
