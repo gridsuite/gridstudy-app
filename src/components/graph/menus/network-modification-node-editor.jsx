@@ -297,11 +297,6 @@ const NetworkModificationNodeEditor = () => {
                     label: 'VSC',
                     action: () => adapt(VscCreationDialog),
                 },
-                {
-                    id: MODIFICATION_TYPES.TABULAR_CREATION.type,
-                    label: 'BY_TABLE',
-                    action: () => adapt(TabularCreationDialog),
-                },
             ],
         },
         {
@@ -359,16 +354,6 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
                     label: 'VSC',
                     action: () => adapt(VscModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
-                    label: 'BY_TABLE',
-                    action: () => adapt(TabularModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
-                    label: 'BY_FORMULA',
-                    action: () => adapt(ByFormulaDialog),
                 },
             ],
         },
