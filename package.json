@@ -62,7 +62,8 @@
         "build": "tsc && vite build",
         "serve": "vite preview",
         "test": "jest",
-        "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0"
+        "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0",
+        "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"MIT; BSD-3-Clause; BSD-2-Clause; 0BSD; Apache-2.0; ISC; Apache-Style; CC-BY-3.0; CC0-1.0; MIT AND CC-BY-3.0; MIT OR CC0-1.0; Artistic-2.0\" --excludePackages \"@mapbox/jsonlint-lines-primitives@2.0.2;cartocolor@4.0.2\""
     },
     "eslintConfig": {
         "extends": [
@@ -116,6 +117,7 @@
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
         "jest-svg-transformer": "^1.0.0",
+        "license-checker": "^25.0.1",
         "prettier": "^2.0.5",
         "ts-node": "^10.9.2",
         "vite": "^5.0.11",
