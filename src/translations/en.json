@@ -462,6 +462,8 @@
     "LoadFlowResultsStatus": "Status",
     "ComputationResultsLogs": "Logs",
 
+    "results.globalFilter.fillerText": "Country or voltage level",
+
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
     "status": "Status",

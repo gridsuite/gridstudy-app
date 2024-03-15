@@ -49,6 +49,7 @@ import { ICellRendererParams } from 'ag-grid-community';
 import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import { LimitViolationResult } from './limit-violation-result';
+import ResultsGlobalFilter from "../common/results-global-filter";
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -245,8 +246,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, [tabIndex, loadflowResult, intl]);
     return (
         <>
-            <div>
-                <Tabs value={tabIndex} onChange={handleTabChange}>
+            <Box sx={{display: 'flex'}}>
+                <Tabs value={tabIndex} onChange={handleTabChange} sx={{flexGrow: 0}}>
                     <Tab
                         label={
                             <FormattedMessage
@@ -272,7 +273,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         }
                     />
                 </Tabs>
-            </div>
+                <Box sx={{flexGrow: 0}}><ResultsGlobalFilter /></Box>
+                <Box sx={{ flexGrow: 1 }}></Box>
+            </Box>
 
             {tabIndex === 0 && (
                 <LimitViolationResult

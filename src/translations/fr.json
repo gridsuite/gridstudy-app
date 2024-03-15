@@ -463,6 +463,8 @@
     "LoadFlowResultsStatus": "Statut",
     "ComputationResultsLogs": "Logs",
 
+    "results.globalFilter.fillerText": "Pays ou niveau de tension",
+
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
     "status": "Statut",
