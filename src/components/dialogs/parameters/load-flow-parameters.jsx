@@ -643,8 +643,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 item
                 sx={mergeSx(
                     styles.controlParametersItem,
-                    styles.marginTopButton,
-                    { paddingTop: 4 }
+                    styles.marginTopButton
                 )}
             >
                 <LabelledButton
