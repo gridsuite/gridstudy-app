@@ -7,106 +7,109 @@
 
 import { useIntl } from 'react-intl';
 import { MODIFICATION_TYPES } from '../../utils/modification-type';
+import { useCallback } from 'react';
+
+const getOperatingStatusModificationValues = (modification, withFormat) => {
+    return {
+        action: modification.action,
+        energizedEnd: modification.energizedVoltageLevelId,
+        computedLabel: withFormat ? (
+            <strong>{modification.equipmentId}</strong>
+        ) : (
+            modification.equipmentId
+        ),
+    };
+};
+const getEquipmentAttributeModificationValues = (modification, withFormat) => {
+    return {
+        equipmentAttributeName: modification.equipmentAttributeName,
+        equipmentAttributeValue: modification.equipmentAttributeValue,
+        computedLabel: withFormat ? (
+            <strong>{modification.equipmentId}</strong>
+        ) : (
+            modification.equipmentId
+        ),
+    };
+};
 
 export const useModificationLabelComputer = () => {
     const intl = useIntl();
 
-    const getOperatingStatusModificationValues = (modification, withFormat) => {
-        return {
-            action: modification.action,
-            energizedEnd: modification.energizedVoltageLevelId,
-            computedLabel: withFormat ? (
-                <strong>{modification.equipmentId}</strong>
-            ) : (
-                modification.equipmentId
-            ),
-        };
-    };
+    const getLabel = useCallback(
+        (modif) => {
+            const modificationMetadata = JSON.parse(modif.messageValues);
 
-    const getEquipmentAttributeModificationValues = (
-        modification,
-        withFormat
-    ) => {
-        return {
-            equipmentAttributeName: modification.equipmentAttributeName,
-            equipmentAttributeValue: modification.equipmentAttributeValue,
-            computedLabel: withFormat ? (
-                <strong>{modification.equipmentId}</strong>
-            ) : (
-                modification.equipmentId
-            ),
-        };
-    };
+            switch (modif.messageType) {
+                case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
+                    return modificationMetadata.lineToSplitId;
+                case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
+                    return modificationMetadata.lineToAttachToId;
+                case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
+                    return modificationMetadata.attachedLineId;
+                case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
+                    return (
+                        modificationMetadata.lineToAttachTo1Id +
+                        '/' +
+                        modificationMetadata.lineToAttachTo2Id
+                    );
+                case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
+                    return (
+                        modificationMetadata.attachedLineId +
+                        '/' +
+                        modificationMetadata.lineToAttachTo1Id +
+                        '/' +
+                        modificationMetadata.lineToAttachTo2Id
+                    );
+                case MODIFICATION_TYPES.TABULAR_MODIFICATION.type:
+                    return intl.formatMessage({
+                        id:
+                            'network_modifications.tabular.' +
+                            modificationMetadata.tabularModificationType,
+                    });
+                case MODIFICATION_TYPES.BY_FILTER_DELETION.type:
+                    return intl.formatMessage({
+                        id: modificationMetadata.equipmentType,
+                    });
+                case MODIFICATION_TYPES.TABULAR_CREATION.type:
+                    return intl.formatMessage({
+                        id:
+                            'network_modifications.tabular.' +
+                            modificationMetadata.tabularCreationType,
+                    });
+                default:
+                    return modificationMetadata.equipmentId || '';
+            }
+        },
+        [intl]
+    );
 
-    const getLabel = (modif) => {
-        const modificationMetadata = JSON.parse(modif.messageValues);
+    const computeLabel = useCallback(
+        (modif, withFormat = true) => {
+            const modificationValues = JSON.parse(modif.messageValues);
 
-        switch (modif.messageType) {
-            case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
-                return modificationMetadata.lineToSplitId;
-            case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
-                return modificationMetadata.lineToAttachToId;
-            case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
-                return modificationMetadata.attachedLineId;
-            case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
-                return (
-                    modificationMetadata.lineToAttachTo1Id +
-                    '/' +
-                    modificationMetadata.lineToAttachTo2Id
-                );
-            case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
-                return (
-                    modificationMetadata.attachedLineId +
-                    '/' +
-                    modificationMetadata.lineToAttachTo1Id +
-                    '/' +
-                    modificationMetadata.lineToAttachTo2Id
-                );
-            case MODIFICATION_TYPES.TABULAR_MODIFICATION.type:
-                return intl.formatMessage({
-                    id:
-                        'network_modifications.tabular.' +
-                        modificationMetadata.tabularModificationType,
-                });
-            case MODIFICATION_TYPES.BY_FILTER_DELETION.type:
-                return intl.formatMessage({
-                    id: modificationMetadata.equipmentType,
-                });
-            case MODIFICATION_TYPES.TABULAR_CREATION.type:
-                return intl.formatMessage({
-                    id:
-                        'network_modifications.tabular.' +
-                        modificationMetadata.tabularCreationType,
-                });
-            default:
-                return modificationMetadata.equipmentId || '';
-        }
-    };
-
-    const computeLabel = (modif, withFormat = true) => {
-        const modificationValues = JSON.parse(modif.messageValues);
-
-        switch (modif.messageType) {
-            case MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type:
-                return getOperatingStatusModificationValues(
-                    modificationValues,
-                    withFormat
-                );
-            case MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type:
-                return getEquipmentAttributeModificationValues(
-                    modificationValues,
-                    withFormat
-                );
-            default:
-                return {
-                    computedLabel: withFormat ? (
-                        <strong>{getLabel(modif)}</strong>
-                    ) : (
-                        getLabel(modif)
-                    ),
-                };
-        }
-    };
+            switch (modif.messageType) {
+                case MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type:
+                    return getOperatingStatusModificationValues(
+                        modificationValues,
+                        withFormat
+                    );
+                case MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type:
+                    return getEquipmentAttributeModificationValues(
+                        modificationValues,
+                        withFormat
+                    );
+                default:
+                    return {
+                        computedLabel: withFormat ? (
+                            <strong>{getLabel(modif)}</strong>
+                        ) : (
+                            getLabel(modif)
+                        ),
+                    };
+            }
+        },
+        [getLabel]
+    );
 
     return { computeLabel };
 };
