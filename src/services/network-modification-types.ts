@@ -13,12 +13,12 @@ export interface hvdcOperatorActivePowerRange {
 export interface VscModificationInfo {
     id: string;
     name: string;
-    dcNominalVoltage: number;
-    dcResistance: number;
-    maximumActivePower: number;
+    nominalV: number;
+    r: number;
+    maxP: number;
     hvdcOperatorActivePowerRange: hvdcOperatorActivePowerRange;
     convertersMode: string;
-    activePower: number;
+    activePowerSetpoint: number;
     hvdcAngleDroopActivePowerControl: HvdcAngleDroopActivePowerControlInfo;
     converterStation1: ConverterStationElementModificationInfos;
     converterStation2: ConverterStationElementModificationInfos;

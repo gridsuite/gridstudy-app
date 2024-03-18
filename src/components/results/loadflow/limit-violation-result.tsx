@@ -123,7 +123,6 @@ export const LimitViolationResult: FunctionComponent<
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={message}
-                    enableCellTextSelection={true}
                     skipColumnHeaders={false}
                 />
             </>

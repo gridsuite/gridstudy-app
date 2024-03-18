@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
@@ -26,6 +26,8 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { elementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
 
@@ -65,6 +67,9 @@ const VariationForm = ({ name, index }) => {
             label={'filter'}
             titleId={'FiltersListsSelection'}
             itemFilter={itemFilter}
+            fetchDirectoryContent={fetchDirectoryContent}
+            fetchRootFolders={fetchRootFolders}
+            fetchElementsInfos={fetchElementsMetadata}
         />
     );
 
