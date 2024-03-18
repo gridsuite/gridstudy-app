@@ -244,7 +244,14 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                         paddingTop: 0,
                     })}
                 >
-                    <Grid xl={6} container sx={{ height: 'fit-content' }}>
+                    <Grid
+                        xl={6}
+                        container
+                        sx={{
+                            height: 'fit-content',
+                            justifyContent: 'space-between',
+                        }}
+                    >
                         {providers && provider && (
                             <DropDown
                                 value={provider}

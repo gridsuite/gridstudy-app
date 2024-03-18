@@ -50,8 +50,8 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
                 container
                 spacing={1}
                 sx={styles.scrollableGrid}
-                key={'sldParameters'}
                 marginTop={-3}
+                justifyContent={'space-between'}
             >
                 <ParamLine
                     type={ParameterType.Switch}
