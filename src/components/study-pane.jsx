@@ -7,10 +7,10 @@
 
 import React, { useCallback, useState } from 'react';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
-import { STUDY_DISPLAY_MODE } from '../redux/actions';
+import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import {
@@ -69,7 +69,6 @@ const styles = {
         bottom: 0,
         left: 0,
         right: 0,
-        width: '80%',
     },
     table: {
         display: 'flex',
@@ -87,6 +86,7 @@ export const StudyView = {
 };
 
 const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
+    const dispatch = useDispatch();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -145,6 +145,18 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         props.onChangeTab(1); // switch to spreadsheet view
     }
 
+    function setDrawDisplay() {
+        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
+    }
+
+    function getMapWitdh(displayMode) {
+        if (displayMode === STUDY_DISPLAY_MODE.DRAW) {
+            return '80%';
+        } else {
+            return '100%';
+        }
+    }
+
     function renderMapView() {
         return (
             <ReactFlowProvider>
@@ -163,14 +175,12 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                         <div
                             style={{
                                 display:
-                                    studyDisplayMode === STUDY_DISPLAY_MODE.MAP
+                                    studyDisplayMode ===
+                                        STUDY_DISPLAY_MODE.MAP ||
+                                    studyDisplayMode === STUDY_DISPLAY_MODE.DRAW
                                         ? 'none'
                                         : null,
-                                width:
-                                    studyDisplayMode ===
-                                    STUDY_DISPLAY_MODE.HYBRID
-                                        ? '50%'
-                                        : '100%',
+                                width: getMapWitdh(studyDisplayMode),
                             }}
                         >
                             <NetworkModificationTreePane
@@ -178,77 +188,91 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
                         </div>
-                        <Box
-                            sx={styles.map}
+                        <div
                             style={{
                                 display:
                                     studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                                         ? 'none'
-                                        : null,
-                                width:
-                                    studyDisplayMode ===
-                                    STUDY_DISPLAY_MODE.HYBRID
-                                        ? '50%'
-                                        : '100%',
+                                        : 'flex',
+                                flexDirection: 'row',
+                                flexGrow: 1,
+                                width: '100%',
                             }}
                         >
-                            <Box>
-                                <Box sx={styles.mapBelowDiagrams}>
-                                    <NetworkMapTab
-                                        /* TODO do we move redux param to container */
-                                        studyUuid={studyUuid}
-                                        visible={
-                                            props.view === StudyView.MAP &&
-                                            studyDisplayMode !==
-                                                STUDY_DISPLAY_MODE.TREE
-                                        }
-                                        lineFullPath={lineFullPath}
-                                        lineParallelPath={lineParallelPath}
-                                        lineFlowMode={lineFlowMode}
-                                        lineFlowColorMode={lineFlowColorMode}
-                                        lineFlowAlertThreshold={
-                                            lineFlowAlertThreshold
-                                        }
-                                        openVoltageLevel={openVoltageLevel}
-                                        /* TODO verif tableEquipment*/
-                                        currentNode={currentNode}
-                                        onChangeTab={props.onChangeTab}
-                                        showInSpreadsheet={showInSpreadsheet}
-                                        setErrorMessage={setErrorMessage}
-                                        onDrawModeChanged={(drawMode) => {
-                                            console.log(
-                                                'debug',
-                                                'drawMode',
-                                                drawMode
-                                            );
-                                        }}
-                                    ></NetworkMapTab>
+                            <Box
+                                sx={styles.map}
+                                style={{
+                                    display:
+                                        studyDisplayMode ===
+                                        STUDY_DISPLAY_MODE.TREE
+                                            ? 'none'
+                                            : null,
+                                    width: getMapWitdh(studyDisplayMode),
+                                }}
+                            >
+                                <Box>
+                                    <Box sx={styles.mapBelowDiagrams}>
+                                        <NetworkMapTab
+                                            /* TODO do we move redux param to container */
+                                            studyUuid={studyUuid}
+                                            visible={
+                                                props.view === StudyView.MAP &&
+                                                studyDisplayMode !==
+                                                    STUDY_DISPLAY_MODE.TREE
+                                            }
+                                            lineFullPath={lineFullPath}
+                                            lineParallelPath={lineParallelPath}
+                                            lineFlowMode={lineFlowMode}
+                                            lineFlowColorMode={
+                                                lineFlowColorMode
+                                            }
+                                            lineFlowAlertThreshold={
+                                                lineFlowAlertThreshold
+                                            }
+                                            openVoltageLevel={openVoltageLevel}
+                                            /* TODO verif tableEquipment*/
+                                            currentNode={currentNode}
+                                            onChangeTab={props.onChangeTab}
+                                            showInSpreadsheet={
+                                                showInSpreadsheet
+                                            }
+                                            setErrorMessage={setErrorMessage}
+                                            onDrawModeChanged={(drawMode) => {
+                                                if (drawMode) {
+                                                    setDrawDisplay();
+                                                }
+                                            }}
+                                        ></NetworkMapTab>
+                                    </Box>
                                 </Box>
-                                <Box
-                                    sx={{
-                                        width: '20%',
-                                        position: 'absolute',
-                                        top: '0',
-                                        right: '0',
-                                    }}
-                                >
-                                    <FilterCreationPanel></FilterCreationPanel>
-                                </Box>
+
+                                <DiagramPane
+                                    studyUuid={studyUuid}
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    currentNode={currentNode}
+                                    visible={
+                                        props.view === StudyView.MAP &&
+                                        studyDisplayMode !==
+                                            STUDY_DISPLAY_MODE.TREE
+                                    }
+                                    oneBusShortCircuitStatus={
+                                        oneBusShortCircuitStatus
+                                    }
+                                />
                             </Box>
 
-                            <DiagramPane
-                                studyUuid={studyUuid}
-                                showInSpreadsheet={showInSpreadsheet}
-                                currentNode={currentNode}
-                                visible={
-                                    props.view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                                }
-                                oneBusShortCircuitStatus={
-                                    oneBusShortCircuitStatus
-                                }
-                            />
-                        </Box>
+                            <Box
+                                style={{
+                                    display:
+                                        studyDisplayMode !==
+                                        STUDY_DISPLAY_MODE.DRAW
+                                            ? 'none'
+                                            : null,
+                                }}
+                            >
+                                <FilterCreationPanel></FilterCreationPanel>
+                            </Box>
+                        </div>
                     </div>
                 </Box>
             </ReactFlowProvider>
