@@ -607,12 +607,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     flexDirection: 'column',
                 }}
             >
-                <Box
-                    sx={{
-                        flexGrow: 1,
-                        overflow: 'auto',
-                    }}
-                >
+                <Box sx={{ flexGrow: 0 }}>
                     <Grid
                         container
                         spacing={1}
@@ -630,6 +625,13 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                             callback={updateLfProviderCallback}
                         />
                     </Grid>
+                </Box>
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        overflow: 'auto',
+                    }}
+                >
                     <Grid
                         container
                         sx={mergeSx(styles.scrollableGrid, {
