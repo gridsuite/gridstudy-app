@@ -99,7 +99,7 @@ const RegulatingTerminalForm = ({
                     {
                         <AutocompleteInput
                             name={`${id}.${VOLTAGE_LEVEL}`}
-                            label="VoltageLevel"
+                            label="VOLTAGE_LEVEL"
                             size="small"
                             freeSolo
                             forcePopupIcon
