@@ -327,7 +327,11 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'actualOverloadDuration',
             sortProps,
             filterProps,
-            filterParams: numericFilterParams,
+            filterParams: {
+                ...numericFilterParams,
+                isDuration: true,
+                parser: parseDuration,
+            },
             filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
             valueGetter: (value: ValueGetterParams) =>
                 convertDuration(value.data.actualOverloadDuration),

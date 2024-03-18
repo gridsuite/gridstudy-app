@@ -263,6 +263,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterProps,
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.NUMBER,
+            isDuration: true,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             parser: parseDuration,
         },

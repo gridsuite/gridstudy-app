@@ -553,7 +553,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                             'loading the following loadflow parameters : ' +
                                 parameters.uuid
                         );
-
+                        const provider = parameters['provider'];
                         const specParamsToSave = {
                             [provider]:
                                 parameters?.specificParametersPerProvider[
@@ -577,8 +577,19 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, updateParameters, provider]
+        [snackError, updateParameters]
     );
+    const formatNewParams = useCallback((newParams) => {
+        const speceficParameters =
+            'specificParametersPerProvider' in newParams
+                ? newParams['specificParametersPerProvider']
+                : {};
+
+        return {
+            ...newParams,
+            specificParametersPerProvider: speceficParameters,
+        };
+    }, []);
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
@@ -661,7 +672,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 <CreateParameterDialog
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
-                    parameterValues={() => params}
+                    parameterValues={() => formatNewParams(params)}
                     parameterFormatter={(newParams) => newParams}
                     parameterType={elementType.LOADFLOW_PARAMETERS}
                 />
