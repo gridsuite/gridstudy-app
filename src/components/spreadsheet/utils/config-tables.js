@@ -123,6 +123,35 @@ const defaultEnumFilterConfig = {
     },
 };
 
+/**
+ * Default configuration for boolean filter
+ * a new filter option is added to the default ag-grid filter
+ */
+const defaultBooleanFilterConfig = {
+    filter: 'agTextColumnFilter',
+    agGridFilterParams: {
+        filterOptions: [
+            {
+                displayKey: 'customInRange',
+                displayName: 'customInRange',
+                predicate: ([filterValue], cellValue) => {
+                    console.log(
+                        'Filter and cell value : ',
+                        filterValue,
+                        cellValue
+                    );
+                    // We receive here the filter enum values as a string (filterValue)
+                    return filterValue === cellValue.toString();
+                },
+            },
+        ],
+    },
+    customFilterParams: {
+        filterDataType: FILTER_DATA_TYPES.TEXT,
+        isBoolean: true,
+    },
+};
+
 const defaultNumericFilterConfig = {
     filter: 'agNumberColumnFilter',
     customFilterParams: {
@@ -657,6 +686,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -664,6 +694,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],

@@ -283,6 +283,34 @@ const TableWrapper = (props) => {
         );
     }, [tabIndex]);
 
+    // Function to get the columns that have isEnum filter set to true in customFilterParams
+    const getBooleanFilterColumns = useCallback(() => {
+        const generatedTableColumns =
+            TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
+        return generatedTableColumns.filter(
+            ({ customFilterParams }) => customFilterParams?.isBoolean
+        );
+    }, [tabIndex]);
+
+    const generateEquipmentsFilterBoolean = useCallback(() => {
+        if (!equipments) {
+            return {};
+        }
+        const filterBoolean = {};
+        getBooleanFilterColumns().forEach((column) => {
+            filterBoolean[column.field] = [
+                ...new Set(
+                    equipments
+                        .map((equipment) =>
+                            deepFindValue(equipment, column.field)
+                        )
+                        .filter((value) => value != null)
+                ),
+            ];
+        });
+        return filterBoolean;
+    }, [getBooleanFilterColumns, equipments]);
+
     const generateEquipmentsFilterEnums = useCallback(() => {
         if (!equipments) {
             return {};
@@ -305,6 +333,11 @@ const TableWrapper = (props) => {
     const filterEnums = useMemo(
         () => generateEquipmentsFilterEnums(),
         [generateEquipmentsFilterEnums]
+    );
+
+    const filterBoolean = useMemo(
+        () => generateEquipmentsFilterBoolean(),
+        [generateEquipmentsFilterBoolean]
     );
 
     const enrichColumn = useCallback(
@@ -352,6 +385,7 @@ const TableWrapper = (props) => {
                 filterParams: {
                     ...column?.customFilterParams,
                     filterEnums,
+                    filterBoolean,
                 },
                 ...column,
             });
@@ -366,6 +400,7 @@ const TableWrapper = (props) => {
             loadFlowStatus,
             fluxConvention,
             filterEnums,
+            filterBoolean,
         ]
     );
 

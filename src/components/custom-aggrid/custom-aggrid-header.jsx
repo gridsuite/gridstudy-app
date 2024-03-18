@@ -71,7 +71,9 @@ const CustomHeaderComponent = ({
         parser, // Used to convert the value displayed in the table into its actual value
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
+    console.log('filterParams : ', filterParams);
 
+    const isMultipleSelection = !filterParams?.filterBoolean[field];
     const {
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
@@ -306,9 +308,11 @@ const CustomHeaderComponent = ({
                 >
                     {isAutoCompleteFilter ? (
                         <Autocomplete
-                            multiple
+                            multiple={isMultipleSelection}
                             value={selectedFilterData || []}
-                            options={customFilterOptions}
+                            options={customFilterOptions.map((val) =>
+                                val.toString()
+                            )}
                             getOptionLabel={(option) =>
                                 intl.formatMessage({
                                     id: option,
