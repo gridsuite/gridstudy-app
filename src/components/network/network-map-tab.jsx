@@ -1018,9 +1018,10 @@ export const NetworkMapTab = ({
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
             onDrawModeChanged={(evt) => {
-                // closeEquipmentMenu();
-                // closeChoiceVoltageLevelMenu();
                 onDrawModeChanged(evt);
+            }}
+            onFeaturesChanged={(features) => {
+                console.log('features', features);
             }}
         />
     );
@@ -1042,23 +1043,6 @@ export const NetworkMapTab = ({
             <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
-            {/* <div
-                style={{
-                    position: 'absolute',
-                    height: '100%',
-                    width: '20px',
-                    zIndex: 1,
-                    backgroundColor: 'black',
-                    float: 'right', // Add this line to position it to the right side
-                    display: 'flex',
-                }}
-            >
-                <div>
-                    {intlRef.current.formatMessage({
-                        id: 'loadingGeoData',
-                    })}
-                </div>
-            </div> */}
             {renderMap()}
             {renderEquipmentMenu()}
             {modificationDialogOpen && renderModificationDialog()}
