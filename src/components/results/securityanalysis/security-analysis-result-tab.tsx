@@ -37,7 +37,7 @@ import {
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     getIdType,
-    getColumnToFieldMapping,
+    mappingColumnToField,
     mappingTabs,
     mappingActions,
 } from './security-analysis-result-utils';
@@ -48,6 +48,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -115,7 +116,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     }, [tabIndex, nmkType]);
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        getColumnToFieldMapping(resultType),
         mappingTabs(tabIndex),
         mappingActions(tabIndex),
         () => {
@@ -140,8 +140,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
             if (sortConfig) {
                 const { sortWay, colKey } = sortConfig;
-                const columnToFieldMapping =
-                    getColumnToFieldMapping(resultType);
+                const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['sort'] = {
                     colKey: columnToFieldMapping[colKey],
                     sortWay,
@@ -149,7 +148,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             }
 
             if (filterSelector) {
-                queryParams['filters'] = filterSelector;
+                const columnToFieldMapping = mappingColumnToField(resultType);
+                queryParams['filters'] = mapFieldsToColumnsFilter(
+                    filterSelector,
+                    columnToFieldMapping
+                );
             }
 
             return fetchSecurityAnalysisResult(

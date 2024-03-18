@@ -7,6 +7,7 @@
 
 import { CustomColDef, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
+import { FilterSelectorType } from 'hooks/use-aggrid-row-filter';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
@@ -62,4 +63,14 @@ export const makeAgGridCustomHeaderColumn = ({
         filterParams: props?.agGridFilterParams || undefined,
         ...props,
     };
+};
+
+export const mapFieldsToColumnsFilter = (
+    filterSelector: FilterSelectorType[],
+    columnToFieldMapping: Record<string, string>
+) => {
+    return filterSelector.map((filter) => ({
+        ...filter,
+        column: columnToFieldMapping[filter.column],
+    }));
 };

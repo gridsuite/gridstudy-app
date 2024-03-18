@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction } from 'redux';
 
@@ -64,7 +64,6 @@ const changeValueFromArrayWithFieldValue = (
 };
 
 export const useAggridRowFilter = (
-    filterSelectorKeys: Record<string, string>,
     filterTab: string,
     setFilterStore?: (dispatch: FilterSelectorType[]) => AnyAction,
     updateFilterCallback?: () => void
@@ -73,60 +72,16 @@ export const useAggridRowFilter = (
     const filterStore = useSelector((state: any) => state[filterTab]);
     const [filters, setFilters] = useState<FilterSelectorType[]>(filterStore);
 
-    /* useEffect(() => {
+    useEffect(() => {
         if (filterStore?.length) {
-            const filterState: FilterType[] = filterStore.map(
-                (element: FilterSelectorType) => {
-                    return {
-                        field: element.column,
-                        data: {
-                            value: element.value,
-                            type: element.type,
-                            dataType: element.dataType,
-                        },
-                    };
-                }
-            );
-            setFilters(filterState);
+            setFilters(filterStore);
         }
-    }, [filterStore]); */
-
-    /*  const transformFilter = useCallback(
-        (filters: FilterType[]) => {
-            const result = filters.reduce(
-                (selector: Record<string, FilterDataType>, { field, data }) => {
-                    selector[filterSelectorKeys[field]] = data;
-                    return selector;
-                },
-                {}
-            );
-
-            const resultKeys = Object.keys(result);
-
-            if (!resultKeys.length) {
-                return null;
-            }
-
-            return resultKeys.map((field: string) => {
-                const selectedValue = result[field];
-
-                const { value, type, dataType } = selectedValue;
-
-                return {
-                    column: field,
-                    dataType,
-                    type,
-                    value,
-                };
-            });
-        },
-        [filterSelectorKeys]
-    ); */
+    }, [filterStore]);
 
     const updateFilter = useCallback(
         (field: string, data: FilterDataType): void => {
             const newFilter = {
-                column: filterSelectorKeys[field],
+                column: field,
                 dataType: data.dataType,
                 type: data.type,
                 value: data.value,
@@ -138,12 +93,12 @@ export const useAggridRowFilter = (
                 if (!data.value) {
                     updatedFilters = removeElementFromArrayWithFieldValue(
                         oldRowFilters,
-                        filterSelectorKeys[field]
+                        field
                     );
                 } else {
                     updatedFilters = changeValueFromArrayWithFieldValue(
                         oldRowFilters,
-                        filterSelectorKeys[field],
+                        field,
                         newFilter
                     );
                 }
@@ -154,7 +109,7 @@ export const useAggridRowFilter = (
             });
             setFilterStore && dispatch(setFilterStore(filter || []));
         },
-        [filterSelectorKeys, updateFilterCallback, dispatch, setFilterStore]
+        [updateFilterCallback, dispatch, setFilterStore]
     );
 
     const filterSelector: FilterSelectorType[] | null = useMemo(() => {

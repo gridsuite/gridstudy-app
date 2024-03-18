@@ -305,6 +305,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
+            filterTab: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -315,6 +316,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
+            filterTab: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
@@ -328,6 +330,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
+            filterTab: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
@@ -337,6 +340,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
+            filterTab: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -351,6 +355,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
+            filterTab: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -362,6 +367,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
+            filterTab: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
@@ -661,7 +667,7 @@ export enum RESULT_TYPE {
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
 }
 
-export const getColumnToFieldMapping = (resultType: RESULT_TYPE) => {
+export const mappingColumnToField = (resultType: RESULT_TYPE) => {
     switch (resultType) {
         case RESULT_TYPE.N:
             return FROM_COLUMN_TO_FIELD_N;
