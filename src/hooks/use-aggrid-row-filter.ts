@@ -11,11 +11,6 @@ import { AnyAction } from 'redux';
 
 type FilterDataType = { value: string; type: string; dataType: string };
 
-/* type FilterType = {
-    field: string;
-    data: FilterDataType;
-}; */
-
 export type FilterEnumsType = Record<string, string[] | null>;
 
 export type FilterSelectorType = {
@@ -64,13 +59,16 @@ const changeValueFromArrayWithFieldValue = (
 };
 
 export const useAggridRowFilter = (
-    filterTab: string,
-    setFilterStore?: (dispatch: FilterSelectorType[]) => AnyAction,
+    typeFilter: string,
+    tabFilter: string,
+    setFilterStore?: (dispatch: any) => AnyAction,
     updateFilterCallback?: () => void
 ): UseAggridRowFilterOutputType => {
     const dispatch = useDispatch();
-    const filterStore = useSelector((state: any) => state[filterTab]);
-    const [filters, setFilters] = useState<FilterSelectorType[]>(filterStore);
+    const filterStore = useSelector(
+        (state: any) => state[typeFilter][tabFilter]
+    );
+    const [filters, setFilters] = useState<FilterSelectorType[]>([]);
 
     useEffect(() => {
         if (filterStore?.length) {
@@ -107,9 +105,14 @@ export const useAggridRowFilter = (
                 filter = updatedFilters;
                 return updatedFilters;
             });
-            setFilterStore && dispatch(setFilterStore(filter || []));
+            setFilterStore &&
+                dispatch(
+                    setFilterStore({
+                        [tabFilter]: filter || [],
+                    })
+                );
         },
-        [updateFilterCallback, dispatch, setFilterStore]
+        [tabFilter, updateFilterCallback, dispatch, setFilterStore]
     );
 
     const filterSelector: FilterSelectorType[] | null = useMemo(() => {

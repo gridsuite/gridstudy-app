@@ -39,7 +39,7 @@ import {
     getIdType,
     mappingColumnToField,
     mappingTabs,
-    mappingActions,
+    SECURITY_ANALYSIS_RESULT_FILTER,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -49,6 +49,7 @@ import { REPORT_TYPES } from '../../utils/report-type';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { setSecurityAnalysisResultFilter } from 'redux/actions';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -116,8 +117,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     }, [tabIndex, nmkType]);
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+        SECURITY_ANALYSIS_RESULT_FILTER,
         mappingTabs(tabIndex),
-        mappingActions(tabIndex),
+        setSecurityAnalysisResultFilter,
         () => {
             setPage(0);
         }

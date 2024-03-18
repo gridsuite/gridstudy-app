@@ -89,11 +89,11 @@ import {
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
     SET_LAST_COMPLETED_COMPUTATION,
-    LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
-    LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
     LOADFLOW_RESULT_FILTER,
-    SECURITY_ANALYSIS_RESULT_N_FILTER,
-    SECURITY_ANALYSIS_RESULT_N_K_FILTER,
+    SECURITY_ANALYSIS_RESULT_FILTER,
+    SENSITIVITY_IN_DELTA_A_RESULT_FILTER,
+    SENSITIVITY_IN_DELTA_MW_RESULT_FILTER,
+    SENSITIVITY_AT_NODE_RESULT_FILTER,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -245,9 +245,18 @@ const initialState = {
     lastCompletedComputation: null,
     loadflowCurrentLimitViolationFilter: [],
     loadflowVoltageLimitViolationFilter: [],
-    loadflowResultFilter: [],
-    securityAnalysisResultNFilter: [],
-    securityAnalysisResultNKFilter: [],
+    loadflowResultFilter: {
+        loadflowCurrentLimitViolation: [],
+        loadflowVoltageLimitViolation: [],
+        loadflowResult: [],
+    },
+    securityAnalysisResultFilter: {
+        securityAnalysisResultN: [],
+        securityAnalysisResultNK: [],
+    },
+    SensitivityInDeltaMW: { N: [], NK: [] },
+    SensitivityInDeltaA: { N: [], NK: [] },
+    SensitivityAtNode: { N: [], NK: [] },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1048,24 +1057,35 @@ export const reducer = createReducer(initialState, {
     [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
     },
-    [LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER]: (state, action) => {
-        state.loadflowCurrentLimitViolationFilter =
-            action.loadflowCurrentLimitViolationFilter;
-    },
-    [LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER]: (state, action) => {
-        state.loadflowVoltageLimitViolationFilter =
-            action.loadflowVoltageLimitViolationFilter;
-    },
     [LOADFLOW_RESULT_FILTER]: (state, action) => {
-        state.loadflowResultFilter = action.loadflowResultFilter;
+        state.loadflowResultFilter = {
+            ...state.loadflowResultFilter,
+            ...action.loadflowResultFilter,
+        };
     },
-    [SECURITY_ANALYSIS_RESULT_N_FILTER]: (state, action) => {
-        state.securityAnalysisResultNFilter =
-            action.securityAnalysisResultNFilter;
+    [SECURITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state.securityAnalysisResultFilter = {
+            ...state.securityAnalysisResultFilter,
+            ...action.securityAnalysisResultFilter,
+        };
     },
-    [SECURITY_ANALYSIS_RESULT_N_K_FILTER]: (state, action) => {
-        state.securityAnalysisResultNKFilter =
-            action.securityAnalysisResultNKFilter;
+    [SENSITIVITY_IN_DELTA_MW_RESULT_FILTER]: (state, action) => {
+        state.SensitivityInDeltaMW = {
+            ...state.SensitivityInDeltaMW,
+            ...action.SensitivityInDeltaMW,
+        };
+    },
+    [SENSITIVITY_IN_DELTA_A_RESULT_FILTER]: (state, action) => {
+        state.SensitivityInDeltaMW = {
+            ...state.SensitivityInDeltaA,
+            ...action.SensitivityInDeltaA,
+        };
+    },
+    [SENSITIVITY_AT_NODE_RESULT_FILTER]: (state, action) => {
+        state.SensitivityAtNode = {
+            ...state.SensitivityAtNode,
+            ...action.SensitivityAtNode,
+        };
     },
 });
 

@@ -61,7 +61,7 @@ const CustomHeaderComponent = ({
     sortParams = {},
     isFilterable = false,
     filterParams = {},
-    filterTab = {},
+    tabFilter = [],
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -73,7 +73,9 @@ const CustomHeaderComponent = ({
         parser, // Used to convert the value displayed in the table into its actual value
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
-    const filterStore = useSelector((state) => state[filterTab]);
+    const filterStore = useSelector((state) =>
+        tabFilter?.reduce((acc, key) => acc[key], state)
+    );
     const {
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change

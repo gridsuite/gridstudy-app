@@ -24,9 +24,11 @@ import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import {
+    N,
     SENSITIVITY_AT_NODE,
+    SENSITIVITY_IN_DELTA_MW,
     SUFFIX_TYPES,
-} from './sensitivity-analysis-content';
+} from './sensitivity-analysis-result-utils';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -89,6 +91,7 @@ const SensitivityAnalysisResult = ({
                         customFilterOptions: filterOptions,
                         updateFilter,
                     },
+                    tabFilter: [SENSITIVITY_IN_DELTA_MW, N],
                 },
                 minWidth: isSortActive && sortWay ? 95 : 65,
                 maxWidth: maxWidth,

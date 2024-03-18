@@ -13,12 +13,14 @@ import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result'
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     COMPUTATION_RESULTS_LOGS,
-    DATA_KEY_TO_FILTER_KEY,
     FUNCTION_TYPES,
+    mappingActions,
+    mappingFilters,
+    mappingTabs,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
-} from './sensitivity-analysis-content';
+} from './sensitivity-analysis-result-utils';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
@@ -58,7 +60,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     );
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        DATA_KEY_TO_FILTER_KEY
+        mappingFilters(sensiKind),
+        mappingTabs(nOrNkIndex),
+        mappingActions(sensiKind)
     );
 
     // Add default sort on sensitivity col

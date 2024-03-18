@@ -36,8 +36,8 @@ import {
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowResultColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
+    LOADFLOW_RESULT_FILTER,
     makeData,
-    mappingActions,
     mappingFields,
     mappingTabs,
     useFetchFiltersEnums,
@@ -52,6 +52,7 @@ import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import { LimitViolationResult } from './limit-violation-result';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { setLoadflowResultFilter } from 'redux/actions';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -88,8 +89,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+        LOADFLOW_RESULT_FILTER,
         mappingTabs(tabIndex),
-        mappingActions(tabIndex)
+        setLoadflowResultFilter
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =

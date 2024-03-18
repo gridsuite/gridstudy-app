@@ -40,20 +40,14 @@ import {
     fetchLoadflowAvailableComputationStatus,
     fetchLoadflowAvailableLimitTypes,
 } from 'services/loadflow';
-import {
-    setLoadflowCurrentLimitViolationFilter,
-    setLoadflowResultFilter,
-    setLoadflowVoltageLimitViolationFilter,
-} from 'redux/actions';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
-const LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER =
-    'loadflowCurrentLimitViolationFilter';
+export const LOADFLOW_RESULT_FILTER = 'loadflowResultFilter';
+const LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB = 'loadflowCurrentLimitViolation';
 
-const LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER =
-    'loadflowVoltageLimitViolationFilter';
+const LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB = 'loadflowVoltageLimitViolation';
 
-const LOADFLOW_RESULT_FILTER = 'loadflowResultFilter';
+export const LOADFLOW_RESULT_TAB = 'loadflowResult';
 
 export const convertMillisecondsToMinutesSeconds = (
     durationInMilliseconds: number
@@ -156,24 +150,11 @@ export const mappingFields = (index: number): Record<string, string> => {
 export const mappingTabs = (index: number): string => {
     switch (index) {
         case 0:
-            return LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER;
+            return LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB;
         case 1:
-            return LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER;
+            return LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB;
         case 2:
-            return LOADFLOW_RESULT_FILTER;
-        default:
-            return '';
-    }
-};
-
-export const mappingActions = (index: number): any => {
-    switch (index) {
-        case 0:
-            return setLoadflowCurrentLimitViolationFilter;
-        case 1:
-            return setLoadflowVoltageLimitViolationFilter;
-        case 2:
-            return setLoadflowResultFilter;
+            return LOADFLOW_RESULT_TAB;
         default:
             return '';
     }
@@ -277,7 +258,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: textFilterParams,
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitNameCurrentViolation' }),
@@ -288,7 +272,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 ...textFilterParams,
                 parser: convertLimitNameFrontToBack,
             },
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
             valueFormatter: (params: ValueFormatterParams) =>
                 formatNAValue(params.value, intl),
         }),
@@ -300,7 +287,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
@@ -310,7 +300,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
@@ -320,7 +313,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
@@ -332,7 +328,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 isDuration: true,
                 parser: parseDuration,
             },
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
             valueGetter: (value: ValueGetterParams) =>
                 convertDuration(value.data.actualOverloadDuration),
         }),
@@ -342,7 +341,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: { ...textFilterParams, parser: parseDuration },
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
             valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });
@@ -364,7 +366,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            filterTab: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
+            ],
         }),
     ];
 };
@@ -387,7 +392,10 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: textFilterParams,
-            filterTab: LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
+            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
@@ -398,7 +406,10 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            filterTab: LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
+            ],
             valueGetter: (value: ValueGetterParams) => {
                 return formatLimitType(value.data.limitType, intl);
             },
@@ -411,7 +422,10 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
+            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
@@ -421,7 +435,10 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
+            tabFilter: [
+                LOADFLOW_RESULT_FILTER,
+                LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
+            ],
         }),
     ];
 };
@@ -442,7 +459,7 @@ export const loadFlowResultColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_RESULT_FILTER,
+            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'synchronousComponentNum' }),
@@ -450,7 +467,7 @@ export const loadFlowResultColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_RESULT_FILTER,
+            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'status' }),
@@ -461,7 +478,7 @@ export const loadFlowResultColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            filterTab: LOADFLOW_RESULT_FILTER,
+            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
             cellRenderer: statusCellRender,
         }),
         makeAgGridCustomHeaderColumn({
@@ -470,14 +487,14 @@ export const loadFlowResultColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_RESULT_FILTER,
+            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'slackBusId' }),
             field: 'id',
             filterProps,
             filterParams: textFilterParams,
-            filterTab: LOADFLOW_RESULT_FILTER,
+            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -488,7 +505,7 @@ export const loadFlowResultColumnsDefinition = (
             fractionDigits: 2,
             filterProps,
             filterParams: numericFilterParams,
-            filterTab: LOADFLOW_RESULT_FILTER,
+            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
             cellRenderer: numberRenderer,
         }),
     ];

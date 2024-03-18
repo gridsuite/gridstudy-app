@@ -689,32 +689,6 @@ export function setLastCompletedComputation(lastCompletedComputation) {
     };
 }
 
-export const LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER =
-    'LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER';
-
-export function setLoadflowCurrentLimitViolationFilter(
-    loadflowCurrentLimitViolationFilter
-) {
-    return {
-        type: LOADFLOW_CURRENT_LIMIT_VIOLATION_FILTER,
-        loadflowCurrentLimitViolationFilter:
-            loadflowCurrentLimitViolationFilter,
-    };
-}
-
-export const LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER =
-    'LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER';
-
-export function setLoadflowVoltageLimitViolationFilter(
-    loadflowVoltageLimitViolationFilter
-) {
-    return {
-        type: LOADFLOW_VOLTAGE_LIMIT_VIOLATION_FILTER,
-        loadflowVoltageLimitViolationFilter:
-            loadflowVoltageLimitViolationFilter,
-    };
-}
-
 export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
 
 export function setLoadflowResultFilter(loadflowResultFilter) {
@@ -724,26 +698,42 @@ export function setLoadflowResultFilter(loadflowResultFilter) {
     };
 }
 
-export const SECURITY_ANALYSIS_RESULT_N_FILTER =
-    'SECURITY_ANALYSIS_RESULT_N_FILTER';
+export const SECURITY_ANALYSIS_RESULT_FILTER =
+    'SECURITY_ANALYSIS_RESULT_FILTER';
 
-export function setSecurityAnalysisResultNFilter(
-    securityAnalysisResultNFilter
-) {
+export function setSecurityAnalysisResultFilter(securityAnalysisResultFilter) {
     return {
-        type: SECURITY_ANALYSIS_RESULT_N_FILTER,
-        securityAnalysisResultNFilter: securityAnalysisResultNFilter,
+        type: SECURITY_ANALYSIS_RESULT_FILTER,
+        securityAnalysisResultFilter: securityAnalysisResultFilter,
     };
 }
 
-export const SECURITY_ANALYSIS_RESULT_N_K_FILTER =
-    'SECURITY_ANALYSIS_RESULT_N_K_FILTER';
+export const SENSITIVITY_IN_DELTA_MW_RESULT_FILTER =
+    'SENSITIVITY_IN_DELTA_MW_RESULT_FILTER';
 
-export function setSecurityAnalysisResultNKFilter(
-    securityAnalysisResultNKFilter
-) {
+export function setSensitivityInDeltaMWResultFilter(sensitivityInDeltaMW) {
     return {
-        type: SECURITY_ANALYSIS_RESULT_N_K_FILTER,
-        securityAnalysisResultNKFilter: securityAnalysisResultNKFilter,
+        type: SENSITIVITY_IN_DELTA_MW_RESULT_FILTER,
+        SensitivityInDeltaMW: sensitivityInDeltaMW,
+    };
+}
+
+export const SENSITIVITY_IN_DELTA_A_RESULT_FILTER =
+    'SENSITIVITY_IN_DELTA_A_RESULT_FILTER';
+
+export function setSensitivityInDeltaAResultFilter(sensitivityInDeltaA) {
+    return {
+        type: SENSITIVITY_IN_DELTA_A_RESULT_FILTER,
+        SensitivityInDeltaA: sensitivityInDeltaA,
+    };
+}
+
+export const SENSITIVITY_AT_NODE_RESULT_FILTER =
+    'SENSITIVITY_AT_NODE_RESULT_FILTER';
+
+export function setSensitivityAtNodeResultFilter(sensitivityAtNode) {
+    return {
+        type: SENSITIVITY_AT_NODE_RESULT_FILTER,
+        SensitivityAtNode: sensitivityAtNode,
     };
 }

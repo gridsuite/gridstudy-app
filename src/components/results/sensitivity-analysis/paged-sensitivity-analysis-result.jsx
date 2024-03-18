@@ -8,12 +8,13 @@
 import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
+    DATA_KEY_TO_FILTER_KEY,
     DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     PAGE_OPTIONS,
     SENSITIVITY_AT_NODE,
-} from './sensitivity-analysis-content';
+} from './sensitivity-analysis-result-utils';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -146,7 +147,7 @@ const PagedSensitivityAnalysisResult = ({
             pageSize: rowsPerPage,
             pageNumber: page,
             ...filterSelector?.reduce((acc, curr) => {
-                acc[curr.column] = curr.value;
+                acc[DATA_KEY_TO_FILTER_KEY[curr.column]] = curr.value;
                 return acc;
             }, {}),
             ...sortSelector,
