@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Autocomplete, Chip, Grid, TextField } from '@mui/material';
+import { Autocomplete, Chip, Grid, TextField, Box } from '@mui/material';
 import {
     DropDown,
     LabelledButton,
@@ -34,7 +34,6 @@ import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
-import { Box } from '@mui/system';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
