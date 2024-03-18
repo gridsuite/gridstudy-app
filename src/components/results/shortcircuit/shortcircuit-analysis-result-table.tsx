@@ -390,7 +390,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
-                enableCellTextSelection={true}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
                 onRowDataUpdated={handleRowDataUpdated}

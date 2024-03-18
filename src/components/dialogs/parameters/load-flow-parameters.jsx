@@ -30,8 +30,10 @@ import {
 import { ParameterType, ParamLine, ParameterGroup } from './widget';
 import { mergeSx } from '../../utils/functions';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import DirectoryItemSelector from '../../directory-item-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -551,7 +553,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                             'loading the following loadflow parameters : ' +
                                 parameters.uuid
                         );
-
+                        const provider = parameters['provider'];
                         const specParamsToSave = {
                             [provider]:
                                 parameters?.specificParametersPerProvider[
@@ -575,8 +577,19 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, updateParameters, provider]
+        [snackError, updateParameters]
     );
+    const formatNewParams = useCallback((newParams) => {
+        const speceficParameters =
+            'specificParametersPerProvider' in newParams
+                ? newParams['specificParametersPerProvider']
+                : {};
+
+        return {
+            ...newParams,
+            specificParametersPerProvider: speceficParameters,
+        };
+    }, []);
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
@@ -659,7 +672,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 <CreateParameterDialog
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
-                    parameterValues={() => params}
+                    parameterValues={() => formatNewParams(params)}
                     parameterFormatter={(newParams) => newParams}
                     parameterType={ElementType.LOADFLOW_PARAMETERS}
                 />
@@ -677,6 +690,9 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

@@ -345,6 +345,7 @@ export const useParametersBackend = (
             if (backendUpdateParameters) {
                 let oldParams = { ...currentParams };
                 setParams(newParams);
+                setProvider(newParams['provider']);
                 debouncedBackendUpdateParameters(
                     studyUuid,
                     newParams,

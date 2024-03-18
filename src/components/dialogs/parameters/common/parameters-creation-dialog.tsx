@@ -13,14 +13,16 @@ import { FormProvider, useForm, UseFormGetValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import DirectoryItemSelector from 'components/directory-item-selector';
 import { fetchPath } from 'services/directory';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createParameter } from 'services/explore';
 import { Identifier, VoltageInitForm } from '../voltageinit/voltage-init-utils';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 import { ElementType } from '@gridsuite/commons-ui';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 interface FormData {
     [NAME]: string;
@@ -174,6 +176,9 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
                     title={intl.formatMessage({
                         id: 'showSelectDirectoryDialog',
                     })}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             </ModificationDialog>
         </FormProvider>

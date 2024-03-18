@@ -26,15 +26,16 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import { CheckboxInput } from '@gridsuite/commons-ui';
+import { CheckboxInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { FieldErrorAlert } from '@gridsuite/commons-ui';
-import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
-import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
@@ -132,6 +133,9 @@ function EditableTableCell({
                     elementType={column.elementType}
                     titleId={column.titleId}
                     hideErrorMessage={true}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
             {column.chipItems && (
