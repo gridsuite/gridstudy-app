@@ -144,7 +144,7 @@ const CustomHeaderComponent = ({
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
         debouncedUpdateFilter(field, {
-            value: selectedFilterData,
+            value: parser ? parser(selectedFilterData) : selectedFilterData,
             type: newType,
             dataType: filterDataType,
         });
