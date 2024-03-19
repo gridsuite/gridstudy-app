@@ -288,7 +288,11 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                     <Grid
                         container
                         spacing={1}
-                        sx={{ padding: 0, paddingBottom: 2 }}
+                        sx={{
+                            padding: 0,
+                            paddingBottom: 2,
+                            justifyContent: 'space-between',
+                        }}
                         xl={6}
                     >
                         <DropDown

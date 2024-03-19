@@ -194,7 +194,6 @@ const DynamicSimulationResultTimeline = memo(
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     overlayNoRowsTemplate={overlayMessage}
-                    enableCellTextSelection
                 />
             </>
         );
