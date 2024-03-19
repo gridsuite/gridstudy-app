@@ -121,35 +121,7 @@ function createVoltageLevelIdentifierList(
         }),
     };
 }
-async function createVoltageLevelFilterInStudyPath(
-    studyUuid: UUID,
-    voltageLevels: any
-) {
-    try {
-        const studyPath = await fetchPath(studyUuid);
-        if (!studyPath || studyPath.length < 2) {
-            return;
-        }
 
-        const PARENT_DIRECTORY_INDEX = 1;
-        const studyDirectoryUuid =
-            studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
-
-        const substationParam = createVoltageLevelIdentifierList(
-            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-            voltageLevels
-        );
-
-        return createFilter(
-            substationParam,
-            'polygoneFilter',
-            'description',
-            studyDirectoryUuid
-        );
-    } catch (error) {
-        return Promise.reject(error);
-    }
-}
 const FilterCreationPanel: React.FC = () => {
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const polygoneCoordinates = useSelector(
@@ -259,7 +231,7 @@ const FilterCreationPanel: React.FC = () => {
                         ...formMethods,
                     }}
                 >
-                    <GridSection title="Filter creation" />
+                    <GridSection title="createNewFilter" />
                     <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
