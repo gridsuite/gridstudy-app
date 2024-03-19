@@ -116,6 +116,7 @@ const FilterCreationPanel: React.FC = () => {
                 console.error('debug', 'createFilter', err);
             });
     };
+    function handleCancelButtonClick() {}
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchPath(studyUuid).then((res) => {
             if (res) {
@@ -170,7 +171,7 @@ const FilterCreationPanel: React.FC = () => {
 
     return (
         <>
-            <Grid container spacing={2}>
+            <Grid container>
                 <FormProvider
                     {...{
                         validationSchema: formSchema,
@@ -222,7 +223,20 @@ const FilterCreationPanel: React.FC = () => {
                             variant="contained"
                             onClick={handleValidationButtonClick}
                         >
-                            Validate
+                            {intl.formatMessage({
+                                id: 'validate',
+                            })}
+                        </Button>
+                    </Grid>
+
+                    <Grid item>
+                        <Button
+                            variant="contained"
+                            onClick={handleCancelButtonClick}
+                        >
+                            {intl.formatMessage({
+                                id: 'cancel',
+                            })}
                         </Button>
                     </Grid>
                 </FormProvider>
