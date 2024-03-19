@@ -44,7 +44,23 @@ const styles = {
     chip: (theme) => ({
         margin: '4px 2px 4px 2px',
         padding:0,
-        //color: theme.palette.getContrastText(theme.palette.text.primary),
+    }),
+    chipCountry: (theme) => ({
+        backgroundColor: 'red !important',
+        color: theme.palette.getContrastText('#FF0000'),
+        //'&:hover, &:focus': {
+        //    backgroundColor: 'blue !important',
+        //    //filter: 'brightness(120%)',
+        //},
+        //'&:active': {
+        //    boxShadow: 'none',
+        //    backgroundColor: 'blue !important',
+        //    //borderColor: 'blue',
+        //},
+    }),
+    chipVoltageLevel: (theme) => ({
+        backgroundColor: 'pink !important',
+        color: theme.palette.getContrastText('#f1a2fc'),
     }),
 };
 
@@ -117,10 +133,12 @@ const ResultsGlobalFilter = (props) => {
                 renderOption={(params, option) => (
                     <Chip
                         {...params}
+                        disableRipple
                         label={option.label}
                         size='small'
-                        color={option.filterType === 'country' ? 'primary' : 'secondary'}
-                        sx={styles.chip}
+                        sx={mergeSx(styles.chip,
+                            option.filterType === 'country' ? styles.chipCountry : styles.chipVoltageLevel
+                        )}
                     />
                 )}
                 renderGroup={(item) => {
