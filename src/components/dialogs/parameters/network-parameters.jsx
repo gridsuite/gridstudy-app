@@ -52,6 +52,7 @@ export const NetworkParameters = () => {
                     key={'networkParameters'}
                     sx={styles.scrollableGrid}
                     marginTop={-3}
+                    justifyContent={'space-between'}
                 >
                     <ParamLine
                         type={ParameterType.DropDown}

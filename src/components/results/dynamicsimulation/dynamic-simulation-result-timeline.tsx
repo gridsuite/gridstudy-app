@@ -204,7 +204,6 @@ const DynamicSimulationResultTimeline = ({
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
                 overlayNoRowsTemplate={overlayMessage}
-                enableCellTextSelection
             />
         </>
     );
