@@ -63,7 +63,7 @@ export const SwitchWithLabel = ({ value, label, callback }) => {
 export const DropDown = ({ value, label, values, callback }) => {
     return (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={5} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={4} sx={styles.controlItem}>
@@ -142,7 +142,7 @@ export const styles = {
     scrollableGrid: (theme) => ({
         overflowY: 'auto',
         overflowX: 'hidden',
-        maxHeight: '85%',
+        maxHeight: '85%', // TODO This needs to be refactored
         paddingRight: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(1),
