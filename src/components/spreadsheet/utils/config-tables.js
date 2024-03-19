@@ -135,8 +135,12 @@ const defaultBooleanFilterConfig = {
                 displayKey: 'customInRange',
                 displayName: 'customInRange',
                 predicate: ([filterValue], cellValue) => {
-                    // We receive here the filter enum values as a string (filterValue)
-                    return filterValue === cellValue.toString();
+                    // We receive here the filter boolean values as a string (filterValue)
+                    // we check if the cellValue is not null neither undefined
+                    if (cellValue != null) {
+                        return filterValue === cellValue.toString();
+                    }
+                    return filterValue === 'false';
                 },
             },
         ],
