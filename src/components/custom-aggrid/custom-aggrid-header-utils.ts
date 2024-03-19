@@ -23,9 +23,11 @@ export const makeAgGridCustomHeaderColumn = ({
         filterBoolean = {},
     } = filterParams || {};
 
-    const filterOptions = filterEnums[field] ?? filterBoolean[field];
     const customFilterOptions =
-        filterDataType === FILTER_DATA_TYPES.TEXT ? filterOptions : [];
+        filterDataType === FILTER_DATA_TYPES.TEXT
+            ? filterEnums[field] ??
+              filterBoolean[field]?.map((v) => v.toString())
+            : [];
 
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;

@@ -71,9 +71,8 @@ const CustomHeaderComponent = ({
         parser, // Used to convert the value displayed in the table into its actual value
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
-    console.log('filterParams : ', filterParams);
 
-    const isMultipleSelection = !filterParams?.filterBoolean[field];
+    const isMultipleSelection = !filterParams?.filterBoolean?.[field]; // in case we have boolean filter, we allow the selection of one value for the filter
     const {
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change

@@ -135,11 +135,6 @@ const defaultBooleanFilterConfig = {
                 displayKey: 'customInRange',
                 displayName: 'customInRange',
                 predicate: ([filterValue], cellValue) => {
-                    console.log(
-                        'Filter and cell value : ',
-                        filterValue,
-                        cellValue
-                    );
                     // We receive here the filter enum values as a string (filterValue)
                     return filterValue === cellValue.toString();
                 },
