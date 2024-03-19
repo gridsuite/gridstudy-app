@@ -10,6 +10,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { SitePropertiesEditor } from './equipement-table-popup-editors';
 import {
     BooleanListField,
+    EnumListField,
     GeneratorRegulatingTerminalEditor,
     NumericalField,
     SelectCountryField,
@@ -34,6 +35,7 @@ import {
 import { getComputedRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import {
     computeHighTapPosition,
+    getEnumLabelById,
     getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
 import {
@@ -43,6 +45,7 @@ import {
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { NOMINAL_V } from '../../utils/field-constants';
 import CountryCellRenderer from '../country-cell-render';
+import EnumCellRenderer from '../enum-cell-renderer';
 
 const generateTapPositions = (params) => {
     return params
@@ -119,16 +122,32 @@ const defaultEnumFilterConfig = {
     },
     customFilterParams: {
         filterDataType: FILTER_DATA_TYPES.TEXT,
-        isEnum: true,
     },
+    isEnum: true,
 };
+
+// This function is used to generate the default configuration for an enum filter
+// It generates configuration for filtering, sorting and rendering
+const getDefaultEnumConfig = (enumOptions) => ({
+    ...defaultEnumFilterConfig,
+    cellRenderer: EnumCellRenderer,
+    cellRendererParams: {
+        enumOptions: enumOptions,
+    },
+    getEnumLabel: (value) => getEnumLabelById(enumOptions, value),
+});
+
+const getDefaultEnumCellEditorParams = (params, defaultValue, enumOptions) => ({
+    defaultValue: defaultValue,
+    enumOptions: enumOptions,
+    gridContext: params.context,
+    gridApi: params.api,
+    colDef: params.colDef,
+});
 
 const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,
-    customFilterParams: {
-        ...defaultEnumFilterConfig.customFilterParams,
-        isCountry: true,
-    },
+    isCountry: true,
 };
 
 const defaultNumericFilterConfig = {
@@ -850,18 +869,17 @@ export const TABLES_DEFINITIONS = {
 
                     return params;
                 },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.ratioTapChanger?.regulationMode,
+                        Object.values(RATIO_REGULATION_MODES)
+                    ),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: Object.values(RATIO_REGULATION_MODES).map(
-                            (regulationMode) => regulationMode.id
-                        ),
-                    };
-                },
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn:
@@ -869,7 +887,7 @@ export const TABLES_DEFINITIONS = {
                         columnValue: 1,
                     },
                 },
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(RATIO_REGULATION_MODES)),
             },
             {
                 id: 'TargetVPoint',
@@ -927,7 +945,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioRegulationTypeText',
                 field: 'ratioTapChanger.regulationType',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
                 valueGetter: (params) =>
                     params.data?.ratioTapChanger?.regulationType,
                 valueSetter: (params) => {
@@ -937,25 +955,22 @@ export const TABLES_DEFINITIONS = {
                     };
                     return params;
                 },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.ratioTapChanger?.regulationType,
+                        Object.values(REGULATION_TYPES)
+                    ),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: [
-                            ...Object.values(REGULATION_TYPES).map(
-                                (type) => type.id
-                            ),
-                        ],
-                    };
-                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioRegulatedSide',
                 field: 'ratioTapChanger.regulationSide',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(SIDE)),
                 valueGetter: (params) =>
                     params.data?.ratioTapChanger?.regulationSide,
                 valueSetter: (params) => {
@@ -967,12 +982,13 @@ export const TABLES_DEFINITIONS = {
                 },
                 editable: isEditableTwtRatioRegulationSideCell,
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: [...Object.values(SIDE).map((side) => side.id)],
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.ratioTapChanger?.regulationSide,
+                        Object.values(SIDE)
+                    ),
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn: 'ratioTapChanger.regulationType',
@@ -1092,7 +1108,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode',
                 field: 'phaseTapChanger.regulationMode',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(PHASE_REGULATION_MODES)),
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.regulationMode,
                 valueSetter: (params) => {
@@ -1106,14 +1122,13 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) => hasTwtPhaseTapChangerAndEditable(params),
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: Object.values(PHASE_REGULATION_MODES).map(
-                            (regulationMode) => regulationMode.id
-                        ),
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.phaseTapChanger?.regulationMode,
+                        Object.values(PHASE_REGULATION_MODES)
+                    ),
             },
             {
                 id: 'RegulatingValue',
@@ -1181,7 +1196,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseRegulationTypeText',
                 field: 'phaseTapChanger.regulationType',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
                 valueGetter: (params) =>
                     params.data?.phaseTapChanger?.regulationType,
                 valueSetter: (params) => {
@@ -1194,22 +1209,19 @@ export const TABLES_DEFINITIONS = {
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 editable: (params) => hasTwtPhaseTapChangerAndEditable(params),
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: [
-                            ...Object.values(REGULATION_TYPES).map(
-                                (type) => type.id
-                            ),
-                        ],
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.phaseTapChanger?.regulationType,
+                        Object.values(REGULATION_TYPES)
+                    ),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'PhaseRegulatedSide',
                 field: 'phaseTapChanger.regulationSide',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(SIDE)),
                 valueGetter: (params) =>
                     params.data?.phaseTapChanger?.regulationSide,
                 valueSetter: (params) => {
@@ -1221,12 +1233,13 @@ export const TABLES_DEFINITIONS = {
                 },
                 editable: isEditableTwtPhaseRegulationSideCell,
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: [...Object.values(SIDE).map((side) => side.id)],
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.phaseTapChanger?.regulationSide,
+                        Object.values(SIDE)
+                    ),
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn: 'phaseTapChanger.regulationType',
@@ -1880,18 +1893,17 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'energySource',
                 field: 'energySource',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(ENERGY_SOURCES),
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: ENERGY_SOURCES.map(
-                            (energySource) => energySource.id
-                        ),
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.energySource,
+                        ENERGY_SOURCES
+                    ),
             },
             {
                 id: 'activePower',
@@ -2382,19 +2394,16 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulationTypeText',
                 field: 'RegulationTypeText',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: [
-                            ...Object.values(REGULATION_TYPES).map(
-                                (type) => type.id
-                            ),
-                        ],
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.RegulationTypeText,
+                        Object.values(REGULATION_TYPES)
+                    ),
             },
             {
                 id: 'RegulatingTerminalGenerator',
@@ -2451,19 +2460,19 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'loadType',
                 field: 'type',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig([
+                    ...LOAD_TYPES,
+                    { id: 'UNDEFINED', label: 'Undefined' },
+                ]),
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: [
-                            ...LOAD_TYPES.map((loadType) => loadType.id),
-                            'UNDEFINED',
-                        ],
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(params, params.data?.type, [
+                        ...LOAD_TYPES,
+                        { id: 'UNDEFINED', label: 'Undefined' },
+                    ]),
             },
             {
                 id: 'VoltageLevelId',
@@ -2650,19 +2659,16 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Type',
                 field: 'type',
-                ...defaultEnumFilterConfig,
+                ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
                 editable: isEditable,
                 cellStyle: editableCellStyle,
-                cellEditor: 'agSelectCellEditor',
-                cellEditorParams: () => {
-                    return {
-                        values: [
-                            ...Object.values(SHUNT_COMPENSATOR_TYPES).map(
-                                (shuntType) => shuntType.id
-                            ),
-                        ],
-                    };
-                },
+                cellEditor: EnumListField,
+                cellEditorParams: (params) =>
+                    getDefaultEnumCellEditorParams(
+                        params,
+                        params.data?.type,
+                        Object.values(SHUNT_COMPENSATOR_TYPES)
+                    ),
             },
             {
                 id: 'maxQAtNominalV',
