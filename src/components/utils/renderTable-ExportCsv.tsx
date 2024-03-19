@@ -41,7 +41,6 @@ interface RenderTableAndExportCsvProps {
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onGridReady: ((event: GridReadyEvent) => void) | undefined;
     getRowStyle: (params: RowClassParams) => RowStyle | undefined;
-    enableCellTextSelection: boolean;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
 }
@@ -57,7 +56,6 @@ export const RenderTableAndExportCsv: FunctionComponent<
     onRowDataUpdated,
     onGridReady,
     getRowStyle,
-    enableCellTextSelection,
     overlayNoRowsTemplate,
     skipColumnHeaders = false,
 }) => {
@@ -85,7 +83,6 @@ export const RenderTableAndExportCsv: FunctionComponent<
                         onGridReady={onGridReady}
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={overlayNoRowsTemplate}
-                        enableCellTextSelection={enableCellTextSelection}
                     />
                 </Box>
             )}
