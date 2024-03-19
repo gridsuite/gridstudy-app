@@ -5,9 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
+
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
+export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER =
+    'shortcircuitAnalysisResultFilter';
+export const ONE_BUS_TAB = 'oneBus';
+export const ALL_BUSES_TAB = 'allBuses';
 
 export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     elementId: 'fault.id',
@@ -27,4 +33,15 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
 export const FROM_COLUMN_TO_FIELD_ONE_BUS: Record<string, string> = {
     ...FROM_COLUMN_TO_FIELD,
     current: 'fortescueCurrent.positiveMagnitude',
+};
+
+export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {
+    switch (analysisType) {
+        case ShortCircuitAnalysisType.ONE_BUS:
+            return ONE_BUS_TAB;
+        case ShortCircuitAnalysisType.ALL_BUSES:
+            return ALL_BUSES_TAB;
+        default:
+            return '';
+    }
 };

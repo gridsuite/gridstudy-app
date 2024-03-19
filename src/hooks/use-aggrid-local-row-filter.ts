@@ -13,6 +13,7 @@ import {
     useAggridRowFilter,
 } from './use-aggrid-row-filter';
 import { FILTER_DATA_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { setSpreadsheetFilter } from 'redux/actions';
 
 interface FilterModel {
     [colId: string]: any;
@@ -20,13 +21,16 @@ interface FilterModel {
 
 export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
+    filterType: string,
+    filterTab: string,
     filterSelectorKeys: Record<string, string>,
     updateFilterCallback?: () => {}
 ): UseAggridRowFilterOutputType => {
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        filterSelectorKeys,
-        updateFilterCallback
-    );
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter({
+        filterType: filterType,
+        filterTab: filterTab,
+        filterStoreAction: setSpreadsheetFilter,
+    });
 
     const generateEnumFilterModel = useCallback(
         (filter: FilterSelectorType) => {

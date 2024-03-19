@@ -13,7 +13,7 @@ export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
     filterProps, // filterProps: contains useAgGridRowFilter params
     filterParams, // filterParams: Parameters for the column's filtering functionality
-    tabFilter,
+    filterTab,
     ...props // agGrid column props
 }: CustomColDef) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
@@ -58,7 +58,7 @@ export const makeAgGridCustomHeaderColumn = ({
                 customFilterOptions,
                 updateFilter,
             },
-            tabFilter,
+            filterTab: filterTab,
         },
         filterParams: props?.agGridFilterParams || undefined,
         ...props,

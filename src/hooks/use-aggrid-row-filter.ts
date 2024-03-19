@@ -26,6 +26,15 @@ export type FilterPropsType = {
     initFilters?: () => void;
 };
 
+export type FilterStorePropsType = {
+    filterType: string;
+    filterTab: string;
+    filterStoreAction: (
+        filterTab: string,
+        filter: FilterSelectorType[]
+    ) => AnyAction;
+};
+
 export type UseAggridRowFilterOutputType = {
     updateFilter: (field: string, data: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
@@ -59,22 +68,21 @@ const changeValueFromArrayWithFieldValue = (
 };
 
 export const useAggridRowFilter = (
-    typeFilter: string,
-    tabFilter: string,
-    setFilterStore?: (dispatch: any) => AnyAction,
+    filterStoreParam: FilterStorePropsType,
     updateFilterCallback?: () => void
 ): UseAggridRowFilterOutputType => {
     const dispatch = useDispatch();
-    const filterStore = useSelector(
-        (state: any) => state[typeFilter][tabFilter]
+    const { filterType, filterTab, filterStoreAction } = filterStoreParam;
+    const storeFilter = useSelector(
+        (state: any) => state[filterType][filterTab]
     );
     const [filters, setFilters] = useState<FilterSelectorType[]>([]);
 
     useEffect(() => {
-        if (filterStore?.length) {
-            setFilters(filterStore);
+        if (storeFilter?.length) {
+            setFilters(storeFilter);
         }
-    }, [filterStore]);
+    }, [storeFilter]);
 
     const updateFilter = useCallback(
         (field: string, data: FilterDataType): void => {
@@ -84,7 +92,6 @@ export const useAggridRowFilter = (
                 type: data.type,
                 value: data.value,
             };
-            let filter: FilterSelectorType[] = [];
             setFilters((oldRowFilters: FilterSelectorType[]) => {
                 let updatedFilters;
 
@@ -102,25 +109,21 @@ export const useAggridRowFilter = (
                 }
 
                 updateFilterCallback && updateFilterCallback();
-                filter = updatedFilters;
+                filterStoreAction &&
+                    filterTab &&
+                    dispatch(filterStoreAction(filterTab, updatedFilters));
                 return updatedFilters;
             });
-            setFilterStore &&
-                dispatch(
-                    setFilterStore({
-                        [tabFilter]: filter || [],
-                    })
-                );
         },
-        [tabFilter, updateFilterCallback, dispatch, setFilterStore]
+        [filterTab, updateFilterCallback, dispatch, filterStoreAction]
     );
 
     const filterSelector: FilterSelectorType[] | null = useMemo(() => {
-        if (filterStore?.length) {
-            return filterStore;
+        if (storeFilter?.length) {
+            return storeFilter;
         }
         return filters;
-    }, [filters, filterStore]);
+    }, [filters, storeFilter]);
 
     const initFilters = useCallback(() => {
         setFilters([]);

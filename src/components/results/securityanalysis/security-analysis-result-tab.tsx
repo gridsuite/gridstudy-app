@@ -117,9 +117,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     }, [tabIndex, nmkType]);
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        SECURITY_ANALYSIS_RESULT_FILTER,
-        mappingTabs(tabIndex),
-        setSecurityAnalysisResultFilter,
+        {
+            filterType: SECURITY_ANALYSIS_RESULT_FILTER,
+            filterTab: mappingTabs(tabIndex),
+            filterStoreAction: setSecurityAnalysisResultFilter,
+        },
         () => {
             setPage(0);
         }

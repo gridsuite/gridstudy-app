@@ -691,9 +691,10 @@ export function setLastCompletedComputation(lastCompletedComputation) {
 
 export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
 
-export function setLoadflowResultFilter(loadflowResultFilter) {
+export function setLoadflowResultFilter(filterTab, loadflowResultFilter) {
     return {
         type: LOADFLOW_RESULT_FILTER,
+        filterTab: filterTab,
         loadflowResultFilter: loadflowResultFilter,
     };
 }
@@ -701,39 +702,51 @@ export function setLoadflowResultFilter(loadflowResultFilter) {
 export const SECURITY_ANALYSIS_RESULT_FILTER =
     'SECURITY_ANALYSIS_RESULT_FILTER';
 
-export function setSecurityAnalysisResultFilter(securityAnalysisResultFilter) {
+export function setSecurityAnalysisResultFilter(
+    filterTab,
+    securityAnalysisResultFilter
+) {
     return {
         type: SECURITY_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
         securityAnalysisResultFilter: securityAnalysisResultFilter,
     };
 }
 
-export const SENSITIVITY_IN_DELTA_MW_RESULT_FILTER =
-    'SENSITIVITY_IN_DELTA_MW_RESULT_FILTER';
+export const SENSITIVITY_ANALYSIS_RESULT_FILTER =
+    'SENSITIVITY_ANALYSIS_RESULT_FILTER';
 
-export function setSensitivityInDeltaMWResultFilter(sensitivityInDeltaMW) {
+export function setSensitivityAnalysisResultFilter(
+    filterTab,
+    sensitivityAnalysisResultFilter
+) {
     return {
-        type: SENSITIVITY_IN_DELTA_MW_RESULT_FILTER,
-        SensitivityInDeltaMW: sensitivityInDeltaMW,
+        type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        sensitivityAnalysisResultFilter: sensitivityAnalysisResultFilter,
     };
 }
 
-export const SENSITIVITY_IN_DELTA_A_RESULT_FILTER =
-    'SENSITIVITY_IN_DELTA_A_RESULT_FILTER';
+export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER =
+    'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
 
-export function setSensitivityInDeltaAResultFilter(sensitivityInDeltaA) {
+export function setShortcircuitAnalysisResultFilter(
+    filterTab,
+    shortcircuitAnalysisResultFilter
+) {
     return {
-        type: SENSITIVITY_IN_DELTA_A_RESULT_FILTER,
-        SensitivityInDeltaA: sensitivityInDeltaA,
+        type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        shortcircuitAnalysisResultFilter: shortcircuitAnalysisResultFilter,
     };
 }
 
-export const SENSITIVITY_AT_NODE_RESULT_FILTER =
-    'SENSITIVITY_AT_NODE_RESULT_FILTER';
+export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
 
-export function setSensitivityAtNodeResultFilter(sensitivityAtNode) {
+export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {
     return {
-        type: SENSITIVITY_AT_NODE_RESULT_FILTER,
-        SensitivityAtNode: sensitivityAtNode,
+        type: SPREADSHEET_FILTER,
+        filterTab: filterTab,
+        spreadsheetFilter: spreadsheetFilter,
     };
 }

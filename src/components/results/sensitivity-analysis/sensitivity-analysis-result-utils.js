@@ -5,12 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    setSensitivityAtNodeResultFilter,
-    setSensitivityInDeltaAResultFilter,
-    setSensitivityInDeltaMWResultFilter,
-} from 'redux/actions';
-
 export const SENSITIVITY_IN_DELTA_MW = 'SensitivityInDeltaMW';
 export const SENSITIVITY_IN_DELTA_A = 'SensitivityInDeltaA';
 export const SENSITIVITY_AT_NODE = 'SensitivityAtNode';
@@ -18,8 +12,12 @@ export const COMPUTATION_RESULTS_LOGS = 'ComputationResultsLogs';
 export const SENSITIVITY_ANALYSIS_RESULT_FILTER =
     'sensitivityAnalysisResultFilter';
 
-export const N = 'N';
-export const NK = 'NK';
+export const SENSITIVITY_IN_DELTA_MW_N = 'sensitivityInDeltaMWN';
+export const SENSITIVITY_IN_DELTA_MW_N_K = 'sensitivityInDeltaMWNK';
+export const SENSITIVITY_IN_DELTA_A_N = 'sensitivityInDeltaAN';
+export const SENSITIVITY_IN_DELTA_A_N_K = 'sensitivityInDeltaANK';
+export const SENSITIVITY_AT_NODE_N = 'sensitivityAtNodeN';
+export const SENSITIVITY_AT_NODE_N_K = 'sensitivityAtNodeNK';
 
 export const FUNCTION_TYPES = {
     [SENSITIVITY_IN_DELTA_MW]: 'BRANCH_ACTIVE_POWER_1',
@@ -48,31 +46,21 @@ export const DATA_KEY_TO_SORT_KEY = {
     functionReferenceAfter: 'POST_REFERENCE',
     valueAfter: 'POST_SENSITIVITY',
 };
-export const mappingFilters = (sensiResultKind) => {
+export const mappingTabs = (sensiResultKind, nOrNkIndex) => {
     switch (sensiResultKind) {
-        case 0:
-            return SENSITIVITY_IN_DELTA_MW;
-        case 1:
-            return SENSITIVITY_IN_DELTA_A;
-        case 2:
-            return SENSITIVITY_AT_NODE;
+        case SENSITIVITY_IN_DELTA_MW:
+            return nOrNkIndex === 0
+                ? SENSITIVITY_IN_DELTA_MW_N
+                : SENSITIVITY_IN_DELTA_MW_N_K;
+        case SENSITIVITY_IN_DELTA_A:
+            return nOrNkIndex === 0
+                ? SENSITIVITY_IN_DELTA_A_N
+                : SENSITIVITY_IN_DELTA_A_N_K;
+        case SENSITIVITY_AT_NODE:
+            return nOrNkIndex === 0
+                ? SENSITIVITY_AT_NODE_N
+                : SENSITIVITY_AT_NODE_N_K;
         default:
-            return SENSITIVITY_IN_DELTA_MW;
-    }
-};
-export const mappingTabs = (nOrNkIndex) => {
-    return nOrNkIndex === 0 ? N : NK;
-};
-
-export const mappingActions = (sensiResultKind) => {
-    switch (sensiResultKind) {
-        case 0:
-            return setSensitivityInDeltaMWResultFilter;
-        case 1:
-            return setSensitivityInDeltaAResultFilter;
-        case 2:
-            return setSensitivityAtNodeResultFilter;
-        default:
-            return setSensitivityInDeltaMWResultFilter;
+            return '';
     }
 };

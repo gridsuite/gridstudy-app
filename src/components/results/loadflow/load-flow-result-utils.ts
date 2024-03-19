@@ -258,7 +258,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: textFilterParams,
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -272,7 +272,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 ...textFilterParams,
                 parser: convertLimitNameFrontToBack,
             },
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -287,7 +287,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -300,7 +300,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -313,7 +313,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -328,7 +328,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 isDuration: true,
                 parser: parseDuration,
             },
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -341,7 +341,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: { ...textFilterParams, parser: parseDuration },
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -366,7 +366,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_CURRENT_LIMIT_VIOLATION_TAB,
             ],
@@ -392,7 +392,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: textFilterParams,
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
             ],
@@ -406,7 +406,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
             ],
@@ -422,7 +422,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
             ],
@@ -435,7 +435,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [
+            filterTab: [
                 LOADFLOW_RESULT_FILTER,
                 LOADFLOW_VOLTAGE_LIMIT_VIOLATION_TAB,
             ],
@@ -459,7 +459,7 @@ export const loadFlowResultColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
+            filterTab: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'synchronousComponentNum' }),
@@ -467,7 +467,7 @@ export const loadFlowResultColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
+            filterTab: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'status' }),
@@ -478,7 +478,7 @@ export const loadFlowResultColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
+            filterTab: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
             cellRenderer: statusCellRender,
         }),
         makeAgGridCustomHeaderColumn({
@@ -487,14 +487,14 @@ export const loadFlowResultColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
+            filterTab: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'slackBusId' }),
             field: 'id',
             filterProps,
             filterParams: textFilterParams,
-            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
+            filterTab: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -505,7 +505,7 @@ export const loadFlowResultColumnsDefinition = (
             fractionDigits: 2,
             filterProps,
             filterParams: numericFilterParams,
-            tabFilter: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
+            filterTab: [LOADFLOW_RESULT_FILTER, LOADFLOW_RESULT_TAB],
             cellRenderer: numberRenderer,
         }),
     ];

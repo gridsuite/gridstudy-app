@@ -31,6 +31,8 @@ import {
     DEFAULT_PAGE_COUNT,
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
+    mappingTabs,
+    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -44,6 +46,8 @@ import {
     useAggridRowFilter,
 } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
+import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -101,7 +105,11 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     });
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
-        fromFrontColumnToBackKeys,
+        {
+            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+            filterTab: mappingTabs(analysisType),
+            filterStoreAction: setShortcircuitAnalysisResultFilter,
+        },
         () => {
             setPage(0);
         }
@@ -137,7 +145,12 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         const selector = {
             page,
             size: rowsPerPage,
-            filter: filterSelector,
+            filter: filterSelector
+                ? mapFieldsToColumnsFilter(
+                      filterSelector,
+                      fromFrontColumnToBackKeys
+                  )
+                : null,
             sort: {
                 colKey: fromFrontColumnToBackKeys[colKey],
                 sortWay,

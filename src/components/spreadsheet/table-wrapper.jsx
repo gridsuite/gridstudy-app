@@ -189,6 +189,8 @@ const TableWrapper = (props) => {
 
     const [columnData, setColumnData] = useState([]);
 
+    const SPREADSHEET_FILTER = 'spreadsheetFilter';
+
     const rollbackEdit = useCallback(() => {
         resetBuffer();
         setEditingData();
@@ -238,7 +240,13 @@ const TableWrapper = (props) => {
     );
 
     const { updateFilter, filterSelector, initFilters } =
-        useAggridLocalRowFilter(gridRef, equipementFiltersSelectorKeys);
+        useAggridLocalRowFilter(
+            gridRef,
+            SPREADSHEET_FILTER,
+            TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+            equipementFiltersSelectorKeys
+        );
+    const equipmentType = TABLES_DEFINITION_INDEXES.get(tabIndex).type;
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -353,6 +361,7 @@ const TableWrapper = (props) => {
                     ...column?.customFilterParams,
                     filterEnums,
                 },
+                filterTab: [SPREADSHEET_FILTER, equipmentType],
                 ...column,
             });
         },
@@ -366,6 +375,7 @@ const TableWrapper = (props) => {
             loadFlowStatus,
             fluxConvention,
             filterEnums,
+            equipmentType,
         ]
     );
 
@@ -1340,7 +1350,7 @@ const TableWrapper = (props) => {
                 .columns.filter((c) => {
                     return selectedColumnsNames.has(c.id);
                 })
-                .map((column) => enrichColumn(column));
+                .map((column) => enrichColumn(column, tabIndex));
 
             function sortByIndex(a, b) {
                 return (

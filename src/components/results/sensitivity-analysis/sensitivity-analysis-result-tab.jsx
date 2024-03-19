@@ -14,9 +14,8 @@ import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     COMPUTATION_RESULTS_LOGS,
     FUNCTION_TYPES,
-    mappingActions,
-    mappingFilters,
     mappingTabs,
+    SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
@@ -35,6 +34,7 @@ import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
+import { setSensitivityAnalysisResultFilter } from 'redux/actions';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -59,11 +59,11 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        mappingFilters(sensiKind),
-        mappingTabs(nOrNkIndex),
-        mappingActions(sensiKind)
-    );
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter({
+        filterType: SENSITIVITY_ANALYSIS_RESULT_FILTER,
+        filterTab: mappingTabs(sensiKind, nOrNkIndex),
+        filterStoreAction: setSensitivityAnalysisResultFilter,
+    });
 
     // Add default sort on sensitivity col
     const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';

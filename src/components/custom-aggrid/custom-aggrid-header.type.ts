@@ -41,5 +41,5 @@ export interface CustomColDef extends ColDef {
     filterParams?: FilterParams;
     sortProps?: SortPropsType;
     agGridFilterParams?: any;
-    tabFilter?: string[];
+    filterTab?: string[];
 }

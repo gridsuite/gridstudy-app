@@ -174,7 +174,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -189,7 +189,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterEnums,
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -209,7 +209,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -226,7 +226,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -243,7 +243,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -260,7 +260,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -281,7 +281,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             parser: parseDuration,
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -296,7 +296,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterEnums,
         },
-        tabFilter: [
+        filterTab: [
             SECURITY_ANALYSIS_RESULT_FILTER,
             SECURITY_ANALYSIS_RESULT_N,
         ],
@@ -325,7 +325,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -339,7 +339,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -356,7 +356,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -369,7 +369,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -387,7 +387,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -402,7 +402,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -461,7 +461,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -479,7 +479,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -492,7 +492,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -505,7 +505,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -523,7 +523,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],
@@ -538,7 +538,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            tabFilter: [
+            filterTab: [
                 SECURITY_ANALYSIS_RESULT_FILTER,
                 SECURITY_ANALYSIS_RESULT_N_K,
             ],

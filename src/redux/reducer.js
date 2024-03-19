@@ -91,9 +91,9 @@ import {
     SET_LAST_COMPLETED_COMPUTATION,
     LOADFLOW_RESULT_FILTER,
     SECURITY_ANALYSIS_RESULT_FILTER,
-    SENSITIVITY_IN_DELTA_A_RESULT_FILTER,
-    SENSITIVITY_IN_DELTA_MW_RESULT_FILTER,
-    SENSITIVITY_AT_NODE_RESULT_FILTER,
+    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+    SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    SPREADSHEET_FILTER,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -190,6 +190,22 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
 };
 
+const initialSpreadsheetFilter = {
+    [EQUIPMENT_TYPES.SUBSTATION]: [],
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [],
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [],
+    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: [],
+    [EQUIPMENT_TYPES.GENERATOR]: [],
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [],
+    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: [],
+    [EQUIPMENT_TYPES.BATTERY]: [],
+    [EQUIPMENT_TYPES.HVDC_LINE]: [],
+    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: [],
+    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
+    [EQUIPMENT_TYPES.DANGLING_LINE]: [],
+    [EQUIPMENT_TYPES.BUS]: [],
+};
+
 export const defaultOptionalServicesState = Object.keys(
     OptionalServicesNames
 ).map((key) => ({
@@ -243,8 +259,7 @@ const initialState = {
     ...paramsInitialState,
     limitReductionModified: false,
     lastCompletedComputation: null,
-    loadflowCurrentLimitViolationFilter: [],
-    loadflowVoltageLimitViolationFilter: [],
+    // Results filters
     loadflowResultFilter: {
         loadflowCurrentLimitViolation: [],
         loadflowVoltageLimitViolation: [],
@@ -254,9 +269,21 @@ const initialState = {
         securityAnalysisResultN: [],
         securityAnalysisResultNK: [],
     },
-    SensitivityInDeltaMW: { N: [], NK: [] },
-    SensitivityInDeltaA: { N: [], NK: [] },
-    SensitivityAtNode: { N: [], NK: [] },
+    sensitivityAnalysisResultFilter: {
+        sensitivityInDeltaMWN: [],
+        sensitivityInDeltaMWNK: [],
+        sensitivityInDeltaAN: [],
+        sensitivityInDeltaANK: [],
+        sensitivityAtNodeN: [],
+        sensitivityAtNodeNK: [],
+    },
+    shortcircuitAnalysisResultFilter: {
+        allBuses: [],
+        oneBuses: [],
+    },
+
+    // Spreadsheet filters
+    spreadsheetFilter: { ...initialSpreadsheetFilter },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1058,34 +1085,23 @@ export const reducer = createReducer(initialState, {
         state.lastCompletedComputation = action.lastCompletedComputation;
     },
     [LOADFLOW_RESULT_FILTER]: (state, action) => {
-        state.loadflowResultFilter = {
-            ...state.loadflowResultFilter,
-            ...action.loadflowResultFilter,
-        };
+        state.loadflowResultFilter[action.filterTab] =
+            action.loadflowResultFilter;
     },
     [SECURITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
-        state.securityAnalysisResultFilter = {
-            ...state.securityAnalysisResultFilter,
-            ...action.securityAnalysisResultFilter,
-        };
+        state.securityAnalysisResultFilter[action.filterTab] =
+            action.securityAnalysisResultFilter;
     },
-    [SENSITIVITY_IN_DELTA_MW_RESULT_FILTER]: (state, action) => {
-        state.SensitivityInDeltaMW = {
-            ...state.SensitivityInDeltaMW,
-            ...action.SensitivityInDeltaMW,
-        };
+    [SENSITIVITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state.sensitivityAnalysisResultFilter[action.filterTab] =
+            action.sensitivityAnalysisResultFilter;
     },
-    [SENSITIVITY_IN_DELTA_A_RESULT_FILTER]: (state, action) => {
-        state.SensitivityInDeltaMW = {
-            ...state.SensitivityInDeltaA,
-            ...action.SensitivityInDeltaA,
-        };
+    [SHORTCIRCUIT_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state.shortcircuitAnalysisResultFilter[action.filterTab] =
+            action.shortcircuitAnalysisResultFilter;
     },
-    [SENSITIVITY_AT_NODE_RESULT_FILTER]: (state, action) => {
-        state.SensitivityAtNode = {
-            ...state.SensitivityAtNode,
-            ...action.SensitivityAtNode,
-        };
+    [SPREADSHEET_FILTER]: (state, action) => {
+        state.spreadsheetFilter[action.filterTab] = action.spreadsheetFilter;
     },
 });
 

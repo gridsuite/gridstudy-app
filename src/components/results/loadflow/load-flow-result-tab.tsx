@@ -88,11 +88,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         sortWay: SORT_WAYS.desc,
     });
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        LOADFLOW_RESULT_FILTER,
-        mappingTabs(tabIndex),
-        setLoadflowResultFilter
-    );
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter({
+        filterType: LOADFLOW_RESULT_FILTER,
+        filterTab: mappingTabs(tabIndex),
+        filterStoreAction: setLoadflowResultFilter,
+    });
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
