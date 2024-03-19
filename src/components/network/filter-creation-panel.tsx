@@ -72,7 +72,7 @@ const emptyFormData = {
     equipmentType: '',
 };
 
-function getVoltageLevelInPolygone(
+function getVoltageLevelInPolygon(
     features: any,
     mapEquipments: any,
     geoData: GeoData
@@ -83,8 +83,7 @@ function getVoltageLevelInPolygone(
         return null;
     }
     //get the list of substation
-    const readyToDisplay = true; //FIXME (why is this here?)
-    const substationsList = readyToDisplay ? mapEquipments?.substations : [];
+    const substationsList = mapEquipments?.substations ?? [];
 
     const positions = substationsList // we need a list of substation and their positions
         .map((substation: any) => {
@@ -110,6 +109,18 @@ function getVoltageLevelInPolygone(
     return voltageLevels;
 }
 
+function createVoltageLevelIdentifierList(
+    equipmentType: string,
+    equipementsList: any
+) {
+    return {
+        type: 'IDENTIFIER_LIST',
+        equipmentType: equipmentType,
+        filterEquipmentsAttributes: equipementsList.map((eq: any) => {
+            return { equipmentID: eq.id };
+        }),
+    };
+}
 async function createVoltageLevelFilterInStudyPath(
     studyUuid: UUID,
     voltageLevels: any
@@ -124,13 +135,10 @@ async function createVoltageLevelFilterInStudyPath(
         const studyDirectoryUuid =
             studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
 
-        const substationParam = {
-            type: 'IDENTIFIER_LIST',
-            equipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-            filterEquipmentsAttributes: voltageLevels.map((eq: any) => {
-                return { equipmentID: eq.id };
-            }),
-        };
+        const substationParam = createVoltageLevelIdentifierList(
+            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+            voltageLevels
+        );
 
         return createFilter(
             substationParam,
@@ -161,35 +169,19 @@ const FilterCreationPanel: React.FC = () => {
         name: null,
     });
 
-    const substationInPolygone = useMemo(() => {
-        return getVoltageLevelInPolygone(
-            polygoneCoordinates,
-            mapEquipments,
-            geoData
-        );
-    }, [polygoneCoordinates, mapEquipments, geoData]);
-
-    console.log('debug', 'substationInPolygone', substationInPolygone);
-
     const handleValidationButtonClick = () => {
         // get the form data
         const formData = formMethods.getValues();
         console.log('debug', 'formData', formData);
-        const filterData = {
-            type: 'IDENTIFIER_LIST',
-            equipmentType: 'VOLTAGE_LEVEL',
-            filterEquipmentsAttributes: [
-                {
-                    equipmentID: 'fds',
-                },
-                {
-                    equipmentID: 'sf',
-                },
-                {
-                    equipmentID: 'fes',
-                },
-            ],
-        };
+        const vlsInPolygon = getVoltageLevelInPolygon(
+            polygoneCoordinates,
+            mapEquipments,
+            geoData
+        );
+        const filterData = createVoltageLevelIdentifierList(
+            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+            vlsInPolygon
+        );
         //create the filter
         createFilter(
             filterData,
@@ -221,8 +213,6 @@ const FilterCreationPanel: React.FC = () => {
             fetchDefaultDirectoryForStudy();
         }
     }, [fetchDefaultDirectoryForStudy, studyUuid]);
-
-    console.log('debug', 'polygoneCoordinates', polygoneCoordinates);
 
     const handleChangeFolder = () => {
         setOpenDirectoryFolders(true);
