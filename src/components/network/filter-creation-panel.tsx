@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 import { SelectInput, elementType } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { Identifier } from './../dialogs/parameters/voltageinit/voltage-init-utils';
+import { Identifier } from '../dialogs/parameters/voltageinit/voltage-init-utils';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
@@ -18,7 +18,10 @@ import {
 import { createFilter, fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
-import { ParameterType } from 'components/dialogs/parameters/widget';
+import { UUID } from 'crypto';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { GeoData } from '@powsybl/diagram-viewer';
 
 const EXPERT_FILTER_EQUIPMENTS = {
     GENERATOR: {
@@ -59,7 +62,7 @@ const formSchema = yup
     .object()
     .shape({
         [FILTER_NAME]: yup.string().nullable(),
-        [NAME]: yup.string().nullable(),
+        [NAME]: yup.string(),
         equipmentType: yup.string().nullable(),
     })
     .required();
@@ -68,8 +71,83 @@ const emptyFormData = {
     [NAME]: '',
     equipmentType: '',
 };
+
+function getVoltageLevelInPolygone(
+    features: any,
+    mapEquipments: any,
+    geoData: GeoData,
+    readyToDisplay: boolean
+) {
+    // in case we want to handle multiple polygons drawing, we need to handle the features as an array
+    const firstPolygonFeatures: any = Object.values(features)[0];
+    const polygoneCoordinates = firstPolygonFeatures?.geometry;
+    if (!polygoneCoordinates || polygoneCoordinates.coordinates < 3) {
+        return null;
+    }
+    //get the list of substation
+    const substationsList = readyToDisplay ? mapEquipments?.substations : [];
+
+    const positions = substationsList // we need a list of substation and their positions
+        .map((substation: any) => {
+            return {
+                substation: substation,
+                pos: geoData.getSubstationPosition(substation.id),
+            };
+        });
+    if (!positions) {
+        return null;
+    }
+
+    const substationsInsidePolygone = positions.filter((substation: any) => {
+        return booleanPointInPolygon(substation.pos, polygoneCoordinates);
+    });
+
+    const voltageLevels = substationsInsidePolygone
+        .map((substation: any) => {
+            return substation.substation.voltageLevels;
+        })
+        .flat();
+
+    return voltageLevels;
+}
+
+async function createVoltageLevelFilterInStudyPath(
+    studyUuid: UUID,
+    voltageLevels: any
+) {
+    try {
+        const studyPath = await fetchPath(studyUuid);
+        if (!studyPath || studyPath.length < 2) {
+            return;
+        }
+
+        const PARENT_DIRECTORY_INDEX = 1;
+        const studyDirectoryUuid =
+            studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
+
+        const substationParam = {
+            type: 'IDENTIFIER_LIST',
+            equipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+            filterEquipmentsAttributes: voltageLevels.map((eq: any) => {
+                return { equipmentID: eq.id };
+            }),
+        };
+
+        return createFilter(
+            substationParam,
+            'polygoneFilter',
+            'description',
+            studyDirectoryUuid
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
 const FilterCreationPanel: React.FC = () => {
     const studyUuid = useSelector((state: any) => state.studyUuid);
+    const polygoneCoordinates = useSelector(
+        (state: any) => state.polygonCoordinate
+    );
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
     const intl = useIntl();
     const formMethods = useForm({
@@ -86,7 +164,6 @@ const FilterCreationPanel: React.FC = () => {
         // get the form data
         const formData = formMethods.getValues();
         console.log('debug', 'formData', formData);
-        console.log('debug', 'defaultFolder', defaultFolder);
         const filterData = {
             type: 'IDENTIFIER_LIST',
             equipmentType: 'VOLTAGE_LEVEL',
@@ -134,6 +211,8 @@ const FilterCreationPanel: React.FC = () => {
         }
     }, [fetchDefaultDirectoryForStudy, studyUuid]);
 
+    console.log('debug', 'polygoneCoordinates', polygoneCoordinates);
+
     const handleChangeFolder = () => {
         setOpenDirectoryFolders(true);
     };
@@ -180,59 +259,61 @@ const FilterCreationPanel: React.FC = () => {
                     }}
                 >
                     <GridSection title="Filter creation" />
-                    <Grid item>
+                    <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
                             options={Object.values(EXPERT_FILTER_EQUIPMENTS)}
                             label={'equipmentType'}
                             fullWidth
-                            size={'small'}
+                            size={'medium'}
                             disableClearable={true}
                             formProps={{ style: { fontStyle: 'italic' } }}
                         />
                     </Grid>
 
-                    <UniqueNameInput
-                        name={NAME}
-                        label={'Name'}
-                        elementType={'DIRECTORY'}
-                        activeDirectory={defaultFolder.id}
-                        autoFocus
-                    />
-                    {folderChooser}
+                    <Grid container paddingTop={2}>
+                        <UniqueNameInput
+                            name={NAME}
+                            label={'Name'}
+                            elementType={'DIRECTORY'}
+                            activeDirectory={defaultFolder.id}
+                            autoFocus
+                        />
+                        {folderChooser}
+                    </Grid>
+                    <Grid container paddingTop={2}>
+                        <DirectoryItemSelector
+                            open={openDirectoryFolders}
+                            onClose={setSelectedFolder}
+                            types={[elementType.DIRECTORY]}
+                            onlyLeaves={false}
+                            multiselect={false}
+                            validationButtonText={intl.formatMessage({
+                                id: 'validate',
+                            })}
+                            title={intl.formatMessage({
+                                id: 'showSelectDirectoryDialog',
+                            })}
+                            fetchDirectoryContent={fetchDirectoryContent}
+                            fetchRootFolders={fetchRootFolders}
+                            fetchElementsInfos={fetchElementsMetadata}
+                        />
+                    </Grid>
 
-                    <DirectoryItemSelector
-                        open={openDirectoryFolders}
-                        onClose={setSelectedFolder}
-                        types={[elementType.DIRECTORY]}
-                        onlyLeaves={false}
-                        multiselect={false}
-                        validationButtonText={intl.formatMessage({
-                            id: 'validate',
-                        })}
-                        title={intl.formatMessage({
-                            id: 'showSelectDirectoryDialog',
-                        })}
-                        fetchDirectoryContent={fetchDirectoryContent}
-                        fetchRootFolders={fetchRootFolders}
-                        fetchElementsInfos={fetchElementsMetadata}
-                    />
-
-                    <Grid item>
+                    <Grid container paddingTop={2}>
                         <Button
                             variant="contained"
                             onClick={handleValidationButtonClick}
+                            size={'large'}
                         >
                             {intl.formatMessage({
                                 id: 'validate',
                             })}
                         </Button>
-                    </Grid>
-
-                    <Grid item>
                         <Button
                             variant="contained"
                             onClick={handleCancelButtonClick}
+                            size={'large'}
                         >
                             {intl.formatMessage({
                                 id: 'cancel',

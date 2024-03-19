@@ -31,7 +31,11 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import {
+    resetMapReloaded,
+    setMapDataLoading,
+    setPolygonCoordinate,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -1021,7 +1025,28 @@ export const NetworkMapTab = ({
                 onDrawModeChanged(evt);
             }}
             onFeaturesChanged={(features) => {
-                console.log('features', features);
+                if (
+                    Object.keys(features).length === 0 &&
+                    features.constructor === Object
+                ) {
+                    // is empty object
+                    dispatch(setPolygonCoordinate([]));
+                    return;
+                }
+
+                // in case we want to handle multiple polygons drawing, we need to handle the features as an array
+                const firstPolygonFeatures = Object.values(features)[0];
+                const polygoneCoordinates = firstPolygonFeatures?.geometry;
+                if (
+                    !polygoneCoordinates ||
+                    polygoneCoordinates.coordinates < 3
+                ) {
+                    dispatch(setPolygonCoordinate([]));
+                    return;
+                }
+                dispatch(
+                    setPolygonCoordinate(polygoneCoordinates.coordinates[0])
+                );
             }}
         />
     );

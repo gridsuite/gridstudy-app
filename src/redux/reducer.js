@@ -89,6 +89,7 @@ import {
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
     SET_LAST_COMPLETED_COMPUTATION,
+    MAP_POLYGON_COORDINATE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -238,6 +239,7 @@ const initialState = {
     ...paramsInitialState,
     limitReductionModified: false,
     lastCompletedComputation: null,
+    polygonCoordinate: [],
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -1036,6 +1038,9 @@ export const reducer = createReducer(initialState, {
     },
     [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
+    },
+    [MAP_POLYGON_COORDINATE]: (state, action) => {
+        state.polygonCoordinate = action.polygonCoordinate;
     },
 });
 

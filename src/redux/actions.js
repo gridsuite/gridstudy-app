@@ -689,3 +689,14 @@ export function setLastCompletedComputation(lastCompletedComputation) {
         lastCompletedComputation: lastCompletedComputation,
     };
 }
+
+export const MAP_POLYGON_COORDINATE = 'MAP_POLYGON_COORDINATE';
+/**
+ * @param {Array.<Array.<number>>} coordinates - An array of arrays where each sub-array contains two numbers.
+ */
+export function setPolygonCoordinate(coordinates) {
+    return {
+        type: MAP_POLYGON_COORDINATE,
+        polygonCoordinate: coordinates,
+    };
+}
