@@ -191,15 +191,16 @@ const CustomHeaderComponent = ({
         }
     }, [selectedFilterComparator, filterComparators]);
 
-    const getOptionLabelHandler = (option) => {
-        if (isCountry) {
-            return translate(option);
-        }
-        return intl.formatMessage({
-            id: option,
-            defaultMessage: option,
-        });
-    };
+    const getOptionLabel = useCallback(
+        (option) =>
+            isCountry
+                ? translate(option)
+                : intl.formatMessage({
+                      id: option,
+                      defaultMessage: option,
+                  }),
+        [isCountry, intl, translate]
+    );
 
     return (
         <Grid
@@ -323,9 +324,7 @@ const CustomHeaderComponent = ({
                             multiple
                             value={selectedFilterData || []}
                             options={customFilterOptions}
-                            getOptionLabel={(option) =>
-                                getOptionLabelHandler(option)
-                            }
+                            getOptionLabel={getOptionLabel}
                             onChange={handleFilterAutoCompleteChange}
                             size="small"
                             disableCloseOnSelect
