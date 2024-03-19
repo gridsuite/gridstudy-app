@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { SelectInput, elementType } from '@gridsuite/commons-ui';
@@ -75,16 +75,15 @@ const emptyFormData = {
 function getVoltageLevelInPolygone(
     features: any,
     mapEquipments: any,
-    geoData: GeoData,
-    readyToDisplay: boolean
+    geoData: GeoData
 ) {
-    // in case we want to handle multiple polygons drawing, we need to handle the features as an array
     const firstPolygonFeatures: any = Object.values(features)[0];
     const polygoneCoordinates = firstPolygonFeatures?.geometry;
     if (!polygoneCoordinates || polygoneCoordinates.coordinates < 3) {
         return null;
     }
     //get the list of substation
+    const readyToDisplay = true; //FIXME (why is this here?)
     const substationsList = readyToDisplay ? mapEquipments?.substations : [];
 
     const positions = substationsList // we need a list of substation and their positions
@@ -148,7 +147,9 @@ const FilterCreationPanel: React.FC = () => {
     const polygoneCoordinates = useSelector(
         (state: any) => state.polygonCoordinate
     );
+    const mapEquipments = useSelector((state) => state.mapEquipments);
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
+    const geoData = useSelector((state: any) => state.geoData);
     const intl = useIntl();
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -159,6 +160,16 @@ const FilterCreationPanel: React.FC = () => {
         id: null,
         name: null,
     });
+
+    const substationInPolygone = useMemo(() => {
+        return getVoltageLevelInPolygone(
+            polygoneCoordinates,
+            mapEquipments,
+            geoData
+        );
+    }, [polygoneCoordinates, mapEquipments, geoData]);
+
+    console.log('debug', 'substationInPolygone', substationInPolygone);
 
     const handleValidationButtonClick = () => {
         // get the form data

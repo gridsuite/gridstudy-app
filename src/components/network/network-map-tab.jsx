@@ -33,6 +33,7 @@ import {
 } from '../graph/util/model-functions';
 import {
     resetMapReloaded,
+    setGeoData,
     setMapDataLoading,
     setPolygonCoordinate,
 } from '../../redux/actions';
@@ -110,7 +111,7 @@ export const NetworkMapTab = ({
         (state) => state.networkModificationTreeModel
     );
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
-
+    const geoData = useSelector((state) => state.geoData);
     const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
@@ -131,7 +132,6 @@ export const NetworkMapTab = ({
     const { snackError } = useSnackMessage();
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState();
-    const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 
     const basicDataReady = mapEquipments && geoData;
@@ -597,7 +597,7 @@ export const NetworkMapTab = ({
                             notFoundLineIds,
                             fetchedLinePositions
                         );
-                        setGeoData(newGeoData);
+                        dispatch(setGeoData(newGeoData));
                         geoDataRef.current = newGeoData;
                     }
                 })
@@ -646,7 +646,7 @@ export const NetworkMapTab = ({
                 geoDataRef.current?.linePositionsById || new Map()
             );
             newGeoData.setSubstationPositions(data);
-            setGeoData(newGeoData);
+            dispatch(setGeoData(newGeoData));
             geoDataRef.current = newGeoData;
         });
 
@@ -659,7 +659,7 @@ export const NetworkMapTab = ({
                       new Map()
                   );
                   newGeoData.setLinePositions(data);
-                  setGeoData(newGeoData);
+                  dispatch(setGeoData(newGeoData));
                   geoDataRef.current = newGeoData;
               });
 
@@ -1025,28 +1025,29 @@ export const NetworkMapTab = ({
                 onDrawModeChanged(evt);
             }}
             onFeaturesChanged={(features) => {
-                if (
-                    Object.keys(features).length === 0 &&
-                    features.constructor === Object
-                ) {
-                    // is empty object
-                    dispatch(setPolygonCoordinate([]));
-                    return;
-                }
-
-                // in case we want to handle multiple polygons drawing, we need to handle the features as an array
-                const firstPolygonFeatures = Object.values(features)[0];
-                const polygoneCoordinates = firstPolygonFeatures?.geometry;
-                if (
-                    !polygoneCoordinates ||
-                    polygoneCoordinates.coordinates < 3
-                ) {
-                    dispatch(setPolygonCoordinate([]));
-                    return;
-                }
-                dispatch(
-                    setPolygonCoordinate(polygoneCoordinates.coordinates[0])
-                );
+                dispatch(setPolygonCoordinate(features));
+                // if (
+                //     Object.keys(features).length === 0 &&
+                //     features.constructor === Object
+                // ) {
+                //     // is empty object
+                //     dispatch(setPolygonCoordinate([]));
+                //     return;
+                // }
+                //
+                // // in case we want to handle multiple polygons drawing, we need to handle the features as an array
+                // const firstPolygonFeatures = Object.values(features)[0];
+                // const polygoneCoordinates = firstPolygonFeatures?.geometry;
+                // if (
+                //     !polygoneCoordinates ||
+                //     polygoneCoordinates.coordinates < 3
+                // ) {
+                //     dispatch(setPolygonCoordinate([]));
+                //     return;
+                // }
+                // dispatch(
+                //     setPolygonCoordinate(polygoneCoordinates.coordinates[0])
+                // );
             }}
         />
     );

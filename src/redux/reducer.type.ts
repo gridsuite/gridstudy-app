@@ -28,6 +28,8 @@ export interface ReduxState {
     notificationIdList: UUID[];
     theme: string;
     nonEvacuatedEnergyNotif: boolean;
+    geoData: any;
+    mapEquipments: any;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {

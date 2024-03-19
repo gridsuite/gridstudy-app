@@ -691,12 +691,21 @@ export function setLastCompletedComputation(lastCompletedComputation) {
 }
 
 export const MAP_POLYGON_COORDINATE = 'MAP_POLYGON_COORDINATE';
-/**
- * @param {Array.<Array.<number>>} coordinates - An array of arrays where each sub-array contains two numbers.
- */
+
 export function setPolygonCoordinate(coordinates) {
     return {
         type: MAP_POLYGON_COORDINATE,
         polygonCoordinate: coordinates,
+    };
+}
+
+export const GEO_DATA = 'GEO_DATA';
+/**
+ * @param {Array.<Object>} geoData - An array of objects containing geo data.
+ */
+export function setGeoData(geoData) {
+    return {
+        type: GEO_DATA,
+        geoData: geoData,
     };
 }
