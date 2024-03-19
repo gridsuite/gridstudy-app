@@ -146,6 +146,7 @@ lightTheme = createTheme(lightTheme, {
         cancelButtonColor: {
             main: lightTheme.palette.text.secondary,
         },
+        tabBackground: lightTheme.palette.background.default,
     },
     components: {
         CancelButton: {
@@ -222,6 +223,7 @@ darkTheme = createTheme(darkTheme, {
         cancelButtonColor: {
             main: darkTheme.palette.text.secondary,
         },
+        tabBackground: '#1E1E1E',
     },
     components: {
         CancelButton: {

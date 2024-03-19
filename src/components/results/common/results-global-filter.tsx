@@ -9,38 +9,50 @@ import React from 'react';
 import { Box } from '@mui/system';
 import {Autocomplete, Chip, InputAdornment, TextField} from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
-import { useIntl } from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {mergeSx} from "../../utils/functions";
 
 const styles = {
-    filter: {
+    filter: (theme) => ({
         height: '100%',
-        width: 500,
-        '& .Mui-expanded': {
-            backgroundColor: 'red',
+        width: 420,
+        '& .Mui-expanded, & .Mui-focused, & .Mui-focusVisible': {
+            position: 'absolute',
+            width: 'inherit',
+            zIndex: 2,
+            '&:not(:first-child)': { // Fixes the background of the input label when there is focus
+                background: 'linear-gradient(to top, '+theme.palette.tabBackground+' 80%, transparent 80%)',
+            }
         }
-    },
+    }),
     chipBox: {
         width: '100%',
         display: "flex",
         flexWrap: 'wrap',
         padding: '0.5em',
-
     },
     recentBox: (theme) => ({
         borderBottom: '1px solid',
-        borderColor: theme.palette.primary.main,
+        borderColor: theme.palette.divider,
     }),
-    chip: {
+    recentLabel: (theme) => ({
+        color: theme.palette.text.secondary,
+        fontSize: 'small',
+        width: '100%',
+        paddingLeft: 1,
+    }),
+    chip: (theme) => ({
         margin: '4px 2px 4px 2px',
         padding:0,
-    }
+        //color: theme.palette.getContrastText(theme.palette.text.primary),
+    }),
 };
 
 const filters = [
     {
         label: "France",
         filterType: "country",
+        recent: true,
     },
     {
         label: "380 kv",
@@ -49,9 +61,19 @@ const filters = [
     {
         label: "220 kv",
         filterType: "voltageLevel",
+        recent: true,
     },
     {
         label: "Belgium",
+        filterType: "country",
+        recent: true,
+    },
+    {
+        label: "South Korea",
+        filterType: "country",
+    },
+    {
+        label: "Italy",
         filterType: "country",
         recent: true,
     },
@@ -67,6 +89,7 @@ const filters = [
     {
         label: "Germany",
         filterType: "country",
+        recent: true,
     },
     {
         label: "Spain",
@@ -87,7 +110,7 @@ const ResultsGlobalFilter = (props) => {
                 multiple
                 id="result-global-filter"
                 size="small"
-                limitTags={4}
+                limitTags={3}
                 disableCloseOnSelect
                 options={filters.sort((a, b) => !!b.recent - !!a.recent)}
                 groupBy={(option) => !!option.recent}
@@ -102,13 +125,19 @@ const ResultsGlobalFilter = (props) => {
                 )}
                 renderGroup={(item) => {
                     const { group, children } = item;
+                    const itemRecentAvailable = !!group;
                     return (
                         <Box
                             sx={mergeSx(
                                 styles.chipBox,
-                                group && styles.recentBox // "group" => item.recent
+                                itemRecentAvailable && styles.recentBox
                             )}
                         >
+                            {itemRecentAvailable && (
+                                <Box sx={styles.recentLabel}>
+                                    <FormattedMessage id="results.globalFilter.recent"/>
+                                </Box>
+                            )}
                             {children}
                         </Box>
                     );

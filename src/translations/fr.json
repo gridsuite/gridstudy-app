@@ -464,6 +464,7 @@
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.fillerText": "Pays ou niveau de tension",
+    "results.globalFilter.recent": "Récents :",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",

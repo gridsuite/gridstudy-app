@@ -463,6 +463,7 @@
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.fillerText": "Country or voltage level",
+    "results.globalFilter.recent": "Recent:",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
