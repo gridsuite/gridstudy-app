@@ -53,6 +53,7 @@ export const MapParameters = () => {
                 sx={styles.scrollableGrid}
                 key={'mapParameters'}
                 marginTop={-3}
+                justifyContent={'space-between'}
             >
                 <ParamLine
                     type={ParameterType.Switch}
