@@ -88,6 +88,7 @@ import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
+import { setSpreadsheetFilter } from 'redux/actions';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -216,13 +217,13 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
-    const equipementFiltersSelectorKeys = useMemo(() => {
+    /*  const equipementFiltersSelectorKeys = useMemo(() => {
         let filtersSelectorKeys = {};
         TABLES_DEFINITION_INDEXES.get(tabIndex).columns.forEach((column) => {
             filtersSelectorKeys[column?.field] = column?.field;
         });
         return filtersSelectorKeys;
-    }, [tabIndex]);
+    }, [tabIndex]); */
 
     const defaultSortColKey = useMemo(() => {
         const defaultSortCol = columnData.find(
@@ -240,12 +241,11 @@ const TableWrapper = (props) => {
     );
 
     const { updateFilter, filterSelector, initFilters } =
-        useAggridLocalRowFilter(
-            gridRef,
-            SPREADSHEET_FILTER,
-            TABLES_DEFINITION_INDEXES.get(tabIndex).type,
-            equipementFiltersSelectorKeys
-        );
+        useAggridLocalRowFilter(gridRef, {
+            filterType: SPREADSHEET_FILTER,
+            filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+            filterStoreAction: setSpreadsheetFilter,
+        });
     const equipmentType = TABLES_DEFINITION_INDEXES.get(tabIndex).type;
 
     const equipmentDefinition = useMemo(

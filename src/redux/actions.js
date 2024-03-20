@@ -741,6 +741,20 @@ export function setShortcircuitAnalysisResultFilter(
     };
 }
 
+export const DYNAMIC_SIMULATION_RESULT_FILTER =
+    'DYNAMIC_SIMULATION_RESULT_FILTER';
+
+export function setDynamicSimulationResultFilter(
+    filterTab,
+    dynamicSimulationResultFilter
+) {
+    return {
+        type: DYNAMIC_SIMULATION_RESULT_FILTER,
+        filterTab: filterTab,
+        dynamicSimulationResultFilter: dynamicSimulationResultFilter,
+    };
+}
+
 export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
 
 export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {

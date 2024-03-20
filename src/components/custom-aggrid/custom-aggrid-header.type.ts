@@ -10,6 +10,7 @@ import {
 } from '../../hooks/use-aggrid-row-filter';
 import { ColDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
+import { AnyAction } from 'redux';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -43,3 +44,18 @@ export interface CustomColDef extends ColDef {
     agGridFilterParams?: any;
     filterTab?: string[];
 }
+export type FilterSelectorType = {
+    column: string;
+    dataType: string;
+    type: string;
+    value: string | string[];
+};
+
+export type FilterStorePropsType = {
+    filterType: string;
+    filterTab: string;
+    filterStoreAction: (
+        filterTab: string,
+        filter: FilterSelectorType[]
+    ) => AnyAction;
+};

@@ -5,9 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomColDef, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
+import {
+    CustomColDef,
+    FilterSelectorType,
+    FILTER_DATA_TYPES,
+} from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
-import { FilterSelectorType } from 'hooks/use-aggrid-row-filter';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params

@@ -5,34 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import {
+    FilterSelectorType,
+    FilterStorePropsType,
+} from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AnyAction } from 'redux';
 
 type FilterDataType = { value: string; type: string; dataType: string };
 
 export type FilterEnumsType = Record<string, string[] | null>;
 
-export type FilterSelectorType = {
-    column: string;
-    dataType: string;
-    type: string;
-    value: string | string[];
-};
-
 export type FilterPropsType = {
     updateFilter: (field: string, value: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
     initFilters?: () => void;
-};
-
-export type FilterStorePropsType = {
-    filterType: string;
-    filterTab: string;
-    filterStoreAction: (
-        filterTab: string,
-        filter: FilterSelectorType[]
-    ) => AnyAction;
 };
 
 export type UseAggridRowFilterOutputType = {

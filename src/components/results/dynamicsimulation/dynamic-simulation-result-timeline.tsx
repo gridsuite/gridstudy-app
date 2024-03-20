@@ -29,7 +29,9 @@ import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-fil
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import {
+    CURVES,
     dynamicSimulationResultInvalidations,
+    DYNAMIC_SIMULATION_RESULT_FILTER,
     LARGE_COLUMN_WIDTH,
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
@@ -37,6 +39,7 @@ import {
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
+import { setDynamicSimulationResultFilter } from 'redux/actions';
 
 const styles = {
     loader: {
@@ -84,9 +87,9 @@ const DynamicSimulationResultTimeline = memo(
         const { updateFilter, filterSelector } = useAggridLocalRowFilter(
             gridRef,
             {
-                [COL_TIME]: COL_TIME,
-                [COL_MODEL_NAME]: COL_MODEL_NAME,
-                [COL_MESSAGE]: COL_MESSAGE,
+                filterType: DYNAMIC_SIMULATION_RESULT_FILTER,
+                filterTab: CURVES,
+                filterStoreAction: setDynamicSimulationResultFilter,
             }
         );
 

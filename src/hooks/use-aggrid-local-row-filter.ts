@@ -8,12 +8,14 @@
 import { AgGridReact } from 'ag-grid-react';
 import React, { useCallback, useEffect } from 'react';
 import {
-    FilterSelectorType,
     UseAggridRowFilterOutputType,
     useAggridRowFilter,
 } from './use-aggrid-row-filter';
-import { FILTER_DATA_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { setSpreadsheetFilter } from 'redux/actions';
+import {
+    FilterSelectorType,
+    FilterStorePropsType,
+    FILTER_DATA_TYPES,
+} from 'components/custom-aggrid/custom-aggrid-header.type';
 
 interface FilterModel {
     [colId: string]: any;
@@ -21,16 +23,13 @@ interface FilterModel {
 
 export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
-    filterType: string,
-    filterTab: string,
-    filterSelectorKeys: Record<string, string>,
+    filterStoreParam: FilterStorePropsType,
     updateFilterCallback?: () => {}
 ): UseAggridRowFilterOutputType => {
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter({
-        filterType: filterType,
-        filterTab: filterTab,
-        filterStoreAction: setSpreadsheetFilter,
-    });
+    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+        filterStoreParam,
+        updateFilterCallback
+    );
 
     const generateEnumFilterModel = useCallback(
         (filter: FilterSelectorType) => {

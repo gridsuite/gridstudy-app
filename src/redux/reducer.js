@@ -94,6 +94,7 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SPREADSHEET_FILTER,
+    DYNAMIC_SIMULATION_RESULT_FILTER,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -280,6 +281,9 @@ const initialState = {
     shortcircuitAnalysisResultFilter: {
         allBuses: [],
         oneBuses: [],
+    },
+    dynamicSimulationResultFilter: {
+        chronology: [],
     },
 
     // Spreadsheet filters
@@ -1099,6 +1103,10 @@ export const reducer = createReducer(initialState, {
     [SHORTCIRCUIT_ANALYSIS_RESULT_FILTER]: (state, action) => {
         state.shortcircuitAnalysisResultFilter[action.filterTab] =
             action.shortcircuitAnalysisResultFilter;
+    },
+    [DYNAMIC_SIMULATION_RESULT_FILTER]: (state, action) => {
+        state.dynamicSimulationResultFilter[action.filterTab] =
+            action.dynamicSimulationResultFilter;
     },
     [SPREADSHEET_FILTER]: (state, action) => {
         state.spreadsheetFilter[action.filterTab] = action.spreadsheetFilter;
