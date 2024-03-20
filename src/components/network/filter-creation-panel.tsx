@@ -1,7 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { SelectInput, elementType } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemSelector,
+    elementType,
+    SelectInput,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { Identifier } from '../dialogs/parameters/voltageinit/voltage-init-utils';
@@ -9,7 +13,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import {
     fetchDirectoryContent,
     fetchPath,
@@ -18,7 +21,6 @@ import {
 import { createFilter, fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
-import { UUID } from 'crypto';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { GeoData } from '@powsybl/diagram-viewer';
@@ -72,15 +74,15 @@ const emptyFormData = {
     equipmentType: '',
 };
 
-function getVoltageLevelInPolygon(
+function getSubstationsInPolygone(
     features: any,
     mapEquipments: any,
     geoData: GeoData
-) {
+): any[] {
     const firstPolygonFeatures: any = Object.values(features)[0];
-    const polygoneCoordinates = firstPolygonFeatures?.geometry;
-    if (!polygoneCoordinates || polygoneCoordinates.coordinates < 3) {
-        return null;
+    const polygonCoordinates = firstPolygonFeatures?.geometry;
+    if (!polygonCoordinates || polygonCoordinates.coordinates < 3) {
+        return [];
     }
     //get the list of substation
     const substationsList = mapEquipments?.substations ?? [];
@@ -93,38 +95,69 @@ function getVoltageLevelInPolygon(
             };
         });
     if (!positions) {
-        return null;
+        return [];
     }
 
-    const substationsInsidePolygone = positions.filter((substation: any) => {
-        return booleanPointInPolygon(substation.pos, polygoneCoordinates);
+    return positions.filter((substation: any) => {
+        return booleanPointInPolygon(substation.pos, polygonCoordinates);
     });
+}
 
-    const voltageLevels = substationsInsidePolygone
+function getVoltageLevelFromSubstation(substations: any): any[] {
+    return substations
         .map((substation: any) => {
             return substation.substation.voltageLevels;
         })
         .flat();
-
-    return voltageLevels;
 }
 
 function createVoltageLevelIdentifierList(
     equipmentType: string,
-    equipementsList: any
+    equipmentList: any
 ) {
     return {
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
-        filterEquipmentsAttributes: equipementsList.map((eq: any) => {
+        filterEquipmentsAttributes: equipmentList.map((eq: any) => {
             return { equipmentID: eq.id };
         }),
     };
 }
 
+function getRequestedEquipements(
+    equipementType: string,
+    substationsInPolygone: any[]
+) {
+    switch (equipementType) {
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            const allowedNominalVoltageMap = new Set();
+            allowedNominalVoltageMap.add(380);
+            allowedNominalVoltageMap.add(225);
+            allowedNominalVoltageMap.add(110);
+            allowedNominalVoltageMap.add(21);
+            allowedNominalVoltageMap.add(10.5);
+            return getVoltageLevelFromSubstation(substationsInPolygone).filter(
+                (vl: any) => allowedNominalVoltageMap.has(vl.nominalV)
+            );
+        case EQUIPMENT_TYPES.SUBSTATION:
+            return substationsInPolygone
+                .map((substation: any) => {
+                    return substation.substation;
+                })
+                .flat();
+        default:
+            console.error(
+                'debug',
+                'getRequestedEquipements',
+                'not implemented'
+            );
+            throw new Error('not implemented');
+    }
+}
+
 const FilterCreationPanel: React.FC = () => {
     const studyUuid = useSelector((state: any) => state.studyUuid);
-    const polygoneCoordinates = useSelector(
+    const polygonCoordinates = useSelector(
         (state: any) => state.polygonCoordinate
     );
     const mapEquipments = useSelector((state) => state.mapEquipments);
@@ -145,14 +178,21 @@ const FilterCreationPanel: React.FC = () => {
         // get the form data
         const formData = formMethods.getValues();
         console.log('debug', 'formData', formData);
-        const vlsInPolygon = getVoltageLevelInPolygon(
-            polygoneCoordinates,
+        const substationsInPolygone = getSubstationsInPolygone(
+            polygonCoordinates,
             mapEquipments,
             geoData
         );
+        const equipments = getRequestedEquipements(
+            formData.equipmentType,
+            substationsInPolygone
+        );
+
+        console.log('debug', 'equipments', equipments);
+
         const filterData = createVoltageLevelIdentifierList(
-            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-            vlsInPolygon
+            formData.equipmentType,
+            equipments
         );
         //create the filter
         createFilter(
