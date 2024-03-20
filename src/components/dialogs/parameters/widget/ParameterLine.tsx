@@ -144,7 +144,7 @@ const ParamLineDropdown: FunctionComponent<
 
     return (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={5} sx={styles.parameterName}>
                 <FormattedMessage id={props.labelTitle} />
             </Grid>
             <Grid item container xs={4} sx={styles.controlItem}>

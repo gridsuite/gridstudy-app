@@ -29,10 +29,12 @@ export enum FILTER_NUMBER_COMPARATORS {
 
 type FilterParams = {
     filterDataType?: string;
+    isDuration?: boolean;
     filterComparators?: string[];
     debounceMs?: number;
     parser?: (value: string) => void;
     filterEnums?: FilterEnumsType;
+    isCountry?: boolean;
 };
 
 export interface CustomColDef extends ColDef {
