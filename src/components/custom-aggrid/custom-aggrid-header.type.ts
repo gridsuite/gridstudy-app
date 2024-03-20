@@ -34,6 +34,7 @@ type FilterParams = {
     debounceMs?: number;
     parser?: (value: string) => void;
     filterEnums?: FilterEnumsType;
+    isCountry?: boolean;
 };
 
 export interface CustomColDef extends ColDef {
