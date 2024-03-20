@@ -283,7 +283,7 @@ const initialState = {
         oneBuses: [],
     },
     dynamicSimulationResultFilter: {
-        chronology: [],
+        timeline: [],
     },
 
     // Spreadsheet filters

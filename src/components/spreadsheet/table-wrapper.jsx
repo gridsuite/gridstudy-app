@@ -217,14 +217,6 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
-    /*  const equipementFiltersSelectorKeys = useMemo(() => {
-        let filtersSelectorKeys = {};
-        TABLES_DEFINITION_INDEXES.get(tabIndex).columns.forEach((column) => {
-            filtersSelectorKeys[column?.field] = column?.field;
-        });
-        return filtersSelectorKeys;
-    }, [tabIndex]); */
-
     const defaultSortColKey = useMemo(() => {
         const defaultSortCol = columnData.find(
             (column) => column.isDefaultSort

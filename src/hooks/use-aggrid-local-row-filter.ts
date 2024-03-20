@@ -23,13 +23,10 @@ interface FilterModel {
 
 export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
-    filterStoreParam: FilterStorePropsType,
-    updateFilterCallback?: () => {}
+    filterStoreParam: FilterStorePropsType
 ): UseAggridRowFilterOutputType => {
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        filterStoreParam,
-        updateFilterCallback
-    );
+    const { updateFilter, filterSelector, initFilters } =
+        useAggridRowFilter(filterStoreParam);
 
     const generateEnumFilterModel = useCallback(
         (filter: FilterSelectorType) => {
