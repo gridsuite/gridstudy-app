@@ -26,7 +26,6 @@ import {
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
-import { useSelector } from 'react-redux';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const styles = {
@@ -75,9 +74,6 @@ const CustomHeaderComponent = ({
         parser, // Used to convert the value displayed in the table into its actual value
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
-    const filterStore = useSelector((state) =>
-        filterTab?.reduce((acc, key) => acc[key], state)
-    );
     const {
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
@@ -193,7 +189,7 @@ const CustomHeaderComponent = ({
         if (!filterSelector?.length) {
             setSelectedFilterData(undefined);
         } else {
-            const filterObject = filterStore?.find(
+            const filterObject = filterSelector?.find(
                 (filter) => filter.column === field
             );
             if (filterObject) {
@@ -201,7 +197,7 @@ const CustomHeaderComponent = ({
                 setSelectedFilterComparator(filterObject.type);
             }
         }
-    }, [filterSelector, filterStore, field]);
+    }, [filterSelector, field]);
     const getOptionLabel = useCallback(
         (option) =>
             isCountry

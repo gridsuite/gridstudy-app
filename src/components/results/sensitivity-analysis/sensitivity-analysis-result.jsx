@@ -24,8 +24,6 @@ import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import {
-    mappingTabs,
-    SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_AT_NODE,
     SUFFIX_TYPES,
 } from './sensitivity-analysis-result-utils';
@@ -91,10 +89,6 @@ const SensitivityAnalysisResult = ({
                         customFilterOptions: filterOptions,
                         updateFilter,
                     },
-                    filterTab: [
-                        SENSITIVITY_ANALYSIS_RESULT_FILTER,
-                        mappingTabs(sensiKind, nOrNkIndex),
-                    ],
                 },
                 minWidth: isSortActive && sortWay ? 95 : 65,
                 maxWidth: maxWidth,
@@ -104,7 +98,7 @@ const SensitivityAnalysisResult = ({
                 headerTooltip: intl.formatMessage({ id: labelId }),
             };
         },
-        [filtersDef, intl, sortProps, filterProps, sensiKind, nOrNkIndex]
+        [filtersDef, intl, sortProps, filterProps]
     );
 
     const columnsDefs = useMemo(() => {

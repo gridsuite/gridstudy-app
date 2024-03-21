@@ -240,7 +240,6 @@ const TableWrapper = (props) => {
             filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
             filterStoreAction: setSpreadsheetFilter,
         });
-    const equipmentType = TABLES_DEFINITION_INDEXES.get(tabIndex).type;
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -381,7 +380,6 @@ const TableWrapper = (props) => {
                     ...column?.customFilterParams,
                     filterEnums,
                 },
-                filterTab: [SPREADSHEET_FILTER],
                 ...column,
             });
         },

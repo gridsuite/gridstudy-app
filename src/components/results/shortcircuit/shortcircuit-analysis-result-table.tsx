@@ -118,11 +118,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             ? filterProps
             : undefined;
 
-        const filterTab = [
-            SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-            mappingTabs(analysisType),
-        ];
-
         const textFilterParams = {
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterComparators: [
@@ -148,7 +143,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: textFilterParams,
-                filterTab: filterTab,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
@@ -156,7 +150,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: autoCompleteFilterParams,
-                filterTab: filterTab,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -164,7 +157,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForOneBusAnalysisType,
                 filterProps: filterPropsCheckedForOneBusAnalysisType,
                 filterParams: textFilterParams,
-                filterTab: filterTab,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
@@ -174,7 +166,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                filterTab: filterTab,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -182,7 +173,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: autoCompleteFilterParams,
-                filterTab: filterTab,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
@@ -195,7 +185,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     ...numericFilterParams,
                     parser: kiloUnitToUnit,
                 },
-                filterTab: filterTab,
                 valueGetter: (params: ValueGetterParams) =>
                     unitToKiloUnit(params.data?.limitMin),
             }),
@@ -210,7 +199,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     ...numericFilterParams,
                     parser: kiloUnitToUnit,
                 },
-                filterTab: filterTab,
                 valueGetter: (params: ValueGetterParams) =>
                     unitToKiloUnit(params.data?.limitMax),
             }),
@@ -222,7 +210,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                filterTab: filterTab,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
@@ -232,7 +219,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                filterTab: filterTab,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
@@ -242,7 +228,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                filterTab: filterTab,
             }),
             {
                 field: 'linkedElementId',
