@@ -34,6 +34,7 @@ type FilterParams = {
     debounceMs?: number;
     parser?: (value: string) => void;
     textFilterOptions?: TextFilterOptionsType;
+    isCountry?: boolean;
 };
 
 export interface CustomColDef extends ColDef {

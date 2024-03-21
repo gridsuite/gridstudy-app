@@ -347,8 +347,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             fractionDigits: 2,
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                textFilterOptions: filterEnums,
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -356,12 +356,22 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -370,10 +380,22 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                isDuration: true,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                parser: parseDuration,
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
@@ -459,8 +481,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             fractionDigits: 2,
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                textFilterOptions: filterEnums,
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -468,12 +490,22 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -482,10 +514,22 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                isDuration: true,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                parser: parseDuration,
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            filterProps,
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums,
+            },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions

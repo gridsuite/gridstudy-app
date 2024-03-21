@@ -151,6 +151,14 @@ const defaultBooleanFilterConfig = {
     },
 };
 
+const countryEnumFilterConfig = {
+    ...defaultEnumFilterConfig,
+    customFilterParams: {
+        ...defaultEnumFilterConfig.customFilterParams,
+        isCountry: true,
+    },
+};
+
 const defaultNumericFilterConfig = {
     filter: 'agNumberColumnFilter',
     customFilterParams: {
@@ -356,7 +364,7 @@ export const TABLES_DEFINITIONS = {
                     params.data.country = params?.newValue?.countryCode;
                     return params;
                 },
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
             },
             {
                 id: 'Properties',
@@ -412,7 +420,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -569,13 +577,13 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country1',
                 field: 'country1',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
                 field: 'country2',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -729,7 +737,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -1464,7 +1472,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -1904,7 +1912,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -2513,7 +2521,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -2623,7 +2631,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -2808,7 +2816,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -2891,7 +2899,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -3127,13 +3135,13 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country1',
                 field: 'country1',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
                 id: 'Country2',
                 field: 'country2',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -3230,7 +3238,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -3316,7 +3324,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -3417,7 +3425,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
@@ -3523,7 +3531,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'country',
-                ...defaultEnumFilterConfig,
+                ...countryEnumFilterConfig,
                 cellRenderer: CountryCellRenderer,
             },
             {
