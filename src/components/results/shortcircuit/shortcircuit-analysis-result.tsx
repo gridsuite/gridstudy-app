@@ -40,7 +40,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import {
-    FilterEnumsType,
+    TextFilterOptionsType,
     useAggridRowFilter,
 } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
@@ -75,7 +75,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-    const [filterEnums, setFilterEnums] = useState<FilterEnumsType>({});
+    const [filterEnums, setFilterEnums] = useState<TextFilterOptionsType>({});
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(

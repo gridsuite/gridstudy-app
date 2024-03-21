@@ -39,7 +39,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
-    FilterEnumsType,
+    TextFilterOptionsType,
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
@@ -160,7 +160,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => [
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -183,7 +183,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterProps,
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterEnums,
+            textFilterOptions: filterEnums,
         },
     }),
 
@@ -266,7 +266,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterProps,
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterEnums,
+            textFilterOptions: filterEnums,
         },
     }),
 ];
@@ -276,7 +276,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -301,7 +301,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -323,7 +323,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -394,7 +394,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
@@ -411,7 +411,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -448,7 +448,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -457,7 +457,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -528,7 +528,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
@@ -589,10 +589,10 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 export const useFetchFiltersEnums = (
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
-): { error: boolean; loading: boolean; result: FilterEnumsType } => {
+): { error: boolean; loading: boolean; result: TextFilterOptionsType } => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState<FilterEnumsType>({
+    const [result, setResult] = useState<TextFilterOptionsType>({
         status: null,
         limitType: null,
         side: null,

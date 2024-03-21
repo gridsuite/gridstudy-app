@@ -275,20 +275,21 @@ const TableWrapper = (props) => {
     );
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
-    const getEnumFilterColumns = useCallback(() => {
+    const getTextFilterOptionsColumns = useCallback(() => {
         const generatedTableColumns =
             TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
         return generatedTableColumns.filter(
-            ({ customFilterParams }) => customFilterParams?.isEnum
+            ({ customFilterParams }) =>
+                customFilterParams?.isEnum || customFilterParams?.isBoolean
         );
     }, [tabIndex]);
 
-    const generateEquipmentsFilterEnums = useCallback(() => {
+    const generateTextFilterOptions = useCallback(() => {
         if (!equipments) {
             return {};
         }
         const filterEnums = {};
-        getEnumFilterColumns().forEach((column) => {
+        getTextFilterOptionsColumns().forEach((column) => {
             filterEnums[column.field] = [
                 ...new Set(
                     equipments
@@ -300,11 +301,11 @@ const TableWrapper = (props) => {
             ];
         });
         return filterEnums;
-    }, [getEnumFilterColumns, equipments]);
+    }, [getTextFilterOptionsColumns, equipments]);
 
-    const filterEnums = useMemo(
-        () => generateEquipmentsFilterEnums(),
-        [generateEquipmentsFilterEnums]
+    const textFilterOptions = useMemo(
+        () => generateTextFilterOptions(),
+        [generateTextFilterOptions]
     );
 
     const enrichColumn = useCallback(
@@ -351,7 +352,7 @@ const TableWrapper = (props) => {
                 },
                 filterParams: {
                     ...column?.customFilterParams,
-                    filterEnums,
+                    textFilterOptions,
                 },
                 ...column,
             });
@@ -365,7 +366,7 @@ const TableWrapper = (props) => {
             filterSelector,
             loadFlowStatus,
             fluxConvention,
-            filterEnums,
+            textFilterOptions,
         ]
     );
 

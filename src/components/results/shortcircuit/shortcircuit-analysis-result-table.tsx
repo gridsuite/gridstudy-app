@@ -29,7 +29,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import {
-    FilterEnumsType,
+    TextFilterOptionsType,
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
@@ -47,7 +47,7 @@ interface ShortCircuitAnalysisResultProps {
     isFetching: boolean;
     filterProps: FilterPropsType;
     sortProps: SortPropsType;
-    filterEnums: FilterEnumsType;
+    filterEnums: TextFilterOptionsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (params: GridReadyEvent) => void;
 }

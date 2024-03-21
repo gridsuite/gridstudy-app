@@ -123,6 +123,34 @@ const defaultEnumFilterConfig = {
     },
 };
 
+/**
+ * Default configuration for boolean filter
+ * a new filter option is added to the default ag-grid filter
+ */
+const defaultBooleanFilterConfig = {
+    filter: 'agTextColumnFilter',
+    agGridFilterParams: {
+        filterOptions: [
+            {
+                displayKey: 'customInRange',
+                displayName: 'customInRange',
+                predicate: ([filterValue], cellValue) => {
+                    // We receive here the filter boolean values as a string (filterValue)
+                    // we check if the cellValue is not null neither undefined
+                    if (cellValue != null) {
+                        return filterValue === cellValue.toString();
+                    }
+                    return filterValue === 'false';
+                },
+            },
+        ],
+    },
+    customFilterParams: {
+        filterDataType: FILTER_DATA_TYPES.TEXT,
+        isBoolean: true,
+    },
+};
+
 const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,
     customFilterParams: {
@@ -689,6 +717,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -696,6 +725,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -872,6 +902,7 @@ export const TABLES_DEFINITIONS = {
                         colDef: params.colDef,
                     };
                 },
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1428,6 +1459,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1435,6 +1467,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1583,6 +1616,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hasLoadTapChanging1Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1590,6 +1624,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'isRegulatingRatio1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1632,6 +1667,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hasLoadTapChanging2Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1639,6 +1675,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'isRegulatingRatio2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1681,6 +1718,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hasLoadTapChanging3Capabilities',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1688,6 +1726,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'isRegulatingRatio3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1737,6 +1776,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'isRegulatingPhase1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1787,6 +1827,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'isRegulatingPhase2',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1837,6 +1878,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'isRegulatingPhase3',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1880,6 +1922,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1887,6 +1930,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1894,6 +1938,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminal3Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -2013,6 +2058,7 @@ export const TABLES_DEFINITIONS = {
                         colDef: params.colDef,
                     };
                 },
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -2161,6 +2207,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'voltageRegulationOn',
                 field: 'voltageRegulatorOn',
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2451,6 +2498,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -2646,6 +2694,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -2858,6 +2907,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -2962,6 +3012,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -3063,6 +3114,7 @@ export const TABLES_DEFINITIONS = {
                         colDef: params.colDef,
                     };
                 },
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -3195,6 +3247,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -3321,6 +3374,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'hvdcAngleDroopActivePowerControl.isEnabled',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -3434,6 +3488,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -3524,6 +3579,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'voltageRegulatorOn',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -3547,6 +3603,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -3645,6 +3702,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+                ...defaultBooleanFilterConfig,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
