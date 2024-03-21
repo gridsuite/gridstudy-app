@@ -183,7 +183,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterProps,
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterEnums,
+            textFilterOptions: filterEnums,
         },
     }),
 
@@ -266,7 +266,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterProps,
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterEnums,
+            textFilterOptions: filterEnums,
         },
     }),
 ];
@@ -301,7 +301,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -323,7 +323,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -348,7 +348,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -426,7 +426,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -435,7 +435,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -460,7 +460,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         makeAgGridCustomHeaderColumn({

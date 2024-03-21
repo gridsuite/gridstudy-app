@@ -320,7 +320,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
     ];
@@ -352,7 +352,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
             valueGetter: (value: ValueGetterParams) => {
                 return formatLimitType(value.data.limitType, intl);
@@ -410,7 +410,7 @@ export const loadFlowResultColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
             cellRenderer: statusCellRender,
         }),
