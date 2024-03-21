@@ -275,48 +275,21 @@ const TableWrapper = (props) => {
     );
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
-    const getEnumFilterColumns = useCallback(() => {
+    const getTextFilterOptionsColumns = useCallback(() => {
         const generatedTableColumns =
             TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
         return generatedTableColumns.filter(
-            ({ customFilterParams }) => customFilterParams?.isEnum
+            ({ customFilterParams }) =>
+                customFilterParams?.isEnum || customFilterParams?.isBoolean
         );
     }, [tabIndex]);
 
-    // Function to get the columns that have isEnum filter set to true in customFilterParams
-    const getBooleanFilterColumns = useCallback(() => {
-        const generatedTableColumns =
-            TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
-        return generatedTableColumns.filter(
-            ({ customFilterParams }) => customFilterParams?.isBoolean
-        );
-    }, [tabIndex]);
-
-    const generateEquipmentsFilterBoolean = useCallback(() => {
-        if (!equipments) {
-            return {};
-        }
-        const filterBoolean = {};
-        getBooleanFilterColumns().forEach((column) => {
-            filterBoolean[column.field] = [
-                ...new Set(
-                    equipments
-                        .map((equipment) =>
-                            deepFindValue(equipment, column.field)
-                        )
-                        .filter((value) => value != null)
-                ),
-            ];
-        });
-        return filterBoolean;
-    }, [getBooleanFilterColumns, equipments]);
-
-    const generateEquipmentsFilterEnums = useCallback(() => {
+    const generateTextFilterOptions = useCallback(() => {
         if (!equipments) {
             return {};
         }
         const filterEnums = {};
-        getEnumFilterColumns().forEach((column) => {
+        getTextFilterOptionsColumns().forEach((column) => {
             filterEnums[column.field] = [
                 ...new Set(
                     equipments
@@ -328,16 +301,11 @@ const TableWrapper = (props) => {
             ];
         });
         return filterEnums;
-    }, [getEnumFilterColumns, equipments]);
+    }, [getTextFilterOptionsColumns, equipments]);
 
-    const filterEnums = useMemo(
-        () => generateEquipmentsFilterEnums(),
-        [generateEquipmentsFilterEnums]
-    );
-
-    const filterBoolean = useMemo(
-        () => generateEquipmentsFilterBoolean(),
-        [generateEquipmentsFilterBoolean]
+    const textFilterOptions = useMemo(
+        () => generateTextFilterOptions(),
+        [generateTextFilterOptions]
     );
 
     const enrichColumn = useCallback(
@@ -384,8 +352,7 @@ const TableWrapper = (props) => {
                 },
                 filterParams: {
                     ...column?.customFilterParams,
-                    filterEnums,
-                    filterBoolean,
+                    textFilterOptions,
                 },
                 ...column,
             });
@@ -399,8 +366,7 @@ const TableWrapper = (props) => {
             filterSelector,
             loadFlowStatus,
             fluxConvention,
-            filterEnums,
-            filterBoolean,
+            textFilterOptions,
         ]
     );
 

@@ -14,9 +14,7 @@ type FilterType = {
     data: FilterDataType;
 };
 
-export type FilterEnumsType = Record<string, string[] | null>;
-
-export type FilterBooleanType = Record<string, boolean[] | null>;
+export type TextFilterOptionsType = Record<string, string[] | boolean[] | null>;
 
 export type FilterSelectorType = {
     column: string;

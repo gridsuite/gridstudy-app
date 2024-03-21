@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    FilterBooleanType,
-    FilterEnumsType,
+    TextFilterOptionsType,
     FilterPropsType,
 } from '../../hooks/use-aggrid-row-filter';
 import { ColDef } from 'ag-grid-community';
@@ -34,8 +33,7 @@ type FilterParams = {
     filterComparators?: string[];
     debounceMs?: number;
     parser?: (value: string) => void;
-    filterEnums?: FilterEnumsType;
-    filterBoolean?: FilterBooleanType;
+    textFilterOptions?: TextFilterOptionsType;
 };
 
 export interface CustomColDef extends ColDef {

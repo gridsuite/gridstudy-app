@@ -39,7 +39,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
-    FilterEnumsType,
+    TextFilterOptionsType,
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
@@ -160,7 +160,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => [
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -276,7 +276,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -389,7 +389,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterPropsType,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -545,10 +545,10 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 export const useFetchFiltersEnums = (
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
-): { error: boolean; loading: boolean; result: FilterEnumsType } => {
+): { error: boolean; loading: boolean; result: TextFilterOptionsType } => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState<FilterEnumsType>({
+    const [result, setResult] = useState<TextFilterOptionsType>({
         status: null,
         limitType: null,
         side: null,

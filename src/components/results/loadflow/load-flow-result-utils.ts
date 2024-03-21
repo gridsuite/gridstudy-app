@@ -27,7 +27,10 @@ import {
 } from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
+import {
+    TextFilterOptionsType,
+    FilterPropsType,
+} from 'hooks/use-aggrid-row-filter';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
     FILTER_NUMBER_COMPARATORS,
@@ -169,10 +172,10 @@ export const makeData = (
 export const useFetchFiltersEnums = (
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
-): { error: boolean; loading: boolean; result: FilterEnumsType } => {
+): { error: boolean; loading: boolean; result: TextFilterOptionsType } => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState<FilterEnumsType>({
+    const [result, setResult] = useState<TextFilterOptionsType>({
         status: null,
         limitType: null,
         side: null,
@@ -219,7 +222,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => {
     const convertLimitNameFrontToBack = (limitName: string) => {
         const limitNameMapping = {
@@ -332,7 +335,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: TextFilterOptionsType
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -380,7 +383,7 @@ export const loadFlowResultColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType,
+    filterEnums: TextFilterOptionsType,
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {

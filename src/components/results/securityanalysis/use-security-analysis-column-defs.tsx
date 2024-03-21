@@ -20,7 +20,10 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SortPropsType } from 'hooks/use-aggrid-sort';
-import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
+import {
+    TextFilterOptionsType,
+    FilterPropsType,
+} from 'hooks/use-aggrid-row-filter';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 
@@ -33,7 +36,7 @@ const styles = {
 type UseSecurityAnalysisColumnsDefsProps = (
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType,
+    filterEnums: TextFilterOptionsType,
     resultType: RESULT_TYPE,
     openVoltageLevelDiagram: (id: string) => void
 ) => ColDef<any>[];
