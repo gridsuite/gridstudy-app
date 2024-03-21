@@ -394,7 +394,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
@@ -528,7 +528,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterEnums,
+                textFilterOptions: filterEnums,
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
