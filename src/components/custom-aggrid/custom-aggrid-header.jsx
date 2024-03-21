@@ -62,7 +62,8 @@ const CustomHeaderComponent = ({
     sortParams = {},
     isFilterable = false,
     filterParams = {},
-    filterTab = [],
+    getEnumLabel, // Used for translation of enum values in the filter
+    isCountry, // Used for translation of the countries options in the filter
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -72,7 +73,6 @@ const CustomHeaderComponent = ({
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
         parser, // Used to convert the value displayed in the table into its actual value
-        isCountry, // Used to translate the countries options in the filter
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
     const filterStore = useSelector((state) =>
@@ -207,10 +207,10 @@ const CustomHeaderComponent = ({
             isCountry
                 ? translate(option)
                 : intl.formatMessage({
-                      id: option,
+                      id: getEnumLabel?.(option) || option,
                       defaultMessage: option,
                   }),
-        [isCountry, intl, translate]
+        [isCountry, intl, translate, getEnumLabel]
     );
 
     return (

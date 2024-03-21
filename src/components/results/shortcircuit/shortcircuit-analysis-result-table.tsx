@@ -13,7 +13,11 @@ import {
     SCAFeederResult,
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import {
+    GridReadyEvent,
+    RowClassParams,
+    ValueGetterParams,
+} from 'ag-grid-community';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     getNoRowsMessage,
@@ -36,11 +40,6 @@ import {
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../utils/unit-converter';
-import { ValueGetterParams } from 'ag-grid-community';
-import {
-    mappingTabs,
-    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-} from './shortcircuit-analysis-result-content';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -198,7 +197,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 },
                 filterTab: filterTab,
                 valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params),
+                    unitToKiloUnit(params.data?.limitMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -213,7 +212,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 },
                 filterTab: filterTab,
                 valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params),
+                    unitToKiloUnit(params.data?.limitMax),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),

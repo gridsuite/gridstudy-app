@@ -35,7 +35,6 @@ type FilterParams = {
     debounceMs?: number;
     parser?: (value: string) => void;
     filterEnums?: FilterEnumsType;
-    isCountry?: boolean;
 };
 
 export interface CustomColDef extends ColDef {
@@ -44,6 +43,8 @@ export interface CustomColDef extends ColDef {
     sortProps?: SortPropsType;
     agGridFilterParams?: any;
     filterTab?: string[];
+    getEnumLabel?: (value: string) => string;
+    isCountry?: boolean;
 }
 export type FilterSelectorType = {
     column: string;
