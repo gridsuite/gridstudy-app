@@ -406,7 +406,6 @@ const MapView = ({
                                     //     getSelectedSubstation,
                                     //     getSelectedVoltageLevel,
                                     //     getSelectedLines,
-                                    //     getSelectedHVDCLines,
                                     let equipementList = [];
                                     switch (filter.equipmentType) {
                                         case EQUIPMENT_TYPES.SUBSTATION:
@@ -428,13 +427,6 @@ const MapView = ({
                                                 createEquipmentIdentifierList(
                                                     filter.equipmentType,
                                                     networkMapref.current.getSelectedLines()
-                                                );
-                                            break;
-                                        case EQUIPMENT_TYPES.HVDC_LINE:
-                                            equipementList =
-                                                createEquipmentIdentifierList(
-                                                    filter.equipmentType,
-                                                    networkMapref.current.getSelectedHVDCLines()
                                                 );
                                             break;
                                         default:
