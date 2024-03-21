@@ -370,8 +370,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                             limitType: '', // we have to add this otherwise it's automatically filtered
                         });
                     });
-
-                    console.log(rows);
                 }
             );
             return rows;
