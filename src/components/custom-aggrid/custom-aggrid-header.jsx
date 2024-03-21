@@ -74,8 +74,10 @@ const CustomHeaderComponent = ({
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
 
-    const isMultipleSelection =
-        !filterParams?.textFilterOptions?.[field]?.length === 2; // in case we have only two option (like for boolean), we allow the selection of one value for the filter
+    const isMultipleSelection = !(
+        filterParams?.textFilterOptions?.[field]?.length === 2
+    ); // in case we have only two option (like for boolean), we allow the selection of one value for the filter
+
     const {
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
