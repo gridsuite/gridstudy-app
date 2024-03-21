@@ -68,9 +68,9 @@ interface IFilterCreation {
 const formSchema = yup
     .object()
     .shape({
-        [FILTER_NAME]: yup.string().nullable(),
+        [FILTER_NAME]: yup.string(),
         [NAME]: yup.string(),
-        equipmentType: yup.string().nullable(),
+        equipmentType: yup.string(),
     })
     .required();
 const emptyFormData = {
@@ -79,89 +79,8 @@ const emptyFormData = {
     equipmentType: '',
 };
 
-function getSubstationsInPolygone(
-    features: any,
-    mapEquipments: any,
-    geoData: any
-): any[] {
-    const firstPolygonFeatures: any = Object.values(features)[0];
-    const polygonCoordinates = firstPolygonFeatures?.geometry;
-    if (!polygonCoordinates || polygonCoordinates.coordinates < 3) {
-        return [];
-    }
-    //get the list of substation
-    const substationsList = mapEquipments?.substations ?? [];
-
-    const positions = substationsList // we need a list of substation and their positions
-        .map((substation: any) => {
-            return {
-                substation: substation,
-                pos: geoData.getSubstationPosition(substation.id),
-            };
-        });
-    if (!positions) {
-        return [];
-    }
-
-    return positions.filter((substation: any) => {
-        return booleanPointInPolygon(substation.pos, polygonCoordinates);
-    });
-}
-
-function getVoltageLevelFromSubstation(substations: any): any[] {
-    return substations
-        .map((substation: any) => {
-            return substation.substation.voltageLevels;
-        })
-        .flat();
-}
-
-function createVoltageLevelIdentifierList(
-    equipmentType: string,
-    equipmentList: any
-) {
-    return {
-        type: 'IDENTIFIER_LIST',
-        equipmentType: equipmentType,
-        filterEquipmentsAttributes: equipmentList.map((eq: any) => {
-            return { equipmentID: eq.id };
-        }),
-    };
-}
-
-function getRequestedEquipements(
-    equipementType: string,
-    substationsInPolygone: any[]
-) {
-    switch (equipementType) {
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-            const allowedNominalVoltageMap = new Set();
-            allowedNominalVoltageMap.add(380);
-            allowedNominalVoltageMap.add(225);
-            allowedNominalVoltageMap.add(110);
-            allowedNominalVoltageMap.add(21);
-            allowedNominalVoltageMap.add(10.5);
-            return getVoltageLevelFromSubstation(substationsInPolygone).filter(
-                (vl: any) => allowedNominalVoltageMap.has(vl.nominalV)
-            );
-        case EQUIPMENT_TYPES.SUBSTATION:
-            return substationsInPolygone
-                .map((substation: any) => {
-                    return substation.substation;
-                })
-                .flat();
-        default:
-            console.error(
-                'debug',
-                'getRequestedEquipements',
-                'not implemented'
-            );
-            throw new Error('not implemented');
-    }
-}
-
 type FilterCreationPanelProps = {
-    onSaveFilter: (data: IFilterCreation) => void;
+    onSaveFilter: (data: IFilterCreation, distDir: Identifier) => void;
     onCancel: () => void;
 };
 
@@ -325,7 +244,14 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         <Button
                             variant="contained"
                             onClick={() => {
-                                onSaveFilter(formMethods.getValues());
+                                formMethods.trigger().then((isValid) => {
+                                    if (isValid) {
+                                        onSaveFilter(
+                                            formMethods.getValues() as IFilterCreation,
+                                            defaultFolder
+                                        );
+                                    }
+                                });
                             }}
                             size={'large'}
                         >

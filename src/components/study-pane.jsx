@@ -35,6 +35,9 @@ import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
 import FilterCreationPanel from './network/filter-creation-panel';
+import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import { createFilter } from '../services/explore';
+import { NAME } from './utils/field-constants.js';
 
 const styles = {
     map: {
@@ -203,6 +206,26 @@ StudyPane.propTypes = {
 };
 
 export default StudyPane;
+
+function createEquipmentIdentifierList(equipmentType, equipmentList) {
+    if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+        // TODO (jamal) refactor this to not have to create a special case for substations
+        return {
+            type: 'IDENTIFIER_LIST',
+            equipmentType: equipmentType,
+            filterEquipmentsAttributes: equipmentList.map((eq) => {
+                return { equipmentID: eq.substation.id };
+            }),
+        };
+    }
+    return {
+        type: 'IDENTIFIER_LIST',
+        equipmentType: equipmentType,
+        filterEquipmentsAttributes: equipmentList.map((eq) => {
+            return { equipmentID: eq.id };
+        }),
+    };
+}
 
 const MapView = ({
     studyUuid,
@@ -376,8 +399,79 @@ const MapView = ({
                             }}
                         >
                             <FilterCreationPanel
-                                onSaveFilter={(filter) => {
-                                    console.log('filter', filter);
+                                onSaveFilter={(filter, distDir) => {
+                                    console.log('debug', 'filter', filter);
+                                    // getPolygonFeatures,
+                                    //     computeSelectedSubstation,
+                                    //     getSelectedSubstation,
+                                    //     getSelectedVoltageLevel,
+                                    //     getSelectedLines,
+                                    //     getSelectedHVDCLines,
+                                    let equipementList = [];
+                                    switch (filter.equipmentType) {
+                                        case EQUIPMENT_TYPES.SUBSTATION:
+                                            equipementList =
+                                                createEquipmentIdentifierList(
+                                                    filter.equipmentType,
+                                                    networkMapref.current.getSelectedSubstation()
+                                                );
+                                            break;
+                                        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+                                            equipementList =
+                                                createEquipmentIdentifierList(
+                                                    filter.equipmentType,
+                                                    networkMapref.current.getSelectedVoltageLevel()
+                                                );
+                                            break;
+                                        case EQUIPMENT_TYPES.LINE:
+                                            equipementList =
+                                                createEquipmentIdentifierList(
+                                                    filter.equipmentType,
+                                                    networkMapref.current.getSelectedLines()
+                                                );
+                                            break;
+                                        case EQUIPMENT_TYPES.HVDC_LINE:
+                                            equipementList =
+                                                createEquipmentIdentifierList(
+                                                    filter.equipmentType,
+                                                    networkMapref.current.getSelectedHVDCLines()
+                                                );
+                                            break;
+                                        default:
+                                            break;
+                                    }
+
+                                    if (
+                                        equipementList
+                                            .filterEquipmentsAttributes.length >
+                                        0
+                                    ) {
+                                        console.log(
+                                            'debug',
+                                            'equipementList',
+                                            equipementList
+                                        );
+                                        createFilter(
+                                            equipementList,
+                                            filter[NAME],
+                                            'description',
+                                            distDir.id?.toString() ?? ''
+                                        )
+                                            .then((res) => {
+                                                console.log(
+                                                    'debug',
+                                                    'createFilter',
+                                                    res
+                                                );
+                                            })
+                                            .catch((err) => {
+                                                console.error(
+                                                    'debug',
+                                                    'createFilter',
+                                                    err
+                                                );
+                                            });
+                                    }
                                 }}
                                 onCancel={onCancelFunction}
                             ></FilterCreationPanel>
