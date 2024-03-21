@@ -64,6 +64,19 @@
         "test": "jest",
         "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0"
     },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "plugin:prettier/recommended"
+        ],
+        "ignorePatterns": [
+            "build"
+        ],
+        "rules": {
+            "prettier/prettier": "warn",
+            "curly": "error"
+        }
+    },
     "browserslist": {
         "production": [
             ">0.2% and supports es6-class",
