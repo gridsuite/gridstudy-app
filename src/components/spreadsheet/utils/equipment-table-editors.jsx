@@ -411,8 +411,8 @@ export const EnumListField = forwardRef(
         );
 
         /**
-         * Automatically stops cell editing when the value changes to ensure the handleCellEditingStopped event is triggered. 
-         * This step is crucial because ag-Grid by default only stops editing upon clicking outside of the cell. 
+         * Automatically stops cell editing when the value changes to ensure the handleCellEditingStopped event is triggered.
+         * This step is crucial because ag-Grid by default only stops editing upon clicking outside of the cell.
          * The immediate stopping of editing upon value change ensures consistent and expected behavior in the grid's editing flow.
          */
         useEffect(() => {
