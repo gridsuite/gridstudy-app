@@ -186,7 +186,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     parser: kiloUnitToUnit,
                 },
                 valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params.data.limitMin),
+                    unitToKiloUnit(params.data?.limitMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -200,7 +200,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     parser: kiloUnitToUnit,
                 },
                 valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params.data.limitMax),
+                    unitToKiloUnit(params.data?.limitMax),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
