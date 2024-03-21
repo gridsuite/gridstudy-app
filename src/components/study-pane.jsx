@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -214,6 +214,7 @@ const MapView = ({
     onChangeTab,
     setErrorMessage,
 }) => {
+    const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
     const dispatch = useDispatch();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
@@ -266,6 +267,9 @@ const MapView = ({
             return '100%';
         }
     }
+    const onCancelFunction = useCallback(() => {
+        console.log('debug', networkMapref);
+    }, []);
     return (
         <ReactFlowProvider>
             <Box sx={styles.table}>
@@ -319,6 +323,7 @@ const MapView = ({
                             <Box>
                                 <Box sx={styles.mapBelowDiagrams}>
                                     <NetworkMapTab
+                                        networkMapRef={networkMapref}
                                         /* TODO do we move redux param to container */
                                         studyUuid={studyUuid}
                                         visible={
@@ -374,9 +379,7 @@ const MapView = ({
                                 onSaveFilter={(filter) => {
                                     console.log('filter', filter);
                                 }}
-                                onCancel={() => {
-                                    console.log('cancel');
-                                }}
+                                onCancel={onCancelFunction}
                             ></FilterCreationPanel>
                         </Box>
                     </div>

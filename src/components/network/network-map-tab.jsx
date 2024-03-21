@@ -82,6 +82,7 @@ const styles = {
 const NODE_CHANGED_ERROR =
     'Node has changed or is not built anymore. The Promise is rejected.';
 export const NetworkMapTab = ({
+    networkMapRef,
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
@@ -137,7 +138,6 @@ export const NetworkMapTab = ({
     const basicDataReady = mapEquipments && geoData;
 
     const lineFullPathRef = useRef();
-    const networkMapRef = useRef();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -1023,11 +1023,11 @@ export const NetworkMapTab = ({
             }}
             onFeaturesChanged={(features) => {
                 dispatch(setPolygonCoordinate(features));
-                networkMapRef.current.computeSelectedSubstation();
+                networkMapRef?.current?.computeSelectedSubstation();
                 console.log(
                     'debug',
                     'lines',
-                    networkMapRef.current.getSelectedLines()
+                    networkMapRef?.current?.getSelectedLines()
                 );
                 console.log(
                     'debug',
