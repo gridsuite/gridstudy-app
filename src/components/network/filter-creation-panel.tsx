@@ -23,7 +23,6 @@ import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
-import { GeoData } from '@powsybl/diagram-viewer';
 
 const EXPERT_FILTER_EQUIPMENTS = {
     GENERATOR: {
@@ -60,6 +59,12 @@ const EXPERT_FILTER_EQUIPMENTS = {
     },
 };
 
+interface IFilterCreation {
+    [FILTER_NAME]: string | null;
+    [NAME]: string;
+    equipmentType: string | null;
+}
+
 const formSchema = yup
     .object()
     .shape({
@@ -77,7 +82,7 @@ const emptyFormData = {
 function getSubstationsInPolygone(
     features: any,
     mapEquipments: any,
-    geoData: GeoData
+    geoData: any
 ): any[] {
     const firstPolygonFeatures: any = Object.values(features)[0];
     const polygonCoordinates = firstPolygonFeatures?.geometry;
@@ -155,14 +160,17 @@ function getRequestedEquipements(
     }
 }
 
-const FilterCreationPanel: React.FC = () => {
+type FilterCreationPanelProps = {
+    onSaveFilter: (data: IFilterCreation) => void;
+    onCancel: () => void;
+};
+
+const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
+    onSaveFilter,
+    onCancel,
+}) => {
     const studyUuid = useSelector((state: any) => state.studyUuid);
-    const polygonCoordinates = useSelector(
-        (state: any) => state.polygonCoordinate
-    );
-    const mapEquipments = useSelector((state) => state.mapEquipments);
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
-    const geoData = useSelector((state: any) => state.geoData);
     const intl = useIntl();
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -174,41 +182,41 @@ const FilterCreationPanel: React.FC = () => {
         name: null,
     });
 
-    const handleValidationButtonClick = () => {
-        // get the form data
-        const formData = formMethods.getValues();
-        console.log('debug', 'formData', formData);
-        const substationsInPolygone = getSubstationsInPolygone(
-            polygonCoordinates,
-            mapEquipments,
-            geoData
-        );
-        const equipments = getRequestedEquipements(
-            formData.equipmentType,
-            substationsInPolygone
-        );
-
-        console.log('debug', 'equipments', equipments);
-
-        const filterData = createVoltageLevelIdentifierList(
-            formData.equipmentType,
-            equipments
-        );
-        //create the filter
-        createFilter(
-            filterData,
-            formData[NAME],
-            'description',
-            defaultFolder.id?.toString() ?? ''
-        )
-            .then((res) => {
-                console.log('debug', 'createFilter', res);
-            })
-            .catch((err) => {
-                console.error('debug', 'createFilter', err);
-            });
-    };
-    function handleCancelButtonClick() {}
+    // const handleValidationButtonClick = () => {
+    //     // get the form data
+    //     const formData = formMethods.getValues();
+    //     console.log('debug', 'formData', formData);
+    //     const substationsInPolygone = getSubstationsInPolygone(
+    //         polygonCoordinates,
+    //         mapEquipments,
+    //         geoData
+    //     );
+    //     const equipments = getRequestedEquipements(
+    //         formData.equipmentType,
+    //         substationsInPolygone
+    //     );
+    //
+    //     console.log('debug', 'equipments', equipments);
+    //
+    //     const filterData = createVoltageLevelIdentifierList(
+    //         formData.equipmentType,
+    //         equipments
+    //     );
+    //     //create the filter
+    //     createFilter(
+    //         filterData,
+    //         formData[NAME],
+    //         'description',
+    //         defaultFolder.id?.toString() ?? ''
+    //     )
+    //         .then((res) => {
+    //             console.log('debug', 'createFilter', res);
+    //         })
+    //         .catch((err) => {
+    //             console.error('debug', 'createFilter', err);
+    //         });
+    // };
+    // function handleCancelButtonClick() {}
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchPath(studyUuid).then((res) => {
             if (res) {
@@ -316,7 +324,9 @@ const FilterCreationPanel: React.FC = () => {
                     <Grid container paddingTop={2}>
                         <Button
                             variant="contained"
-                            onClick={handleValidationButtonClick}
+                            onClick={() => {
+                                onSaveFilter(formMethods.getValues());
+                            }}
                             size={'large'}
                         >
                             {intl.formatMessage({
@@ -325,7 +335,7 @@ const FilterCreationPanel: React.FC = () => {
                         </Button>
                         <Button
                             variant="contained"
-                            onClick={handleCancelButtonClick}
+                            onClick={onCancel}
                             size={'large'}
                         >
                             {intl.formatMessage({

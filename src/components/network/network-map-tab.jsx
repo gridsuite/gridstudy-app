@@ -137,6 +137,7 @@ export const NetworkMapTab = ({
     const basicDataReady = mapEquipments && geoData;
 
     const lineFullPathRef = useRef();
+    const networkMapRef = useRef();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -965,9 +966,11 @@ export const NetworkMapTab = ({
             equipmentType={EQUIPMENT_TYPES.LINE}
         />
     );
-
+    // console.log('debug', 'updatedLines', mapEquipments?.lines);
+    // console.log('debug', 'updatedHvdcLines', updatedHvdcLines);
     const renderMap = () => (
         <NetworkMap
+            ref={networkMapRef}
             mapEquipments={mapEquipments}
             geoData={geoData}
             updatedLines={[
@@ -1020,28 +1023,17 @@ export const NetworkMapTab = ({
             }}
             onFeaturesChanged={(features) => {
                 dispatch(setPolygonCoordinate(features));
-                // if (
-                //     Object.keys(features).length === 0 &&
-                //     features.constructor === Object
-                // ) {
-                //     // is empty object
-                //     dispatch(setPolygonCoordinate([]));
-                //     return;
-                // }
-                //
-                // // in case we want to handle multiple polygons drawing, we need to handle the features as an array
-                // const firstPolygonFeatures = Object.values(features)[0];
-                // const polygoneCoordinates = firstPolygonFeatures?.geometry;
-                // if (
-                //     !polygoneCoordinates ||
-                //     polygoneCoordinates.coordinates < 3
-                // ) {
-                //     dispatch(setPolygonCoordinate([]));
-                //     return;
-                // }
-                // dispatch(
-                //     setPolygonCoordinate(polygoneCoordinates.coordinates[0])
-                // );
+                networkMapRef.current.computeSelectedSubstation();
+                console.log(
+                    'debug',
+                    'lines',
+                    networkMapRef.current.getSelectedLines()
+                );
+                console.log(
+                    'debug',
+                    'filteredNominalVoltages',
+                    filteredNominalVoltages
+                );
             }}
         />
     );
