@@ -17,7 +17,7 @@ export const makeAgGridCustomHeaderColumn = ({
     const { headerName, field = '', fractionDigits, numeric } = props;
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
-    const { filterDataType, textFilterOptions } = filterParams || {};
+    const { filterDataType, textFilterOptions = {} } = filterParams || {};
 
     const customFilterOptions =
         filterDataType === FILTER_DATA_TYPES.TEXT
@@ -55,7 +55,9 @@ export const makeAgGridCustomHeaderColumn = ({
             filterParams: {
                 ...filterParams,
                 filterSelector,
-                customFilterOptions,
+                customFilterOptions: customFilterOptions?.map((o) =>
+                    o.toString()
+                ),
                 updateFilter,
             },
         },
