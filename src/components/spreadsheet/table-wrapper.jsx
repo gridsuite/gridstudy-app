@@ -90,6 +90,7 @@ import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -192,8 +193,6 @@ const TableWrapper = (props) => {
 
     const [columnData, setColumnData] = useState([]);
 
-    const SPREADSHEET_FILTER = 'spreadsheetFilter';
-
     const rollbackEdit = useCallback(() => {
         resetBuffer();
         setEditingData();
@@ -236,7 +235,7 @@ const TableWrapper = (props) => {
 
     const { updateFilter, filterSelector, initFilters } =
         useAggridLocalRowFilter(gridRef, {
-            filterType: SPREADSHEET_FILTER,
+            filterType: SPREADSHEET_STORE_FIELD,
             filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
             filterStoreAction: setSpreadsheetFilter,
         });
@@ -1381,7 +1380,7 @@ const TableWrapper = (props) => {
                 .columns.filter((c) => {
                     return selectedColumnsNames.has(c.id);
                 })
-                .map((column) => enrichColumn(column, tabIndex));
+                .map((column) => enrichColumn(column));
 
             function sortByIndex(a, b) {
                 return (
