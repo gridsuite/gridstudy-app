@@ -579,12 +579,12 @@ const TableWrapper = (props) => {
 
     const buildEditPromise = useCallback(
         (editingData, groovyCr, context) => {
+            const propertiesForBackend = formatPropertiesForBackend(
+                editingDataRef.current.properties ?? {},
+                editingData.properties ?? {}
+            );
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
-                    const propertiesForBackend = formatPropertiesForBackend(
-                        editingDataRef.current.properties ?? {},
-                        editingData.properties ?? {}
-                    );
                     return modifySubstation(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -619,7 +619,8 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                     let ratioTap = null;
@@ -888,7 +889,8 @@ const TableWrapper = (props) => {
                         ratioTap,
                         phaseTap,
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
                     const regulatingTerminalConnectableIdFieldValue =
@@ -1008,7 +1010,11 @@ const TableWrapper = (props) => {
                         getFieldValue(
                             editingData?.activePowerControl?.droop,
                             editingDataRef.current?.activePowerControl?.droop
-                        )
+                        ),
+                        undefined,
+                        undefined,
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -1042,7 +1048,8 @@ const TableWrapper = (props) => {
                                 ?.ipMax
                         ),
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.BATTERY:
                     return modifyBattery(
@@ -1084,7 +1091,12 @@ const TableWrapper = (props) => {
                         getFieldValue(
                             editingData.activePowerControl?.droop,
                             editingDataRef.current.activePowerControl?.droop
-                        )
+                        ),
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
                     return modifyShuntCompensator(
@@ -1123,7 +1135,8 @@ const TableWrapper = (props) => {
                         ),
                         editingData.voltageLevelId,
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 default:
                     return requestNetworkChange(
