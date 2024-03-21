@@ -79,6 +79,7 @@ export const useAggridRowFilter = (
                 type: data.type,
                 value: data.value,
             };
+            let filtersToStore: FilterSelectorType[] = [];
             setFilters((oldRowFilters: FilterSelectorType[]) => {
                 let updatedFilters;
 
@@ -96,11 +97,12 @@ export const useAggridRowFilter = (
                 }
 
                 updateFilterCallback && updateFilterCallback();
-                filterStoreAction &&
-                    filterTab &&
-                    dispatch(filterStoreAction(filterTab, updatedFilters));
+                filtersToStore = updatedFilters;
                 return updatedFilters;
             });
+            filterStoreAction &&
+                filterTab &&
+                dispatch(filterStoreAction(filterTab, filtersToStore));
         },
         [filterTab, updateFilterCallback, dispatch, filterStoreAction]
     );

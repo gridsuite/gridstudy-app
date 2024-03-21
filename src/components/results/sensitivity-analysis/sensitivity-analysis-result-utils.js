@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import {
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+} from 'utils/store-filter-fields';
+
 export const SENSITIVITY_IN_DELTA_MW = 'SensitivityInDeltaMW';
 export const SENSITIVITY_IN_DELTA_A = 'SensitivityInDeltaA';
 export const SENSITIVITY_AT_NODE = 'SensitivityAtNode';
 export const COMPUTATION_RESULTS_LOGS = 'ComputationResultsLogs';
-export const SENSITIVITY_ANALYSIS_RESULT_FILTER =
-    'sensitivityAnalysisResultFilter';
-
-export const SENSITIVITY_IN_DELTA_MW_N = 'sensitivityInDeltaMWN';
-export const SENSITIVITY_IN_DELTA_MW_N_K = 'sensitivityInDeltaMWNK';
-export const SENSITIVITY_IN_DELTA_A_N = 'sensitivityInDeltaAN';
-export const SENSITIVITY_IN_DELTA_A_N_K = 'sensitivityInDeltaANK';
-export const SENSITIVITY_AT_NODE_N = 'sensitivityAtNodeN';
-export const SENSITIVITY_AT_NODE_N_K = 'sensitivityAtNodeNK';
 
 export const FUNCTION_TYPES = {
     [SENSITIVITY_IN_DELTA_MW]: 'BRANCH_ACTIVE_POWER_1',

@@ -43,6 +43,10 @@ import {
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import {
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+} from 'utils/store-filter-fields';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -174,10 +178,6 @@ export const securityAnalysisTableNColumnsDefinition = (
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -189,10 +189,6 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterEnums,
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -209,10 +205,6 @@ export const securityAnalysisTableNColumnsDefinition = (
                 FILTER_TEXT_COMPARATORS.CONTAINS,
             ],
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -226,10 +218,6 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -243,10 +231,6 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -260,10 +244,6 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -281,10 +261,6 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             parser: parseDuration,
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -296,10 +272,6 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterEnums,
         },
-        filterTab: [
-            SECURITY_ANALYSIS_RESULT_FILTER,
-            SECURITY_ANALYSIS_RESULT_N,
-        ],
     }),
 ];
 
@@ -325,10 +297,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -339,10 +307,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
@@ -356,10 +320,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
@@ -369,10 +329,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -387,10 +343,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -402,10 +354,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
                 filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
@@ -483,10 +431,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
@@ -501,10 +445,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -514,10 +454,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
@@ -527,10 +463,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.TEXT,
                 filterEnums,
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
@@ -545,10 +477,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     FILTER_TEXT_COMPARATORS.CONTAINS,
                 ],
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
@@ -560,10 +488,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
                 filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
-            filterTab: [
-                SECURITY_ANALYSIS_RESULT_FILTER,
-                SECURITY_ANALYSIS_RESULT_N_K,
-            ],
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
@@ -718,9 +642,6 @@ export const useFetchFiltersEnums = (
 export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
     'securityAnalysisResult',
 ];
-export const SECURITY_ANALYSIS_RESULT_FILTER = 'securityAnalysisResultFilter';
-const SECURITY_ANALYSIS_RESULT_N = 'securityAnalysisResultN';
-const SECURITY_ANALYSIS_RESULT_N_K = 'securityAnalysisResultNK';
 
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
@@ -796,7 +717,7 @@ export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
 
 export const MAX_INT32: number = 2147483647;
 
-export const mappingTabs = (index: number): string => {
+export const getStoreFields = (index: number): string => {
     switch (index) {
         case 0:
             return SECURITY_ANALYSIS_RESULT_N;

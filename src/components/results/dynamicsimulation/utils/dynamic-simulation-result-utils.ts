@@ -6,8 +6,6 @@
  */
 
 export const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
-export const DYNAMIC_SIMULATION_RESULT_FILTER = 'dynamicSimulationResultFilter';
-export const TIMELINE = 'timeline';
 
 // These constants are taken from components/spreadsheet/utils/config-tables.js
 export const MIN_COLUMN_WIDTH = 160;

@@ -10,10 +10,6 @@ import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER =
-    'shortcircuitAnalysisResultFilter';
-export const ONE_BUS_TAB = 'oneBus';
-export const ALL_BUSES_TAB = 'allBuses';
 
 export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     elementId: 'fault.id',

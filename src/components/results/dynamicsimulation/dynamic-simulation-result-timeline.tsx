@@ -30,16 +30,18 @@ import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-fil
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import {
     dynamicSimulationResultInvalidations,
-    DYNAMIC_SIMULATION_RESULT_FILTER,
     LARGE_COLUMN_WIDTH,
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
-    TIMELINE,
 } from './utils/dynamic-simulation-result-utils';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { setDynamicSimulationResultFilter } from 'redux/actions';
+import {
+    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    TIMELINE,
+} from 'utils/store-filter-fields';
 
 const styles = {
     loader: {
@@ -87,7 +89,7 @@ const DynamicSimulationResultTimeline = memo(
         const { updateFilter, filterSelector } = useAggridLocalRowFilter(
             gridRef,
             {
-                filterType: DYNAMIC_SIMULATION_RESULT_FILTER,
+                filterType: DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
                 filterTab: TIMELINE,
                 filterStoreAction: setDynamicSimulationResultFilter,
             }
@@ -125,7 +127,6 @@ const DynamicSimulationResultTimeline = memo(
                             FILTER_NUMBER_COMPARATORS
                         ),
                     },
-                    filterTab: [DYNAMIC_SIMULATION_RESULT_FILTER, TIMELINE],
                     cellRenderer: NumberCellRenderer,
                     ...sortAndFilterProps,
                 }),
@@ -142,7 +143,6 @@ const DynamicSimulationResultTimeline = memo(
                             FILTER_TEXT_COMPARATORS.CONTAINS,
                         ],
                     },
-                    filterTab: [DYNAMIC_SIMULATION_RESULT_FILTER, TIMELINE],
                     ...sortAndFilterProps,
                 }),
                 makeAgGridCustomHeaderColumn({
@@ -158,7 +158,6 @@ const DynamicSimulationResultTimeline = memo(
                             FILTER_TEXT_COMPARATORS.CONTAINS,
                         ],
                     },
-                    filterTab: [DYNAMIC_SIMULATION_RESULT_FILTER, TIMELINE],
                     ...sortAndFilterProps,
                 }),
             ],

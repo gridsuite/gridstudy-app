@@ -38,7 +38,7 @@ import {
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     getIdType,
     mappingColumnToField,
-    mappingTabs,
+    getStoreFields,
     SECURITY_ANALYSIS_RESULT_FILTER,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
@@ -119,7 +119,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         {
             filterType: SECURITY_ANALYSIS_RESULT_FILTER,
-            filterTab: mappingTabs(tabIndex),
+            filterTab: getStoreFields(tabIndex),
             filterStoreAction: setSecurityAnalysisResultFilter,
         },
         () => {

@@ -140,6 +140,28 @@ import {
     OptionalServicesStatus,
 } from '../components/utils/optional-services';
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
+import {
+    LOADFLOW_CURRENT_LIMIT_VIOLATION,
+    LOADFLOW_RESULT,
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+    ALL_BUSES,
+    LOADFLOW_RESULT_STORE_FIELD,
+    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    TIMELINE,
+    SPREADSHEET_STORE_FIELD,
+    ONE_BUS,
+} from 'utils/store-filter-fields';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -263,33 +285,33 @@ const initialState = {
     limitReductionModified: false,
     lastCompletedComputation: null,
     // Results filters
-    loadflowResultFilter: {
-        loadflowCurrentLimitViolation: [],
-        loadflowVoltageLimitViolation: [],
-        loadflowResult: [],
+    [LOADFLOW_RESULT_STORE_FIELD]: {
+        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [],
+        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [],
+        [LOADFLOW_RESULT]: [],
     },
-    securityAnalysisResultFilter: {
-        securityAnalysisResultN: [],
-        securityAnalysisResultNK: [],
+    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
+        [SECURITY_ANALYSIS_RESULT_N]: [],
+        [SECURITY_ANALYSIS_RESULT_N_K]: [],
     },
-    sensitivityAnalysisResultFilter: {
-        sensitivityInDeltaMWN: [],
-        sensitivityInDeltaMWNK: [],
-        sensitivityInDeltaAN: [],
-        sensitivityInDeltaANK: [],
-        sensitivityAtNodeN: [],
-        sensitivityAtNodeNK: [],
+    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
+        [SENSITIVITY_IN_DELTA_MW_N]: [],
+        [SENSITIVITY_IN_DELTA_MW_N_K]: [],
+        [SENSITIVITY_IN_DELTA_A_N]: [],
+        [SENSITIVITY_IN_DELTA_A_N_K]: [],
+        [SENSITIVITY_AT_NODE_N]: [],
+        [SENSITIVITY_AT_NODE_N_K]: [],
     },
-    shortcircuitAnalysisResultFilter: {
-        allBuses: [],
-        oneBuses: [],
+    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
+        [ONE_BUS]: [],
+        [ALL_BUSES]: [],
     },
-    dynamicSimulationResultFilter: {
-        timeline: [],
+    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
+        [TIMELINE]: [],
     },
 
     // Spreadsheet filters
-    spreadsheetFilter: { ...initialSpreadsheetFilter },
+    [SPREADSHEET_STORE_FIELD]: { ...initialSpreadsheetFilter },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
