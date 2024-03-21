@@ -2967,8 +2967,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
-                //  editable: isEditable,
-                //cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter,
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
@@ -2977,15 +2975,6 @@ export const TABLES_DEFINITIONS = {
                     params.data.properties = params.newValue;
                     return params;
                 },
-                //  cellEditor: SitePropertiesEditor,
-                /*  cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },*/
-                //    cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
         ],
@@ -3353,8 +3342,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
-                // editable: isEditable,
-                //cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter,
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
@@ -3363,15 +3350,6 @@ export const TABLES_DEFINITIONS = {
                     params.data.properties = params.newValue;
                     return params;
                 },
-                //cellEditor: SitePropertiesEditor,
-                /*cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },*/
-                //    cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
         ],
@@ -3461,8 +3439,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
-                //   editable: isEditable,
-                // cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter,
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
@@ -3471,15 +3447,6 @@ export const TABLES_DEFINITIONS = {
                     params.data.properties = params.newValue;
                     return params;
                 },
-                //   cellEditor: SitePropertiesEditor,
-                /*  cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },*/
-                //  cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
         ],
@@ -3585,8 +3552,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
-                //  editable: isEditable,
-                //cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter,
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
@@ -3595,15 +3560,6 @@ export const TABLES_DEFINITIONS = {
                     params.data.properties = params.newValue;
                     return params;
                 },
-                // cellEditor: SitePropertiesEditor,
-                /* cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },*/
-                // cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
         ],
@@ -3694,8 +3650,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
-                //  editable: isEditable,
-                // cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter,
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
@@ -3704,15 +3658,6 @@ export const TABLES_DEFINITIONS = {
                     params.data.properties = params.newValue;
                     return params;
                 },
-                //  cellEditor: SitePropertiesEditor,
-                /*cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },*/
-                // cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
         ],
@@ -3777,8 +3722,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
-                // editable: isEditable,
-                //cellStyle: editableCellStyle,
                 valueGetter: propertiesGetter,
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
@@ -3787,15 +3730,6 @@ export const TABLES_DEFINITIONS = {
                     params.data.properties = params.newValue;
                     return params;
                 },
-                //cellEditor: SitePropertiesEditor,
-                /*cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },*/
-                // cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
         ],
