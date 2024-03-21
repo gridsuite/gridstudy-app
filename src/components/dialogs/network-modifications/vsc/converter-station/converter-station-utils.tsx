@@ -279,12 +279,12 @@ export function getConverterStationModificationData(
         reactiveCapabilityCurve: toModificationOperation(
             isReactiveCapabilityCurveOn
         ),
-        minimumReactivePower: toModificationOperation(
+        minQ: toModificationOperation(
             isReactiveCapabilityCurveOn
                 ? null
                 : reactiveLimits[MINIMUM_REACTIVE_POWER]
         ),
-        maximumReactivePower: toModificationOperation(
+        maxQ: toModificationOperation(
             isReactiveCapabilityCurveOn
                 ? null
                 : reactiveLimits[MAXIMUM_REACTIVE_POWER]
