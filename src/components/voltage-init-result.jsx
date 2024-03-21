@@ -305,7 +305,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             },
             {
                 headerName: intl.formatMessage({ id: 'BusVoltage' }),
-                field: 'voltage',
+                field: 'v',
                 numeric: true,
             },
             {
