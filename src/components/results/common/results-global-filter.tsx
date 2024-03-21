@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box } from '@mui/system';
-import {Autocomplete, Chip, InputAdornment, TextField} from '@mui/material';
+import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
-import {FormattedMessage, useIntl} from 'react-intl';
-import {mergeSx} from "../../utils/functions";
+import { FormattedMessage, useIntl } from 'react-intl';
+import { mergeSx } from '../../utils/functions';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const styles = {
     filter: (theme) => ({
@@ -20,14 +21,18 @@ const styles = {
             position: 'absolute',
             width: 'inherit',
             zIndex: 2,
-            '&:not(:first-child)': { // Fixes the background of the input label when there is focus
-                background: 'linear-gradient(to top, '+theme.palette.tabBackground+' 80%, transparent 80%)',
-            }
-        }
+            '&:not(:first-child)': {
+                // Fixes the background of the input label when there is focus
+                background:
+                    'linear-gradient(to top, ' +
+                    theme.palette.tabBackground +
+                    ' 80%, transparent 80%)',
+            },
+        }, // TODO Fix transparent background when we select a chip with the keybord, in the inputField
     }),
     chipBox: {
         width: '100%',
-        display: "flex",
+        display: 'flex',
         flexWrap: 'wrap',
         padding: '0.5em',
     },
@@ -42,86 +47,118 @@ const styles = {
         paddingLeft: 1,
     }),
     chip: (theme) => ({
-        margin: '4px 2px 4px 2px',
-        padding:0,
+        '&.MuiChip-root': {
+            margin: '4px 2px 4px 2px',
+            padding: '0',
+            color: 'white',
+        },
+        '.MuiChip-deleteIcon:hover': {
+            color: 'white',
+        },
+        '&.Mui-focusVisible': {
+            width: 'auto',
+            position: 'relative',
+        },
+        // '&.Mui-focusVisible': {
+        //     color: 'gold !important',
+        //     backgroundColor: 'red !important',
+        //     width: 'auto',
+        //     position: 'relative',
+        // },
     }),
     chipCountry: (theme) => ({
-        backgroundColor: 'red !important',
-        color: theme.palette.getContrastText('#FF0000'),
-        //'&:hover, &:focus': {
-        //    backgroundColor: 'blue !important',
-        //    //filter: 'brightness(120%)',
-        //},
-        //'&:active': {
-        //    boxShadow: 'none',
-        //    backgroundColor: 'blue !important',
-        //    //borderColor: 'blue',
-        //},
+        '&.MuiChip-root': {
+            backgroundColor: '#01579b',
+        },
+        '.MuiChip-deleteIcon': {
+            color: '#b2daf1',
+        },
+        '&.MuiChip-root:hover': {
+            backgroundColor: '#0277bd',
+        },
+        '&.Mui-focusVisible': {
+            background: '#0288d1 !important',
+        },
     }),
     chipVoltageLevel: (theme) => ({
-        backgroundColor: 'pink !important',
-        color: theme.palette.getContrastText('#f1a2fc'),
+        '&.MuiChip-root': {
+            backgroundColor: '#1e88e5',
+        },
+        '& .MuiChip-deleteIcon': {
+            color: '#bbdefb',
+        },
+        '&.MuiChip-root:hover': {
+            backgroundColor: '#1976d2',
+        },
+        '&.Mui-focusVisible': {
+            background: '#2196F3 !important',
+        },
     }),
 };
 
 const filters = [
     {
-        label: "France",
-        filterType: "country",
+        label: 'FR',
+        filterType: 'country',
         recent: true,
     },
     {
-        label: "380 kv",
-        filterType: "voltageLevel",
+        label: '380 kV',
+        filterType: 'voltageLevel',
     },
     {
-        label: "220 kv",
-        filterType: "voltageLevel",
+        label: '220 kV',
+        filterType: 'voltageLevel',
         recent: true,
     },
     {
-        label: "Belgium",
-        filterType: "country",
+        label: 'BE',
+        filterType: 'country',
         recent: true,
     },
     {
-        label: "South Korea",
-        filterType: "country",
+        label: 'KR',
+        filterType: 'country',
     },
     {
-        label: "Italy",
-        filterType: "country",
+        label: 'IT',
+        filterType: 'country',
         recent: true,
     },
     {
-        label: "400 kv",
-        filterType: "voltageLevel",
+        label: '400 kV',
+        filterType: 'voltageLevel',
         recent: true,
     },
     {
-        label: "150 kv",
-        filterType: "voltageLevel",
+        label: '150 kV',
+        filterType: 'voltageLevel',
     },
     {
-        label: "Germany",
-        filterType: "country",
+        label: 'DE',
+        filterType: 'country',
         recent: true,
     },
     {
-        label: "Spain",
-        filterType: "country",
+        label: 'ES',
+        filterType: 'country',
     },
 ];
 
 const ResultsGlobalFilter = (props) => {
     const intl = useIntl();
+    const { translate } = useLocalizedCountries();
+
+    const getOptionLabel = useCallback(
+        (option) =>
+            option.filterType === 'country'
+                ? translate(option.label)
+                : option.label,
+        [translate]
+    );
 
     return (
-        <Box
-            //style={{ display: selected ? 'inherit' : 'none' }}
-            sx={styles.filter}
-            //{...other}
-        >
+        <Box sx={styles.filter}>
             <Autocomplete
                 multiple
                 id="result-global-filter"
@@ -130,17 +167,36 @@ const ResultsGlobalFilter = (props) => {
                 disableCloseOnSelect
                 options={filters.sort((a, b) => !!b.recent - !!a.recent)}
                 groupBy={(option) => !!option.recent}
-                renderOption={(params, option) => (
+                renderOption={(props, option) => (
                     <Chip
-                        {...params}
+                        {...props}
                         disableRipple
-                        label={option.label}
-                        size='small'
-                        sx={mergeSx(styles.chip,
-                            option.filterType === 'country' ? styles.chipCountry : styles.chipVoltageLevel
+                        label={getOptionLabel(option)}
+                        size="small"
+                        sx={mergeSx(
+                            styles.chip,
+                            option.filterType === 'country'
+                                ? styles.chipCountry
+                                : styles.chipVoltageLevel
                         )}
                     />
                 )}
+                renderTags={(value, getTagsProps) =>
+                    value.map((element, index) => (
+                        <Chip
+                            id={'chip_' + element}
+                            size={'small'}
+                            label={getOptionLabel(element)}
+                            {...getTagsProps({ index })}
+                            sx={mergeSx(
+                                styles.chip,
+                                element.filterType === 'country'
+                                    ? styles.chipCountry
+                                    : styles.chipVoltageLevel
+                            )}
+                        />
+                    ))
+                }
                 renderGroup={(item) => {
                     const { group, children } = item;
                     const itemRecentAvailable = !!group;
@@ -153,7 +209,7 @@ const ResultsGlobalFilter = (props) => {
                         >
                             {itemRecentAvailable && (
                                 <Box sx={styles.recentLabel}>
-                                    <FormattedMessage id="results.globalFilter.recent"/>
+                                    <FormattedMessage id="results.globalFilter.recent" />
                                 </Box>
                             )}
                             {children}
@@ -164,27 +220,25 @@ const ResultsGlobalFilter = (props) => {
                     sx: styles.openBoxList,
                 }}*/
                 renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label={intl.formatMessage({
-                                id: 'results.globalFilter.fillerText',
-                            })}
-                            InputProps={{
-                                ...params.InputProps,
-                                startAdornment: (
-                                    <>
-                                        <InputAdornment position="start">
-                                            <FilterAlt/>
-                                        </InputAdornment>
-                                        {params.InputProps.startAdornment}
-                                    </>
-                                ),
-                            }}
-
-                        />
-                    )
-                }
-                />
+                    <TextField
+                        {...params}
+                        label={intl.formatMessage({
+                            id: 'results.globalFilter.fillerText',
+                        })}
+                        InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                                <>
+                                    <InputAdornment position="start">
+                                        <FilterAlt />
+                                    </InputAdornment>
+                                    {params.InputProps.startAdornment}
+                                </>
+                            ),
+                        }}
+                    />
+                )}
+            />
         </Box>
     );
 };

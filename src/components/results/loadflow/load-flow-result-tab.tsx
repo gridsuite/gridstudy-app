@@ -50,7 +50,7 @@ import {
     NumberCellRenderer,
     StatusCellRender,
 } from '../common/result-cell-renderers';
-import ResultsGlobalFilter from "../common/results-global-filter";
+import ResultsGlobalFilter from '../common/results-global-filter';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -202,8 +202,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, [tabIndex, loadflowResult, intl]);
     return (
         <>
-            <Box sx={{display: 'flex'}}>
-                <Tabs value={tabIndex} onChange={handleTabChange} sx={{flexGrow: 0}}>
+            <Box sx={{ display: 'flex' }}>
+                <Tabs
+                    value={tabIndex}
+                    onChange={handleTabChange}
+                    sx={{ flexGrow: 0 }}
+                >
                     <Tab
                         label={
                             <FormattedMessage
@@ -229,7 +233,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         }
                     />
                 </Tabs>
-                <Box sx={{flexGrow: 0}}><ResultsGlobalFilter /></Box>
+                <Box sx={{ flexGrow: 0 }}>
+                    <ResultsGlobalFilter />
+                </Box>
                 <Box sx={{ flexGrow: 1 }}></Box>
             </Box>
 
