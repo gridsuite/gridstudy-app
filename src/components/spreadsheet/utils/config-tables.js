@@ -533,6 +533,30 @@ export const TABLES_DEFINITIONS = {
                     },
                 },
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+                ...defaultTextFilterConfig,
+            },
         ],
     },
 
@@ -692,6 +716,19 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
             },
         ],
     },
@@ -1413,6 +1450,30 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+                ...defaultTextFilterConfig,
+            },
         ],
     },
 
@@ -1847,6 +1908,19 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
             },
         ],
     },
@@ -2433,6 +2507,30 @@ export const TABLES_DEFINITIONS = {
                 },
                 cellEditorPopup: true,
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+                ...defaultTextFilterConfig,
+            },
         ],
     },
     LOADS: {
@@ -2558,6 +2656,30 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Properties',
+                field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+                ...defaultTextFilterConfig,
             },
         ],
     },
@@ -2744,6 +2866,30 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+                ...defaultTextFilterConfig,
+            },
         ],
     },
 
@@ -2823,6 +2969,19 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
             },
         ],
     },
@@ -3044,6 +3203,30 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                editable: isEditable,
+                cellStyle: editableCellStyle,
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                cellEditor: SitePropertiesEditor,
+                cellEditorParams: (params) => {
+                    return {
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                        rowData: params.data,
+                    };
+                },
+                cellEditorPopup: true,
+                ...defaultTextFilterConfig,
+            },
         ],
     },
 
@@ -3162,6 +3345,19 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
+            },
         ],
     },
 
@@ -3245,6 +3441,19 @@ export const TABLES_DEFINITIONS = {
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
             },
         ],
     },
@@ -3346,6 +3555,19 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
+            },
         ],
     },
 
@@ -3431,6 +3653,19 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
+            },
         ],
     },
     BUSES: {
@@ -3489,6 +3724,19 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
                 ...defaultNumericFilterConfig,
+            },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter,
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+                valueSetter: (params) => {
+                    params.data.properties = params.newValue;
+                    return params;
+                },
+                ...defaultTextFilterConfig,
             },
         ],
     },
