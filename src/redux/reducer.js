@@ -1113,27 +1113,28 @@ export const reducer = createReducer(initialState, {
         state.lastCompletedComputation = action.lastCompletedComputation;
     },
     [LOADFLOW_RESULT_FILTER]: (state, action) => {
-        state.loadflowResultFilter[action.filterTab] =
-            action.loadflowResultFilter;
+        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] =
+            action[LOADFLOW_RESULT_STORE_FIELD];
     },
     [SECURITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
-        state.securityAnalysisResultFilter[action.filterTab] =
-            action.securityAnalysisResultFilter;
+        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
     },
     [SENSITIVITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
-        state.sensitivityAnalysisResultFilter[action.filterTab] =
-            action.sensitivityAnalysisResultFilter;
+        state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
     },
     [SHORTCIRCUIT_ANALYSIS_RESULT_FILTER]: (state, action) => {
-        state.shortcircuitAnalysisResultFilter[action.filterTab] =
-            action.shortcircuitAnalysisResultFilter;
+        state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
     },
     [DYNAMIC_SIMULATION_RESULT_FILTER]: (state, action) => {
-        state.dynamicSimulationResultFilter[action.filterTab] =
-            action.dynamicSimulationResultFilter;
+        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] =
+            action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
     },
     [SPREADSHEET_FILTER]: (state, action) => {
-        state.spreadsheetFilter[action.filterTab] = action.spreadsheetFilter;
+        state[SPREADSHEET_STORE_FIELD][action.filterTab] =
+            action[SPREADSHEET_STORE_FIELD];
     },
 });
 
