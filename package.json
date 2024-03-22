@@ -12,7 +12,7 @@
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
-        "@powsybl/diagram-viewer": "0.3.2",
+        "@powsybl/diagram-viewer": "0.3.3",
         "@reduxjs/toolkit": "^1.2.3",
         "@svgdotjs/svg.js": "^3.0.12",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
@@ -64,33 +64,6 @@
         "test": "jest",
         "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0",
         "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"MPL-2.0; MIT; BSD-3-Clause; BSD-2-Clause; 0BSD; Apache-2.0; ISC; Apache-Style; CC-BY-3.0; CC-BY-4.0; CC0-1.0; MIT AND CC-BY-3.0; MIT OR CC0-1.0; Artistic-2.0; Python-2.0; Unlicense\" --excludePackages \"@mapbox/jsonlint-lines-primitives@2.0.2;cartocolor@4.0.2\""
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "plugin:prettier/recommended"
-        ],
-        "ignorePatterns": [
-            "build"
-        ],
-        "rules": {
-            "prettier/prettier": "warn",
-            "curly": "error"
-        }
-    },
-    "browserslist": {
-        "production": [
-            ">0.2% and supports es6-class",
-            "not dead",
-            "not op_mini all",
-            "not chrome < 51",
-            "not safari < 10"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
     },
     "devDependencies": {
         "@babel/helper-builder-react-jsx": "7.15.4",

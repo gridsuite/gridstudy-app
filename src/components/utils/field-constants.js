@@ -248,6 +248,7 @@ export const FIXED_GENERATORS = 'constantQGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
 export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
+export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
 export const LEG_SIDE = 'legSide';
 
 export const PRIORITY = 'priority';

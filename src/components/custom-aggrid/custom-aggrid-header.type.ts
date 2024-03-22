@@ -29,6 +29,7 @@ export enum FILTER_NUMBER_COMPARATORS {
 
 type FilterParams = {
     filterDataType?: string;
+    isDuration?: boolean;
     filterComparators?: string[];
     debounceMs?: number;
     parser?: (value: string) => void;
@@ -40,4 +41,6 @@ export interface CustomColDef extends ColDef {
     filterParams?: FilterParams;
     sortProps?: SortPropsType;
     agGridFilterParams?: any;
+    getEnumLabel?: (value: string) => string;
+    isCountry?: boolean;
 }
