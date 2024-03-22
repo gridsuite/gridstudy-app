@@ -26,6 +26,7 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
+import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -134,7 +135,7 @@ const PagedSensitivityAnalysisResult = ({
                       (acc, value) => ({
                           ...acc,
                           [DATA_KEY_TO_SORT_KEY[value.colId]]:
-                              value.sort === 'desc' ? -1 : 1,
+                              value.sort === SORT_WAYS.desc ? -1 : 1,
                       }),
                       {}
                   ),

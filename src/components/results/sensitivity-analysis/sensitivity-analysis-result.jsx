@@ -62,8 +62,9 @@ const SensitivityAnalysisResult = ({
             const { onSortChanged = () => {}, sortConfig } = sortProps || {};
             const { updateFilter, filterSelector } = filterProps || {};
 
-            const { colKey, sortWay } = sortConfig || {};
-            const isSortActive = colKey === field;
+            const isSortActive = !!sortConfig?.find(
+                (value) => value.colId === field
+            );
 
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||

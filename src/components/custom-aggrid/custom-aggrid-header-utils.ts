@@ -7,6 +7,7 @@
 
 import { CustomColDef, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
@@ -47,7 +48,7 @@ export const makeAgGridCustomHeaderColumn = ({
             isSortable,
             sortParams: {
                 sortConfig,
-                onSortChanged: (newSortValue: 'asc' | 'desc') => {
+                onSortChanged: (newSortValue: SortWay) => {
                     onSortChanged({
                         colId: field,
                         sort: newSortValue,

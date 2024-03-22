@@ -9,7 +9,7 @@ import { useCallback, useState } from 'react';
 
 export type SortConfigType = {
     colId: string;
-    sort: 'asc' | 'desc';
+    sort: SortWay;
     children?: boolean;
 };
 
@@ -24,6 +24,8 @@ export const SORT_WAYS = {
     asc: 'asc' as const,
     desc: 'desc' as const,
 };
+
+export type SortWay = 'asc' | 'desc';
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType
