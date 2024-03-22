@@ -65,7 +65,7 @@ function reactVirtualized(): PluginOption {
             const reactVirtualizedPath = require.resolve('react-virtualized');
             const { pathname: reactVirtualizedFilePath } = new url.URL(
                 reactVirtualizedPath,
-                import.meta.url,
+                import.meta.url
             );
             const file = reactVirtualizedFilePath.replace(
                 path.join('dist', 'commonjs', 'index.js'),
@@ -74,8 +74,8 @@ function reactVirtualized(): PluginOption {
                     'es',
                     'WindowScroller',
                     'utils',
-                    'onScroll.js',
-                ),
+                    'onScroll.js'
+                )
             );
             const code = await fs.readFile(file, 'utf-8');
             const modified = code.replace(WRONG_CODE, '');

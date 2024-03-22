@@ -22,22 +22,22 @@ import { getSortValue } from '../../hooks/use-aggrid-sort';
 export function startSecurityAnalysis(
     studyUuid,
     currentNodeUuid,
-    contingencyListNames,
+    contingencyListNames
 ) {
     console.info(
-        `Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`,
+        `Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
     );
 
     // Add params to Url
     const contingencyListsQueryParams = getRequestParamFromList(
         contingencyListNames,
-        'contingencyListName',
+        'contingencyListName'
     );
     const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
-        currentNodeUuid,
+        currentNodeUuid
     )}/security-analysis/run?${urlSearchParams}`;
 
     console.debug(url);
@@ -50,7 +50,7 @@ export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
             studyUuid +
             ' and node ' +
             currentNodeUuid +
-            ' ...',
+            ' ...'
     );
     const stopSecurityAnalysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -62,14 +62,14 @@ export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
 export function fetchSecurityAnalysisResult(
     studyUuid,
     currentNodeUuid,
-    queryParams,
+    queryParams
 ) {
     console.info(
-        `Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`,
+        `Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
-        currentNodeUuid,
+        currentNodeUuid
     )}/security-analysis/result`;
 
     const { resultType, page, size, sort, filters } = queryParams || {};
@@ -99,14 +99,14 @@ export function downloadSecurityAnalysisResultZippedCsv(
     currentNodeUuid,
     queryParams,
     headers,
-    enumValueTranslations,
+    enumValueTranslations
 ) {
     console.info(
-        `Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`,
+        `Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
-        currentNodeUuid,
+        currentNodeUuid
     )}/security-analysis/result/csv`;
 
     const { resultType } = queryParams || {};
@@ -130,7 +130,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
 
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`,
+        `Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`
     );
 
     const url =

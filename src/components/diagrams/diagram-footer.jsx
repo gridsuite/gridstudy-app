@@ -51,19 +51,19 @@ const DiagramFooter = (props) => {
     } = props;
     const handleStopFullScreen = useCallback(
         () => onStopFullScreen && onStopFullScreen(),
-        [onStopFullScreen],
+        [onStopFullScreen]
     );
     const handleStartFullScreen = useCallback(
         () => onStartFullScreen && onStartFullScreen(),
-        [onStartFullScreen],
+        [onStartFullScreen]
     );
     const handleIncrementCounter = useCallback(
         () => onIncrementCounter && onIncrementCounter(),
-        [onIncrementCounter],
+        [onIncrementCounter]
     );
     const handleDecrementCounter = useCallback(
         () => onDecrementCounter && onDecrementCounter(),
-        [onDecrementCounter],
+        [onDecrementCounter]
     );
 
     return (

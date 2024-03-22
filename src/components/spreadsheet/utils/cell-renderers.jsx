@@ -224,7 +224,7 @@ export const EditableCellRenderer = (props) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const isRootNode = useMemo(
         () => isNodeReadOnly(currentNode),
-        [currentNode],
+        [currentNode]
     );
 
     const handleStartEditing = useCallback(() => {
@@ -255,7 +255,7 @@ export const ReferenceLineCellRenderer = (props) => {
             sx={mergeSx(
                 styles.referenceEditRow,
                 styles.leftFade,
-                styles.editCell,
+                styles.editCell
             )}
         >
             <IconButton
@@ -280,7 +280,7 @@ export const EditingCellRenderer = (props) => {
 
     const isFormInvalid = useMemo(
         () => Object.entries(props.context.editErrors).length !== 0,
-        [props.context.editErrors],
+        [props.context.editErrors]
     );
 
     return (

@@ -102,14 +102,14 @@ const SubstationModificationDialog = ({
         (equipment) => {
             // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
             const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`,
+                `${ADDITIONAL_PROPERTIES}`
             );
             return mergeModificationAndEquipmentProperties(
                 modificationProperties,
-                equipment,
+                equipment
             );
         },
-        [getValues],
+        [getValues]
     );
 
     const onEquipmentIdChange = useCallback(
@@ -125,7 +125,7 @@ const SubstationModificationDialog = ({
                     EQUIPMENT_TYPES.SUBSTATION,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true,
+                    true
                 )
                     .then((substation) => {
                         if (substation) {
@@ -147,13 +147,7 @@ const SubstationModificationDialog = ({
                     });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            reset,
-            getConcatenatedProperties,
-            editData,
-        ],
+        [studyUuid, currentNodeUuid, reset, getConcatenatedProperties, editData]
     );
 
     useEffect(() => {
@@ -172,7 +166,7 @@ const SubstationModificationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData?.uuid,
-                toModificationProperties(substation),
+                toModificationProperties(substation)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -180,7 +174,7 @@ const SubstationModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid, selectedId],
+        [currentNodeUuid, editData, snackError, studyUuid, selectedId]
     );
 
     const open = useOpenShortWaitFetching({

@@ -49,14 +49,14 @@ const VariationForm = ({ name, index }) => {
                 return (
                     value?.specificMetadata?.type === IDENTIFIER_LIST &&
                     value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                        (filter) => !!filter.distributionKey,
+                        (filter) => !!filter.distributionKey
                     )
                 );
             }
 
             return true;
         },
-        [variationMode],
+        [variationMode]
     );
 
     const filtersField = (

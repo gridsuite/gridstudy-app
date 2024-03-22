@@ -25,7 +25,7 @@ export const useModificationLabelComputer = () => {
 
     const getEquipmentAttributeModificationValues = (
         modification,
-        withFormat,
+        withFormat
     ) => {
         return {
             equipmentAttributeName: modification.equipmentAttributeName,
@@ -90,12 +90,12 @@ export const useModificationLabelComputer = () => {
             case MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type:
                 return getBranchStatusModificationValues(
                     modificationValues,
-                    withFormat,
+                    withFormat
                 );
             case MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type:
                 return getEquipmentAttributeModificationValues(
                     modificationValues,
-                    withFormat,
+                    withFormat
                 );
             default:
                 return {

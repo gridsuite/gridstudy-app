@@ -16,44 +16,41 @@ import RunningStatus from 'components/utils/running-status';
  */
 export const useComputationResultsCount = () => {
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW],
+        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS],
+            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const sensitivityAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS],
+            state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
     const nonEvacuateEnergyAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
+            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
     const oneBusallBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS],
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const allBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[
-                ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
-            ],
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
     );
 
     const dynamicSimulationStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.DYNAMIC_SIMULATION],
+            state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
     const voltageInitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.VOLTAGE_INIT],
+        (state: ReduxState) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)

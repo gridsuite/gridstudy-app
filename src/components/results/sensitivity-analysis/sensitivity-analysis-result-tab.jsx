@@ -41,7 +41,7 @@ export const SensitivityResultTabs = [
 
 function getDisplayedColumns(params) {
     return params.api.columnModel.columnDefs.map(
-        (c) => c.headerComponentParams.displayName,
+        (c) => c.headerComponentParams.displayName
     );
 }
 
@@ -54,11 +54,11 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS],
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        DATA_KEY_TO_FILTER_KEY,
+        DATA_KEY_TO_FILTER_KEY
     );
 
     // Add default sort on sensitivity col

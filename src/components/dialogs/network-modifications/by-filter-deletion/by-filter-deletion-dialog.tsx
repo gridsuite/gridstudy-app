@@ -43,7 +43,7 @@ const formSchema = yup
                     [SPECIFIC_METADATA]: yup.object().shape({
                         [TYPE]: yup.string(),
                     }),
-                }),
+                })
             )
             .required()
             .min(1, 'FieldIsRequired'),
@@ -96,7 +96,7 @@ const ByFilterDeletionDialog: FunctionComponent<
                 [FILTERS]: editData.filters,
             });
         },
-        [reset],
+        [reset]
     );
 
     useEffect(() => {
@@ -112,7 +112,7 @@ const ByFilterDeletionDialog: FunctionComponent<
                 currentNodeUuid,
                 formData[TYPE],
                 formData[FILTERS],
-                editData?.uuid,
+                editData?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -120,7 +120,7 @@ const ByFilterDeletionDialog: FunctionComponent<
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

@@ -122,11 +122,11 @@ const phaseTapChangerValidationSchema = (id) => ({
                         .required()
                         .min(
                             yup.ref(LOW_TAP_POSITION),
-                            'TapPositionMustBeBetweenLowAndHighTapPositionValue',
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         )
                         .max(
                             yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionMustBeBetweenLowAndHighTapPositionValue',
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         ),
             }),
         [STEPS]: yup
@@ -140,7 +140,7 @@ const phaseTapChangerValidationSchema = (id) => ({
                     [STEPS_SUSCEPTANCE]: yup.number(),
                     [STEPS_RATIO]: yup.number(),
                     [STEPS_ALPHA]: yup.number(),
-                }),
+                })
             )
             .when(ENABLED, {
                 is: true,
@@ -219,7 +219,7 @@ const phaseTapChangerModificationValidationSchema = (id) => ({
                     [STEPS_SUSCEPTANCE]: yup.number(),
                     [STEPS_RATIO]: yup.number(),
                     [STEPS_ALPHA]: yup.number(),
-                }),
+                })
             )
             .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
                 const alphaArray = array.map((step) => step[STEPS_ALPHA]);
@@ -255,7 +255,7 @@ export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
 };
 
 export const getPhaseTapChangerModificationValidationSchema = (
-    id = PHASE_TAP_CHANGER,
+    id = PHASE_TAP_CHANGER
 ) => {
     return phaseTapChangerModificationValidationSchema(id);
 };
@@ -298,7 +298,7 @@ export const getPhaseTapChangerFormData = (
         equipmentId,
         equipmentType,
     },
-    id = PHASE_TAP_CHANGER,
+    id = PHASE_TAP_CHANGER
 ) => ({
     [id]: {
         [ENABLED]: enabled,
@@ -321,7 +321,7 @@ export const getPhaseTapChangerFormData = (
 });
 
 export const getComputedPhaseTapChangerRegulationMode = (
-    phaseTapChangerFormValues,
+    phaseTapChangerFormValues
 ) => {
     if (
         phaseTapChangerFormValues?.[REGULATION_MODE] ===

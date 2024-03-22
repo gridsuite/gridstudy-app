@@ -88,7 +88,7 @@ const withOperatingStatusMenu =
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
                 equipment.id,
-                false,
+                false
             ).then((value) => {
                 if (value) {
                     setEquipmentInfos(value);
@@ -111,7 +111,7 @@ const withOperatingStatusMenu =
                 currentNode,
                 isAnyNodeBuilding,
                 modificationInProgress,
-            ],
+            ]
         );
 
         function handleError(error, translationKey) {
@@ -136,7 +136,7 @@ const withOperatingStatusMenu =
             lockoutEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
                 (error) => {
                     handleError(error, 'UnableToLockout');
-                },
+                }
             );
         }
 
@@ -145,7 +145,7 @@ const withOperatingStatusMenu =
             tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
                 (error) => {
                     handleError(error, 'UnableToTrip');
-                },
+                }
             );
         }
 
@@ -155,7 +155,7 @@ const withOperatingStatusMenu =
                 studyUuid,
                 currentNode?.id,
                 equipmentInfos,
-                side,
+                side
             ).catch((error) => {
                 handleError(error, 'UnableToEnergiseOnOneEnd');
             });
@@ -166,7 +166,7 @@ const withOperatingStatusMenu =
             switchOnEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
                 (error) => {
                     handleError(error, 'UnableToSwitchOn');
-                },
+                }
             );
         }
 
@@ -176,10 +176,10 @@ const withOperatingStatusMenu =
                 onOpenDynamicSimulationEventDialog(
                     equipmentId,
                     equipmentType,
-                    dialogTitle,
+                    dialogTitle
                 );
             },
-            [handleClose, onOpenDynamicSimulationEventDialog],
+            [handleClose, onOpenDynamicSimulationEventDialog]
         );
 
         return (
@@ -285,7 +285,7 @@ const withOperatingStatusMenu =
                                     {intl.formatMessage(
                                         {
                                             id: getTranslationKey(
-                                                'EnergiseOnOneEnd',
+                                                'EnergiseOnOneEnd'
                                             ),
                                         },
                                         {
@@ -293,7 +293,7 @@ const withOperatingStatusMenu =
                                                 name: equipmentInfos?.voltageLevelName1,
                                                 id: equipmentInfos?.voltageLevelId1,
                                             }),
-                                        },
+                                        }
                                     )}
                                 </Typography>
                             }
@@ -320,7 +320,7 @@ const withOperatingStatusMenu =
                                     {intl.formatMessage(
                                         {
                                             id: getTranslationKey(
-                                                'EnergiseOnOneEnd',
+                                                'EnergiseOnOneEnd'
                                             ),
                                         },
                                         {
@@ -328,7 +328,7 @@ const withOperatingStatusMenu =
                                                 name: equipmentInfos?.voltageLevelName2,
                                                 id: equipmentInfos?.voltageLevelId2,
                                             }),
-                                        },
+                                        }
                                     )}
                                 </Typography>
                             }
@@ -365,7 +365,7 @@ const withOperatingStatusMenu =
                     onClick={() =>
                         handleDeleteEquipment(
                             getFeederTypeFromEquipmentType(equipmentType),
-                            equipment.id,
+                            equipment.id
                         )
                     }
                     disabled={!isNodeEditable}
@@ -391,7 +391,7 @@ const withOperatingStatusMenu =
                         onClick={() =>
                             handleOpenModificationDialog(
                                 equipment.id,
-                                equipmentType,
+                                equipmentType
                             )
                         }
                         disabled={!isNodeEditable}

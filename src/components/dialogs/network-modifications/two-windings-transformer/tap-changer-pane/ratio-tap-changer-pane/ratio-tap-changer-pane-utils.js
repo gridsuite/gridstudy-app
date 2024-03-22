@@ -87,7 +87,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                         enabled,
                         hasLoadTapChangingCapabilities,
                         regulationMode,
-                        regulationType,
+                        regulationType
                     ) =>
                         enabled &&
                         hasLoadTapChangingCapabilities &&
@@ -95,7 +95,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
                         regulationType === REGULATION_TYPES.LOCAL.id,
                     then: (schema) => schema.required(),
-                },
+                }
             ),
         [TARGET_V]: yup
             .mixed()
@@ -147,11 +147,11 @@ const ratioTapChangerValidationSchema = (id) => ({
                         .required()
                         .min(
                             yup.ref(LOW_TAP_POSITION),
-                            'TapPositionMustBeBetweenLowAndHighTapPositionValue',
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         )
                         .max(
                             yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionMustBeBetweenLowAndHighTapPositionValue',
+                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
                         ),
             }),
         [STEPS]: yup
@@ -164,7 +164,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                     [STEPS_CONDUCTANCE]: yup.number(),
                     [STEPS_SUSCEPTANCE]: yup.number(),
                     [STEPS_RATIO]: yup.number(),
-                }),
+                })
             )
             .when(ENABLED, {
                 is: true,
@@ -201,7 +201,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                         enabled,
                         hasLoadTapChangingCapabilities,
                         regulationMode,
-                        regulationType,
+                        regulationType
                     ) =>
                         enabled &&
                         hasLoadTapChangingCapabilities &&
@@ -209,7 +209,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
                         regulationType === REGULATION_TYPES.DISTANT.id,
                     then: (schema) => schema.required(),
-                },
+                }
             ),
         [EQUIPMENT]: yup
             .object()
@@ -231,7 +231,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                         enabled,
                         hasLoadTapChangingCapabilities,
                         regulationMode,
-                        regulationType,
+                        regulationType
                     ) =>
                         enabled &&
                         hasLoadTapChangingCapabilities &&
@@ -239,7 +239,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
                         regulationType === REGULATION_TYPES.DISTANT.id,
                     then: (schema) => schema.required(),
-                },
+                }
             ),
     }),
 });
@@ -272,7 +272,7 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
                     [STEPS_CONDUCTANCE]: yup.number(),
                     [STEPS_SUSCEPTANCE]: yup.number(),
                     [STEPS_RATIO]: yup.number(),
-                }),
+                })
             )
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);
@@ -310,7 +310,7 @@ export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
 
 export const getRatioTapChangerModificationValidationSchema = (
     previousValues,
-    id = RATIO_TAP_CHANGER,
+    id = RATIO_TAP_CHANGER
 ) => {
     return ratioTapChangerModificationValidationSchema(previousValues, id);
 };
@@ -353,7 +353,7 @@ export const getRatioTapChangerFormData = (
         equipmentId,
         equipmentType,
     },
-    id = RATIO_TAP_CHANGER,
+    id = RATIO_TAP_CHANGER
 ) => ({
     [id]: {
         [ENABLED]: enabled,

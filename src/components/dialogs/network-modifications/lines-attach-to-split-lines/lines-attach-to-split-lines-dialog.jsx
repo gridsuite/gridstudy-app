@@ -127,7 +127,7 @@ const LinesAttachToSplitLinesDialog = ({
                 linesAttachToSplitLine[REPLACING_LINE_1_ID],
                 sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
                 linesAttachToSplitLine[REPLACING_LINE_2_ID],
-                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME]),
+                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -135,7 +135,7 @@ const LinesAttachToSplitLinesDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError],
+        [editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {

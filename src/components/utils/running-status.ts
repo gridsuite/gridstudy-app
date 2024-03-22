@@ -15,7 +15,7 @@ export enum RunningStatus {
 export default RunningStatus;
 
 export function getLoadFlowRunningStatus(
-    loadFlowStatus: string,
+    loadFlowStatus: string
 ): RunningStatus {
     switch (loadFlowStatus) {
         case 'CONVERGED':
@@ -34,7 +34,7 @@ export function getLoadFlowRunningStatus(
 }
 
 export function getSecurityAnalysisRunningStatus(
-    securityAnalysisStatus: string,
+    securityAnalysisStatus: string
 ): RunningStatus {
     switch (securityAnalysisStatus) {
         case 'CONVERGED':
@@ -51,7 +51,7 @@ export function getSecurityAnalysisRunningStatus(
 }
 
 export function getSensitivityAnalysisRunningStatus(
-    sensitivityAnalysisStatus: string,
+    sensitivityAnalysisStatus: string
 ): RunningStatus {
     switch (sensitivityAnalysisStatus) {
         case 'COMPLETED':
@@ -66,7 +66,7 @@ export function getSensitivityAnalysisRunningStatus(
 }
 
 export function getNonEvacuatedEnergyRunningStatus(
-    nonEvacuatedEnergyStatus: string,
+    nonEvacuatedEnergyStatus: string
 ): RunningStatus {
     switch (nonEvacuatedEnergyStatus) {
         case 'COMPLETED':
@@ -83,7 +83,7 @@ export function getNonEvacuatedEnergyRunningStatus(
 }
 
 export function getShortCircuitAnalysisRunningStatus(
-    shortCircuitAnalysisStatus: string,
+    shortCircuitAnalysisStatus: string
 ): RunningStatus {
     switch (shortCircuitAnalysisStatus) {
         case 'COMPLETED':
@@ -98,7 +98,7 @@ export function getShortCircuitAnalysisRunningStatus(
 }
 
 export function getDynamicSimulationRunningStatus(
-    dynamicSimulationStatus: string,
+    dynamicSimulationStatus: string
 ): RunningStatus {
     switch (dynamicSimulationStatus) {
         case 'CONVERGED':
@@ -115,7 +115,7 @@ export function getDynamicSimulationRunningStatus(
 }
 
 export function getVoltageInitRunningStatus(
-    voltageInitStatus: string,
+    voltageInitStatus: string
 ): RunningStatus {
     switch (voltageInitStatus) {
         case 'OK':

@@ -61,7 +61,7 @@ export const formatNewParams = (newParams: VoltageInitForm) => {
                 return {
                     [PRIORITY]:
                         newParams.voltageLimitsModification.indexOf(
-                            voltageLimit,
+                            voltageLimit
                         ),
                     [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
                     [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
@@ -72,7 +72,7 @@ export const formatNewParams = (newParams: VoltageInitForm) => {
                         };
                     }),
                 };
-            },
+            }
         ),
         [VOLTAGE_LIMITS_DEFAULT]: newParams.voltageLimitsDefault.map(
             (voltageLimit) => {
@@ -88,7 +88,7 @@ export const formatNewParams = (newParams: VoltageInitForm) => {
                         };
                     }),
                 };
-            },
+            }
         ),
         [FIXED_GENERATORS]: newParams[FIXED_GENERATORS]?.map((filter) => {
             return {
@@ -102,7 +102,7 @@ export const formatNewParams = (newParams: VoltageInitForm) => {
                     [FILTER_ID]: filter[ID],
                     [FILTER_NAME]: filter[NAME],
                 };
-            },
+            }
         ),
         [VARIABLE_SHUNT_COMPENSATORS]: newParams[
             VARIABLE_SHUNT_COMPENSATORS
@@ -116,7 +116,7 @@ export const formatNewParams = (newParams: VoltageInitForm) => {
 };
 
 export const fromVoltageInitParamsDataToFormValues = (
-    parameters: VoltageInitParam,
+    parameters: VoltageInitParam
 ) => {
     return {
         [VOLTAGE_LIMITS_MODIFICATION]:
@@ -159,7 +159,7 @@ export const fromVoltageInitParamsDataToFormValues = (
                     [ID]: filter[FILTER_ID],
                     [NAME]: filter[FILTER_NAME],
                 };
-            },
+            }
         ),
         [VARIABLE_SHUNT_COMPENSATORS]: parameters[
             VARIABLE_SHUNT_COMPENSATORS

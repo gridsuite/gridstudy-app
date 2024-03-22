@@ -125,7 +125,7 @@ const LineCreationDialog = ({
     const { snackError } = useSnackMessage();
 
     const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB,
+        LineCreationDialogTab.CHARACTERISTICS_TAB
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
@@ -142,7 +142,7 @@ const LineCreationDialog = ({
             ...getHeaderValidationSchema(),
             ...getCharacteristicsValidationSchema(
                 CHARACTERISTICS,
-                displayConnectivity,
+                displayConnectivity
             ),
             ...getLimitsValidationSchema(),
         })
@@ -181,7 +181,7 @@ const LineCreationDialog = ({
                                 connectionName:
                                     line.connectablePosition1.connectionName,
                             },
-                            CONNECTIVITY_1,
+                            CONNECTIVITY_1
                         )),
                     ...(displayConnectivity &&
                         getConnectivityFormData(
@@ -194,7 +194,7 @@ const LineCreationDialog = ({
                                 connectionName:
                                     line.connectablePosition2.connectionName,
                             },
-                            CONNECTIVITY_2,
+                            CONNECTIVITY_2
                         )),
                 }),
                 ...getLimitsFormData({
@@ -202,18 +202,18 @@ const LineCreationDialog = ({
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
                         formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits,
-                        ),
+                            line.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
                         formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits,
-                        ),
+                            line.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
                 ...copyEquipmentPropertiesForCreation(line),
             },
-            { keepDefaultValues: true },
+            { keepDefaultValues: true }
         );
     };
 
@@ -240,7 +240,7 @@ const LineCreationDialog = ({
                             voltageLevelId: line.voltageLevelId1,
                             connected: line.connected1,
                         },
-                        CONNECTIVITY_1,
+                        CONNECTIVITY_1
                     ),
                     ...getConnectivityFormData(
                         {
@@ -251,7 +251,7 @@ const LineCreationDialog = ({
                             voltageLevelId: line.voltageLevelId2,
                             connected: line.connected2,
                         },
-                        CONNECTIVITY_2,
+                        CONNECTIVITY_2
                     ),
                 }),
                 ...getLimitsFormData({
@@ -259,19 +259,19 @@ const LineCreationDialog = ({
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
                         formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits,
-                        ),
+                            line.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
                         formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits,
-                        ),
+                            line.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
         },
-        [reset],
+        [reset]
     );
 
     const searchCopy = useFormSearchCopy({
@@ -332,20 +332,20 @@ const LineCreationDialog = ({
                 limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                 limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                 sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS],
+                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
                 ),
                 sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS],
+                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                 ),
                 !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(
-                    characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME],
+                    characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
                 ),
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(
-                    characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME],
+                    characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]
                 ),
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
@@ -353,7 +353,7 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
                 characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
                 characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
-                toModificationProperties(line),
+                toModificationProperties(line)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -361,7 +361,7 @@ const LineCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine],
+        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
     const onValidationError = (errors) => {

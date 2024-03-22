@@ -75,7 +75,7 @@ const DiagramResizableBox = (props) => {
                     styles.leftHandle,
                 !props.disableResize &&
                     props?.align === 'left' &&
-                    styles.rightHandle,
+                    styles.rightHandle
             )}
         >
             <>

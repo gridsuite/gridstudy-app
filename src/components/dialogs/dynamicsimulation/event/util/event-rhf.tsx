@@ -10,7 +10,7 @@ import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 const renderFloatField = (
     propertyName: string,
     propertyDefinition: EventPropertyDefinition | undefined,
-    propertyValue: any,
+    propertyValue: any
 ) => (
     <FloatInput
         name={propertyName}
@@ -31,7 +31,7 @@ const renderFloatField = (
 const renderEnumField = (
     propertyName: string,
     propertyDefinition: EventPropertyDefinition | undefined,
-    propertyValue: any,
+    propertyValue: any
 ) => (
     <SelectInput
         name={propertyName}
@@ -53,7 +53,7 @@ const DEFAULT_PRIMITIVE_RENDER = {
 export const makeComponentFor = (
     propertyName: string,
     propertyDefinition: EventPropertyDefinition | undefined,
-    propertyValue: any,
+    propertyValue: any
 ) => {
     const render = propertyDefinition
         ? DEFAULT_PRIMITIVE_RENDER[propertyDefinition?.type]

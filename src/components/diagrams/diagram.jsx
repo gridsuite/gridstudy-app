@@ -50,11 +50,11 @@ const Diagram = (props) => {
         fullScreenDiagram?.svgType === props.svgType;
 
     const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth,
+        (state) => state.networkAreaDiagramDepth
     );
 
     const nbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels,
+        (state) => state.networkAreaDiagramNbVoltageLevels
     );
 
     /**

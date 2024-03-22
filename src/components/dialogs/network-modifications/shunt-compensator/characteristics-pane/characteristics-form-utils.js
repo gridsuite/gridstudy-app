@@ -53,7 +53,7 @@ const getCharacteristicsCreateFormValidationSchema = () => {
                     schema
                         .min(
                             0,
-                            'ShuntCompensatorErrorQAtNominalVoltageLessThanZero',
+                            'ShuntCompensatorErrorQAtNominalVoltageLessThanZero'
                         )
                         .required(),
             }),
@@ -76,7 +76,7 @@ const getCharacteristicsCreateFormValidationSchema = () => {
             .min(0, 'SectionCountMustBeBetweenZeroAndMaximumSectionCount')
             .max(
                 yup.ref(MAXIMUM_SECTION_COUNT),
-                'SectionCountMustBeBetweenZeroAndMaximumSectionCount',
+                'SectionCountMustBeBetweenZeroAndMaximumSectionCount'
             ),
         [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().notRequired(),
         [SWITCHED_ON_SUSCEPTANCE]: yup.number().notRequired(),
@@ -104,7 +104,7 @@ const getCharacteristicsModificationFormValidationSchema = () => {
 };
 
 export const getCharacteristicsFormValidationSchema = (
-    isModification = false,
+    isModification = false
 ) => {
     return characteristicsValidationSchema(isModification);
 };
@@ -144,14 +144,14 @@ export const getCharacteristicsFormData = ({
             ? computeSwitchedOnValue(
                   sectionCount,
                   maximumSectionCount,
-                  maxQAtNominalV,
+                  maxQAtNominalV
               )
             : null,
         [SWITCHED_ON_SUSCEPTANCE]: maxSusceptance
             ? computeSwitchedOnValue(
                   sectionCount,
                   maximumSectionCount,
-                  maxSusceptance,
+                  maxSusceptance
               )
             : null,
     };

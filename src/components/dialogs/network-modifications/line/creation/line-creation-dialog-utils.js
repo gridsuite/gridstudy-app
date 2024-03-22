@@ -36,7 +36,7 @@ export const getHeaderEmptyFormData = (id = TAB_HEADER) => {
 
 export const getHeaderFormData = (
     { equipmentId, equipmentName = '' },
-    id = TAB_HEADER,
+    id = TAB_HEADER
 ) => ({
     [id]: {
         [EQUIPMENT_ID]: equipmentId,

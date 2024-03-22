@@ -92,7 +92,7 @@ const DeleteAttachingLineDialog = ({
                 [REPLACING_LINE_1_NAME]: editData.replacingLine1Name,
             });
         },
-        [reset],
+        [reset]
     );
 
     useEffect(() => {
@@ -111,7 +111,7 @@ const DeleteAttachingLineDialog = ({
                 formData[LINE_TO_ATTACH_TO_2_ID],
                 formData[ATTACHED_LINE_ID],
                 formData[REPLACING_LINE_1_ID],
-                sanitizeString(formData[REPLACING_LINE_1_NAME]),
+                sanitizeString(formData[REPLACING_LINE_1_NAME])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -119,7 +119,7 @@ const DeleteAttachingLineDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

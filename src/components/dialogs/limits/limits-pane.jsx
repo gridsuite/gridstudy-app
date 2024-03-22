@@ -85,7 +85,7 @@ const LimitsPane = ({
     const newRowData = useMemo(() => {
         const newRowData = {};
         columnsDefinition.forEach(
-            (column) => (newRowData[column.dataKey] = column.initialValue),
+            (column) => (newRowData[column.dataKey] = column.initialValue)
         );
         return newRowData;
     }, [columnsDefinition]);
@@ -99,11 +99,11 @@ const LimitsPane = ({
                         l.name === getValues(arrayFormName)[rowIndex]?.name &&
                         l.acceptableDuration ===
                             getValues(arrayFormName)[rowIndex]
-                                ?.acceptableDuration,
+                                ?.acceptableDuration
                 )?.length > 0
             );
         },
-        [getValues],
+        [getValues]
     );
 
     const findTemporaryLimit = useCallback(
@@ -112,10 +112,10 @@ const LimitsPane = ({
                 (e) =>
                     e.name === getValues(arrayFormName)[rowIndex]?.name &&
                     e.acceptableDuration ===
-                        getValues(arrayFormName)[rowIndex]?.acceptableDuration,
+                        getValues(arrayFormName)[rowIndex]?.acceptableDuration
             );
         },
-        [getValues],
+        [getValues]
     );
 
     const disableTableCell = useCallback(
@@ -128,10 +128,10 @@ const LimitsPane = ({
                 : temporaryLimitHasPreviousValue(
                       rowIndex,
                       arrayFormName,
-                      temporaryLimits,
+                      temporaryLimits
                   ) && column.dataKey !== TEMPORARY_LIMIT_VALUE;
         },
-        [getValues, temporaryLimitHasPreviousValue],
+        [getValues, temporaryLimitHasPreviousValue]
     );
 
     const shouldReturnPreviousValue = useCallback(
@@ -140,14 +140,14 @@ const LimitsPane = ({
                 (temporaryLimitHasPreviousValue(
                     rowIndex,
                     arrayFormName,
-                    temporaryLimits,
+                    temporaryLimits
                 ) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
                 getValues(arrayFormName)[rowIndex]?.modificationType ===
                     TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
             );
         },
-        [getValues, temporaryLimitHasPreviousValue],
+        [getValues, temporaryLimitHasPreviousValue]
     );
 
     const getTemporaryLimitPreviousValue = useCallback(
@@ -159,13 +159,13 @@ const LimitsPane = ({
                     rowIndex,
                     column,
                     arrayFormName,
-                    formattedTemporaryLimits,
+                    formattedTemporaryLimits
                 )
             ) {
                 const temporaryLimit = findTemporaryLimit(
                     rowIndex,
                     arrayFormName,
-                    formattedTemporaryLimits,
+                    formattedTemporaryLimits
                 );
                 if (temporaryLimit === undefined) {
                     return undefined;
@@ -181,7 +181,7 @@ const LimitsPane = ({
                 return undefined;
             }
         },
-        [findTemporaryLimit, shouldReturnPreviousValue],
+        [findTemporaryLimit, shouldReturnPreviousValue]
     );
 
     const isTemporaryLimitModified = useCallback(
@@ -197,7 +197,7 @@ const LimitsPane = ({
                 return temporaryLimit?.modificationType !== null;
             }
         },
-        [currentNode, getValues],
+        [currentNode, getValues]
     );
 
     const permanentCurrentLimit1Field = (

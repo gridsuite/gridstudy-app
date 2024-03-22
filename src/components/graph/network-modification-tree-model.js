@@ -36,7 +36,7 @@ export default class NetworkModificationTreeModel {
         // nodes before their parents when building graph in dagre library which have uncontrolled results
         // We also need to do this to keep a correct order when inserting nodes and not loose the user.
         const referenceNodeIndex = this.treeNodes.findIndex(
-            (node) => node.id === referenceNodeId,
+            (node) => node.id === referenceNodeId
         );
         switch (insertMode) {
             case NodeInsertModes.Before: {
@@ -44,7 +44,7 @@ export default class NetworkModificationTreeModel {
                 this.treeNodes.splice(
                     referenceNodeIndex,
                     0,
-                    convertNodetoReactFlowModelNode(newNode, parentId),
+                    convertNodetoReactFlowModelNode(newNode, parentId)
                 );
                 break;
             }
@@ -53,7 +53,7 @@ export default class NetworkModificationTreeModel {
                 this.treeNodes.splice(
                     referenceNodeIndex + 1,
                     0,
-                    convertNodetoReactFlowModelNode(newNode, parentId),
+                    convertNodetoReactFlowModelNode(newNode, parentId)
                 );
                 break;
             }
@@ -63,14 +63,14 @@ export default class NetworkModificationTreeModel {
                 this.treeNodes.splice(
                     referenceNodeIndex + nbChildren + 1,
                     0,
-                    convertNodetoReactFlowModelNode(newNode, parentId),
+                    convertNodetoReactFlowModelNode(newNode, parentId)
                 );
                 break;
             }
             default: {
                 // Just push nodes in order
                 this.treeNodes.push(
-                    convertNodetoReactFlowModelNode(newNode, parentId),
+                    convertNodetoReactFlowModelNode(newNode, parentId)
                 );
                 break;
             }
@@ -138,23 +138,23 @@ export default class NetworkModificationTreeModel {
         deletedNodes.forEach((nodeId) => {
             // get edges which have the deleted node as source or target
             const edges = this.treeEdges.filter(
-                (edge) => edge.source === nodeId || edge.target === nodeId,
+                (edge) => edge.source === nodeId || edge.target === nodeId
             );
             // From the edges array
             // get edges which have the deleted node as source
             const edgesOfSource = edges.filter(
-                (edge) => edge.source === nodeId,
+                (edge) => edge.source === nodeId
             );
             // get edges which have the deleted node as target
             const edgesOfTarget = edges.filter(
-                (edge) => edge.target === nodeId,
+                (edge) => edge.target === nodeId
             );
             // Remove these edges and the node from the edges and nodes array
             const filteredEdges = this.treeEdges.filter(
-                (edge) => edge.source !== nodeId && edge.target !== nodeId,
+                (edge) => edge.source !== nodeId && edge.target !== nodeId
             );
             const filteredNodes = this.treeNodes.filter(
-                (node) => node.id !== nodeId,
+                (node) => node.id !== nodeId
             );
             // Recreate edges by reparenting previously targeted nodes to previous source nodes
             edgesOfTarget.forEach((edgeOfTarget) => {
@@ -193,7 +193,7 @@ export default class NetworkModificationTreeModel {
     updateNodes(updatedNodes) {
         updatedNodes.forEach((node) => {
             const indexModifiedNode = this.treeNodes.findIndex(
-                (othernode) => othernode.id === node.id,
+                (othernode) => othernode.id === node.id
             );
             if (indexModifiedNode !== -1) {
                 this.treeNodes[indexModifiedNode].data = {
@@ -211,7 +211,7 @@ export default class NetworkModificationTreeModel {
     setTreeElements(elements) {
         // handle root node
         this.treeNodes.push(
-            convertNodetoReactFlowModelNode(elements, undefined),
+            convertNodetoReactFlowModelNode(elements, undefined)
         );
         // handle root children
         elements.children.forEach((child) => {
@@ -224,7 +224,7 @@ export default class NetworkModificationTreeModel {
         /* shallow clone of the network https://stackoverflow.com/a/44782052 */
         let newTreeModel = Object.assign(
             Object.create(Object.getPrototypeOf(this)),
-            this,
+            this
         );
         return newTreeModel;
     }
@@ -232,7 +232,7 @@ export default class NetworkModificationTreeModel {
     setBuildingStatus() {
         this.isAnyNodeBuilding =
             this.treeNodes.find(
-                (node) => node?.data?.globalBuildStatus === 'BUILDING',
+                (node) => node?.data?.globalBuildStatus === 'BUILDING'
             ) !== undefined;
     }
 

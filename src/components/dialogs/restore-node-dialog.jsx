@@ -159,7 +159,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                                         control={
                                             <Checkbox
                                                 checked={selectedNodes.includes(
-                                                    node.first,
+                                                    node.first
                                                 )}
                                                 onChange={(event) =>
                                                     handleClick(node.first)

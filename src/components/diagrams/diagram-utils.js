@@ -35,13 +35,11 @@ const sortByIndex = (a, b, diagramStates) => {
     return (
         diagramStates.findIndex(
             (diagramState) =>
-                diagramState.id === a?.id &&
-                diagramState.svgType === a?.svgType,
+                diagramState.id === a?.id && diagramState.svgType === a?.svgType
         ) -
         diagramStates.findIndex(
             (diagramState) =>
-                diagramState.id === b?.id &&
-                diagramState.svgType === b?.svgType,
+                diagramState.id === b?.id && diagramState.svgType === b?.svgType
         )
     );
 };

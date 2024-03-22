@@ -44,7 +44,7 @@ const withEquipmentMenu =
                 isNodeBuilt(currentNode) &&
                 !isNodeReadOnly(currentNode) &&
                 !isAnyNodeBuilding,
-            [currentNode, isAnyNodeBuilding],
+            [currentNode, isAnyNodeBuilding]
         );
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
@@ -53,10 +53,10 @@ const withEquipmentMenu =
                 onOpenDynamicSimulationEventDialog(
                     equipmentId,
                     equipmentType,
-                    dialogTitle,
+                    dialogTitle
                 );
             },
-            [handleClose, onOpenDynamicSimulationEventDialog],
+            [handleClose, onOpenDynamicSimulationEventDialog]
         );
 
         return (

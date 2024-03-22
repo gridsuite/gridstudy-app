@@ -71,7 +71,7 @@ const DeleteEquipmentItem = ({
             onClick={() =>
                 handleDeleteEquipment(
                     getFeederTypeFromEquipmentType(equipmentType),
-                    equipmentId,
+                    equipmentId
                 )
             }
             selected={false}
@@ -101,7 +101,7 @@ const ModifyEquipmentItem = ({
             onClick={() =>
                 handleOpenModificationDialog(
                     equipmentId,
-                    getFeederTypeFromEquipmentType(equipmentType),
+                    getFeederTypeFromEquipmentType(equipmentType)
                 )
             }
             selected={false}
@@ -185,7 +185,7 @@ const BaseEquipmentMenu = ({
                             // equipmentsNotDeletable deletion is not implemented yet
                             !(
                                 displayWithOperatingStatusMenu.includes(
-                                    equipmentType,
+                                    equipmentType
                                 ) ||
                                 equipmentsNotDeletable.includes(equipmentType)
                             ) && (

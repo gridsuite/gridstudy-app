@@ -28,7 +28,7 @@ function NetworkAreaDiagramContent(props) {
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW],
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
     /**
@@ -43,7 +43,7 @@ function NetworkAreaDiagramContent(props) {
                 MIN_WIDTH,
                 MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-                MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
+                MAX_HEIGHT_NETWORK_AREA_DIAGRAM
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -51,7 +51,7 @@ function NetworkAreaDiagramContent(props) {
                 props.diagramId,
                 props.svgType,
                 diagramViewer.getWidth(),
-                diagramViewer.getHeight(),
+                diagramViewer.getHeight()
             );
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
@@ -90,7 +90,7 @@ function NetworkAreaDiagramContent(props) {
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED &&
-                        styles.divDiagramInvalid,
+                        styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
             />

@@ -51,7 +51,7 @@ const SensitivityAnalysisResult = ({
     const gridRef = useRef(null);
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS],
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
     const { onGridColumnsChanged } = props;
 
@@ -98,7 +98,7 @@ const SensitivityAnalysisResult = ({
                 headerTooltip: intl.formatMessage({ id: labelId }),
             };
         },
-        [filtersDef, intl, sortProps, filterProps],
+        [filtersDef, intl, sortProps, filterProps]
     );
 
     const columnsDefs = useMemo(() => {
@@ -113,14 +113,14 @@ const SensitivityAnalysisResult = ({
                         : 'SupervisedBranches',
                 pinned: true,
                 maxWidth: 350,
-            }),
+            })
         );
         returnedTable.push(
             makeColumn({
                 field: 'varId',
                 labelId: 'VariablesToSimulate',
                 pinned: true,
-            }),
+            })
         );
 
         if (nOrNkIndex === 1) {
@@ -129,7 +129,7 @@ const SensitivityAnalysisResult = ({
                     field: 'contingencyId',
                     labelId: 'ContingencyId',
                     pinned: true,
-                }),
+                })
             );
         }
 
@@ -141,14 +141,14 @@ const SensitivityAnalysisResult = ({
                 field: 'functionReference',
                 labelId: 'ValRef' + suffix,
                 isNum: true,
-            }),
+            })
         );
         returnedTable.push(
             makeColumn({
                 field: 'value',
                 labelId: 'Delta' + suffix,
                 isNum: true,
-            }),
+            })
         );
 
         if (nOrNkIndex === 1) {
@@ -157,14 +157,14 @@ const SensitivityAnalysisResult = ({
                     field: 'functionReferenceAfter',
                     labelId: 'ValRef' + suffix1,
                     isNum: true,
-                }),
+                })
             );
             returnedTable.push(
                 makeColumn({
                     field: 'valueAfter',
                     labelId: 'Delta' + suffix1,
                     isNum: true,
-                }),
+                })
             );
         }
 
@@ -181,7 +181,7 @@ const SensitivityAnalysisResult = ({
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
-        [],
+        []
     );
 
     const gridOptions = {
@@ -195,14 +195,14 @@ const SensitivityAnalysisResult = ({
                 onGridColumnsChanged && onGridColumnsChanged(params);
             }
         },
-        [onGridColumnsChanged],
+        [onGridColumnsChanged]
     );
 
     const message = getNoRowsMessage(
         messages,
         rows,
         sensitivityAnalysisStatus,
-        !isLoading,
+        !isLoading
     );
 
     const openLoader = useOpenLoaderShortWait({

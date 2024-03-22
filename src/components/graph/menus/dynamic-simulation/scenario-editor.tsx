@@ -34,7 +34,7 @@ export interface ScenarioEditorProps {}
 const ScenarioEditor = (props: ScenarioEditorProps) => {
     const dispatch = useDispatch();
     const currentTreeNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode,
+        (state: ReduxState) => state.currentTreeNode
     );
 
     const intl = useIntl();

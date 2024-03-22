@@ -99,10 +99,10 @@ export const NetworkModificationTreePane = ({
                     sourceStudyUuid: sourceStudyUuid,
                     nodeId: nodeId,
                     copyType: copyType,
-                }),
+                })
             );
         },
-        [dispatch],
+        [dispatch]
     );
 
     const [broadcastChannel] = useState(() => {
@@ -123,7 +123,7 @@ export const NetworkModificationTreePane = ({
                 dispatchSelectionForCopy(
                     event.data.sourceStudyUuid,
                     event.data.nodeId,
-                    event.data.copyType,
+                    event.data.copyType
                 );
             }
         };
@@ -155,10 +155,10 @@ export const NetworkModificationTreePane = ({
     selectionForCopyRef.current = selectionForCopy;
 
     const isModificationsDrawerOpen = useSelector(
-        (state) => state.isModificationsDrawerOpen,
+        (state) => state.isModificationsDrawerOpen
     );
     const isEventScenarioDrawerOpen = useSelector(
-        (state) => state.isEventScenarioDrawerOpen,
+        (state) => state.isEventScenarioDrawerOpen
     );
     const isStudyDrawerOpen =
         isModificationsDrawerOpen || isEventScenarioDrawerOpen;
@@ -171,13 +171,13 @@ export const NetworkModificationTreePane = ({
         (updatedNodesIds) => {
             Promise.all(
                 updatedNodesIds.map((nodeId) =>
-                    fetchNetworkModificationTreeNode(studyUuid, nodeId),
-                ),
+                    fetchNetworkModificationTreeNode(studyUuid, nodeId)
+                )
             ).then((values) => {
                 dispatch(networkModificationTreeNodesUpdated(values));
             });
         },
-        [studyUuid, dispatch],
+        [studyUuid, dispatch]
     );
 
     const isSubtreeImpacted = useCallback(
@@ -188,12 +188,10 @@ export const NetworkModificationTreePane = ({
             nodes.some(
                 (nodeId) =>
                     nodeId === selectionForCopyRef.current.nodeId ||
-                    selectionForCopyRef.current.allChildrenIds?.includes(
-                        nodeId,
-                    ),
+                    selectionForCopyRef.current.allChildrenIds?.includes(nodeId)
             ),
 
-        [],
+        []
     );
 
     const resetNodeClipboard = useCallback(() => {
@@ -219,7 +217,7 @@ export const NetworkModificationTreePane = ({
             ) {
                 fetchNetworkModificationTreeNode(
                     studyUuid,
-                    studyUpdatedForce.eventData.headers['newNode'],
+                    studyUpdatedForce.eventData.headers['newNode']
                 ).then((node) => {
                     dispatch(
                         networkModificationTreeNodeAdded(
@@ -228,8 +226,8 @@ export const NetworkModificationTreePane = ({
                             studyUpdatedForce.eventData.headers['insertMode'],
                             studyUpdatedForce.eventData.headers[
                                 'referenceNodeUuid'
-                            ],
-                        ),
+                            ]
+                        )
                     );
                 });
 
@@ -249,13 +247,13 @@ export const NetworkModificationTreePane = ({
             ) {
                 fetchNetworkModificationSubtree(
                     studyUuid,
-                    studyUpdatedForce.eventData.headers['newNode'],
+                    studyUpdatedForce.eventData.headers['newNode']
                 ).then((nodes) => {
                     dispatch(
                         networkModificationHandleSubtree(
                             nodes,
-                            studyUpdatedForce.eventData.headers['parentNode'],
-                        ),
+                            studyUpdatedForce.eventData.headers['parentNode']
+                        )
                     );
                 });
             } else if (
@@ -264,7 +262,7 @@ export const NetworkModificationTreePane = ({
             ) {
                 fetchNetworkModificationTreeNode(
                     studyUuid,
-                    studyUpdatedForce.eventData.headers['movedNode'],
+                    studyUpdatedForce.eventData.headers['movedNode']
                 ).then((node) => {
                     dispatch(
                         networkModificationTreeNodeMoved(
@@ -273,8 +271,8 @@ export const NetworkModificationTreePane = ({
                             studyUpdatedForce.eventData.headers['insertMode'],
                             studyUpdatedForce.eventData.headers[
                                 'referenceNodeUuid'
-                            ],
-                        ),
+                            ]
+                        )
                     );
                 });
             } else if (
@@ -283,13 +281,13 @@ export const NetworkModificationTreePane = ({
             ) {
                 fetchNetworkModificationSubtree(
                     studyUuid,
-                    studyUpdatedForce.eventData.headers['movedNode'],
+                    studyUpdatedForce.eventData.headers['movedNode']
                 ).then((nodes) => {
                     dispatch(
                         networkModificationHandleSubtree(
                             nodes,
-                            studyUpdatedForce.eventData.headers['parentNode'],
-                        ),
+                            studyUpdatedForce.eventData.headers['parentNode']
+                        )
                     );
                 });
             } else if (
@@ -299,18 +297,18 @@ export const NetworkModificationTreePane = ({
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
-                            nodeId === selectionForCopyRef.current.nodeId,
+                            nodeId === selectionForCopyRef.current.nodeId
                     ) ||
                     isSubtreeImpacted(
-                        studyUpdatedForce.eventData.headers['nodes'],
+                        studyUpdatedForce.eventData.headers['nodes']
                     )
                 ) {
                     resetNodeClipboard();
                 }
                 dispatch(
                     networkModificationTreeNodesRemoved(
-                        studyUpdatedForce.eventData.headers['nodes'],
-                    ),
+                        studyUpdatedForce.eventData.headers['nodes']
+                    )
                 );
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
@@ -322,20 +320,20 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === currentNodeRef.current?.id,
+                        (nodeId) => nodeId === currentNodeRef.current?.id
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode([currentNodeRef.current?.id]),
+                        removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
-                            nodeId === selectionForCopyRef.current.nodeId,
+                            nodeId === selectionForCopyRef.current.nodeId
                     ) ||
                     isSubtreeImpacted(
-                        studyUpdatedForce.eventData.headers['nodes'],
+                        studyUpdatedForce.eventData.headers['nodes']
                     )
                 ) {
                     resetNodeClipboard();
@@ -352,17 +350,17 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === currentNodeRef.current?.id,
+                        (nodeId) => nodeId === currentNodeRef.current?.id
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode([currentNodeRef.current?.id]),
+                        removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
             } else if (
                 UPDATE_TYPE.includes(
-                    studyUpdatedForce.eventData.headers['updateType'],
+                    studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
                 if (
@@ -401,7 +399,7 @@ export const NetworkModificationTreePane = ({
                             messageTxt: error.message,
                             headerId: 'NodeCreateError',
                         });
-                    }),
+                    })
                 )
                 .catch((error) => {
                     snackError({
@@ -410,7 +408,7 @@ export const NetworkModificationTreePane = ({
                     });
                 });
         },
-        [studyUuid, snackError],
+        [studyUuid, snackError]
     );
 
     const handleCopyNode = (nodeId) => {
@@ -419,7 +417,7 @@ export const NetworkModificationTreePane = ({
                 nodeId +
                 ' from study ' +
                 studyUuid +
-                ' selected for copy',
+                ' selected for copy'
         );
         isInitiatingCopyTab.current = true;
         dispatchSelectionForCopy(studyUuid, nodeId, CopyType.NODE_COPY);
@@ -443,7 +441,7 @@ export const NetworkModificationTreePane = ({
                     studyUuid,
                     selectionForCopyRef.current.nodeId,
                     referenceNodeId,
-                    insertMode,
+                    insertMode
                 ).catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -460,7 +458,7 @@ export const NetworkModificationTreePane = ({
                     studyUuid,
                     selectionForCopyRef.current.nodeId,
                     referenceNodeId,
-                    insertMode,
+                    insertMode
                 ).catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -470,7 +468,7 @@ export const NetworkModificationTreePane = ({
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, snackError, dispatch],
+        [studyUuid, snackError, dispatch]
     );
 
     const handleRemoveNode = useCallback(
@@ -482,7 +480,7 @@ export const NetworkModificationTreePane = ({
                 });
             });
         },
-        [studyUuid, snackError],
+        [studyUuid, snackError]
     );
 
     const handleUnbuildNode = useCallback(
@@ -494,7 +492,7 @@ export const NetworkModificationTreePane = ({
                 });
             });
         },
-        [studyUuid, snackError],
+        [studyUuid, snackError]
     );
 
     const handleBuildNode = useCallback(
@@ -506,7 +504,7 @@ export const NetworkModificationTreePane = ({
                 });
             });
         },
-        [studyUuid, snackError],
+        [studyUuid, snackError]
     );
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
@@ -554,7 +552,7 @@ export const NetworkModificationTreePane = ({
                 });
             });
         },
-        [snackError, studyUuid],
+        [snackError, studyUuid]
     );
 
     const handleCopySubtree = (nodeId) => {
@@ -563,7 +561,7 @@ export const NetworkModificationTreePane = ({
                 nodeId +
                 ' from study ' +
                 studyUuid +
-                ' selected for copy',
+                ' selected for copy'
         );
         isInitiatingCopyTab.current = true;
         dispatchSelectionForCopy(studyUuid, nodeId, CopyType.SUBTREE_COPY);
@@ -586,7 +584,7 @@ export const NetworkModificationTreePane = ({
                 cutSubtree(
                     studyUuid,
                     selectionForCopyRef.current.nodeId,
-                    referenceNodeId,
+                    referenceNodeId
                 ).catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -602,7 +600,7 @@ export const NetworkModificationTreePane = ({
                     selectionForCopyRef.current.sourceStudyUuid,
                     studyUuid,
                     selectionForCopyRef.current.nodeId,
-                    referenceNodeId,
+                    referenceNodeId
                 ).catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -612,7 +610,7 @@ export const NetworkModificationTreePane = ({
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, dispatch, snackError],
+        [studyUuid, dispatch, snackError]
     );
     return (
         <>

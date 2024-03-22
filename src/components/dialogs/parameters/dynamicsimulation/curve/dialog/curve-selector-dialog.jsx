@@ -61,9 +61,9 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                             variableId: variable.variableId,
                         },
                     ],
-                    arr,
+                    arr
                 ),
-            [],
+            []
         );
         previewRef.current.api.addCurves(curves);
     }, []);

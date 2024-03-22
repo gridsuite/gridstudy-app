@@ -123,13 +123,13 @@ const App = () => {
     const user = useSelector((state) => state.user);
 
     const signInCallbackError = useSelector(
-        (state) => state.signInCallbackError,
+        (state) => state.signInCallbackError
     );
     const authenticationRouterError = useSelector(
-        (state) => state.authenticationRouterError,
+        (state) => state.authenticationRouterError
     );
     const showAuthenticationRouterLogin = useSelector(
-        (state) => state.showAuthenticationRouterLogin,
+        (state) => state.showAuthenticationRouterLogin
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
@@ -161,18 +161,18 @@ const App = () => {
                         dispatch(selectLanguage(param.value));
                         dispatch(
                             selectComputedLanguage(
-                                getComputedLanguage(param.value),
-                            ),
+                                getComputedLanguage(param.value)
+                            )
                         );
                         break;
                     case PARAM_CENTER_LABEL:
                         dispatch(
-                            selectCenterLabelState(param.value === 'true'),
+                            selectCenterLabelState(param.value === 'true')
                         );
                         break;
                     case PARAM_DIAGONAL_LABEL:
                         dispatch(
-                            selectDiagonalLabelState(param.value === 'true'),
+                            selectDiagonalLabelState(param.value === 'true')
                         );
                         break;
                     case PARAM_LIMIT_REDUCTION:
@@ -192,17 +192,17 @@ const App = () => {
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(
-                            selectEnableDeveloperMode(param.value === 'true'),
+                            selectEnableDeveloperMode(param.value === 'true')
                         );
                         break;
                     case PARAM_LINE_FULL_PATH:
                         dispatch(
-                            selectLineFullPathState(param.value === 'true'),
+                            selectLineFullPathState(param.value === 'true')
                         );
                         break;
                     case PARAM_LINE_PARALLEL_PATH:
                         dispatch(
-                            selectLineParallelPathState(param.value === 'true'),
+                            selectLineParallelPathState(param.value === 'true')
                         );
                         break;
                     case PARAM_SUBSTATION_LAYOUT:
@@ -213,7 +213,7 @@ const App = () => {
                         break;
                     case PARAM_MAP_MANUAL_REFRESH:
                         dispatch(
-                            selectMapManualRefresh(param.value === 'true'),
+                            selectMapManualRefresh(param.value === 'true')
                         );
                         break;
                     case PARAM_MAP_BASEMAP:
@@ -225,20 +225,20 @@ const App = () => {
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(
                             selectFavoriteContingencyLists(
-                                param.value.split(',').filter((list) => list),
-                            ),
+                                param.value.split(',').filter((list) => list)
+                            )
                         );
                         break;
                     default:
                         if (
                             param.name.startsWith(
-                                DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+                                DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
                             )
                         ) {
                             let index = TABLES_NAMES_INDEXES.get(
                                 param.name.slice(
-                                    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length,
-                                ),
+                                    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
                             );
                             displayedColumnsParams[index] = {
                                 index: index,
@@ -248,13 +248,13 @@ const App = () => {
                         }
                         if (
                             param.name.startsWith(
-                                LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+                                LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
                             )
                         ) {
                             let index = TABLES_NAMES_INDEXES.get(
                                 param.name.slice(
-                                    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length,
-                                ),
+                                    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
                             );
                             lockedColumnsParams[index] = {
                                 index: index,
@@ -264,13 +264,13 @@ const App = () => {
                         }
                         if (
                             param.name.startsWith(
-                                REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+                                REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
                             )
                         ) {
                             let index = TABLES_NAMES_INDEXES.get(
                                 param.name.slice(
-                                    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length,
-                                ),
+                                    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
                             );
                             reorderedColumnsParams[index] = {
                                 index: index,
@@ -284,7 +284,7 @@ const App = () => {
                 if (dispatchReorderedColumns) {
                     cleanEquipmentsColumnsParamsWithNewAndDeleted(
                         displayedColumnsParams,
-                        reorderedColumnsParams,
+                        reorderedColumnsParams
                     );
                 }
                 dispatch(changeDisplayedColumns(displayedColumnsParams));
@@ -294,7 +294,7 @@ const App = () => {
                     cleanEquipmentsColumnsParamsWithNewAndDeleted(
                         lockedColumnsParams,
                         reorderedColumnsParams,
-                        true,
+                        true
                     );
                 }
                 dispatch(changeLockedColumns(lockedColumnsParams));
@@ -302,18 +302,18 @@ const App = () => {
             if (dispatchReorderedColumns) {
                 cleanEquipmentsColumnsParamsWithNewAndDeleted(
                     reorderedColumnsParams,
-                    reorderedColumnsParams,
+                    reorderedColumnsParams
                 );
                 dispatch(changeReorderedColumns(reorderedColumnsParams));
             }
         },
-        [dispatch],
+        [dispatch]
     );
 
     function cleanEquipmentsColumnsParamsWithNewAndDeleted(
         equipmentsColumnsParams,
         reorderedColumnsParams,
-        deletedOnly = false,
+        deletedOnly = false
     ) {
         for (let param of equipmentsColumnsParams) {
             if (!param) {
@@ -323,23 +323,23 @@ const App = () => {
             let index = param.index;
 
             const equipmentAllColumnsIds = TABLES_DEFINITION_INDEXES.get(
-                index,
+                index
             ).columns.map((item) => item.id);
 
             let equipmentReorderedColumnsIds = JSON.parse(
-                reorderedColumnsParams[index].value,
+                reorderedColumnsParams[index].value
             );
             let equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
-                (item) => !equipmentReorderedColumnsIds.includes(item),
+                (item) => !equipmentReorderedColumnsIds.includes(item)
             );
 
             let equipmentsParamColumnIds = JSON.parse(
-                equipmentsColumnsParams[index].value,
+                equipmentsColumnsParams[index].value
             );
 
             // Remove deleted ids
             let equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter(
-                (item) => equipmentAllColumnsIds.includes(item),
+                (item) => equipmentAllColumnsIds.includes(item)
             );
 
             // Update columns
@@ -371,7 +371,7 @@ const App = () => {
                         snackError({
                             messageTxt: error.message,
                             headerId: 'paramsRetrievingError',
-                        }),
+                        })
                     );
             }
         };
@@ -385,13 +385,13 @@ const App = () => {
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useMatch({
             path: '/silent-renew-callback',
-        }),
+        })
     );
 
     const [initialMatchSigninCallbackUrl] = useState(
         useMatch({
             path: '/sign-in-callback',
-        }),
+        })
     );
 
     const isStudyPane =
@@ -414,7 +414,7 @@ const App = () => {
                     fetchIdpSettings(),
                     fetchValidateUser,
                     authorizationCodeFlowEnabled,
-                    initialMatchSigninCallbackUrl != null,
+                    initialMatchSigninCallbackUrl != null
                 );
             })
             .then((userManager) => {
@@ -433,7 +433,7 @@ const App = () => {
     useEffect(() => {
         if (user !== null) {
             const fetchCommonConfigPromise = fetchConfigParameters(
-                COMMON_APP_NAME,
+                COMMON_APP_NAME
             ).then((params) => updateParams(params));
 
             const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then(
@@ -447,7 +447,7 @@ const App = () => {
                                     // If they are not defined, values are taken from default values file
                                     if (
                                         !params.find(
-                                            (param) => param.name === key,
+                                            (param) => param.name === key
                                         )
                                     ) {
                                         params.push({
@@ -455,7 +455,7 @@ const App = () => {
                                             value: defaultValue,
                                         });
                                     }
-                                },
+                                }
                             );
                             updateParams(params);
                         })
@@ -465,7 +465,7 @@ const App = () => {
                                 headerId: 'paramsRetrievingError',
                             });
                         });
-                },
+                }
             );
 
             const fetchOptionalServices = getOptionalServices()
@@ -479,7 +479,7 @@ const App = () => {
                     // get all potentially optional services
                     const optionalServicesNames =
                         defaultOptionalServicesState.map(
-                            (service) => service.name,
+                            (service) => service.name
                         );
 
                     // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
@@ -489,13 +489,13 @@ const App = () => {
                             (serviceName) =>
                                 !retrieveOptionalServices
                                     .map((service) => service.name)
-                                    .includes(serviceName),
+                                    .includes(serviceName)
                         )
                         .forEach((serviceName) =>
                             retrieveOptionalServices.push({
                                 name: serviceName,
                                 status: OptionalServicesStatus.Up,
-                            }),
+                            })
                         );
                     dispatch(setOptionalServices(retrieveOptionalServices));
                 })
@@ -522,7 +522,7 @@ const App = () => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
-                    }),
+                    })
                 );
 
             const ws = connectNotificationsUpdateConfig();

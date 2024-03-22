@@ -88,17 +88,17 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
-        (state) => state[PARAM_LINE_PARALLEL_PATH],
+        (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
 
     const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
 
     const lineFlowColorMode = useSelector(
-        (state) => state[PARAM_LINE_FLOW_COLOR_MODE],
+        (state) => state[PARAM_LINE_FLOW_COLOR_MODE]
     );
 
     const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD]),
+        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
@@ -111,7 +111,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
     const oneBusShortCircuitStatus = useSelector(
         (state) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS],
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const { openDiagramView } = useDiagram();
@@ -130,7 +130,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         (vlId) => {
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         },
-        [openDiagramView],
+        [openDiagramView]
     );
 
     function showInSpreadsheet(equipment) {

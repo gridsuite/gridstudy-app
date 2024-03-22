@@ -15,5 +15,5 @@ export const SeriesType = PropTypes.arrayOf(
             x: PropTypes.arrayOf(PropTypes.number),
             y: PropTypes.arrayOf(PropTypes.number),
         }),
-    }),
+    })
 );

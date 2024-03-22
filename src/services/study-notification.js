@@ -16,13 +16,13 @@ export function connectNotificationsWebsocket(studyUuid, options) {
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
     const wsAdress = `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(
-        studyUuid,
+        studyUuid
     )}`;
 
     const rws = new ReconnectingWebSocket(
         () => getUrlWithToken(wsAdress),
         [],
-        options,
+        options
     );
     // don't log the token, it's private
     rws.onopen = function () {

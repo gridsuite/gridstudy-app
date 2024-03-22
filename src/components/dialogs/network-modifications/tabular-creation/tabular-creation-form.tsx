@@ -47,7 +47,7 @@ const TabularCreationForm = () => {
 
     const getTypeLabel = useCallback(
         (type: string) => intl.formatMessage({ id: type }),
-        [intl],
+        [intl]
     );
 
     const handleComplete = useCallback(
@@ -90,7 +90,7 @@ const TabularCreationForm = () => {
                 });
             }
         },
-        [clearErrors, setValue, getValues, setError, intl],
+        [clearErrors, setValue, getValues, setError, intl]
     );
 
     const watchType = useWatch({
@@ -101,7 +101,7 @@ const TabularCreationForm = () => {
         return TABULAR_CREATION_FIELDS[watchType]?.map(
             (field: TabularCreationField) => {
                 return field.id;
-            },
+            }
         );
     }, [watchType]);
 
@@ -164,7 +164,7 @@ const TabularCreationForm = () => {
                         getValues(TYPE)
                     ]?.find(
                         (field) =>
-                            intl.formatMessage({ id: field.id }) === header,
+                            intl.formatMessage({ id: field.id }) === header
                     );
                     return transformedHeader ?? header;
                 },
@@ -184,7 +184,7 @@ const TabularCreationForm = () => {
     const typesOptions = useMemo(() => {
         //only available types for tabular creation
         return Object.keys(TABULAR_CREATION_FIELDS).filter(
-            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES],
+            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );
     }, []);
 
@@ -215,7 +215,7 @@ const TabularCreationForm = () => {
             autoHeaderHeight: true,
             cellRenderer: DefaultCellRenderer,
         }),
-        [],
+        []
     );
 
     const columnDefs = useMemo(() => {

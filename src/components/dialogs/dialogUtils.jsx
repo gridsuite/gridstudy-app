@@ -167,7 +167,7 @@ export const gridItemWithErrorMsg = (
     field,
     size = 6,
     error,
-    errorClassName,
+    errorClassName
 ) => {
     return (
         <Grid item xs={size} align={'start'}>

@@ -38,7 +38,7 @@ export function fetchContingencyAndFiltersLists(listIds) {
     // Add params to Url
     const idsParams = getRequestParamFromList(
         listIds.filter((id) => id), // filter falsy elements
-        'ids',
+        'ids'
     );
     const urlSearchParams = new URLSearchParams(idsParams);
 
@@ -51,7 +51,7 @@ export function fetchContingencyAndFiltersLists(listIds) {
 
 function getPathUrl(studyUuid) {
     return `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements/${encodeURIComponent(
-        studyUuid,
+        studyUuid
     )}/path`;
 }
 

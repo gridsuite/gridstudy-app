@@ -79,10 +79,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 > = ({ studyUuid, nodeUuid, openVoltageLevelDiagram }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [nmkType, setNmkType] = useState(
-        NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES,
+        NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
     );
     const [rowsPerPage, setRowsPerPage] = useState<number>(
-        DEFAULT_PAGE_COUNT as number,
+        DEFAULT_PAGE_COUNT as number
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
@@ -94,7 +94,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS],
+            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
@@ -116,7 +116,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         getColumnToFieldMapping(resultType),
         () => {
             setPage(0);
-        },
+        }
     );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
@@ -151,10 +151,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             return fetchSecurityAnalysisResult(
                 studyUuid,
                 nodeUuid,
-                queryParams,
+                queryParams
             );
         },
-        [page, tabIndex, rowsPerPage, sortConfig, filterSelector, resultType],
+        [page, tabIndex, rowsPerPage, sortConfig, filterSelector, resultType]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
@@ -162,7 +162,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         nodeUuid,
         fetchSecurityAnalysisResultWithQueryParams,
         SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
-        null,
+        null
     );
 
     const resetResultStates = useCallback(
@@ -175,7 +175,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 initSort(defaultSortColKey);
             }
         },
-        [initSort, initFilters, setResult],
+        [initSort, initFilters, setResult]
     );
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {
@@ -183,12 +183,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         resetResultStates(
             newNmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                 ? 'contingencyId'
-                : 'subjectId',
+                : 'subjectId'
         );
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                 ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
-                : NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES,
+                : NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
         );
     };
 
@@ -201,11 +201,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const handleChangePage = useCallback(
         (
             _: React.MouseEvent<HTMLButtonElement> | null,
-            selectedPage: number,
+            selectedPage: number
         ) => {
             setPage(selectedPage);
         },
-        [setPage],
+        [setPage]
     );
 
     const handleChangeRowsPerPage = useCallback(
@@ -213,7 +213,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             setRowsPerPage(parseInt(event.target.value, 10));
             setPage(0);
         },
-        [setPage],
+        [setPage]
     );
 
     const result = useMemo(
@@ -221,7 +221,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             securityAnalysisResult === RunningStatus.FAILED
                 ? []
                 : securityAnalysisResult,
-        [securityAnalysisResult],
+        [securityAnalysisResult]
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
@@ -250,12 +250,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         },
         filterEnums,
         resultType,
-        openVoltageLevelDiagram,
+        openVoltageLevelDiagram
     );
 
     const csvHeaders = useMemo(
         () => columnDefs.map((cDef) => cDef.headerName ?? ''),
-        [columnDefs],
+        [columnDefs]
     );
 
     const isExportButtonDisabled =

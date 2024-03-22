@@ -47,7 +47,7 @@ const characteristicsValidationSchema = (isModification, additionalFields) => ({
 
 export const getCharacteristicsValidationSchema = (
     isModification = false,
-    additionalFields = {},
+    additionalFields = {}
 ) => {
     return characteristicsValidationSchema(isModification, additionalFields);
 };
@@ -79,7 +79,7 @@ export const getCharacteristicsFormData = (
         ratedU1 = null,
         ratedU2 = null,
     },
-    additionalFields = {},
+    additionalFields = {}
 ) => {
     return {
         [CHARACTERISTICS]: {

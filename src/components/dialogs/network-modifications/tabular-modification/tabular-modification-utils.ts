@@ -131,7 +131,7 @@ export const formatModification = (modification: Modification) => {
 
 export const convertValueFromBackToFront = (
     key: string,
-    value: { value: string | number },
+    value: { value: string | number }
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
@@ -150,7 +150,7 @@ export const convertValueFromBackToFront = (
 
 export const convertValueFromFrontToBack = (
     key: string,
-    value: string | number,
+    value: string | number
 ) => {
     switch (key) {
         case EQUIPMENT_ID:
@@ -169,7 +169,7 @@ export const convertValueFromFrontToBack = (
 
 export const getEquipmentTypeFromModificationType = (type: string) => {
     return Object.keys(TABULAR_MODIFICATION_TYPES).find(
-        (key) => TABULAR_MODIFICATION_TYPES[key] === type,
+        (key) => TABULAR_MODIFICATION_TYPES[key] === type
     );
 };
 

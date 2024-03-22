@@ -207,7 +207,7 @@ export const NonEvacuatedEnergyParameters = ({
             ...getGenerationStagesSelectionParams(newParams),
             [GENERATORS_LIMIT]: getGeneratorsCappingsParams(
                 newParams[SENSITIVITY_THRESHOLD],
-                newParams,
+                newParams
             ),
             ...getMonitoredBranchesParams(newParams),
             ...getContingenciesParams(newParams),
@@ -224,11 +224,11 @@ export const NonEvacuatedEnergyParameters = ({
         (newParams) => {
             setNonEvacuatedEnergyParameters(
                 studyUuid,
-                formatNewParams(newParams, true),
+                formatNewParams(newParams, true)
             )
                 .then(() => {
                     setNonEvacuatedEnergyParams(
-                        formatNewParams(newParams, false),
+                        formatNewParams(newParams, false)
                     );
                     updateProvider(newParams[PROVIDER]);
                 })
@@ -245,7 +245,7 @@ export const NonEvacuatedEnergyParameters = ({
             studyUuid,
             formatNewParams,
             updateProvider,
-        ],
+        ]
     );
 
     const fromNonEvacuatedEnergyParamsDataToFormValues = useCallback(
@@ -323,7 +323,7 @@ export const NonEvacuatedEnergyParameters = ({
                                             CONTAINER_NAME
                                         ],
                                     };
-                                },
+                                }
                             ),
 
                             [MONITORED_BRANCHES_IST_N]:
@@ -355,14 +355,14 @@ export const NonEvacuatedEnergyParameters = ({
                                         [ID]: contingency[CONTAINER_ID],
                                         [NAME]: contingency[CONTAINER_NAME],
                                     };
-                                },
+                                }
                             ),
                             [ACTIVATED]: contingencies[ACTIVATED],
                         };
                     }) ?? [],
             });
         },
-        [reset],
+        [reset]
     );
 
     const combineStagesDefinition = useCallback((stagesDefinition) => {
@@ -370,12 +370,12 @@ export const NonEvacuatedEnergyParameters = ({
         const stagesPmaxPercentsCount = 3; // only 3 pmax percents
         const stagesSelectionsCount = Math.pow(
             stagesPmaxPercentsCount,
-            stagesDefinitionsCount,
+            stagesDefinitionsCount
         );
         let res = [];
         for (let i = 0; i < stagesSelectionsCount; ++i) {
             const indexPmax1 = Math.trunc(
-                i / (stagesPmaxPercentsCount * stagesPmaxPercentsCount),
+                i / (stagesPmaxPercentsCount * stagesPmaxPercentsCount)
             );
             const indexPmax2 =
                 Math.trunc(i / stagesPmaxPercentsCount) %
@@ -414,7 +414,7 @@ export const NonEvacuatedEnergyParameters = ({
                     '_' +
                     valPmax3,
                 [STAGES_DEFINITION_INDEX]: Array.from(
-                    Array(stagesDefinitionsCount).keys(),
+                    Array(stagesDefinitionsCount).keys()
                 ),
                 [PMAX_PERCENTS_INDEX]: [indexPmax1, indexPmax2, indexPmax3],
             };
@@ -427,7 +427,7 @@ export const NonEvacuatedEnergyParameters = ({
         setValue(
             STAGES_SELECTION,
             combineStagesDefinition(getValues()[STAGES_DEFINITION]),
-            { shouldDirty: true },
+            { shouldDirty: true }
         );
     }, [setValue, getValues, combineStagesDefinition]);
 
@@ -488,7 +488,7 @@ export const NonEvacuatedEnergyParameters = ({
                             options={Object.values(providers).map(
                                 (provider) => {
                                     return { id: provider, label: provider };
-                                },
+                                }
                             )}
                         ></SelectInput>
                     </Grid>

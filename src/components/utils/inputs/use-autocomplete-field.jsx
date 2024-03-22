@@ -128,7 +128,7 @@ export const useAutocompleteField = ({
             setValue(value);
             inputForm?.setHasChanged(true);
         },
-        [inputForm],
+        [inputForm]
     );
 
     useEffect(() => {
@@ -193,7 +193,7 @@ export const useAutocompleteField = ({
             setExpanded(true);
             onSearchTermChange(term, true);
         },
-        [onSearchTermChange],
+        [onSearchTermChange]
     );
 
     const onOpen = useCallback(() => {
@@ -212,7 +212,7 @@ export const useAutocompleteField = ({
         (term, reason) => {
             if (allowNewValue && reason !== 'reset') {
                 let matchingOption = values?.find(
-                    (val) => val.id?.toUpperCase() === term.toUpperCase(),
+                    (val) => val.id?.toUpperCase() === term.toUpperCase()
                 );
                 if (matchingOption) {
                     setValue(matchingOption);
@@ -243,7 +243,7 @@ export const useAutocompleteField = ({
             allowNewValue,
             newEntryToValue,
             inputForm,
-        ],
+        ]
     );
 
     const field = useMemo(() => {

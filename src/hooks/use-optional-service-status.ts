@@ -6,13 +6,13 @@ import {
 } from '../components/utils/optional-services';
 
 export const useOptionalServiceStatus = (
-    serviceName: OptionalServicesNames,
+    serviceName: OptionalServicesNames
 ): OptionalServicesStatus | undefined => {
     const optionalServices = useSelector(
-        (state: ReduxState) => state.optionalServices,
+        (state: ReduxState) => state.optionalServices
     );
     const optionalService = optionalServices?.find(
-        (service) => service.name === serviceName,
+        (service) => service.name === serviceName
     );
     return optionalService?.status;
 };

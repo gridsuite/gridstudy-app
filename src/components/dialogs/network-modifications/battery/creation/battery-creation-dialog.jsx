@@ -227,7 +227,7 @@ const BatteryCreationDialog = ({
                 battery[DROOP] ?? null,
                 !!editData,
                 editData?.uuid ?? null,
-                toModificationProperties(battery),
+                toModificationProperties(battery)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -235,7 +235,7 @@ const BatteryCreationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, studyUuid, snackError],
+        [currentNodeUuid, editData, studyUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({

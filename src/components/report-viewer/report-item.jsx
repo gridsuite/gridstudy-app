@@ -45,7 +45,7 @@ const styles = {
                 backgroundColor: alpha(
                     theme.palette.primary.main,
                     theme.palette.action.selectedOpacity +
-                        theme.palette.action.hoverOpacity,
+                        theme.palette.action.hoverOpacity
                 ),
             },
         '&.Mui-focused': {

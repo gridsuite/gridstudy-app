@@ -50,7 +50,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
 > = ({ studyUuid, nodeUuid, view }) => {
     const lastCompletedComputation = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation,
+        (state: ReduxState) => state.lastCompletedComputation
     );
 
     const [csvHeaders, setCsvHeaders] = useState([]);
@@ -59,7 +59,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
             computingTypeToShortcircuitTabRedirection(lastCompletedComputation),
-        [lastCompletedComputation],
+        [lastCompletedComputation]
     );
 
     const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
@@ -68,19 +68,17 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
 
     const AllBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[
-                ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
-            ],
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
     );
     const OneBusShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS],
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const setRedirectionLock = useResultsTab(
         resultTabIndexRedirection,
         setTabIndex,
-        view,
+        view
     );
 
     const handleTabChange = useCallback(
@@ -89,7 +87,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             //when we manually browse results we ought to block further redirections until the next completed computation
             setRedirectionLock(true);
         },
-        [setTabIndex, setRedirectionLock],
+        [setTabIndex, setRedirectionLock]
     );
 
     const RESULTS_TAB_INDEX = 0;
@@ -99,7 +97,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         (event: React.SyntheticEvent, newIndex: number) => {
             setResultOrLogIndex(newIndex);
         },
-        [setResultOrLogIndex],
+        [setResultOrLogIndex]
     );
 
     const shortCircuitTabResultStatusSucceedOrFailed = useMemo(() => {

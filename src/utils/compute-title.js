@@ -65,7 +65,7 @@ export const computePageTitle = (appName, studyName, parents) => {
     // Rule 1 : if first repository causes exceeding of the maximum number of characters, truncates this repository name
     const titleWithFirstDir = computePageTitleWithFirstDirectory(
         pageTitle,
-        parents,
+        parents
     );
 
     if (titleWithFirstDir.length > MAX_TITLE_LENGTH) {

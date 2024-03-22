@@ -75,7 +75,7 @@ const EquipmentDeletionDialog = ({
                 [EQUIPMENT_ID]: editData.equipmentId,
             });
         },
-        [reset],
+        [reset]
     );
 
     const fromMenuDataValues = useCallback(
@@ -86,7 +86,7 @@ const EquipmentDeletionDialog = ({
                 [DELETION_SPECIFIC_DATA]: null,
             });
         },
-        [reset],
+        [reset]
     );
 
     useEffect(() => {
@@ -110,7 +110,7 @@ const EquipmentDeletionDialog = ({
                 formData[TYPE],
                 formData[EQUIPMENT_ID],
                 editData?.uuid,
-                formData[DELETION_SPECIFIC_DATA],
+                formData[DELETION_SPECIFIC_DATA]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -118,7 +118,7 @@ const EquipmentDeletionDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

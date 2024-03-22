@@ -78,10 +78,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a: { id: string }, b: { id: string }) =>
-                            a.id.localeCompare(b.id),
-                        ),
+                            a.id.localeCompare(b.id)
+                        )
                     );
-                },
+                }
             );
         }
     }, [studyUuid, currentNodeUuid]);

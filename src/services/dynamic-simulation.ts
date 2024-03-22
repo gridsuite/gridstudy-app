@@ -35,10 +35,10 @@ export function fetchDynamicSimulationProviders() {
 
 export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid: UUID,
-    currentNodeUuid: UUID,
+    currentNodeUuid: UUID
 ): Promise<TimeSeriesMetadata[] | null> {
     console.info(
-        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`,
+        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     const url =
@@ -50,10 +50,10 @@ export function fetchDynamicSimulationTimeSeriesMetadata(
 
 export function fetchDynamicSimulationResultTimeline(
     studyUuid: UUID,
-    currentNodeUuid: UUID,
+    currentNodeUuid: UUID
 ): Promise<TimelineEvent[] | null> {
     console.info(
-        `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`,
+        `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -66,10 +66,10 @@ export function fetchDynamicSimulationResultTimeline(
 
 export function fetchDynamicSimulationEvents(
     studyUuid: string,
-    nodeUuid: string,
+    nodeUuid: string
 ): Promise<Event[]> {
     console.info(
-        `Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`,
+        `Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`
     );
 
     const url =
@@ -84,10 +84,10 @@ export function fetchDynamicSimulationEvents(
 export function fetchDynamicSimulationEvent(
     studyUuid: string,
     nodeUuid: string,
-    equipmentId: string,
+    equipmentId: string
 ): Promise<Event> {
     console.info(
-        `Fetching dynamic simulation event with '${equipmentId}' on '${studyUuid}' and node '${nodeUuid}' ...`,
+        `Fetching dynamic simulation event with '${equipmentId}' on '${studyUuid}' and node '${nodeUuid}' ...`
     );
 
     const url =
@@ -102,10 +102,10 @@ export function fetchDynamicSimulationEvent(
 export function saveDynamicSimulationEvent(
     studyUuid: string,
     nodeUuid: string,
-    event: Event,
+    event: Event
 ) {
     console.info(
-        `Saving dynamic simulation event on '${studyUuid}' and node '${nodeUuid}' ...`,
+        `Saving dynamic simulation event on '${studyUuid}' and node '${nodeUuid}' ...`
     );
 
     const url =
@@ -126,15 +126,15 @@ export function saveDynamicSimulationEvent(
 export function deleteDynamicSimulationEvents(
     studyUuid: string,
     nodeUuid: string,
-    events: Event[],
+    events: Event[]
 ) {
     console.info(
-        `Delete dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`,
+        `Delete dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`
     );
 
     const eventIdsParams = getRequestParamFromList(
         events.map((event) => event.uuid),
-        'eventUuids',
+        'eventUuids'
     );
 
     const url =

@@ -22,19 +22,19 @@ export default class GSMapEquipments extends MapEquipments {
             studyUuid,
             currentNodeUuid,
             undefined,
-            false,
+            false
         );
         const fetchLinesMapInfosPromise = fetchLinesMapInfos(
             studyUuid,
             currentNodeUuid,
             undefined,
-            false,
+            false
         );
         const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNodeUuid,
             undefined,
-            false,
+            false
         );
 
         this.dispatch(setMapEquipementsInitialized(false));
@@ -42,7 +42,7 @@ export default class GSMapEquipments extends MapEquipments {
         fetchSubstationsMapInfosPromise
             .then((val) => {
                 this.dispatch(
-                    mapEquipmentsCreated(this, undefined, val, undefined),
+                    mapEquipmentsCreated(this, undefined, val, undefined)
                 );
             })
             .catch((error) => {
@@ -58,7 +58,7 @@ export default class GSMapEquipments extends MapEquipments {
         fetchLinesMapInfosPromise
             .then((val) => {
                 this.dispatch(
-                    mapEquipmentsCreated(this, val, undefined, undefined),
+                    mapEquipmentsCreated(this, val, undefined, undefined)
                 );
             })
             .catch((error) => {
@@ -74,7 +74,7 @@ export default class GSMapEquipments extends MapEquipments {
         fetchHvdcLinesMapInfosPromise
             .then((val) => {
                 this.dispatch(
-                    mapEquipmentsCreated(this, undefined, undefined, val),
+                    mapEquipmentsCreated(this, undefined, undefined, val)
                 );
             })
             .catch((error) => {
@@ -107,25 +107,25 @@ export default class GSMapEquipments extends MapEquipments {
     reloadImpactedSubstationsEquipments(
         studyUuid,
         currentNode,
-        substationsIds,
+        substationsIds
     ) {
         const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
             substationsIds,
-            true,
+            true
         );
         const updatedLines = fetchLinesMapInfos(
             studyUuid,
             currentNode?.id,
             substationsIds,
-            true,
+            true
         );
         const updatedHvdcLines = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNode?.id,
             substationsIds,
-            true,
+            true
         );
         updatedSubstations.catch((error) => {
             console.error(error.message);

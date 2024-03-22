@@ -86,7 +86,7 @@ const TapChangerSteps = ({
 
     function createTapRows(numberOfRows) {
         const currentLowTapPosition = getValues(
-            `${tapChanger}.${LOW_TAP_POSITION}`,
+            `${tapChanger}.${LOW_TAP_POSITION}`
         );
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
@@ -106,7 +106,7 @@ const TapChangerSteps = ({
                     ...accumulator,
                     [currentValue.dataKey]: currentValue.initialValue,
                 }),
-                { [STEPS_TAP]: nextHighestTap },
+                { [STEPS_TAP]: nextHighestTap }
             );
             tapRowsToAdd.push(newRow);
             if (i !== numberOfRows - 1) {
@@ -129,7 +129,7 @@ const TapChangerSteps = ({
         } else {
             return !compareStepsWithPreviousValues(
                 tapStepsWatcher,
-                previousValues?.[STEPS],
+                previousValues?.[STEPS]
             );
         }
     }, [currentNode, editData, previousValues, tapStepsWatcher]);
@@ -151,7 +151,7 @@ const TapChangerSteps = ({
             ) {
                 setValue(
                     `${tapChanger}.${STEPS}[${index}].${STEPS_TAP}`,
-                    tapPosition,
+                    tapPosition
                 );
             }
 
@@ -161,7 +161,7 @@ const TapChangerSteps = ({
                     : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [getValues, tapChanger, lowTapPosition, previousValues, setValue],
+        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
@@ -216,8 +216,8 @@ const TapChangerSteps = ({
                     setFileParseError(
                         intl.formatMessage(
                             { id: 'TapPositionValueError' },
-                            { value: MAX_ROWS_NUMBER },
-                        ),
+                            { value: MAX_ROWS_NUMBER }
+                        )
                     );
                     return;
                 }
@@ -292,19 +292,19 @@ const TapChangerSteps = ({
     const getTapPreviousValue = useCallback(
         (rowIndex, column, arrayFormName, tapSteps) => {
             const step = tapSteps?.find(
-                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index,
+                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
             );
             if (step === undefined) {
                 return undefined;
             }
             return step?.[column.dataKey];
         },
-        [getValues],
+        [getValues]
     );
 
     const isTapModified = useCallback(
         () => areStepsModified,
-        [areStepsModified],
+        [areStepsModified]
     );
 
     return (

@@ -57,13 +57,13 @@ const formSchema = yup.object().shape({
                     .test(
                         'empty-check',
                         'SegmentTypeMissing',
-                        (value) => value.length > 0,
+                        (value) => value.length > 0
                     ),
                 [SEGMENT_TYPE_ID]: yup.string(),
                 [SEGMENT_RESISTANCE]: yup.number(),
                 [SEGMENT_REACTANCE]: yup.number(),
                 [SEGMENT_SUSCEPTANCE]: yup.number(),
-            }),
+            })
         )
         .min(1, 'AtLeastOneSegmentNeeded'),
 });

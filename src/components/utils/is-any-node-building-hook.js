@@ -12,7 +12,7 @@ export const useIsAnyNodeBuilding = () => {
     const [iAnyNodeBuild, setAnyNodeBuilding] = useState(false);
 
     const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel,
+        (state) => state.networkModificationTreeModel
     );
 
     useEffect(() => {

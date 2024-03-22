@@ -34,7 +34,7 @@ export const useFormSearchCopy = ({
             EQUIPMENT_INFOS_TYPES.FORM.type,
             element.id,
             true,
-            operation,
+            operation
         );
         return fetchElementPromise
             .then((response) => {
@@ -45,7 +45,7 @@ export const useFormSearchCopy = ({
                     { id: 'EquipmentCopied' },
                     {
                         equipmentId: element.id,
-                    },
+                    }
                 );
                 snackInfo({
                     messageTxt: msg,
@@ -55,14 +55,14 @@ export const useFormSearchCopy = ({
                 console.error(
                     'error while fetching equipment {equipmentId} : message = {message}',
                     element.id,
-                    error.message,
+                    error.message
                 );
                 if (error.status === 404) {
                     msg = intl.formatMessage(
                         { id: 'EquipmentCopyFailed404' },
                         {
                             equipmentId: element.id,
-                        },
+                        }
                     );
                 } else {
                     msg =
@@ -70,7 +70,7 @@ export const useFormSearchCopy = ({
                             { id: 'EquipmentCopyFailed' },
                             {
                                 equipmentId: element.id,
-                            },
+                            }
                         ) +
                         ' ' +
                         error.message;

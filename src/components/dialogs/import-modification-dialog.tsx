@@ -47,7 +47,7 @@ const ImportModificationDialog: FunctionComponent<
                 studyUuid,
                 currentNode.id,
                 modificationUuidList,
-                copyInfos,
+                copyInfos
             ).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,

@@ -16,7 +16,7 @@ import {
 
 export const useAgGridLocalSort = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
-    initSortConfig: SortConfigType,
+    initSortConfig: SortConfigType
 ): SortPropsType => {
     const { onSortChanged, sortConfig, initSort } =
         useAgGridSort(initSortConfig);
@@ -33,7 +33,7 @@ export const useAgGridLocalSort = (
                 defaultState: { sort: null },
             });
         },
-        [gridRef],
+        [gridRef]
     );
 
     useEffect(() => {

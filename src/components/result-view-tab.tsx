@@ -95,26 +95,26 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const lastCompletedComputation = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation,
+        (state: ReduxState) => state.lastCompletedComputation
     );
 
     const securityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SecurityAnalysis,
+        OptionalServicesNames.SecurityAnalysis
     );
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis,
+        OptionalServicesNames.SensitivityAnalysis
     );
     const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis,
+        OptionalServicesNames.SensitivityAnalysis
     );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.DynamicSimulation,
+        OptionalServicesNames.DynamicSimulation
     );
     const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit,
+        OptionalServicesNames.VoltageInit
     );
     const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit,
+        OptionalServicesNames.ShortCircuit
     );
 
     const renderLoadFlowResult = useMemo(() => {
@@ -275,9 +275,9 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         () =>
             computingTypeToRootTabRedirection(
                 lastCompletedComputation ?? ComputingType.LOADFLOW,
-                services,
+                services
             ),
-        [lastCompletedComputation, services],
+        [lastCompletedComputation, services]
     );
 
     const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
@@ -285,7 +285,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const setRedirectionLock = useResultsTab(
         resultTabIndexRedirection,
         setTabIndex,
-        view,
+        view
     );
 
     const renderTab = (service: IService) => {
@@ -301,7 +301,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     };
     const renderTabPanelLazy = (
         service: IService,
-        index: number,
+        index: number
     ): React.ReactNode => {
         return (
             <TabPanelLazy
@@ -330,7 +330,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             //when we manually browse results we ought to block further redirections until the next completed computation
             setRedirectionLock(true);
         },
-        [setRedirectionLock],
+        [setRedirectionLock]
     );
 
     return (
@@ -347,7 +347,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
             </Box>
             {services.map((service, index) =>
-                renderTabPanelLazy(service, index),
+                renderTabPanelLazy(service, index)
             )}
         </Paper>
     );

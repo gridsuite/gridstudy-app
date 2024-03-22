@@ -149,12 +149,12 @@ const LineAttachToVoltageLevelDialog = ({
                 newVoltageLevel.busbarSections = buildNewBusbarSections(
                     newVoltageLevel?.equipmentId,
                     newVoltageLevel?.sectionCount,
-                    newVoltageLevel?.busbarCount,
+                    newVoltageLevel?.busbarCount
                 );
                 setNewVoltageLevel(newVoltageLevel);
             }
         },
-        [reset],
+        [reset]
     );
 
     useEffect(() => {
@@ -184,7 +184,7 @@ const LineAttachToVoltageLevelDialog = ({
                 lineAttach[LINE1_ID],
                 sanitizeString(lineAttach[LINE1_NAME]),
                 lineAttach[LINE2_ID],
-                sanitizeString(lineAttach[LINE2_NAME]),
+                sanitizeString(lineAttach[LINE2_NAME])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -199,7 +199,7 @@ const LineAttachToVoltageLevelDialog = ({
             newVoltageLevel,
             snackError,
             studyUuid,
-        ],
+        ]
     );
 
     useEffect(() => {
@@ -207,9 +207,9 @@ const LineAttachToVoltageLevelDialog = ({
             fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
                 (values) => {
                     setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id)),
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
                     );
-                },
+                }
             );
         }
     }, [studyUuid, currentNode?.id]);
@@ -237,7 +237,7 @@ const LineAttachToVoltageLevelDialog = ({
             permanentCurrentLimit1,
             permanentCurrentLimit2,
             temporaryCurrentLimits1,
-            temporaryCurrentLimits2,
+            temporaryCurrentLimits2
         ) => {
             return new Promise(() => {
                 const preparedLine = {
@@ -266,7 +266,7 @@ const LineAttachToVoltageLevelDialog = ({
                 });
             });
         },
-        [setValue],
+        [setValue]
     );
 
     const onVoltageLevelCreationDo = useCallback(
@@ -305,7 +305,7 @@ const LineAttachToVoltageLevelDialog = ({
                 preparedVoltageLevel.busbarSections = buildNewBusbarSections(
                     preparedVoltageLevel.equipmentId,
                     preparedVoltageLevel.sectionCount,
-                    preparedVoltageLevel.busbarCount,
+                    preparedVoltageLevel.busbarCount
                 );
 
                 // we keep the old voltage level id, so it can be removed for from voltage level options
@@ -318,7 +318,7 @@ const LineAttachToVoltageLevelDialog = ({
                 const newVoltageLevelOptions = getNewVoltageLevelOptions(
                     formattedVoltageLevel,
                     oldVoltageLevelId,
-                    voltageLevelOptions,
+                    voltageLevelOptions
                 );
 
                 setVoltageLevelOptions(newVoltageLevelOptions);
@@ -332,11 +332,11 @@ const LineAttachToVoltageLevelDialog = ({
                     {
                         shouldValidate: true,
                         shouldDirty: true,
-                    },
+                    }
                 );
             });
         },
-        [setValue, newVoltageLevel, voltageLevelOptions],
+        [setValue, newVoltageLevel, voltageLevelOptions]
     );
 
     const open = useOpenShortWaitFetching({

@@ -38,11 +38,11 @@ export function connectNotificationsWsUpdateDirectories() {
     const webSocketUrl = `${webSocketBaseUrl}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`;
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => `${webSocketUrl}&access_token=${getToken()}`,
+        () => `${webSocketUrl}&access_token=${getToken()}`
     );
     reconnectingWebSocket.onopen = function () {
         console.info(
-            `Connected Websocket update directories ${webSocketUrl} ...`,
+            `Connected Websocket update directories ${webSocketUrl} ...`
         );
     };
     return reconnectingWebSocket;

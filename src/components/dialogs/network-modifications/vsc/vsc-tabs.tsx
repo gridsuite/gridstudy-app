@@ -37,21 +37,21 @@ const VscTabs: FunctionComponent<VscTabsProps> = ({
                         label={<FormattedMessage id="HVDC_LINE" />}
                         sx={getTabStyle(
                             tabIndexesWithError,
-                            VSC_CREATION_TABS.HVDC_LINE_TAB,
+                            VSC_CREATION_TABS.HVDC_LINE_TAB
                         )}
                     />
                     <Tab
                         label={<FormattedMessage id="converterStation1" />}
                         sx={getTabStyle(
                             tabIndexesWithError,
-                            VSC_CREATION_TABS.CONVERTER_STATION_1,
+                            VSC_CREATION_TABS.CONVERTER_STATION_1
                         )}
                     />
                     <Tab
                         label={<FormattedMessage id="converterStation2" />}
                         sx={getTabStyle(
                             tabIndexesWithError,
-                            VSC_CREATION_TABS.CONVERTER_STATION_2,
+                            VSC_CREATION_TABS.CONVERTER_STATION_2
                         )}
                     />
                 </Tabs>

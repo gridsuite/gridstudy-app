@@ -58,7 +58,7 @@ const NetworkModificationTree = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel,
+        (state) => state.networkModificationTreeModel
     );
 
     const [isMoving, setIsMoving] = useState(false);
@@ -89,15 +89,13 @@ const NetworkModificationTree = ({
     const onNodeClick = useCallback(
         (event, node) => {
             dispatch(
-                setModificationsDrawerOpen(
-                    node.type === 'NETWORK_MODIFICATION',
-                ),
+                setModificationsDrawerOpen(node.type === 'NETWORK_MODIFICATION')
             );
             if (!isSameNode(currentNode, node)) {
                 dispatch(setCurrentTreeNode(node));
             }
         },
-        [dispatch, currentNode],
+        [dispatch, currentNode]
     );
 
     const toggleMinimap = useCallback(() => {

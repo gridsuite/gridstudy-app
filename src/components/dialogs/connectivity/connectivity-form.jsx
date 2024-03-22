@@ -70,7 +70,7 @@ export const ConnectivityForm = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
-        [],
+        []
     );
 
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
@@ -86,14 +86,14 @@ export const ConnectivityForm = ({
     useEffect(() => {
         if (watchVoltageLevelId) {
             const voltageLevelTopologyKind = voltageLevelOptions.find(
-                (vl) => vl.id === watchVoltageLevelId,
+                (vl) => vl.id === watchVoltageLevelId
             )?.topologyKind;
             switch (voltageLevelTopologyKind) {
                 case 'NODE_BREAKER':
                     fetchBusbarSectionsForVoltageLevel(
                         studyUuid,
                         currentNodeUuid,
-                        watchVoltageLevelId,
+                        watchVoltageLevelId
                     ).then((busbarSections) => {
                         setBusOrBusbarSectionOptions(busbarSections);
                     });
@@ -103,7 +103,7 @@ export const ConnectivityForm = ({
                     fetchBusesForVoltageLevel(
                         studyUuid,
                         currentNodeUuid,
-                        watchVoltageLevelId,
+                        watchVoltageLevelId
                     ).then((buses) => setBusOrBusbarSectionOptions(buses));
                     break;
 
@@ -136,18 +136,18 @@ export const ConnectivityForm = ({
 
     useEffect(() => {
         const currentBusOrBusbarSection = getValues(
-            `${id}.${BUS_OR_BUSBAR_SECTION}`,
+            `${id}.${BUS_OR_BUSBAR_SECTION}`
         );
         if (
             busOrBusbarSectionOptions?.length > 0 &&
             !busOrBusbarSectionOptions.find(
                 (busOrBusbarSection) =>
-                    busOrBusbarSection.id === currentBusOrBusbarSection?.id,
+                    busOrBusbarSection.id === currentBusOrBusbarSection?.id
             )
         ) {
             setValue(
                 `${id}.${BUS_OR_BUSBAR_SECTION}`,
-                busOrBusbarSectionOptions[0],
+                busOrBusbarSectionOptions[0]
             );
         }
     }, [busOrBusbarSectionOptions, setValue, id, getValues]);

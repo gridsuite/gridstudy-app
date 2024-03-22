@@ -71,7 +71,7 @@ const SensitivityParametersSelector = ({
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(
-        TAB_VALUES.SensiInjectionsSet,
+        TAB_VALUES.SensiInjectionsSet
     );
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
@@ -100,15 +100,15 @@ const SensitivityParametersSelector = ({
         useCreateRowDataSensi(sensiParam.SensiInjection);
 
     const [rowDataHvdc, useFieldArrayOutputHvdc] = useCreateRowDataSensi(
-        sensiParam.SensiHvdcs,
+        sensiParam.SensiHvdcs
     );
 
     const [rowDataPst, useFieldArrayOutputPst] = useCreateRowDataSensi(
-        sensiParam.SensiPsts,
+        sensiParam.SensiPsts
     );
 
     const [rowDataNodes, useFieldArrayOutputNodes] = useCreateRowDataSensi(
-        sensiParam.SensiNodes,
+        sensiParam.SensiNodes
     );
 
     const getColumnsDefinition = useCallback(
@@ -121,7 +121,7 @@ const SensitivityParametersSelector = ({
             }
             return [];
         },
-        [intl],
+        [intl]
     );
 
     const renderComputingEventLoading = () => {
@@ -236,7 +236,7 @@ const SensitivityParametersSelector = ({
                                         <SensitivityTable
                                             arrayFormName={`${SensiInjectionsSet.name}`}
                                             columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_INJECTIONS_SET,
+                                                sensiParam.COLUMNS_DEFINITIONS_INJECTIONS_SET
                                             )}
                                             useFieldArrayOutput={
                                                 useFieldArrayOutputInjectionsSet
@@ -254,7 +254,7 @@ const SensitivityParametersSelector = ({
                                         <SensitivityTable
                                             arrayFormName={`${SensiInjection.name}`}
                                             columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_INJECTIONS,
+                                                sensiParam.COLUMNS_DEFINITIONS_INJECTIONS
                                             )}
                                             useFieldArrayOutput={
                                                 useFieldArrayOutputInjections
@@ -272,7 +272,7 @@ const SensitivityParametersSelector = ({
                                         <SensitivityTable
                                             arrayFormName={`${SensiHvdcs.name}`}
                                             columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_HVDCS,
+                                                sensiParam.COLUMNS_DEFINITIONS_HVDCS
                                             )}
                                             useFieldArrayOutput={
                                                 useFieldArrayOutputHvdc
@@ -290,7 +290,7 @@ const SensitivityParametersSelector = ({
                                         <SensitivityTable
                                             arrayFormName={`${SensiPsts.name}`}
                                             columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_PSTS,
+                                                sensiParam.COLUMNS_DEFINITIONS_PSTS
                                             )}
                                             useFieldArrayOutput={
                                                 useFieldArrayOutputPst
@@ -307,7 +307,7 @@ const SensitivityParametersSelector = ({
                             <SensitivityTable
                                 arrayFormName={`${SensiNodes.name}`}
                                 columnsDefinition={getColumnsDefinition(
-                                    sensiParam.COLUMNS_DEFINITIONS_NODES,
+                                    sensiParam.COLUMNS_DEFINITIONS_NODES
                                 )}
                                 useFieldArrayOutput={useFieldArrayOutputNodes}
                                 createRows={rowDataNodes}

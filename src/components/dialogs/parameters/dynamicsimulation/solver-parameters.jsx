@@ -45,8 +45,8 @@ export const formSchema = yup.object().shape({
                 } else if (type === SOLVER_TYPES.SIM) {
                     return getSimplifiedFormSchema();
                 }
-            }),
-        ),
+            })
+        )
     ),
 });
 

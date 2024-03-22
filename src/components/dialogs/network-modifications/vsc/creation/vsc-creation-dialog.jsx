@@ -120,11 +120,11 @@ const VscCreationDialog = ({
             }),
             ...getConverterStationFromSearchCopy(
                 CONVERTER_STATION_1,
-                hvdcLine.converterStation1,
+                hvdcLine.converterStation1
             ),
             ...getConverterStationFromSearchCopy(
                 CONVERTER_STATION_2,
-                hvdcLine.converterStation2,
+                hvdcLine.converterStation2
             ),
         });
     };
@@ -191,11 +191,11 @@ const VscCreationDialog = ({
                 ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, editData),
                 ...getConverterStationFormEditData(
                     CONVERTER_STATION_1,
-                    editData.converterStation1,
+                    editData.converterStation1
                 ),
                 ...getConverterStationFormEditData(
                     CONVERTER_STATION_2,
-                    editData.converterStation2,
+                    editData.converterStation2
                 ),
             });
         }
@@ -229,10 +229,10 @@ const VscCreationDialog = ({
         (hvdcLine) => {
             const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
             const converterStation1 = getConverterStationCreationData(
-                hvdcLine[CONVERTER_STATION_1],
+                hvdcLine[CONVERTER_STATION_1]
             );
             const converterStation2 = getConverterStationCreationData(
-                hvdcLine[CONVERTER_STATION_2],
+                hvdcLine[CONVERTER_STATION_2]
             );
             createVsc(
                 studyUuid,
@@ -252,7 +252,7 @@ const VscCreationDialog = ({
                 converterStation1,
                 converterStation2,
                 !!editData,
-                editData?.uuid ?? null,
+                editData?.uuid ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -260,7 +260,7 @@ const VscCreationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, editData, snackError],
+        [studyUuid, currentNodeUuid, editData, snackError]
     );
 
     return (

@@ -73,7 +73,7 @@ const LoadScalingDialog = ({
                 currentNodeUuid,
                 editData?.uuid ?? undefined,
                 loadScalingInfos[VARIATION_TYPE],
-                loadScalingInfos[VARIATIONS],
+                loadScalingInfos[VARIATIONS]
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,
@@ -81,7 +81,7 @@ const LoadScalingDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({

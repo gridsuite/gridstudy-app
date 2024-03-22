@@ -85,14 +85,14 @@ const TabularCreationDialog = ({
     useEffect(() => {
         if (editData) {
             const equipmentType = getEquipmentTypeFromCreationType(
-                editData?.creationType,
+                editData?.creationType
             );
             const creations = editData?.creations.map((creat) => {
                 const creation = {};
                 Object.keys(formatModification(creat)).forEach((key) => {
                     const entry = convertCreationFieldFromBackToFront(
                         key,
-                        creat[key],
+                        creat[key]
                     );
                     creation[entry.key] = entry.value;
                 });
@@ -115,7 +115,7 @@ const TabularCreationDialog = ({
                 Object.keys(row).forEach((key) => {
                     const entry = convertCreationFieldFromFrontToBack(
                         key,
-                        row[key],
+                        row[key]
                     );
                     creation[entry.key] = entry.value;
                 });
@@ -131,7 +131,7 @@ const TabularCreationDialog = ({
                 creationType,
                 creations,
                 !!editData,
-                editData?.uuid,
+                editData?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -139,7 +139,7 @@ const TabularCreationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

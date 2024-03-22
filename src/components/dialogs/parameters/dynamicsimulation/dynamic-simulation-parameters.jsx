@@ -71,7 +71,7 @@ const TAB_VALUES = {
 
 const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.DynamicSimulation,
+        OptionalServicesNames.DynamicSimulation
     );
 
     const [
@@ -91,7 +91,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
         fetchDefaultDynamicSimulationProvider,
         updateDynamicSimulationProvider,
         fetchDynamicSimulationParameters,
-        updateDynamicSimulationParameters,
+        updateDynamicSimulationParameters
     );
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
@@ -102,7 +102,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
         (evt) => {
             updateProvider(evt.target.value);
         },
-        [updateProvider],
+        [updateProvider]
     );
 
     const handleResetParametersAndProvider = useCallback(() => {
@@ -165,7 +165,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
             }
             setTabIndexesWithError(tabsInError);
         },
-        [tabValue],
+        [tabValue]
     );
 
     // errors is a mutable object => convert to json to activate useEffect
@@ -191,7 +191,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                             ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]
                             : curr,
                     ],
-                    [],
+                    []
                 ),
                 ...newParams[TAB_VALUES.MAPPING],
                 ...newParams[TAB_VALUES.MAPPING],
@@ -199,7 +199,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                 ...newParams[TAB_VALUES.CURVE],
             });
         },
-        [parameters, updateParameters],
+        [parameters, updateParameters]
     );
 
     useEffect(() => {
@@ -255,7 +255,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                             `DynamicSimulationProvider${value}`;
                                         return obj;
                                     },
-                                    {},
+                                    {}
                                 )}
                                 callback={handleUpdateProvider}
                             />
@@ -284,7 +284,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                 value={TAB_VALUES.TIME_DELAY}
                                 sx={getTabStyle(
                                     tabIndexesWithError,
-                                    TAB_VALUES.TIME_DELAY,
+                                    TAB_VALUES.TIME_DELAY
                                 )}
                             />
                             <Tab
@@ -294,7 +294,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                 value={TAB_VALUES.SOLVER}
                                 sx={getTabStyle(
                                     tabIndexesWithError,
-                                    TAB_VALUES.SOLVER,
+                                    TAB_VALUES.SOLVER
                                 )}
                             />
                             <Tab
@@ -304,7 +304,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                 value={TAB_VALUES.MAPPING}
                                 sx={getTabStyle(
                                     tabIndexesWithError,
-                                    TAB_VALUES.MAPPING,
+                                    TAB_VALUES.MAPPING
                                 )}
                             />
                             <Tab
@@ -314,7 +314,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                 value={TAB_VALUES.NETWORK}
                                 sx={getTabStyle(
                                     tabIndexesWithError,
-                                    TAB_VALUES.NETWORK,
+                                    TAB_VALUES.NETWORK
                                 )}
                             />
                             <Tab
@@ -373,7 +373,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                 sx={mergeSx(
                     styles.controlParametersItem,
                     styles.marginTopButton,
-                    { paddingTop: 4 },
+                    { paddingTop: 4 }
                 )}
             >
                 <LabelledButton

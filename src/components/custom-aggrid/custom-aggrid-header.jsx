@@ -115,7 +115,7 @@ const CustomHeaderComponent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
         debounce((field, data) => updateFilter(field, data), debounceMs),
-        [field, debounceMs, updateFilter],
+        [field, debounceMs, updateFilter]
     );
 
     const handleFilterTextChange = (event) => {
@@ -370,7 +370,7 @@ const CustomHeaderComponent = ({
                                 }}
                                 sx={mergeSx(
                                     styles.input,
-                                    isNumberFilter && styles.noArrows,
+                                    isNumberFilter && styles.noArrows
                                 )}
                             />
                         </Grid>

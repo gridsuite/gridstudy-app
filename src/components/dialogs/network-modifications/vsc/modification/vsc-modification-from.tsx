@@ -115,12 +115,12 @@ export const VscModificationForm: FunctionComponent<
                     previousValues={vscToModify?.converterStation1}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={(
                         action,
-                        index,
+                        index
                     ) => {
                         updatePreviousReactiveCapabilityCurveTableConverterStation(
                             action,
                             index,
-                            'converterStation1',
+                            'converterStation1'
                         );
                     }}
                 />
@@ -138,12 +138,12 @@ export const VscModificationForm: FunctionComponent<
                     previousValues={vscToModify?.converterStation2}
                     updatePreviousReactiveCapabilityCurveTableConverterStation={(
                         action,
-                        index,
+                        index
                     ) => {
                         updatePreviousReactiveCapabilityCurveTableConverterStation(
                             action,
                             index,
-                            'converterStation2',
+                            'converterStation2'
                         );
                     }}
                 />

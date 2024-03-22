@@ -78,7 +78,7 @@ const DynamicSimulationResultSeriesChart = ({
             // propagate change
             onPlotScale(plotId, !plotScale);
         },
-        [onPlotScale, plotScale],
+        [onPlotScale, plotScale]
     );
 
     return (

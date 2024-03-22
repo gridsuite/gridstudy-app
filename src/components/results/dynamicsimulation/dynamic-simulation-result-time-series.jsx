@@ -47,7 +47,7 @@ const styles = {
 const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
     const [result, loadTimeSeries, isLoading] = useResultTimeSeries(
         nodeUuid,
-        studyUuid,
+        studyUuid
     );
 
     // tab id is automatically increased and reset to zero when there is no tab.
@@ -81,7 +81,7 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
                     ? -1
                     : index === tabs.length - 1
                       ? newTabs.length - 1
-                      : index,
+                      : index
             ); // get the next item in new tabs
             setTabs(newTabs);
             if (newTabs.length === 0) {
@@ -106,7 +106,7 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
 
     // messages to show when no data
     const dynamicSimulationStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION],
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(
@@ -115,9 +115,9 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
                 messages,
                 result?.timeseriesMetadatas,
                 dynamicSimulationStatus,
-                !isLoading,
+                !isLoading
             ),
-        [messages, result, dynamicSimulationStatus, isLoading],
+        [messages, result, dynamicSimulationStatus, isLoading]
     );
 
     return (
@@ -160,12 +160,12 @@ const DynamicSimulationResultTimeSeries = ({ nodeUuid, studyUuid }) => {
                                                         toolTip={intl.formatMessage(
                                                             {
                                                                 id: 'DynamicSimulationCloseTab',
-                                                            },
+                                                            }
                                                         )}
                                                         size="small"
                                                         component="span"
                                                         onClick={handleClose(
-                                                            index,
+                                                            index
                                                         )}
                                                     >
                                                         <CloseIcon />

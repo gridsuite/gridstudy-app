@@ -33,12 +33,12 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
 
     const oneBusShortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS],
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode,
+        (state: ReduxState) => state.currentTreeNode
     );
 
     const [faultResult, setFaultResult] = useState<SCAFaultResult>();
@@ -61,7 +61,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
                     messageId: 'ShortCircuitAnalysisResultsError',
                 });
                 console.error(
-                    'We should have one and only one fault for one bus SCA results, or we found 0 or more than 1',
+                    'We should have one and only one fault for one bus SCA results, or we found 0 or more than 1'
                 );
                 return;
             }
@@ -87,7 +87,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
         (results: SCAFaultResult[] | SCAFeederResult[] | null) => {
             setFeederResults((results as SCAFeederResult[]) ?? null);
         },
-        [],
+        []
     );
 
     return (

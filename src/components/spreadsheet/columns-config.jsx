@@ -64,13 +64,13 @@ export const ColumnsConfig = ({
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
 
     const allDisplayedColumnsNames = useSelector(
-        (state) => state.allDisplayedColumnsNames,
+        (state) => state.allDisplayedColumnsNames
     );
     const allLockedColumnsNames = useSelector(
-        (state) => state.allLockedColumnsNames,
+        (state) => state.allLockedColumnsNames
     );
     const allReorderedTableDefinitionIndexes = useSelector(
-        (state) => state.allReorderedTableDefinitionIndexes,
+        (state) => state.allReorderedTableDefinitionIndexes
     );
 
     const { snackError } = useSnackMessage();
@@ -87,15 +87,15 @@ export const ColumnsConfig = ({
     const handleCancelPopupSelectColumnNames = useCallback(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         setSelectedColumnsNames(
-            new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []),
+            new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
         );
         const allLockedTemp = allLockedColumnsNames[tabIndex];
         setLockedColumnsNames(
-            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []),
+            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
         );
         const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
         setReorderedTableDefinitionIndexes(
-            allReorderedTemp ? JSON.parse(allReorderedTemp) : [],
+            allReorderedTemp ? JSON.parse(allReorderedTemp) : []
         );
         handleCloseColumnsSettingDialog();
     }, [
@@ -113,11 +113,11 @@ export const ColumnsConfig = ({
         updateConfigParameter(
             DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
-            JSON.stringify([...selectedColumnsNames]),
+            JSON.stringify([...selectedColumnsNames])
         ).catch((error) => {
             const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
             setSelectedColumnsNames(
-                new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []),
+                new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
             );
             snackError({
                 messageTxt: error.message,
@@ -125,16 +125,16 @@ export const ColumnsConfig = ({
             });
         });
         let lockedColumnsToSave = [...lockedColumnsNames].filter((name) =>
-            selectedColumnsNames.has(name),
+            selectedColumnsNames.has(name)
         );
         updateConfigParameter(
             LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
-            JSON.stringify(lockedColumnsToSave),
+            JSON.stringify(lockedColumnsToSave)
         ).catch((error) => {
             const allLockedTemp = allLockedColumnsNames[tabIndex];
             setLockedColumnsNames(
-                new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []),
+                new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
             );
             snackError({
                 messageTxt: error.message,
@@ -146,7 +146,7 @@ export const ColumnsConfig = ({
         updateConfigParameter(
             REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
-            JSON.stringify(reorderedTableDefinitionIndexes),
+            JSON.stringify(reorderedTableDefinitionIndexes)
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -188,7 +188,7 @@ export const ColumnsConfig = ({
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         // If all columns are selected/checked, then we hide all of them.
         setSelectedColumnsNames(
-            isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex],
+            isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]
         );
         if (isAllChecked) {
             setLockedColumnsNames(new Set());
@@ -218,14 +218,14 @@ export const ColumnsConfig = ({
                 reorderedTableDefinitionIndexesTemp.splice(
                     destination.index,
                     0,
-                    reorderedItem,
+                    reorderedItem
                 );
                 setReorderedTableDefinitionIndexes(
-                    reorderedTableDefinitionIndexesTemp,
+                    reorderedTableDefinitionIndexesTemp
                 );
             }
         },
-        [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes],
+        [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes]
     );
 
     const renderColumnConfigLockIcon = (value) => {
@@ -296,7 +296,7 @@ export const ColumnsConfig = ({
 
                                                         <ListItemIcon
                                                             onClick={handleClickOnLock(
-                                                                value,
+                                                                value
                                                             )}
                                                             style={{
                                                                 minWidth: 0,
@@ -304,35 +304,35 @@ export const ColumnsConfig = ({
                                                             }}
                                                         >
                                                             {renderColumnConfigLockIcon(
-                                                                value,
+                                                                value
                                                             )}
                                                         </ListItemIcon>
                                                         <ListItemIcon
                                                             onClick={handleToggle(
-                                                                value,
+                                                                value
                                                             )}
                                                         >
                                                             <Checkbox
                                                                 checked={selectedColumnsNames.has(
-                                                                    value,
+                                                                    value
                                                                 )}
                                                             />
                                                         </ListItemIcon>
                                                         <ListItemText
                                                             onClick={handleToggle(
-                                                                value,
+                                                                value
                                                             )}
                                                             primary={intl.formatMessage(
                                                                 {
                                                                     id: `${value}`,
-                                                                },
+                                                                }
                                                             )}
                                                         />
                                                     </ListItem>
                                                 </div>
                                             )}
                                         </Draggable>
-                                    ),
+                                    )
                                 )}
                                 {provided.placeholder}
                             </div>

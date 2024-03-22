@@ -12,7 +12,7 @@ const PREFIX_NETWORK_MODIFICATION_QUERIES =
 
 export function fetchNetworkModification(modificationUuid) {
     const modificationFetchUrl = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/${encodeURIComponent(
-        modificationUuid,
+        modificationUuid
     )}`;
 
     console.debug(modificationFetchUrl);

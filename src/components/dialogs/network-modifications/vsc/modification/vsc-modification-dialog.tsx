@@ -99,12 +99,12 @@ const VscModificationDialog: React.FC<any> = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const [tabIndex, setTabIndex] = useState(
-        VSC_MODIFICATION_TABS.HVDC_LINE_TAB,
+        VSC_MODIFICATION_TABS.HVDC_LINE_TAB
     );
 
     const [equipmentId, setEquipmentId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
     const [vscToModify, setVcsToModify] = useState<VscModificationInfo | null>(
-        null,
+        null
     );
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const formMethods = useForm({
@@ -130,19 +130,19 @@ const VscModificationDialog: React.FC<any> = ({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 ...getVscHvdcLineModificationTabFormData(
                     HVDC_LINE_TAB,
-                    editData,
+                    editData
                 ),
                 ...getConverterStationModificationFormEditData(
                     CONVERTER_STATION_1,
-                    editData.converterStation1,
+                    editData.converterStation1
                 ),
                 ...getConverterStationModificationFormEditData(
                     CONVERTER_STATION_2,
-                    editData.converterStation2,
+                    editData.converterStation2
                 ),
             });
         },
-        [reset],
+        [reset]
     );
 
     useEffect(() => {
@@ -156,10 +156,10 @@ const VscModificationDialog: React.FC<any> = ({
         (customData = {}, keepDefaultValues = false) => {
             reset(
                 { ...emptyFormData, ...customData },
-                { keepDefaultValues: keepDefaultValues },
+                { keepDefaultValues: keepDefaultValues }
             );
         },
-        [reset],
+        [reset]
     );
 
     const onEquipmentIdChange = useCallback(
@@ -172,7 +172,7 @@ const VscModificationDialog: React.FC<any> = ({
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipementId,
-                    true,
+                    true
                 )
                     .then((value: any) => {
                         const previousReactiveCapabilityCurveTable1 =
@@ -183,7 +183,7 @@ const VscModificationDialog: React.FC<any> = ({
                                 previousReactiveCapabilityCurveTable1,
                                 `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                 getValues,
-                                setValue,
+                                setValue
                             );
                         }
 
@@ -195,19 +195,19 @@ const VscModificationDialog: React.FC<any> = ({
                                 previousReactiveCapabilityCurveTable2,
                                 `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                 getValues,
-                                setValue,
+                                setValue
                             );
                         }
 
                         setSelectedReactiveLimits(
                             `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                             value.converterStation1?.minMaxReactiveLimits,
-                            setValue,
+                            setValue
                         );
                         setSelectedReactiveLimits(
                             `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                             value.converterStation2?.minMaxReactiveLimits,
-                            setValue,
+                            setValue
                         );
 
                         setVcsToModify({
@@ -246,7 +246,7 @@ const VscModificationDialog: React.FC<any> = ({
             equipmentId,
             reset,
             setValuesAndEmptyOthers,
-        ],
+        ]
     );
     useEffect(() => {
         onEquipmentIdChange(equipmentId);
@@ -256,11 +256,11 @@ const VscModificationDialog: React.FC<any> = ({
         const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
         const converterStation1 = getConverterStationModificationData(
             hvdcLine[CONVERTER_STATION_1],
-            vscToModify?.converterStation1,
+            vscToModify?.converterStation1
         );
         const converterStation2 = getConverterStationModificationData(
             hvdcLine[CONVERTER_STATION_2],
-            vscToModify?.converterStation2,
+            vscToModify?.converterStation2
         );
 
         modifyVsc(
@@ -281,7 +281,7 @@ const VscModificationDialog: React.FC<any> = ({
             converterStation1,
             converterStation2,
             !!editData,
-            editData?.uuid ?? null,
+            editData?.uuid ?? null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -294,7 +294,7 @@ const VscModificationDialog: React.FC<any> = ({
         newRccValues: ReactiveCapabilityCurvePointsData[] | undefined,
         action: string,
         index: number,
-        previousValue: VscModificationInfo | null,
+        previousValue: VscModificationInfo | null
     ): any => {
         if (!newRccValues) {
             return previousValue;
@@ -315,7 +315,7 @@ const VscModificationDialog: React.FC<any> = ({
     const updatePreviousReactiveCapabilityCurveTableConverterStation = (
         action: string,
         index: number,
-        converterStationName: 'converterStation1' | 'converterStation2',
+        converterStationName: 'converterStation1' | 'converterStation2'
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues =
@@ -325,7 +325,7 @@ const VscModificationDialog: React.FC<any> = ({
                 newRccValues,
                 action,
                 index,
-                previousValue,
+                previousValue
             );
         });
     };

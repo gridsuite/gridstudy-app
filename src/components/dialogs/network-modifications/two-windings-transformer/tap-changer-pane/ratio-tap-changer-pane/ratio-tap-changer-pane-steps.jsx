@@ -102,7 +102,7 @@ const RatioTapChangerPaneSteps = ({
                         id: 'ImportFileResistance',
                     })
                 ],
-                0,
+                0
             ),
             [STEPS_REACTANCE]: parseIntData(
                 val[
@@ -110,7 +110,7 @@ const RatioTapChangerPaneSteps = ({
                         id: 'ImportFileReactance',
                     })
                 ],
-                0,
+                0
             ),
             [STEPS_CONDUCTANCE]: parseIntData(
                 val[
@@ -118,7 +118,7 @@ const RatioTapChangerPaneSteps = ({
                         id: 'ImportFileConductance',
                     })
                 ],
-                0,
+                0
             ),
             [STEPS_SUSCEPTANCE]: parseIntData(
                 val[
@@ -126,10 +126,10 @@ const RatioTapChangerPaneSteps = ({
                         id: 'ImportFileSusceptance',
                     })
                 ],
-                0,
+                0
             ),
             [STEPS_RATIO]: isNaN(
-                parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
+                parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
             )
                 ? 1
                 : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),

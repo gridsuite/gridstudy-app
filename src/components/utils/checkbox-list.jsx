@@ -23,7 +23,7 @@ const CheckboxList = ({
     const handleToggle = (clickedItem) => {
         const newCheckedValues = [...checkedValues];
         const valueToDeleteIndex = checkedValues.findIndex((item) =>
-            itemComparator(item, clickedItem),
+            itemComparator(item, clickedItem)
         );
 
         if (valueToDeleteIndex > -1) {
@@ -43,7 +43,7 @@ const CheckboxList = ({
                     index,
                     checked: isChecked(item),
                     handleToggle,
-                }),
+                })
             )}
         </List>
     );

@@ -58,7 +58,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
     const newRowData = useMemo(() => {
         const newRowData = {};
         columnsDefinition.forEach(
-            (column) => (newRowData[column.dataKey] = column.initialValue),
+            (column) => (newRowData[column.dataKey] = column.initialValue)
         );
         return newRowData;
     }, [columnsDefinition]);

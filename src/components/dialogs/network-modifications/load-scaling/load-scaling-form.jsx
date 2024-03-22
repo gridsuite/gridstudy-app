@@ -37,7 +37,7 @@ const LoadScalingForm = () => {
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
             initialValue={getVariationEmptyForm(
-                ACTIVE_VARIATION_MODES.PROPORTIONAL.id,
+                ACTIVE_VARIATION_MODES.PROPORTIONAL.id
             )}
         />
     );

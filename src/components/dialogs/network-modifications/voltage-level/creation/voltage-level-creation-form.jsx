@@ -48,7 +48,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                 currentNodeUuid,
                 undefined,
                 'SUBSTATION',
-                true,
+                true
             ).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
             });

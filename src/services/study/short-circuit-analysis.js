@@ -15,7 +15,7 @@ import { getSortValue } from '../../hooks/use-aggrid-sort';
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(
-        `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`,
+        `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     const urlSearchParams = new URLSearchParams();
@@ -31,7 +31,7 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
 
 export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     console.info(
-        `Stopping short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`,
+        `Stopping short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     const stopShortCircuitAnalysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -43,11 +43,11 @@ export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
 export function fetchShortCircuitAnalysisStatus(
     studyUuid,
     currentNodeUuid,
-    type = ShortCircuitAnalysisType.ALL_BUSES,
+    type = ShortCircuitAnalysisType.ALL_BUSES
 ) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
     console.info(
-        `Fetching ${analysisType} short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`,
+        `Fetching ${analysisType} short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('type', analysisType);
@@ -61,12 +61,12 @@ export function fetchShortCircuitAnalysisStatus(
 
 export function fetchOneBusShortCircuitAnalysisStatus(
     studyUuid,
-    currentNodeUuid,
+    currentNodeUuid
 ) {
     return fetchShortCircuitAnalysisStatus(
         studyUuid,
         currentNodeUuid,
-        ShortCircuitAnalysisType.ONE_BUS,
+        ShortCircuitAnalysisType.ONE_BUS
     );
 }
 
@@ -79,7 +79,7 @@ export function fetchShortCircuitAnalysisResult({
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
     console.info(
-        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`,
+        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     const urlSearchParams = new URLSearchParams();
@@ -105,7 +105,7 @@ export function fetchShortCircuitAnalysisPagedResults({
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
     console.info(
-        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`,
+        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     const urlSearchParams = new URLSearchParams();
@@ -196,14 +196,14 @@ export function downloadShortCircuitResultZippedCsv(
     currentNodeUuid,
     analysisType,
     headersCsv,
-    enumValueTranslations,
+    enumValueTranslations
 ) {
     console.info(
-        `Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`,
+        `Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
-        currentNodeUuid,
+        currentNodeUuid
     )}/shortcircuit/result/csv`;
     const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
     const param = new URLSearchParams({ type });

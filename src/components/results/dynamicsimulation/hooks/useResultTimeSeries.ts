@@ -26,7 +26,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
                 ? Array(timeseriesMetadatas.length)
                 : undefined,
             timeseriesMetadatas: timeseriesMetadatas,
-        }),
+        })
     );
 
     const { snackError } = useSnackMessage();
@@ -35,7 +35,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
         (selectedIndexes: number[]) => {
             // check cache to get not yet loaded selected indexes
             const selectedIndexesToLoad = selectedIndexes.filter(
-                (indexValue) => !result.timeseries[indexValue],
+                (indexValue) => !result.timeseries[indexValue]
             );
 
             // LOAD ON DEMAND
@@ -45,19 +45,19 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
                     selectedIndexes.map((indexValue) => ({
                         ...result.timeseries[indexValue],
                         index: indexValue, // memorize index position in the series names list to generate a color later in plot
-                    })),
+                    }))
                 );
             } else {
                 // need load selected series not yet in cache
 
                 const timeSeriesNamesToLoad = selectedIndexesToLoad.map(
-                    (indexValue) => result.timeseriesMetadatas[indexValue].name,
+                    (indexValue) => result.timeseriesMetadatas[indexValue].name
                 );
 
                 return fetchDynamicSimulationResultTimeSeries(
                     studyUuid,
                     nodeUuid,
-                    timeSeriesNamesToLoad,
+                    timeSeriesNamesToLoad
                 )
                     .then((newlyLoadedTimeSeries) => {
                         // insert one by one newly loaded timeserie into the cache
@@ -65,10 +65,10 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
                             result.timeseries.splice(
                                 result.timeseriesMetadatas.findIndex(
                                     (elem: TimeSeriesMetadata) =>
-                                        elem.name === newSeries.metadata.name,
+                                        elem.name === newSeries.metadata.name
                                 ),
                                 1,
-                                newSeries,
+                                newSeries
                             );
                         }
 
@@ -86,7 +86,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
                     });
             }
         },
-        [studyUuid, nodeUuid, result, snackError],
+        [studyUuid, nodeUuid, result, snackError]
     );
 
     return [result, lazyLoadTimeSeriesCb, isLoading];

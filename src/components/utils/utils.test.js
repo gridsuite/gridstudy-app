@@ -43,7 +43,7 @@ test('utils.areNumbersOrdered', () => {
             '5',
             '54',
             400,
-        ]),
+        ])
     ).toBeTruthy();
     expect(
         areNumbersOrdered([
@@ -58,7 +58,7 @@ test('utils.areNumbersOrdered', () => {
             '0',
             '-2',
             -3,
-        ]),
+        ])
     ).toBeTruthy();
     expect(areNumbersOrdered([1, 0, 1])).toBeFalsy();
     expect(areNumbersOrdered([-1, 0, -1])).toBeFalsy();
@@ -67,7 +67,7 @@ test('utils.areNumbersOrdered', () => {
     expect(areNumbersOrdered([0, 1, 2, 3, 4, 4, 5, 6, 5, 4, 3, 2])).toBeFalsy();
     expect(areNumbersOrdered([0, 1, 2, 3, 4, 4, 5, 6, 5, 6, 7, 8])).toBeFalsy();
     expect(
-        areNumbersOrdered([-0, -1, -2, -3, -4, -4, -5, -6, -5, -6, -7, -8]),
+        areNumbersOrdered([-0, -1, -2, -3, -4, -4, -5, -6, -5, -6, -7, -8])
     ).toBeFalsy();
     expect(areNumbersOrdered([1, 2, NaN, 3])).toBeFalsy(); // Only numbers allowed
     expect(areNumbersOrdered([1, 2, 'three', 4])).toBeFalsy();

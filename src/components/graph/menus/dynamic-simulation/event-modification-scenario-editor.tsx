@@ -54,7 +54,7 @@ import { areUuidsEqual } from 'components/utils/utils';
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
     const notificationIdList = useSelector(
-        (state: ReduxState) => state.notificationIdList,
+        (state: ReduxState) => state.notificationIdList
     );
     const params = useParams();
     const studyUuid = params?.studyUuid
@@ -63,7 +63,7 @@ const EventModificationScenarioEditor = () => {
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode,
+        (state: ReduxState) => state.currentTreeNode
     );
 
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
@@ -82,7 +82,7 @@ const EventModificationScenarioEditor = () => {
 
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated,
+        (state: ReduxState) => state.studyUpdated
     );
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
@@ -100,10 +100,10 @@ const EventModificationScenarioEditor = () => {
                 addNotification([
                     study.eventData.headers['parentNode'],
                     ...(study.eventData.headers['nodes'] ?? []),
-                ]),
+                ])
             );
         },
-        [dispatch],
+        [dispatch]
     );
 
     const manageNotification = useCallback(
@@ -127,13 +127,13 @@ const EventModificationScenarioEditor = () => {
             }
             fillNotification(study, messageId);
         },
-        [fillNotification],
+        [fillNotification]
     );
 
     const updateSelectedItems = useCallback((events: Event[]) => {
         const toKeepIdsSet = new Set(events.map((e) => e.uuid));
         setSelectedItems((oldselectedItems) =>
-            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid)),
+            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid))
         );
     }, []);
 
@@ -151,7 +151,7 @@ const EventModificationScenarioEditor = () => {
                     updateSelectedItems(res);
                     // sort by start time
                     const sortedEvents = res.sort(
-                        (a, b) => getStartTime(a) - getStartTime(b),
+                        (a, b) => getStartTime(a) - getStartTime(b)
                     );
                     setEvents(sortedEvents);
                 }
@@ -202,7 +202,7 @@ const EventModificationScenarioEditor = () => {
 
             if (
                 Object.values<string>(EventCrudType).includes(
-                    studyUpdatedForce.eventData.headers['updateType'] ?? '',
+                    studyUpdatedForce.eventData.headers['updateType'] ?? ''
                 )
             ) {
                 dispatch(setModificationsInProgress(true));
@@ -223,7 +223,7 @@ const EventModificationScenarioEditor = () => {
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
                         ...(studyUpdatedForce.eventData.headers['nodes'] ?? []),
-                    ]),
+                    ])
                 );
             }
         }
@@ -236,7 +236,7 @@ const EventModificationScenarioEditor = () => {
         deleteDynamicSimulationEvents(
             studyUuid ?? '',
             currentNode.id,
-            selectedEvents,
+            selectedEvents
         ).catch((errMsg) => {
             snackError({
                 messageTxt: errMsg,
@@ -255,14 +255,14 @@ const EventModificationScenarioEditor = () => {
 
     const toggleSelectAllEvents = useCallback(() => {
         setSelectedItems((oldVals: Event[]) =>
-            oldVals.length === 0 ? events : [],
+            oldVals.length === 0 ? events : []
         );
     }, [events]);
 
     const isLoading = () => {
         return (
             notificationIdList.filter(
-                (notification) => notification === currentNode?.id,
+                (notification) => notification === currentNode?.id
             ).length > 0
         );
     };
@@ -366,7 +366,7 @@ const EventModificationScenarioEditor = () => {
                     checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(
                         selectedItems.length,
-                        events?.length,
+                        events?.length
                     )}
                     disableRipple
                     onClick={toggleSelectAllEvents}
@@ -404,7 +404,7 @@ const EventModificationScenarioEditor = () => {
                                 ]
                             }`,
                         },
-                        { computedLabel: '' },
+                        { computedLabel: '' }
                     )}
                 />
             )}

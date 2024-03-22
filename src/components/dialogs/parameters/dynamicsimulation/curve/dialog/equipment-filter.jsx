@@ -89,28 +89,28 @@ const EquipmentFilter = forwardRef(
                 setEquipmentType(selectedEquipmentType);
                 onChangeEquipmentType(selectedEquipmentType);
             },
-            [onChangeEquipmentType],
+            [onChangeEquipmentType]
         );
 
         // --- Voltage levels, nominal voltages => lookup in mapEquipments which is loaded at booting up application --- //
         const voltageLevels = mapEquipments.getVoltageLevels();
         const voltageLevelIds = useMemo(
             () => voltageLevels.map((elem) => elem.id),
-            [voltageLevels],
+            [voltageLevels]
         );
         const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
-            [],
+            []
         );
         const handleVoltageLevelChange = useCallback(
             (selectedVoltageLevelIds) => {
                 setSelectedVoltageLevelIds(selectedVoltageLevelIds);
             },
-            [],
+            []
         );
 
         const nominalVoltages = mapEquipments.getNominalVoltages();
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
-            [],
+            []
         );
 
         const handleNominalVoltageChange = useCallback((selectedTensionIds) => {
@@ -147,7 +147,7 @@ const EquipmentFilter = forwardRef(
             const buildExpertRules = (
                 voltageLevelIds,
                 countries,
-                nominalVoltages,
+                nominalVoltages
             ) => {
                 const rules = [];
 
@@ -198,7 +198,7 @@ const EquipmentFilter = forwardRef(
                 rules: buildExpertRules(
                     selectedVoltageLevelIds,
                     selectedCountries,
-                    selectedNominalVoltages,
+                    selectedNominalVoltages
                 ),
             };
 
@@ -282,7 +282,7 @@ const EquipmentFilter = forwardRef(
                     },
                 },
             }),
-            [],
+            []
         );
 
         // config overlay when fetching from back
@@ -425,7 +425,7 @@ const EquipmentFilter = forwardRef(
                 </Grid>
             </>
         );
-    },
+    }
 );
 
 export default EquipmentFilter;

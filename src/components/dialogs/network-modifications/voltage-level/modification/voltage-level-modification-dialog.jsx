@@ -70,7 +70,7 @@ const formSchema = yup
                 then: (schema) =>
                     schema.max(
                         yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
-                        'ShortCircuitCurrentLimitMinMaxError',
+                        'ShortCircuitCurrentLimitMinMaxError'
                     ),
             }),
         [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
@@ -103,14 +103,14 @@ const VoltageLevelModificationDialog = ({
     const getConcatenatedProperties = useCallback(
         (equipment) => {
             const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`,
+                `${ADDITIONAL_PROPERTIES}`
             );
             return mergeModificationAndEquipmentProperties(
                 modificationProperties,
-                equipment,
+                equipment
             );
         },
-        [getValues],
+        [getValues]
     );
     useEffect(() => {
         if (editData) {
@@ -142,7 +142,7 @@ const VoltageLevelModificationDialog = ({
                     EQUIPMENT_TYPES.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true,
+                    true
                 )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
@@ -151,12 +151,12 @@ const VoltageLevelModificationDialog = ({
                                 voltageLevel.identifiableShortCircuit.ipMax =
                                     unitToKiloUnit(
                                         voltageLevel.identifiableShortCircuit
-                                            ?.ipMax,
+                                            ?.ipMax
                                     );
                                 voltageLevel.identifiableShortCircuit.ipMin =
                                     unitToKiloUnit(
                                         voltageLevel.identifiableShortCircuit
-                                            ?.ipMin,
+                                            ?.ipMin
                                     );
                             }
                             setVoltageLevelInfos(voltageLevel);
@@ -190,7 +190,7 @@ const VoltageLevelModificationDialog = ({
             resetField,
             reset,
             getConcatenatedProperties,
-        ],
+        ]
     );
 
     useEffect(() => {
@@ -213,7 +213,7 @@ const VoltageLevelModificationDialog = ({
                 kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 !!editData,
                 editData?.uuid,
-                toModificationProperties(voltageLevel),
+                toModificationProperties(voltageLevel)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -221,7 +221,7 @@ const VoltageLevelModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, selectedId, snackError],
+        [editData, studyUuid, currentNodeUuid, selectedId, snackError]
     );
 
     const clear = useCallback(() => {

@@ -83,7 +83,7 @@ const RegulatingTerminalModificationDialog = ({
             fetchVoltageLevelsListInfos(studyUuid, currentNode.id)
                 .then((values) => {
                     setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id)),
+                        values.sort((a, b) => a.id.localeCompare(b.id))
                     );
                 })
                 .catch((error) => {
@@ -96,7 +96,7 @@ const RegulatingTerminalModificationDialog = ({
         (voltageRegulationGenerator) => {
             onModifyRegulatingTerminalGenerator(voltageRegulationGenerator);
         },
-        [onModifyRegulatingTerminalGenerator],
+        [onModifyRegulatingTerminalGenerator]
     );
 
     const fromEditDataToFormValues = useCallback(
@@ -109,7 +109,7 @@ const RegulatingTerminalModificationDialog = ({
                 }),
             });
         },
-        [reset],
+        [reset]
     );
 
     useEffect(() => {
@@ -131,7 +131,7 @@ const RegulatingTerminalModificationDialog = ({
                 previousData?.regulatingTerminalVlId
             }
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                previousData,
+                previousData
             )}
         />
     );

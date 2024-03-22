@@ -79,7 +79,7 @@ const CheckboxTreeview = forwardRef(
                 const updateStateParent = (itemStates, items, childId) => {
                     const child = items.find((elem) => elem.id === childId);
                     const parent = items.find(
-                        (elem) => elem.id === child.parentId,
+                        (elem) => elem.id === child.parentId
                     );
 
                     if (!parent) {
@@ -92,19 +92,19 @@ const CheckboxTreeview = forwardRef(
                         .map((elem) => elem.id);
 
                     const childrenStates = childrenIds.map((id) =>
-                        getState(itemStates, id),
+                        getState(itemStates, id)
                     );
 
                     // recompute state of parent
                     const parentState = itemStates.find(
-                        (elem) => elem.id === parent.id,
+                        (elem) => elem.id === parent.id
                     );
                     // initial default state
                     parentState.state = CheckState.INDETERMINATE;
                     // all children checked => parent must be checked
                     if (
                         childrenStates.every(
-                            (elem) => elem.state === CheckState.CHECKED,
+                            (elem) => elem.state === CheckState.CHECKED
                         )
                     ) {
                         parentState.state = CheckState.CHECKED;
@@ -112,7 +112,7 @@ const CheckboxTreeview = forwardRef(
                     // all children unchecked => parent must be unchecked
                     if (
                         childrenStates.every(
-                            (elem) => elem.state === CheckState.UNCHECKED,
+                            (elem) => elem.state === CheckState.UNCHECKED
                         )
                     ) {
                         parentState.state = CheckState.UNCHECKED;
@@ -127,10 +127,10 @@ const CheckboxTreeview = forwardRef(
                     itemStates.find((elem) => elem.id === id).state = newState;
                     // set all children the same state of current element
                     const children = items.filter(
-                        (elem) => elem.parentId === id,
+                        (elem) => elem.parentId === id
                     );
                     children.forEach((elem) =>
-                        setState(itemStates, items, elem.id, newState),
+                        setState(itemStates, items, elem.id, newState)
                     );
 
                     // update parent's state of the current element
@@ -147,12 +147,12 @@ const CheckboxTreeview = forwardRef(
                     onClickedId,
                     currentState.state === CheckState.CHECKED
                         ? CheckState.UNCHECKED
-                        : CheckState.CHECKED,
+                        : CheckState.CHECKED
                 );
 
                 return newItemStates;
             },
-            [],
+            []
         );
 
         const handleItemSelect = useCallback(
@@ -166,12 +166,12 @@ const CheckboxTreeview = forwardRef(
                         (item) =>
                             newItemStates.find((elem) => elem.id === item.id)
                                 ?.state === CheckState.CHECKED &&
-                            !items.find((elem) => elem.parentId === item.id), // no children
+                            !items.find((elem) => elem.parentId === item.id) // no children
                     );
                     onSelectionChanged(selectedItems);
                 }
             },
-            [itemStates, items, updateItemState, onSelectionChanged],
+            [itemStates, items, updateItemState, onSelectionChanged]
         );
 
         const handleExpand = (event) => {
@@ -182,7 +182,7 @@ const CheckboxTreeview = forwardRef(
             (id) => {
                 return itemStates.find((elem) => elem.id === id)?.state;
             },
-            [itemStates],
+            [itemStates]
         );
 
         // expose some api for the component by using ref
@@ -194,19 +194,17 @@ const CheckboxTreeview = forwardRef(
                         items.filter(
                             (item) =>
                                 getState(item.id) === CheckState.CHECKED &&
-                                !items.find(
-                                    (elem) => elem.parentId === item.id,
-                                ), // no children
+                                !items.find((elem) => elem.parentId === item.id) // no children
                         ),
                 },
             }),
-            [items, getState],
+            [items, getState]
         );
 
         // render functions (recursive rendering)
         const renderChildren = (allItems, parentId) => {
             const children = allItems.filter(
-                (elem) => elem.parentId === parentId,
+                (elem) => elem.parentId === parentId
             );
             return !children.length ? null : renderItems(allItems, children);
         };
@@ -255,7 +253,7 @@ const CheckboxTreeview = forwardRef(
                 {renderItems(items)}
             </TreeView>
         );
-    },
+    }
 );
 
 export default CheckboxTreeview;

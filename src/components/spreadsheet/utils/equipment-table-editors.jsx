@@ -55,11 +55,11 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                     },
                 };
             },
-            [colDef.field, gridContext.dynamicValidation],
+            [colDef.field, gridContext.dynamicValidation]
         );
 
         const handleSaveRegulatingTerminalPopup = (
-            updatedRegulatedTerminal,
+            updatedRegulatedTerminal
         ) => {
             const {
                 equipment: { type: equipmentType, id: equipmentId } = {},
@@ -68,17 +68,17 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
                 'regulatingTerminalConnectableId',
-                equipmentId,
+                equipmentId
             );
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
                 'regulatingTerminalConnectableType',
-                equipmentType,
+                equipmentType
             );
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
                 'regulatingTerminalVlId',
-                voltageLevelId,
+                voltageLevelId
             );
             setOpenGeneratorPopup(false);
         };
@@ -94,7 +94,7 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                 currentNode={gridContext.currentNode}
                 studyUuid={gridContext.studyUuid}
                 onModifyRegulatingTerminalGenerator={(
-                    updatedRegulatedTerminal,
+                    updatedRegulatedTerminal
                 ) => {
                     handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
                 }}
@@ -102,7 +102,7 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                 previousData={gridContext.dataToModify}
             />
         );
-    },
+    }
 );
 
 export const TWTRegulatingTerminalEditor = forwardRef(
@@ -126,7 +126,7 @@ export const TWTRegulatingTerminalEditor = forwardRef(
                     getValue: () => {
                         return getTapChangerRegulationTerminalValue(
                             gridContext.dynamicValidation?.[tapChangerType] ||
-                                {},
+                                {}
                         );
                     },
                     getField: () => {
@@ -134,11 +134,11 @@ export const TWTRegulatingTerminalEditor = forwardRef(
                     },
                 };
             },
-            [colDef.field, gridContext.dynamicValidation, tapChangerType],
+            [colDef.field, gridContext.dynamicValidation, tapChangerType]
         );
 
         const handleSaveRegulatingTerminalPopup = (
-            updatedRegulatedTerminal,
+            updatedRegulatedTerminal
         ) => {
             const {
                 equipment: { type: equipmentType, id: equipmentId } = {},
@@ -147,17 +147,17 @@ export const TWTRegulatingTerminalEditor = forwardRef(
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
                 `${tapChangerType}.regulatingTerminalConnectableId`,
-                equipmentId,
+                equipmentId
             );
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
                 `${tapChangerType}.regulatingTerminalConnectableType`,
-                equipmentType,
+                equipmentType
             );
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,
                 `${tapChangerType}.regulatingTerminalVlId`,
-                voltageLevelId,
+                voltageLevelId
             );
             setOpenTWTRegulatingTerminalPopup(false);
         };
@@ -188,7 +188,7 @@ export const TWTRegulatingTerminalEditor = forwardRef(
                 currentNode={gridContext.currentNode}
                 studyUuid={gridContext.studyUuid}
                 onModifyRegulatingTerminalGenerator={(
-                    updatedRegulatedTerminal,
+                    updatedRegulatedTerminal
                 ) => {
                     handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
                 }}
@@ -196,7 +196,7 @@ export const TWTRegulatingTerminalEditor = forwardRef(
                 previousData={gridContext.dataToModify?.[tapChangerType]}
             />
         );
-    },
+    }
 );
 
 export const NumericalField = forwardRef(
@@ -239,7 +239,7 @@ export const NumericalField = forwardRef(
                     },
                 };
             },
-            [colDef.field, value],
+            [colDef.field, value]
         );
 
         const validateEvent = useCallback(
@@ -252,11 +252,11 @@ export const NumericalField = forwardRef(
                 gridContext.dynamicValidation = deepUpdateValue(
                     gridContext.dynamicValidation,
                     colDef.field,
-                    newVal,
+                    newVal
                 );
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
-            [colDef.field, gridApi, gridContext],
+            [colDef.field, gridApi, gridContext]
         );
 
         function renderNumericText() {
@@ -297,17 +297,17 @@ export const NumericalField = forwardRef(
             if (minValue !== undefined && maxValue !== undefined) {
                 tooltip = intl.formatMessage(
                     { id: 'MinMax' },
-                    { min: minValue, max: maxValue },
+                    { min: minValue, max: maxValue }
                 );
             } else if (minValue !== undefined) {
                 tooltip = intl.formatMessage(
                     { id: 'OnlyMin' },
-                    { min: minValue },
+                    { min: minValue }
                 );
             } else if (maxValue !== undefined) {
                 tooltip = intl.formatMessage(
                     { id: 'OnlyMax' },
-                    { max: maxValue },
+                    { max: maxValue }
                 );
             }
             if (tooltip !== '') {
@@ -321,7 +321,7 @@ export const NumericalField = forwardRef(
                 {renderNumericTextWithTooltip()}
             </div>
         );
-    },
+    }
 );
 
 export const BooleanListField = forwardRef(
@@ -341,7 +341,7 @@ export const BooleanListField = forwardRef(
                     },
                 };
             },
-            [colDef.field, value],
+            [colDef.field, value]
         );
 
         const validateChange = useCallback(
@@ -351,11 +351,11 @@ export const BooleanListField = forwardRef(
                 gridContext.dynamicValidation = deepUpdateValue(
                     gridContext.dynamicValidation,
                     colDef.field,
-                    val,
+                    val
                 );
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
-            [colDef.field, gridApi, gridContext],
+            [colDef.field, gridApi, gridContext]
         );
 
         return (
@@ -375,7 +375,7 @@ export const BooleanListField = forwardRef(
                 </MenuItem>
             </Select>
         );
-    },
+    }
 );
 
 export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
@@ -394,7 +394,7 @@ export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
                 },
             };
         },
-        [colDef.field, value],
+        [colDef.field, value]
     );
 
     return (

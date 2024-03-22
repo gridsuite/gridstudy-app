@@ -34,7 +34,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     const handleLeftPercentageValueChange = (value) => {
         const leftPercentageValue = formatPercentageValue(value);
         const rightPercentageValue = sanitizePercentageValue(
-            100 - leftPercentageValue,
+            100 - leftPercentageValue
         );
         setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
@@ -49,7 +49,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     const handleRightPercentageValueChange = (value) => {
         const rightPercentageValue = formatPercentageValue(value);
         const leftPercentageValue = sanitizePercentageValue(
-            100 - rightPercentageValue,
+            100 - rightPercentageValue
         );
         setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {

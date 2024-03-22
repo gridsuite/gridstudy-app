@@ -78,7 +78,7 @@ export const ShortCircuitExportButton: FunctionComponent<
             nodeUuid,
             analysisType,
             csvHeaders,
-            enumValueTranslations,
+            enumValueTranslations
         )
             .then((response) => {
                 response.blob().then((fileBlob: Blob) => {
@@ -86,7 +86,7 @@ export const ShortCircuitExportButton: FunctionComponent<
                         fileBlob,
                         analysisType === ShortCircuitAnalysisType.ONE_BUS
                             ? 'oneBus-results.zip'
-                            : 'allBuses_results.zip',
+                            : 'allBuses_results.zip'
                     );
                     setIsCsvExportSuccessful(true);
                 });

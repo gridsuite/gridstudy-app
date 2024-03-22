@@ -64,66 +64,66 @@ export const LineTypeSegmentForm = () => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineTypesCatalogFetchingError',
-                }),
+                })
             );
     }, [snackError]);
 
     const updateSegmentValues = useCallback(
         (index) => {
             const distance = getValues(
-                `${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`,
+                `${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`
             );
             const typeId = getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
 
             const entryFromCatalog = lineTypesCatalog?.find(
-                (entry) => entry.id === typeId,
+                (entry) => entry.id === typeId
             );
 
             const newResistance = roundToDefaultPrecision(
                 calculateResistance(
                     distance,
-                    entryFromCatalog?.linearResistance ?? 0,
-                ),
+                    entryFromCatalog?.linearResistance ?? 0
+                )
             );
             const newReactance = roundToDefaultPrecision(
                 calculateReactance(
                     distance,
-                    entryFromCatalog?.linearReactance ?? 0,
-                ),
+                    entryFromCatalog?.linearReactance ?? 0
+                )
             );
             const newSusceptance = roundToDefaultPrecision(
                 calculateSusceptance(
                     distance,
-                    entryFromCatalog?.linearCapacity ?? 0,
-                ),
+                    entryFromCatalog?.linearCapacity ?? 0
+                )
             );
 
             setValue(
                 `${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`,
-                newResistance,
+                newResistance
             );
             setValue(`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`, newReactance);
             setValue(
                 `${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`,
-                newSusceptance,
+                newSusceptance
             );
         },
-        [getValues, setValue, lineTypesCatalog],
+        [getValues, setValue, lineTypesCatalog]
     );
 
     const updateTotals = useCallback(() => {
         const segments = getValues(SEGMENTS);
         const totalResistance = segments.reduce(
             (accum, item) => accum + item[SEGMENT_RESISTANCE] ?? 0,
-            0,
+            0
         );
         const totalReactance = segments.reduce(
             (accum, item) => accum + item[SEGMENT_REACTANCE] ?? 0,
-            0,
+            0
         );
         const totalSusceptance = segments.reduce(
             (accum, item) => accum + item[SEGMENT_SUSCEPTANCE] ?? 0,
-            0,
+            0
         );
         setValue(TOTAL_RESISTANCE, roundToDefaultPrecision(totalResistance));
         setValue(TOTAL_REACTANCE, roundToDefaultPrecision(totalReactance));
@@ -145,14 +145,14 @@ export const LineTypeSegmentForm = () => {
                 const selectedTypeId = selectedLine.id ?? '';
                 setValue(
                     `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`,
-                    selectedType,
+                    selectedType
                 );
                 setValue(
                     `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`,
-                    selectedTypeId,
+                    selectedTypeId
                 );
                 clearErrors(
-                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`,
+                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`
                 );
                 updateSegmentValues(openCatalogDialogIndex);
                 updateTotals();
@@ -164,7 +164,7 @@ export const LineTypeSegmentForm = () => {
             setValue,
             clearErrors,
             openCatalogDialogIndex,
-        ],
+        ]
     );
 
     const handleSegmentDistantChange = useCallback(
@@ -172,7 +172,7 @@ export const LineTypeSegmentForm = () => {
             updateSegmentValues(index);
             updateTotals();
         },
-        [updateSegmentValues, updateTotals],
+        [updateSegmentValues, updateTotals]
     );
 
     const handleSegmentDelete = useCallback(
@@ -186,14 +186,14 @@ export const LineTypeSegmentForm = () => {
             updateTotals();
             return true; // Needed to remove the line in ExpandableInput
         },
-        [setValue, updateTotals],
+        [setValue, updateTotals]
     );
 
     const getPreselectedRowIdForCatalog = useCallback(
         (index) => {
             return getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
         },
-        [getValues],
+        [getValues]
     );
 
     const segmentTypeHeader = (
@@ -272,7 +272,7 @@ export const LineTypeSegmentForm = () => {
                     onSelectLine={onSelectCatalogLine}
                     titleId={'SelectType'}
                     preselectedRowId={getPreselectedRowIdForCatalog(
-                        openCatalogDialogIndex,
+                        openCatalogDialogIndex
                     )}
                 />
             )}

@@ -98,7 +98,7 @@ export const getEventType = (equipmentType: string): EventType | undefined => {
 export const getStartTime = (event: Event): number => {
     return parseFloat(
         event.properties.find((property) => property.name === 'startTime')
-            ?.value ?? '',
+            ?.value ?? ''
     );
 };
 

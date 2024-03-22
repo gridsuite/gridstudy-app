@@ -20,11 +20,11 @@ export function connectNotificationsWsUpdateConfig() {
         APP_NAME;
 
     const reconnectingWebSocket = new ReconnectingWebSocket(() =>
-        getUrlWithToken(webSocketUrl),
+        getUrlWithToken(webSocketUrl)
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
-            'Connected Websocket update config ui ' + webSocketUrl + ' ...',
+            'Connected Websocket update config ui ' + webSocketUrl + ' ...'
         );
     };
     return reconnectingWebSocket;

@@ -43,7 +43,7 @@ export const CsvExport = ({
                 if (gridData[item].limitName) {
                     gridData[item].limitName = formatNAValue(
                         gridData[item].limitName,
-                        intl,
+                        intl
                     );
                 }
             });

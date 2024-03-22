@@ -70,7 +70,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const { snackError } = useSnackMessage();
 
     const [rowsPerPage, setRowsPerPage] = useState<number>(
-        DEFAULT_PAGE_COUNT as number,
+        DEFAULT_PAGE_COUNT as number
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
@@ -79,7 +79,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode,
+        (state: ReduxState) => state.currentTreeNode
     );
 
     const isOneBusShortCircuitAnalysisType =
@@ -104,14 +104,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         fromFrontColumnToBackKeys,
         () => {
             setPage(0);
-        },
+        }
     );
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
             setPage(newPage);
         },
-        [setPage],
+        [setPage]
     );
 
     const handleChangeRowsPerPage = useCallback(
@@ -119,7 +119,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             setRowsPerPage(parseInt(event.target.value, 10));
             setPage(0);
         },
-        [setPage],
+        [setPage]
     );
 
     // Effects
@@ -161,7 +161,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 snackError({
                     messageTxt: error.message,
                     headerId: 'ShortCircuitAnalysisResultsError',
-                }),
+                })
             )
             .finally(() => {
                 if (active) {
@@ -199,7 +199,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 snackError({
                     messageTxt: error.message,
                     headerId: 'ShortCircuitAnalysisResultsError',
-                }),
+                })
             );
     }, [intl, snackError]);
 
@@ -215,7 +215,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 snackError({
                     messageTxt: error.message,
                     headerId: 'ShortCircuitAnalysisResultsError',
-                }),
+                })
             );
     }, [intl, snackError]);
 

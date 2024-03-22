@@ -111,19 +111,19 @@ const ShuntCompensatorModificationDialog = ({
                 ...getPropertiesFromModification(shuntCompensator.properties),
             });
         },
-        [reset],
+        [reset]
     );
     const getConcatenatedProperties = useCallback(
         (equipment) => {
             const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`,
+                `${ADDITIONAL_PROPERTIES}`
             );
             return mergeModificationAndEquipmentProperties(
                 modificationProperties,
-                equipment,
+                equipment
             );
         },
-        [getValues],
+        [getValues]
     );
 
     // If we only change the characteristics choice without changing the corresponding fields,
@@ -166,7 +166,7 @@ const ShuntCompensatorModificationDialog = ({
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true,
-                    EQUIPMENT_INFOS_OPERATION.MODIFICATION,
+                    EQUIPMENT_INFOS_OPERATION.MODIFICATION
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
@@ -205,7 +205,7 @@ const ShuntCompensatorModificationDialog = ({
             studyUuid,
             reset,
             getConcatenatedProperties,
-        ],
+        ]
     );
 
     useEffect(() => {
@@ -242,7 +242,7 @@ const ShuntCompensatorModificationDialog = ({
                 shuntCompensatorInfos?.voltageLevelId,
                 !!editData,
                 editData?.uuid,
-                toModificationProperties(shuntCompensator),
+                toModificationProperties(shuntCompensator)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -257,7 +257,7 @@ const ShuntCompensatorModificationDialog = ({
             shuntCompensatorInfos?.voltageLevelId,
             snackError,
             selectedId,
-        ],
+        ]
     );
 
     return (

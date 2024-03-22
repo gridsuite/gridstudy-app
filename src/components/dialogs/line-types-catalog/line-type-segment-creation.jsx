@@ -63,7 +63,7 @@ const LineTypeSegmentCreation = ({
 
     const handleEditButtonClick = useCallback(
         () => onEditButtonClick && onEditButtonClick(index),
-        [index, onEditButtonClick],
+        [index, onEditButtonClick]
     );
 
     const segmentTypeField = (

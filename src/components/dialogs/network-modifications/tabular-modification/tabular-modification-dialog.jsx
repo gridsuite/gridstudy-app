@@ -76,14 +76,14 @@ const TabularModificationDialog = ({
     useEffect(() => {
         if (editData) {
             const equipmentType = getEquipmentTypeFromModificationType(
-                editData?.modificationType,
+                editData?.modificationType
             );
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
                     modification[key] = convertValueFromBackToFront(
                         key,
-                        modif[key],
+                        modif[key]
                     );
                 });
                 return modification;
@@ -105,7 +105,7 @@ const TabularModificationDialog = ({
                 Object.keys(row).forEach((key) => {
                     modification[key] = convertValueFromFrontToBack(
                         key,
-                        row[key],
+                        row[key]
                     );
                 });
                 return modification;
@@ -116,7 +116,7 @@ const TabularModificationDialog = ({
                 modificationType,
                 modifications,
                 !!editData,
-                editData?.uuid,
+                editData?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -124,7 +124,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

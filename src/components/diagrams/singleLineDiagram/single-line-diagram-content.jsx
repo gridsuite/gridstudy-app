@@ -90,13 +90,13 @@ function SingleLineDiagramContent(props) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit,
+        OptionalServicesNames.ShortCircuit
     );
     const computationStarting = useSelector(
-        (state) => state.computationStarting,
+        (state) => state.computationStarting
     );
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW],
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
     const [
@@ -136,7 +136,7 @@ function SingleLineDiagramContent(props) {
             closeEquipmentMenu();
             setEquipmentToDelete({ equipmentId, equipmentType });
         },
-        [closeEquipmentMenu],
+        [closeEquipmentMenu]
     );
 
     const closeModificationDialog = () => {
@@ -160,7 +160,7 @@ function SingleLineDiagramContent(props) {
                 setHoveredEquipmentType('');
             }
         },
-        [setShouldDisplayTooltip],
+        [setShouldDisplayTooltip]
     );
 
     const handleBreakerClick = useCallback(
@@ -173,14 +173,14 @@ function SingleLineDiagramContent(props) {
                     studyUuid,
                     currentNode?.id,
                     breakerId,
-                    newSwitchState,
+                    newSwitchState
                 ).catch((error) => {
                     console.error(error.message);
                     setErrorMessage(error.message);
                 });
             }
         },
-        [studyUuid, currentNode, modificationInProgress],
+        [studyUuid, currentNode, modificationInProgress]
     );
 
     const handleNextVoltageLevelClick = useCallback(
@@ -192,7 +192,7 @@ function SingleLineDiagramContent(props) {
             }
             openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
         },
-        [studyUuid, currentNode, openDiagramView],
+        [studyUuid, currentNode, openDiagramView]
     );
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -220,7 +220,7 @@ function SingleLineDiagramContent(props) {
                 display: true,
             });
         },
-        [setBusMenu, handleTogglePopover],
+        [setBusMenu, handleTogglePopover]
     );
 
     const showEquipmentMenu = useCallback(
@@ -234,7 +234,7 @@ function SingleLineDiagramContent(props) {
                 display: true,
             });
         },
-        [handleTogglePopover],
+        [handleTogglePopover]
     );
 
     const closeBusMenu = useCallback(() => {
@@ -255,7 +255,7 @@ function SingleLineDiagramContent(props) {
                 currentNode?.id,
                 equipmentType,
                 equipmentId,
-                undefined,
+                undefined
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -264,7 +264,7 @@ function SingleLineDiagramContent(props) {
             });
             closeEquipmentMenu();
         },
-        [studyUuid, currentNode?.id, closeEquipmentMenu, snackError],
+        [studyUuid, currentNode?.id, closeEquipmentMenu, snackError]
     );
 
     const handleRunShortcircuitAnalysis = useCallback(
@@ -272,8 +272,8 @@ function SingleLineDiagramContent(props) {
             dispatch(
                 setComputingStatus(
                     ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
-                    RunningStatus.RUNNING,
-                ),
+                    RunningStatus.RUNNING
+                )
             );
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
@@ -286,8 +286,8 @@ function SingleLineDiagramContent(props) {
                     dispatch(
                         setComputingStatus(
                             ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
-                            RunningStatus.FAILED,
-                        ),
+                            RunningStatus.FAILED
+                        )
                     );
                     resetOneBusShortcircuitAnalysisLoader();
                 })
@@ -300,7 +300,7 @@ function SingleLineDiagramContent(props) {
             currentNode?.id,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
-        ],
+        ]
     );
 
     const displayBusMenu = () => {
@@ -333,14 +333,14 @@ function SingleLineDiagramContent(props) {
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.MAP.type,
                     equipmentId,
-                    false,
+                    false
                 )
                     .then((hvdcInfos) => {
                         if (hvdcInfos?.hvdcType === 'LCC') {
                             // only hvdc line with LCC requires a Dialog (to select MCS)
                             handleOpenDeletionDialog(
                                 equipmentId,
-                                EQUIPMENT_TYPES.HVDC_LINE,
+                                EQUIPMENT_TYPES.HVDC_LINE
                             );
                         } else {
                             removeEquipment(equipmentType, equipmentId);
@@ -360,7 +360,7 @@ function SingleLineDiagramContent(props) {
             snackError,
             handleOpenDeletionDialog,
             removeEquipment,
-        ],
+        ]
     );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
@@ -371,7 +371,7 @@ function SingleLineDiagramContent(props) {
                 equipmentType,
             });
         },
-        [],
+        []
     );
 
     const handleCloseDynamicSimulationEventDialog = useCallback(() => {
@@ -411,7 +411,7 @@ function SingleLineDiagramContent(props) {
         const Menu = withEquipmentMenu(
             BaseEquipmentMenu,
             menuId,
-            equipmentType,
+            equipmentType
         );
         return (
             equipmentMenu.display &&
@@ -549,7 +549,7 @@ function SingleLineDiagramContent(props) {
                 theme.palette.background.paper,
 
                 // Toggle popover
-                handleTogglePopover,
+                handleTogglePopover
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -557,25 +557,25 @@ function SingleLineDiagramContent(props) {
                 props.diagramId,
                 props.svgType,
                 diagramViewer.getWidth(),
-                diagramViewer.getHeight(),
+                diagramViewer.getHeight()
             );
 
             // Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker?.id) {
                 const breakerToSwitchDom = document.getElementById(
-                    locallySwitchedBreaker.id,
+                    locallySwitchedBreaker.id
                 );
                 if (breakerToSwitchDom.classList.value.includes('sld-closed')) {
                     breakerToSwitchDom.classList.replace(
                         'sld-closed',
-                        'sld-open',
+                        'sld-open'
                     );
                 } else if (
                     breakerToSwitchDom.classList.value.includes('sld-open')
                 ) {
                     breakerToSwitchDom.classList.replace(
                         'sld-open',
-                        'sld-closed',
+                        'sld-closed'
                     );
                 }
             }
@@ -651,7 +651,7 @@ function SingleLineDiagramContent(props) {
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED &&
-                        styles.divDiagramInvalid,
+                        styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
             />
@@ -664,19 +664,19 @@ function SingleLineDiagramContent(props) {
             {displayMenu(EQUIPMENT_TYPES.GENERATOR, 'generator-menus')}
             {displayMenu(
                 EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-                'static-var-compensator-menus',
+                'static-var-compensator-menus'
             )}
             {displayMenu(
                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-                'shunt-compensator-menus',
+                'shunt-compensator-menus'
             )}
             {displayMenu(
                 EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-                'lcc-converter-station-menus',
+                'lcc-converter-station-menus'
             )}
             {displayMenu(
                 EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-                'vsc-converter-station-menus',
+                'vsc-converter-station-menus'
             )}
             {equipmentToModify && displayModificationDialog()}
             {equipmentToDelete && displayDeletionDialog()}

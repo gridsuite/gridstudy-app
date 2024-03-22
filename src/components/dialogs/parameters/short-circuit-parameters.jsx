@@ -44,7 +44,7 @@ export const useGetShortCircuitParameters = () => {
     const [shortCircuitParams, setShortCircuitParams] = useState(null);
 
     const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit,
+        OptionalServicesNames.ShortCircuit
     );
 
     useEffect(() => {
@@ -184,7 +184,7 @@ export const ShortCircuitParameters = ({
             snackError,
             studyUuid,
             reset,
-        ],
+        ]
     );
 
     // when ever the predefined parameter changes we need to reset all parameters
@@ -214,13 +214,13 @@ export const ShortCircuitParameters = ({
                 initalVoltageProfileMode,
                 {
                     shouldDirty: true,
-                },
+                }
             );
             setValue(SHORT_CIRCUIT_PREDEFINED_PARAMS, predefinedParameter, {
                 shouldDirty: true,
             });
         },
-        [setValue],
+        [setValue]
     );
 
     useEffect(() => {
@@ -242,7 +242,7 @@ export const ShortCircuitParameters = ({
                 container
                 sx={mergeSx(
                     styles.controlParametersItem,
-                    styles.marginTopButton,
+                    styles.marginTopButton
                 )}
             >
                 <SubmitButton

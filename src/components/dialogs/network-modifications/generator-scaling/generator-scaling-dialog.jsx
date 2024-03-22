@@ -73,7 +73,7 @@ const GeneratorScalingDialog = ({
                 currentNodeUuid,
                 editData?.uuid ?? undefined,
                 generatorScalingInfos[VARIATION_TYPE],
-                generatorScalingInfos[VARIATIONS],
+                generatorScalingInfos[VARIATIONS]
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,
@@ -81,7 +81,7 @@ const GeneratorScalingDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const open = useOpenShortWaitFetching({

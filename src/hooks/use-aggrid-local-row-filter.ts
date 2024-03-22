@@ -21,11 +21,11 @@ interface FilterModel {
 export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     filterSelectorKeys: Record<string, string>,
-    updateFilterCallback?: () => {},
+    updateFilterCallback?: () => {}
 ): UseAggridRowFilterOutputType => {
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         filterSelectorKeys,
-        updateFilterCallback,
+        updateFilterCallback
     );
 
     const generateEnumFilterModel = useCallback(
@@ -37,7 +37,7 @@ export const useAggridLocalRowFilter = (
                 filter: filterValue,
             };
         },
-        [],
+        []
     );
 
     const formatCustomFiltersForAgGrid = useCallback(
@@ -61,7 +61,7 @@ export const useAggridLocalRowFilter = (
             });
             return agGrifFilterModel;
         },
-        [generateEnumFilterModel],
+        [generateEnumFilterModel]
     );
 
     const setFiltersInAgGrid = useCallback(
@@ -73,7 +73,7 @@ export const useAggridLocalRowFilter = (
                 gridRef.current?.api?.setFilterModel(null);
             }
         },
-        [formatCustomFiltersForAgGrid, gridRef],
+        [formatCustomFiltersForAgGrid, gridRef]
     );
 
     useEffect(() => {

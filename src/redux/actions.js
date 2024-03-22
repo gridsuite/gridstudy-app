@@ -78,7 +78,7 @@ export function mapEquipmentsCreated(
     mapEquipments,
     newLines,
     newSubstations,
-    newHvdcLines,
+    newHvdcLines
 ) {
     return {
         type: MAP_EQUIPMENTS_CREATED,
@@ -93,7 +93,7 @@ export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS =
     'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
 
 export function loadNetworkModificationTreeSuccess(
-    networkModificationTreeModel,
+    networkModificationTreeModel
 ) {
     return {
         type: LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -108,7 +108,7 @@ export function networkModificationTreeNodeAdded(
     networkModificationTreeNode,
     parentNodeId,
     insertMode,
-    referenceNodeId,
+    referenceNodeId
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
@@ -126,7 +126,7 @@ export function networkModificationTreeNodeMoved(
     networkModificationTreeNode,
     parentNodeId,
     insertMode,
-    referenceNodeId,
+    referenceNodeId
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_MOVED,
@@ -142,7 +142,7 @@ export const NETWORK_MODIFICATION_HANDLE_SUBTREE =
 
 export function networkModificationHandleSubtree(
     networkModificationTreeNodes,
-    parentNodeId,
+    parentNodeId
 ) {
     return {
         type: NETWORK_MODIFICATION_HANDLE_SUBTREE,
@@ -155,7 +155,7 @@ export const NETWORK_MODIFICATION_TREE_NODES_REMOVED =
     'NETWORK_MODIFICATION_TREE_NODES_REMOVED';
 
 export function networkModificationTreeNodesRemoved(
-    networkModificationTreeNodes,
+    networkModificationTreeNodes
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_REMOVED,
@@ -167,7 +167,7 @@ export const NETWORK_MODIFICATION_TREE_NODES_UPDATED =
     'NETWORK_MODIFICATION_TREE_NODES_UPDATED';
 
 export function networkModificationTreeNodesUpdated(
-    networkModificationTreeNodes,
+    networkModificationTreeNodes
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_UPDATED,

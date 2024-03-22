@@ -27,7 +27,7 @@ export const SecurityAnalysisTable: FunctionComponent<
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS],
+            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
 
@@ -35,7 +35,7 @@ export const SecurityAnalysisTable: FunctionComponent<
         resultStatusMessages,
         rows,
         securityAnalysisStatus,
-        !isLoadingResult,
+        !isLoadingResult
     );
 
     const onGridReady = useCallback(({ api }: GridReadyEvent) => {
@@ -52,7 +52,7 @@ export const SecurityAnalysisTable: FunctionComponent<
             cellRenderer: DefaultCellRenderer,
             comparator: (): number => 0, // we disable the AGGrid sort because we do it in the server
         }),
-        [],
+        []
     );
 
     return (

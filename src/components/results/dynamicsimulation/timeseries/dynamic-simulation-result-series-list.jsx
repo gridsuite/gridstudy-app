@@ -49,14 +49,14 @@ const DynamicSimulationResultSeriesList = ({
         (id) => {
             handleToggle(id, setLeftAxisCheckedIndexes);
         },
-        [handleToggle],
+        [handleToggle]
     );
 
     const handleToggleRightAxis = useCallback(
         (id) => {
             handleToggle(id, setRightAxisCheckedIndexes);
         },
-        [handleToggle],
+        [handleToggle]
     );
 
     useEffect(() => {

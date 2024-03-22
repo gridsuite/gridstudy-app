@@ -127,12 +127,12 @@ export const DoubleEditor = ({
                         (gt !== undefined && f <= gt) ||
                         (ge !== undefined && f < ge) ||
                         (lt !== undefined && f >= lt) ||
-                        (le !== undefined && f > le),
+                        (le !== undefined && f > le)
                 );
                 setValue(outputTransformFloatString(newValue));
             }
         },
-        [checkIsTwoDigitAfterDecimal, ge, gt, le, lt],
+        [checkIsTwoDigitAfterDecimal, ge, gt, le, lt]
     );
 
     return (
@@ -172,7 +172,7 @@ function makeComponentsFor(
     localParams,
     allParams,
     setter,
-    provider,
+    provider
 ) {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
@@ -182,7 +182,7 @@ function makeComponentsFor(
                 localParams,
                 allParams,
                 setter,
-                provider,
+                provider
             )}
             <LineSeparator />
         </Grid>
@@ -202,7 +202,7 @@ function makeComponentFor(
     localParams,
     allParams,
     setter,
-    provider,
+    provider
 ) {
     function updateValues(newval) {
         localParams = { ...localParams, [key]: newval }; // single value update made
@@ -324,7 +324,7 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
         defParams,
         lfParams?.commonParameters || {},
         lfParams,
-        commitLFParameter,
+        commitLFParameter
     );
 };
 
@@ -387,7 +387,7 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
                 defParams,
                 lfParams?.commonParameters || {},
                 lfParams,
-                commitLFParameter,
+                commitLFParameter
             )}
         </ParameterGroup>
     );
@@ -454,7 +454,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     ];
 
     const [specificCurrentParams, setSpecificCurrentParams] = useState(
-        params['specificParametersPerProvider'],
+        params['specificParametersPerProvider']
     );
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
@@ -465,7 +465,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
 
     const onSpecificParamChange = (paramName, newValue) => {
         const specificParamDescr = Object.values(
-            specificParamsDescrWithoutNanVals[provider],
+            specificParamsDescrWithoutNanVals[provider]
         ).find((descr) => descr.name === paramName);
 
         let specParamsToSave;
@@ -490,7 +490,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
 
         const commitParameters = fusionSpecificWithOtherParams(
             params,
-            specParamsToSave,
+            specParamsToSave
         );
         updateParameters(commitParameters);
     };
@@ -511,7 +511,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
         (evt) => {
             updateProvider(evt.target.value);
         },
-        [updateProvider],
+        [updateProvider]
     );
 
     const resetLfParametersAndLfProvider = useCallback(() => {
@@ -540,8 +540,8 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     // TODO: remove this when DynaFlow will be available not only in developer mode
     const LoadFlowProviders = Object.fromEntries(
         Object.entries(providers).filter(
-            ([key]) => !key.includes('DynaFlow') || enableDeveloperMode,
-        ),
+            ([key]) => !key.includes('DynaFlow') || enableDeveloperMode
+        )
     );
     const handleLoadParameter = useCallback(
         (newParams) => {
@@ -551,7 +551,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     .then((parameters) => {
                         console.info(
                             'loading the following loadflow parameters : ' +
-                                parameters.uuid,
+                                parameters.uuid
                         );
 
                         const specParamsToSave = {
@@ -562,7 +562,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         };
                         const commitParameters = fusionSpecificWithOtherParams(
                             parameters,
-                            specParamsToSave,
+                            specParamsToSave
                         );
                         updateParameters(commitParameters);
                         setSpecificCurrentParams(specParamsToSave);
@@ -577,7 +577,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, updateParameters, provider],
+        [snackError, updateParameters, provider]
     );
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
@@ -637,7 +637,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 sx={mergeSx(
                     styles.controlParametersItem,
                     styles.marginTopButton,
-                    { paddingTop: 4 },
+                    { paddingTop: 4 }
                 )}
             >
                 <LabelledButton

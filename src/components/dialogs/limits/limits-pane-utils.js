@@ -36,7 +36,7 @@ const temporaryLimitsTableValidationSchema = () => ({
                 [TEMPORARY_LIMIT_NAME]: yup.string().required(),
                 [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
                 [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-            }),
+            })
         )
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
             const namesArray = array
@@ -49,10 +49,10 @@ const temporaryLimitsTableValidationSchema = () => ({
             'TemporaryLimitDurationUnicityError',
             (array) => {
                 const durationsArray = array.map(
-                    (l) => l[TEMPORARY_LIMIT_DURATION],
+                    (l) => l[TEMPORARY_LIMIT_DURATION]
                 );
                 return areArrayElementsUnique(durationsArray);
-            },
+            }
         ),
 });
 
@@ -95,7 +95,7 @@ export const getLimitsFormData = (
         temporaryLimits1 = [],
         temporaryLimits2 = [],
     },
-    id = LIMITS,
+    id = LIMITS
 ) => ({
     [id]: {
         [CURRENT_LIMITS_1]: {
@@ -119,12 +119,12 @@ const findTemporaryLimit = (temporaryLimits, limit) =>
     temporaryLimits?.find(
         (l) =>
             l.name === limit.name &&
-            l.acceptableDuration === limit.acceptableDuration,
+            l.acceptableDuration === limit.acceptableDuration
     );
 
 export const updateTemporaryLimits = (
     modifiedTemporaryLimits,
-    temporaryLimitsToModify,
+    temporaryLimitsToModify
 ) => {
     let updatedTemporaryLimits = modifiedTemporaryLimits ?? [];
     //add temporary limits from previous modifications
@@ -146,7 +146,7 @@ export const updateTemporaryLimits = (
                     limit.modificationType ===
                         TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED) &&
                 findTemporaryLimit(temporaryLimitsToModify, limit) === undefined
-            ),
+            )
     );
 
     //update temporary limits values
@@ -154,7 +154,7 @@ export const updateTemporaryLimits = (
         if (limit.modificationType === null) {
             limit.value = findTemporaryLimit(
                 temporaryLimitsToModify,
-                limit,
+                limit
             )?.value;
         }
     });
@@ -165,23 +165,23 @@ export const addModificationTypeToTemporaryLimits = (
     temporaryLimits,
     temporaryLimitsToModify,
     currentModifiedTemporaryLimits,
-    currentNode,
+    currentNode
 ) => {
     const formattedTemporaryLimitsToModify = formatTemporaryLimits(
-        temporaryLimitsToModify,
+        temporaryLimitsToModify
     );
     const formattedCurrentModifiedTemporaryLimits = formatTemporaryLimits(
-        currentModifiedTemporaryLimits,
+        currentModifiedTemporaryLimits
     );
     const updatedTemporaryLimits = temporaryLimits.map((limit) => {
         const limitWithSameName = findTemporaryLimit(
             formattedTemporaryLimitsToModify,
-            limit,
+            limit
         );
         if (limitWithSameName) {
             const currentLimitWithSameName = findTemporaryLimit(
                 formattedCurrentModifiedTemporaryLimits,
-                limitWithSameName,
+                limitWithSameName
             );
             if (
                 (currentLimitWithSameName?.modificationType ===

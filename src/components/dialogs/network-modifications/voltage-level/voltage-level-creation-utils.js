@@ -45,15 +45,15 @@ export const controlCouplingOmnibusBetweenSections = (values, message) => {
                 new yup.ValidationError(
                     message,
                     null,
-                    `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID1}`,
-                ),
+                    `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID1}`
+                )
             );
             errors.push(
                 new yup.ValidationError(
                     message,
                     null,
-                    `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID2}`,
-                ),
+                    `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID2}`
+                )
             );
         });
     }

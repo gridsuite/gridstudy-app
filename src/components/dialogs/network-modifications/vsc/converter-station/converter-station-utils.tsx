@@ -49,13 +49,13 @@ import { toModificationOperation } from '../../../../utils/utils';
 
 export type UpdateReactiveCapabilityCurveTable = (
     action: string,
-    index: number,
+    index: number
 ) => void;
 
 export type UpdateReactiveCapabilityCurveTableConverterStation = (
     action: string,
     index: number,
-    converterStationName: 'converterStation1' | 'converterStation2',
+    converterStationName: 'converterStation1' | 'converterStation2'
 ) => void;
 
 export interface ReactiveCapabilityCurvePointsData {
@@ -189,7 +189,7 @@ export function getVscConverterStationModificationSchema(id: string) {
 
 export function getVscConverterStationEmptyFormData(
     id: string,
-    isModification = false,
+    isModification = false
 ) {
     return {
         [id]: {
@@ -221,7 +221,7 @@ export function getConverterStationCreationData(converterStation: any) {
         busOrBusbarSectionId:
             converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
         connectionName: sanitizeString(
-            converterStation[CONNECTIVITY]?.[CONNECTION_NAME],
+            converterStation[CONNECTIVITY]?.[CONNECTION_NAME]
         ),
         connectionDirection:
             converterStation[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
@@ -246,12 +246,12 @@ export function getConverterStationModificationData(
     converterStation: any,
     converterStationToModify:
         | ConverterStationElementModificationInfos
-        | undefined,
+        | undefined
 ) {
     const reactiveLimits = converterStation[REACTIVE_LIMITS];
     const buildCurvePointsToStore = calculateCurvePointsToStore(
         reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
-        converterStationToModify,
+        converterStationToModify
     );
     const isReactiveCapabilityCurveOn =
         reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
@@ -260,34 +260,34 @@ export function getConverterStationModificationData(
         type: MODIFICATION_TYPES.CONVERTER_STATION_MODIFICATION.type,
         equipmentId: converterStationToModify?.id,
         equipmentName: toModificationOperation(
-            converterStation[CONVERTER_STATION_NAME],
+            converterStation[CONVERTER_STATION_NAME]
         ),
         lossFactor: toModificationOperation(converterStation[LOSS_FACTOR]),
         reactivePower: toModificationOperation(
-            converterStation[REACTIVE_POWER],
+            converterStation[REACTIVE_POWER]
         ),
         voltageRegulationOn: toModificationOperation(
-            converterStation[VOLTAGE_REGULATION_ON],
+            converterStation[VOLTAGE_REGULATION_ON]
         ),
         voltage: toModificationOperation(converterStation[VOLTAGE]),
         voltageLevelId: toModificationOperation(
-            converterStation[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+            converterStation[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]
         ),
         busOrBusbarSectionId: toModificationOperation(
-            converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+            converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]
         ),
         reactiveCapabilityCurve: toModificationOperation(
-            isReactiveCapabilityCurveOn,
+            isReactiveCapabilityCurveOn
         ),
         minimumReactivePower: toModificationOperation(
             isReactiveCapabilityCurveOn
                 ? null
-                : reactiveLimits[MINIMUM_REACTIVE_POWER],
+                : reactiveLimits[MINIMUM_REACTIVE_POWER]
         ),
         maximumReactivePower: toModificationOperation(
             isReactiveCapabilityCurveOn
                 ? null
-                : reactiveLimits[MAXIMUM_REACTIVE_POWER],
+                : reactiveLimits[MAXIMUM_REACTIVE_POWER]
         ),
         reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
             ? buildCurvePointsToStore
@@ -297,7 +297,7 @@ export function getConverterStationModificationData(
 
 export function getConverterStationFormEditData(
     id: string,
-    converterStation: ConverterStationInterfaceEditData,
+    converterStation: ConverterStationInterfaceEditData
 ) {
     return {
         [id]: {
@@ -323,7 +323,7 @@ export function getConverterStationFormEditData(
 
 export function getConverterStationModificationFormEditData(
     id: string,
-    converterStation: ConverterStationModificationInterfaceEditData,
+    converterStation: ConverterStationModificationInterfaceEditData
 ) {
     return {
         [id]: {
@@ -353,7 +353,7 @@ export function getConverterStationModificationFormEditData(
     };
 }
 function getConverterStationReactiveLimits(
-    converterStation: ConverterStationInterfaceEditData,
+    converterStation: ConverterStationInterfaceEditData
 ) {
     return converterStation.reactiveCapabilityCurve
         ? getReactiveLimitsFormData({
@@ -375,7 +375,7 @@ function getConverterStationReactiveLimits(
 }
 
 function getConverterStationModificationReactiveLimits(
-    converterStationEditData: ConverterStationModificationInterfaceEditData,
+    converterStationEditData: ConverterStationModificationInterfaceEditData
 ) {
     return {
         ...getReactiveLimitsFormData({
@@ -391,7 +391,7 @@ function getConverterStationModificationReactiveLimits(
                 converterStationEditData?.reactiveCapabilityCurvePoints
                     ?.length > 0
                     ? completeReactiveCapabilityCurvePointsData(
-                          converterStationEditData?.reactiveCapabilityCurvePoints,
+                          converterStationEditData?.reactiveCapabilityCurvePoints
                       )
                     : [getRowEmptyFormData(), getRowEmptyFormData()],
         }),
@@ -399,7 +399,7 @@ function getConverterStationModificationReactiveLimits(
 }
 export function getConverterStationFromSearchCopy(
     id: string,
-    converterStation: ConverterStationElementInfos,
+    converterStation: ConverterStationElementInfos
 ) {
     return {
         [id]: {

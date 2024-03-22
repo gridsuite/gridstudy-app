@@ -44,7 +44,7 @@ interface UniqueNameInputProps {
  * Input component that constantly check if the field's value is available or not
  */
 export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
-    props,
+    props
 ) => {
     const {
         field: { onChange, onBlur, value, name, ref },
@@ -92,7 +92,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
             props.activeDirectory,
             props.name,
             props.elementType,
-        ],
+        ]
     );
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
@@ -130,7 +130,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
 
     // Handle on user's change
     const handleManualChange = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         onChange(e.target.value);
         props.onManualChangeCallback && props.onManualChangeCallback();

@@ -80,7 +80,7 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
                       ) : (
                           <FormattedMessage id={'NoModification'} />
                       ),
-                      4,
+                      4
                   )
                 : gridItem(frequencyRegulationField, 4)}
             {gridItem(droopField, 4)}

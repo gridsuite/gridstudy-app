@@ -45,29 +45,29 @@ const NonEvacuatedEnergyParametersSelector = ({
 
     const [rowDataGenerationStages, useFieldArrayOutputGenerationStages] =
         useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyGenerationStages,
+            nonEvacuatedEnergyParam.NonEvacuatedEnergyGenerationStages
         );
 
     const [
         rowDataGenerationStagesSelection,
         useFieldArrayOutputGenerationStagesSelection,
     ] = useCreateRowDataSensi(
-        nonEvacuatedEnergyParam.NonEvacuatedEnergyStagesSelection,
+        nonEvacuatedEnergyParam.NonEvacuatedEnergyStagesSelection
     );
 
     const [rowDataGeneratorsCappings, useFieldArrayOutputGeneratorsCappings] =
         useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyGeneratorsCappings,
+            nonEvacuatedEnergyParam.NonEvacuatedEnergyGeneratorsCappings
         );
 
     const [rowDataMonitoredBranches, useFieldArrayOutputMonitoredBranches] =
         useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyMonitoredBranches,
+            nonEvacuatedEnergyParam.NonEvacuatedEnergyMonitoredBranches
         );
 
     const [rowDataContingencies, useFieldArrayOutputContingencies] =
         useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyContingencies,
+            nonEvacuatedEnergyParam.NonEvacuatedEnergyContingencies
         );
 
     const getColumnsDefinition = useCallback(
@@ -80,7 +80,7 @@ const NonEvacuatedEnergyParametersSelector = ({
             }
             return [];
         },
-        [intl],
+        [intl]
     );
 
     return (
@@ -107,7 +107,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                             <SensitivityTable
                                 arrayFormName={`${NonEvacuatedEnergyGenerationStages.name}`}
                                 columnsDefinition={getColumnsDefinition(
-                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES,
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES
                                 )}
                                 useFieldArrayOutput={
                                     useFieldArrayOutputGenerationStages
@@ -125,7 +125,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                             <SensitivityTable
                                 arrayFormName={`${NonEvacuatedEnergyStagesSelection.name}`}
                                 columnsDefinition={getColumnsDefinition(
-                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES_SELECTION,
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES_SELECTION
                                 )}
                                 useFieldArrayOutput={
                                     useFieldArrayOutputGenerationStagesSelection
@@ -147,7 +147,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                             <SensitivityTable
                                 arrayFormName={`${NonEvacuatedEnergyGeneratorsCappings.name}`}
                                 columnsDefinition={getColumnsDefinition(
-                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_GENERATORS_CAPPINGS,
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_GENERATORS_CAPPINGS
                                 )}
                                 useFieldArrayOutput={
                                     useFieldArrayOutputGeneratorsCappings
@@ -163,7 +163,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                             <SensitivityTable
                                 arrayFormName={`${NonEvacuatedEnergyMonitoredBranches.name}`}
                                 columnsDefinition={getColumnsDefinition(
-                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_MONITORED_BRANCHES,
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_MONITORED_BRANCHES
                                 )}
                                 useFieldArrayOutput={
                                     useFieldArrayOutputMonitoredBranches
@@ -179,7 +179,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                             <SensitivityTable
                                 arrayFormName={`${NonEvacuatedEnergyContingencies.name}`}
                                 columnsDefinition={getColumnsDefinition(
-                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_CONTINGENCIES,
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_CONTINGENCIES
                                 )}
                                 useFieldArrayOutput={
                                     useFieldArrayOutputContingencies

@@ -194,7 +194,7 @@ export const SensitivityAnalysisParameters = ({
                     (entry) =>
                         entry[INJECTIONS]?.length > 0 ||
                         entry[PSTS]?.length > 0 ||
-                        entry[HVDC_LINES]?.length > 0,
+                        entry[HVDC_LINES]?.length > 0
                 )
                 .map((entry) => entry[COUNT])
                 .reduce((a, b) => a + b, 0);
@@ -215,7 +215,7 @@ export const SensitivityAnalysisParameters = ({
                 getResultCount();
             }
         },
-        [getResultCount],
+        [getResultCount]
     );
 
     const onChangeParams = useCallback(
@@ -224,13 +224,13 @@ export const SensitivityAnalysisParameters = ({
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
                 arrayFormName === SENSI_INJECTIONS_SET,
-                formatFilteredParams(row),
+                formatFilteredParams(row)
             )
                 .then((response) => {
                     response.text().then((value) => {
                         setValue(
                             `${arrayFormName}[${index}].[${COUNT}]`,
-                            parseIntData(value, 0),
+                            parseIntData(value, 0)
                         );
                         getResultCount();
                     });
@@ -244,7 +244,7 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount],
+        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
@@ -290,7 +290,7 @@ export const SensitivityAnalysisParameters = ({
                                 [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
                                 [COUNT]: 0,
                             };
-                        },
+                        }
                     ) ?? [],
 
                 [PARAMETER_SENSI_INJECTION]:
@@ -310,7 +310,7 @@ export const SensitivityAnalysisParameters = ({
                                         [ID]: sensiInjection[CONTAINER_ID],
                                         [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
-                                },
+                                }
                             ),
                             [DISTRIBUTION_TYPE]:
                                 sensiInjections[DISTRIBUTION_TYPE],
@@ -320,7 +320,7 @@ export const SensitivityAnalysisParameters = ({
                                         [ID]: sensiInjection[CONTAINER_ID],
                                         [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
-                                },
+                                }
                             ),
                             [ACTIVATED]: sensiInjections[ACTIVATED],
                             [COUNT]: 0,
@@ -343,7 +343,7 @@ export const SensitivityAnalysisParameters = ({
                                         [ID]: sensiInjection[CONTAINER_ID],
                                         [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
-                                },
+                                }
                             ),
                             [SENSITIVITY_TYPE]:
                                 sensiInjectionsSet[SENSITIVITY_TYPE],
@@ -376,7 +376,7 @@ export const SensitivityAnalysisParameters = ({
                                         [ID]: sensiInjection[CONTAINER_ID],
                                         [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
-                                },
+                                }
                             ),
                             [SENSITIVITY_TYPE]:
                                 sensiInjectionsSet[SENSITIVITY_TYPE],
@@ -427,7 +427,7 @@ export const SensitivityAnalysisParameters = ({
             };
             reset(values);
         },
-        [reset],
+        [reset]
     );
 
     const initRowsCount = useCallback(() => {
@@ -442,11 +442,11 @@ export const SensitivityAnalysisParameters = ({
                     entry[MONITORED_BRANCHES].length > 0 &&
                     (entry[INJECTIONS]?.length > 0 ||
                         entry[PSTS]?.length > 0 ||
-                        entry[HVDC_LINES]?.length > 0),
+                        entry[HVDC_LINES]?.length > 0)
             );
             filteredInitEntries.forEach((entry) => {
                 const originalIndex = entriesWithIndices.findIndex(
-                    (obj) => obj.entry === entry,
+                    (obj) => obj.entry === entry
                 );
                 onChangeParams(entry, parameter, originalIndex);
             });
@@ -455,11 +455,11 @@ export const SensitivityAnalysisParameters = ({
         const values = getValues();
         handleEntries(
             values[PARAMETER_SENSI_INJECTIONS_SET],
-            PARAMETER_SENSI_INJECTIONS_SET,
+            PARAMETER_SENSI_INJECTIONS_SET
         );
         handleEntries(
             values[PARAMETER_SENSI_INJECTION],
-            PARAMETER_SENSI_INJECTION,
+            PARAMETER_SENSI_INJECTION
         );
         handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
         handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
@@ -469,7 +469,7 @@ export const SensitivityAnalysisParameters = ({
             setIsSubmitAction(true);
             setSensitivityAnalysisParameters(
                 studyUuid,
-                formatNewParams(newParams),
+                formatNewParams(newParams)
             )
                 .then(() => {
                     setSensitivityAnalysisParams(formatNewParams(newParams));
@@ -488,7 +488,7 @@ export const SensitivityAnalysisParameters = ({
             studyUuid,
             formatNewParams,
             initRowsCount,
-        ],
+        ]
     );
 
     const handleSensibilityParameter = useCallback(
@@ -499,15 +499,15 @@ export const SensitivityAnalysisParameters = ({
                     .then((parameters) => {
                         console.info(
                             'loading the following loadflow parameters : ' +
-                                parameters.uuid,
+                                parameters.uuid
                         );
                         reset(
                             fromSensitivityAnalysisParamsDataToFormValues(
-                                parameters,
+                                parameters
                             ),
                             {
                                 keepDefaultValues: true,
-                            },
+                            }
                         );
                     })
                     .catch((error) => {
@@ -520,13 +520,13 @@ export const SensitivityAnalysisParameters = ({
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, fromSensitivityAnalysisParamsDataToFormValues, reset],
+        [snackError, fromSensitivityAnalysisParamsDataToFormValues, reset]
     );
 
     useEffect(() => {
         if (sensitivityAnalysisParams) {
             fromSensitivityAnalysisParamsDataToFormValues(
-                sensitivityAnalysisParams,
+                sensitivityAnalysisParams
             );
             !isSubmitAction && initRowsCount();
         }
@@ -545,7 +545,7 @@ export const SensitivityAnalysisParameters = ({
 
     const isMaxReached = useMemo(
         () => analysisComputeComplexity > numberMax,
-        [analysisComputeComplexity],
+        [analysisComputeComplexity]
     );
 
     useEffect(() => {

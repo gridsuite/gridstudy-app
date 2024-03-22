@@ -35,7 +35,7 @@ const modelsToVariablesTree = (models) => {
                         ...obj,
                         [variable.name]: variable.name,
                     }),
-                    {},
+                    {}
                 ),
                 ...model.variablesSets.reduce(
                     (obj, variablesSet) => ({
@@ -46,14 +46,14 @@ const modelsToVariablesTree = (models) => {
                                     ...obj,
                                     [variable.name]: variable.name,
                                 }),
-                                {},
+                                {}
                             ),
                     }),
-                    {},
+                    {}
                 ),
             },
         }),
-        {},
+        {}
     );
 };
 
@@ -144,7 +144,7 @@ const ModelFilter = forwardRef(
         // --- models CheckboxSelect --- //
         const associatedModels = useMemo(() => {
             const associatedModels = allModels?.filter(
-                (model) => model.equipmentType === equipmentType,
+                (model) => model.equipmentType === equipmentType
             );
             // convert array to object
             return associatedModels
@@ -153,13 +153,13 @@ const ModelFilter = forwardRef(
                           ...obj,
                           [model.name]: model.name,
                       }),
-                      {},
+                      {}
                   )
                 : {};
         }, [equipmentType, allModels]);
         const initialSelectedModels = useMemo(
             () => Object.keys(associatedModels) ?? [],
-            [associatedModels],
+            [associatedModels]
         );
 
         const [selectedModels, setSelectedModels] = useState([]);
@@ -174,7 +174,7 @@ const ModelFilter = forwardRef(
         // --- variables array CheckboxTreeview --- //
         const variables = useMemo(
             () => variablesTreeToVariablesArray(allVariables),
-            [allVariables],
+            [allVariables]
         );
 
         const filteredVariables = useMemo(
@@ -182,9 +182,9 @@ const ModelFilter = forwardRef(
                 variables.filter((elem) =>
                     selectedModels.some((model) => {
                         return elem.id.includes(associatedModels[model]);
-                    }),
+                    })
                 ),
-            [variables, selectedModels, associatedModels],
+            [variables, selectedModels, associatedModels]
         );
 
         // fetch all associated models and variables for current node and study
@@ -195,13 +195,13 @@ const ModelFilter = forwardRef(
                         models.map((model) => ({
                             name: model.modelName,
                             equipmentType: model.equipmentType,
-                        })),
+                        }))
                     );
 
                     // transform models to variables tree representation
                     const variablesTree = modelsToVariablesTree(models);
                     setAllVariables(variablesTree);
-                },
+                }
             );
         }, [studyUuid, currentNode.id]);
 
@@ -218,13 +218,13 @@ const ModelFilter = forwardRef(
                                 (item, index, arr) =>
                                     arr.findIndex(
                                         (elem) =>
-                                            elem.variableId === item.variableId,
-                                    ) === index,
+                                            elem.variableId === item.variableId
+                                    ) === index
                             ); // remove duplicated by variableId
                     },
                 },
             }),
-            [],
+            []
         );
 
         const getModelLabel = useMemo(() => {
@@ -294,7 +294,7 @@ const ModelFilter = forwardRef(
                 </Grid>
             </>
         );
-    },
+    }
 );
 
 export default ModelFilter;

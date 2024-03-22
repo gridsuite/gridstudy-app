@@ -25,7 +25,7 @@ export const FluxConventions = {
 
 export const NetworkParameters = () => {
     const [, handleChangeFluxConvention] = useParameterState(
-        PARAM_FLUX_CONVENTION,
+        PARAM_FLUX_CONVENTION
     );
     const [enableDeveloperMode, handleChangeEnableDeveloperMode] =
         useParameterState(PARAM_DEVELOPER_MODE);
@@ -38,7 +38,7 @@ export const NetworkParameters = () => {
                 handleChangeFluxConvention(defaultFluxConvention);
             }
             handleChangeEnableDeveloperMode(
-                defaultValues?.enableDeveloperMode ?? false,
+                defaultValues?.enableDeveloperMode ?? false
             );
         });
     };
@@ -83,7 +83,7 @@ export const NetworkParameters = () => {
                 container
                 sx={mergeSx(
                     styles.controlParametersItem,
-                    styles.marginTopButton,
+                    styles.marginTopButton
                 )}
             >
                 <LabelledButton

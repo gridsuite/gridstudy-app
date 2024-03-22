@@ -32,7 +32,7 @@ export const getSortValue = (sortWay: number) => {
 };
 
 export const useAgGridSort = (
-    initSortConfig: SortConfigType,
+    initSortConfig: SortConfigType
 ): SortPropsType => {
     const { colKey: initColKey, sortWay: initSortWay } = initSortConfig;
 
@@ -43,12 +43,12 @@ export const useAgGridSort = (
 
     const onSortChanged = useCallback(
         (colKey: string, sortWay: number) => setSortConfig({ colKey, sortWay }),
-        [],
+        []
     );
 
     const initSort = useCallback(
         (colKey: string) => setSortConfig({ colKey, sortWay: initSortWay }),
-        [initSortWay],
+        [initSortWay]
     );
 
     return { onSortChanged, sortConfig, initSort };

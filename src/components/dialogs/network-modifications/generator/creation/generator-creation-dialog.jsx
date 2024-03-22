@@ -336,7 +336,7 @@ const GeneratorCreationDialog = ({
                 sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
                 generator[CONNECTIVITY]?.[CONNECTION_POSITION],
                 generator[CONNECTIVITY]?.[CONNECTED],
-                toModificationProperties(generator),
+                toModificationProperties(generator)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -344,7 +344,7 @@ const GeneratorCreationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, studyUuid, snackError],
+        [currentNodeUuid, editData, studyUuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({

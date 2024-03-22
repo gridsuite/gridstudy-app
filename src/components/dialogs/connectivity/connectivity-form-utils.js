@@ -39,7 +39,7 @@ export const getConnectivityPropertiesValidationSchema = () => {
 };
 
 export const getConnectivityWithPositionValidationSchema = (
-    id = CONNECTIVITY,
+    id = CONNECTIVITY
 ) => ({
     [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
@@ -51,7 +51,7 @@ export const getConnectivityWithPositionValidationSchema = (
 });
 
 export const getConnectivityWithoutPositionValidationSchema = (
-    id = CONNECTIVITY,
+    id = CONNECTIVITY
 ) => {
     return {
         [id]: yup.object().shape(getConnectivityPropertiesValidationSchema()),
@@ -67,7 +67,7 @@ export const getConnectivityPropertiesEmptyFormData = () => {
 };
 
 export const getConnectivityWithPositionEmptyFormData = (
-    id = CONNECTIVITY,
+    id = CONNECTIVITY
 ) => ({
     [id]: {
         ...getConnectivityPropertiesEmptyFormData(),
@@ -79,7 +79,7 @@ export const getConnectivityWithPositionEmptyFormData = (
 });
 
 export const getConnectivityWithoutPositionEmptyFormData = (
-    id = CONNECTIVITY,
+    id = CONNECTIVITY
 ) => ({
     [id]: getConnectivityPropertiesEmptyFormData(),
 });
@@ -133,7 +133,7 @@ export const getNewVoltageLevelData = (newVoltageLevel) => ({
 
 export const getConnectivityData = (
     { voltageLevelId, busbarSectionId, busbarSectionName },
-    id = CONNECTIVITY,
+    id = CONNECTIVITY
 ) => {
     return {
         [id]: getConnectivityPropertiesData({
@@ -154,7 +154,7 @@ export const getConnectivityFormData = (
         connectionPosition,
         connected,
     },
-    id = CONNECTIVITY,
+    id = CONNECTIVITY
 ) => {
     return {
         [id]: {

@@ -95,7 +95,7 @@ export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
 
 export const convertCreationFieldFromBackToFront = (
     key: string,
-    value: { value: string | number | boolean },
+    value: { value: string | number | boolean }
 ) => {
     switch (key) {
         case PARTICIPATE:
@@ -117,7 +117,7 @@ export const convertCreationFieldFromBackToFront = (
 
 export const convertCreationFieldFromFrontToBack = (
     key: string,
-    value: string | number | boolean,
+    value: string | number | boolean
 ) => {
     switch (key) {
         case FREQUENCY_REGULATION:
@@ -141,7 +141,7 @@ export const convertCreationFieldFromFrontToBack = (
 
 export const getEquipmentTypeFromCreationType = (type: string) => {
     return Object.keys(TABULAR_CREATION_TYPES).find(
-        (key) => TABULAR_CREATION_TYPES[key] === type,
+        (key) => TABULAR_CREATION_TYPES[key] === type
     );
 };
 

@@ -44,7 +44,7 @@ export default class LogReport {
         this.key = jsonReporter.taskKey;
         this.title = LogReportItem.resolveTemplateMessage(
             jsonReporter.defaultName,
-            jsonReporter.taskValues,
+            jsonReporter.taskValues
         );
         this.subReports = [];
         this.logs = [];
@@ -94,7 +94,7 @@ export default class LogReport {
 
     getAllLogs() {
         return this.getLogs().concat(
-            this.getSubReports().flatMap((r) => r.getAllLogs()),
+            this.getSubReports().flatMap((r) => r.getAllLogs())
         );
     }
 
@@ -104,12 +104,10 @@ export default class LogReport {
                 ? LogReportType.NodeReport
                 : LogReportType.SubReport;
         jsonReporter.subReporters.map((value) =>
-            this.subReports.push(
-                new LogReport(childType, value, this.uniqueId),
-            ),
+            this.subReports.push(new LogReport(childType, value, this.uniqueId))
         );
         jsonReporter.reports.map((value) =>
-            this.logs.push(new LogReportItem(value, this.uniqueId)),
+            this.logs.push(new LogReportItem(value, this.uniqueId))
         );
 
         // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]

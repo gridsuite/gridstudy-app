@@ -34,7 +34,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
                 currentNode?.id,
                 undefined,
                 EQUIPMENT_TYPES.LINE,
-                true,
+                true
             )
                 .then((values) => {
                     setLinesOptions(values.sort());
@@ -50,16 +50,16 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
 
     useEffect(() => {
         const lineToAttachOrSplit = linesOptions.find(
-            (l) => l?.id === watchLineToAttachOrSplit,
+            (l) => l?.id === watchLineToAttachOrSplit
         );
 
         setLine1Substation(
             lineToAttachOrSplit?.voltageLevelName1 ??
-                lineToAttachOrSplit?.voltageLevelId1,
+                lineToAttachOrSplit?.voltageLevelId1
         );
         setLine2Substation(
             lineToAttachOrSplit?.voltageLevelName2 ??
-                lineToAttachOrSplit?.voltageLevelId2,
+                lineToAttachOrSplit?.voltageLevelId2
         );
     }, [linesOptions, watchLineToAttachOrSplit]);
 

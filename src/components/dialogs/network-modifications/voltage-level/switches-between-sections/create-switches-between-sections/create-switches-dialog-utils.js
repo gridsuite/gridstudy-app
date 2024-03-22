@@ -25,7 +25,7 @@ export const getSwitchTypeSchema = () =>
 
 export const getCreateSwitchesEmptyFormData = (
     sectionCount,
-    id = SWITCH_KINDS,
+    id = SWITCH_KINDS
 ) => ({
     [id]: Array(sectionCount - 1).fill(createSwitchesEmptyFormData()),
 });

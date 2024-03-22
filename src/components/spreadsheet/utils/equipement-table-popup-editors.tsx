@@ -39,7 +39,7 @@ const validationSchema = yup
         yup.object().shape({
             key: yup.string().required('FillAllFields'),
             value: yup.string().required('FillAllFields'),
-        }),
+        })
     )
     .test('unique-keys', 'DuplicatedPropsError', (values) => {
         const keys = values?.map((value) => value.key);
@@ -71,7 +71,7 @@ export const SitePropertiesEditor = forwardRef(
         const intl = useIntl();
         const [open, setOpen] = useState(true);
         const [localRowData, setRowData] = useState(() =>
-            initializeLocalRowData(rowData),
+            initializeLocalRowData(rowData)
         );
 
         useImperativeHandle(
@@ -86,7 +86,7 @@ export const SitePropertiesEditor = forwardRef(
                     },
                 };
             },
-            [colDef.field, localRowData],
+            [colDef.field, localRowData]
         );
 
         const handleRemoveRow = useCallback(
@@ -99,7 +99,7 @@ export const SitePropertiesEditor = forwardRef(
                 });
                 setRowData(newData);
             },
-            [localRowData],
+            [localRowData]
         );
 
         const handleAddRow = () => {
@@ -119,7 +119,7 @@ export const SitePropertiesEditor = forwardRef(
                 setError(
                     intl.formatMessage({
                         id: err.errors[0],
-                    }),
+                    })
                 );
             }
             if (!hasError) {
@@ -185,7 +185,7 @@ export const SitePropertiesEditor = forwardRef(
                                                                 handleNameChange(
                                                                     index,
                                                                     e.target
-                                                                        .value,
+                                                                        .value
                                                                 )
                                                             }
                                                         />
@@ -199,7 +199,7 @@ export const SitePropertiesEditor = forwardRef(
                                                                 handleValueChange(
                                                                     index,
                                                                     e.target
-                                                                        .value,
+                                                                        .value
                                                                 )
                                                             }
                                                         />
@@ -209,7 +209,7 @@ export const SitePropertiesEditor = forwardRef(
                                                             <IconButton
                                                                 onClick={() => {
                                                                     handleRemoveRow(
-                                                                        index,
+                                                                        index
                                                                     );
                                                                 }}
                                                             >
@@ -247,7 +247,7 @@ export const SitePropertiesEditor = forwardRef(
                 }
             />
         );
-    },
+    }
 );
 
 const PropertiesEditorHeader = ({ darkTheme, handleAddRow }: any) => {

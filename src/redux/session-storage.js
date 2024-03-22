@@ -21,15 +21,13 @@ export const syncDiagramStateWithSessionStorage = (diagramState, studyUuid) => {
     }
     sessionStorage.setItem(
         getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
-        JSON.stringify(diagramState),
+        JSON.stringify(diagramState)
     );
 };
 
 export const loadDiagramStateFromSessionStorage = (studyUuid) => {
     const diagramState = JSON.parse(
-        sessionStorage.getItem(
-            getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
-        ),
+        sessionStorage.getItem(getDiagramStateKeyPrefixFromStudyUuid(studyUuid))
     );
     if (diagramState === null) {
         return [];

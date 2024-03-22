@@ -104,7 +104,7 @@ export enum ShortCircuitAnalysisType {
 }
 
 export const getShortCircuitAnalysisTypeFromEnum = (
-    type: ShortCircuitAnalysisType,
+    type: ShortCircuitAnalysisType
 ) => {
     switch (type) {
         case ShortCircuitAnalysisType.ALL_BUSES:

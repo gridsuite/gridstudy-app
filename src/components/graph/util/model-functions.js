@@ -37,7 +37,7 @@ export function getFirstNodeOfType(elements, nodeType, buildStatusList) {
         elements,
         undefined, // first is Root node without parent node
         nodeType,
-        buildStatusList,
+        buildStatusList
     );
 }
 
@@ -46,13 +46,13 @@ export function recursiveSearchFirstNodeOfType(
     elements,
     parentNodeUuid,
     nodeType,
-    buildStatusList,
+    buildStatusList
 ) {
     if (
         elements.type === nodeType &&
         (buildStatusList === undefined ||
             buildStatusList.includes(
-                elements.nodeBuildStatus?.globalBuildStatus,
+                elements.nodeBuildStatus?.globalBuildStatus
             ))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
@@ -63,7 +63,7 @@ export function recursiveSearchFirstNodeOfType(
             child,
             elements.id,
             nodeType,
-            buildStatusList,
+            buildStatusList
         );
         if (found) {
             return found;
@@ -115,7 +115,7 @@ export function isSameNodeAndBuilt(node1, node2) {
 export function getAllChildren(elements, nodeId) {
     const selectedNode = elements.treeNodes.find((node) => node.id === nodeId);
     const directChildren = elements.treeNodes.filter(
-        (node) => node.data.parentNodeUuid === selectedNode.id,
+        (node) => node.data.parentNodeUuid === selectedNode.id
     );
     let allChildren = [...directChildren];
     directChildren.forEach((child) => {

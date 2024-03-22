@@ -176,10 +176,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const user = useSelector((state: ReduxState) => state.user);
 
     const [tabValue, setTabValue] = useState<string>(
-        TAB_VALUES.sldParamsTabValue,
+        TAB_VALUES.sldParamsTabValue
     );
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(
-        undefined,
+        undefined
     );
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
 
@@ -188,22 +188,22 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const securityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SecurityAnalysis,
+        OptionalServicesNames.SecurityAnalysis
     );
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis,
+        OptionalServicesNames.SensitivityAnalysis
     );
     const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis,
+        OptionalServicesNames.SensitivityAnalysis
     );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.DynamicSimulation,
+        OptionalServicesNames.DynamicSimulation
     );
     const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit,
+        OptionalServicesNames.VoltageInit
     );
     const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit,
+        OptionalServicesNames.ShortCircuit
     );
 
     const loadFlowParametersBackend = useParametersBackend(
@@ -216,7 +216,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         setLoadFlowProvider,
         getLoadFlowParameters,
         setLoadFlowParameters,
-        getLoadFlowSpecificParametersDescription,
+        getLoadFlowSpecificParametersDescription
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
@@ -228,7 +228,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         fetchDefaultSecurityAnalysisProvider,
         updateSecurityAnalysisProvider,
         getSecurityAnalysisParameters,
-        setSecurityAnalysisParameters,
+        setSecurityAnalysisParameters
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
@@ -239,7 +239,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         null,
         fetchDefaultSensitivityAnalysisProvider,
         null,
-        getSensitivityAnalysisParameters,
+        getSensitivityAnalysisParameters
     );
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
@@ -249,7 +249,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
         fetchNonEvacuatedEnergyProvider,
         fetchDefaultNonEvacuatedEnergyProvider,
-        updateNonEvacuatedEnergyProvider,
+        updateNonEvacuatedEnergyProvider
     );
 
     const useNonEvacuatedEnergyParameters =

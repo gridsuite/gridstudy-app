@@ -31,7 +31,7 @@ export const useLocalizedCountries = () => {
             console.warn(
                 'Unsupported language "' +
                     lang +
-                    '" for countries translation, we use english as default',
+                    '" for countries translation, we use english as default'
             );
             localizedCountriesResult = localizedCountries(countriesEn);
         }
@@ -43,7 +43,7 @@ export const useLocalizedCountries = () => {
             localizedCountriesModule
                 ? Object.keys(localizedCountriesModule.object())
                 : [],
-        [localizedCountriesModule],
+        [localizedCountriesModule]
     );
 
     const translate = useCallback(
@@ -51,7 +51,7 @@ export const useLocalizedCountries = () => {
             localizedCountriesModule
                 ? localizedCountriesModule.get(countryCode)
                 : '',
-        [localizedCountriesModule],
+        [localizedCountriesModule]
     );
 
     return { translate, countryCodes };

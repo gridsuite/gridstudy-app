@@ -40,7 +40,7 @@ export type DynamicSimulationEventDialogProps = {
 } & Omit<DialogProps, 'open'>;
 
 export const DynamicSimulationEventDialog = (
-    props: DynamicSimulationEventDialogProps,
+    props: DynamicSimulationEventDialogProps
 ) => {
     const {
         studyUuid,
@@ -60,12 +60,12 @@ export const DynamicSimulationEventDialog = (
 
     const eventType = useMemo(
         () => getEventType(equipmentType),
-        [equipmentType],
+        [equipmentType]
     );
 
     const eventDefinition = useMemo(
         () => (eventType ? eventDefinitions[eventType] : undefined),
-        [eventType],
+        [eventType]
     );
 
     // build formSchema from an event definition
@@ -80,12 +80,12 @@ export const DynamicSimulationEventDialog = (
                                   ...obj,
                                   [key]: getSchema(value),
                               }),
-                              {},
+                              {}
                           )
-                        : {},
+                        : {}
                 )
                 .required(),
-        [eventDefinition],
+        [eventDefinition]
     );
 
     // build default values from an event definition
@@ -98,10 +98,10 @@ export const DynamicSimulationEventDialog = (
                       Object.entries(eventDefinition).map(([key, value]) => [
                           key,
                           value.default,
-                      ]),
+                      ])
                   )
                 : {},
-        [eventDefinition],
+        [eventDefinition]
     );
 
     const formMethods = useForm({
@@ -118,7 +118,7 @@ export const DynamicSimulationEventDialog = (
             (event) => {
                 setDataFetchStatus(FetchStatus.SUCCEED);
                 setEvent(event);
-            },
+            }
         );
     }, [currentNodeId, equipmentId, studyUuid, reset]);
 
@@ -130,7 +130,7 @@ export const DynamicSimulationEventDialog = (
                     key,
                     event.properties.find((property) => property.name === key)
                         ?.value,
-                ]),
+                ])
             );
             reset(formData);
         }
@@ -146,7 +146,7 @@ export const DynamicSimulationEventDialog = (
         (formObj: { [KEY in EventPropertyName]: any }) => {
             // formObj to EventProperty[]
             const propertyNames = Object.keys(
-                formObj ?? {},
+                formObj ?? {}
             ) as EventPropertyName[];
 
             // new or changed properties
@@ -156,7 +156,7 @@ export const DynamicSimulationEventDialog = (
                     {
                         // lookup the corresponding old property by name to merge
                         ...event?.properties.find(
-                            (elem) => elem.name === propertyName,
+                            (elem) => elem.name === propertyName
                         ),
                         name: propertyName,
                         value: formObj[propertyName],
@@ -168,13 +168,13 @@ export const DynamicSimulationEventDialog = (
                 [
                     {
                         ...event?.properties.find(
-                            (elem) => elem.name === 'staticId',
+                            (elem) => elem.name === 'staticId'
                         ),
                         name: 'staticId',
                         value: equipmentId,
                         type: PrimitiveTypes.STRING,
                     },
-                ] as EventProperty[],
+                ] as EventProperty[]
             );
 
             const submitEvent: Event = event
@@ -195,7 +195,7 @@ export const DynamicSimulationEventDialog = (
             saveDynamicSimulationEvent(
                 studyUuid,
                 currentNodeId,
-                submitEvent,
+                submitEvent
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -212,7 +212,7 @@ export const DynamicSimulationEventDialog = (
             eventType,
             event,
             eventDefinition,
-        ],
+        ]
     );
 
     const waitingOpen = useOpenShortWaitFetching({

@@ -30,7 +30,7 @@ import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
 
 export const getFrequencyRegulationEmptyFormData = (
-    isEquipmentModification,
+    isEquipmentModification
 ) => ({
     [FREQUENCY_REGULATION]: isEquipmentModification ? null : false,
     [DROOP]: null,
@@ -182,7 +182,7 @@ export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
                                 value >= minActivePower &&
                                 value <= maxActivePower
                             );
-                        },
+                        }
                     );
             },
         }),

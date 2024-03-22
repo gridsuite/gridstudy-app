@@ -75,7 +75,7 @@ const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
                 {
                     status,
                 },
-            ],
+            ]
     );
 
     function StatusCellRender(cellData) {
@@ -97,7 +97,7 @@ const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
 
     // messages to show when no data
     const dynamicSimulationStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION],
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(
@@ -106,9 +106,9 @@ const DynamicSimulationResultSynthesis = ({ nodeUuid, studyUuid }) => {
                 messages,
                 result,
                 dynamicSimulationStatus,
-                !isLoading,
+                !isLoading
             ),
-        [messages, result, dynamicSimulationStatus, isLoading],
+        [messages, result, dynamicSimulationStatus, isLoading]
     );
 
     return (

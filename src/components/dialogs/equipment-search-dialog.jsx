@@ -38,7 +38,7 @@ const EquipmentSearchDialog = ({
             studyUuid,
             currentNodeUuid,
             true,
-            equipmentType,
+            equipmentType
         );
 
     return (

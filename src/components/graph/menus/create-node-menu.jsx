@@ -25,7 +25,7 @@ export const NodeActions = {
 
 export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
     const children = treeModel.treeNodes.filter((node) =>
-        sourceNodeIds.includes(node.data.parentNodeUuid),
+        sourceNodeIds.includes(node.data.parentNodeUuid)
     );
     if (children.length > 0) {
         children.forEach((item) => {
@@ -41,7 +41,7 @@ export const getNodesFromSubTree = (treeModel, id) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
         const activeNodeDirectChildren = treeModel.treeNodes.filter(
-            (item) => item.data.parentNodeUuid === id,
+            (item) => item.data.parentNodeUuid === id
         );
         const allChildren = [];
         activeNodeDirectChildren.forEach((child) => {
@@ -76,11 +76,11 @@ const CreateNodeMenu = ({
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isModificationsInProgress = useSelector(
-        (state) => state.isModificationsInProgress,
+        (state) => state.isModificationsInProgress
     );
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel,
+        (state) => state.networkModificationTreeModel
     );
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
@@ -208,7 +208,7 @@ const CreateNodeMenu = ({
     }
     function isNodeHasChildren(node, treeModel) {
         return treeModel.treeNodes.some(
-            (item) => item.data.parentNodeUuid === node.id,
+            (item) => item.data.parentNodeUuid === node.id
         );
     }
     function isSubtreeRemovingAllowed() {
@@ -237,7 +237,7 @@ const CreateNodeMenu = ({
                     onRoot: true,
                     action: () =>
                         createNetworkModificationNode(
-                            NodeInsertModes.NewBranch,
+                            NodeInsertModes.NewBranch
                         ),
                     id: 'createNetworkModificationNodeInNewBranch',
                 },
@@ -379,7 +379,7 @@ const CreateNodeMenu = ({
                 );
             });
         },
-        [intl, activeNode?.type],
+        [intl, activeNode?.type]
     );
 
     const content = intl.formatMessage(
@@ -392,7 +392,7 @@ const CreateNodeMenu = ({
         {
             nodeName: activeNode?.data?.label,
             nodesNumber: getNodesFromSubTree(treeModel, activeNode?.id),
-        },
+        }
     );
     const handleOnClose = useCallback(() => {
         setNodeAction(NodeActions.NO_ACTION);

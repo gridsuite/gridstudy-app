@@ -139,7 +139,7 @@ const ShuntCompensatorCreationDialog = ({
                 });
             }
         },
-        [reset, snackWarning],
+        [reset, snackWarning]
     );
 
     const fromEditDataToFormValues = useCallback(
@@ -165,7 +165,7 @@ const ShuntCompensatorCreationDialog = ({
                 ...getPropertiesFromModification(shuntCompensator.properties),
             });
         },
-        [reset],
+        [reset]
     );
 
     const searchCopy = useFormSearchCopy({
@@ -210,11 +210,11 @@ const ShuntCompensatorCreationDialog = ({
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(
-                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME],
+                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
                 ),
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
                 shuntCompensator[CONNECTIVITY]?.[CONNECTED],
-                toModificationProperties(shuntCompensator),
+                toModificationProperties(shuntCompensator)
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -222,7 +222,7 @@ const ShuntCompensatorCreationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid],
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

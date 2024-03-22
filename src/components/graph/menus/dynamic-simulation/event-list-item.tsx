@@ -61,7 +61,7 @@ export const EventListItem = ({
     const intl = useIntl();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode,
+        (state: ReduxState) => state.currentTreeNode
     );
 
     const toggle = useCallback(() => handleToggle(item), [item, handleToggle]);
@@ -76,7 +76,7 @@ export const EventListItem = ({
                 <>
                     <strong>{item.equipmentId}</strong>
                     <i>{` - ${getStartTime(item)} ${getStartTimeUnit(
-                        item,
+                        item
                     )}`}</i>
                 </>
             ),
@@ -90,7 +90,7 @@ export const EventListItem = ({
             },
             {
                 ...computedValues,
-            },
+            }
         );
     }, [item, studyUuid, currentNode, intl]);
 

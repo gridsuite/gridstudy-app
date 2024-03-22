@@ -92,14 +92,14 @@ function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {
     const equipmentType = parent?.value?.[EQUIPMENT_TYPE_FIELD];
     return parent
         ? EQUIPMENTS_FIELDS[equipmentType]?.some(
-              (field: { id: string; label: string }) => field.id === value,
+              (field: { id: string; label: string }) => field.id === value
           )
         : false;
 }
 
 const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (
     value,
-    context,
+    context
 ) => {
     const newValue = value.replace(',', '.');
     if (!isNaN(parseFloat(newValue))) {
@@ -111,7 +111,7 @@ const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (
 
 const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (
     value,
-    context,
+    context
 ) => {
     return isValueInEquipmentFields(context, value);
 };
@@ -137,7 +137,7 @@ export function getFormulaSchema(id: string) {
                             [SPECIFIC_METADATA]: yup.object().shape({
                                 [TYPE]: yup.string(),
                             }),
-                        }),
+                        })
                     )
                     .required()
                     .min(1, 'FieldIsRequired'),
@@ -149,7 +149,7 @@ export function getFormulaSchema(id: string) {
                     .test(
                         'checkRefOrValue',
                         'WrongRefOrValueError',
-                        checkValueInEquipmentFieldsOrNumeric,
+                        checkValueInEquipmentFieldsOrNumeric
                     )
                     .when([OPERATOR], {
                         is: 'PERCENTAGE',
@@ -159,7 +159,7 @@ export function getFormulaSchema(id: string) {
                                 'ValueMustBeNumericWhenPercentageError',
                                 (value: any) =>
                                     !isNaN(parseFloat(value)) &&
-                                    parseFloat(value) >= 0,
+                                    parseFloat(value) >= 0
                             ),
                     }),
                 [REFERENCE_FIELD_OR_VALUE_2]: yup
@@ -168,7 +168,7 @@ export function getFormulaSchema(id: string) {
                     .test(
                         'checkRefOrValue',
                         'WrongRefOrValueError',
-                        checkValueInEquipmentFieldsOrNumeric,
+                        checkValueInEquipmentFieldsOrNumeric
                     )
                     .when([OPERATOR], {
                         is: 'PERCENTAGE',
@@ -176,10 +176,10 @@ export function getFormulaSchema(id: string) {
                             schema.test(
                                 'checkValueIsReference',
                                 'ValueMustBeRefWhenPercentageError',
-                                checkValueInEquipmentFields,
+                                checkValueInEquipmentFields
                             ),
                     }),
-            }),
+            })
         ),
     };
 }

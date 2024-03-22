@@ -77,7 +77,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<
                 resultType,
             },
             csvHeaders,
-            enumValueTranslations,
+            enumValueTranslations
         )
             .then((fileBlob) => {
                 downloadZipFile(fileBlob, `${resultType}-results.zip`);

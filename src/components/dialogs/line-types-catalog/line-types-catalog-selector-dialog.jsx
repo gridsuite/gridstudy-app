@@ -43,7 +43,7 @@ const LineTypesCatalogSelectorDialog = ({
     const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
 
     const [tabIndex, setTabIndex] = useState(
-        LineTypesCatalogSelectorDialogTabs.AERIAL_TAB,
+        LineTypesCatalogSelectorDialogTabs.AERIAL_TAB
     );
 
     const [selectedRow, setSelectedRow] = useState(null);
@@ -65,7 +65,7 @@ const LineTypesCatalogSelectorDialog = ({
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
     const handleSubmit = useCallback(
         () => onSelectLine && onSelectLine(selectedRow),
-        [onSelectLine, selectedRow],
+        [onSelectLine, selectedRow]
     );
     const handleTabChange = useCallback((newValue) => {
         setTabIndex(newValue);
@@ -230,7 +230,7 @@ const LineTypesCatalogSelectorDialog = ({
     useEffect(() => {
         if (preselectedRowId && rowData) {
             const preselectedRow = rowData?.find(
-                (entry) => entry.id === preselectedRowId,
+                (entry) => entry.id === preselectedRowId
             );
             const newTabIndex =
                 preselectedRow?.category === 'UNDERGROUND'
@@ -288,7 +288,7 @@ const LineTypesCatalogSelectorDialog = ({
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
         }),
-        [],
+        []
     );
 
     const displayTable = useCallback(
@@ -321,7 +321,7 @@ const LineTypesCatalogSelectorDialog = ({
             onSelectionChanged,
             rowDataAerialTab,
             rowDataUndergroundTab,
-        ],
+        ]
     );
 
     return (

@@ -29,13 +29,13 @@ interface DynamicSimulationEventMenuItemProps {
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: string,
-        dialogTitle: string,
+        dialogTitle: string
     ) => void;
     disabled: boolean;
 }
 
 const DynamicSimulationEventMenuItem = (
-    props: DynamicSimulationEventMenuItemProps,
+    props: DynamicSimulationEventMenuItemProps
 ) => {
     const intl = useIntl();
     const {
@@ -53,7 +53,7 @@ const DynamicSimulationEventMenuItem = (
                     equipmentType,
                     `${getEventType(equipmentType)}${
                         EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
-                    }`,
+                    }`
                 )
             }
             disabled={disabled}
