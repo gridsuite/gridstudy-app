@@ -94,7 +94,7 @@ const SensitivityAnalysisResult = ({
                         updateFilter,
                     },
                 },
-                minWidth: isSortActive && sortWay ? 95 : 65,
+                minWidth: isSortActive ? 95 : 65,
                 maxWidth: maxWidth,
                 wrapHeaderText: true,
                 autoHeaderHeight: true,
