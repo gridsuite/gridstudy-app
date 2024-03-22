@@ -14,21 +14,23 @@ import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const styles = {
-    filter: (theme) => ({
-        height: '100%',
-        width: 420,
-        '& .Mui-expanded, & .Mui-focused, & .Mui-focusVisible': {
+    autocomplete: (theme) => ({
+        width: '420px',
+        '.MuiAutocomplete-inputRoot': {
+            height: '40px',
+            backgroundColor: 'unset', // prevents the field from changing size when selected with the keyboard
+        },
+        '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
             position: 'absolute',
             width: 'inherit',
+            height: 'inherit',
             zIndex: 2,
-            '&:not(:first-child)': {
-                // Fixes the background of the input label when there is focus
-                background:
-                    'linear-gradient(to top, ' +
-                    theme.palette.tabBackground +
-                    ' 80%, transparent 80%)',
-            },
-        }, // TODO Fix transparent background when we select a chip with the keybord, in the inputField
+            background: theme.palette.tabBackground,
+        },
+        '.MuiInputLabel-root': {
+            zIndex: 3,
+            width: 'auto',
+        },
     }),
     chipBox: {
         width: '100%',
@@ -56,15 +58,10 @@ const styles = {
             color: 'white',
         },
         '&.Mui-focusVisible': {
-            width: 'auto',
+            width: 'unset', // prevents the chip from changing size when selected with the keyboard
+            height: 'unset', // prevents the chip from changing size when selected with the keyboard
             position: 'relative',
         },
-        // '&.Mui-focusVisible': {
-        //     color: 'gold !important',
-        //     backgroundColor: 'red !important',
-        //     width: 'auto',
-        //     position: 'relative',
-        // },
     }),
     chipCountry: (theme) => ({
         '&.MuiChip-root': {
@@ -158,8 +155,9 @@ const ResultsGlobalFilter = (props) => {
     );
 
     return (
-        <Box sx={styles.filter}>
+        <Box>
             <Autocomplete
+                sx={styles.autocomplete}
                 multiple
                 id="result-global-filter"
                 size="small"
