@@ -130,7 +130,7 @@ export function useNodeData(
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid) {
+        if (!studyUuid || !nodeUuid || !fetcher) {
             return;
         }
         const isUpdateForUs = isWorthUpdate(

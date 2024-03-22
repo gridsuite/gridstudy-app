@@ -88,6 +88,7 @@ import { SORT_WAYS } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -144,6 +145,7 @@ const TableWrapper = (props) => {
     const gridRef = useRef();
     const timerRef = useRef(null);
     const intl = useIntl();
+    const { translate } = useLocalizedCountries();
 
     const { snackError } = useSnackMessage();
 
@@ -278,9 +280,7 @@ const TableWrapper = (props) => {
     const getEnumFilterColumns = useCallback(() => {
         const generatedTableColumns =
             TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
-        return generatedTableColumns.filter(
-            ({ customFilterParams }) => customFilterParams?.isEnum
-        );
+        return generatedTableColumns.filter(({ isEnum }) => isEnum === true);
     }, [tabIndex]);
 
     const generateEquipmentsFilterEnums = useCallback(() => {
@@ -338,6 +338,34 @@ const TableWrapper = (props) => {
                 ? 'left'
                 : undefined;
 
+            //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
+            if (column?.isEnum) {
+                column.comparator = (valueA, valueB) => {
+                    const getTranslatedOrOriginalValue = (value) => {
+                        if (value === undefined || value === null) {
+                            return '';
+                        }
+                        if (column.isCountry) {
+                            return translate(value);
+                        } else if (column.getEnumLabel) {
+                            const labelId = column.getEnumLabel(value);
+                            return intl.formatMessage({
+                                id: labelId || value,
+                                defaultMessage: value,
+                            });
+                        }
+                        return value;
+                    };
+
+                    const translatedValueA =
+                        getTranslatedOrOriginalValue(valueA);
+                    const translatedValueB =
+                        getTranslatedOrOriginalValue(valueB);
+
+                    return translatedValueA.localeCompare(translatedValueB);
+                };
+            }
+
             return makeAgGridCustomHeaderColumn({
                 headerName: column.headerName,
                 field: column.field,
@@ -366,6 +394,7 @@ const TableWrapper = (props) => {
             loadFlowStatus,
             fluxConvention,
             filterEnums,
+            translate,
         ]
     );
 
@@ -579,12 +608,12 @@ const TableWrapper = (props) => {
 
     const buildEditPromise = useCallback(
         (editingData, groovyCr, context) => {
+            const propertiesForBackend = formatPropertiesForBackend(
+                editingDataRef.current.properties ?? {},
+                editingData.properties ?? {}
+            );
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
-                    const propertiesForBackend = formatPropertiesForBackend(
-                        editingDataRef.current.properties ?? {},
-                        editingData.properties ?? {}
-                    );
                     return modifySubstation(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -619,7 +648,8 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                     let ratioTap = null;
@@ -888,7 +918,8 @@ const TableWrapper = (props) => {
                         ratioTap,
                         phaseTap,
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
                     const regulatingTerminalConnectableIdFieldValue =
@@ -1008,7 +1039,11 @@ const TableWrapper = (props) => {
                         getFieldValue(
                             editingData?.activePowerControl?.droop,
                             editingDataRef.current?.activePowerControl?.droop
-                        )
+                        ),
+                        undefined,
+                        undefined,
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
@@ -1042,7 +1077,8 @@ const TableWrapper = (props) => {
                                 ?.ipMax
                         ),
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.BATTERY:
                     return modifyBattery(
@@ -1084,7 +1120,12 @@ const TableWrapper = (props) => {
                         getFieldValue(
                             editingData.activePowerControl?.droop,
                             editingDataRef.current.activePowerControl?.droop
-                        )
+                        ),
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
                     return modifyShuntCompensator(
@@ -1123,7 +1164,8 @@ const TableWrapper = (props) => {
                         ),
                         editingData.voltageLevelId,
                         false,
-                        undefined
+                        undefined,
+                        propertiesForBackend
                     );
                 default:
                     return requestNetworkChange(

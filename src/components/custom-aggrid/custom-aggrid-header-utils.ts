@@ -62,6 +62,8 @@ export const makeAgGridCustomHeaderColumn = ({
                 customFilterOptions,
                 updateFilter,
             },
+            getEnumLabel: props?.getEnumLabel,
+            isCountry: props?.isCountry,
         },
         filterParams: props?.agGridFilterParams || undefined,
         ...props,
