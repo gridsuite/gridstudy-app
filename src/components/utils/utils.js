@@ -11,6 +11,20 @@ import { toNumber } from './validation-functions';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
+/**
+ * Get the label of an enum value from its id
+ * @param {Array} enumValues - The enum values {id: string, label: string} []
+ * @param {string} id - The id of the enum value
+ * @returns {string | undefined} - The label of the enum value
+ */
+export const getEnumLabelById = (enumValues, id) => {
+    if (!enumValues || !id) {
+        return undefined;
+    }
+    const enumValue = enumValues.find((enumValue) => enumValue.id === id);
+    return enumValue?.label;
+};
+
 // When using Typescript, you can't get the validation schema from useFormContext (because it is a custom prop)
 // this method can be used instead in Typescript files
 export const isFieldFromContextRequired = (fieldName, formContext, values) => {

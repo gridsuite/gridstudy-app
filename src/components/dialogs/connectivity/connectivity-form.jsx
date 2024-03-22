@@ -58,7 +58,7 @@ import {
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
-    voltageLevelSelectLabel = 'VoltageLevel',
+    voltageLevelSelectLabel = 'VOLTAGE_LEVEL',
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
