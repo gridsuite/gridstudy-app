@@ -993,6 +993,9 @@ export const NetworkMapTab = ({
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
             }
+            onHvdcLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE)
+            }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
             centerOnSubstation={centerOnSubstation}

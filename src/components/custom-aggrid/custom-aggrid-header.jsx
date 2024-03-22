@@ -26,6 +26,7 @@ import {
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const styles = {
     iconSize: {
@@ -60,6 +61,8 @@ const CustomHeaderComponent = ({
     sortParams = {},
     isFilterable = false,
     filterParams = {},
+    getEnumLabel, // Used for translation of enum values in the filter
+    isCountry, // Used for translation of the countries options in the filter
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -76,6 +79,8 @@ const CustomHeaderComponent = ({
         sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
+
+    const { translate } = useLocalizedCountries();
 
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
@@ -186,6 +191,17 @@ const CustomHeaderComponent = ({
             setSelectedFilterComparator(filterComparators[0]);
         }
     }, [selectedFilterComparator, filterComparators]);
+
+    const getOptionLabel = useCallback(
+        (option) =>
+            isCountry
+                ? translate(option)
+                : intl.formatMessage({
+                      id: getEnumLabel?.(option) || option,
+                      defaultMessage: option,
+                  }),
+        [isCountry, intl, translate, getEnumLabel]
+    );
 
     return (
         <Grid
@@ -309,12 +325,7 @@ const CustomHeaderComponent = ({
                             multiple
                             value={selectedFilterData || []}
                             options={customFilterOptions}
-                            getOptionLabel={(option) =>
-                                intl.formatMessage({
-                                    id: option,
-                                    defaultMessage: option,
-                                })
-                            }
+                            getOptionLabel={getOptionLabel}
                             onChange={handleFilterAutoCompleteChange}
                             size="small"
                             disableCloseOnSelect
