@@ -11,7 +11,7 @@ import {
     TreeItem,
     TreeItemContentProps,
     TreeItemProps,
-    useTreeItemState,
+    useTreeItem,
 } from '@mui/x-tree-view/TreeItem';
 
 /**
@@ -25,7 +25,7 @@ const CustomContent = React.forwardRef(function CustomContent(
         classes,
         className,
         label,
-        itemId,
+        nodeId,
         icon: iconProp,
         expansionIcon,
         displayIcon,
@@ -39,7 +39,7 @@ const CustomContent = React.forwardRef(function CustomContent(
         handleExpansion,
         handleSelection,
         preventSelection,
-    } = useTreeItemState(itemId);
+    } = useTreeItem(nodeId);
 
     const icon = iconProp || expansionIcon || displayIcon;
 

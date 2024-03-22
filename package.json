@@ -12,7 +12,7 @@
         "@mui/icons-material": "^5.15.14",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.15.14",
-        "@mui/x-tree-view": "^7.0.0",
+        "@mui/x-tree-view": "^6.0.0",
         "@powsybl/diagram-viewer": "0.3.3",
         "@reduxjs/toolkit": "^2.2.2",
         "@svgdotjs/svg.js": "^3.2.0",
