@@ -33,7 +33,7 @@ import {
 const formSchema = yup
     .object()
     .shape({
-        [TYPE]: yup.string().required(),
+        [TYPE]: yup.mixed<keyof typeof EQUIPMENT_TYPES>().required(),
         [FILTERS]: yup
             .array()
             .of(
