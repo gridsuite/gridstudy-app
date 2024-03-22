@@ -64,28 +64,28 @@ const styles = {
         },
     }),
     chipCountry: (theme) => ({
-        '&.MuiChip-root': {
-            backgroundColor: '#01579b',
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: '#01579b !important',
         },
         '.MuiChip-deleteIcon': {
             color: '#b2daf1',
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: '#0277bd',
+            backgroundColor: '#0277bd !important',
         },
         '&.Mui-focusVisible': {
             background: '#0288d1 !important',
         },
     }),
     chipVoltageLevel: (theme) => ({
-        '&.MuiChip-root': {
-            backgroundColor: '#1e88e5',
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: '#1e88e5 !important',
         },
         '& .MuiChip-deleteIcon': {
             color: '#bbdefb',
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: '#1976d2',
+            backgroundColor: '#1976d2 !important',
         },
         '&.Mui-focusVisible': {
             background: '#2196F3 !important',
@@ -165,20 +165,27 @@ const ResultsGlobalFilter = (props) => {
                 disableCloseOnSelect
                 options={filters.sort((a, b) => !!b.recent - !!a.recent)}
                 groupBy={(option) => !!option.recent}
-                renderOption={(props, option) => (
-                    <Chip
-                        {...props}
-                        disableRipple
-                        label={getOptionLabel(option)}
-                        size="small"
-                        sx={mergeSx(
-                            styles.chip,
-                            option.filterType === 'country'
-                                ? styles.chipCountry
-                                : styles.chipVoltageLevel
-                        )}
+                // renderInput the inputfield that contains the chips, adornments and label
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={intl.formatMessage({
+                            id: 'results.globalFilter.fillerText',
+                        })}
+                        InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                                <>
+                                    <InputAdornment position="start">
+                                        <FilterAlt />
+                                    </InputAdornment>
+                                    {params.InputProps.startAdornment}
+                                </>
+                            ),
+                        }}
                     />
                 )}
+                // renderTags : the chips in the inputField
                 renderTags={(value, getTagsProps) =>
                     value.map((element, index) => (
                         <Chip
@@ -195,6 +202,7 @@ const ResultsGlobalFilter = (props) => {
                         />
                     ))
                 }
+                // renderGroup : the box below that is visible when we focus on the AutoComplete
                 renderGroup={(item) => {
                     const { group, children } = item;
                     const itemRecentAvailable = !!group;
@@ -214,26 +222,19 @@ const ResultsGlobalFilter = (props) => {
                         </Box>
                     );
                 }}
-                /*ListboxProps={{
-                    sx: styles.openBoxList,
-                }}*/
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label={intl.formatMessage({
-                            id: 'results.globalFilter.fillerText',
-                        })}
-                        InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                                <>
-                                    <InputAdornment position="start">
-                                        <FilterAlt />
-                                    </InputAdornment>
-                                    {params.InputProps.startAdornment}
-                                </>
-                            ),
-                        }}
+                // renderOption : the chips that are in the box that is visible when we focus on the AutoComplete
+                renderOption={(props, option) => (
+                    <Chip
+                        {...props}
+                        disableRipple
+                        label={getOptionLabel(option)}
+                        size="small"
+                        sx={mergeSx(
+                            styles.chip,
+                            option.filterType === 'country'
+                                ? styles.chipCountry
+                                : styles.chipVoltageLevel
+                        )}
                     />
                 )}
             />
