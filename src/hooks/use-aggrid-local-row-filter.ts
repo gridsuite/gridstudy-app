@@ -25,7 +25,7 @@ export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     filterStoreParam: FilterStorePropsType
 ): UseAggridRowFilterOutputType => {
-    const { updateFilter, filterSelector, initFilters } =
+    const { updateFilter, filterSelector } =
         useAggridRowFilter(filterStoreParam);
 
     const generateEnumFilterModel = useCallback(
@@ -80,5 +80,5 @@ export const useAggridLocalRowFilter = (
         setFiltersInAgGrid(filterSelector);
     }, [filterSelector, setFiltersInAgGrid]);
 
-    return { updateFilter, filterSelector, initFilters };
+    return { updateFilter, filterSelector };
 };

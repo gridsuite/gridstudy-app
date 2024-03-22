@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ALL_BUSES, ONE_BUS } from 'utils/store-filter-fields';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
@@ -34,9 +35,9 @@ export const FROM_COLUMN_TO_FIELD_ONE_BUS: Record<string, string> = {
 export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {
     switch (analysisType) {
         case ShortCircuitAnalysisType.ONE_BUS:
-            return ONE_BUS_TAB;
+            return ONE_BUS;
         case ShortCircuitAnalysisType.ALL_BUSES:
-            return ALL_BUSES_TAB;
+            return ALL_BUSES;
         default:
             return '';
     }

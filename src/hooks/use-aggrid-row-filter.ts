@@ -9,7 +9,7 @@ import {
     FilterSelectorType,
     FilterStorePropsType,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 type FilterDataType = { value: string; type: string; dataType: string };
@@ -19,13 +19,11 @@ export type FilterEnumsType = Record<string, string[] | null>;
 export type FilterPropsType = {
     updateFilter: (field: string, value: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
-    initFilters?: () => void;
 };
 
 export type UseAggridRowFilterOutputType = {
     updateFilter: (field: string, data: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
-    initFilters: () => void;
 };
 
 const removeElementFromArrayWithFieldValue = (
@@ -60,16 +58,9 @@ export const useAggridRowFilter = (
 ): UseAggridRowFilterOutputType => {
     const dispatch = useDispatch();
     const { filterType, filterTab, filterStoreAction } = filterStoreParam;
-    const storeFilter = useSelector(
+    const filterStore = useSelector(
         (state: any) => state[filterType][filterTab]
     );
-    const [filters, setFilters] = useState<FilterSelectorType[]>([]);
-
-    useEffect(() => {
-        if (storeFilter?.length) {
-            setFilters(storeFilter);
-        }
-    }, [storeFilter]);
 
     const updateFilter = useCallback(
         (field: string, data: FilterDataType): void => {
@@ -79,44 +70,38 @@ export const useAggridRowFilter = (
                 type: data.type,
                 value: data.value,
             };
-            let filtersToStore: FilterSelectorType[] = [];
-            setFilters((oldRowFilters: FilterSelectorType[]) => {
-                let updatedFilters;
+            let updatedFilters;
 
-                if (!data.value) {
-                    updatedFilters = removeElementFromArrayWithFieldValue(
-                        oldRowFilters,
-                        field
-                    );
-                } else {
-                    updatedFilters = changeValueFromArrayWithFieldValue(
-                        oldRowFilters,
-                        field,
-                        newFilter
-                    );
-                }
+            if (!data.value) {
+                updatedFilters = removeElementFromArrayWithFieldValue(
+                    filterStore,
+                    field
+                );
+            } else {
+                updatedFilters = changeValueFromArrayWithFieldValue(
+                    filterStore,
+                    field,
+                    newFilter
+                );
+            }
 
-                updateFilterCallback && updateFilterCallback();
-                filtersToStore = updatedFilters;
-                return updatedFilters;
-            });
+            updateFilterCallback && updateFilterCallback();
             filterStoreAction &&
                 filterTab &&
-                dispatch(filterStoreAction(filterTab, filtersToStore));
+                dispatch(filterStoreAction(filterTab, updatedFilters));
         },
-        [filterTab, updateFilterCallback, dispatch, filterStoreAction]
+        [
+            filterTab,
+            filterStore,
+            updateFilterCallback,
+            dispatch,
+            filterStoreAction,
+        ]
     );
 
     const filterSelector: FilterSelectorType[] | null = useMemo(() => {
-        if (storeFilter?.length) {
-            return storeFilter;
-        }
-        return filters;
-    }, [filters, storeFilter]);
+        return filterStore;
+    }, [filterStore]);
 
-    const initFilters = useCallback(() => {
-        setFilters([]);
-    }, []);
-
-    return { updateFilter, filterSelector, initFilters };
+    return { updateFilter, filterSelector };
 };

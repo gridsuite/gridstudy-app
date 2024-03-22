@@ -15,7 +15,6 @@ import {
     COMPUTATION_RESULTS_LOGS,
     FUNCTION_TYPES,
     mappingTabs,
-    SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
@@ -35,6 +34,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { setSensitivityAnalysisResultFilter } from 'redux/actions';
+import { SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -59,8 +59,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter({
-        filterType: SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    const { updateFilter, filterSelector } = useAggridRowFilter({
+        filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
         filterTab: mappingTabs(sensiKind, nOrNkIndex),
         filterStoreAction: setSensitivityAnalysisResultFilter,
     });
@@ -73,7 +73,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         sortWay: defaultSortOrder,
     });
     const initTable = (nOrNkIndex) => {
-        initFilters();
         initSort(nOrNkIndex ? 'valueAfter' : 'value');
 
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)

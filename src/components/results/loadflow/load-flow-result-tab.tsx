@@ -36,7 +36,6 @@ import {
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowResultColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
-    LOADFLOW_RESULT_FILTER,
     makeData,
     mappingFields,
     mappingTabs,
@@ -53,6 +52,7 @@ import {
     NumberCellRenderer,
     StatusCellRender,
 } from '../common/result-cell-renderers';
+import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -72,8 +72,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         sortWay: SORT_WAYS.desc,
     });
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter({
-        filterType: LOADFLOW_RESULT_FILTER,
+    const { updateFilter, filterSelector } = useAggridRowFilter({
+        filterType: LOADFLOW_RESULT_STORE_FIELD,
         filterTab: mappingTabs(tabIndex),
         filterStoreAction: setLoadflowResultFilter,
     });
@@ -185,12 +185,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const resetResultStates = useCallback(
         (defaultSortColKey: string) => {
             setResult(null);
-            initFilters();
             if (initSort) {
                 initSort(defaultSortColKey);
             }
         },
-        [initSort, initFilters, setResult]
+        [initSort, setResult]
     );
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {

@@ -32,7 +32,6 @@ import {
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
     mappingTabs,
-    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -48,6 +47,7 @@ import {
 import { GridReadyEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -106,7 +106,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
         {
-            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
             filterTab: mappingTabs(analysisType),
             filterStoreAction: setShortcircuitAnalysisResultFilter,
         },

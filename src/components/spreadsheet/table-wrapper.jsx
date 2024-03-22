@@ -233,12 +233,11 @@ const TableWrapper = (props) => {
         }
     );
 
-    const { updateFilter, filterSelector, initFilters } =
-        useAggridLocalRowFilter(gridRef, {
-            filterType: SPREADSHEET_STORE_FIELD,
-            filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
-            filterStoreAction: setSpreadsheetFilter,
-        });
+    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
+        filterType: SPREADSHEET_STORE_FIELD,
+        filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+        filterStoreAction: setSpreadsheetFilter,
+    });
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -407,8 +406,7 @@ const TableWrapper = (props) => {
 
     useEffect(() => {
         initSort(defaultSortColKey);
-        initFilters();
-    }, [tabIndex, initFilters, defaultSortColKey, initSort]);
+    }, [tabIndex, defaultSortColKey, initSort]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {

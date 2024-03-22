@@ -39,7 +39,6 @@ import {
     getIdType,
     mappingColumnToField,
     getStoreFields,
-    SECURITY_ANALYSIS_RESULT_FILTER,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -50,6 +49,7 @@ import { SecurityAnalysisExportButton } from './security-analysis-export-button'
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { setSecurityAnalysisResultFilter } from 'redux/actions';
+import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -116,9 +116,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }, [tabIndex, nmkType]);
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
+    const { updateFilter, filterSelector } = useAggridRowFilter(
         {
-            filterType: SECURITY_ANALYSIS_RESULT_FILTER,
+            filterType: SECURITY_ANALYSIS_RESULT_STORE_FIELD,
             filterTab: getStoreFields(tabIndex),
             filterStoreAction: setSecurityAnalysisResultFilter,
         },
@@ -181,12 +181,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             setResult(null);
             setCount(0);
             setPage(0);
-            initFilters();
             if (initSort) {
                 initSort(defaultSortColKey);
             }
         },
-        [initSort, initFilters, setResult]
+        [initSort, setResult]
     );
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {

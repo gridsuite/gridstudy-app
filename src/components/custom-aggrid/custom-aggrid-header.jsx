@@ -183,7 +183,7 @@ const CustomHeaderComponent = ({
         if (!selectedFilterComparator) {
             setSelectedFilterComparator(filterComparators[0]);
         }
-    }, [selectedFilterComparator, filterComparators]);
+    }, [filterSelector, selectedFilterComparator, filterComparators]);
 
     useEffect(() => {
         if (!filterSelector?.length) {
@@ -195,6 +195,8 @@ const CustomHeaderComponent = ({
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
                 setSelectedFilterComparator(filterObject.type);
+            } else {
+                setSelectedFilterData(undefined);
             }
         }
     }, [filterSelector, field]);
