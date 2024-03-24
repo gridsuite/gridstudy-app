@@ -42,6 +42,7 @@ import {
 import { createFilter } from '../services/explore';
 import { NAME } from './utils/field-constants.js';
 import { fetchNetworkElementsInfos } from '../services/study/network.js';
+import { createMapFilter } from '../services/study/network-map.js';
 
 const styles = {
     map: {
@@ -210,26 +211,6 @@ StudyPane.propTypes = {
 };
 
 export default StudyPane;
-
-function createEquipmentIdentifierList(equipmentType, equipmentList) {
-    if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
-        // TODO (jamal) refactor this to not have to create a special case for substations
-        return {
-            type: 'IDENTIFIER_LIST',
-            equipmentType: equipmentType,
-            filterEquipmentsAttributes: equipmentList.map((eq) => {
-                return { equipmentID: eq.substation.id };
-            }),
-        };
-    }
-    return {
-        type: 'IDENTIFIER_LIST',
-        equipmentType: equipmentType,
-        filterEquipmentsAttributes: equipmentList.map((eq) => {
-            return { equipmentID: eq.id };
-        }),
-    };
-}
 
 const MapView = ({
     studyUuid,
@@ -404,117 +385,16 @@ const MapView = ({
                         >
                             <FilterCreationPanel
                                 onSaveFilter={async (filter, distDir) => {
-                                    let equipementList = [];
-                                    switch (filter.equipmentType) {
-                                        case EQUIPMENT_TYPES.SUBSTATION:
-                                            equipementList =
-                                                createEquipmentIdentifierList(
-                                                    filter.equipmentType,
-                                                    networkMapref.current.getSelectedSubstation()
-                                                );
-                                            break;
-                                        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-                                            equipementList =
-                                                createEquipmentIdentifierList(
-                                                    filter.equipmentType,
-                                                    networkMapref.current.getSelectedVoltageLevel()
-                                                );
-                                            break;
-                                        case EQUIPMENT_TYPES.LINE:
-                                            equipementList =
-                                                createEquipmentIdentifierList(
-                                                    filter.equipmentType,
-                                                    networkMapref.current.getSelectedLines()
-                                                );
-                                            break;
-                                        case EQUIPMENT_TYPES.BUS:
-                                        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-                                        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
-                                        case EQUIPMENT_TYPES.BUSBAR_SECTION:
-                                        case EQUIPMENT_TYPES.GENERATOR:
-                                        case EQUIPMENT_TYPES.BATTERY:
-                                        case EQUIPMENT_TYPES.LOAD:
-                                        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-                                        case EQUIPMENT_TYPES.DANGLING_LINE:
-                                        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
-                                        case EQUIPMENT_TYPES.HVDC_CONVERTER_STATION:
-                                        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
-                                        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
-                                        case EQUIPMENT_TYPES.SWITCH:
-                                            const substationsIds =
-                                                networkMapref.current
-                                                    .getSelectedSubstation()
-                                                    .map(
-                                                        (substation) =>
-                                                            substation
-                                                                .substation.id
-                                                    );
-                                            console.log(
-                                                'debug',
-                                                'substations',
-                                                substationsIds
-                                            );
-                                            try {
-                                                const elements =
-                                                    await fetchNetworkElementsInfos(
-                                                        studyUuid,
-                                                        currentNode.id,
-                                                        substationsIds,
-                                                        filter.equipmentType,
-                                                        EQUIPMENT_INFOS_TYPES
-                                                            .TAB.type,
-                                                        false
-                                                    );
-                                                console.log(
-                                                    'debug',
-                                                    'elements',
-                                                    elements
-                                                );
-                                                equipementList =
-                                                    createEquipmentIdentifierList(
-                                                        filter.equipmentType,
-                                                        elements
-                                                    );
-                                            } catch (error) {
-                                                throw error;
-                                            }
-
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-
-                                    if (
-                                        equipementList
-                                            .filterEquipmentsAttributes.length >
-                                        0
-                                    ) {
-                                        console.log(
-                                            'debug',
-                                            'equipementList',
-                                            equipementList
+                                    try {
+                                        await createMapFilter(
+                                            filter,
+                                            distDir,
+                                            studyUuid,
+                                            currentNode.id,
+                                            networkMapref
                                         );
-                                        createFilter(
-                                            equipementList,
-                                            filter[NAME],
-                                            'description',
-                                            distDir.id?.toString() ?? ''
-                                        )
-                                            .then((res) => {
-                                                console.log(
-                                                    'debug',
-                                                    'createFilter',
-                                                    res
-                                                );
-                                            })
-                                            .catch((err) => {
-                                                console.error(
-                                                    'debug',
-                                                    'createFilter',
-                                                    err
-                                                );
-                                            });
+                                    } catch (e) {
+                                        console.log('debug', 'error', e);
                                     }
                                 }}
                                 onCancel={onCancelFunction}
