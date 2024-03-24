@@ -35,9 +35,13 @@ import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
 import FilterCreationPanel from './network/filter-creation-panel';
-import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from './utils/equipment-types.js';
 import { createFilter } from '../services/explore';
 import { NAME } from './utils/field-constants.js';
+import { fetchNetworkElementsInfos } from '../services/study/network.js';
 
 const styles = {
     map: {
@@ -399,13 +403,7 @@ const MapView = ({
                             }}
                         >
                             <FilterCreationPanel
-                                onSaveFilter={(filter, distDir) => {
-                                    console.log('debug', 'filter', filter);
-                                    // getPolygonFeatures,
-                                    //     computeSelectedSubstation,
-                                    //     getSelectedSubstation,
-                                    //     getSelectedVoltageLevel,
-                                    //     getSelectedLines,
+                                onSaveFilter={async (filter, distDir) => {
                                     let equipementList = [];
                                     switch (filter.equipmentType) {
                                         case EQUIPMENT_TYPES.SUBSTATION:
@@ -429,6 +427,60 @@ const MapView = ({
                                                     networkMapref.current.getSelectedLines()
                                                 );
                                             break;
+                                        case EQUIPMENT_TYPES.BUS:
+                                        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+                                        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+                                        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+                                        case EQUIPMENT_TYPES.GENERATOR:
+                                        case EQUIPMENT_TYPES.BATTERY:
+                                        case EQUIPMENT_TYPES.LOAD:
+                                        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+                                        case EQUIPMENT_TYPES.DANGLING_LINE:
+                                        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+                                        case EQUIPMENT_TYPES.HVDC_CONVERTER_STATION:
+                                        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+                                        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+                                        case EQUIPMENT_TYPES.SWITCH:
+                                            const substationsIds =
+                                                networkMapref.current
+                                                    .getSelectedSubstation()
+                                                    .map(
+                                                        (substation) =>
+                                                            substation
+                                                                .substation.id
+                                                    );
+                                            console.log(
+                                                'debug',
+                                                'substations',
+                                                substationsIds
+                                            );
+                                            try {
+                                                const elements =
+                                                    await fetchNetworkElementsInfos(
+                                                        studyUuid,
+                                                        currentNode.id,
+                                                        substationsIds,
+                                                        filter.equipmentType,
+                                                        EQUIPMENT_INFOS_TYPES
+                                                            .TAB.type,
+                                                        false
+                                                    );
+                                                console.log(
+                                                    'debug',
+                                                    'elements',
+                                                    elements
+                                                );
+                                                equipementList =
+                                                    createEquipmentIdentifierList(
+                                                        filter.equipmentType,
+                                                        elements
+                                                    );
+                                            } catch (error) {
+                                                throw error;
+                                            }
+
+                                            break;
+
                                         default:
                                             break;
                                     }
