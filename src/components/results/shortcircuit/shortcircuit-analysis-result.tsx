@@ -38,7 +38,7 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     useAggridRowFilter,
@@ -93,8 +93,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         ? 'current'
         : 'elementId';
     const defaultSortWay = isOneBusShortCircuitAnalysisType
-        ? SORT_WAYS.desc
-        : SORT_WAYS.asc;
+        ? SortWay.DESC
+        : SortWay.ASC;
     const { onSortChanged, sortConfig } = useAgGridSort({
         colId: defaultSortKey,
         sort: defaultSortWay,

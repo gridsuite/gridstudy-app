@@ -84,7 +84,7 @@ import {
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
-import { SORT_WAYS } from 'hooks/use-aggrid-sort';
+import { SortWay } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
@@ -235,7 +235,7 @@ const TableWrapper = (props) => {
         gridRef,
         {
             colId: defaultSortColKey,
-            sort: SORT_WAYS.asc,
+            sort: SortWay.ASC,
         }
     );
 

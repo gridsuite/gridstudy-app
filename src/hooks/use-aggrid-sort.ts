@@ -25,7 +25,10 @@ export const SORT_WAYS = {
     desc: 'desc' as const,
 };
 
-export type SortWay = 'asc' | 'desc';
+export enum SortWay {
+    ASC = 'asc',
+    DESC = 'desc',
+}
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType
