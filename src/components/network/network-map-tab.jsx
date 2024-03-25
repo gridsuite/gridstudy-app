@@ -135,9 +135,8 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
-    const filteredNominalVoltages = useSelector(
-        (state) => state[MAP_FILTRED_NOMINAL_VOLTAGES]
-    );
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState();
+
     const geoDataRef = useRef();
 
     const basicDataReady = mapEquipments && geoData;
@@ -1047,9 +1046,9 @@ export const NetworkMapTab = ({
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
-                    onChange={(newValues) =>
-                        dispatch(setMapFiltredNominalVoltages(newValues))
-                    }
+                    onChange={(newValues) => {
+                        setFilteredNominalVoltages(newValues);
+                    }}
                 />
             </Box>
         );
