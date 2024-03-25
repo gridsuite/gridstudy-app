@@ -29,6 +29,8 @@ import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
+import { useParameterState } from './dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
 const styles = {
     container: {
@@ -79,6 +81,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
         !result || !result.modificationsGroupUuid
@@ -294,6 +297,41 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         );
     }
 
+    const busVoltagesColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'BusId' }),
+                field: 'busId',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'BusVoltage' }),
+                field: 'v',
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'BusAngle' }),
+                field: 'angle',
+                numeric: true,
+            },
+        ];
+    }, [intl]);
+
+    function renderBusVoltagesTable(busVoltages) {
+        return (
+            <>
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={busVoltagesColumnDefs}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'BusVoltages' })}
+                    rows={busVoltages}
+                    onRowDataUpdated={onRowDataUpdated}
+                    skipColumnHeaders={true}
+                />
+            </>
+        );
+    }
+
     const renderReportViewer = () => {
         return (
             <>
@@ -329,6 +367,13 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                                     id: 'ReactiveSlacks',
                                 })}
                             />
+                            {enableDeveloperMode && (
+                                <Tab
+                                    label={intl.formatMessage({
+                                        id: 'BusVoltages',
+                                    })}
+                                />
+                            )}
                             <Tab
                                 label={
                                     <FormattedMessage
@@ -375,7 +420,13 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     {result &&
                         tabIndex === 1 &&
                         renderReactiveSlacksTable(result.reactiveSlacks)}
-                    {tabIndex === 2 && renderReportViewer()}
+                    {result &&
+                        tabIndex === 2 &&
+                        enableDeveloperMode &&
+                        renderBusVoltagesTable(result.busVoltages)}
+                    {((tabIndex === 3 && enableDeveloperMode) ||
+                        (tabIndex === 2 && !enableDeveloperMode)) &&
+                        renderReportViewer()}
                 </div>
             </>
         );
