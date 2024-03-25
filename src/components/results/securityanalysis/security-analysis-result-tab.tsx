@@ -116,15 +116,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }, [tabIndex, nmkType]);
 
+    const memoizedSetPageCallback = useCallback(() => {
+        setPage(0);
+    }, []);
+
     const { updateFilter, filterSelector } = useAggridRowFilter(
         {
             filterType: SECURITY_ANALYSIS_RESULT_STORE_FIELD,
             filterTab: getStoreFields(tabIndex),
             filterStoreAction: setSecurityAnalysisResultFilter,
         },
-        () => {
-            setPage(0);
-        }
+        memoizedSetPageCallback
     );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(

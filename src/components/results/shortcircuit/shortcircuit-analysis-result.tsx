@@ -103,6 +103,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         colKey: defaultSortKey,
         sortWay: defaultSortWay,
     });
+    const memoizedSetPageCallback = useCallback(() => {
+        setPage(0);
+    }, []);
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
         {
@@ -110,9 +113,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             filterTab: mappingTabs(analysisType),
             filterStoreAction: setShortcircuitAnalysisResultFilter,
         },
-        () => {
-            setPage(0);
-        }
+        memoizedSetPageCallback
     );
 
     const handleChangePage = useCallback(
