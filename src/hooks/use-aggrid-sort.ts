@@ -20,11 +20,6 @@ export type SortPropsType = {
     children?: boolean;
 };
 
-export const SORT_WAYS = {
-    asc: 'asc' as const,
-    desc: 'desc' as const,
-};
-
 export enum SortWay {
     ASC = 'asc',
     DESC = 'desc',
@@ -37,21 +32,18 @@ export const useAgGridSort = (
         initSortConfig,
     ]);
 
-    const onSortChanged = useCallback(
-        (newSortConfig: SortConfigType) => {
-            setSortConfig(
-                sortConfig
-                    // for now, we can have only one parent sort and one children sort
-                    .filter(
-                        (sort) =>
-                            (sort.children ?? false) !==
-                            (newSortConfig.children ?? false)
-                    )
-                    .concat(newSortConfig)
-            );
-        },
-        [sortConfig]
-    );
+    const onSortChanged = useCallback((newSortConfig: SortConfigType) => {
+        setSortConfig((prevSortConfig) =>
+            prevSortConfig
+                // for now, we can have only one parent sort and one children sort
+                .filter(
+                    (sort) =>
+                        (sort.children ?? false) !==
+                        (newSortConfig.children ?? false)
+                )
+                .concat(newSortConfig)
+        );
+    }, []);
 
     const initSort = useCallback(
         (colKey: string) =>

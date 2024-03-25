@@ -404,6 +404,7 @@ CustomHeaderComponent.propTypes = {
             PropTypes.shape({
                 colId: PropTypes.string,
                 sort: PropTypes.string,
+                children: PropTypes.bool,
             })
         ),
         onSortChanged: PropTypes.func,
