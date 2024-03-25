@@ -61,6 +61,7 @@ import {
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     MAP_EQUIPMENTS_CREATED,
+    MAP_FILTRED_NOMINAL_VOLTAGES,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     SET_FULLSCREEN_DIAGRAM,
     SET_UPDATED_SUBSTATIONS_IDS,
@@ -544,6 +545,9 @@ export const reducer = createReducer(initialState, {
 
     [SET_DELETED_EQUIPMENTS]: (state, action) => {
         state.deletedEquipments = action.deletedEquipments;
+    },
+    [MAP_FILTRED_NOMINAL_VOLTAGES]: (state, action) => {
+        state.filtredNominalVoltage = action.filtredNominalVoltage;
     },
 
     [SUBSTATION_LAYOUT]: (state, action) => {

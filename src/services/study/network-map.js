@@ -169,26 +169,31 @@ export async function createMapFilter(
     distDir,
     studyUuid,
     currentNodeUuid,
-    networkMapref
+    networkMapref,
+    filtredNominalVoltage
 ) {
     let equipementList = [];
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedSubstation()
+                networkMapref.current.getSelectedSubstation(
+                    filtredNominalVoltage
+                )
             );
             break;
         case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedVoltageLevel()
+                networkMapref.current.getSelectedVoltageLevel(
+                    filtredNominalVoltage
+                )
             );
             break;
         case EQUIPMENT_TYPES.LINE:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedLines()
+                networkMapref.current.getSelectedLines(filtredNominalVoltage)
             );
             break;
         case EQUIPMENT_TYPES.BUS:
@@ -206,8 +211,8 @@ export async function createMapFilter(
         case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
         case EQUIPMENT_TYPES.SWITCH:
             const substationsIds = networkMapref.current
-                .getSelectedSubstation()
-                .map((substation) => substation.substation.id);
+                .getSelectedSubstation(filtredNominalVoltage)
+                .map((substation) => substation.id);
             console.log('debug', 'substations', substationsIds);
             try {
                 const elements = await fetchNetworkElementsInfos(

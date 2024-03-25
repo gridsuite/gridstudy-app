@@ -328,6 +328,14 @@ export function setMapDataLoading(mapDataLoading) {
     };
 }
 
+export const MAP_FILTRED_NOMINAL_VOLTAGES = 'mapFiltredNominalVoltages';
+export const setMapFiltredNominalVoltages = (filtredNominalVoltages) => {
+    return {
+        type: MAP_FILTRED_NOMINAL_VOLTAGES,
+        filtredNominalVoltages,
+    };
+};
+
 export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
 
 export function selectMapManualRefresh(mapManualRefresh) {

@@ -10,7 +10,11 @@ import React, { useCallback, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
-import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions';
+import {
+    MAP_FILTRED_NOMINAL_VOLTAGES,
+    setStudyDisplayMode,
+    STUDY_DISPLAY_MODE,
+} from '../redux/actions';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import {
@@ -35,13 +39,6 @@ import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
 import FilterCreationPanel from './network/filter-creation-panel';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from './utils/equipment-types.js';
-import { createFilter } from '../services/explore';
-import { NAME } from './utils/field-constants.js';
-import { fetchNetworkElementsInfos } from '../services/study/network.js';
 import { createMapFilter } from '../services/study/network-map.js';
 
 const styles = {
@@ -225,7 +222,9 @@ const MapView = ({
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
     const dispatch = useDispatch();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
-
+    const filtredNominalVoltage = useSelector(
+        (state) => state[MAP_FILTRED_NOMINAL_VOLTAGES]
+    );
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
@@ -391,7 +390,8 @@ const MapView = ({
                                             distDir,
                                             studyUuid,
                                             currentNode.id,
-                                            networkMapref
+                                            networkMapref,
+                                            filtredNominalVoltage
                                         );
                                     } catch (e) {
                                         console.log('debug', 'error', e);

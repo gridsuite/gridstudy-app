@@ -21,6 +21,7 @@ import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    PARAM_LINE_FULL_PATH,
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_USE_NAME,
@@ -32,9 +33,11 @@ import {
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
 import {
+    MAP_FILTRED_NOMINAL_VOLTAGES,
     resetMapReloaded,
     setGeoData,
     setMapDataLoading,
+    setMapFiltredNominalVoltages,
     setPolygonCoordinate,
 } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
@@ -132,7 +135,9 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
-    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState();
+    const filteredNominalVoltages = useSelector(
+        (state) => state[MAP_FILTRED_NOMINAL_VOLTAGES]
+    );
     const geoDataRef = useRef();
 
     const basicDataReady = mapEquipments && geoData;
@@ -1024,15 +1029,13 @@ export const NetworkMapTab = ({
             onFeaturesChanged={(features) => {
                 dispatch(setPolygonCoordinate(features));
                 networkMapRef?.current?.computeSelectedSubstation();
+
                 console.log(
                     'debug',
-                    'lines',
-                    networkMapRef?.current?.getSelectedLines()
-                );
-                console.log(
-                    'debug',
-                    'filteredNominalVoltages',
-                    filteredNominalVoltages
+                    'getSelectedSubstation',
+                    networkMapRef?.current?.getSelectedSubstation(
+                        filteredNominalVoltages
+                    )
                 );
             }}
         />
@@ -1044,7 +1047,9 @@ export const NetworkMapTab = ({
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
-                    onChange={setFilteredNominalVoltages}
+                    onChange={(newValues) =>
+                        dispatch(setMapFiltredNominalVoltages(newValues))
+                    }
                 />
             </Box>
         );
