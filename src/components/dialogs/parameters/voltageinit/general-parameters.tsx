@@ -1,3 +1,9 @@
+import { FormattedMessage } from 'react-intl';
+
 export const GeneralParameters = () => {
-    return <></>;
+    return (
+        <>
+            <FormattedMessage id={'WorkInProgress'} />
+        </>
+    );
 };
