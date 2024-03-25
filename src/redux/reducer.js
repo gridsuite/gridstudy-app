@@ -91,7 +91,6 @@ import {
     MAP_EQUIPMENTS_INITIALIZED,
     SET_LAST_COMPLETED_COMPUTATION,
     MAP_POLYGON_COORDINATE,
-    GEO_DATA,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -1047,9 +1046,6 @@ export const reducer = createReducer(initialState, {
     },
     [MAP_POLYGON_COORDINATE]: (state, action) => {
         state.polygonCoordinate = action.polygonCoordinate;
-    },
-    [GEO_DATA]: (state, action) => {
-        state.geoData = action.geoData;
     },
 });
 

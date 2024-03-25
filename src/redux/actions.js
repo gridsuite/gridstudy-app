@@ -706,14 +706,3 @@ export function setPolygonCoordinate(coordinates) {
         polygonCoordinate: coordinates,
     };
 }
-
-export const GEO_DATA = 'GEO_DATA';
-/**
- * @param {Array.<Object>} geoData - An array of objects containing geo data.
- */
-export function setGeoData(geoData) {
-    return {
-        type: GEO_DATA,
-        geoData: geoData,
-    };
-}
