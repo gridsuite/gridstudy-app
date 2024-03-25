@@ -332,94 +332,90 @@ const CustomHeaderComponent = ({
                         ],
                     }}
                 >
-                    <>
-                        {isAutoCompleteFilter ? (
-                            <Autocomplete
-                                multiple
-                                value={selectedFilterData || []}
-                                options={customFilterOptions}
-                                getOptionLabel={getOptionLabel}
-                                onChange={handleFilterAutoCompleteChange}
-                                size="small"
-                                disableCloseOnSelect
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        placeholder={
-                                            !selectedFilterData?.length
-                                                ? intl.formatMessage({
-                                                      id: 'filter.filterOoo',
-                                                  })
-                                                : ''
-                                        }
-                                    />
-                                )}
-                                fullWidth
-                            />
-                        ) : isBooleanFilter ? (
+                    {isAutoCompleteFilter ? (
+                        <Autocomplete
+                            multiple
+                            value={selectedFilterData || []}
+                            options={customFilterOptions}
+                            getOptionLabel={getOptionLabel}
+                            onChange={handleFilterAutoCompleteChange}
+                            size="small"
+                            disableCloseOnSelect
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    placeholder={
+                                        !selectedFilterData?.length
+                                            ? intl.formatMessage({
+                                                  id: 'filter.filterOoo',
+                                              })
+                                            : ''
+                                    }
+                                />
+                            )}
+                            fullWidth
+                        />
+                    ) : isBooleanFilter ? (
+                        <Select
+                            value={selectFilterBoolean}
+                            onChange={handleFilterBooleanChange}
+                            displayEmpty
+                            size={'small'}
+                            sx={styles.input}
+                        >
+                            {customFilterOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {intl.formatMessage({
+                                        id: option,
+                                    })}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    ) : (
+                        <Grid
+                            container
+                            direction={'column'}
+                            gap={0.8}
+                            sx={{ padding: '8px' }}
+                        >
                             <Select
-                                value={selectFilterBoolean}
-                                onChange={handleFilterBooleanChange}
+                                value={selectedFilterComparator}
+                                onChange={handleFilterComparatorChange}
                                 displayEmpty
                                 size={'small'}
                                 sx={styles.input}
                             >
-                                {customFilterOptions.map((option) => (
-                                    <MenuItem key={option} value={option}>
+                                {filterComparators.map((filterComparator) => (
+                                    <MenuItem
+                                        key={filterComparator}
+                                        value={filterComparator}
+                                    >
                                         {intl.formatMessage({
-                                            id: option,
+                                            id: `filter.${filterComparator}`,
                                         })}
                                     </MenuItem>
                                 ))}
                             </Select>
-                        ) : (
-                            <Grid
-                                container
-                                direction={'column'}
-                                gap={0.8}
-                                sx={{ padding: '8px' }}
-                            >
-                                <Select
-                                    value={selectedFilterComparator}
-                                    onChange={handleFilterComparatorChange}
-                                    displayEmpty
-                                    size={'small'}
-                                    sx={styles.input}
-                                >
-                                    {filterComparators.map(
-                                        (filterComparator) => (
-                                            <MenuItem
-                                                key={filterComparator}
-                                                value={filterComparator}
-                                            >
-                                                {intl.formatMessage({
-                                                    id: `filter.${filterComparator}`,
-                                                })}
-                                            </MenuItem>
-                                        )
-                                    )}
-                                </Select>
-                                <TextField
-                                    size={'small'}
-                                    fullWidth
-                                    value={selectedFilterData || ''}
-                                    onChange={handleFilterTextChange}
-                                    placeholder={intl.formatMessage({
-                                        id: 'filter.filterOoo',
-                                    })}
-                                    inputProps={{
-                                        type: isNumberInput
-                                            ? FILTER_DATA_TYPES.NUMBER
-                                            : FILTER_DATA_TYPES.TEXT,
-                                    }}
-                                    sx={mergeSx(
-                                        styles.input,
-                                        isNumberInput && styles.noArrows
-                                    )}
-                                />
-                            </Grid>
-                        )}
-                    </>
+                            <TextField
+                                size={'small'}
+                                fullWidth
+                                value={selectedFilterData || ''}
+                                onChange={handleFilterTextChange}
+                                placeholder={intl.formatMessage({
+                                    id: 'filter.filterOoo',
+                                })}
+                                inputProps={{
+                                    type: isNumberInput
+                                        ? FILTER_DATA_TYPES.NUMBER
+                                        : FILTER_DATA_TYPES.TEXT,
+                                }}
+                                sx={mergeSx(
+                                    styles.input,
+                                    isNumberInput && styles.noArrows
+                                )}
+                            />
+                        </Grid>
+                    )}
                 </Popover>
             )}
         </Grid>
