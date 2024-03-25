@@ -213,7 +213,6 @@ export async function createMapFilter(
             const substationsIds = networkMapref.current
                 .getSelectedSubstation(filtredNominalVoltage)
                 .map((substation) => substation.id);
-            console.log('debug', 'substations', substationsIds);
             try {
                 const elements = await fetchNetworkElementsInfos(
                     studyUuid,
@@ -223,7 +222,6 @@ export async function createMapFilter(
                     EQUIPMENT_INFOS_TYPES.TAB.type,
                     false
                 );
-                console.log('debug', 'elements', elements);
                 equipementList = createEquipmentIdentifierList(
                     filter.equipmentType,
                     elements

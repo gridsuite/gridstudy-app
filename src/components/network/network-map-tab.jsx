@@ -1032,9 +1032,18 @@ export const NetworkMapTab = ({
                 console.log(
                     'debug',
                     'getSelectedSubstation',
-                    networkMapRef?.current?.getSelectedSubstation(
-                        filteredNominalVoltages
-                    )
+                    networkMapRef?.current?.getSelectedSubstation()
+                );
+                console.log(
+                    'debug',
+                    'getSelectedLine',
+                    networkMapRef?.current?.getSelectedLines()
+                );
+
+                console.log(
+                    'debug',
+                    'getSelectedVoltageLevel',
+                    networkMapRef?.current?.getSelectedVoltageLevel()
                 );
             }}
         />
@@ -1046,9 +1055,7 @@ export const NetworkMapTab = ({
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
-                    onChange={(newValues) => {
-                        setFilteredNominalVoltages(newValues);
-                    }}
+                    onChange={setFilteredNominalVoltages}
                 />
             </Box>
         );

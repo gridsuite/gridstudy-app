@@ -101,40 +101,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         name: null,
     });
 
-    // const handleValidationButtonClick = () => {
-    //     // get the form data
-    //     const formData = formMethods.getValues();
-    //     console.log('debug', 'formData', formData);
-    //     const substationsInPolygone = getSubstationsInPolygone(
-    //         polygonCoordinates,
-    //         mapEquipments,
-    //         geoData
-    //     );
-    //     const equipments = getRequestedEquipements(
-    //         formData.equipmentType,
-    //         substationsInPolygone
-    //     );
-    //
-    //     console.log('debug', 'equipments', equipments);
-    //
-    //     const filterData = createVoltageLevelIdentifierList(
-    //         formData.equipmentType,
-    //         equipments
-    //     );
-    //     //create the filter
-    //     createFilter(
-    //         filterData,
-    //         formData[NAME],
-    //         'description',
-    //         defaultFolder.id?.toString() ?? ''
-    //     )
-    //         .then((res) => {
-    //             console.log('debug', 'createFilter', res);
-    //         })
-    //         .catch((err) => {
-    //             console.error('debug', 'createFilter', err);
-    //         });
-    // };
     // function handleCancelButtonClick() {}
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchPath(studyUuid).then((res) => {
