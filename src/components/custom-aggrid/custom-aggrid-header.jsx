@@ -82,9 +82,13 @@ const CustomHeaderComponent = ({
 
     const { translate } = useLocalizedCountries();
 
-    const isAutoCompleteFilter =
+    const isEnumFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
         !!customFilterOptions?.length;
+
+    const isBooleanFilter = filterDataType === FILTER_DATA_TYPES.BOOLEAN;
+    const isAutoCompleteFilter = isEnumFilter || isBooleanFilter;
+
     const isNumberInput =
         filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const isColumnSorted = sortColKey === field;
@@ -322,7 +326,7 @@ const CustomHeaderComponent = ({
                 >
                     {isAutoCompleteFilter ? (
                         <Autocomplete
-                            multiple
+                            multiple={!isBooleanFilter}
                             value={selectedFilterData || []}
                             options={customFilterOptions}
                             getOptionLabel={getOptionLabel}
@@ -413,6 +417,7 @@ CustomHeaderComponent.propTypes = {
         filterDataType: PropTypes.oneOf([
             FILTER_DATA_TYPES.TEXT,
             FILTER_DATA_TYPES.NUMBER,
+            FILTER_DATA_TYPES.BOOLEAN,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
