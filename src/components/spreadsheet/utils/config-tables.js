@@ -3437,7 +3437,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'connected',
-                field: 'terminalIsConnected',
+                field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3550,7 +3550,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'connected',
-                field: 'terminalIsConnected',
+                field: 'terminalConnected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
