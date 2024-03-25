@@ -183,6 +183,7 @@
     "BusAngle": "Angle (°)",
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
+    "VoltageInitParametersGeneralTabLabel": "General",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
