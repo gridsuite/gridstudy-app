@@ -50,6 +50,9 @@ import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { mergeSx } from 'components/utils/functions';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
+import { GeneralParameters } from './general-parameters';
+
+const GENERAL = 'GENERAL';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -80,11 +83,13 @@ export const useGetVoltageInitParameters = () => {
 };
 
 const TAB_VALUES = {
+    general: GENERAL,
     voltageLimitsParamsTabValue: 'voltageLimits',
     equipmentSelectionParamsTabValue: 'equipmentSelection',
 };
 
 const formSchema = yup.object().shape({
+    [GENERAL]: yup.object().optional(),
     [VOLTAGE_LIMITS_MODIFICATION]: yup.array().of(
         yup.object().shape({
             [FILTERS]: yup
@@ -164,9 +169,7 @@ export const VoltageInitParameters = ({
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
-    const [tabValue, setTabValue] = useState(
-        TAB_VALUES.voltageLimitsParamsTabValue
-    );
+    const [tabValue, setTabValue] = useState(TAB_VALUES.general);
 
     const emptyFormData = useMemo(() => {
         return {
@@ -237,7 +240,11 @@ export const VoltageInitParameters = ({
 
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const onValidationError = (errors) => {
+        // TODO: this does not work if formSchema keys does not match tab values
         let tabsInError = [];
+        if (errors?.[GENERAL] !== undefined) {
+            tabsInError.push(TAB_VALUES.general);
+        }
         if (errors?.[TAB_VALUES.voltageLimitsParamsTabValue] !== undefined) {
             tabsInError.push(TAB_VALUES.voltageLimitsParamsTabValue);
         }
@@ -332,6 +339,16 @@ export const VoltageInitParameters = ({
                             }}
                         >
                             <Tab
+                                label={
+                                    <FormattedMessage id="VoltageInitParametersGeneralTabLabel" />
+                                }
+                                value={TAB_VALUES.general}
+                                sx={getTabStyle(
+                                    tabIndexesWithError,
+                                    TAB_VALUES.general
+                                )}
+                            />
+                            <Tab
                                 label={<FormattedMessage id="VoltageLimits" />}
                                 value={TAB_VALUES.voltageLimitsParamsTabValue}
                                 sx={getTabStyle(
@@ -355,14 +372,15 @@ export const VoltageInitParameters = ({
                         <Grid container>
                             <TabPanel
                                 value={tabValue}
+                                index={TAB_VALUES.general}
+                            >
+                                <GeneralParameters />
+                            </TabPanel>
+                            <TabPanel
+                                value={tabValue}
                                 index={TAB_VALUES.voltageLimitsParamsTabValue}
                             >
-                                <VoltageLimitsParameters
-                                    reset={reset}
-                                    useVoltageInitParameters={
-                                        useVoltageInitParameters
-                                    }
-                                />
+                                <VoltageLimitsParameters />
                             </TabPanel>
                             <TabPanel
                                 value={tabValue}
@@ -370,12 +388,7 @@ export const VoltageInitParameters = ({
                                     TAB_VALUES.equipmentSelectionParamsTabValue
                                 }
                             >
-                                <EquipmentSelectionParameters
-                                    reset={reset}
-                                    useVoltageInitParameters={
-                                        useVoltageInitParameters
-                                    }
-                                />
+                                <EquipmentSelectionParameters />
                             </TabPanel>
                         </Grid>
                     </Grid>

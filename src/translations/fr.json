@@ -183,6 +183,7 @@
     "BusAngle": "Angle (°)",
     "VoltageInitStatus": "STATUT",
     "startVoltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
+    "VoltageInitParametersGeneralTabLabel": "Général",
     "VoltageLimits": "Limites de tension",
     "VoltageLevelFilter": "Filtre poste",
     "LowVoltageLimitDefault": "Valeur par défaut limite basse",
@@ -1335,5 +1336,7 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "    
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+
+    "WorkInProgress": "Travail en cours..."
 }
