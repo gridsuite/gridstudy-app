@@ -8,7 +8,7 @@ import { IntlShape } from 'react-intl';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
-export const convertLimitName = (
+export const translateLimitName = (
     limitName: string | null | undefined,
     intl: IntlShape
 ) =>

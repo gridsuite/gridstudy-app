@@ -43,7 +43,7 @@ import {
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { convertLimitName } from '../common/utils';
+import { translateLimitName } from '../common/utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -90,7 +90,10 @@ export const flattenNmKResultsContingencies = (
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    limitName: convertLimitName(limitViolation.limitName, intl),
+                    limitName: translateLimitName(
+                        limitViolation.limitName,
+                        intl
+                    ),
                     side: limitViolation.side
                         ? intl.formatMessage({ id: limitViolation.side })
                         : '',
@@ -135,7 +138,7 @@ export const flattenNmKResultsConstraints = (
                                   id: limitViolation.limitType,
                               })
                             : '',
-                        limitName: convertLimitName(
+                        limitName: translateLimitName(
                             limitViolation.limitName,
                             intl
                         ),

@@ -40,7 +40,7 @@ import {
     fetchLoadflowAvailableComputationStatus,
     fetchLoadflowAvailableLimitTypes,
 } from 'services/loadflow';
-import { convertLimitName, PERMANENT_LIMIT_NAME } from '../common/utils';
+import { translateLimitName, PERMANENT_LIMIT_NAME } from '../common/utils';
 
 export const convertMillisecondsToMinutesSeconds = (
     durationInMilliseconds: number
@@ -152,7 +152,7 @@ export const makeData = (
             upComingOverloadDuration:
                 overloadedEquipment.upComingOverloadDuration,
             limit: overloadedEquipment.limit,
-            limitName: convertLimitName(overloadedEquipment.limitName, intl),
+            limitName: translateLimitName(overloadedEquipment.limitName, intl),
             side: convertSide(overloadedEquipment.side, intl),
             limitType: overloadedEquipment.limitType,
         };
