@@ -134,8 +134,8 @@ const defaultBooleanFilterConfig = {
     agGridFilterParams: {
         filterOptions: [
             {
-                displayKey: 'customInRange',
-                displayName: 'customInRange',
+                displayKey: 'booleanMatches',
+                displayName: 'booleanMatches',
                 predicate: ([filterValue], cellValue) => {
                     // We receive here the filter boolean values as a string (filterValue)
                     // we check if the cellValue is not null neither undefined
@@ -152,7 +152,6 @@ const defaultBooleanFilterConfig = {
     customFilterParams: {
         filterDataType: FILTER_DATA_TYPES.BOOLEAN,
     },
-    isBoolean: true,
 };
 
 // This function is used to generate the default configuration for an enum filter
