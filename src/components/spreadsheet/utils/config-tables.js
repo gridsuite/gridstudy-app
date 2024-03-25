@@ -145,8 +145,7 @@ const defaultBooleanFilterConfig = {
 
                     // if cellValue is undefined or null, we return true if the filter selected is false
                     return filterValue === 'false';
-                }
-                ,
+                },
             },
         ],
     },
