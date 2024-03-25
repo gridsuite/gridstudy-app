@@ -48,7 +48,7 @@ const styles = {
         width: '100%',
         paddingLeft: 1,
     }),
-    chip: (theme) => ({
+    chip: {
         '&.MuiChip-root': {
             margin: '4px 2px 4px 2px',
             padding: '0',
@@ -62,8 +62,8 @@ const styles = {
             height: 'unset', // prevents the chip from changing size when selected with the keyboard
             position: 'relative',
         },
-    }),
-    chipCountry: (theme) => ({
+    },
+    chipCountry: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: '#01579b !important',
         },
@@ -76,8 +76,8 @@ const styles = {
         '&.Mui-focusVisible': {
             background: '#0288d1 !important',
         },
-    }),
-    chipVoltageLevel: (theme) => ({
+    },
+    chipVoltageLevel: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: '#1e88e5 !important',
         },
@@ -90,7 +90,7 @@ const styles = {
         '&.Mui-focusVisible': {
             background: '#2196F3 !important',
         },
-    }),
+    },
 };
 
 const filters = [
@@ -100,11 +100,11 @@ const filters = [
         recent: true,
     },
     {
-        label: '380 kV',
+        label: '380',
         filterType: 'voltageLevel',
     },
     {
-        label: '220 kV',
+        label: '220',
         filterType: 'voltageLevel',
         recent: true,
     },
@@ -123,12 +123,12 @@ const filters = [
         recent: true,
     },
     {
-        label: '400 kV',
+        label: '400',
         filterType: 'voltageLevel',
         recent: true,
     },
     {
-        label: '150 kV',
+        label: '150',
         filterType: 'voltageLevel',
     },
     {
@@ -142,7 +142,7 @@ const filters = [
     },
 ];
 
-const ResultsGlobalFilter = (props) => {
+const ResultsGlobalFilter = ({ onChange }) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
 
@@ -150,9 +150,13 @@ const ResultsGlobalFilter = (props) => {
         (option) =>
             option.filterType === 'country'
                 ? translate(option.label)
-                : option.label,
+                : option.label + ' kV',
         [translate]
     );
+
+    const handleChange = (event, value) => {
+        onChange(value);
+    };
 
     return (
         <Box>
@@ -164,6 +168,7 @@ const ResultsGlobalFilter = (props) => {
                 limitTags={3}
                 disableCloseOnSelect
                 options={filters.sort((a, b) => !!b.recent - !!a.recent)}
+                onChange={handleChange}
                 groupBy={(option) => !!option.recent}
                 // renderInput the inputfield that contains the chips, adornments and label
                 renderInput={(params) => (
@@ -189,7 +194,11 @@ const ResultsGlobalFilter = (props) => {
                 renderTags={(value, getTagsProps) =>
                     value.map((element, index) => (
                         <Chip
-                            id={'chip_' + element}
+                            key={
+                                'keyChipTag_' +
+                                element.filterType +
+                                element.label
+                            }
                             size={'small'}
                             label={getOptionLabel(element)}
                             {...getTagsProps({ index })}
@@ -208,6 +217,7 @@ const ResultsGlobalFilter = (props) => {
                     const itemRecentAvailable = !!group;
                     return (
                         <Box
+                            key={'keyBoxGroup_' + group}
                             sx={mergeSx(
                                 styles.chipBox,
                                 itemRecentAvailable && styles.recentBox
@@ -225,6 +235,9 @@ const ResultsGlobalFilter = (props) => {
                 // renderOption : the chips that are in the box that is visible when we focus on the AutoComplete
                 renderOption={(props, option) => (
                     <Chip
+                        key={
+                            'keyChipOption_' + option.filterType + option.label
+                        }
                         {...props}
                         disableRipple
                         label={getOptionLabel(option)}

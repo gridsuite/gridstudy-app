@@ -120,7 +120,7 @@ export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
 
 export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
     console.info(`Fetching limit violations ...`);
-    const { sort, filters } = queryParams || {};
+    const { sort, filters, globalFilters } = queryParams || {};
     const params = new URLSearchParams({});
 
     if (sort?.colKey && sort?.sortWay) {
@@ -129,6 +129,10 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
+    }
+
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        params.append('globalfilters', JSON.stringify(globalFilters));
     }
 
     const url =

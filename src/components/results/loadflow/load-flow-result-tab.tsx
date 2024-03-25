@@ -70,6 +70,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         sortWay: SORT_WAYS.desc,
     });
 
+    const [globalFilters, setGlobalFilters] = useState(undefined);
+
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
         mappingFields(tabIndex)
     );
@@ -99,6 +101,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                           value: limitTypeValues,
                       },
                   ];
+        let updatedGlobalFilters = undefined;
+        if (globalFilters && Object.keys(globalFilters).length > 0) {
+            updatedGlobalFilters = {
+                ...globalFilters,
+                limitViolationsType:
+                    tabIndex === 0 ? LimitTypes.CURRENT : 'VOLTAGE',
+            };
+        }
+
         return fetchLimitViolations(studyUuid, nodeUuid, {
             sort: {
                 colKey: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[
@@ -107,8 +118,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 sortWay: sortConfig.sortWay,
             },
             filters: updatedFilters,
+            globalFilters: updatedGlobalFilters,
         });
-    }, [studyUuid, nodeUuid, sortConfig, filterSelector, tabIndex]);
+    }, [
+        studyUuid,
+        nodeUuid,
+        sortConfig,
+        filterSelector,
+        tabIndex,
+        globalFilters,
+    ]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
         return fetchLoadFlowResult(studyUuid, nodeUuid, {
@@ -191,6 +210,28 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         setTabIndex(newTabIndex);
     };
 
+    const handleGlobalFilterChange = (value: any) => {
+        let formattedData;
+        if (value) {
+            // We update the format of the filter to reflect the DTO in the backend
+            formattedData = value.reduce((accumulator, currentItem) => {
+                const { label, filterType } = currentItem;
+                let key;
+                if (filterType === 'voltageLevel') {
+                    key = 'nominalV';
+                } else {
+                    key = 'countryCode';
+                }
+                if (!accumulator[key]) {
+                    accumulator[key] = [];
+                }
+                accumulator[key].push(label);
+                return accumulator;
+            }, {});
+        }
+        setGlobalFilters(formattedData);
+    };
+
     const result = useMemo(() => {
         if (loadflowResult === RunningStatus.FAILED || !loadflowResult) {
             return [];
@@ -200,6 +241,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         }
         return loadflowResult;
     }, [tabIndex, loadflowResult, intl]);
+
     return (
         <>
             <Box sx={{ display: 'flex' }}>
@@ -234,7 +276,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     />
                 </Tabs>
                 <Box sx={{ flexGrow: 0 }}>
-                    <ResultsGlobalFilter />
+                    <ResultsGlobalFilter onChange={handleGlobalFilterChange} />
                 </Box>
                 <Box sx={{ flexGrow: 1 }}></Box>
             </Box>
