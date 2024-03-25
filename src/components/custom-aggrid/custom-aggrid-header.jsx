@@ -183,7 +183,7 @@ const CustomHeaderComponent = ({
         if (!selectedFilterComparator) {
             setSelectedFilterComparator(filterComparators[0]);
         }
-    }, [filterSelector, selectedFilterComparator, filterComparators]);
+    }, [selectedFilterComparator, filterComparators]);
 
     useEffect(() => {
         if (!filterSelector?.length) {

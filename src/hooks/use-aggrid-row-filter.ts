@@ -9,7 +9,7 @@ import {
     FilterSelectorType,
     FilterStorePropsType,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 type FilterDataType = { value: string; type: string; dataType: string };
@@ -99,9 +99,5 @@ export const useAggridRowFilter = (
         ]
     );
 
-    const filterSelector: FilterSelectorType[] | null = useMemo(() => {
-        return filterStore;
-    }, [filterStore]);
-
-    return { updateFilter, filterSelector };
+    return { updateFilter, filterSelector: filterStore };
 };
