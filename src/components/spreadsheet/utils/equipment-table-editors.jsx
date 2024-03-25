@@ -11,6 +11,7 @@ import {
     forwardRef,
     useImperativeHandle,
     useMemo,
+    useEffect,
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -373,6 +374,84 @@ export const BooleanListField = forwardRef(
                 <MenuItem value={0} key={colDef.field + '_0'}>
                     <em>{intl.formatMessage({ id: 'false' })}</em>
                 </MenuItem>
+            </Select>
+        );
+    }
+);
+
+// used to translate the enum values, enumOptions is of the form { id: string; label: string } [];
+export const EnumListField = forwardRef(
+    (
+        {
+            defaultValue,
+            enumOptions,
+            gridContext,
+            colDef,
+            gridApi,
+            stopEditing,
+        },
+        ref
+    ) => {
+        const intl = useIntl();
+        const [value, setValue] = useState(defaultValue);
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue: () => {
+                        return value;
+                    },
+                    getField: () => {
+                        return colDef.field;
+                    },
+                };
+            },
+            [colDef.field, value]
+        );
+
+        /**
+         * Automatically stops cell editing when the value changes to ensure the handleCellEditingStopped event is triggered.
+         * This step is crucial because ag-Grid by default only stops editing upon clicking outside of the cell.
+         * The immediate stopping of editing upon value change ensures consistent and expected behavior in the grid's editing flow.
+         */
+        useEffect(() => {
+            if (value !== defaultValue) {
+                stopEditing();
+            }
+        }, [value, stopEditing, defaultValue]);
+
+        const validateChange = useCallback(
+            (ev) => {
+                const val = ev.target.value;
+                setValue(val);
+                gridContext.dynamicValidation = deepUpdateValue(
+                    gridContext.dynamicValidation,
+                    colDef.field,
+                    val
+                );
+                checkValidationsAndRefreshCells(gridApi, gridContext);
+            },
+            [colDef.field, gridApi, gridContext]
+        );
+
+        return (
+            <Select
+                value={value}
+                onChange={validateChange}
+                size={'medium'}
+                margin={'none'}
+                style={{ width: '100%' }}
+                autoFocus
+            >
+                {enumOptions.map((enumValue) => (
+                    <MenuItem
+                        value={enumValue.id}
+                        key={colDef.field + '_' + enumValue.id}
+                    >
+                        <em>{intl.formatMessage({ id: enumValue.label })}</em>
+                    </MenuItem>
+                ))}
             </Select>
         );
     }
