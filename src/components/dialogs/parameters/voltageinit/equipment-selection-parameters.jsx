@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { DialogContent } from '@mui/material';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -24,7 +24,7 @@ const EquipmentSelectionParameters = () => {
                 param_name_id={null}
                 name={FIXED_GENERATORS}
                 equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
-                elementType={elementType.FILTER}
+                elementType={ElementType.FILTER}
                 label={'FixedGenerators'}
                 hideErrorMessage={true}
             />
@@ -33,7 +33,7 @@ const EquipmentSelectionParameters = () => {
                 param_name_id={null}
                 name={VARIABLE_TRANSFORMERS}
                 equipmentTypes={[EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]}
-                elementType={elementType.FILTER}
+                elementType={ElementType.FILTER}
                 label={'VariableTransformers'}
                 hideErrorMessage={true}
             />
@@ -42,7 +42,7 @@ const EquipmentSelectionParameters = () => {
                 param_name_id={null}
                 name={VARIABLE_SHUNT_COMPENSATORS}
                 equipmentTypes={[EQUIPMENT_TYPES.SHUNT_COMPENSATOR]}
-                elementType={elementType.FILTER}
+                elementType={ElementType.FILTER}
                 label={'VariableShuntCompensators'}
                 hideErrorMessage={true}
             />
