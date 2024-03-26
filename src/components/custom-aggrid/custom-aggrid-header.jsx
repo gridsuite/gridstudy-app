@@ -105,7 +105,6 @@ const CustomHeaderComponent = ({
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] =
         useState('');
-    const [selectFilterBoolean, setSelectFilterBoolean] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState(undefined);
 
     const shouldDisplayFilterIcon =
@@ -139,15 +138,6 @@ const CustomHeaderComponent = ({
         });
     };
 
-    const handleFilterBooleanChange = (event) => {
-        const value = event.target.value;
-        setSelectFilterBoolean(value);
-        debouncedUpdateFilter(field, {
-            value: value,
-            type: FILTER_TEXT_COMPARATORS.EQUALS,
-            dataType: filterDataType,
-        });
-    };
     const handleFilterAutoCompleteChange = (_, data) => {
         setSelectedFilterData(data);
         debouncedUpdateFilter(field, {
@@ -357,8 +347,8 @@ const CustomHeaderComponent = ({
                         />
                     ) : isBooleanFilter ? (
                         <Select
-                            value={selectFilterBoolean}
-                            onChange={handleFilterBooleanChange}
+                            value={selectedFilterData || ''}
+                            onChange={handleFilterAutoCompleteChange}
                             displayEmpty
                             size={'small'}
                             sx={styles.input}
