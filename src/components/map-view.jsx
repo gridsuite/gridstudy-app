@@ -247,35 +247,37 @@ const MapView = ({
                                 </Box>
                             )}
                         </Box>
-
-                        <Box
-                            style={{
-                                display:
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.DRAW
-                                        ? 'none'
-                                        : null,
-                            }}
-                        >
-                            <FilterCreationPanel
-                                onSaveFilter={async (filter, distDir) => {
-                                    try {
-                                        await createMapFilter(
-                                            filter,
-                                            distDir,
-                                            studyUuid,
-                                            currentNode.id,
-                                            networkMapref
-                                        );
-                                    } catch (error) {
-                                        snackError({
-                                            messageTxt: error.message,
-                                            headerId: 'FilterCreationError',
-                                        });
-                                    }
+                        {studyDisplayMode === STUDY_DISPLAY_MODE.DRAW && (
+                            <Box
+                                style={{
+                                    display:
+                                        studyDisplayMode !==
+                                        STUDY_DISPLAY_MODE.DRAW
+                                            ? 'none'
+                                            : null,
                                 }}
-                                onCancel={onCancelFunction}
-                            ></FilterCreationPanel>
-                        </Box>
+                            >
+                                <FilterCreationPanel
+                                    onSaveFilter={async (filter, distDir) => {
+                                        try {
+                                            await createMapFilter(
+                                                filter,
+                                                distDir,
+                                                studyUuid,
+                                                currentNode.id,
+                                                networkMapref
+                                            );
+                                        } catch (error) {
+                                            snackError({
+                                                messageTxt: error.message,
+                                                headerId: 'FilterCreationError',
+                                            });
+                                        }
+                                    }}
+                                    onCancel={onCancelFunction}
+                                ></FilterCreationPanel>
+                            </Box>
+                        )}
                     </div>
                 </div>
             </Box>
