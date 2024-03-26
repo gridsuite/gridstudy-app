@@ -1020,7 +1020,6 @@ export const NetworkMapTab = ({
             }}
             onFeaturesChanged={(features) => {
                 dispatch(setPolygonCoordinate(features));
-                networkMapRef?.current?.computeSelectedSubstation();
 
                 console.log(
                     'debug',
