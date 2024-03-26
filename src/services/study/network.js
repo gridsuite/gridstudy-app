@@ -132,6 +132,29 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
+export function fetchNetworkElementsIds(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    console.info(
+        `Fetching network elements ids of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}...`
+    );
+    const substationsIdsParams = getRequestParamFromList(
+        substationsIds,
+        'substationsIds'
+    );
+
+    const fetchNetworkElementsIdsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/elements-ids' +
+        '?' +
+        substationsIdsParams;
+    console.debug(fetchNetworkElementsIdsUrl);
+
+    return backendFetchJson(fetchNetworkElementsIdsUrl);
+}
+
 /* elements */
 export function fetchNetworkElementsInfos(
     studyUuid,

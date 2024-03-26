@@ -10,11 +10,7 @@ import React, { useCallback, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
-import {
-    MAP_FILTRED_NOMINAL_VOLTAGES,
-    setStudyDisplayMode,
-    STUDY_DISPLAY_MODE,
-} from '../redux/actions';
+import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import {
@@ -222,9 +218,6 @@ const MapView = ({
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
     const dispatch = useDispatch();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
-    const filtredNominalVoltage = useSelector(
-        (state) => state[MAP_FILTRED_NOMINAL_VOLTAGES]
-    );
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
@@ -390,8 +383,7 @@ const MapView = ({
                                             distDir,
                                             studyUuid,
                                             currentNode.id,
-                                            networkMapref,
-                                            filtredNominalVoltage
+                                            networkMapref
                                         );
                                     } catch (e) {
                                         console.log('debug', 'error', e);

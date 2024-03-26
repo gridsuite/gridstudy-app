@@ -7,11 +7,8 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../components/utils/equipment-types.js';
-import { fetchNetworkElementsInfos } from './network.js';
+import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import { fetchNetworkElementsIds } from './network.js';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 
@@ -169,31 +166,26 @@ export async function createMapFilter(
     distDir,
     studyUuid,
     currentNodeUuid,
-    networkMapref,
-    filtredNominalVoltage
+    networkMapref
 ) {
     let equipementList = [];
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedSubstation(
-                    filtredNominalVoltage
-                )
+                networkMapref.current.getSelectedSubstation()
             );
             break;
         case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedVoltageLevel(
-                    filtredNominalVoltage
-                )
+                networkMapref.current.getSelectedVoltageLevel()
             );
             break;
         case EQUIPMENT_TYPES.LINE:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedLines(filtredNominalVoltage)
+                networkMapref.current.getSelectedLines()
             );
             break;
         case EQUIPMENT_TYPES.BUS:
@@ -211,16 +203,13 @@ export async function createMapFilter(
         case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
         case EQUIPMENT_TYPES.SWITCH:
             const substationsIds = networkMapref.current
-                .getSelectedSubstation(filtredNominalVoltage)
+                .getSelectedSubstation()
                 .map((substation) => substation.id);
             try {
-                const elements = await fetchNetworkElementsInfos(
+                const elements = await fetchNetworkElementsIds(
                     studyUuid,
                     currentNodeUuid,
-                    substationsIds,
-                    filter.equipmentType,
-                    EQUIPMENT_INFOS_TYPES.TAB.type,
-                    false
+                    substationsIds
                 );
                 equipementList = createEquipmentIdentifierList(
                     filter.equipmentType,
