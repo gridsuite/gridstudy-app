@@ -31,7 +31,12 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import {
+    resetMapReloaded,
+    setMapDataLoading,
+    setStudyDisplayMode,
+    STUDY_DISPLAY_MODE,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -92,7 +97,6 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     setErrorMessage,
-    onDrawModeChanged,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1012,10 +1016,18 @@ export const NetworkMapTab = ({
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
             onDrawModeChanged={(evt) => {
-                onDrawModeChanged(evt);
+                if (evt === true) {
+                    dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+                }
             }}
             onFeaturesChanged={(features) => {
-                //dispatch(setPolygonCoordinate(features));
+                //check if the object is not empty
+                // onDrawModeChanged(Object.keys(features).length !== 0);
+                if (Object.keys(features).length !== 0) {
+                    dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
+                } else {
+                    // dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+                }
             }}
         />
     );
@@ -1059,7 +1071,6 @@ NetworkMapTab.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
-    onDrawModeChanged: PropTypes.func,
 };
 
 export default NetworkMapTab;

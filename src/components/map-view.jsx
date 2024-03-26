@@ -115,7 +115,7 @@ const MapView = ({
         }
     }
     const onCancelFunction = useCallback(() => {
-        console.log('debug', networkMapref);
+        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
     }, []);
     return (
         <ReactFlowProvider>
@@ -191,11 +191,6 @@ const MapView = ({
                                         onChangeTab={onChangeTab}
                                         showInSpreadsheet={showInSpreadsheet}
                                         setErrorMessage={setErrorMessage}
-                                        onDrawModeChanged={(drawMode) => {
-                                            if (drawMode) {
-                                                setDrawDisplay();
-                                            }
-                                        }}
                                     ></NetworkMapTab>
                                 </Box>
                             </Box>
