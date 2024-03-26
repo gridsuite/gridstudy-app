@@ -7,14 +7,8 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../components/utils/equipment-types.js';
-import {
-    fetchNetworkElementsIds,
-    fetchNetworkElementsInfos,
-} from './network.js';
+import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import { fetchNetworkElementsIds } from './network.js';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 
@@ -149,21 +143,15 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
 }
 
 function createEquipmentIdentifierList(equipmentType, equipmentList) {
-    if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
-        // TODO (jamal) refactor this to not have to create a special case for substations
-        return {
-            type: 'IDENTIFIER_LIST',
-            equipmentType: equipmentType,
-            filterEquipmentsAttributes: equipmentList.map((eq) => {
-                return { equipmentID: eq.substation.id };
-            }),
-        };
-    }
     return {
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
         filterEquipmentsAttributes: equipmentList.map((eqId) => {
-            return { equipmentID: eqId };
+            if (eqId?.id) {
+                return { equipmentID: eqId.id };
+            } else {
+                return { equipmentID: eqId };
+            }
         }),
     };
 }
