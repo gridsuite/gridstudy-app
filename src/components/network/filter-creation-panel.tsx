@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { Identifier } from '../dialogs/parameters/voltageinit/voltage-init-utils';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FILTER_NAME, NAME } from 'components/utils/field-constants';
+import { FILTER_NAME, G, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -131,26 +131,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         setOpenDirectoryFolders(false);
     };
 
-    const folderChooser = //compied from src/components/dialogs/parameters/common/parameters-creation-dialog.tsx
-        (
-            <Grid container item>
-                <Grid item>
-                    <Button onClick={handleChangeFolder} variant="contained">
-                        <FormattedMessage id={'showSelectDirectoryDialog'} />
-                    </Button>
-                </Grid>
-                <Typography m={1} component="span">
-                    <Box fontWeight={'fontWeightBold'}>
-                        {defaultFolder == null ? (
-                            <CircularProgress />
-                        ) : (
-                            defaultFolder.name
-                        )}
-                    </Box>
-                </Typography>
-            </Grid>
-        );
-
     return (
         <Box p={4}>
             <Grid container>
@@ -182,7 +162,26 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             activeDirectory={defaultFolder.id}
                             autoFocus
                         />
-                        {folderChooser}
+                    </Grid>
+                    <Grid container paddingTop={2}>
+                        <Button
+                            onClick={handleChangeFolder}
+                            variant="contained"
+                        >
+                            <FormattedMessage
+                                id={'showSelectDirectoryDialog'}
+                            />
+                        </Button>
+
+                        <Typography m={1} component="span">
+                            <Box fontWeight={'fontWeightBold'}>
+                                {defaultFolder == null ? (
+                                    <CircularProgress />
+                                ) : (
+                                    defaultFolder.name
+                                )}
+                            </Box>
+                        </Typography>
                     </Grid>
                     <Grid container paddingTop={2}>
                         <DirectoryItemSelector
