@@ -212,6 +212,11 @@ const MapView = ({
                                                     )
                                                 );
                                             }
+                                            console.log(
+                                                'debug',
+                                                'onDrawModeChanged',
+                                                evt
+                                            );
                                             setIsDrawingMode(evt);
                                         }}
                                     ></NetworkMapTab>
@@ -230,7 +235,7 @@ const MapView = ({
                                     oneBusShortCircuitStatus
                                 }
                             />
-                            {studyDisplayMode === STUDY_DISPLAY_MODE.DRAW && (
+                            {isDrawingMode && (
                                 <Box style={styles.drawInfo}>
                                     <div
                                         style={{
