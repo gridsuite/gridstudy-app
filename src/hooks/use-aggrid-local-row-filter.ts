@@ -25,6 +25,7 @@ export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     filterStoreParam: FilterStorePropsType
 ): UseAggridRowFilterOutputType => {
+    const columns = gridRef.current?.api?.getColumnDefs();
     const { updateFilter, filterSelector } =
         useAggridRowFilter(filterStoreParam);
 
@@ -66,11 +67,24 @@ export const useAggridLocalRowFilter = (
 
     const setFiltersInAgGrid = useCallback(
         (filters: FilterSelectorType[] | null) => {
-            if (filters) {
+            if (!filters || !gridRef.current?.api) {
+                return;
+            }
+
+            const currentColumnDefs = gridRef.current.api.getColumnDefs();
+            const allColumnsExist = filters.every((filter) =>
+                currentColumnDefs?.some((colDef) => {
+                    return (
+                        'field' in colDef &&
+                        filter &&
+                        colDef?.field === filter.column
+                    );
+                })
+            );
+
+            if (allColumnsExist) {
                 const formattedFilters = formatCustomFiltersForAgGrid(filters);
-                gridRef.current?.api?.setFilterModel(formattedFilters);
-            } else {
-                gridRef.current?.api?.setFilterModel(null);
+                gridRef.current.api.setFilterModel(formattedFilters);
             }
         },
         [formatCustomFiltersForAgGrid, gridRef]
@@ -78,7 +92,7 @@ export const useAggridLocalRowFilter = (
 
     useEffect(() => {
         setFiltersInAgGrid(filterSelector);
-    }, [filterSelector, setFiltersInAgGrid]);
+    }, [filterSelector, setFiltersInAgGrid, columns]);
 
     return { updateFilter, filterSelector };
 };
