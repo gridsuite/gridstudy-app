@@ -18,11 +18,9 @@ import {
     fetchPath,
     fetchRootFolders,
 } from 'services/directory';
-import { createFilter, fetchElementsMetadata } from 'services/explore';
+import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 
 const EXPERT_FILTER_EQUIPMENTS = {
     GENERATOR: {
@@ -101,7 +99,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         name: null,
     });
 
-    // function handleCancelButtonClick() {}
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchPath(studyUuid).then((res) => {
             if (res) {

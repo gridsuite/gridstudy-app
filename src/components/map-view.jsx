@@ -230,7 +230,7 @@ const MapView = ({
                                     oneBusShortCircuitStatus
                                 }
                             />
-                            {isDrawingMode && (
+                            {studyDisplayMode === STUDY_DISPLAY_MODE.DRAW && (
                                 <Box style={styles.drawInfo}>
                                     <div
                                         style={{
