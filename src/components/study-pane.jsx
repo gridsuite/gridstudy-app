@@ -25,17 +25,9 @@ const styles = {
         flexDirection: 'row',
         height: '100%',
     },
-    horizontalToolbar: (theme) => ({
-        backgroundColor: darken(theme.palette.background.paper, 0.2),
-        display: 'flex',
-        flexDirection: 'row',
-    }),
     error: (theme) => ({
         padding: theme.spacing(2),
     }),
-    rotate: {
-        animation: 'spin 1000ms infinite',
-    },
     '@global': {
         '@keyframes spin': {
             '0%': {
@@ -45,13 +37,6 @@ const styles = {
                 transform: 'rotate(-360deg)',
             },
         },
-    },
-    mapBelowDiagrams: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
     },
     table: {
         display: 'flex',

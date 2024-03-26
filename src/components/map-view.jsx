@@ -39,22 +39,6 @@ const styles = {
         display: 'flex',
         flexDirection: 'row',
     }),
-    error: (theme) => ({
-        padding: theme.spacing(2),
-    }),
-    rotate: {
-        animation: 'spin 1000ms infinite',
-    },
-    '@global': {
-        '@keyframes spin': {
-            '0%': {
-                transform: 'rotate(0deg)',
-            },
-            '100%': {
-                transform: 'rotate(-360deg)',
-            },
-        },
-    },
     mapBelowDiagrams: {
         position: 'absolute',
         top: 0,
