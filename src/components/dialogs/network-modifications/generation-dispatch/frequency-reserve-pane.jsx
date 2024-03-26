@@ -15,7 +15,7 @@ import React, { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { Tooltip, IconButton } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -32,7 +32,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 numeric: false,
                 directoryItems: true,
                 equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
-                elementType: elementType.FILTER,
+                elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
             },
             {
