@@ -31,11 +31,7 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import {
-    resetMapReloaded,
-    setMapDataLoading,
-    setPolygonCoordinate,
-} from '../../redux/actions';
+import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -1019,24 +1015,7 @@ export const NetworkMapTab = ({
                 onDrawModeChanged(evt);
             }}
             onFeaturesChanged={(features) => {
-                dispatch(setPolygonCoordinate(features));
-
-                console.log(
-                    'debug',
-                    'getSelectedSubstation',
-                    networkMapRef?.current?.getSelectedSubstation()
-                );
-                console.log(
-                    'debug',
-                    'getSelectedLine',
-                    networkMapRef?.current?.getSelectedLines()
-                );
-
-                console.log(
-                    'debug',
-                    'getSelectedVoltageLevel',
-                    networkMapRef?.current?.getSelectedVoltageLevel()
-                );
+                //dispatch(setPolygonCoordinate(features));
             }}
         />
     );

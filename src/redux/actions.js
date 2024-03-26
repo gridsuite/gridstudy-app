@@ -688,12 +688,3 @@ export function setLastCompletedComputation(lastCompletedComputation) {
         lastCompletedComputation: lastCompletedComputation,
     };
 }
-
-export const MAP_POLYGON_COORDINATE = 'MAP_POLYGON_COORDINATE';
-
-export function setPolygonCoordinate(coordinates) {
-    return {
-        type: MAP_POLYGON_COORDINATE,
-        polygonCoordinate: coordinates,
-    };
-}

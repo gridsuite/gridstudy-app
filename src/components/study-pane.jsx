@@ -6,7 +6,6 @@
  */
 
 import React, { useState } from 'react';
-import { darken } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import { ReportViewerTab } from './report-viewer-tab';

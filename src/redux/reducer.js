@@ -89,7 +89,6 @@ import {
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
     SET_LAST_COMPLETED_COMPUTATION,
-    MAP_POLYGON_COORDINATE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -1038,9 +1037,6 @@ export const reducer = createReducer(initialState, {
     },
     [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
-    },
-    [MAP_POLYGON_COORDINATE]: (state, action) => {
-        state.polygonCoordinate = action.polygonCoordinate;
     },
 });
 
