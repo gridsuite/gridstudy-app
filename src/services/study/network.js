@@ -135,24 +135,37 @@ export function getSubstationSingleLineDiagram(
 export function fetchNetworkElementsIds(
     studyUuid,
     currentNodeUuid,
-    substationsIds
+    substationsIds,
+    equipmentType,
+    inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching network elements ids of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}...`
+        `Fetching network '${equipmentType}' elements ids of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}...`
     );
+
     const substationsIdsParams = getRequestParamFromList(
         substationsIds,
         'substationsIds'
     );
 
-    const fetchNetworkElementsIdsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/elements-ids' +
-        '?' +
-        substationsIdsParams;
-    console.debug(fetchNetworkElementsIdsUrl);
+    const urlSearchParams = new URLSearchParams(substationsIdsParams);
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
 
-    return backendFetchJson(fetchNetworkElementsIdsUrl);
+    urlSearchParams.append('equipmentType', equipmentType);
+
+    const fetchElementsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/equipments-ids' +
+        '?' +
+        urlSearchParams;
+    console.log(fetchElementsUrl);
+
+    return backendFetchJson(fetchElementsUrl);
 }
 
 /* elements */

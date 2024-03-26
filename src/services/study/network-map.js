@@ -7,8 +7,14 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
-import { fetchNetworkElementsIds } from './network.js';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../components/utils/equipment-types.js';
+import {
+    fetchNetworkElementsIds,
+    fetchNetworkElementsInfos,
+} from './network.js';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 
@@ -156,8 +162,8 @@ function createEquipmentIdentifierList(equipmentType, equipmentList) {
     return {
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
-        filterEquipmentsAttributes: equipmentList.map((eq) => {
-            return { equipmentID: eq.id };
+        filterEquipmentsAttributes: equipmentList.map((eqId) => {
+            return { equipmentID: eqId };
         }),
     };
 }
@@ -209,8 +215,18 @@ export async function createMapFilter(
                 const elements = await fetchNetworkElementsIds(
                     studyUuid,
                     currentNodeUuid,
-                    substationsIds
+                    substationsIds,
+                    filter.equipmentType,
+                    false
                 );
+                // const elements = await fetchNetworkElementsInfos(
+                //     studyUuid,
+                //     currentNodeUuid,
+                //     substationsIds,
+                //     filter.equipmentType,
+                //     EQUIPMENT_INFOS_TYPES.TAB.type,
+                //     false
+                // );
                 equipementList = createEquipmentIdentifierList(
                     filter.equipmentType,
                     elements
