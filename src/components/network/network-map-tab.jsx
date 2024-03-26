@@ -97,6 +97,7 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     setErrorMessage,
+    onDrawModeChanged,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1016,9 +1017,7 @@ export const NetworkMapTab = ({
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
             onDrawModeChanged={(evt) => {
-                if (evt === true) {
-                    dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
-                }
+                onDrawModeChanged(evt);
             }}
             onFeaturesChanged={(features) => {
                 //check if the object is not empty
@@ -1071,6 +1070,7 @@ NetworkMapTab.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
+    onDrawModeChanged: PropTypes.func,
 };
 
 export default NetworkMapTab;

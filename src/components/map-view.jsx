@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -27,6 +27,8 @@ import { createMapFilter } from '../services/study/network-map.js';
 import { StudyView } from './study-pane.jsx';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
+import { useIntl } from 'react-intl';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
     map: {
@@ -51,6 +53,18 @@ const styles = {
         flexDirection: 'column',
         height: '100%',
     },
+    drawInfo: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        paddingBottom: '1em',
+        pointerEvents: 'none', // Allow selecting components below
+    },
 };
 const MapView = ({
     studyUuid,
@@ -63,7 +77,10 @@ const MapView = ({
     setErrorMessage,
 }) => {
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
+    const intl = useIntl();
     const dispatch = useDispatch();
+    const [isDrawingMode, setIsDrawingMode] = useState(false);
+    const { snackError } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
@@ -80,10 +97,6 @@ const MapView = ({
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-
-    function setDrawDisplay() {
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
-    }
 
     const oneBusShortCircuitStatus = useSelector(
         (state) =>
@@ -191,6 +204,16 @@ const MapView = ({
                                         onChangeTab={onChangeTab}
                                         showInSpreadsheet={showInSpreadsheet}
                                         setErrorMessage={setErrorMessage}
+                                        onDrawModeChanged={(evt) => {
+                                            if (evt === true) {
+                                                dispatch(
+                                                    setStudyDisplayMode(
+                                                        STUDY_DISPLAY_MODE.MAP
+                                                    )
+                                                );
+                                            }
+                                            setIsDrawingMode(evt);
+                                        }}
                                     ></NetworkMapTab>
                                 </Box>
                             </Box>
@@ -207,6 +230,22 @@ const MapView = ({
                                     oneBusShortCircuitStatus
                                 }
                             />
+                            {isDrawingMode && (
+                                <Box style={styles.drawInfo}>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            width: '50%',
+                                            overflowWrap: 'break-word',
+                                        }}
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'DrawingPolygonInstruction',
+                                        })}
+                                    </div>
+                                </Box>
+                            )}
                         </Box>
 
                         <Box
@@ -227,8 +266,11 @@ const MapView = ({
                                             currentNode.id,
                                             networkMapref
                                         );
-                                    } catch (e) {
-                                        console.log('debug', 'error', e);
+                                    } catch (error) {
+                                        snackError({
+                                            messageTxt: error.message,
+                                            headerId: 'FilterCreationError',
+                                        });
                                     }
                                 }}
                                 onCancel={onCancelFunction}

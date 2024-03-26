@@ -202,6 +202,8 @@
     "SelectAll": "All",
     "UnselectAll": "None",
 
+    "DrawingPolygonInstruction": "Click the map to draw a polygon. press enter to validate or escape to cancel",
+
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -914,6 +916,8 @@
     "StackingUp": "Stacking up",
     "GeneratorScalingError": "Error while creating a generator scaling",
     "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
+
+    "FilterCreationError": "Error while creating a filter",
 
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
