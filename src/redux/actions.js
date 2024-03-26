@@ -77,6 +77,7 @@ export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export function mapEquipmentsCreated(
     mapEquipments,
     newLines,
+    newTieLines,
     newSubstations,
     newHvdcLines
 ) {
@@ -84,6 +85,7 @@ export function mapEquipmentsCreated(
         type: MAP_EQUIPMENTS_CREATED,
         mapEquipments: mapEquipments,
         newLines: newLines,
+        newTieLines: newTieLines,
         newSubstations: newSubstations,
         newHvdcLines: newHvdcLines,
     };

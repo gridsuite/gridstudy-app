@@ -28,7 +28,7 @@ import {
     NAME,
     STAGES_DEFINITION_GENERATORS,
 } from '../../../utils/field-constants';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { ISensiParameters } from '../sensi/columns-definitions';
 
@@ -62,7 +62,7 @@ export const COLUMNS_DEFINITIONS_STAGES = [
         editable: true,
         directoryItems: true,
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
         width: '40%',
     },
@@ -128,7 +128,7 @@ export const COLUMNS_DEFINITIONS_GENERATORS_CAPPINGS = [
         editable: true,
         directoryItems: true,
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
         width: '40%',
     },
@@ -150,7 +150,7 @@ export const COLUMNS_DEFINITIONS_MONITORED_BRANCHES = [
         editable: true,
         directoryItems: true,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
         width: '30%',
     },
@@ -219,7 +219,7 @@ export const COLUMNS_DEFINITIONS_CONTINGENCIES = [
         initialValue: [],
         editable: true,
         directoryItems: true,
-        elementType: elementType.CONTINGENCY_LIST,
+        elementType: ElementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
         width: '40%',
     },
