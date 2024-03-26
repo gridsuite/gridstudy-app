@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, elementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
@@ -63,7 +63,7 @@ const ByFilterDeletionForm = () => {
             <DirectoryItemsInput
                 key={equipmentTypeWatch} // force refresh on equipment type change
                 name={FILTERS}
-                elementType={elementType.FILTER}
+                elementType={ElementType.FILTER}
                 titleId={'FiltersListsSelection'}
                 label={'filter'}
                 equipmentTypes={[equipmentTypeWatch]}
