@@ -147,6 +147,16 @@ const CustomHeaderComponent = ({
         });
     };
 
+    const handleFilterBooleanChange = (event) => {
+        const value = event.target.value;
+        setSelectedFilterData(value);
+        debouncedUpdateFilter(field, {
+            value: value,
+            type: FILTER_TEXT_COMPARATORS.EQUALS,
+            dataType: filterDataType,
+        });
+    };
+
     const handleFilterComparatorChange = (event) => {
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
@@ -348,7 +358,7 @@ const CustomHeaderComponent = ({
                     ) : isBooleanFilter ? (
                         <Select
                             value={selectedFilterData || ''}
-                            onChange={handleFilterAutoCompleteChange}
+                            onChange={handleFilterBooleanChange}
                             displayEmpty
                             size={'small'}
                             sx={styles.input}
