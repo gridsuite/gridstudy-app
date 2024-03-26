@@ -152,7 +152,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         );
 
     return (
-        <>
+        <Box p={4}>
             <Grid container>
                 <FormProvider
                     {...{
@@ -203,7 +203,11 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         />
                     </Grid>
 
-                    <Grid container paddingTop={2}>
+                    <Grid
+                        container
+                        paddingTop={2}
+                        justifyContent="space-between"
+                    >
                         <Button
                             variant="contained"
                             onClick={() => {
@@ -234,7 +238,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     </Grid>
                 </FormProvider>
             </Grid>
-        </>
+        </Box>
     );
 };
 

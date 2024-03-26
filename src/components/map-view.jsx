@@ -212,11 +212,6 @@ const MapView = ({
                                                     )
                                                 );
                                             }
-                                            console.log(
-                                                'debug',
-                                                'onDrawModeChanged',
-                                                evt
-                                            );
                                             setIsDrawingMode(evt);
                                         }}
                                     ></NetworkMapTab>
