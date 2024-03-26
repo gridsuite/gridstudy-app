@@ -152,6 +152,8 @@ export function getEquipmentTypeFromFeederType(feederType) {
             return EQUIPMENT_TYPES.LOAD;
         case FEEDER_TYPES.BATTERY:
             return EQUIPMENT_TYPES.BATTERY;
+        case FEEDER_TYPES.TIE_LINE:
+            return EQUIPMENT_TYPES.TIE_LINE;
         case FEEDER_TYPES.DANGLING_LINE:
             return EQUIPMENT_TYPES.DANGLING_LINE;
         case FEEDER_TYPES.GENERATOR:
@@ -191,6 +193,8 @@ export function getFeederTypeFromEquipmentType(equipmentType) {
             return FEEDER_TYPES.LOAD;
         case EQUIPMENT_TYPES.BATTERY:
             return FEEDER_TYPES.BATTERY;
+        case FEEDER_TYPES.TIE_LINE:
+            return EQUIPMENT_TYPES.TIE_LINE;
         case EQUIPMENT_TYPES.DANGLING_LINE:
             return FEEDER_TYPES.DANGLING_LINE;
         case EQUIPMENT_TYPES.GENERATOR:
