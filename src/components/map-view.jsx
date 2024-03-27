@@ -129,7 +129,7 @@ const MapView = ({
     }
     const onCancelFunction = useCallback(() => {
         dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
-    }, []);
+    }, [dispatch]);
     return (
         <ReactFlowProvider>
             <Box sx={styles.table}>

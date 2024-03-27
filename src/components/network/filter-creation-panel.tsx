@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { Identifier } from '../dialogs/parameters/voltageinit/voltage-init-utils';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FILTER_NAME, G, NAME } from 'components/utils/field-constants';
+import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
