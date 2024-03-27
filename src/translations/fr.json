@@ -985,6 +985,7 @@
     "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
     "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
     "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
+    "equipmentType": "Type d'ouvrage",
 
     "insertNetworkModificationNodeAbove": "au dessus dans la branche courante",
     "insertNetworkModificationNodeBelow": "en dessous dans la branche courante",

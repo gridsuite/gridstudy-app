@@ -216,8 +216,6 @@ export async function createMapFilter(
                         filter.equipmentType,
                         elements
                     );
-                } else {
-                    throw new Error('No equipment selected');
                 }
             } catch (error) {
                 throw error;
@@ -234,17 +232,11 @@ export async function createMapFilter(
     }
 
     if (equipementList.filterEquipmentsAttributes.length > 0) {
-        createFilter(
+        await createFilter(
             equipementList,
             filter[NAME],
             '',
             distDir.id?.toString() ?? ''
-        )
-            .then((res) => {
-                console.log('debug', 'createFilter', res);
-            })
-            .catch((err) => {
-                console.error('debug', 'createFilter', err);
-            });
+        );
     }
 }

@@ -29,6 +29,7 @@ import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { Typography } from '@mui/material';
 
 const styles = {
     map: {
@@ -64,6 +65,13 @@ const styles = {
         alignItems: 'flex-end',
         paddingBottom: '1em',
         pointerEvents: 'none', // Allow selecting components below
+    },
+    instructionsMessage: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '50%',
+        overflowWrap: 'break-word',
+        textAlign: 'center',
     },
 };
 const MapView = ({
@@ -233,18 +241,13 @@ const MapView = ({
                             />
                             {isDrawingMode && (
                                 <Box style={styles.drawInfo}>
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            width: '50%',
-                                            overflowWrap: 'break-word',
-                                        }}
+                                    <Typography
+                                        style={styles.instructionsMessage}
                                     >
                                         {intl.formatMessage({
                                             id: 'DrawingPolygonInstruction',
                                         })}
-                                    </div>
+                                    </Typography>
                                 </Box>
                             )}
                         </Box>

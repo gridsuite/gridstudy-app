@@ -985,6 +985,7 @@
     "EquipmentCopied": "Data successfully copied from equipment {equipmentId}",
     "EquipmentCopyFailed404": "Equipment copy failed: the equipment was not found",
     "EquipmentCopyFailed": "Equipment copy failed",
+    "equipmentType": "Equipment type",
 
     "insertNetworkModificationNodeAbove": "above in the current branch",
     "insertNetworkModificationNodeBelow": "below in the current branch",

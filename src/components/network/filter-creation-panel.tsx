@@ -65,11 +65,11 @@ const EXPERT_FILTER_EQUIPMENTS = {
     },
     LCC_CONVERTER_STATION: {
         id: 'LCC_CONVERTER_STATION',
-        label: 'LCCConverterStations',
+        label: 'LccConverterStations',
     },
     VSC_CONVERTER_STATION: {
         id: 'VSC_CONVERTER_STATION',
-        label: 'VSCConverterStations',
+        label: 'VscConverterStations',
     },
     STATIC_VAR_COMPENSATOR: {
         id: 'STATIC_VAR_COMPENSATOR',
