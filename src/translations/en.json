@@ -921,6 +921,7 @@
     "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
 
     "FilterCreationError": "Error while creating a filter",
+    "FilterCreationSuccess": "Filter successfully created",
 
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",

@@ -3,7 +3,7 @@ import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
     DirectoryItemSelector,
-    elementType,
+    ElementType,
     SelectInput,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -195,11 +195,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
 
                         <Typography m={1} component="span">
                             <Box fontWeight={'fontWeightBold'}>
-                                {defaultFolder == null ? (
-                                    <CircularProgress />
-                                ) : (
-                                    defaultFolder.name
-                                )}
+                                {defaultFolder.name}
                             </Box>
                         </Typography>
                     </Grid>
@@ -207,7 +203,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         <DirectoryItemSelector
                             open={openDirectoryFolders}
                             onClose={setSelectedFolder}
-                            types={[elementType.DIRECTORY]}
+                            types={[ElementType.DIRECTORY]}
                             onlyLeaves={false}
                             multiselect={false}
                             validationButtonText={intl.formatMessage({

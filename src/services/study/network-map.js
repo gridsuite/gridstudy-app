@@ -207,14 +207,7 @@ export async function createMapFilter(
                     filter.equipmentType,
                     false
                 );
-                // const elements = await fetchNetworkElementsInfos(
-                //     studyUuid,
-                //     currentNodeUuid,
-                //     substationsIds,
-                //     filter.equipmentType,
-                //     EQUIPMENT_INFOS_TYPES.TAB.type,
-                //     false
-                // );
+
                 equipementList = createEquipmentIdentifierList(
                     filter.equipmentType,
                     elements
@@ -227,6 +220,10 @@ export async function createMapFilter(
 
         default:
             break;
+    }
+
+    if (equipementList.filterEquipmentsAttributes?.length === 0) {
+        throw new Error('No equipment selected');
     }
 
     if (equipementList.filterEquipmentsAttributes.length > 0) {

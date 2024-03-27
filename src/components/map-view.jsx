@@ -80,7 +80,7 @@ const MapView = ({
     const intl = useIntl();
     const dispatch = useDispatch();
     const [isDrawingMode, setIsDrawingMode] = useState(false);
-    const { snackError } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
@@ -267,6 +267,16 @@ const MapView = ({
                                                 currentNode.id,
                                                 networkMapref
                                             );
+                                            snackInfo({
+                                                messageTxt: intl.formatMessage(
+                                                    {
+                                                        id: 'FilterCreationSuccess',
+                                                    },
+                                                    {
+                                                        filterName: filter.name,
+                                                    }
+                                                ),
+                                            });
                                         } catch (error) {
                                             snackError({
                                                 messageTxt: error.message,

@@ -921,6 +921,7 @@
     "GeneratorScalingError": "Erreur lors de la création de la variation du plan de production",
     "AllExplicitNamingFiltersError": "Tous les types de filtres doivent être par nommage lorsque le mode de variation est empilement ou ventilation",
     "FilterCreationError": "Erreur lors de la création d'un filtre",
+    "FilterCreationSuccess": "Filtre créé avec succès",
 
     "Tap": "Prise",
     "DeltaResistance": "Δ Résistance (%)",
