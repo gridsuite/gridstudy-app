@@ -238,6 +238,7 @@ const initialState = {
     ...paramsInitialState,
     limitReductionModified: false,
     lastCompletedComputation: null,
+    polygonCoordinate: [],
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER

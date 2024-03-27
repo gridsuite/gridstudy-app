@@ -7,6 +7,10 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
+import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import { fetchNetworkElementsIds } from './network.js';
+import { createFilter } from '../explore';
+import { NAME } from '../../components/utils/field-constants.js';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -136,4 +140,104 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
         '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
+}
+
+function createEquipmentIdentifierList(equipmentType, equipmentList) {
+    return {
+        type: 'IDENTIFIER_LIST',
+        equipmentType: equipmentType,
+        filterEquipmentsAttributes: equipmentList.map((eqId) => {
+            if (eqId?.id) {
+                return { equipmentID: eqId.id };
+            } else {
+                return { equipmentID: eqId };
+            }
+        }),
+    };
+}
+export async function createMapFilter(
+    filter,
+    distDir,
+    studyUuid,
+    currentNodeUuid,
+    networkMapref
+) {
+    let equipementList = [];
+    switch (filter.equipmentType) {
+        case EQUIPMENT_TYPES.SUBSTATION:
+            equipementList = createEquipmentIdentifierList(
+                filter.equipmentType,
+                networkMapref.current.getSelectedSubstation()
+            );
+            break;
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            equipementList = createEquipmentIdentifierList(
+                filter.equipmentType,
+                networkMapref.current.getSelectedVoltageLevel()
+            );
+            break;
+        case EQUIPMENT_TYPES.LINE:
+            equipementList = createEquipmentIdentifierList(
+                filter.equipmentType,
+                networkMapref.current.getSelectedLines()
+            );
+            break;
+        case EQUIPMENT_TYPES.BUS:
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+        case EQUIPMENT_TYPES.GENERATOR:
+        case EQUIPMENT_TYPES.BATTERY:
+        case EQUIPMENT_TYPES.LOAD:
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+        case EQUIPMENT_TYPES.DANGLING_LINE:
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+        case EQUIPMENT_TYPES.HVDC_CONVERTER_STATION:
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+        case EQUIPMENT_TYPES.SWITCH:
+            const substationsIds = networkMapref.current
+                .getSelectedSubstation()
+                .map((substation) => substation.id);
+            try {
+                const elements = await fetchNetworkElementsIds(
+                    studyUuid,
+                    currentNodeUuid,
+                    substationsIds,
+                    filter.equipmentType,
+                    false
+                );
+
+                equipementList = createEquipmentIdentifierList(
+                    filter.equipmentType,
+                    elements
+                );
+            } catch (error) {
+                throw error;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+
+    if (equipementList.filterEquipmentsAttributes?.length === 0) {
+        throw new Error('No equipment selected');
+    }
+
+    if (equipementList.filterEquipmentsAttributes.length > 0) {
+        createFilter(
+            equipementList,
+            filter[NAME],
+            'description',
+            distDir.id?.toString() ?? ''
+        )
+            .then((res) => {
+                console.log('debug', 'createFilter', res);
+            })
+            .catch((err) => {
+                console.error('debug', 'createFilter', err);
+            });
+    }
 }

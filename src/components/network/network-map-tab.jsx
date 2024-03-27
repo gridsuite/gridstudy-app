@@ -31,7 +31,12 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import {
+    resetMapReloaded,
+    setMapDataLoading,
+    setStudyDisplayMode,
+    STUDY_DISPLAY_MODE,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -64,19 +69,20 @@ const styles = {
         bottom: '30px',
         zIndex: 0,
         '&:hover': {
-            zIndex: 1,
+            zIndex: 2,
         },
     },
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
-        zIndex: 1,
+        zIndex: 2,
     },
 };
 
 const NODE_CHANGED_ERROR =
     'Node has changed or is not built anymore. The Promise is rejected.';
 export const NetworkMapTab = ({
+    networkMapRef,
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
@@ -91,6 +97,7 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     setErrorMessage,
+    onDrawModeChanged,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -105,7 +112,6 @@ export const NetworkMapTab = ({
         (state) => state.networkModificationTreeModel
     );
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
-
     const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
@@ -975,9 +981,9 @@ export const NetworkMapTab = ({
             equipmentType={EQUIPMENT_TYPES.LINE}
         />
     );
-
     const renderMap = () => (
         <NetworkMap
+            ref={networkMapRef}
             mapEquipments={mapEquipments}
             geoData={geoData}
             updatedLines={[
@@ -1029,6 +1035,18 @@ export const NetworkMapTab = ({
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
+            onDrawModeChanged={(evt) => {
+                onDrawModeChanged(evt);
+            }}
+            onFeaturesChanged={(features) => {
+                //check if the object is not empty
+                // onDrawModeChanged(Object.keys(features).length !== 0);
+                if (Object.keys(features).length !== 0) {
+                    dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
+                } else {
+                    // dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+                }
+            }}
         />
     );
 
@@ -1071,6 +1089,7 @@ NetworkMapTab.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
+    onDrawModeChanged: PropTypes.func,
 };
 
 export default NetworkMapTab;

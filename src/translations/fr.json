@@ -205,6 +205,8 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
+    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer a dessiner un polygone. Entrer pour terminer ou echap pour annuler.",
+
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
     "DynamicSimulationParametersChangeError": "Une erreur est survenue lors de changement des paramètres de la simulation dynamique",
@@ -918,6 +920,8 @@
     "variations": "Variations",
     "GeneratorScalingError": "Erreur lors de la création de la variation du plan de production",
     "AllExplicitNamingFiltersError": "Tous les types de filtres doivent être par nommage lorsque le mode de variation est empilement ou ventilation",
+    "FilterCreationError": "Erreur lors de la création d'un filtre",
+    "FilterCreationSuccess": "Filtre créé avec succès",
 
     "Tap": "Prise",
     "DeltaResistance": "Δ Résistance (%)",
@@ -1080,6 +1084,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "P cible",
     "CreateVariation": "Ajouter Variation",
+    "createNewFilter": "Créer un filtre",
     "ActiveVariationMode": "Mode variation de l'actif",
     "ReactiveVariationMode": "Mode variation du réactif",
     "RegularDistribution": "Équirépartition",
