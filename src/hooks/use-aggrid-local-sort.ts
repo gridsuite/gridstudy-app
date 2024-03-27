@@ -10,7 +10,6 @@ import { useCallback, useEffect } from 'react';
 import {
     SortConfigType,
     SortPropsType,
-    getSortValue,
     useAgGridSort,
 } from './use-aggrid-sort';
 
@@ -22,14 +21,9 @@ export const useAgGridLocalSort = (
         useAgGridSort(initSortConfig);
 
     const setSortInAgGrid = useCallback(
-        (sortConfig: SortConfigType) => {
+        (sortConfig: SortConfigType[]) => {
             gridRef.current?.columnApi?.applyColumnState({
-                state: [
-                    {
-                        colId: sortConfig.colKey,
-                        sort: getSortValue(sortConfig.sortWay),
-                    },
-                ],
+                state: sortConfig,
                 defaultState: { sort: null },
             });
         },

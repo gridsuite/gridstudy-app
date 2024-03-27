@@ -79,7 +79,7 @@ export interface PreContingencyResult {
 
 export type QueryParamsType = Record<
     string,
-    string | number | SortConfigType | FilterSelectorType[]
+    string | number | SortConfigType[] | FilterSelectorType[]
 >;
 
 type Sort = {
