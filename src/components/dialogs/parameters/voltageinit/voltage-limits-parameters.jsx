@@ -20,7 +20,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
 import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
@@ -50,7 +50,7 @@ const VoltageLimitsParameters = () => {
                 editable: true,
                 directoryItems: true,
                 equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                elementType: elementType.FILTER,
+                elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
                 extra: VoltageLevelFilterTooltip,
             },
@@ -90,7 +90,7 @@ const VoltageLimitsParameters = () => {
                 editable: true,
                 directoryItems: true,
                 equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                elementType: elementType.FILTER,
+                elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
                 extra: VoltageLevelFilterTooltip,
             },

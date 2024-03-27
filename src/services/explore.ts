@@ -20,7 +20,7 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
 export function fetchElementsMetadata(
     ids: UUID[],
     elementTypes: string[],
-    equipmentTypes: string[]
+    equipmentTypes?: string[]
 ) {
     console.info('Fetching elements metadata');
 

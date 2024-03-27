@@ -6,7 +6,7 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { AutocompleteInput, elementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -52,7 +52,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
             equipmentTypes={[equipmentTypeWatch]}
-            elementType={elementType.FILTER}
+            elementType={ElementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
             disable={!equipmentTypeWatch}

@@ -1,0 +1,15 @@
+{
+    "root": true,
+    "extends": [
+        "react-app",
+        "plugin:prettier/recommended"
+    ],
+    "ignorePatterns": [
+        // node_modules is implicitly always ignored
+        "build"
+    ],
+    "rules": {
+        "prettier/prettier": "warn",
+        "curly": "error"
+    }
+}

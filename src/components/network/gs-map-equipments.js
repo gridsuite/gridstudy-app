@@ -13,6 +13,7 @@ import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
+    fetchTieLinesMapInfos,
 } from '../../services/study/network';
 import { MapEquipments } from '@powsybl/diagram-viewer';
 
@@ -30,6 +31,12 @@ export default class GSMapEquipments extends MapEquipments {
             undefined,
             false
         );
+        const fetchTieLinesMapInfosPromise = fetchTieLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            false
+        );
         const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNodeUuid,
@@ -42,7 +49,13 @@ export default class GSMapEquipments extends MapEquipments {
         fetchSubstationsMapInfosPromise
             .then((val) => {
                 this.dispatch(
-                    mapEquipmentsCreated(this, undefined, val, undefined)
+                    mapEquipmentsCreated(
+                        this,
+                        undefined,
+                        undefined,
+                        val,
+                        undefined
+                    )
                 );
             })
             .catch((error) => {
@@ -58,7 +71,35 @@ export default class GSMapEquipments extends MapEquipments {
         fetchLinesMapInfosPromise
             .then((val) => {
                 this.dispatch(
-                    mapEquipmentsCreated(this, val, undefined, undefined)
+                    mapEquipmentsCreated(
+                        this,
+                        val,
+                        undefined,
+                        undefined,
+                        undefined
+                    )
+                );
+            })
+            .catch((error) => {
+                console.error(error.message);
+                if (this.errHandler) {
+                    this.errHandler({
+                        messageTxt: error.message,
+                        headerId: 'MapEquipmentsLoadError',
+                    });
+                }
+            });
+
+        fetchTieLinesMapInfosPromise
+            .then((val) => {
+                this.dispatch(
+                    mapEquipmentsCreated(
+                        this,
+                        undefined,
+                        val,
+                        undefined,
+                        undefined
+                    )
                 );
             })
             .catch((error) => {
@@ -74,7 +115,13 @@ export default class GSMapEquipments extends MapEquipments {
         fetchHvdcLinesMapInfosPromise
             .then((val) => {
                 this.dispatch(
-                    mapEquipmentsCreated(this, undefined, undefined, val)
+                    mapEquipmentsCreated(
+                        this,
+                        undefined,
+                        undefined,
+                        undefined,
+                        val
+                    )
                 );
             })
             .catch((error) => {
@@ -90,6 +137,7 @@ export default class GSMapEquipments extends MapEquipments {
         Promise.all([
             fetchSubstationsMapInfosPromise,
             fetchLinesMapInfosPromise,
+            fetchTieLinesMapInfosPromise,
             fetchHvdcLinesMapInfosPromise,
         ]).finally(() => {
             this.dispatch(setMapEquipementsInitialized(true));
@@ -121,6 +169,12 @@ export default class GSMapEquipments extends MapEquipments {
             substationsIds,
             true
         );
+        const updatedTieLines = fetchTieLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            substationsIds,
+            true
+        );
         const updatedHvdcLines = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNode?.id,
@@ -145,6 +199,15 @@ export default class GSMapEquipments extends MapEquipments {
                 });
             }
         });
+        updatedTieLines.catch((error) => {
+            console.error(error.message);
+            if (this.errHandler) {
+                this.errHandler({
+                    messageTxt: error.message,
+                    headerId: 'MapEquipmentsLoadError',
+                });
+            }
+        });
         updatedHvdcLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
@@ -154,6 +217,11 @@ export default class GSMapEquipments extends MapEquipments {
                 });
             }
         });
-        return [updatedSubstations, updatedLines, updatedHvdcLines];
+        return [
+            updatedSubstations,
+            updatedLines,
+            updatedTieLines,
+            updatedHvdcLines,
+        ];
     }
 }

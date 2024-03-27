@@ -7,10 +7,10 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "^0.49.0",
+        "@gridsuite/commons-ui": "0.51.0",
         "@hookform/resolvers": "^3.0.0",
         "@mui/icons-material": "^5.5.1",
-        "@mui/lab": "^5.0.0-alpha.72",
+        "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
         "@powsybl/diagram-viewer": "file:../../libs/powsybl-diagram-viewer",
         "@turf/boolean-point-in-polygon": "^6.5.0",
@@ -64,32 +64,6 @@
         "serve": "vite preview",
         "test": "jest",
         "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "plugin:prettier/recommended"
-        ],
-        "ignorePatterns": [
-            "build"
-        ],
-        "rules": {
-            "curly": "error"
-        }
-    },
-    "browserslist": {
-        "production": [
-            ">0.2% and supports es6-class",
-            "not dead",
-            "not op_mini all",
-            "not chrome < 51",
-            "not safari < 10"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
     },
     "devDependencies": {
         "@babel/helper-builder-react-jsx": "7.15.4",

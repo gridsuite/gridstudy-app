@@ -275,6 +275,22 @@ export function fetchLinesMapInfos(
     );
 }
 
+export function fetchTieLinesMapInfos(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.TIE_LINE,
+        EQUIPMENT_INFOS_TYPES.MAP.type,
+        inUpstreamBuiltParentNode
+    );
+}
+
 export function fetchHvdcLinesMapInfos(
     studyUuid,
     currentNodeUuid,

@@ -273,6 +273,10 @@ export const reducer = createReducer(initialState, {
             newMapEquipments.lines = action.newLines;
             newMapEquipments.completeLinesInfos();
         }
+        if (action.newTieLines) {
+            newMapEquipments.tieLines = action.newTieLines;
+            newMapEquipments.completeTieLinesInfos();
+        }
         if (action.newSubstations) {
             newMapEquipments.substations = action.newSubstations;
             newMapEquipments.completeSubstationsInfos();
@@ -1058,6 +1062,8 @@ function getEquipmentTypeFromUpdateType(updateType) {
     switch (updateType) {
         case 'lines':
             return EQUIPMENT_TYPES.LINE;
+        case 'tieLines':
+            return EQUIPMENT_TYPES.TIE_LINE;
         case 'twoWindingsTransformers':
             return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
         case 'threeWindingsTransformers':
