@@ -5,7 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomColDef, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
+import {
+    CustomColDef,
+    FilterSelectorType,
+    FILTER_DATA_TYPES,
+} from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
@@ -13,6 +17,7 @@ export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
     filterProps, // filterProps: contains useAgGridRowFilter params
     filterParams, // filterParams: Parameters for the column's filtering functionality
+    filterTab,
     ...props // agGrid column props
 }: CustomColDef) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
@@ -69,4 +74,14 @@ export const makeAgGridCustomHeaderColumn = ({
         filterParams: props?.agGridFilterParams || undefined,
         ...props,
     };
+};
+
+export const mapFieldsToColumnsFilter = (
+    filterSelector: FilterSelectorType[],
+    columnToFieldMapping: Record<string, string>
+) => {
+    return filterSelector.map((filter) => ({
+        ...filter,
+        column: columnToFieldMapping[filter.column],
+    }));
 };

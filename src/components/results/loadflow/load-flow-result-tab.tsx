@@ -38,6 +38,7 @@ import {
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
     mappingFields,
+    mappingTabs,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import {
@@ -45,10 +46,13 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { setLoadflowResultFilter } from 'redux/actions';
 import {
     NumberCellRenderer,
     StatusCellRender,
 } from '../common/result-cell-renderers';
+import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -68,9 +72,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         sort: SortWay.DESC,
     });
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        mappingFields(tabIndex)
-    );
+    const { updateFilter, filterSelector } = useAggridRowFilter({
+        filterType: LOADFLOW_RESULT_STORE_FIELD,
+        filterTab: mappingTabs(tabIndex),
+        filterStoreAction: setLoadflowResultFilter,
+    });
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
@@ -102,7 +108,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 ...sort,
                 colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
             })),
-            filters: updatedFilters,
+            filters: mapFieldsToColumnsFilter(
+                updatedFilters,
+                mappingFields(tabIndex)
+            ),
         });
     }, [studyUuid, nodeUuid, sortConfig, filterSelector, tabIndex]);
 
@@ -174,12 +183,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const resetResultStates = useCallback(
         (defaultSortColKey: string) => {
             setResult(null);
-            initFilters();
             if (initSort) {
                 initSort(defaultSortColKey);
             }
         },
-        [initSort, initFilters, setResult]
+        [initSort, setResult]
     );
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {

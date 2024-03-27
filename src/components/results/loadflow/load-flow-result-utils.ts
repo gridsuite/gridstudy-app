@@ -40,6 +40,11 @@ import {
     fetchLoadflowAvailableComputationStatus,
     fetchLoadflowAvailableLimitTypes,
 } from 'services/loadflow';
+import {
+    LOADFLOW_CURRENT_LIMIT_VIOLATION,
+    LOADFLOW_RESULT,
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+} from 'utils/store-filter-fields';
 
 const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -79,7 +84,7 @@ export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<
     string,
     string
 > = {
-    name: 'subjectId',
+    subjectId: 'subjectId',
     status: 'status',
     limitType: 'limitType',
     limitName: 'limitName',
@@ -120,7 +125,7 @@ export const getIdType = (index: number): string => {
         case 0:
             return 'overload';
         case 1:
-            return 'name';
+            return 'subjectId';
         case 2:
             return 'connectedComponentNum';
         default:
@@ -141,6 +146,19 @@ export const mappingFields = (index: number): Record<string, string> => {
     }
 };
 
+export const mappingTabs = (index: number): string => {
+    switch (index) {
+        case 0:
+            return LOADFLOW_CURRENT_LIMIT_VIOLATION;
+        case 1:
+            return LOADFLOW_VOLTAGE_LIMIT_VIOLATION;
+        case 2:
+            return LOADFLOW_RESULT;
+        default:
+            return '';
+    }
+};
+
 export const makeData = (
     overloadedEquipments: OverloadedEquipmentFromBack[],
     intl: IntlShape
@@ -148,7 +166,7 @@ export const makeData = (
     return overloadedEquipments.map((overloadedEquipment) => {
         return {
             overload: overloadedEquipment.overload,
-            name: overloadedEquipment.subjectId,
+            subjectId: overloadedEquipment.subjectId,
             value: overloadedEquipment.value,
             actualOverloadDuration:
                 overloadedEquipment.actualOverloadDuration ===
@@ -235,7 +253,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
-            field: 'name',
+            field: 'subjectId',
             sortProps,
             filterProps,
             filterParams: textFilterParams,
@@ -337,7 +355,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
-            field: 'name',
+            field: 'subjectId',
             sortProps,
             filterProps,
             filterParams: textFilterParams,
@@ -388,7 +406,6 @@ export const loadFlowResultColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'connectedComponentNum' }),
             field: 'connectedComponentNum',
-
             sortProps,
             filterProps,
             filterParams: numericFilterParams,

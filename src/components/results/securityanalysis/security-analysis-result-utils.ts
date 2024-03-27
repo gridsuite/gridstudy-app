@@ -43,6 +43,10 @@ import {
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import {
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+} from 'utils/store-filter-fields';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -706,7 +710,7 @@ export enum RESULT_TYPE {
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
 }
 
-export const getColumnToFieldMapping = (resultType: RESULT_TYPE) => {
+export const mappingColumnToField = (resultType: RESULT_TYPE) => {
     switch (resultType) {
         case RESULT_TYPE.N:
             return FROM_COLUMN_TO_FIELD_N;
@@ -729,3 +733,14 @@ export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
 };
 
 export const MAX_INT32: number = 2147483647;
+
+export const getStoreFields = (index: number): string => {
+    switch (index) {
+        case 0:
+            return SECURITY_ANALYSIS_RESULT_N;
+        case 1:
+            return SECURITY_ANALYSIS_RESULT_N_K;
+        default:
+            return '';
+    }
+};

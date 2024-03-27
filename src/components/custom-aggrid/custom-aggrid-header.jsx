@@ -74,7 +74,6 @@ const CustomHeaderComponent = ({
         parser, // Used to convert the value displayed in the table into its actual value
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
-
     const {
         sortConfig, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
@@ -182,17 +181,26 @@ const CustomHeaderComponent = ({
     }, []);
 
     useEffect(() => {
-        if (!filterSelector) {
-            setSelectedFilterData(undefined);
-        }
-    }, [filterSelector]);
-
-    useEffect(() => {
         if (!selectedFilterComparator) {
             setSelectedFilterComparator(filterComparators[0]);
         }
     }, [selectedFilterComparator, filterComparators]);
 
+    useEffect(() => {
+        if (!filterSelector?.length) {
+            setSelectedFilterData(undefined);
+        } else {
+            const filterObject = filterSelector?.find(
+                (filter) => filter.column === field
+            );
+            if (filterObject) {
+                setSelectedFilterData(filterObject.value);
+                setSelectedFilterComparator(filterObject.type);
+            } else {
+                setSelectedFilterData(undefined);
+            }
+        }
+    }, [filterSelector, field]);
     const getOptionLabel = useCallback(
         (option) =>
             isCountry

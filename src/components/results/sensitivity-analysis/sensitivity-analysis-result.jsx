@@ -26,7 +26,7 @@ import { Box, LinearProgress } from '@mui/material';
 import {
     SENSITIVITY_AT_NODE,
     SUFFIX_TYPES,
-} from './sensitivity-analysis-content';
+} from './sensitivity-analysis-result-utils';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
