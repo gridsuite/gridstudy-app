@@ -125,7 +125,7 @@ export const getIdType = (index: number): string => {
         case 0:
             return 'overload';
         case 1:
-            return 'subjectId';
+            return 'name';
         case 2:
             return 'connectedComponentNum';
         default:

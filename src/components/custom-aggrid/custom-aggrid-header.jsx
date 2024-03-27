@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
+import { SortWay } from '../../hooks/use-aggrid-sort';
 import {
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
@@ -75,7 +75,7 @@ const CustomHeaderComponent = ({
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
     const {
-        sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
+        sortConfig, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
 
@@ -86,7 +86,8 @@ const CustomHeaderComponent = ({
         !!customFilterOptions?.length;
     const isNumberInput =
         filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
-    const isColumnSorted = sortColKey === field;
+    const columnSort = sortConfig?.find((value) => value.colId === field);
+    const isColumnSorted = !!columnSort;
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -157,19 +158,19 @@ const CustomHeaderComponent = ({
     const handleSortChange = useCallback(() => {
         let newSort;
         if (!isColumnSorted) {
-            newSort = SORT_WAY.asc;
+            newSort = SortWay.ASC;
         } else {
-            if (sortWay < 0) {
-                newSort = SORT_WAY.asc;
+            if (columnSort.sort === SortWay.DESC) {
+                newSort = SortWay.ASC;
             } else {
-                newSort = SORT_WAY.desc;
+                newSort = SortWay.DESC;
             }
         }
 
         if (typeof onSortChanged === 'function') {
             onSortChanged(newSort);
         }
-    }, [isColumnSorted, onSortChanged, sortWay]);
+    }, [isColumnSorted, onSortChanged, columnSort?.sort]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
@@ -262,7 +263,7 @@ const CustomHeaderComponent = ({
                                 {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {sortWay === SORT_WAY.asc ? (
+                                            {columnSort.sort === SortWay.ASC ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
@@ -407,13 +408,13 @@ CustomHeaderComponent.propTypes = {
     displayName: PropTypes.string.isRequired,
     isSortable: PropTypes.bool,
     sortParams: PropTypes.shape({
-        sortConfig: PropTypes.shape({
-            colKey: PropTypes.string,
-            sortWay: PropTypes.number,
-            selector: PropTypes.shape({
-                sortKeysWithWeightAndDirection: PropTypes.object,
-            }),
-        }),
+        sortConfig: PropTypes.arrayOf(
+            PropTypes.shape({
+                colId: PropTypes.string,
+                sort: PropTypes.string,
+                children: PropTypes.bool,
+            })
+        ),
         onSortChanged: PropTypes.func,
     }),
     isFilterable: PropTypes.bool,

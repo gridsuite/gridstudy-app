@@ -15,7 +15,7 @@ export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     elementId: 'fault.id',
     faultType: 'fault.faultType',
-    connectableId: 'connectableId',
+    connectableId: 'feederResults.connectableId',
     current: 'current',
     limitType: 'limitViolations.limitType',
     limitMin: 'ipMin',
@@ -29,6 +29,7 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
 // it's actually the 'fortescueCurrent.positiveMagnitude' field in the back-end
 export const FROM_COLUMN_TO_FIELD_ONE_BUS: Record<string, string> = {
     ...FROM_COLUMN_TO_FIELD,
+    connectableId: 'connectableId',
     current: 'fortescueCurrent.positiveMagnitude',
 };
 

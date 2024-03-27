@@ -39,7 +39,7 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     useAggridRowFilter,
@@ -97,11 +97,11 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         ? 'current'
         : 'elementId';
     const defaultSortWay = isOneBusShortCircuitAnalysisType
-        ? SORT_WAYS.desc
-        : SORT_WAYS.asc;
+        ? SortWay.DESC
+        : SortWay.ASC;
     const { onSortChanged, sortConfig } = useAgGridSort({
-        colKey: defaultSortKey,
-        sortWay: defaultSortWay,
+        colId: defaultSortKey,
+        sort: defaultSortWay,
     });
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
@@ -141,7 +141,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        const { colKey, sortWay } = sortConfig || {};
+        const backSortConfig = sortConfig?.map((sort) => ({
+            ...sort,
+            colId: fromFrontColumnToBackKeys[sort.colId],
+        }));
 
         const selector = {
             page,
@@ -152,10 +155,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                       fromFrontColumnToBackKeys
                   )
                 : null,
-            sort: {
-                colKey: fromFrontColumnToBackKeys[colKey],
-                sortWay,
-            },
+            sort: backSortConfig,
         };
 
         fetchShortCircuitAnalysisPagedResults({

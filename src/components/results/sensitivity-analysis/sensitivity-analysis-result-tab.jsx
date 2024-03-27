@@ -19,7 +19,7 @@ import {
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result-utils';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -67,10 +67,10 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
 
     // Add default sort on sensitivity col
     const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';
-    const defaultSortOrder = SORT_WAYS.asc;
+    const defaultSortOrder = SortWay.ASC;
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colKey: defaultSortColumn,
-        sortWay: defaultSortOrder,
+        colId: defaultSortColumn,
+        sort: defaultSortOrder,
     });
     const initTable = (nOrNkIndex) => {
         initSort(nOrNkIndex ? 'valueAfter' : 'value');

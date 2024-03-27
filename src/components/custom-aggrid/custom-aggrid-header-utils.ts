@@ -11,6 +11,7 @@ import {
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
@@ -20,7 +21,7 @@ export const makeAgGridCustomHeaderColumn = ({
     ...props // agGrid column props
 }: CustomColDef) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
+    const { onSortChanged = () => {}, sortConfig, children } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
 
@@ -29,7 +30,9 @@ export const makeAgGridCustomHeaderColumn = ({
 
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;
-    const isCurrentColumnSorted = sortConfig?.colKey === field;
+    const isCurrentColumnSorted = !!sortConfig?.find(
+        (value) => value.colId === field
+    );
 
     let minWidth = 75;
     if (isSortable && isCurrentColumnSorted) {
@@ -50,8 +53,12 @@ export const makeAgGridCustomHeaderColumn = ({
             isSortable,
             sortParams: {
                 sortConfig,
-                onSortChanged: (newSortValue: number = 0) => {
-                    onSortChanged(field, newSortValue);
+                onSortChanged: (newSortValue: SortWay) => {
+                    onSortChanged({
+                        colId: field,
+                        sort: newSortValue,
+                        children: children,
+                    });
                 },
             },
             isFilterable,

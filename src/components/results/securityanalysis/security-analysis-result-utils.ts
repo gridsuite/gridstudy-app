@@ -312,6 +312,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -324,6 +325,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -335,6 +337,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) =>
                 formatNAValue(params.value, intl),
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -349,6 +352,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -360,6 +364,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -371,6 +376,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -384,6 +390,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -395,6 +402,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -437,6 +445,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -449,6 +458,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'status',
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -458,6 +468,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             field: 'limitType',
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -469,6 +480,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) =>
                 formatNAValue(params.value, intl),
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -483,6 +495,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -494,6 +507,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -505,6 +519,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -518,6 +533,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
@@ -529,6 +545,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,

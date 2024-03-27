@@ -71,10 +71,10 @@ export const useAggridLocalRowFilter = (
             if (!filters || !gridRef.current?.api) {
                 return; // Exit if no filters are provided or if the grid API is not accessible
             }
-    
+
             // Retrieve the current column definitions from AG Grid
             const currentColumnDefs = gridRef.current.api.getColumnDefs();
-            
+
             // Check if all filters' columns exist in the current column definitions
             const allColumnsExist = filters.every((filter) =>
                 currentColumnDefs?.some((colDef) => {
@@ -87,7 +87,7 @@ export const useAggridLocalRowFilter = (
                     );
                 })
             );
-    
+
             // If all columns referenced by the filters exist, apply the filters
             if (allColumnsExist) {
                 // Format the filters for AG Grid and apply them using setFilterModel
@@ -97,7 +97,6 @@ export const useAggridLocalRowFilter = (
         },
         [formatCustomFiltersForAgGrid, gridRef]
     );
-    
 
     useEffect(() => {
         setFiltersInAgGrid(filterSelector);
