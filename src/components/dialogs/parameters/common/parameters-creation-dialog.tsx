@@ -102,7 +102,6 @@ const CreateParameterDialog = <T extends FieldValues>({
     const onSubmit = useCallback(
         (values: FormData) => {
             if (defaultFolder.id) {
-                console.log();
                 createParameter(
                     parameterFormatter(parameterValues()),
                     values.name,

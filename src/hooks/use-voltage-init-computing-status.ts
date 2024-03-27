@@ -51,7 +51,7 @@ export const useVoltageInitComputingStatus = (
         voltageInitAvailability
     );
 
-    // TODO: This should not be here but really catch a message
+    // TODO: This is a bit clumsy but for now there is no way to catch specific events from the backend
     useEffect(() => {
         if (voltageInitStatus === RunningStatus.SUCCEED) {
             getVoltageInitStudyParameters(studyUuid)

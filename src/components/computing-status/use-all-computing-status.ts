@@ -11,7 +11,6 @@ import {
     getSensitivityAnalysisRunningStatus,
     getShortCircuitAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
-    getVoltageInitRunningStatus,
     getLoadFlowRunningStatus,
     getNonEvacuatedEnergyRunningStatus,
 } from '../utils/running-status';

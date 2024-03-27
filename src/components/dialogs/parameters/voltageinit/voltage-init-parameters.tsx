@@ -111,6 +111,28 @@ export const VoltageInitParameters = ({
             });
     }, [studyUuid, setVoltageInitParams, snackError]);
 
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<TabValue[]>(
+        []
+    );
+
+    const onValidationError = useCallback(
+        (errors?: any) => {
+            // TODO: this does not work if formSchema keys does not match tab values
+            let tabsInError = [];
+            if (errors?.[GENERAL] !== undefined) {
+                tabsInError.push(TabValue.GENERAL);
+            }
+            if (errors?.[TabValue.VOLTAGE_LIMITS] !== undefined) {
+                tabsInError.push(TabValue.VOLTAGE_LIMITS);
+            }
+            if (errors?.[TabValue.EQUIPMENTS_SELECTION]) {
+                tabsInError.push(TabValue.EQUIPMENTS_SELECTION);
+            }
+            setTabIndexesWithError(tabsInError);
+        },
+        [setTabIndexesWithError]
+    );
+
     const onSubmit = useCallback(
         (newParams: VoltageInitParametersForm) => {
             updateVoltageInitParameters(
@@ -123,14 +145,14 @@ export const VoltageInitParameters = ({
                     );
                 })
                 .catch((error) => {
-                    onValidationError(error);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'VoltageInitParametersError',
                     });
                 });
+            onValidationError();
         },
-        [setVoltageInitParams, snackError, studyUuid]
+        [onValidationError, setVoltageInitParams, snackError, studyUuid]
     );
 
     useEffect(() => {
@@ -141,29 +163,11 @@ export const VoltageInitParameters = ({
         }
     }, [reset, voltageInitParams]);
 
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<TabValue[]>(
-        []
-    );
-    const onValidationError = (errors: any) => {
-        // TODO: this does not work if formSchema keys does not match tab values
-        let tabsInError = [];
-        if (errors?.[GENERAL] !== undefined) {
-            tabsInError.push(TabValue.GENERAL);
-        }
-        if (errors?.[TabValue.VOLTAGE_LIMITS] !== undefined) {
-            tabsInError.push(TabValue.VOLTAGE_LIMITS);
-        }
-        if (errors?.[TabValue.EQUIPMENTS_SELECTION]) {
-            tabsInError.push(TabValue.EQUIPMENTS_SELECTION);
-        }
-        setTabIndexesWithError(tabsInError);
-    };
-
     const clear = useCallback(() => {
         reset(initialVoltageInitParametersForm);
         resetVoltageInitParameters();
-        setTabIndexesWithError([]);
-    }, [reset, resetVoltageInitParameters, setTabIndexesWithError]);
+        onValidationError();
+    }, [reset, resetVoltageInitParameters, onValidationError]);
 
     const handleLoadParameter = useCallback(
         (newParams: { id: UUID }[]) => {
