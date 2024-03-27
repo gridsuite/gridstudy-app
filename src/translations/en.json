@@ -184,6 +184,7 @@
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "VoltageInitParametersGeneralTabLabel": "General",
+    "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
