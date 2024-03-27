@@ -64,8 +64,9 @@ export function fetchVoltageLevelEquipments(
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map' +
-        '/voltage-level-equipments/' +
+        '/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
+        '/equipments' +
         '?' +
         getQueryParamsList(substationsIds, 'substationId') +
         urlSearchParams.toString();
