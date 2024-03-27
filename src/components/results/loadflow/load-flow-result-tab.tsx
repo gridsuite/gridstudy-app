@@ -9,6 +9,7 @@ import React, {
     FunctionComponent,
     SyntheticEvent,
     useCallback,
+    useEffect,
     useMemo,
     useState,
 } from 'react';
@@ -51,11 +52,14 @@ import {
     StatusCellRender,
 } from '../common/result-cell-renderers';
 import ResultsGlobalFilter from '../common/results-global-filter';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchAllCountries } from '../../../services/study/network-map';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
 }) => {
+    const { snackError } = useSnackMessage();
     const intl = useIntl();
     const loadflowResultInvalidations = ['loadflowResult'];
 
@@ -70,6 +74,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         sortWay: SORT_WAYS.desc,
     });
 
+    const mapEquipments = useSelector((state) => state.mapEquipments);
+    const [countriesFilter, setCountriesFilter] = useState([]);
+    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState([]);
     const [globalFilters, setGlobalFilters] = useState(undefined);
 
     const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
@@ -78,6 +85,41 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
+
+    // load countries
+    useEffect(() => {
+        fetchAllCountries(studyUuid, nodeUuid)
+            .then((countryCodes) => {
+                setCountriesFilter(
+                    countryCodes.map((countryCode) => ({
+                        label: countryCode,
+                        filterType: 'country',
+                    }))
+                );
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'DynamicSimulationFetchCountryError',
+                });
+            });
+    }, [nodeUuid, studyUuid, snackError]);
+
+    // load voltage levels
+    useEffect(() => {
+        const voltageLevels = mapEquipments.getVoltageLevels();
+        const nominalVs = voltageLevels.map((element) =>
+            element.nominalV?.toString()
+        );
+        const uniqueNominalV = [...new Set(nominalVs)];
+
+        setVoltageLevelsFilter(
+            uniqueNominalV.map((nominalV) => ({
+                label: nominalV,
+                filterType: 'voltageLevel',
+            }))
+        );
+    }, [mapEquipments]);
 
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =
@@ -276,8 +318,18 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     />
                 </Tabs>
                 <Box sx={{ flexGrow: 0 }}>
-                    <ResultsGlobalFilter onChange={handleGlobalFilterChange} />
+                    <ResultsGlobalFilter
+                        onChange={handleGlobalFilterChange}
+                        filters={[...countriesFilter, ...voltageLevelsFilter]}
+                    />
                 </Box>
+                {isLoadingResult && (
+                    /* TODO update this : we have to add a glasspane and big spinner over the results. */ <Box
+                        sx={{ backgroundColor: 'red', color: 'white' }}
+                    >
+                        LOADING
+                    </Box>
+                )}
                 <Box sx={{ flexGrow: 1 }}></Box>
             </Box>
 

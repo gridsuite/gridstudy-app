@@ -93,56 +93,20 @@ const styles = {
     },
 };
 
-const filters = [
+// TODO add the "recent" system
+/*const filters = [
     {
         label: 'FR',
         filterType: 'country',
         recent: true,
     },
     {
-        label: '380',
-        filterType: 'voltageLevel',
-    },
-    {
-        label: '220',
-        filterType: 'voltageLevel',
-        recent: true,
-    },
-    {
         label: 'BE',
         filterType: 'country',
-        recent: true,
     },
-    {
-        label: 'KR',
-        filterType: 'country',
-    },
-    {
-        label: 'IT',
-        filterType: 'country',
-        recent: true,
-    },
-    {
-        label: '400',
-        filterType: 'voltageLevel',
-        recent: true,
-    },
-    {
-        label: '150',
-        filterType: 'voltageLevel',
-    },
-    {
-        label: 'DE',
-        filterType: 'country',
-        recent: true,
-    },
-    {
-        label: 'ES',
-        filterType: 'country',
-    },
-];
+];*/
 
-const ResultsGlobalFilter = ({ onChange }) => {
+const ResultsGlobalFilter = ({ onChange, filters }) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
 
@@ -170,7 +134,7 @@ const ResultsGlobalFilter = ({ onChange }) => {
                 options={filters.sort((a, b) => !!b.recent - !!a.recent)}
                 onChange={handleChange}
                 groupBy={(option) => !!option.recent}
-                // renderInput the inputfield that contains the chips, adornments and label
+                // renderInput : the inputfield that contains the chips, adornments and label
                 renderInput={(params) => (
                     <TextField
                         {...params}
