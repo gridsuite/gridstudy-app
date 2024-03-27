@@ -63,6 +63,18 @@ const EXPERT_FILTER_EQUIPMENTS = {
         id: 'DANGLING_LINE',
         label: 'DanglingLines',
     },
+    LCC_CONVERTER_STATION: {
+        id: 'LCC_CONVERTER_STATION',
+        label: 'LCCConverterStations',
+    },
+    VSC_CONVERTER_STATION: {
+        id: 'VSC_CONVERTER_STATION',
+        label: 'VSCConverterStations',
+    },
+    STATIC_VAR_COMPENSATOR: {
+        id: 'STATIC_VAR_COMPENSATOR',
+        label: 'StaticVarCompensators',
+    },
 };
 
 interface IFilterCreation {

@@ -216,6 +216,8 @@ export async function createMapFilter(
                         filter.equipmentType,
                         elements
                     );
+                } else {
+                    throw new Error('No equipment selected');
                 }
             } catch (error) {
                 throw error;
