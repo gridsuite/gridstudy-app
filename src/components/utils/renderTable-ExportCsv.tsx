@@ -11,10 +11,11 @@ import { CustomAGGrid } from '../custom-aggrid/custom-aggrid';
 import React, { FunctionComponent, Ref } from 'react';
 import {
     ColDef,
+    GridReadyEvent,
+    RowClassParams,
     RowDataUpdatedEvent,
     RowStyle,
-} from 'ag-grid-community/dist/lib/main';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+} from 'ag-grid-community';
 
 const styles = {
     gridContainer: {

@@ -7,11 +7,12 @@
 import * as React from 'react';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
-import TreeItem, {
+import {
+    TreeItem,
+    TreeItemContentProps,
     TreeItemProps,
     useTreeItem,
-    TreeItemContentProps,
-} from '@mui/lab/TreeItem';
+} from '@mui/x-tree-view/TreeItem';
 
 /**
  To have a custom MUI TreeItem where we can toggle a node without changing the current node / triggering handleSelection.

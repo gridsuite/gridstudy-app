@@ -7,9 +7,9 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    ReduxState,
     DeletedEquipment,
     NetworkImpactsInfos,
+    ReduxState,
     UpdateTypes,
 } from '../redux/reducer.type';
 import {
@@ -18,7 +18,7 @@ import {
     setDeletedEquipments,
     setUpdatedSubstationsIds,
     updateEquipments,
-} from 'redux/actions';
+} from '../redux/actions';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';

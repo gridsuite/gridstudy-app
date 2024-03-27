@@ -10,10 +10,13 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setComputingStatus, setLastCompletedComputation } from 'redux/actions';
 import { ComputingType } from './computing-type';
 import { ReduxState, StudyUpdated } from 'redux/reducer.type';
 import { OptionalServicesStatus } from '../utils/optional-services';
+import {
+    setComputingStatus,
+    setLastCompletedComputation,
+} from '../../redux/actions';
 
 interface UseComputingStatusProps {
     (

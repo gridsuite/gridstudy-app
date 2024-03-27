@@ -38,7 +38,7 @@ import {
     DefaultCellRenderer,
 } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
-import { ColDef } from 'ag-grid-community/dist/lib/main';
+import { ColDef } from 'ag-grid-community';
 
 const TabularCreationForm = () => {
     const intl = useIntl();

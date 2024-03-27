@@ -312,8 +312,8 @@ const DynamicSimulationResultChart = ({
                 newPlots.length === 0
                     ? -1
                     : index === plots.length - 1
-                    ? newPlots.length - 1
-                    : index
+                      ? newPlots.length - 1
+                      : index
             ); // get the next item in new plots
             setPlots(newPlots);
             if (newPlots.length === 0) {

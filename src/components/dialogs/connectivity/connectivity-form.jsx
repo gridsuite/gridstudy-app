@@ -11,11 +11,11 @@ import { IconButton, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    CONNECTED,
     ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
@@ -26,10 +26,13 @@ import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
-import { AutocompleteInput, SwitchInput } from '@gridsuite/commons-ui';
-import { IntegerInput } from '@gridsuite/commons-ui';
-import { SelectInput } from '@gridsuite/commons-ui';
-import { TextInput } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    IntegerInput,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,
@@ -237,8 +240,8 @@ export const ConnectivityForm = ({
                     id: !isNodeBuilt(currentNode)
                         ? 'NodeNotBuildPositionMessage'
                         : watchVoltageLevelId
-                        ? 'DisplayTakenPositions'
-                        : 'NoVoltageLevelPositionMessage',
+                          ? 'DisplayTakenPositions'
+                          : 'NoVoltageLevelPositionMessage',
                 })}
             >
                 {isNodeBuilt(currentNode) && watchVoltageLevelId ? (

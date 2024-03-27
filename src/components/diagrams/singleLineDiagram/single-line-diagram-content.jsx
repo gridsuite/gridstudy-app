@@ -5,21 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useLayoutEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
 import {
+    DiagramType,
     getEquipmentTypeFromFeederType,
-    MIN_HEIGHT,
-    MIN_WIDTH,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_SUBSTATION,
     MAX_WIDTH_VOLTAGE_LEVEL,
-    DiagramType,
-    useDiagram,
+    MIN_HEIGHT,
+    MIN_WIDTH,
     styles,
+    useDiagram,
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
@@ -44,9 +44,7 @@ import {
     updateSwitchState,
 } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { setComputationStarting, setComputingStatus } from 'redux/actions';
 import { ComputingType } from 'components/computing-status/computing-type';
-import { useDispatch } from 'react-redux';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import {
@@ -64,6 +62,10 @@ import {
 import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
+import {
+    setComputationStarting,
+    setComputingStatus,
+} from '../../../redux/actions';
 
 function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;

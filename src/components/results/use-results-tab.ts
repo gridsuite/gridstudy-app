@@ -55,7 +55,7 @@ export const useResultsTab = (
 
 const useResultsTabRedirectionLock = (): [
     Boolean,
-    Dispatch<SetStateAction<Boolean>>
+    Dispatch<SetStateAction<Boolean>>,
 ] => {
     const lastCompletedComputation: string = useSelector(
         (state: ReduxState) => state.lastCompletedComputation
