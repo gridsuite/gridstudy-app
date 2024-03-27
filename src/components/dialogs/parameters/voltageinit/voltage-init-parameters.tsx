@@ -31,8 +31,9 @@ import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import {
     fromVoltageInitParametersFormToParamValues,
-    fromVoltageInitParamsDataToFormValues,
+    fromStudyVoltageInitParamsDataToFormValues,
     VoltageInitParam,
+    fromVoltageInitParamsDataToFormValues,
 } from './voltage-init-utils';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { getVoltageInitParameters } from 'services/voltage-init';
@@ -134,7 +135,9 @@ export const VoltageInitParameters = ({
 
     useEffect(() => {
         if (voltageInitParams) {
-            reset(fromVoltageInitParamsDataToFormValues(voltageInitParams));
+            reset(
+                fromStudyVoltageInitParamsDataToFormValues(voltageInitParams)
+            );
         }
     }, [reset, voltageInitParams]);
 
@@ -324,8 +327,9 @@ export const VoltageInitParameters = ({
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={getValues}
                     parameterType={elementType.VOLTAGE_INIT_PARAMETERS}
-                    parameterFormatter={(newParams) =>
-                        fromVoltageInitParametersFormToParamValues(newParams)
+                    parameterFormatter={(params: VoltageInitParametersForm) =>
+                        fromVoltageInitParametersFormToParamValues(params)
+                            .computationParameters
                     }
                 />
             )}

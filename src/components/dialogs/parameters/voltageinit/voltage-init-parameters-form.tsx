@@ -17,6 +17,8 @@ import { isBlankOrEmpty } from '../../../utils/validation-functions';
 export const GENERAL = 'GENERAL';
 export const GENERAL_APPLY_MODIFICATIONS = 'GENERAL_APPLY_MODIFICATIONS';
 
+export const DEFAULT_GENERAL_APPLY_MODIFICATIONS = true;
+
 export enum TabValue {
     GENERAL = 'GENERAL',
     VOLTAGE_LIMITS = 'voltageLimits',
@@ -25,7 +27,7 @@ export enum TabValue {
 
 export const initialVoltageInitParametersForm: VoltageInitParametersForm = {
     [GENERAL]: {
-        [GENERAL_APPLY_MODIFICATIONS]: true,
+        [GENERAL_APPLY_MODIFICATIONS]: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
     },
     [VOLTAGE_LIMITS_MODIFICATION]: [],
     [VOLTAGE_LIMITS_DEFAULT]: [],

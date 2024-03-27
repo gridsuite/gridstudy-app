@@ -22,6 +22,7 @@ import {
 } from 'components/utils/field-constants';
 import { UUID } from 'crypto';
 import {
+    DEFAULT_GENERAL_APPLY_MODIFICATIONS,
     GENERAL,
     GENERAL_APPLY_MODIFICATIONS,
     TabValue,
@@ -60,7 +61,8 @@ export const fromVoltageInitParametersFormToParamValues = (
 ): VoltageInitParam => {
     return {
         applyModifications:
-            newParams?.[GENERAL]?.[GENERAL_APPLY_MODIFICATIONS] ?? true,
+            newParams?.[GENERAL]?.[GENERAL_APPLY_MODIFICATIONS] ??
+            DEFAULT_GENERAL_APPLY_MODIFICATIONS,
         computationParameters: {
             [VOLTAGE_LIMITS_MODIFICATION]:
                 newParams.voltageLimitsModification?.map((voltageLimit) => {
@@ -128,6 +130,66 @@ export const fromVoltageInitParametersFormToParamValues = (
 };
 
 export const fromVoltageInitParamsDataToFormValues = (
+    parameters: VoltageInitParam['computationParameters']
+): VoltageInitParametersForm => {
+    return {
+        [TabValue.GENERAL]: {
+            [GENERAL_APPLY_MODIFICATIONS]: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
+        },
+        [VOLTAGE_LIMITS_MODIFICATION]:
+            parameters?.voltageLimitsModification?.map((voltageLimit) => {
+                return {
+                    // [SELECTED]: false,
+                    [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
+                };
+            }) ?? [],
+        [VOLTAGE_LIMITS_DEFAULT]:
+            parameters?.voltageLimitsDefault?.map((voltageLimit) => {
+                return {
+                    [SELECTED]: false,
+                    [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
+                };
+            }) ?? [],
+        [FIXED_GENERATORS]: parameters?.[FIXED_GENERATORS]?.map((filter) => {
+            return {
+                [ID]: filter[FILTER_ID],
+                [NAME]: filter[FILTER_NAME],
+            };
+        }),
+        [VARIABLE_TRANSFORMERS]: parameters?.[VARIABLE_TRANSFORMERS]?.map(
+            (filter) => {
+                return {
+                    [ID]: filter[FILTER_ID],
+                    [NAME]: filter[FILTER_NAME],
+                };
+            }
+        ),
+        [VARIABLE_SHUNT_COMPENSATORS]: parameters?.[
+            VARIABLE_SHUNT_COMPENSATORS
+        ]?.map((filter) => {
+            return {
+                [ID]: filter[FILTER_ID],
+                [NAME]: filter[FILTER_NAME],
+            };
+        }),
+    };
+};
+
+export const fromStudyVoltageInitParamsDataToFormValues = (
     parameters: VoltageInitParam
 ): VoltageInitParametersForm => {
     return {
