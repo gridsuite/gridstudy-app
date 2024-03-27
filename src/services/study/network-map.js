@@ -199,6 +199,9 @@ export async function createMapFilter(
             const substationsIds = networkMapref.current
                 .getSelectedSubstation()
                 .map((substation) => substation.id);
+            if (substationsIds.length === 0) {
+                throw new Error('No substations selected');
+            }
             try {
                 const elements = await fetchNetworkElementsIds(
                     studyUuid,
@@ -208,10 +211,12 @@ export async function createMapFilter(
                     false
                 );
 
-                equipementList = createEquipmentIdentifierList(
-                    filter.equipmentType,
-                    elements
-                );
+                if (elements.length > 0) {
+                    equipementList = createEquipmentIdentifierList(
+                        filter.equipmentType,
+                        elements
+                    );
+                }
             } catch (error) {
                 throw error;
             }
@@ -230,7 +235,7 @@ export async function createMapFilter(
         createFilter(
             equipementList,
             filter[NAME],
-            'description',
+            '',
             distDir.id?.toString() ?? ''
         )
             .then((res) => {

@@ -128,6 +128,7 @@ const MapView = ({
         }
     }
     const onCancelFunction = useCallback(() => {
+        networkMapref.current.getMapDrawer().deleteAll();
         dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
     }, [dispatch]);
     return (

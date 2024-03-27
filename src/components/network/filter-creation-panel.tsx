@@ -55,6 +55,14 @@ const EXPERT_FILTER_EQUIPMENTS = {
         id: 'TWO_WINDINGS_TRANSFORMER',
         label: 'TwoWindingsTransformers',
     },
+    THREE_WINDINGS_TRANSFORMER: {
+        id: 'THREE_WINDINGS_TRANSFORMER',
+        label: 'ThreeWindingsTransformers',
+    },
+    DANGLING_LINE: {
+        id: 'DANGLING_LINE',
+        label: 'DanglingLines',
+    },
 };
 
 interface IFilterCreation {
