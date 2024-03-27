@@ -25,11 +25,11 @@ import {
     fetchOneBusShortCircuitAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
 } from '../../services/study/short-circuit-analysis';
-import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowStatus } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
+import { useVoltageInitComputingStatus } from '../../hooks/use-voltage-init-computing-status';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
@@ -56,10 +56,6 @@ const oneBusShortCircuitAnalysisStatusInvalidations = [
 const dynamicSimulationStatusInvalidations = [
     'dynamicSimulation_status',
     'dynamicSimulation_failed',
-];
-const voltageInitStatusInvalidations = [
-    'voltageInit_status',
-    'voltageInit_failed',
 ];
 
 const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
@@ -88,10 +84,6 @@ const dynamicSimulationStatusCompletions = [
     'dynamicSimulationResult',
     'dynamicSimulation_failed',
 ];
-const voltageInitStatusCompletions = [
-    'voltageInitResult',
-    'voltageInit_failed',
-];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (
@@ -109,9 +101,6 @@ export const useAllComputingStatus = (
     );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
-    );
-    const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit
     );
     const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
@@ -193,14 +182,5 @@ export const useAllComputingStatus = (
         dynamicSimulationAvailability
     );
 
-    useComputingStatus(
-        studyUuid,
-        currentNodeUuid,
-        fetchVoltageInitStatus,
-        voltageInitStatusInvalidations,
-        voltageInitStatusCompletions,
-        getVoltageInitRunningStatus,
-        ComputingType.VOLTAGE_INIT,
-        voltageInitAvailability
-    );
+    useVoltageInitComputingStatus(studyUuid, currentNodeUuid);
 };
