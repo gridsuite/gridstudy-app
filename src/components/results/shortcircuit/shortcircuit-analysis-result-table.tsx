@@ -13,7 +13,11 @@ import {
     SCAFeederResult,
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import {
+    GridReadyEvent,
+    RowClassParams,
+    ValueGetterParams,
+} from 'ag-grid-community';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     getNoRowsMessage,
@@ -36,7 +40,6 @@ import {
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../utils/unit-converter';
-import { ValueGetterParams } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -98,20 +101,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const columns = useMemo(() => {
         const isAllBusesAnalysisType =
             analysisType === ShortCircuitAnalysisType.ALL_BUSES;
-        const isOneBusAnalysisType =
-            analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
         const sortPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
             ? sortProps
             : undefined;
-        const sortPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType
-            ? sortProps
-            : undefined;
 
         const filterPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
-            ? filterProps
-            : undefined;
-        const filterPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType
             ? filterProps
             : undefined;
 
@@ -151,8 +146,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-                sortProps: sortPropsCheckedForOneBusAnalysisType,
-                filterProps: filterPropsCheckedForOneBusAnalysisType,
+                sortProps: { ...sortProps, children: true },
+                filterProps: filterProps,
                 filterParams: textFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
@@ -161,7 +156,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterProps,
                 filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
@@ -183,7 +178,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     parser: kiloUnitToUnit,
                 },
                 valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params),
+                    unitToKiloUnit(params.data?.limitMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -197,7 +192,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     parser: kiloUnitToUnit,
                 },
                 valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params),
+                    unitToKiloUnit(params.data?.limitMax),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
@@ -390,7 +385,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
-                enableCellTextSelection={true}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
                 onRowDataUpdated={handleRowDataUpdated}

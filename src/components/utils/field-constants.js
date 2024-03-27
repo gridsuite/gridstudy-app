@@ -248,6 +248,7 @@ export const FIXED_GENERATORS = 'constantQGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
 export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
+export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
 export const LEG_SIDE = 'legSide';
 
 export const PRIORITY = 'priority';
@@ -290,10 +291,8 @@ export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';
 
 // VSC
-export const ACTIVE_POWER = 'activePower';
+export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
 export const REACTIVE_POWER = 'reactivePower';
-export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
-export const DC_RESISTANCE = 'dcResistance';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
     'operatorActivePowerLimitSide1';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 =

@@ -9,14 +9,16 @@ import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, elementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
-import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { getIdOrValue } from '../../commons/utils';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 const ByFilterDeletionForm = () => {
     const intl = useIntl();
@@ -57,11 +59,14 @@ const ByFilterDeletionForm = () => {
             <DirectoryItemsInput
                 key={equipmentTypeWatch} // force refresh on equipment type change
                 name={FILTERS}
-                elementType={elementType.FILTER}
+                elementType={ElementType.FILTER}
                 titleId={'FiltersListsSelection'}
                 label={'filter'}
                 equipmentTypes={[equipmentTypeWatch]}
                 disable={!equipmentTypeWatch}
+                fetchDirectoryContent={fetchDirectoryContent}
+                fetchRootFolders={fetchRootFolders}
+                fetchElementsInfos={fetchElementsMetadata}
             />
         );
     }, [equipmentTypeWatch]);

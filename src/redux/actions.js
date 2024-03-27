@@ -77,6 +77,7 @@ export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export function mapEquipmentsCreated(
     mapEquipments,
     newLines,
+    newTieLines,
     newSubstations,
     newHvdcLines
 ) {
@@ -84,6 +85,7 @@ export function mapEquipmentsCreated(
         type: MAP_EQUIPMENTS_CREATED,
         mapEquipments: mapEquipments,
         newLines: newLines,
+        newTieLines: newTieLines,
         newSubstations: newSubstations,
         newHvdcLines: newHvdcLines,
     };
@@ -686,5 +688,81 @@ export function setLastCompletedComputation(lastCompletedComputation) {
     return {
         type: SET_LAST_COMPLETED_COMPUTATION,
         lastCompletedComputation: lastCompletedComputation,
+    };
+}
+
+export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
+
+export function setLoadflowResultFilter(filterTab, loadflowResultFilter) {
+    return {
+        type: LOADFLOW_RESULT_FILTER,
+        filterTab: filterTab,
+        loadflowResultFilter: loadflowResultFilter,
+    };
+}
+
+export const SECURITY_ANALYSIS_RESULT_FILTER =
+    'SECURITY_ANALYSIS_RESULT_FILTER';
+
+export function setSecurityAnalysisResultFilter(
+    filterTab,
+    securityAnalysisResultFilter
+) {
+    return {
+        type: SECURITY_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        securityAnalysisResultFilter: securityAnalysisResultFilter,
+    };
+}
+
+export const SENSITIVITY_ANALYSIS_RESULT_FILTER =
+    'SENSITIVITY_ANALYSIS_RESULT_FILTER';
+
+export function setSensitivityAnalysisResultFilter(
+    filterTab,
+    sensitivityAnalysisResultFilter
+) {
+    return {
+        type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        sensitivityAnalysisResultFilter: sensitivityAnalysisResultFilter,
+    };
+}
+
+export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER =
+    'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
+
+export function setShortcircuitAnalysisResultFilter(
+    filterTab,
+    shortcircuitAnalysisResultFilter
+) {
+    return {
+        type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        shortcircuitAnalysisResultFilter: shortcircuitAnalysisResultFilter,
+    };
+}
+
+export const DYNAMIC_SIMULATION_RESULT_FILTER =
+    'DYNAMIC_SIMULATION_RESULT_FILTER';
+
+export function setDynamicSimulationResultFilter(
+    filterTab,
+    dynamicSimulationResultFilter
+) {
+    return {
+        type: DYNAMIC_SIMULATION_RESULT_FILTER,
+        filterTab: filterTab,
+        dynamicSimulationResultFilter: dynamicSimulationResultFilter,
+    };
+}
+
+export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
+
+export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {
+    return {
+        type: SPREADSHEET_FILTER,
+        filterTab: filterTab,
+        spreadsheetFilter: spreadsheetFilter,
     };
 }

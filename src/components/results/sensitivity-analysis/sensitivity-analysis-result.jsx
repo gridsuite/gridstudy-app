@@ -26,7 +26,7 @@ import { Box, LinearProgress } from '@mui/material';
 import {
     SENSITIVITY_AT_NODE,
     SUFFIX_TYPES,
-} from './sensitivity-analysis-content';
+} from './sensitivity-analysis-result-utils';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -62,8 +62,9 @@ const SensitivityAnalysisResult = ({
             const { onSortChanged = () => {}, sortConfig } = sortProps || {};
             const { updateFilter, filterSelector } = filterProps || {};
 
-            const { colKey, sortWay } = sortConfig || {};
-            const isSortActive = colKey === field;
+            const isSortActive = !!sortConfig?.find(
+                (value) => value.colId === field
+            );
 
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
@@ -81,16 +82,19 @@ const SensitivityAnalysisResult = ({
                     sortParams: {
                         sortConfig,
                         onSortChanged: (newSortValue) =>
-                            onSortChanged(field, newSortValue),
+                            onSortChanged({
+                                colId: field,
+                                sort: newSortValue,
+                            }),
                     },
                     isFilterable: !!filterProps && !!filterOptions.length, // Filter should have options
                     filterParams: {
                         filterSelector,
-                        filterOptions,
+                        customFilterOptions: filterOptions,
                         updateFilter,
                     },
                 },
-                minWidth: isSortActive && sortWay ? 95 : 65,
+                minWidth: isSortActive ? 95 : 65,
                 maxWidth: maxWidth,
                 wrapHeaderText: true,
                 autoHeaderHeight: true,
@@ -184,10 +188,6 @@ const SensitivityAnalysisResult = ({
         []
     );
 
-    const gridOptions = {
-        suppressMultiSort: true,
-    };
-
     const handleGridReady = useCallback(
         (params) => {
             if (params.api) {
@@ -221,7 +221,6 @@ const SensitivityAnalysisResult = ({
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
                 onGridReady={handleGridReady}
-                gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
                 {...props}

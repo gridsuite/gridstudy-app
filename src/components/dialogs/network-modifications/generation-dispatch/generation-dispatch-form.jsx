@@ -6,7 +6,7 @@
  */
 
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
     LOSS_COEFFICIENT,
@@ -20,11 +20,13 @@ import {
     formatPercentageValue,
     isValidPercentage,
 } from '../../percentage-area/percentage-area-utils';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 const GenerationDispatchForm = () => {
     const handleCoefficientValueChange = (id, value) => {
@@ -52,8 +54,11 @@ const GenerationDispatchForm = () => {
                 <DirectoryItemsInput
                     name={GENERATORS_WITH_FIXED_ACTIVE_POWER}
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
-                    elementType={elementType.FILTER}
+                    elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             </Grid>
         </Grid>
@@ -89,8 +94,11 @@ const GenerationDispatchForm = () => {
                 <DirectoryItemsInput
                     name={GENERATORS_WITHOUT_OUTAGE}
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
-                    elementType={elementType.FILTER}
+                    elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             </Grid>
         </Grid>

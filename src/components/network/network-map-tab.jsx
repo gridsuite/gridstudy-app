@@ -182,6 +182,7 @@ export const NetworkMapTab = ({
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef(null);
     const [updatedLines, setUpdatedLines] = useState([]);
+    const [updatedTieLines, setUpdatedTieLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
     const [equipmentToModify, setEquipmentToModify] = useState();
     const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
@@ -295,12 +296,6 @@ export const NetworkMapTab = ({
         BaseEquipmentMenu,
         'voltage-level-menus',
         EQUIPMENT_TYPES.VOLTAGE_LEVEL
-    );
-
-    const MenuHvdcLine = withEquipmentMenu(
-        BaseEquipmentMenu,
-        'hvdc-line-menus',
-        EQUIPMENT_TYPES.HVDC_LINE
     );
 
     function showEquipmentMenu(equipment, x, y, type) {
@@ -729,12 +724,16 @@ export const NetworkMapTab = ({
 
             dispatch(resetMapReloaded());
             const isFullReload = !updatedSubstationsToSend;
-            const [updatedSubstations, updatedLines, updatedHvdcLines] =
-                mapEquipments.reloadImpactedSubstationsEquipments(
-                    studyUuid,
-                    currentNode,
-                    updatedSubstationsToSend
-                );
+            const [
+                updatedSubstations,
+                updatedLines,
+                updatedTieLines,
+                updatedHvdcLines,
+            ] = mapEquipments.reloadImpactedSubstationsEquipments(
+                studyUuid,
+                currentNode,
+                updatedSubstationsToSend
+            );
 
             updatedSubstations.then((values) => {
                 if (
@@ -756,6 +755,15 @@ export const NetworkMapTab = ({
                     setUpdatedLines(values);
                 }
             });
+            updatedTieLines.then((values) => {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                    mapEquipments.updatedTieLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    setUpdatedTieLines(values);
+                }
+            });
             updatedHvdcLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateHvdcLines(
@@ -768,6 +776,7 @@ export const NetworkMapTab = ({
             return Promise.all([
                 updatedSubstations,
                 updatedLines,
+                updatedTieLines,
                 updatedHvdcLines,
             ]).finally(() => {
                 dispatch(setMapDataLoading(false));
@@ -930,14 +939,14 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE &&
+                {(equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE ||
+                    equipmentMenu.equipmentType ===
+                        EQUIPMENT_TYPES.HVDC_LINE) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.HVDC_LINE &&
-                    withEquipment(MenuHvdcLine)}
                 {equipmentMenu.equipmentType === EQUIPMENT_TYPES.SUBSTATION &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType ===
@@ -973,6 +982,7 @@ export const NetworkMapTab = ({
             geoData={geoData}
             updatedLines={[
                 ...(updatedLines ?? []),
+                ...(updatedTieLines ?? []),
                 ...(updatedHvdcLines ?? []),
             ]}
             displayOverlayLoader={!basicDataReady && mapDataLoading}
@@ -998,6 +1008,9 @@ export const NetworkMapTab = ({
             }
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
+            }
+            onHvdcLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}

@@ -6,12 +6,14 @@
  */
 
 import { useIntl } from 'react-intl';
-import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
-import DirectoryItemSelector from '../directory-item-selector';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { CopyType } from '../graph/menus/network-modification-node-editor';
 import { copyOrMoveModifications } from '../../services/study';
 import { UUID } from 'crypto';
 import { FunctionComponent } from 'react';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 /**
  * Dialog to select some network modifications and append them in the current node
@@ -61,11 +63,14 @@ const ImportModificationDialog: FunctionComponent<
         <DirectoryItemSelector
             open={open}
             onClose={processSelectedElements}
-            types={[elementType.MODIFICATION]}
+            types={[ElementType.MODIFICATION]}
             multiselect={true}
             title={intl.formatMessage({
                 id: 'ModificationsSelection',
             })}
+            fetchDirectoryContent={fetchDirectoryContent}
+            fetchRootFolders={fetchRootFolders}
+            fetchElementsInfos={fetchElementsMetadata}
         />
     );
 };

@@ -17,7 +17,6 @@ import {
     backendFetchText,
     getRequestParamFromList,
 } from '../utils';
-import { getSortValue } from '../../hooks/use-aggrid-sort';
 
 export function startSecurityAnalysis(
     studyUuid,
@@ -76,9 +75,7 @@ export function fetchSecurityAnalysisResult(
 
     const params = new URLSearchParams({ resultType });
 
-    if (sort?.colKey && sort?.sortWay) {
-        params.append('sort', `${sort.colKey},${getSortValue(sort.sortWay)}`);
-    }
+    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));

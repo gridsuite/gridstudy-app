@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import {
     FILTERS,
     ID,
@@ -22,9 +22,10 @@ import { SelectInput } from '@gridsuite/commons-ui';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
-import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
-import { fetchElementsMetadata } from '../../../../../services/explore';
+import { fetchElementsMetadata } from 'services/explore';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
@@ -101,7 +102,7 @@ const VariationForm = ({ name, index }) => {
 
     const itemFilter = useCallback(
         (value) => {
-            if (value?.type === elementType.FILTER) {
+            if (value?.type === ElementType.FILTER) {
                 if (variationMode === VARIATION_MODES.STACKING_UP.id) {
                     return value?.specificMetadata?.type === IDENTIFIER_LIST;
                 }
@@ -125,10 +126,13 @@ const VariationForm = ({ name, index }) => {
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
             equipmentTypes={GENERATORS}
-            elementType={elementType.FILTER}
+            elementType={ElementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
             itemFilter={itemFilter}
+            fetchDirectoryContent={fetchDirectoryContent}
+            fetchRootFolders={fetchRootFolders}
+            fetchElementsInfos={fetchElementsMetadata}
         />
     );
 

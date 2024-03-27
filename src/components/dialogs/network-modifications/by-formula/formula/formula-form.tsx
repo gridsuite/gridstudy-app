@@ -6,7 +6,7 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { AutocompleteInput, elementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -16,7 +16,7 @@ import {
     REFERENCE_FIELD_OR_VALUE_2,
 } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import DirectoryItemsInput from '../../../../utils/rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { gridItem } from '../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
@@ -24,6 +24,8 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 interface FormulaProps {
     name: String;
@@ -50,10 +52,13 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
             equipmentTypes={[equipmentTypeWatch]}
-            elementType={elementType.FILTER}
+            elementType={ElementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
             disable={!equipmentTypeWatch}
+            fetchDirectoryContent={fetchDirectoryContent}
+            fetchRootFolders={fetchRootFolders}
+            fetchElementsInfos={fetchElementsMetadata}
         />
     );
 

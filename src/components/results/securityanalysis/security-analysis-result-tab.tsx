@@ -37,15 +37,19 @@ import {
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     getIdType,
-    getColumnToFieldMapping,
+    mappingColumnToField,
+    getStoreFields,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { setSecurityAnalysisResultFilter } from 'redux/actions';
+import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -98,8 +102,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colKey: getIdType(tabIndex, nmkType),
-        sortWay: SORT_WAYS.asc,
+        colId: getIdType(tabIndex, nmkType),
+        sort: SortWay.ASC,
     });
 
     const resultType = useMemo(() => {
@@ -112,11 +116,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }, [tabIndex, nmkType]);
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        getColumnToFieldMapping(resultType),
-        () => {
-            setPage(0);
-        }
+    const memoizedSetPageCallback = useCallback(() => {
+        setPage(0);
+    }, []);
+
+    const { updateFilter, filterSelector } = useAggridRowFilter(
+        {
+            filterType: SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+            filterTab: getStoreFields(tabIndex),
+            filterStoreAction: setSecurityAnalysisResultFilter,
+        },
+        memoizedSetPageCallback
     );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
@@ -134,18 +144,20 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams['size'] = rowsPerPage;
             }
 
-            if (sortConfig) {
-                const { sortWay, colKey } = sortConfig;
-                const columnToFieldMapping =
-                    getColumnToFieldMapping(resultType);
-                queryParams['sort'] = {
-                    colKey: columnToFieldMapping[colKey],
-                    sortWay,
-                };
+            if (sortConfig?.length) {
+                const columnToFieldMapping = mappingColumnToField(resultType);
+                queryParams['sort'] = sortConfig.map((sort) => ({
+                    ...sort,
+                    colId: columnToFieldMapping[sort.colId],
+                }));
             }
 
             if (filterSelector) {
-                queryParams['filters'] = filterSelector;
+                const columnToFieldMapping = mappingColumnToField(resultType);
+                queryParams['filters'] = mapFieldsToColumnsFilter(
+                    filterSelector,
+                    columnToFieldMapping
+                );
             }
 
             return fetchSecurityAnalysisResult(
@@ -170,12 +182,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             setResult(null);
             setCount(0);
             setPage(0);
-            initFilters();
             if (initSort) {
                 initSort(defaultSortColKey);
             }
         },
-        [initSort, initFilters, setResult]
+        [initSort, setResult]
     );
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {

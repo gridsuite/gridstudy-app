@@ -8,7 +8,7 @@
 import {
     SelectInput,
     SubmitButton,
-    elementType,
+    ElementType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
@@ -70,7 +70,9 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import DirectoryItemSelector from 'components/directory-item-selector';
+import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 const formSchema = yup
     .object()
@@ -642,14 +644,14 @@ export const SensitivityAnalysisParameters = ({
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => formatNewParams(getValues())}
                     parameterFormatter={(newParams) => newParams}
-                    parameterType={elementType.SENSITIVITY_PARAMETERS}
+                    parameterType={ElementType.SENSITIVITY_PARAMETERS}
                 />
             )}
             {openSelectParameterDialog && (
                 <DirectoryItemSelector
                     open={openSelectParameterDialog}
                     onClose={handleSensibilityParameter}
-                    types={[elementType.SENSITIVITY_PARAMETERS]}
+                    types={[ElementType.SENSITIVITY_PARAMETERS]}
                     title={intl.formatMessage({
                         id: 'showSelectParameterDialog',
                     })}
@@ -658,6 +660,9 @@ export const SensitivityAnalysisParameters = ({
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

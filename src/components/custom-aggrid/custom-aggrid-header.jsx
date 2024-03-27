@@ -20,12 +20,13 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
+import { SortWay } from '../../hooks/use-aggrid-sort';
 import {
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const styles = {
     iconSize: {
@@ -60,6 +61,8 @@ const CustomHeaderComponent = ({
     sortParams = {},
     isFilterable = false,
     filterParams = {},
+    getEnumLabel, // Used for translation of enum values in the filter
+    isCountry, // Used for translation of the countries options in the filter
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -69,18 +72,22 @@ const CustomHeaderComponent = ({
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
         parser, // Used to convert the value displayed in the table into its actual value
+        isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
-
     const {
-        sortConfig: { colKey: sortColKey, sortWay } = {}, // used to get sort data
+        sortConfig, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
+
+    const { translate } = useLocalizedCountries();
 
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
         !!customFilterOptions?.length;
-    const isNumberFilter = filterDataType === FILTER_DATA_TYPES.NUMBER;
-    const isColumnSorted = sortColKey === field;
+    const isNumberInput =
+        filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
+    const columnSort = sortConfig?.find((value) => value.colId === field);
+    const isColumnSorted = !!columnSort;
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -142,7 +149,7 @@ const CustomHeaderComponent = ({
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
         debouncedUpdateFilter(field, {
-            value: selectedFilterData,
+            value: parser ? parser(selectedFilterData) : selectedFilterData,
             type: newType,
             dataType: filterDataType,
         });
@@ -151,19 +158,19 @@ const CustomHeaderComponent = ({
     const handleSortChange = useCallback(() => {
         let newSort;
         if (!isColumnSorted) {
-            newSort = SORT_WAY.asc;
+            newSort = SortWay.ASC;
         } else {
-            if (sortWay < 0) {
-                newSort = SORT_WAY.asc;
+            if (columnSort.sort === SortWay.DESC) {
+                newSort = SortWay.ASC;
             } else {
-                newSort = SORT_WAY.desc;
+                newSort = SortWay.DESC;
             }
         }
 
         if (typeof onSortChanged === 'function') {
             onSortChanged(newSort);
         }
-    }, [isColumnSorted, onSortChanged, sortWay]);
+    }, [isColumnSorted, onSortChanged, columnSort?.sort]);
 
     const handleMouseEnter = useCallback(() => {
         setIsHoveringColumnHeader(true);
@@ -174,16 +181,36 @@ const CustomHeaderComponent = ({
     }, []);
 
     useEffect(() => {
-        if (!filterSelector) {
-            setSelectedFilterData(undefined);
-        }
-    }, [filterSelector]);
-
-    useEffect(() => {
         if (!selectedFilterComparator) {
             setSelectedFilterComparator(filterComparators[0]);
         }
     }, [selectedFilterComparator, filterComparators]);
+
+    useEffect(() => {
+        if (!filterSelector?.length) {
+            setSelectedFilterData(undefined);
+        } else {
+            const filterObject = filterSelector?.find(
+                (filter) => filter.column === field
+            );
+            if (filterObject) {
+                setSelectedFilterData(filterObject.value);
+                setSelectedFilterComparator(filterObject.type);
+            } else {
+                setSelectedFilterData(undefined);
+            }
+        }
+    }, [filterSelector, field]);
+    const getOptionLabel = useCallback(
+        (option) =>
+            isCountry
+                ? translate(option)
+                : intl.formatMessage({
+                      id: getEnumLabel?.(option) || option,
+                      defaultMessage: option,
+                  }),
+        [isCountry, intl, translate, getEnumLabel]
+    );
 
     return (
         <Grid
@@ -236,7 +263,7 @@ const CustomHeaderComponent = ({
                                 {isColumnSorted && (
                                     <Grid item>
                                         <IconButton>
-                                            {sortWay === SORT_WAY.asc ? (
+                                            {columnSort.sort === SortWay.ASC ? (
                                                 <ArrowUpward
                                                     sx={styles.iconSize}
                                                 />
@@ -307,12 +334,7 @@ const CustomHeaderComponent = ({
                             multiple
                             value={selectedFilterData || []}
                             options={customFilterOptions}
-                            getOptionLabel={(option) =>
-                                intl.formatMessage({
-                                    id: option,
-                                    defaultMessage: option,
-                                })
-                            }
+                            getOptionLabel={getOptionLabel}
                             onChange={handleFilterAutoCompleteChange}
                             size="small"
                             disableCloseOnSelect
@@ -364,13 +386,13 @@ const CustomHeaderComponent = ({
                                     id: 'filter.filterOoo',
                                 })}
                                 inputProps={{
-                                    type: isNumberFilter
+                                    type: isNumberInput
                                         ? FILTER_DATA_TYPES.NUMBER
                                         : FILTER_DATA_TYPES.TEXT,
                                 }}
                                 sx={mergeSx(
                                     styles.input,
-                                    isNumberFilter && styles.noArrows
+                                    isNumberInput && styles.noArrows
                                 )}
                             />
                         </Grid>
@@ -386,13 +408,13 @@ CustomHeaderComponent.propTypes = {
     displayName: PropTypes.string.isRequired,
     isSortable: PropTypes.bool,
     sortParams: PropTypes.shape({
-        sortConfig: PropTypes.shape({
-            colKey: PropTypes.string,
-            sortWay: PropTypes.number,
-            selector: PropTypes.shape({
-                sortKeysWithWeightAndDirection: PropTypes.object,
-            }),
-        }),
+        sortConfig: PropTypes.arrayOf(
+            PropTypes.shape({
+                colId: PropTypes.string,
+                sort: PropTypes.string,
+                children: PropTypes.bool,
+            })
+        ),
         onSortChanged: PropTypes.func,
     }),
     isFilterable: PropTypes.bool,
