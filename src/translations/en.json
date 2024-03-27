@@ -185,6 +185,7 @@
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "VoltageInitParametersGeneralTabLabel": "General",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
+    "VoltageInitParametersGeneralSaveInfo": "Settings of this tab won't be saved and will be set back to default if choosing from external settings",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
@@ -1336,7 +1337,5 @@
     "qPercent": "Reactive percentage",
     "frequencyRegulation": "Active power regulation",
     "droop": "Droop",
-    "FieldRequired": "At least one value is missing for required field : ",
-
-    "WorkInProgress": "Work in progress..."
+    "FieldRequired": "At least one value is missing for required field : "
 }

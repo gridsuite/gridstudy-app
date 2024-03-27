@@ -11,6 +11,9 @@ import {
     GENERAL,
     GENERAL_APPLY_MODIFICATIONS,
 } from './voltage-init-parameters-form';
+import Alert from '@mui/material/Alert';
+import { styles } from '../parameters';
+import { FormattedMessage } from 'react-intl';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();
@@ -29,10 +32,19 @@ export const GeneralParameters = () => {
     );
 
     return (
-        <ParameterSwitch
-            value={applyModificationsWatched}
-            label={'VoltageInitParametersGeneralApplyModificationsLabel'}
-            onChange={setApplyModificationsValue}
-        />
+        <>
+            <Alert
+                sx={styles.adjustExistingLimitsInfo}
+                severity="info"
+                variant="outlined"
+            >
+                <FormattedMessage id="VoltageInitParametersGeneralSaveInfo" />
+            </Alert>
+            <ParameterSwitch
+                value={applyModificationsWatched}
+                label={'VoltageInitParametersGeneralApplyModificationsLabel'}
+                onChange={setApplyModificationsValue}
+            />
+        </>
     );
 };
