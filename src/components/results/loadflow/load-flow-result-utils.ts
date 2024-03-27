@@ -438,7 +438,7 @@ export const loadFlowResultColumnsDefinition = (
     ];
 };
 
-export const formatcomponentResult = (componentResults: ComponentResult[]) => {
+export const formatComponentResult = (componentResults: ComponentResult[]) => {
     return componentResults?.map((componentResult) => {
         return {
             componentResultUuid: componentResult.componentResultUuid,
@@ -448,7 +448,7 @@ export const formatcomponentResult = (componentResults: ComponentResult[]) => {
             iterationCount: componentResult.iterationCount,
             id: componentResult.slackBusResults
                 ?.map((slackBus) => slackBus.id)
-                .join('| '),
+                .join(' | '),
             activePowerMismatch: componentResult.slackBusResults
                 ?.map((slackBus) => slackBus.activePowerMismatch)
                 .reduce((prev, current) => prev + current, 0),
