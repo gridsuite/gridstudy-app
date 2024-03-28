@@ -5,15 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useCallback } from 'react';
 import { Box } from '@mui/system';
-import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
+import {Autocomplete, Chip, InputAdornment, SxProps, TextField} from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
+import { Theme } from '@mui/material';
+import { GlobalFilter } from '../../../redux/reducer.type';
 
 const styles = {
     autocomplete: (theme) => ({
@@ -40,11 +42,11 @@ const styles = {
         flexWrap: 'wrap',
         padding: '0.5em',
     },
-    recentBox: (theme) => ({
+    recentBox: (theme: Theme) => ({
         borderBottom: '1px solid',
         borderColor: theme.palette.divider,
     }),
-    recentLabel: (theme) => ({
+    recentLabel: (theme: Theme) => ({
         color: theme.palette.text.secondary,
         fontSize: 'small',
         width: '100%',
@@ -95,23 +97,40 @@ const styles = {
     },
 };
 
-const ResultsGlobalFilter = ({ onChange, filters = [] }) => {
+export interface Filter {
+    label: string;
+    filterType: string;
+    recent?: boolean;
+}
+
+export interface ResultsGlobalFilterProps {
+    onChange: (value: Filter[]) => void;
+    filters: Filter[];
+}
+
+const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
+    onChange,
+    filters = [],
+}) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch();
     const recentGlobalFilters = useSelector(
-        (state) => state.recentGlobalFilters
+        (state: GlobalFilter) => state.recentGlobalFilters
     );
 
     const getOptionLabel = useCallback(
-        (option) =>
+        (option: Filter) =>
             option.filterType === 'country'
                 ? translate(option.label)
                 : option.label + ' kV',
         [translate]
     );
 
-    const handleChange = (event, value) => {
+    const handleChange = (
+        _event: SyntheticEvent<Element, Event>,
+        value: Filter[]
+    ) => {
         // Updates the "recent" filters
         dispatch(addToRecentGlobalFilters(value));
         onChange(value);
@@ -134,16 +153,16 @@ const ResultsGlobalFilter = ({ onChange, filters = [] }) => {
                             recentGlobalFilters.length > 0
                         ) {
                             isRecent = recentGlobalFilters.some(
-                                (recent) =>
+                                (recent: Filter) =>
                                     recent.label === filter.label &&
                                     recent.filterType === filter.filterType
                             );
                         }
                         return { ...filter, recent: isRecent };
                     })
-                    .sort((a, b) => !!b.recent - !!a.recent)}
+                    .sort((obj) => (obj.recent ? -1 : 1))}
                 onChange={handleChange}
-                groupBy={(option) => !!option.recent}
+                groupBy={(option: any) => option.recent}
                 // renderInput : the inputfield that contains the chips, adornments and label
                 renderInput={(params) => (
                     <TextField
@@ -168,11 +187,6 @@ const ResultsGlobalFilter = ({ onChange, filters = [] }) => {
                 renderTags={(value, getTagsProps) =>
                     value.map((element, index) => (
                         <Chip
-                            key={
-                                'keyChipTag_' +
-                                element.filterType +
-                                element.label
-                            }
                             size={'small'}
                             label={getOptionLabel(element)}
                             {...getTagsProps({ index })}
@@ -207,11 +221,8 @@ const ResultsGlobalFilter = ({ onChange, filters = [] }) => {
                     );
                 }}
                 // renderOption : the chips that are in the box that is visible when we focus on the AutoComplete
-                renderOption={(props, option) => (
+                renderOption={(props, option: Filter) => (
                     <Chip
-                        key={
-                            'keyChipOption_' + option.filterType + option.label
-                        }
                         {...props}
                         disableRipple
                         label={getOptionLabel(option)}
@@ -224,6 +235,10 @@ const ResultsGlobalFilter = ({ onChange, filters = [] }) => {
                         )}
                     />
                 )}
+                isOptionEqualToValue={(option: Filter, value: Filter) =>
+                    option.label === value.label &&
+                    option.filterType === value.filterType
+                }
             />
         </Box>
     );

@@ -97,7 +97,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         fetchAllCountries(studyUuid, nodeUuid)
             .then((countryCodes) => {
                 setCountriesFilter(
-                    countryCodes.map((countryCode) => ({
+                    countryCodes.map((countryCode: string) => ({
                         label: countryCode,
                         filterType: 'country',
                     }))
@@ -253,7 +253,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         [initSort, setResult]
     );
 
-    const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
+    const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
         resetResultStates(getIdType(newTabIndex));
         setTabIndex(newTabIndex);
     };
