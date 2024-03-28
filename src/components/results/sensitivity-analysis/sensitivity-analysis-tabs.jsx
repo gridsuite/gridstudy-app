@@ -16,7 +16,7 @@ import {
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
-} from './sensitivity-analysis-content';
+} from './sensitivity-analysis-result-utils';
 
 const SensitivityAnalysisTabs = ({ sensiKind, setSensiKind }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);

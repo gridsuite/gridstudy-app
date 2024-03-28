@@ -30,7 +30,7 @@ import { ReduxState } from 'redux/reducer.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { SORT_WAYS, useAgGridSort } from 'hooks/use-aggrid-sort';
+import { SortWay, useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import {
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
@@ -40,6 +40,7 @@ import {
     loadFlowVoltageViolationsColumnsDefinition,
     makeData,
     mappingFields,
+    mappingTabs,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import {
@@ -47,6 +48,8 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { setLoadflowResultFilter } from 'redux/actions';
 import {
     NumberCellRenderer,
     StatusCellRender,
@@ -54,6 +57,7 @@ import {
 import ResultsGlobalFilter from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../services/study/network-map';
+import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -70,18 +74,19 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     );
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colKey: getIdType(tabIndex),
-        sortWay: SORT_WAYS.desc,
+        colId: getIdType(tabIndex),
+        sort: SortWay.DESC,
     });
 
+    const { updateFilter, filterSelector } = useAggridRowFilter({
+        filterType: LOADFLOW_RESULT_STORE_FIELD,
+        filterTab: mappingTabs(tabIndex),
+        filterStoreAction: setLoadflowResultFilter,
+    });
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const [countriesFilter, setCountriesFilter] = useState([]);
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState([]);
     const [globalFilters, setGlobalFilters] = useState(undefined);
-
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        mappingFields(tabIndex)
-    );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
@@ -153,13 +158,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         }
 
         return fetchLimitViolations(studyUuid, nodeUuid, {
-            sort: {
-                colKey: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[
-                    sortConfig.colKey
-                ],
-                sortWay: sortConfig.sortWay,
-            },
-            filters: updatedFilters,
+            sort: sortConfig.map((sort) => ({
+                ...sort,
+                colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
+            })),
+            filters: mapFieldsToColumnsFilter(
+                updatedFilters,
+                mappingFields(tabIndex)
+            ),
             globalFilters: updatedGlobalFilters,
         });
     }, [
@@ -239,12 +245,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const resetResultStates = useCallback(
         (defaultSortColKey: string) => {
             setResult(null);
-            initFilters();
             if (initSort) {
                 initSort(defaultSortColKey);
             }
         },
-        [initSort, initFilters, setResult]
+        [initSort, setResult]
     );
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {

@@ -84,11 +84,13 @@ import {
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
-import { SORT_WAYS } from 'hooks/use-aggrid-sort';
+import { SortWay } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
+import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -216,14 +218,6 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
-    const equipementFiltersSelectorKeys = useMemo(() => {
-        let filtersSelectorKeys = {};
-        TABLES_DEFINITION_INDEXES.get(tabIndex).columns.forEach((column) => {
-            filtersSelectorKeys[column?.field] = column?.field;
-        });
-        return filtersSelectorKeys;
-    }, [tabIndex]);
-
     const defaultSortColKey = useMemo(() => {
         const defaultSortCol = columnData.find(
             (column) => column.isDefaultSort
@@ -234,13 +228,16 @@ const TableWrapper = (props) => {
     const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
         gridRef,
         {
-            colKey: defaultSortColKey,
-            sortWay: SORT_WAYS.asc,
+            colId: defaultSortColKey,
+            sort: SortWay.ASC,
         }
     );
 
-    const { updateFilter, filterSelector, initFilters } =
-        useAggridLocalRowFilter(gridRef, equipementFiltersSelectorKeys);
+    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
+        filterType: SPREADSHEET_STORE_FIELD,
+        filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+        filterStoreAction: setSpreadsheetFilter,
+    });
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -409,8 +406,7 @@ const TableWrapper = (props) => {
 
     useEffect(() => {
         initSort(defaultSortColKey);
-        initFilters();
-    }, [tabIndex, initFilters, defaultSortColKey, initSort]);
+    }, [tabIndex, defaultSortColKey, initSort]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {

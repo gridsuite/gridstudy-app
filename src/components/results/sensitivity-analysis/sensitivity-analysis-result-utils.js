@@ -5,6 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import {
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+} from 'utils/store-filter-fields';
+
 export const SENSITIVITY_IN_DELTA_MW = 'SensitivityInDeltaMW';
 export const SENSITIVITY_IN_DELTA_A = 'SensitivityInDeltaA';
 export const SENSITIVITY_AT_NODE = 'SensitivityAtNode';
@@ -36,4 +45,22 @@ export const DATA_KEY_TO_SORT_KEY = {
     value: 'SENSITIVITY',
     functionReferenceAfter: 'POST_REFERENCE',
     valueAfter: 'POST_SENSITIVITY',
+};
+export const mappingTabs = (sensiResultKind, nOrNkIndex) => {
+    switch (sensiResultKind) {
+        case SENSITIVITY_IN_DELTA_MW:
+            return nOrNkIndex === 0
+                ? SENSITIVITY_IN_DELTA_MW_N
+                : SENSITIVITY_IN_DELTA_MW_N_K;
+        case SENSITIVITY_IN_DELTA_A:
+            return nOrNkIndex === 0
+                ? SENSITIVITY_IN_DELTA_A_N
+                : SENSITIVITY_IN_DELTA_A_N_K;
+        case SENSITIVITY_AT_NODE:
+            return nOrNkIndex === 0
+                ? SENSITIVITY_AT_NODE_N
+                : SENSITIVITY_AT_NODE_N_K;
+        default:
+            return '';
+    }
 };
