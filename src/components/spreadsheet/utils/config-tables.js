@@ -2860,6 +2860,14 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
+                id: 'voltageSetpoint',
+                field: 'targetV',
+                numeric: true,
+                ...defaultNumericFilterConfig,
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
                 id: 'connected',
                 field: 'terminalConnected',
                 boolean: true,
