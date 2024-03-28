@@ -31,6 +31,7 @@ import {
     DEFAULT_PAGE_COUNT,
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
+    mappingTabs,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -38,12 +39,15 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     useAggridRowFilter,
 } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
+import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -93,18 +97,23 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         ? 'current'
         : 'elementId';
     const defaultSortWay = isOneBusShortCircuitAnalysisType
-        ? SORT_WAYS.desc
-        : SORT_WAYS.asc;
+        ? SortWay.DESC
+        : SortWay.ASC;
     const { onSortChanged, sortConfig } = useAgGridSort({
-        colKey: defaultSortKey,
-        sortWay: defaultSortWay,
+        colId: defaultSortKey,
+        sort: defaultSortWay,
     });
+    const memoizedSetPageCallback = useCallback(() => {
+        setPage(0);
+    }, []);
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
-        fromFrontColumnToBackKeys,
-        () => {
-            setPage(0);
-        }
+        {
+            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+            filterTab: mappingTabs(analysisType),
+            filterStoreAction: setShortcircuitAnalysisResultFilter,
+        },
+        memoizedSetPageCallback
     );
 
     const handleChangePage = useCallback(
@@ -132,16 +141,21 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        const { colKey, sortWay } = sortConfig || {};
+        const backSortConfig = sortConfig?.map((sort) => ({
+            ...sort,
+            colId: fromFrontColumnToBackKeys[sort.colId],
+        }));
 
         const selector = {
             page,
             size: rowsPerPage,
-            filter: filterSelector,
-            sort: {
-                colKey: fromFrontColumnToBackKeys[colKey],
-                sortWay,
-            },
+            filter: filterSelector
+                ? mapFieldsToColumnsFilter(
+                      filterSelector,
+                      fromFrontColumnToBackKeys
+                  )
+                : null,
+            sort: backSortConfig,
         };
 
         fetchShortCircuitAnalysisPagedResults({

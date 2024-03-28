@@ -89,6 +89,12 @@ import {
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
     SET_LAST_COMPLETED_COMPUTATION,
+    LOADFLOW_RESULT_FILTER,
+    SECURITY_ANALYSIS_RESULT_FILTER,
+    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+    SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    SPREADSHEET_FILTER,
+    DYNAMIC_SIMULATION_RESULT_FILTER,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -134,6 +140,28 @@ import {
     OptionalServicesStatus,
 } from '../components/utils/optional-services';
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
+import {
+    LOADFLOW_CURRENT_LIMIT_VIOLATION,
+    LOADFLOW_RESULT,
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+    ALL_BUSES,
+    LOADFLOW_RESULT_STORE_FIELD,
+    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    TIMELINE,
+    SPREADSHEET_STORE_FIELD,
+    ONE_BUS,
+} from 'utils/store-filter-fields';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -183,6 +211,24 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: null,
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
+};
+
+const initialSpreadsheetFilter = {
+    [EQUIPMENT_TYPES.SUBSTATION]: [],
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [],
+    [EQUIPMENT_TYPES.LINE]: [],
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [],
+    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: [],
+    [EQUIPMENT_TYPES.GENERATOR]: [],
+    [EQUIPMENT_TYPES.LOAD]: [],
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [],
+    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: [],
+    [EQUIPMENT_TYPES.BATTERY]: [],
+    [EQUIPMENT_TYPES.HVDC_LINE]: [],
+    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: [],
+    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
+    [EQUIPMENT_TYPES.DANGLING_LINE]: [],
+    [EQUIPMENT_TYPES.BUS]: [],
 };
 
 export const defaultOptionalServicesState = Object.keys(
@@ -238,6 +284,35 @@ const initialState = {
     ...paramsInitialState,
     limitReductionModified: false,
     lastCompletedComputation: null,
+    // Results filters
+    [LOADFLOW_RESULT_STORE_FIELD]: {
+        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [],
+        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [],
+        [LOADFLOW_RESULT]: [],
+    },
+    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
+        [SECURITY_ANALYSIS_RESULT_N]: [],
+        [SECURITY_ANALYSIS_RESULT_N_K]: [],
+    },
+    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
+        [SENSITIVITY_IN_DELTA_MW_N]: [],
+        [SENSITIVITY_IN_DELTA_MW_N_K]: [],
+        [SENSITIVITY_IN_DELTA_A_N]: [],
+        [SENSITIVITY_IN_DELTA_A_N_K]: [],
+        [SENSITIVITY_AT_NODE_N]: [],
+        [SENSITIVITY_AT_NODE_N_K]: [],
+    },
+    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
+        [ONE_BUS]: [],
+        [ALL_BUSES]: [],
+    },
+    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
+        [TIMELINE]: [],
+    },
+
+    // Spreadsheet filters
+    [SPREADSHEET_STORE_FIELD]: { ...initialSpreadsheetFilter },
+
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -271,6 +346,10 @@ export const reducer = createReducer(initialState, {
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
             newMapEquipments.completeLinesInfos();
+        }
+        if (action.newTieLines) {
+            newMapEquipments.tieLines = action.newTieLines;
+            newMapEquipments.completeTieLinesInfos();
         }
         if (action.newSubstations) {
             newMapEquipments.substations = action.newSubstations;
@@ -1037,6 +1116,30 @@ export const reducer = createReducer(initialState, {
     [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
     },
+    [LOADFLOW_RESULT_FILTER]: (state, action) => {
+        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] =
+            action[LOADFLOW_RESULT_STORE_FIELD];
+    },
+    [SECURITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
+    },
+    [SENSITIVITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
+    },
+    [SHORTCIRCUIT_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
+    },
+    [DYNAMIC_SIMULATION_RESULT_FILTER]: (state, action) => {
+        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] =
+            action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
+    },
+    [SPREADSHEET_FILTER]: (state, action) => {
+        state[SPREADSHEET_STORE_FIELD][action.filterTab] =
+            action[SPREADSHEET_STORE_FIELD];
+    },
 });
 
 function updateSubstationAfterVLDeletion(currentSubstations, VLToDeleteId) {
@@ -1057,6 +1160,8 @@ function getEquipmentTypeFromUpdateType(updateType) {
     switch (updateType) {
         case 'lines':
             return EQUIPMENT_TYPES.LINE;
+        case 'tieLines':
+            return EQUIPMENT_TYPES.TIE_LINE;
         case 'twoWindingsTransformers':
             return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
         case 'threeWindingsTransformers':
