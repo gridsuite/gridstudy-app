@@ -10,6 +10,7 @@ import {
     Checkbox,
     IconButton,
     ListItem,
+    ListItemButton,
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
@@ -247,16 +248,19 @@ export const ColumnsConfig = ({
 
         return (
             <>
-                <ListItem
-                    sx={styles.checkboxSelectAll}
-                    onClick={handleToggleAll}
-                >
-                    <Checkbox
-                        style={{ marginLeft: '21px' }}
-                        checked={isAllChecked}
-                        indeterminate={isSomeChecked}
-                    />
-                    <FormattedMessage id="CheckAll" />
+                <ListItem sx={styles.checkboxSelectAll}>
+                    <ListItemButton
+                        role={undefined}
+                        onClick={handleToggleAll}
+                        dense
+                    >
+                        <Checkbox
+                            style={{ marginLeft: '21px' }}
+                            checked={isAllChecked}
+                            indeterminate={isSomeChecked}
+                        />
+                        <FormattedMessage id="CheckAll" />
+                    </ListItemButton>
                 </ListItem>
 
                 <DragDropContext onDragEnd={handleDrag}>
