@@ -134,6 +134,25 @@ const SensitivityParametersSelector = ({
     };
 
     const renderComputingEvent = () => {
+        if (
+            analysisComputeComplexity < 999999 &&
+            analysisComputeComplexity > 500000
+        ) {
+            return (
+                <Box sx={styles.textAlert}>
+                    <ErrorOutlineIcon
+                        size={'1em'}
+                        sx={styles.errorOutlineIcon}
+                    />
+                    <FormattedMessage
+                        id="sensitivityAnalysis.simulatedComputations"
+                        values={{
+                            count: analysisComputeComplexity.toString(),
+                        }}
+                    />
+                </Box>
+            );
+        }
         if (analysisComputeComplexity > 999999) {
             return (
                 <Box sx={styles.textAlert}>
