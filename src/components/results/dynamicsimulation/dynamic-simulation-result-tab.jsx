@@ -12,6 +12,7 @@ import TabPanelLazy from '../common/tab-panel-lazy';
 import DynamicSimulationResultTimeSeries from './dynamic-simulation-result-time-series';
 import DynamicSimulationResultSynthesis from './dynamic-simulation-result-synthesis';
 import DynamicSimulationResultTimeline from './dynamic-simulation-result-timeline';
+import DynamicSimulationResultLog from './dynamic-simulation-result-log';
 
 const styles = {
     resultContainer: {
@@ -22,6 +23,7 @@ const styles = {
 const TAB_INDEX_TIME_SERIES = 'DynamicSimulationTabTimeSeries';
 const TAB_INDEX_TIMELINE = 'DynamicSimulationTabTimeline';
 const TAB_INDEX_STATUS = 'DynamicSimulationTabStatus';
+const TAB_INDEX_LOG = 'ComputationResultsLogs';
 
 const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
     const intl = useIntl();
@@ -54,6 +56,12 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
                         })}
                         value={TAB_INDEX_STATUS}
                     />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: TAB_INDEX_LOG,
+                        })}
+                        value={TAB_INDEX_LOG}
+                    />
                 </Tabs>
             </Box>
             <Box sx={styles.resultContainer}>
@@ -74,6 +82,9 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                     />
+                </TabPanelLazy>
+                <TabPanelLazy selected={tabIndex === TAB_INDEX_LOG}>
+                    <DynamicSimulationResultLog />
                 </TabPanelLazy>
             </Box>
         </>
