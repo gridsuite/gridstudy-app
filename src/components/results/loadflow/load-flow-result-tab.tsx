@@ -58,6 +58,7 @@ import ResultsGlobalFilter from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import Glasspane from '../common/glasspane';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -322,41 +323,46 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         }
                     />
                 </Tabs>
-                <Box sx={{ flexGrow: 0 }}>
+                <Box
+                    sx={{
+                        flexGrow: 0,
+                        display:
+                            tabIndex === 0 || tabIndex === 1
+                                ? 'inherit'
+                                : 'none',
+                    }}
+                >
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
                         filters={[...countriesFilter, ...voltageLevelsFilter]}
                     />
                 </Box>
-                {isLoadingResult && (
-                    /* TODO update this : we have to add a glasspane and big spinner over the results. */ <Box
-                        sx={{ backgroundColor: 'red', color: 'white' }}
-                    >
-                        LOADING
-                    </Box>
-                )}
                 <Box sx={{ flexGrow: 1 }}></Box>
             </Box>
 
             {tabIndex === 0 && (
-                <LimitViolationResult
-                    result={result}
-                    isLoadingResult={isLoadingResult || filterEnumsLoading}
-                    columnDefs={loadFlowLimitViolationsColumns}
-                    tableName={intl.formatMessage({
-                        id: 'LoadFlowResultsCurrentViolations',
-                    })}
-                />
+                <Glasspane active={isLoadingResult}>
+                    <LimitViolationResult
+                        result={result}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        columnDefs={loadFlowLimitViolationsColumns}
+                        tableName={intl.formatMessage({
+                            id: 'LoadFlowResultsCurrentViolations',
+                        })}
+                    />
+                </Glasspane>
             )}
             {tabIndex === 1 && (
-                <LimitViolationResult
-                    result={result}
-                    isLoadingResult={isLoadingResult || filterEnumsLoading}
-                    columnDefs={loadFlowLimitViolationsColumns}
-                    tableName={intl.formatMessage({
-                        id: 'LoadFlowResultsVoltageViolations',
-                    })}
-                />
+                <Glasspane active={isLoadingResult}>
+                    <LimitViolationResult
+                        result={result}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        columnDefs={loadFlowLimitViolationsColumns}
+                        tableName={intl.formatMessage({
+                            id: 'LoadFlowResultsVoltageViolations',
+                        })}
+                    />
+                </Glasspane>
             )}
             {tabIndex === 2 && (
                 <LoadFlowResult

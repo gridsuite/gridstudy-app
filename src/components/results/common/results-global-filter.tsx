@@ -12,6 +12,8 @@ import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToRecentGlobalFilters } from '../../../redux/actions';
 
 const styles = {
     autocomplete: (theme) => ({
@@ -24,11 +26,11 @@ const styles = {
             position: 'absolute',
             width: 'inherit',
             height: 'inherit',
-            zIndex: 2,
+            zIndex: 20,
             background: theme.palette.tabBackground,
         },
         '.MuiInputLabel-root': {
-            zIndex: 3,
+            zIndex: 30,
             width: 'auto',
         },
     }),
@@ -93,22 +95,13 @@ const styles = {
     },
 };
 
-// TODO add the "recent" system
-/*const filters = [
-    {
-        label: 'FR',
-        filterType: 'country',
-        recent: true,
-    },
-    {
-        label: 'BE',
-        filterType: 'country',
-    },
-];*/
-
-const ResultsGlobalFilter = ({ onChange, filters }) => {
+const ResultsGlobalFilter = ({ onChange, filters = [] }) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
+    const dispatch = useDispatch();
+    const recentGlobalFilters = useSelector(
+        (state) => state.recentGlobalFilters
+    );
 
     const getOptionLabel = useCallback(
         (option) =>
@@ -119,6 +112,8 @@ const ResultsGlobalFilter = ({ onChange, filters }) => {
     );
 
     const handleChange = (event, value) => {
+        // Updates the "recent" filters
+        dispatch(addToRecentGlobalFilters(value));
         onChange(value);
     };
 
@@ -131,7 +126,22 @@ const ResultsGlobalFilter = ({ onChange, filters }) => {
                 size="small"
                 limitTags={3}
                 disableCloseOnSelect
-                options={filters.sort((a, b) => !!b.recent - !!a.recent)}
+                options={filters
+                    .map((filter) => {
+                        let isRecent = false;
+                        if (
+                            recentGlobalFilters &&
+                            recentGlobalFilters.length > 0
+                        ) {
+                            isRecent = recentGlobalFilters.some(
+                                (recent) =>
+                                    recent.label === filter.label &&
+                                    recent.filterType === filter.filterType
+                            );
+                        }
+                        return { ...filter, recent: isRecent };
+                    })
+                    .sort((a, b) => !!b.recent - !!a.recent)}
                 onChange={handleChange}
                 groupBy={(option) => !!option.recent}
                 // renderInput : the inputfield that contains the chips, adornments and label
