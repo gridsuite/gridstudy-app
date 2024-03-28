@@ -18,6 +18,7 @@ import {
     Select,
     TextField,
 } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SORT_WAYS as SORT_WAY } from '../../hooks/use-aggrid-sort';
@@ -138,20 +139,19 @@ const CustomHeaderComponent = ({
         });
     };
 
+    const handleFilterBooleanChange = (event) => {
+        const value = event.target.value;
+        handleSelectedFilterDataChange(value);
+    };
+
     const handleFilterAutoCompleteChange = (_, data) => {
+        handleSelectedFilterDataChange(data);
+    };
+
+    const handleSelectedFilterDataChange = (data) => {
         setSelectedFilterData(data);
         debouncedUpdateFilter(field, {
             value: data,
-            type: FILTER_TEXT_COMPARATORS.EQUALS,
-            dataType: filterDataType,
-        });
-    };
-
-    const handleFilterBooleanChange = (event) => {
-        const value = event.target.value;
-        setSelectedFilterData(value);
-        debouncedUpdateFilter(field, {
-            value: value,
             type: FILTER_TEXT_COMPARATORS.EQUALS,
             dataType: filterDataType,
         });
@@ -357,11 +357,23 @@ const CustomHeaderComponent = ({
                         />
                     ) : isBooleanFilter ? (
                         <Select
+                            fullWidth
+                            size={'small'}
                             value={selectedFilterData || ''}
                             onChange={handleFilterBooleanChange}
-                            displayEmpty
-                            size={'small'}
                             sx={styles.input}
+                            endAdornment={
+                                selectedFilterData && (
+                                    <IconButton
+                                        onClick={() =>
+                                            handleSelectedFilterDataChange('')
+                                        }
+                                        sx={styles.iconSize}
+                                    >
+                                        <ClearIcon />
+                                    </IconButton>
+                                )
+                            }
                         >
                             {customFilterOptions.map((option) => (
                                 <MenuItem key={option} value={option}>

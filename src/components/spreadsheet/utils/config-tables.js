@@ -143,8 +143,8 @@ const defaultBooleanFilterConfig = {
                         return filterValue === cellValue.toString();
                     }
 
-                    // if cellValue is undefined or null, we return true if the filter selected is false
-                    return filterValue === 'false';
+                    // we return true if the filter chosen is undefinedValue
+                    return filterValue === 'undefinedValue';
                 },
             },
         ],
