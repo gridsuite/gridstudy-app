@@ -98,9 +98,9 @@ const generateDateString = () => {
 const formSchema = yup
     .object()
     .shape({
-        [FILTER_NAME]: yup.string(),
-        [NAME]: yup.string(),
-        equipmentType: yup.string(),
+        [FILTER_NAME]: yup.string().required(),
+        [NAME]: yup.string().required(),
+        equipmentType: yup.string().required(),
     })
     .required();
 const emptyFormData = {
@@ -245,6 +245,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     >
                         <Button
                             variant="contained"
+                            type={'submit'}
                             onClick={() => {
                                 formMethods.trigger().then((isValid) => {
                                     if (isValid) {
