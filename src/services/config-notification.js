@@ -29,3 +29,8 @@ export function connectNotificationsWsUpdateConfig() {
     };
     return reconnectingWebSocket;
 }
+
+export function getAnnouncementsWsUrl() {
+    const webSocketBaseUrl = getWsBase();
+    return webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/global';
+}
