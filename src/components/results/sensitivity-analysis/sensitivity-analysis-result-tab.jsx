@@ -13,13 +13,13 @@ import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result'
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     COMPUTATION_RESULTS_LOGS,
-    DATA_KEY_TO_FILTER_KEY,
     FUNCTION_TYPES,
+    mappingTabs,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
-} from './sensitivity-analysis-content';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+} from './sensitivity-analysis-result-utils';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -33,6 +33,8 @@ import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
+import { setSensitivityAnalysisResultFilter } from 'redux/actions';
+import { SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -57,19 +59,20 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        DATA_KEY_TO_FILTER_KEY
-    );
+    const { updateFilter, filterSelector } = useAggridRowFilter({
+        filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+        filterTab: mappingTabs(sensiKind, nOrNkIndex),
+        filterStoreAction: setSensitivityAnalysisResultFilter,
+    });
 
     // Add default sort on sensitivity col
     const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';
-    const defaultSortOrder = SORT_WAYS.asc;
+    const defaultSortOrder = SortWay.ASC;
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colKey: defaultSortColumn,
-        sortWay: defaultSortOrder,
+        colId: defaultSortColumn,
+        sort: defaultSortOrder,
     });
     const initTable = (nOrNkIndex) => {
-        initFilters();
         initSort(nOrNkIndex ? 'valueAfter' : 'value');
 
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
