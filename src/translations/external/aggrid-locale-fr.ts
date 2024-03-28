@@ -17,6 +17,7 @@ const aggrid_locale_fr = {
     'grid.notBlank': "N'est pas vide",
     'grid.inRange': 'Intervalle',
     'grid.customInRange': 'Intervalle', // Custom filter for enums
+    'grid.booleanMatches': 'Correspondances booléennes',
     'grid.lessThan': 'Moins que',
     'grid.lessThanOrEqual': 'Moins ou égal à',
     'grid.greaterThan': 'Plus que',

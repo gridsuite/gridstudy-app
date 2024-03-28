@@ -15,6 +15,7 @@ import { AnyAction } from 'redux';
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
     NUMBER = 'number',
+    BOOLEAN = 'boolean',
 }
 
 export enum FILTER_TEXT_COMPARATORS {

@@ -18,6 +18,7 @@ import {
     Select,
     TextField,
 } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SortWay } from '../../hooks/use-aggrid-sort';
@@ -81,9 +82,11 @@ const CustomHeaderComponent = ({
 
     const { translate } = useLocalizedCountries();
 
+    const isBooleanFilter = filterDataType === FILTER_DATA_TYPES.BOOLEAN;
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
         !!customFilterOptions?.length;
+
     const isNumberInput =
         filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const columnSort = sortConfig?.find((value) => value.colId === field);
@@ -95,7 +98,7 @@ const CustomHeaderComponent = ({
     const shouldActivateFilter =
         isFilterable &&
         filterDataType &&
-        (isAutoCompleteFilter || !!filterComparators.length);
+        (isAutoCompleteFilter || !!filterComparators.length || isBooleanFilter);
 
     const intl = useIntl();
 
@@ -136,7 +139,16 @@ const CustomHeaderComponent = ({
         });
     };
 
+    const handleFilterBooleanChange = (event) => {
+        const value = event.target.value;
+        handleSelectedFilterDataChange(value);
+    };
+
     const handleFilterAutoCompleteChange = (_, data) => {
+        handleSelectedFilterDataChange(data);
+    };
+
+    const handleSelectedFilterDataChange = (data) => {
         setSelectedFilterData(data);
         debouncedUpdateFilter(field, {
             value: data,
@@ -352,6 +364,34 @@ const CustomHeaderComponent = ({
                             )}
                             fullWidth
                         />
+                    ) : isBooleanFilter ? (
+                        <Select
+                            fullWidth
+                            size={'small'}
+                            value={selectedFilterData || ''}
+                            onChange={handleFilterBooleanChange}
+                            sx={styles.input}
+                            endAdornment={
+                                selectedFilterData && (
+                                    <IconButton
+                                        onClick={() =>
+                                            handleSelectedFilterDataChange('')
+                                        }
+                                        sx={styles.iconSize}
+                                    >
+                                        <ClearIcon />
+                                    </IconButton>
+                                )
+                            }
+                        >
+                            {customFilterOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {intl.formatMessage({
+                                        id: option,
+                                    })}
+                                </MenuItem>
+                            ))}
+                        </Select>
                     ) : (
                         <Grid
                             container
@@ -422,6 +462,7 @@ CustomHeaderComponent.propTypes = {
         filterDataType: PropTypes.oneOf([
             FILTER_DATA_TYPES.TEXT,
             FILTER_DATA_TYPES.NUMBER,
+            FILTER_DATA_TYPES.BOOLEAN,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
