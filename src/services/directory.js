@@ -49,15 +49,15 @@ export function fetchContingencyAndFiltersLists(listIds) {
     return backendFetchJson(url);
 }
 
-function getPathUrl(studyUuid) {
+function getPathUrl(elementUuid) {
     return `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements/${encodeURIComponent(
-        studyUuid
+        elementUuid
     )}/path`;
 }
 
-export function fetchPath(studyUuid) {
-    console.info(`Fetching element '${studyUuid}' and its parents info ...`);
-    const fetchPathUrl = getPathUrl(studyUuid);
+export function fetchPath(elementUuid) {
+    console.info(`Fetching element '${elementUuid}' and its parents info ...`);
+    const fetchPathUrl = getPathUrl(elementUuid);
     console.debug(fetchPathUrl);
     return backendFetchJson(fetchPathUrl);
 }

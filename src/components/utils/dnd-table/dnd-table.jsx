@@ -36,6 +36,7 @@ import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
+import { fetchPath } from '../../../services/directory.js';
 
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
@@ -136,6 +137,7 @@ function EditableTableCell({
                     fetchDirectoryContent={fetchDirectoryContent}
                     fetchRootFolders={fetchRootFolders}
                     fetchElementsInfos={fetchElementsMetadata}
+                    fetchDirectoryElementPath={fetchPath}
                 />
             )}
             {column.chipItems && (

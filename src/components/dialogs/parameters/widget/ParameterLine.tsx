@@ -13,7 +13,11 @@ import { Mark } from '@mui/base/useSlider';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { SelectInputProps } from '@mui/material/Select/SelectInput';
 import { mergeSx } from '../../../utils/functions';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import {
+    fetchDirectoryContent,
+    fetchPath,
+    fetchRootFolders,
+} from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
 export enum ParameterType {
@@ -231,6 +235,7 @@ const ParamLineDirectoryItemsInput: FunctionComponent<
                     fetchDirectoryContent={fetchDirectoryContent}
                     fetchRootFolders={fetchRootFolders}
                     fetchElementsInfos={fetchElementsMetadata}
+                    fetchDirectoryElementPath={fetchPath}
                 />
             </Grid>
         </Grid>

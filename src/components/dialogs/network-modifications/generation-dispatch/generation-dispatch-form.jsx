@@ -27,6 +27,7 @@ import { FieldLabel } from '@gridsuite/commons-ui';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
+import { fetchPath } from '../../../../services/directory.js';
 
 const GenerationDispatchForm = () => {
     const handleCoefficientValueChange = (id, value) => {
@@ -59,6 +60,7 @@ const GenerationDispatchForm = () => {
                     fetchDirectoryContent={fetchDirectoryContent}
                     fetchRootFolders={fetchRootFolders}
                     fetchElementsInfos={fetchElementsMetadata}
+                    fetchDirectoryElementPath={fetchPath}
                 />
             </Grid>
         </Grid>
@@ -99,6 +101,7 @@ const GenerationDispatchForm = () => {
                     fetchDirectoryContent={fetchDirectoryContent}
                     fetchRootFolders={fetchRootFolders}
                     fetchElementsInfos={fetchElementsMetadata}
+                    fetchDirectoryElementPath={fetchPath}
                 />
             </Grid>
         </Grid>
