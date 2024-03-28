@@ -88,6 +88,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     MAP_EQUIPMENTS_INITIALIZED,
+    ADD_TO_RECENT_GLOBAL_FILTERS,
     SET_LAST_COMPLETED_COMPUTATION,
     LOADFLOW_RESULT_FILTER,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -283,6 +284,7 @@ const initialState = {
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
+    recentGlobalFilters: [],
     lastCompletedComputation: null,
     // Results filters
     [LOADFLOW_RESULT_STORE_FIELD]: {
@@ -1112,6 +1114,21 @@ export const reducer = createReducer(initialState, {
     },
     [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
         state.studyIndexationStatus = action.studyIndexationStatus;
+    },
+    [ADD_TO_RECENT_GLOBAL_FILTERS]: (state, action) => {
+        let newRecentGlobalFilters = [...state.recentGlobalFilters];
+        action.globalFilters.forEach((filter) => {
+            if (
+                !newRecentGlobalFilters.some(
+                    (obj) =>
+                        obj.label === filter.label &&
+                        obj.filterType === filter.filterType
+                )
+            ) {
+                newRecentGlobalFilters.push(filter);
+            }
+        });
+        state.recentGlobalFilters = newRecentGlobalFilters;
     },
     [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
         state.lastCompletedComputation = action.lastCompletedComputation;

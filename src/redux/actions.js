@@ -682,6 +682,15 @@ export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
     };
 }
 
+export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
+
+export function addToRecentGlobalFilters(globalFilters) {
+    return {
+        type: ADD_TO_RECENT_GLOBAL_FILTERS,
+        globalFilters: globalFilters,
+    };
+}
+
 export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 
 export function setLastCompletedComputation(lastCompletedComputation) {

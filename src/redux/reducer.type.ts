@@ -9,6 +9,7 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { IOptionalService } from '../components/utils/optional-services';
+import { Filter } from '../components/results/common/results-global-filter';
 
 export enum UpdateTypes {
     STUDY = 'study',
@@ -127,4 +128,8 @@ interface Profile {
     name: string;
     email: string;
     s_hash: string;
+}
+
+export interface GlobalFilter {
+    recentGlobalFilters: Filter[];
 }

@@ -9,11 +9,13 @@ import React, {
     FunctionComponent,
     SyntheticEvent,
     useCallback,
+    useEffect,
     useMemo,
     useState,
 } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
@@ -52,12 +54,17 @@ import {
     NumberCellRenderer,
     StatusCellRender,
 } from '../common/result-cell-renderers';
+import ResultsGlobalFilter from '../common/results-global-filter';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchAllCountries } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import Glasspane from '../common/glasspane';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
 }) => {
+    const { snackError } = useSnackMessage();
     const intl = useIntl();
     const loadflowResultInvalidations = ['loadflowResult'];
 
@@ -77,9 +84,48 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         filterTab: mappingTabs(tabIndex),
         filterStoreAction: setLoadflowResultFilter,
     });
+    const mapEquipments = useSelector((state) => state.mapEquipments);
+    const [countriesFilter, setCountriesFilter] = useState([]);
+    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState([]);
+    const [globalFilters, setGlobalFilters] = useState(undefined);
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
+
+    // load countries
+    useEffect(() => {
+        fetchAllCountries(studyUuid, nodeUuid)
+            .then((countryCodes) => {
+                setCountriesFilter(
+                    countryCodes.map((countryCode: string) => ({
+                        label: countryCode,
+                        filterType: 'country',
+                    }))
+                );
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'DynamicSimulationFetchCountryError',
+                });
+            });
+    }, [nodeUuid, studyUuid, snackError]);
+
+    // load voltage levels
+    useEffect(() => {
+        const voltageLevels = mapEquipments.getVoltageLevels();
+        const nominalVs = voltageLevels.map((element) =>
+            element.nominalV?.toString()
+        );
+        const uniqueNominalV = [...new Set(nominalVs)];
+
+        setVoltageLevelsFilter(
+            uniqueNominalV.map((nominalV) => ({
+                label: nominalV,
+                filterType: 'voltageLevel',
+            }))
+        );
+    }, [mapEquipments]);
 
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =
@@ -103,6 +149,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                           value: limitTypeValues,
                       },
                   ];
+        let updatedGlobalFilters = undefined;
+        if (globalFilters && Object.keys(globalFilters).length > 0) {
+            updatedGlobalFilters = {
+                ...globalFilters,
+                limitViolationsType:
+                    tabIndex === 0 ? LimitTypes.CURRENT : 'VOLTAGE',
+            };
+        }
+
         return fetchLimitViolations(studyUuid, nodeUuid, {
             sort: sortConfig.map((sort) => ({
                 ...sort,
@@ -112,8 +167,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 updatedFilters,
                 mappingFields(tabIndex)
             ),
+            globalFilters: updatedGlobalFilters,
         });
-    }, [studyUuid, nodeUuid, sortConfig, filterSelector, tabIndex]);
+    }, [
+        studyUuid,
+        nodeUuid,
+        sortConfig,
+        filterSelector,
+        tabIndex,
+        globalFilters,
+    ]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
         return fetchLoadFlowResult(studyUuid, nodeUuid, {
@@ -190,9 +253,31 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         [initSort, setResult]
     );
 
-    const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
+    const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
         resetResultStates(getIdType(newTabIndex));
         setTabIndex(newTabIndex);
+    };
+
+    const handleGlobalFilterChange = (value: any) => {
+        let formattedData;
+        if (value) {
+            // We update the format of the filter to reflect the DTO in the backend
+            formattedData = value.reduce((accumulator, currentItem) => {
+                const { label, filterType } = currentItem;
+                let key;
+                if (filterType === 'voltageLevel') {
+                    key = 'nominalV';
+                } else {
+                    key = 'countryCode';
+                }
+                if (!accumulator[key]) {
+                    accumulator[key] = [];
+                }
+                accumulator[key].push(label);
+                return accumulator;
+            }, {});
+        }
+        setGlobalFilters(formattedData);
     };
 
     const result = useMemo(() => {
@@ -204,10 +289,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         }
         return loadflowResult;
     }, [tabIndex, loadflowResult, intl]);
+
     return (
         <>
-            <div>
-                <Tabs value={tabIndex} onChange={handleTabChange}>
+            <Box sx={{ display: 'flex' }}>
+                <Tabs
+                    value={tabIndex}
+                    onChange={handleTabChange}
+                    sx={{ flexGrow: 0 }}
+                >
                     <Tab
                         label={
                             <FormattedMessage
@@ -233,27 +323,46 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                         }
                     />
                 </Tabs>
-            </div>
+                <Box
+                    sx={{
+                        flexGrow: 0,
+                        display:
+                            tabIndex === 0 || tabIndex === 1
+                                ? 'inherit'
+                                : 'none',
+                    }}
+                >
+                    <ResultsGlobalFilter
+                        onChange={handleGlobalFilterChange}
+                        filters={[...countriesFilter, ...voltageLevelsFilter]}
+                    />
+                </Box>
+                <Box sx={{ flexGrow: 1 }}></Box>
+            </Box>
 
             {tabIndex === 0 && (
-                <LimitViolationResult
-                    result={result}
-                    isLoadingResult={isLoadingResult || filterEnumsLoading}
-                    columnDefs={loadFlowLimitViolationsColumns}
-                    tableName={intl.formatMessage({
-                        id: 'LoadFlowResultsCurrentViolations',
-                    })}
-                />
+                <Glasspane active={isLoadingResult}>
+                    <LimitViolationResult
+                        result={result}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        columnDefs={loadFlowLimitViolationsColumns}
+                        tableName={intl.formatMessage({
+                            id: 'LoadFlowResultsCurrentViolations',
+                        })}
+                    />
+                </Glasspane>
             )}
             {tabIndex === 1 && (
-                <LimitViolationResult
-                    result={result}
-                    isLoadingResult={isLoadingResult || filterEnumsLoading}
-                    columnDefs={loadFlowLimitViolationsColumns}
-                    tableName={intl.formatMessage({
-                        id: 'LoadFlowResultsVoltageViolations',
-                    })}
-                />
+                <Glasspane active={isLoadingResult}>
+                    <LimitViolationResult
+                        result={result}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        columnDefs={loadFlowLimitViolationsColumns}
+                        tableName={intl.formatMessage({
+                            id: 'LoadFlowResultsVoltageViolations',
+                        })}
+                    />
+                </Glasspane>
             )}
             {tabIndex === 2 && (
                 <LoadFlowResult
