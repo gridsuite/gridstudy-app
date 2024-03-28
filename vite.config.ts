@@ -16,7 +16,7 @@ import * as url from 'node:url';
 import { createRequire } from 'node:module';
 
 const serverSettings: CommonServerOptions = {
-    port: 3000,
+    port: 3002,
     proxy: {
         '/api/gateway': {
             target: 'http://localhost:9000',
