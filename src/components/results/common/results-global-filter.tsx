@@ -6,7 +6,7 @@
  */
 
 import React, { FunctionComponent, SyntheticEvent, useCallback } from 'react';
-import { Box } from '@mui/material';
+import { Box, FilterOptionsState } from '@mui/material';
 import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -241,9 +241,26 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                         />
                     );
                 }}
+                // Allows to find the corresponding chips without taking into account the recent status
                 isOptionEqualToValue={(option: Filter, value: Filter) =>
                     option.label === value.label &&
                     option.filterType === value.filterType
+                }
+                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                filterOptions={(
+                    options: Filter[],
+                    state: FilterOptionsState<Filter>
+                ) =>
+                    options.filter((option) => {
+                        if (option.filterType === 'country') {
+                            return translate(option.label)
+                                .toLowerCase()
+                                .includes(state.inputValue.toLowerCase());
+                        }
+                        return option.label
+                            .toLowerCase()
+                            .includes(state.inputValue.toLowerCase());
+                    })
                 }
             />
         </Box>
