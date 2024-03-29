@@ -6,8 +6,8 @@
  */
 
 import React, { FunctionComponent, SyntheticEvent, useCallback } from 'react';
-import { Box } from '@mui/system';
-import {Autocomplete, Chip, InputAdornment, SxProps, TextField} from '@mui/material';
+import { Box } from '@mui/material';
+import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
@@ -18,7 +18,7 @@ import { Theme } from '@mui/material';
 import { GlobalFilter } from '../../../redux/reducer.type';
 
 const styles = {
-    autocomplete: (theme) => ({
+    autocomplete: (theme: Theme) => ({
         width: '420px',
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
@@ -221,20 +221,23 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                     );
                 }}
                 // renderOption : the chips that are in the box that is visible when we focus on the AutoComplete
-                renderOption={(props, option: Filter) => (
-                    <Chip
-                        {...props}
-                        disableRipple
-                        label={getOptionLabel(option)}
-                        size="small"
-                        sx={mergeSx(
-                            styles.chip,
-                            option.filterType === 'country'
-                                ? styles.chipCountry
-                                : styles.chipVoltageLevel
-                        )}
-                    />
-                )}
+                renderOption={(props, option: Filter) => {
+                    const { children, color, ...otherProps } = props;
+                    return (
+                        <Chip
+                            {...otherProps}
+                            component="li"
+                            label={getOptionLabel(option)}
+                            size="small"
+                            sx={mergeSx(
+                                styles.chip,
+                                option.filterType === 'country'
+                                    ? styles.chipCountry
+                                    : styles.chipVoltageLevel
+                            )}
+                        />
+                    );
+                }}
                 isOptionEqualToValue={(option: Filter, value: Filter) =>
                     option.label === value.label &&
                     option.filterType === value.filterType
