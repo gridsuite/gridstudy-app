@@ -64,7 +64,8 @@
         "build": "tsc && vite build",
         "serve": "vite preview",
         "test": "jest",
-        "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0"
+        "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0",
+        "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"$( jq -r .onlyAllow[] license-checker-config.json | tr '\n' ';')\" --excludePackages \"$( jq -r .excludePackages[] license-checker-config.json | tr '\n' ';')\""
     },
     "devDependencies": {
         "@babel/helper-builder-react-jsx": "7.22.10",
@@ -92,7 +93,8 @@
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
         "jest-svg-transformer": "^1.0.0",
-        "prettier": "^3.2.5",
+        "license-checker": "^25.0.1",
+        "prettier": "^2.8.8",
         "ts-node": "^10.9.2",
         "vite": "^5.2.7",
         "vite-plugin-eslint": "^1.8.1",

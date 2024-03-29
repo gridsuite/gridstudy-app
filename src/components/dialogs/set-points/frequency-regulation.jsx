@@ -40,13 +40,13 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
 
     const frequencyRegulationField = isEquipmentModification ? (
         /** wrappe with box to avoid warning */
-        <Box>
+        (<Box>
             <CheckboxNullableInput
                 name={FREQUENCY_REGULATION}
                 label={'FrequencyRegulation'}
                 previousValue={previousFrequencyRegulation}
             />
-        </Box>
+        </Box>)
     ) : (
         <Box>
             <SwitchInput

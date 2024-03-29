@@ -9,8 +9,8 @@ import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
 import { SortConfigType } from '../../../hooks/use-aggrid-sort';
-import { FilterSelectorType } from '../../../hooks/use-aggrid-row-filter';
 import { UUID } from 'crypto';
+import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -47,7 +47,7 @@ export interface SecurityAnalysisNmkTableRow {
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;
-    limitName?: string;
+    limitName?: string | null;
     limitType?: string;
     linkedElementId?: string;
     loading?: number;
@@ -79,7 +79,7 @@ export interface PreContingencyResult {
 
 export type QueryParamsType = Record<
     string,
-    string | number | SortConfigType | FilterSelectorType[]
+    string | number | SortConfigType[] | FilterSelectorType[]
 >;
 
 type Sort = {

@@ -101,20 +101,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const columns = useMemo(() => {
         const isAllBusesAnalysisType =
             analysisType === ShortCircuitAnalysisType.ALL_BUSES;
-        const isOneBusAnalysisType =
-            analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
         const sortPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
             ? sortProps
             : undefined;
-        const sortPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType
-            ? sortProps
-            : undefined;
 
         const filterPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
-            ? filterProps
-            : undefined;
-        const filterPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType
             ? filterProps
             : undefined;
 
@@ -154,8 +146,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-                sortProps: sortPropsCheckedForOneBusAnalysisType,
-                filterProps: filterPropsCheckedForOneBusAnalysisType,
+                sortProps: { ...sortProps, children: true },
+                filterProps: filterProps,
                 filterParams: textFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
@@ -164,7 +156,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 numeric: true,
                 fractionDigits: 2,
                 sortProps,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterProps,
                 filterParams: numericFilterParams,
             }),
             makeAgGridCustomHeaderColumn({

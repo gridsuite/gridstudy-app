@@ -8,11 +8,14 @@
 import { AgGridReact } from 'ag-grid-react';
 import React, { useCallback, useEffect } from 'react';
 import {
-    FilterSelectorType,
     UseAggridRowFilterOutputType,
     useAggridRowFilter,
 } from './use-aggrid-row-filter';
-import { FILTER_DATA_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import {
+    FilterSelectorType,
+    FilterStorePropsType,
+    FILTER_DATA_TYPES,
+} from 'components/custom-aggrid/custom-aggrid-header.type';
 
 interface FilterModel {
     [colId: string]: any;
@@ -20,13 +23,11 @@ interface FilterModel {
 
 export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
-    filterSelectorKeys: Record<string, string>,
-    updateFilterCallback?: () => {}
+    filterStoreParam: FilterStorePropsType
 ): UseAggridRowFilterOutputType => {
-    const { updateFilter, filterSelector, initFilters } = useAggridRowFilter(
-        filterSelectorKeys,
-        updateFilterCallback
-    );
+    const columns = gridRef.current?.api?.getColumnDefs();
+    const { updateFilter, filterSelector } =
+        useAggridRowFilter(filterStoreParam);
 
     const generateEnumFilterModel = useCallback(
         (filter: FilterSelectorType) => {
@@ -66,11 +67,31 @@ export const useAggridLocalRowFilter = (
 
     const setFiltersInAgGrid = useCallback(
         (filters: FilterSelectorType[] | null) => {
-            if (filters) {
+            // Check if filters are provided and if the AG Grid API is accessible
+            if (!filters || !gridRef.current?.api) {
+                return; // Exit if no filters are provided or if the grid API is not accessible
+            }
+
+            // Retrieve the current column definitions from AG Grid
+            const currentColumnDefs = gridRef.current.api.getColumnDefs();
+
+            // Check if all filters' columns exist in the current column definitions
+            const allColumnsExist = filters.every((filter) =>
+                currentColumnDefs?.some((colDef) => {
+                    return (
+                        // Ensure the column definition has a 'field' property
+                        // and it matches the filter's column field
+                        ('field' in colDef &&
+                        filter && colDef?.field === filter.column)
+                    );
+                })
+            );
+
+            // If all columns referenced by the filters exist, apply the filters
+            if (allColumnsExist) {
+                // Format the filters for AG Grid and apply them using setFilterModel
                 const formattedFilters = formatCustomFiltersForAgGrid(filters);
-                gridRef.current?.api?.setFilterModel(formattedFilters);
-            } else {
-                gridRef.current?.api?.setFilterModel(null);
+                gridRef.current.api.setFilterModel(formattedFilters);
             }
         },
         [formatCustomFiltersForAgGrid, gridRef]
@@ -78,7 +99,7 @@ export const useAggridLocalRowFilter = (
 
     useEffect(() => {
         setFiltersInAgGrid(filterSelector);
-    }, [filterSelector, setFiltersInAgGrid]);
+    }, [filterSelector, setFiltersInAgGrid, columns]);
 
-    return { updateFilter, filterSelector, initFilters };
+    return { updateFilter, filterSelector };
 };
