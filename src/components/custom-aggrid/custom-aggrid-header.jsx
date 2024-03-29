@@ -18,7 +18,6 @@ import {
     Select,
     TextField,
 } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SortWay } from '../../hooks/use-aggrid-sort';
@@ -28,6 +27,7 @@ import {
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter.tsx';
 
 const styles = {
     iconSize: {
@@ -136,11 +136,6 @@ const CustomHeaderComponent = ({
             type: selectedFilterComparator,
             dataType: filterDataType,
         });
-    };
-
-    const handleFilterBooleanChange = (event) => {
-        const value = event.target.value;
-        handleSelectedFilterDataChange(value);
     };
 
     const handleFilterAutoCompleteChange = (_, data) => {
@@ -364,35 +359,10 @@ const CustomHeaderComponent = ({
                             fullWidth
                         />
                     ) : isBooleanFilter ? (
-                        <Select
-                            fullWidth
-                            size={'small'}
-                            value={selectedFilterData || ''}
-                            onChange={handleFilterBooleanChange}
-                            sx={styles.input}
-                            endAdornment={
-                                selectedFilterData && (
-                                    <IconButton
-                                        onClick={() =>
-                                            handleSelectedFilterDataChange('')
-                                        }
-                                        sx={styles.iconSize}
-                                    >
-                                        <ClearIcon />
-                                    </IconButton>
-                                )
-                            }
-                        >
-                            {['true', 'false', 'undefinedValue'].map(
-                                (option) => (
-                                    <MenuItem key={option} value={option}>
-                                        {intl.formatMessage({
-                                            id: option,
-                                        })}
-                                    </MenuItem>
-                                )
-                            )}
-                        </Select>
+                        <CustomAggridBooleanFilter
+                            value={selectedFilterData}
+                            onChange={handleSelectedFilterDataChange}
+                        />
                     ) : (
                         <Grid
                             container

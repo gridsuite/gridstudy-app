@@ -85,3 +85,9 @@ export const mapFieldsToColumnsFilter = (
         column: columnToFieldMapping[filter.column],
     }));
 };
+
+export const BOOLEAN_FILTER_VALUES = {
+    TRUE: 'true',
+    FALSE: 'false',
+    UNDEFINED: 'undefinedValue',
+}
