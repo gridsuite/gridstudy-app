@@ -27,7 +27,7 @@ import {
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter.tsx';
+import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 
 const styles = {
     iconSize: {
