@@ -70,8 +70,8 @@ export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
         : side === BranchSide.TWO
-          ? intl.formatMessage({ id: 'Side2' })
-          : undefined;
+        ? intl.formatMessage({ id: 'Side2' })
+        : undefined;
 };
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<

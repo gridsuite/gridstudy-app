@@ -44,7 +44,7 @@ type oneBusShortcircuitAnalysisLoader = [
     ReactElement,
     boolean,
     () => void,
-    () => void,
+    () => void
 ];
 
 export function useOneBusShortcircuitAnalysisLoader(

@@ -240,8 +240,8 @@ export const ConnectivityForm = ({
                     id: !isNodeBuilt(currentNode)
                         ? 'NodeNotBuildPositionMessage'
                         : watchVoltageLevelId
-                          ? 'DisplayTakenPositions'
-                          : 'NoVoltageLevelPositionMessage',
+                        ? 'DisplayTakenPositions'
+                        : 'NoVoltageLevelPositionMessage',
                 })}
             >
                 {isNodeBuilt(currentNode) && watchVoltageLevelId ? (

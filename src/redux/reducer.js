@@ -90,6 +90,11 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SPREADSHEET_FILTER,
     DYNAMIC_SIMULATION_RESULT_FILTER,
+    STUDY_UPDATED,
+    USE_NAME,
+    SUBSTATION_LAYOUT,
+    TOGGLE_PIN_DIAGRAM,
+    UPDATE_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,

@@ -81,8 +81,9 @@ export const useAggridLocalRowFilter = (
                     return (
                         // Ensure the column definition has a 'field' property
                         // and it matches the filter's column field
-                        ('field' in colDef &&
-                        filter && colDef?.field === filter.column)
+                        'field' in colDef &&
+                        filter &&
+                        colDef?.field === filter.column
                     );
                 })
             );

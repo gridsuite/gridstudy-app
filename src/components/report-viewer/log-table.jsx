@@ -132,13 +132,13 @@ const LogTable = ({
 
     return (
         //TODO do we need to useMemo/useCallback these props to avoid rerenders ?
-        (<VirtualizedTable
+        <VirtualizedTable
             columns={generateTableColumns()}
             rows={generateTableRows()}
             sortable={false}
             onRowClick={handleRowClick}
             rowStyle={rowStyleFormat}
-        />)
+        />
     );
 };
 

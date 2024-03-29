@@ -80,8 +80,8 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
                 newTabs.length === 0
                     ? -1
                     : index === tabs.length - 1
-                      ? newTabs.length - 1
-                      : index
+                    ? newTabs.length - 1
+                    : index
             ); // get the next item in new tabs
             setTabs(newTabs);
             if (newTabs.length === 0) {

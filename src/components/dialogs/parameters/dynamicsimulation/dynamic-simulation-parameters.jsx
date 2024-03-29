@@ -258,8 +258,9 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                 label="Provider"
                                 values={Object.entries(providers).reduce(
                                     (obj, [key, value]) => {
-                                        obj[key] =
-                                            `DynamicSimulationProvider${value}`;
+                                        obj[
+                                            key
+                                        ] = `DynamicSimulationProvider${value}`;
                                         return obj;
                                     },
                                     {}

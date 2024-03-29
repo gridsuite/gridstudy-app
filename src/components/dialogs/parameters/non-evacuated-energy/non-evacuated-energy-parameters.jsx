@@ -385,20 +385,20 @@ export const NonEvacuatedEnergyParameters = ({
                 indexPmax1 === 0
                     ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_1]
                     : indexPmax1 === 1
-                      ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
-                      : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
+                    ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
+                    : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
             const valPmax2 =
                 indexPmax2 === 0
                     ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_1]
                     : indexPmax2 === 1
-                      ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
-                      : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
+                    ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
+                    : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
             const valPmax3 =
                 indexPmax3 === 0
                     ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_1]
                     : indexPmax3 === 1
-                      ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
-                      : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
+                    ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
+                    : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
             let stageSelection = {
                 [ACTIVATED]: true,
                 [NAME]:
