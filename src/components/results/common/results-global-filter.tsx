@@ -15,7 +15,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { Theme } from '@mui/material';
-import { GlobalFilter } from '../../../redux/reducer.type';
+import { ReduxState } from '../../../redux/reducer.type';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -108,15 +108,17 @@ export interface ResultsGlobalFilterProps {
     filters: Filter[];
 }
 
+const emptyArray: Filter[] = [];
+
 const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
     onChange,
-    filters = [],
+    filters = emptyArray,
 }) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch();
     const recentGlobalFilters = useSelector(
-        (state: GlobalFilter) => state.recentGlobalFilters
+        (state: ReduxState) => state.recentGlobalFilters
     );
 
     const getOptionLabel = useCallback(
@@ -127,14 +129,25 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         [translate]
     );
 
-    const handleChange = (
-        _event: SyntheticEvent<Element, Event>,
-        value: Filter[]
-    ) => {
-        // Updates the "recent" filters
-        dispatch(addToRecentGlobalFilters(value));
-        onChange(value);
-    };
+    const getChipStyle = useCallback(
+        (filter: Filter) =>
+            mergeSx(
+                styles.chip,
+                filter.filterType === 'country'
+                    ? styles.chipCountry
+                    : styles.chipVoltageLevel
+            ),
+        []
+    );
+
+    const handleChange = useCallback(
+        (_event: SyntheticEvent<Element, Event>, value: Filter[]) => {
+            // Updates the "recent" filters
+            dispatch(addToRecentGlobalFilters(value));
+            onChange(value);
+        },
+        [dispatch, onChange]
+    );
 
     return (
         <Box>
@@ -190,12 +203,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                             size={'small'}
                             label={getOptionLabel(element)}
                             {...getTagsProps({ index })}
-                            sx={mergeSx(
-                                styles.chip,
-                                element.filterType === 'country'
-                                    ? styles.chipCountry
-                                    : styles.chipVoltageLevel
-                            )}
+                            sx={getChipStyle(element)}
                         />
                     ))
                 }
@@ -229,12 +237,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                             component="li"
                             label={getOptionLabel(option)}
                             size="small"
-                            sx={mergeSx(
-                                styles.chip,
-                                option.filterType === 'country'
-                                    ? styles.chipCountry
-                                    : styles.chipVoltageLevel
-                            )}
+                            sx={getChipStyle(option)}
                         />
                     );
                 }}

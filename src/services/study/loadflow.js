@@ -127,7 +127,7 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
     }
 
     if (globalFilters && Object.keys(globalFilters).length > 0) {
-        params.append('globalfilters', JSON.stringify(globalFilters));
+        params.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url =

@@ -29,6 +29,8 @@ export interface ReduxState {
     notificationIdList: UUID[];
     theme: string;
     nonEvacuatedEnergyNotif: boolean;
+    recentGlobalFilters: Filter[];
+    mapEquipments: any;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
@@ -128,8 +130,4 @@ interface Profile {
     name: string;
     email: string;
     s_hash: string;
-}
-
-export interface GlobalFilter {
-    recentGlobalFilters: Filter[];
 }

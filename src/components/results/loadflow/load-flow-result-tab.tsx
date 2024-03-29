@@ -54,11 +54,17 @@ import {
     NumberCellRenderer,
     StatusCellRender,
 } from '../common/result-cell-renderers';
-import ResultsGlobalFilter from '../common/results-global-filter';
+import ResultsGlobalFilter, { Filter } from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 import Glasspane from '../common/glasspane';
+
+export interface FilterDto {
+    nominalV?: string[];
+    countryCode?: string[];
+    limitViolationsType: string;
+}
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -84,10 +90,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         filterTab: mappingTabs(tabIndex),
         filterStoreAction: setLoadflowResultFilter,
     });
-    const mapEquipments = useSelector((state) => state.mapEquipments);
-    const [countriesFilter, setCountriesFilter] = useState([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState([]);
-    const [globalFilters, setGlobalFilters] = useState(undefined);
+    const mapEquipments = useSelector(
+        (state: ReduxState) => state.mapEquipments
+    );
+    const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
+    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>(
+        []
+    );
+    const [globalFilters, setGlobalFilters] = useState<FilterDto>();
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
@@ -114,13 +124,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     // load voltage levels
     useEffect(() => {
         const voltageLevels = mapEquipments.getVoltageLevels();
-        const nominalVs = voltageLevels.map((element) =>
+        const nominalVs: string[] = voltageLevels.map((element: any) =>
             element.nominalV?.toString()
         );
         const uniqueNominalV = [...new Set(nominalVs)];
 
         setVoltageLevelsFilter(
-            uniqueNominalV.map((nominalV) => ({
+            uniqueNominalV.map((nominalV: string) => ({
                 label: nominalV,
                 filterType: 'voltageLevel',
             }))
@@ -259,25 +269,27 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     };
 
     const handleGlobalFilterChange = (value: any) => {
-        let formattedData;
+        let formattedData: Partial<FilterDto> = {};
         if (value) {
             // We update the format of the filter to reflect the DTO in the backend
-            formattedData = value.reduce((accumulator, currentItem) => {
-                const { label, filterType } = currentItem;
-                let key;
-                if (filterType === 'voltageLevel') {
-                    key = 'nominalV';
-                } else {
-                    key = 'countryCode';
-                }
-                if (!accumulator[key]) {
-                    accumulator[key] = [];
-                }
-                accumulator[key].push(label);
-                return accumulator;
-            }, {});
+            formattedData = value.reduce(
+                (accumulator: FilterDto, currentItem: Filter) => {
+                    let key: keyof FilterDto;
+                    if (currentItem.filterType === 'voltageLevel') {
+                        key = 'nominalV';
+                    } else {
+                        key = 'countryCode';
+                    }
+                    if (!accumulator[key]) {
+                        accumulator[key] = [];
+                    }
+                    (accumulator[key] as string[]).push(currentItem.label);
+                    return accumulator;
+                },
+                {}
+            );
         }
-        setGlobalFilters(formattedData);
+        setGlobalFilters(formattedData as FilterDto);
     };
 
     const result = useMemo(() => {
