@@ -139,7 +139,7 @@ const defaultBooleanFilterConfig = {
                 predicate: ([filterValue], cellValue) => {
                     // We receive here the filter boolean values as a string (filterValue)
                     // we check if the cellValue is not null neither undefined
-                    if (cellValue) {
+                    if (cellValue !== undefined && cellValue !== null) {
                         return filterValue === cellValue.toString();
                     }
 
