@@ -90,4 +90,4 @@ export const BOOLEAN_FILTER_VALUES = {
     TRUE: 'true',
     FALSE: 'false',
     UNDEFINED: 'undefinedValue',
-}
+};
