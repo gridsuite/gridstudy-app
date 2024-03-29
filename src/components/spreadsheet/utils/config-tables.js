@@ -3258,6 +3258,16 @@ export const TABLES_DEFINITIONS = {
                 ...defaultTextFilterConfig,
             },
             {
+                id: 'VoltageLevelIdSide1',
+                field: 'voltageLevelId1',
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'VoltageLevelIdSide2',
+                field: 'voltageLevelId2',
+                ...defaultTextFilterConfig,
+            },
+            {
                 id: 'ConvertersMode',
                 field: 'convertersMode',
                 columnWidth: LARGE_COLUMN_WIDTH,
