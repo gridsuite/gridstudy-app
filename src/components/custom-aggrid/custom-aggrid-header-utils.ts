@@ -86,7 +86,7 @@ export const mapFieldsToColumnsFilter = (
     }));
 };
 
-export enum BOOLEAN_FILTER_VALUES {
+export enum BooleanFilterValue {
     TRUE = 'true',
     FALSE = 'false',
     UNDEFINED = 'undefinedValue',

@@ -10,7 +10,7 @@ import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { BOOLEAN_FILTER_VALUES } from '../custom-aggrid-header-utils';
+import { BooleanFilterValue } from '../custom-aggrid-header-utils';
 
 const styles = {
     iconSize: {
@@ -55,7 +55,7 @@ const CustomAggridBooleanFilter: FunctionComponent<
                 )
             }
         >
-            {Object.values(BOOLEAN_FILTER_VALUES).map((option) => (
+            {Object.values(BooleanFilterValue).map((option) => (
                 <MenuItem key={option} value={option}>
                     {intl.formatMessage({
                         id: option,

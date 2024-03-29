@@ -46,7 +46,7 @@ import {
 import { NOMINAL_V } from '../../utils/field-constants';
 import CountryCellRenderer from '../country-cell-render';
 import EnumCellRenderer from '../enum-cell-renderer';
-import { BOOLEAN_FILTER_VALUES } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { BooleanFilterValue } from 'components/custom-aggrid/custom-aggrid-header-utils';
 
 const generateTapPositions = (params) => {
     return params
@@ -145,7 +145,7 @@ const defaultBooleanFilterConfig = {
                     }
 
                     // we return true if the filter chosen is undefinedValue
-                    return filterValue === BOOLEAN_FILTER_VALUES.UNDEFINED;
+                    return filterValue === BooleanFilterValue.UNDEFINED;
                 },
             },
         ],
