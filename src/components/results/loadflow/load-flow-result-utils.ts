@@ -40,13 +40,12 @@ import {
     fetchLoadflowAvailableComputationStatus,
     fetchLoadflowAvailableLimitTypes,
 } from 'services/loadflow';
+import { translateLimitName, PERMANENT_LIMIT_NAME } from '../common/utils';
 import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
     LOADFLOW_RESULT,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-filter-fields';
-
-const PERMANENT_LIMIT_NAME = 'permanent';
 
 export const convertMillisecondsToMinutesSeconds = (
     durationInMilliseconds: number
@@ -73,11 +72,6 @@ export const convertSide = (side: string | undefined, intl: IntlShape) => {
         : side === BranchSide.TWO
         ? intl.formatMessage({ id: 'Side2' })
         : undefined;
-};
-export const convertLimitName = (limitName: string | null, intl: IntlShape) => {
-    return limitName === PERMANENT_LIMIT_NAME
-        ? intl.formatMessage({ id: 'PermanentLimitName' })
-        : limitName;
 };
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<
@@ -176,7 +170,7 @@ export const makeData = (
             upComingOverloadDuration:
                 overloadedEquipment.upComingOverloadDuration,
             limit: overloadedEquipment.limit,
-            limitName: convertLimitName(overloadedEquipment.limitName, intl),
+            limitName: translateLimitName(overloadedEquipment.limitName, intl),
             side: convertSide(overloadedEquipment.side, intl),
             limitType: overloadedEquipment.limitType,
         };
