@@ -86,7 +86,6 @@ const CustomHeaderComponent = ({
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
         !!customFilterOptions?.length;
-
     const isNumberInput =
         filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const columnSort = sortConfig?.find((value) => value.colId === field);
@@ -384,13 +383,15 @@ const CustomHeaderComponent = ({
                                 )
                             }
                         >
-                            {customFilterOptions.map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {intl.formatMessage({
-                                        id: option,
-                                    })}
-                                </MenuItem>
-                            ))}
+                            {['true', 'false', 'undefinedValue'].map(
+                                (option) => (
+                                    <MenuItem key={option} value={option}>
+                                        {intl.formatMessage({
+                                            id: option,
+                                        })}
+                                    </MenuItem>
+                                )
+                            )}
                         </Select>
                     ) : (
                         <Grid
