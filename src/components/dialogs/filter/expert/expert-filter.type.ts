@@ -63,11 +63,3 @@ export interface RuleGroupTypeExport {
     dataType: DataType;
     rules: (RuleTypeExport | RuleGroupTypeExport)[];
 }
-
-export interface ExpertFilter {
-    id?: UUID;
-    type: 'EXPERT';
-    equipmentType: string; // TODO must be EquipmentType enum
-    rules: RuleGroupTypeExport;
-    topologyKind?: string; // TODO must be TopologyKind enum
-}
