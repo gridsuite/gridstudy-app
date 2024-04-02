@@ -27,6 +27,7 @@ import {
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 
 const styles = {
     iconSize: {
@@ -81,6 +82,7 @@ const CustomHeaderComponent = ({
 
     const { translate } = useLocalizedCountries();
 
+    const isBooleanFilter = filterDataType === FILTER_DATA_TYPES.BOOLEAN;
     const isAutoCompleteFilter =
         filterDataType === FILTER_DATA_TYPES.TEXT &&
         !!customFilterOptions?.length;
@@ -95,7 +97,7 @@ const CustomHeaderComponent = ({
     const shouldActivateFilter =
         isFilterable &&
         filterDataType &&
-        (isAutoCompleteFilter || !!filterComparators.length);
+        (isAutoCompleteFilter || !!filterComparators.length || isBooleanFilter);
 
     const intl = useIntl();
 
@@ -137,6 +139,10 @@ const CustomHeaderComponent = ({
     };
 
     const handleFilterAutoCompleteChange = (_, data) => {
+        handleSelectedFilterDataChange(data);
+    };
+
+    const handleSelectedFilterDataChange = (data) => {
         setSelectedFilterData(data);
         debouncedUpdateFilter(field, {
             value: data,
@@ -352,6 +358,11 @@ const CustomHeaderComponent = ({
                             )}
                             fullWidth
                         />
+                    ) : isBooleanFilter ? (
+                        <CustomAggridBooleanFilter
+                            value={selectedFilterData}
+                            onChange={handleSelectedFilterDataChange}
+                        />
                     ) : (
                         <Grid
                             container
@@ -422,6 +433,7 @@ CustomHeaderComponent.propTypes = {
         filterDataType: PropTypes.oneOf([
             FILTER_DATA_TYPES.TEXT,
             FILTER_DATA_TYPES.NUMBER,
+            FILTER_DATA_TYPES.BOOLEAN,
         ]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
