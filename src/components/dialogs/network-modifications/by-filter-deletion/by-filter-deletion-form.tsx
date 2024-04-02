@@ -44,6 +44,7 @@ const ByFilterDeletionForm = () => {
             EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
             EQUIPMENT_TYPES.BUS,
             EQUIPMENT_TYPES.BUSBAR_SECTION,
+            EQUIPMENT_TYPES.TIE_LINE,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
             (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
