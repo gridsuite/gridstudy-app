@@ -8,7 +8,6 @@
 export const SUBSTATION_RADIUS = 500;
 export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
-export const MAX_NUMBER_OF_IMPACTED_SUBSTATIONS = 100;
 export const FORM_LOADING_DELAY = 200;
 export const RESULTS_LOADING_DELAY = 500;
 
@@ -29,6 +28,11 @@ export const ENERGY_SOURCES = [
     { id: 'SOLAR', label: 'Solar' },
     { id: 'OTHER', label: 'Other' },
 ];
+
+export const SHUNT_COMPENSATOR_TYPES = {
+    REACTOR: { id: 'REACTOR', label: 'Reactor' },
+    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
+};
 
 export const REGULATION_TYPES = {
     DISTANT: { id: 'DISTANT', label: 'Distant' },
@@ -125,7 +129,7 @@ export const BRANCH_SIDE = {
     TWO: 'TWO',
 };
 
-export const BRANCH_STATUS_ACTION = {
+export const OPERATING_STATUS_ACTION = {
     LOCKOUT: 'LOCKOUT',
     TRIP: 'TRIP',
     ENERGISE_END_ONE: 'ENERGISE_END_ONE',

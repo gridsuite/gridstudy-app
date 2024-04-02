@@ -48,6 +48,8 @@ import {
     isPartial,
     styles,
 } from '../network-modification-node-editor';
+import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
+import { areUuidsEqual } from 'components/utils/utils';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -67,8 +69,7 @@ const EventModificationScenarioEditor = () => {
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedItems, setSelectedItems] = useState<Set<Event>>(new Set());
-    const [toggleSelectAll, setToggleSelectAll] = useState<boolean>(false);
+    const [selectedItems, setSelectedItems] = useState<Event[]>([]);
 
     const [editDialogOpen, setEditDialogOpen] = useState<
         | {
@@ -129,6 +130,13 @@ const EventModificationScenarioEditor = () => {
         [fillNotification]
     );
 
+    const updateSelectedItems = useCallback((events: Event[]) => {
+        const toKeepIdsSet = new Set(events.map((e) => e.uuid));
+        setSelectedItems((oldselectedItems) =>
+            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid))
+        );
+    }, []);
+
     const doFetchEvents = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
@@ -140,6 +148,7 @@ const EventModificationScenarioEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
+                    updateSelectedItems(res);
                     // sort by start time
                     const sortedEvents = res.sort(
                         (a, b) => getStartTime(a) - getStartTime(b)
@@ -157,7 +166,14 @@ const EventModificationScenarioEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
+    }, [
+        currentNode?.type,
+        currentNode.id,
+        studyUuid,
+        updateSelectedItems,
+        snackError,
+        dispatch,
+    ]);
 
     useEffect(() => {
         // first time with currentNode initialized then fetch events
@@ -216,7 +232,7 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
-        const selectedEvents = [...selectedItems.values()];
+        const selectedEvents = [...selectedItems];
         deleteDynamicSimulationEvents(
             studyUuid ?? '',
             currentNode.id,
@@ -238,8 +254,10 @@ const EventModificationScenarioEditor = () => {
     };
 
     const toggleSelectAllEvents = useCallback(() => {
-        setToggleSelectAll((oldVal: boolean) => !oldVal);
-    }, []);
+        setSelectedItems((oldVals: Event[]) =>
+            oldVals.length === 0 ? events : []
+        );
+    }, [events]);
 
     const isLoading = () => {
         return (
@@ -254,9 +272,9 @@ const EventModificationScenarioEditor = () => {
             <CheckboxList
                 className={styles.list}
                 onChecked={setSelectedItems}
+                checkedValues={selectedItems}
                 values={events}
-                initialSelection={[]}
-                itemComparator={(a, b) => a.uuid === b.uuid}
+                itemComparator={areUuidsEqual}
                 itemRenderer={(props: any) => (
                     <EventListItem
                         key={props.item.equipmentId}
@@ -266,7 +284,6 @@ const EventModificationScenarioEditor = () => {
                         {...props}
                     />
                 )}
-                toggleSelectAll={toggleSelectAll}
             />
         );
     };
@@ -346,9 +363,9 @@ const EventModificationScenarioEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={isChecked(selectedItems.size)}
+                    checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(
-                        selectedItems.size,
+                        selectedItems.length,
                         events?.length
                     )}
                     disableRipple
@@ -360,7 +377,7 @@ const EventModificationScenarioEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        !(selectedItems?.size > 0) ||
+                        selectedItems.length === 0 ||
                         isAnyNodeBuilding ||
                         !currentNode
                     }
@@ -381,7 +398,11 @@ const EventModificationScenarioEditor = () => {
                     onClose={() => handleCloseDialog()}
                     title={intl.formatMessage(
                         {
-                            id: `${editDialogOpen.eventType}/${editDialogOpen.equipmentType}`,
+                            id: `Event${editDialogOpen.eventType}${
+                                EQUIPMENT_TYPE_LABEL_KEYS[
+                                    editDialogOpen.equipmentType
+                                ]
+                            }`,
                         },
                         { computedLabel: '' }
                     )}

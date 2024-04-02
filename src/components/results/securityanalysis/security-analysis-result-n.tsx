@@ -13,25 +13,15 @@ import {
 } from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import {
-    MAX_INT32,
-    securityAnalysisTableNColumnsDefinition,
-    securityAnalysisTableNFilterDefinition,
-} from './security-analysis-result-utils';
+import { MAX_INT32 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
+import { translateLimitName } from '../common/utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
-> = ({
-    result,
-    isLoadingResult,
-    onSortChanged,
-    sortConfig,
-    updateFilter,
-    filterSelector,
-    filterEnums,
-}) => {
+> = ({ result, isLoadingResult, columnDefs }) => {
     const intl: IntlShape = useIntl();
+
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
             ? result?.map((preContingencyResult: PreContingencyResult) => {
@@ -46,40 +36,18 @@ export const SecurityAnalysisResultN: FunctionComponent<
                           limitViolation?.acceptableDuration === MAX_INT32
                               ? null
                               : limitViolation?.acceptableDuration,
-                      limitName: limitViolation?.limitName,
+                      limitName: translateLimitName(
+                          limitViolation?.limitName,
+                          intl
+                      ),
                       limit: limitViolation?.limit,
                       value: limitViolation?.value,
                       loading: limitViolation?.loading,
-                      side: convertSide(limitViolation?.side, intl),
+                      side: convertSide(limitViolation?.side || '', intl),
                   } as SecurityAnalysisNTableRow;
               }) ?? []
             : [];
     }, [intl, result]);
-
-    const filtersDef = useMemo(
-        () => securityAnalysisTableNFilterDefinition(intl, filterEnums),
-        [filterEnums, intl]
-    );
-
-    const columnDefs = useMemo(
-        () =>
-            securityAnalysisTableNColumnsDefinition(
-                intl,
-                filtersDef,
-                filterSelector,
-                onSortChanged,
-                updateFilter,
-                sortConfig
-            ),
-        [
-            filterSelector,
-            filtersDef,
-            intl,
-            onSortChanged,
-            sortConfig,
-            updateFilter,
-        ]
-    );
 
     return (
         <SecurityAnalysisTable

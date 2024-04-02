@@ -7,7 +7,8 @@
 
 import { backendFetchJson } from './utils';
 
-const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/security-analysis`;
+const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/security-analysis';
 
 function getSecurityAnalysisUrl() {
     return `${PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES}/v1/`;
@@ -37,6 +38,16 @@ export function fetchSecurityAnalysisAvailableBranchSides() {
 export function fetchSecurityAnalysisAvailableComputationStatus() {
     console.info('fetch available computation status');
     const url = getSecurityAnalysisUrl() + 'computation-status';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchSecurityAnalysisParameters(parameterUuid) {
+    console.info('fetch security analysis parameters');
+    const url =
+        getSecurityAnalysisUrl() +
+        'parameters/' +
+        encodeURIComponent(parameterUuid);
     console.debug(url);
     return backendFetchJson(url);
 }

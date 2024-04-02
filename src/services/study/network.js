@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
@@ -177,7 +177,8 @@ export function fetchNetworkElementInfos(
     elementType,
     infoType,
     elementId,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    operation
 ) {
     console.info(
         `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
@@ -191,6 +192,9 @@ export function fetchNetworkElementInfos(
     }
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
+    if (operation) {
+        urlSearchParams.append('operation', operation);
+    }
 
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -230,6 +234,22 @@ export function fetchLinesMapInfos(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.LINE,
+        EQUIPMENT_INFOS_TYPES.MAP.type,
+        inUpstreamBuiltParentNode
+    );
+}
+
+export function fetchTieLinesMapInfos(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.TIE_LINE,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -433,6 +453,16 @@ export function fetchStaticVarCompensators(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
+        EQUIPMENT_INFOS_TYPES.TAB.type
+    );
+}
+
+export function fetchBuses(studyUuid, currentNodeUuid, substationsIds) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.BUS,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }

@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis.type';
 import {
@@ -18,15 +17,10 @@ import {
     flattenNmKResultsContingencies,
     handlePostSortRows,
     PAGE_OPTIONS,
-    securityAnalysisTableNmKConstraintsColumnsDefinition,
-    securityAnalysisTableNmKContingenciesColumnsDefinition,
-    securityAnalysisTableNmKFilterDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import { ColDef, ICellRendererParams, RowClassParams } from 'ag-grid-community';
-import { Box, Button, useTheme } from '@mui/material';
-import { fetchLineOrTransformer } from '../../../services/study/network-map';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { RowClassParams } from 'ag-grid-community';
+import { Box, useTheme } from '@mui/material';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 
 const styles = {
@@ -44,126 +38,15 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     SecurityAnalysisResultNmkProps
 > = ({
     result,
+    columnDefs,
     isLoadingResult,
     isFromContingency,
-    openVoltageLevelDiagram,
-    studyUuid,
-    nodeUuid,
     paginationProps,
-    sortProps,
-    filterProps,
 }) => {
     const { content } = result || {};
-    const { onSortChanged, sortConfig } = sortProps || {};
-    const { updateFilter, filterEnums, filterSelector } = filterProps || {};
 
     const theme = useTheme();
     const intl: IntlShape = useIntl();
-    const { snackError } = useSnackMessage();
-
-    const onClickNmKConstraint = useCallback(
-        (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
-            if (studyUuid && nodeUuid) {
-                if (column?.field === 'subjectId') {
-                    let vlId: string | undefined = '';
-                    const { subjectId, side } = row || {};
-                    // ideally we would have the type of the network element, but we don't
-                    fetchLineOrTransformer(studyUuid, nodeUuid, subjectId)
-                        .then((equipment) => {
-                            if (!equipment) {
-                                // if we didnt find a line or transformer, it's a voltage level
-                                vlId = subjectId;
-                            } else if (row.side) {
-                                if (side === 'ONE') {
-                                    vlId = equipment.voltageLevelId1;
-                                } else if (side === 'TWO') {
-                                    vlId = equipment.voltageLevelId2;
-                                } else {
-                                    vlId = equipment.voltageLevelId3;
-                                }
-                            } else {
-                                vlId = equipment.voltageLevelId1;
-                            }
-                        })
-                        .finally(() => {
-                            if (!vlId) {
-                                console.error(
-                                    `Impossible to open the SLD for equipment ID '${row.subjectId}'`
-                                );
-                                snackError({
-                                    messageId: 'NetworkElementNotFound',
-                                    messageValues: {
-                                        elementId: row.subjectId || '',
-                                    },
-                                });
-                            } else {
-                                if (openVoltageLevelDiagram) {
-                                    openVoltageLevelDiagram(vlId);
-                                }
-                            }
-                        });
-                }
-            }
-        },
-        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid]
-    );
-
-    const SubjectIdRenderer = useCallback(
-        (props: ICellRendererParams) => {
-            const onClick = () => {
-                const row: SecurityAnalysisNmkTableRow = {
-                    ...props?.node?.data,
-                };
-                onClickNmKConstraint(row, props?.colDef);
-            };
-            if (props.value) {
-                return (
-                    <Button sx={styles.button} onClick={onClick}>
-                        {props.value}
-                    </Button>
-                );
-            }
-        },
-        [onClickNmKConstraint]
-    );
-
-    const filtersDef = useMemo(
-        () => securityAnalysisTableNmKFilterDefinition(intl, filterEnums),
-        [filterEnums, intl]
-    );
-
-    const columnDefs = useMemo(
-        () =>
-            isFromContingency
-                ? securityAnalysisTableNmKContingenciesColumnsDefinition(
-                      intl,
-                      filtersDef,
-                      filterSelector,
-                      onSortChanged,
-                      updateFilter,
-                      SubjectIdRenderer,
-                      sortConfig
-                  )
-                : securityAnalysisTableNmKConstraintsColumnsDefinition(
-                      intl,
-                      filtersDef,
-                      filterSelector,
-                      onSortChanged,
-                      updateFilter,
-                      SubjectIdRenderer,
-                      sortConfig
-                  ),
-        [
-            isFromContingency,
-            intl,
-            filtersDef,
-            filterSelector,
-            onSortChanged,
-            updateFilter,
-            SubjectIdRenderer,
-            sortConfig,
-        ]
-    );
 
     const rows = useMemo(
         () =>

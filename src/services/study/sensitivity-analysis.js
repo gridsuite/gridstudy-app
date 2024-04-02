@@ -12,6 +12,9 @@ import {
 } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
+const GET_PARAMETERS_PREFIX =
+    import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
+
 export function startSensitivityAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         `Running sensi on ${studyUuid} and node ${currentNodeUuid} ...`
@@ -92,27 +95,6 @@ export function fetchSensitivityAnalysisFilterOptions(
     return backendFetchJson(url);
 }
 
-export function fetchSensitivityAnalysisProvider(studyUuid) {
-    console.info('fetch sensitivity analysis provider');
-    const url = `${getStudyUrl(studyUuid)}/sensitivity-analysis/provider`;
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function updateSensitivityAnalysisProvider(studyUuid, newProvider) {
-    console.info('update sensitivity analysis provider');
-    const url = `${getStudyUrl(studyUuid)}/sensitivity-analysis/provider`;
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newProvider,
-    });
-}
-
 export function fetchDefaultSensitivityAnalysisProvider() {
     console.info('fetch default sensitivity analysis provider');
     const url = `${PREFIX_STUDY_QUERIES}/v1/sensitivity-analysis-default-provider`;
@@ -123,6 +105,13 @@ export function fetchDefaultSensitivityAnalysisProvider() {
 export function getSensitivityAnalysisParameters(studyUuid) {
     console.info('get sensitivity analysis parameters');
     const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchSensitivityAnalysisParameters(parameterUuid) {
+    console.info('get sensitivity analysis parameters');
+    const url = `${GET_PARAMETERS_PREFIX}/${parameterUuid}`;
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -138,5 +127,52 @@ export function setSensitivityAnalysisParameters(studyUuid, newParams) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newParams),
+    });
+}
+
+export function getSensitivityAnalysisFactorsCount(
+    studyUuid,
+    isInjectionsSet,
+    newParams
+) {
+    console.info('get sensitivity analysis parameters computing count');
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(isInjectionsSet);
+    urlSearchParams.append('isInjectionsSet', jsoned);
+    Object.keys(newParams)
+        .filter((key) => newParams[key])
+        .forEach((key) =>
+            urlSearchParams.append(`ids[${key}]`, newParams[key])
+        );
+
+    const url =
+        getStudyUrl(studyUuid) +
+        `/sensitivity-analysis/factors-count?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'GET',
+    });
+}
+
+export function exportSensitivityResultsAsCsv(
+    studyUuid,
+    currentNodeUuid,
+    csvConfig
+) {
+    console.info(
+        `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
+    );
+
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/sensitivity-analysis/result/csv`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(csvConfig),
     });
 }

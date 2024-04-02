@@ -42,14 +42,6 @@ export function getLoadFlowParameters(studyUuid) {
     return backendFetchJson(getLfParams);
 }
 
-export function getLoadFlowProvider(studyUuid) {
-    console.info('get load flow provider');
-    const getLoadFlowProviderUrl =
-        getStudyUrl(studyUuid) + '/loadflow/provider';
-    console.debug(getLoadFlowProviderUrl);
-    return backendFetchText(getLoadFlowProviderUrl);
-}
-
 export function setLoadFlowProvider(studyUuid, newProvider) {
     console.info('set load flow provider');
     const setLoadFlowProviderUrl =
@@ -103,15 +95,43 @@ export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchLoadFlowResult(studyUuid, currentNodeUuid) {
+export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
     console.info(
         `Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
+    const { sort, filters } = queryParams || {};
+    const params = new URLSearchParams({});
+
+    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
+
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
+    }
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/loadflow/result';
-    console.debug(url);
-    return backendFetchJson(url);
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendFetchJson(urlWithParams);
+}
+
+export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
+    console.info(`Fetching limit violations ...`);
+    const { sort, filters } = queryParams || {};
+    const params = new URLSearchParams({});
+
+    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
+
+    if (filters?.length) {
+        params.append('filters', JSON.stringify(filters));
+    }
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/limit-violations';
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendFetchJson(urlWithParams);
 }
 
 export function invalidateLoadFlowStatus(studyUuid) {

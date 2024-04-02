@@ -10,24 +10,24 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { IOptionalService } from '../components/utils/optional-services';
 
+export enum UpdateTypes {
+    STUDY = 'study',
+}
+
 export interface ReduxState {
     studyUpdated: StudyUpdated;
-    allBusesShortCircuitNotif: boolean;
-    oneBusShortCircuitNotif: boolean;
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
+    lastCompletedComputation: ComputingType;
+    computationStarting: boolean;
     optionalServices: IOptionalService[];
     limitReduction: string;
-    loadflowNotif: boolean;
-    saNotif: boolean;
-    sensiNotif: boolean;
-    voltageInitNotif: boolean;
-    dynamicSimulationNotif: boolean;
     user: User;
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
     notificationIdList: UUID[];
     theme: string;
+    nonEvacuatedEnergyNotif: boolean;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
@@ -35,6 +35,7 @@ export interface oneBusShortCircuitAnalysisDiagram {
     nodeId: UUID;
 }
 
+// Headers
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
@@ -46,15 +47,44 @@ export interface StudyUpdatedEventDataHeader {
     userId?: string;
 }
 
-export interface StudyUpdatedEventData {
+// Payloads
+export interface DeletedEquipment {
+    equipmentId: string;
+    equipmentType: string;
+}
+
+export interface NetworkImpactsInfos {
+    impactedSubstationsIds: UUID[];
+    deletedEquipments: DeletedEquipment[];
+    impactedElementTypes: string[];
+}
+
+// EventData
+interface StudyUpdatedEventData {
+    headers: StudyUpdatedEventDataHeader;
+    payload: NetworkImpactsInfos;
+}
+
+interface StudyUpdatedEventDataUnknown {
     headers: StudyUpdatedEventDataHeader;
     payload: string;
 }
 
-export interface StudyUpdated {
-    force: 0 | 1;
+// Notification types
+type StudyUpdatedStudy = {
+    type: UpdateTypes.STUDY;
     eventData: StudyUpdatedEventData;
-}
+};
+
+type StudyUpdatedUndefined = {
+    type: undefined;
+    eventData: StudyUpdatedEventDataUnknown;
+};
+
+// Redux state
+export type StudyUpdated = {
+    force: 0 | 1;
+} & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
 export interface CurrentTreeNodeData {
     parentNodeUuid: UUID;
@@ -76,6 +106,7 @@ export interface ComputingStatus {
     [ComputingType.LOADFLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
     [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;

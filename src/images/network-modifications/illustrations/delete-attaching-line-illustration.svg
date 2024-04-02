@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 1168 364"
+   fill="none"
+   version="1.1"
+   id="svg214">
+    <defs
+     id="defs218" />
+  <g
+     id="CREA - Supprimer un piquage - BLK">
+    <path
+       id="delete-attach-line-illu-background"
+       d="M1163.01 0H4.99249C2.23521 0 0 3.33327 0 7.44508V356.555C0 360.667 2.23521 364 4.99249 364H1163.01C1165.76 364 1168 360.667 1168 356.555V7.44508C1168 3.33327 1165.76 0 1163.01 0Z"
+       fill="#272727" />
+    <g
+       id="Group 4">
+      <g
+         id="Group 2">
+        <path
+           id="path7084"
+           d="M677.284 157.765C692.905 157.765 705.569 145.101 705.569 129.481C705.569 113.86 692.905 101.196 677.284 101.196C661.663 101.196 649 113.86 649 129.481C649 145.101 661.663 157.765 677.284 157.765Z"
+           stroke="#FFB74D"
+           stroke-width="5.2" />
+        <path
+           id="path9570"
+           d="M666.117 126.761L665.864 132.57L678.617 132.57L674.198 137.242L678.491 141.282L689.855 129.792L678.996 117.796L674.198 121.963L678.491 126.509L666.117 126.761Z"
+           fill="#FFB74D" />
+      </g>
+      <g
+         id="Group 1">
+        <path
+           id="path3740-0-8"
+           d="M124.572 137.198C129.872 137.198 134.169 132.902 134.169 127.602C134.169 122.302 129.872 118.005 124.572 118.005C119.272 118.005 114.976 122.302 114.976 127.602C114.976 132.902 119.272 137.198 124.572 137.198Z"
+           fill="#81C784" />
+        <path
+           id="path3740-0-5"
+           d="M554.919 137.178C560.219 137.178 564.515 132.881 564.515 127.581C564.515 122.281 560.219 117.985 554.919 117.985C549.619 117.985 545.323 122.281 545.323 127.581C545.323 132.881 549.619 137.178 554.919 137.178Z"
+           fill="#81C784" />
+        <path
+           id="path3740-0-0"
+           d="M337.626 137.726C342.926 137.726 347.222 133.43 347.222 128.13C347.222 122.83 342.926 118.533 337.626 118.533C332.326 118.533 328.03 122.83 328.03 128.13C328.03 133.43 332.326 137.726 337.626 137.726Z"
+           fill="#FFA4C2" />
+        <path
+           id="lineBefore-6"
+           d="M311.647 123H149.412H142.03V132H149.412H311.647H319.03V123H311.647Z"
+           fill="#FFA4C2" />
+        <g
+           id="path7047-6">
+          <path
+             d="M337.137 114.052V50.6018Z"
+             fill="#81C784"
+             id="path143" />
+          <path
+             d="M337.137 114.052V50.6018"
+             stroke="#FFA4C2"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path145" />
+        </g>
+        <g
+           id="path7047-8">
+          <path
+             d="M554.918 115.052V51.6018Z"
+             fill="#81C784"
+             id="path148" />
+          <path
+             d="M554.918 115.052V51.6018"
+             stroke="#81C784"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path150" />
+        </g>
+        <g
+           id="path7047-5">
+          <path
+             d="M124.594 114.909V51.4589Z"
+             fill="#FFA4C2"
+             id="path153" />
+          <path
+             d="M124.594 114.909V51.4589"
+             stroke="#81C784"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path155" />
+        </g>
+        <path
+           id="lineBefore-6-4"
+           d="M528.48 123H362.579H355.03V132H362.579H528.48H536.03V123H528.48Z"
+           fill="#FFA4C2" />
+        <g
+           id="path7047-2">
+          <path
+             d="M413.479 310H350.03Z"
+             fill="#81C784"
+             id="path159" />
+          <path
+             d="M413.479 310H350.03"
+             stroke="#FFA4C2"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path161" />
+        </g>
+        <path
+           id="lineBefore"
+           d="M333.03 147.419V200.581V203H342.03V200.581V147.419V145H333.03V147.419Z"
+           fill="#FFA4C2" />
+        <path
+           id="lineBefore_2"
+           d="M333.03 241.211V289.789V292H342.03V289.789V241.211V239H333.03V241.211Z"
+           fill="#FFA4C2" />
+        <path
+           id="path3740-0"
+           d="M337.626 319.193C342.926 319.193 347.222 314.896 347.222 309.596C347.222 304.296 342.926 300 337.626 300C332.326 300 328.03 304.296 328.03 309.596C328.03 314.896 332.326 319.193 337.626 319.193Z"
+           fill="#FFA4C2" />
+        <text
+           id="text4625-2-3-9"
+           xml:space="preserve"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
+           font-size="18.6667"
+           letter-spacing="0em"
+           x="166.52489"
+           y="0"><tspan
+             x="340.5"
+             y="225.38"
+             id="delete-attach-attached-line-left-txt"
+             style="text-align:center;text-anchor:middle">Liaison de piquage</tspan></text>
+        <text
+           id="text177"
+           xml:space="preserve"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
+           font-size="18.6667"
+           font-weight="bold"
+           letter-spacing="0em"
+           x="168.28012"
+           y="0"><tspan
+             x="504.30399"
+             y="315.38"
+             id="delete-attach-attached-voltage-level-left-txt"
+             style="text-align:center;text-anchor:middle">Poste en piquage</tspan></text>
+        <text
+           id="text4625-3-2"
+           xml:space="preserve"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
+           font-size="18.6667"
+           font-weight="bold"
+           letter-spacing="0em"
+           x="149.00211"
+           y="0"><tspan
+             x="552.87701"
+             y="39.430302"
+             id="delete-attach-line-voltage-level2-left-txt"
+             style="text-align:center;text-anchor:middle">Poste extrémité</tspan></text>
+        <text
+           id="text4625-2-3-9_2"
+           xml:space="preserve"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
+           font-size="18.6667"
+           letter-spacing="0em"
+           x="147.36993"
+           y="0"><tspan
+             x="442.15302"
+             y="157.83099"
+             id="delete-attach-line-line2-left-txt"
+             style="text-align:center;text-anchor:middle">Liaison extrémité</tspan></text>
+        <text
+           id="text4625-9-6"
+           xml:space="preserve"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
+           font-size="18.6667"
+           font-weight="bold"
+           letter-spacing="0em"
+           x="246.5498"
+           y="0"><tspan
+             x="336.418"
+             y="39.055801"
+             id="delete-attach-line-attachment-point1-left-txt"
+             style="text-align:center;text-anchor:middle">Point de piquage</tspan></text>
+        <text
+           id="text1382"
+           xml:space="preserve"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#FFA4C2"
+           font-size="18.6667"
+           letter-spacing="0em"
+           x="124.46366"
+           y="0"><tspan
+             x="228.39"
+             y="157.38"
+             id="delete-attach-line-line1-left-txt"
+             style="text-align:center;text-anchor:middle">Liaison origine</tspan></text>
+        <text
+           id="text4625-9"
+           xml:space="preserve"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
+           font-size="18.6667"
+           font-weight="bold"
+           letter-spacing="0em"
+           x="124.61015"
+           y="0"><tspan
+             x="124.2279"
+             y="39.175701"
+             id="delete-attach-line-voltage-level1-left-txt"
+             style="text-align:center;text-anchor:middle">Poste origine</tspan></text>
+      </g>
+      <g
+         id="Group 3">
+        <path
+           id="lineBefore_3"
+           d="M1008.21 124H816.642H807.925V133H816.642H1008.21H1016.92V124H1008.21Z"
+           fill="#64B5F6" />
+        <path
+           id="path3740"
+           d="M791.019 136.678C796.121 136.678 800.258 132.541 800.258 127.439C800.258 122.336 796.121 118.199 791.019 118.199C785.916 118.199 781.779 122.336 781.779 127.439C781.779 132.541 785.916 136.678 791.019 136.678Z"
+           fill="#81C784"
+           fill-opacity="0.941176" />
+        <path
+           id="path3740-0_2"
+           d="M1034.1 137.198C1039.4 137.198 1043.7 132.902 1043.7 127.602C1043.7 122.302 1039.4 118.005 1034.1 118.005C1028.8 118.005 1024.51 122.302 1024.51 127.602C1024.51 132.902 1028.8 137.198 1034.1 137.198Z"
+           fill="#81C784" />
+        <g
+           id="path7047">
+          <path
+             d="M790.722 115.151V51.701Z"
+             fill="#81C784"
+             id="path192" />
+          <path
+             d="M790.722 115.151V51.701"
+             stroke="#81C784"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path194" />
+        </g>
+        <g
+           id="path7047-2_2">
+          <path
+             d="M1034.12 114.191V50.7413Z"
+             fill="#81C784"
+             id="path197" />
+          <path
+             d="M1034.12 114.191V50.7413"
+             stroke="#81C784"
+             stroke-width="3.85668"
+             stroke-dasharray="3.86 3.86"
+             id="path199" />
+        </g>
+        <text
+           id="text177_2"
+           xml:space="preserve"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
+           font-size="18.6667"
+           font-weight="bold"
+           letter-spacing="0em"
+           x="149.00211"
+           y="0"><tspan
+             x="1032.9619"
+             y="39.508801"
+             id="delete-attach-line-voltage-level2-right-txt"
+             style="text-align:center;text-anchor:middle">Poste extrémité</tspan></text>
+        <text
+           id="text4625-2"
+           xml:space="preserve"
+           style="font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#64B5F6"
+           font-size="18.6667"
+           letter-spacing="0em"
+           x="223.04057"
+           y="0"><tspan
+             x="913.15198"
+             y="157.38"
+             id="delete-attach-line-replacing-line-right-txt"
+             style="text-align:center;text-anchor:middle">Liaison de remplacement</tspan></text>
+        <text
+           id="text4625"
+           xml:space="preserve"
+           style="font-weight:bold;font-size:18.66670036px;font-family:Roboto;text-align:center;letter-spacing:0em;text-anchor:middle;white-space:pre;fill:#81C784"
+           font-size="18.6667"
+           font-weight="bold"
+           letter-spacing="0em"
+           x="124.61015"
+           y="0"><tspan
+             x="789.22803"
+             y="39.566898"
+             id="delete-attach-line-voltage-level1-right-txt"
+             style="text-align:center;text-anchor:middle">Poste origine</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>

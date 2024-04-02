@@ -13,6 +13,7 @@ import {
     getDynamicSimulationRunningStatus,
     getVoltageInitRunningStatus,
     getLoadFlowRunningStatus,
+    getNonEvacuatedEnergyRunningStatus,
 } from '../utils/running-status';
 
 import { UUID } from 'crypto';
@@ -28,6 +29,7 @@ import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowStatus } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
+import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
@@ -38,6 +40,10 @@ const securityAnalysisStatusInvalidations = [
 const sensitivityAnalysisStatusInvalidations = [
     'sensitivityAnalysis_status',
     'sensitivityAnalysis_failed',
+];
+const nonEvacuatedEnergyStatusInvalidations = [
+    'nonEvacuatedEnergy_status',
+    'nonEvacuatedEnergy_failed',
 ];
 const shortCircuitAnalysisStatusInvalidations = [
     'shortCircuitAnalysis_status',
@@ -56,6 +62,37 @@ const voltageInitStatusInvalidations = [
     'voltageInit_failed',
 ];
 
+const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
+
+const securityAnalysisStatusCompletions = [
+    'securityAnalysisResult',
+    'securityAnalysis_failed',
+];
+const sensitivityAnalysisStatusCompletions = [
+    'sensitivityAnalysisResult',
+    'sensitivityAnalysis_failed',
+];
+const nonEvacuatedEnergyStatusCompletions = [
+    'nonEvacuatedEnergyResult',
+    'nonEvacuatedEnergy_failed',
+];
+const shortCircuitAnalysisStatusCompletions = [
+    'shortCircuitAnalysisResult',
+    'shortCircuitAnalysis_failed',
+];
+const oneBusShortCircuitAnalysisStatusCompletions = [
+    'oneBusShortCircuitAnalysisResult',
+    'oneBusShortCircuitAnalysis_failed',
+];
+const dynamicSimulationStatusCompletions = [
+    'dynamicSimulationResult',
+    'dynamicSimulation_failed',
+];
+const voltageInitStatusCompletions = [
+    'voltageInitResult',
+    'voltageInit_failed',
+];
+
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (
     studyUuid: UUID,
@@ -65,6 +102,9 @@ export const useAllComputingStatus = (
         OptionalServicesNames.SecurityAnalysis
     );
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
@@ -82,6 +122,7 @@ export const useAllComputingStatus = (
         currentNodeUuid,
         fetchLoadFlowStatus,
         loadFlowStatusInvalidations,
+        loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
         ComputingType.LOADFLOW
     );
@@ -91,6 +132,7 @@ export const useAllComputingStatus = (
         currentNodeUuid,
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
+        securityAnalysisStatusCompletions,
         getSecurityAnalysisRunningStatus,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability
@@ -101,6 +143,7 @@ export const useAllComputingStatus = (
         currentNodeUuid,
         fetchSensitivityAnalysisStatus,
         sensitivityAnalysisStatusInvalidations,
+        sensitivityAnalysisStatusCompletions,
         getSensitivityAnalysisRunningStatus,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability
@@ -109,8 +152,20 @@ export const useAllComputingStatus = (
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        fetchNonEvacuatedEnergyStatus,
+        nonEvacuatedEnergyStatusInvalidations,
+        nonEvacuatedEnergyStatusCompletions,
+        getNonEvacuatedEnergyRunningStatus,
+        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
+        nonEvacuatedEnergyAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
         fetchShortCircuitAnalysisStatus,
         shortCircuitAnalysisStatusInvalidations,
+        shortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
         ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
         shortCircuitAvailability
@@ -121,6 +176,7 @@ export const useAllComputingStatus = (
         currentNodeUuid,
         fetchOneBusShortCircuitAnalysisStatus,
         oneBusShortCircuitAnalysisStatusInvalidations,
+        oneBusShortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
         ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
         shortCircuitAvailability
@@ -131,6 +187,7 @@ export const useAllComputingStatus = (
         currentNodeUuid,
         fetchDynamicSimulationStatus,
         dynamicSimulationStatusInvalidations,
+        dynamicSimulationStatusCompletions,
         getDynamicSimulationRunningStatus,
         ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability
@@ -141,6 +198,7 @@ export const useAllComputingStatus = (
         currentNodeUuid,
         fetchVoltageInitStatus,
         voltageInitStatusInvalidations,
+        voltageInitStatusCompletions,
         getVoltageInitRunningStatus,
         ComputingType.VOLTAGE_INIT,
         voltageInitAvailability

@@ -12,6 +12,8 @@ export enum RunningStatus {
     RUNNING = 'RUNNING',
 }
 
+export default RunningStatus;
+
 export function getLoadFlowRunningStatus(
     loadFlowStatus: string
 ): RunningStatus {
@@ -58,6 +60,23 @@ export function getSensitivityAnalysisRunningStatus(
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
+export function getNonEvacuatedEnergyRunningStatus(
+    nonEvacuatedEnergyStatus: string
+): RunningStatus {
+    switch (nonEvacuatedEnergyStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        case 'FAILED':
+            return RunningStatus.FAILED;
         default:
             return RunningStatus.IDLE;
     }

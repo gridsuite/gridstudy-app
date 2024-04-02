@@ -9,7 +9,13 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
 import { useIntl } from 'react-intl';
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
@@ -18,21 +24,25 @@ import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simu
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
 import {
-    ResultsTabsLevel,
+    computingTypeToRootTabRedirection,
     ResultTabIndexRedirection,
     useResultsTab,
 } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
+import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { CurrentTreeNode } from '../redux/reducer.type';
+import { CurrentTreeNode, ReduxState } from '../redux/reducer.type';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { Box } from '@mui/system';
+import ComputingType from './computing-status/computing-type';
+import { useSelector } from 'react-redux';
+import { usePrevious } from './utils/utils';
 
 const styles = {
     table: {
@@ -52,12 +62,13 @@ interface IResultViewTabProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     openVoltageLevelDiagram: (voltageLevelId: string) => void;
-    resultTabIndexRedirection: ResultTabIndexRedirection;
     disabled: boolean;
+    view: string;
 }
 
-interface IService {
+export interface IService {
     id: string;
+    computingType: ComputingType[];
     displayed: boolean;
     renderResult: React.ReactNode;
 }
@@ -76,27 +87,24 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     studyUuid,
     currentNode,
     openVoltageLevelDiagram,
-    resultTabIndexRedirection,
     disabled,
+    view,
 }) => {
-    const [tabIndex, setTabIndex] = useState(
-        resultTabIndexRedirection?.[ResultsTabsLevel.ROOT] ?? 0
-    );
-
-    useResultsTab(
-        resultTabIndexRedirection,
-        setTabIndex,
-        ResultsTabsLevel.ROOT
-    );
-
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    const lastCompletedComputation = useSelector(
+        (state: ReduxState) => state.lastCompletedComputation
+    );
 
     const securityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SecurityAnalysis
     );
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
     const dynamicSimulationAvailability = useOptionalServiceStatus(
@@ -154,15 +162,28 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode]);
 
+    const renderNonEvacuatedEnergyResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <NonEvacuatedEnergyResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id!}
+                />
+            </Paper>
+        );
+    }, [studyUuid, currentNode]);
+
     const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
                 <ShortCircuitAnalysisResultTab
-                    resultTabIndexRedirection={resultTabIndexRedirection}
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    view={view}
                 />
             </Paper>
         );
-    }, [resultTabIndexRedirection]);
+    }, [view, currentNode?.id, studyUuid]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
@@ -179,30 +200,47 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         return [
             {
                 id: 'LoadFlow',
+                computingType: [ComputingType.LOADFLOW],
                 displayed: true,
                 renderResult: renderLoadFlowResult,
             },
             {
                 id: 'SecurityAnalysis',
+                computingType: [ComputingType.SECURITY_ANALYSIS],
                 displayed:
                     securityAnalysisAvailability === OptionalServicesStatus.Up,
                 renderResult: renderSecurityAnalysisResult,
             },
             {
                 id: 'SensitivityAnalysis',
+                computingType: [ComputingType.SENSITIVITY_ANALYSIS],
                 displayed:
                     sensitivityAnalysisUnavailability ===
                     OptionalServicesStatus.Up,
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
+                id: 'NonEvacuatedEnergyAnalysis',
+                computingType: [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
+                displayed:
+                    enableDeveloperMode &&
+                    nonEvacuatedEnergyUnavailability ===
+                        OptionalServicesStatus.Up,
+                renderResult: renderNonEvacuatedEnergyResult,
+            },
+            {
                 id: 'ShortCircuitAnalysis',
+                computingType: [
+                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                ],
                 displayed:
                     shortCircuitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderShortCircuitAnalysisResult,
             },
             {
                 id: 'DynamicSimulation',
+                computingType: [ComputingType.DYNAMIC_SIMULATION],
                 displayed:
                     enableDeveloperMode &&
                     dynamicSimulationAvailability === OptionalServicesStatus.Up,
@@ -210,6 +248,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             },
             {
                 id: 'VoltageInit',
+                computingType: [ComputingType.VOLTAGE_INIT],
                 displayed:
                     voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,
@@ -217,6 +256,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         ].filter(({ displayed }: IService) => displayed);
     }, [
         sensitivityAnalysisUnavailability,
+        nonEvacuatedEnergyUnavailability,
         securityAnalysisAvailability,
         dynamicSimulationAvailability,
         voltageInitAvailability,
@@ -225,10 +265,28 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderDynamicSimulationResult,
         renderSecurityAnalysisResult,
         renderSensitivityAnalysisResult,
+        renderNonEvacuatedEnergyResult,
         renderShortCircuitAnalysisResult,
         renderVoltageInitResult,
         renderLoadFlowResult,
     ]);
+
+    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
+        () =>
+            computingTypeToRootTabRedirection(
+                lastCompletedComputation ?? ComputingType.LOADFLOW,
+                services
+            ),
+        [lastCompletedComputation, services]
+    );
+
+    const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
+
+    const setRedirectionLock = useResultsTab(
+        resultTabIndexRedirection,
+        setTabIndex,
+        view
+    );
 
     const renderTab = (service: IService) => {
         return (
@@ -255,12 +313,25 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     };
 
+    const previousEnableDeveloperMode = usePrevious(enableDeveloperMode);
     useEffect(() => {
-        if (!enableDeveloperMode) {
+        if (
+            !enableDeveloperMode &&
+            previousEnableDeveloperMode !== enableDeveloperMode
+        ) {
             // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
             setTabIndex(0);
         }
-    }, [enableDeveloperMode]);
+    }, [enableDeveloperMode, previousEnableDeveloperMode]);
+
+    const handleChangeTab = useCallback(
+        (event: React.SyntheticEvent, newTabIndex: number) => {
+            setTabIndex(newTabIndex);
+            //when we manually browse results we ought to block further redirections until the next completed computation
+            setRedirectionLock(true);
+        },
+        [setRedirectionLock]
+    );
 
     return (
         <Paper sx={styles.table}>
@@ -268,7 +339,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <Tabs
                     value={tabIndex}
                     variant="scrollable"
-                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
+                    onChange={handleChangeTab}
+                    TabIndicatorProps={{}}
                 >
                     {services.map((service) => renderTab(service))}
                 </Tabs>

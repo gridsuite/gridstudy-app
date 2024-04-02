@@ -19,45 +19,56 @@ export default class LogReportItem {
         TRACE: {
             name: 'TRACE',
             level: 1,
-            colorName: 'silver',
-            colorHexCode: '#C0C0C0',
+            colorName: 'SlateGray',
+            colorHexCode: '#708090',
+            displayedByDefault: false,
+        },
+        DEBUG: {
+            name: 'DEBUG',
+            level: 2,
+            colorName: 'DarkCyan',
+            colorHexCode: '#008B8B',
             displayedByDefault: false,
         },
         INFO: {
             name: 'INFO',
-            level: 2,
+            level: 3,
             colorName: 'mediumseagreen',
             colorHexCode: '#3CB371',
             displayedByDefault: true,
         },
         WARN: {
             name: 'WARN',
-            level: 3,
+            level: 4,
             colorName: 'orange',
             colorHexCode: '#FFA500',
             displayedByDefault: true,
         },
         ERROR: {
             name: 'ERROR',
-            level: 4,
+            level: 5,
             colorName: 'crimson',
             colorHexCode: '#DC143C',
             displayedByDefault: true,
         },
         FATAL: {
             name: 'FATAL',
-            level: 5,
+            level: 6,
             colorName: 'mediumorchid',
             colorHexCode: '#BA55D3',
             displayedByDefault: true,
         },
     };
 
-    static getDefaultSeverityFilter() {
+    static getDefaultSeverityFilter(severityList) {
         const filterConfig = {};
-        Object.values(LogReportItem.SEVERITY).forEach((s) => {
-            filterConfig[s.name] = s.displayedByDefault;
-        });
+        if (severityList?.length) {
+            Object.values(LogReportItem.SEVERITY)
+                .filter((s) => severityList.includes(s.name))
+                .forEach((s) => {
+                    filterConfig[s.name] = s.displayedByDefault;
+                });
+        }
         return filterConfig;
     }
 

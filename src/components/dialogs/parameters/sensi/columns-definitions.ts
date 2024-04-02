@@ -22,7 +22,7 @@ import {
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
 } from '../../../utils/field-constants';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 export const MONITORED_BRANCHES_EQUIPMENT_TYPES = [
@@ -67,7 +67,7 @@ export interface ISensiParameters {
 export interface IColumnsDef {
     label: string;
     dataKey: string;
-    initialValue: boolean | string | string[];
+    initialValue: boolean | string | string[] | number;
     editable?: boolean;
     directoryItems?: boolean;
     menuItems?: boolean;
@@ -75,6 +75,8 @@ export interface IColumnsDef {
     elementType?: string;
     titleId?: string;
     checkboxItems?: boolean;
+    floatItems?: boolean;
+    textItems?: boolean;
     width?: string;
 }
 export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
@@ -85,7 +87,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         editable: true,
         directoryItems: true,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -95,7 +97,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         editable: true,
         directoryItems: true,
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -113,7 +115,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         initialValue: [],
         editable: true,
         directoryItems: true,
-        elementType: elementType.CONTINGENCY_LIST,
+        elementType: ElementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
     {
@@ -133,7 +135,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         editable: true,
         directoryItems: true,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -143,7 +145,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         editable: true,
         directoryItems: true,
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -152,7 +154,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         initialValue: [],
         editable: true,
         directoryItems: true,
-        elementType: elementType.CONTINGENCY_LIST,
+        elementType: ElementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
     {
@@ -172,7 +174,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         editable: true,
         directoryItems: true,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -191,7 +193,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         editable: true,
         directoryItems: true,
         equipmentTypes: HVDC_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -200,7 +202,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         initialValue: [],
         editable: true,
         directoryItems: true,
-        elementType: elementType.CONTINGENCY_LIST,
+        elementType: ElementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
     {
@@ -220,7 +222,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         editable: true,
         directoryItems: true,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -239,7 +241,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         editable: true,
         directoryItems: true,
         equipmentTypes: PSTS_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -248,7 +250,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         initialValue: [],
         editable: true,
         directoryItems: true,
-        elementType: elementType.CONTINGENCY_LIST,
+        elementType: ElementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
     {
@@ -268,7 +270,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         editable: true,
         directoryItems: true,
         equipmentTypes: MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -278,7 +280,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         editable: true,
         directoryItems: true,
         equipmentTypes: EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
-        elementType: elementType.FILTER,
+        elementType: ElementType.FILTER,
         titleId: 'FiltersListsSelection',
     },
     {
@@ -287,7 +289,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         initialValue: [],
         editable: true,
         directoryItems: true,
-        elementType: elementType.CONTINGENCY_LIST,
+        elementType: ElementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
     {

@@ -8,9 +8,6 @@
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
-    Option,
-    ColumnFilter,
-    ColumnSort,
     SCAFaultResult,
     SCAFeederResult,
     SCAPagedResults,
@@ -32,6 +29,9 @@ import {
 import {
     PAGE_OPTIONS,
     DEFAULT_PAGE_COUNT,
+    FROM_COLUMN_TO_FIELD,
+    FROM_COLUMN_TO_FIELD_ONE_BUS,
+    mappingTabs,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -39,14 +39,24 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import {
+    FilterEnumsType,
+    useAggridRowFilter,
+} from '../../../hooks/use-aggrid-row-filter';
+import { GridReadyEvent } from 'ag-grid-community';
+import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
     analysisStatus: RunningStatus;
     result: SCAFaultResult[];
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
-    shortCircuitNotif: boolean;
     customTablePaginationProps: any;
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
@@ -56,8 +66,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     analysisStatus,
     result,
     updateResult,
-    shortCircuitNotif,
     customTablePaginationProps,
+    onGridColumnsChanged,
+    onRowDataUpdated,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -67,30 +78,43 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
-    const [filter, setFilter] = useState<ColumnFilter[]>([]);
-    const [sort, setSort] = useState<ColumnSort[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-    const [faultTypeOptions, setFaultTypeOptions] = useState<Option[]>([]);
-    const [limitViolationTypeOptions, setLimitViolationTypeOptions] = useState<
-        Option[]
-    >([]);
+    const [filterEnums, setFilterEnums] = useState<FilterEnumsType>({});
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
 
-    const updateFilter = useCallback((newFilter: ColumnFilter[]) => {
-        setFilter((oldFilter) => {
-            // to avoid useless rerender and fetch
-            if (newFilter.length || oldFilter.length) {
-                setPage(0); // we need to reset the page after updating the filter
-                return newFilter;
-            } else {
-                return oldFilter;
-            }
-        });
+    const isOneBusShortCircuitAnalysisType =
+        analysisType === ShortCircuitAnalysisType.ONE_BUS;
+
+    const fromFrontColumnToBackKeys = isOneBusShortCircuitAnalysisType
+        ? FROM_COLUMN_TO_FIELD_ONE_BUS
+        : FROM_COLUMN_TO_FIELD;
+
+    const defaultSortKey = isOneBusShortCircuitAnalysisType
+        ? 'current'
+        : 'elementId';
+    const defaultSortWay = isOneBusShortCircuitAnalysisType
+        ? SortWay.DESC
+        : SortWay.ASC;
+    const { onSortChanged, sortConfig } = useAgGridSort({
+        colId: defaultSortKey,
+        sort: defaultSortWay,
+    });
+    const memoizedSetPageCallback = useCallback(() => {
+        setPage(0);
     }, []);
+
+    const { updateFilter, filterSelector } = useAggridRowFilter(
+        {
+            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+            filterTab: mappingTabs(analysisType),
+            filterStoreAction: setShortcircuitAnalysisResultFilter,
+        },
+        memoizedSetPageCallback
+    );
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -109,7 +133,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     // Effects
     useEffect(() => {
-        if (!shortCircuitNotif || analysisStatus !== RunningStatus.SUCCEED) {
+        if (analysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
 
@@ -117,11 +141,21 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
+        const backSortConfig = sortConfig?.map((sort) => ({
+            ...sort,
+            colId: fromFrontColumnToBackKeys[sort.colId],
+        }));
+
         const selector = {
             page,
             size: rowsPerPage,
-            filter: filter,
-            sort: sort,
+            filter: filterSelector
+                ? mapFieldsToColumnsFilter(
+                      filterSelector,
+                      fromFrontColumnToBackKeys
+                  )
+                : null,
+            sort: backSortConfig,
         };
 
         fetchShortCircuitAnalysisPagedResults({
@@ -153,8 +187,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             active = false;
         };
     }, [
-        filter,
-        sort,
         page,
         rowsPerPage,
         snackError,
@@ -164,20 +196,18 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         studyUuid,
         currentNode?.id,
         intl,
-        shortCircuitNotif,
+        filterSelector,
+        sortConfig,
+        fromFrontColumnToBackKeys,
     ]);
 
     useEffect(() => {
         fetchShortCircuitFaultTypes()
             .then((values) => {
-                setFaultTypeOptions(
-                    values.map((v: string) => {
-                        return {
-                            value: v,
-                            label: intl.formatMessage({ id: v }),
-                        };
-                    })
-                );
+                setFilterEnums((prevFilterEnums) => ({
+                    ...prevFilterEnums,
+                    faultType: values,
+                }));
             })
             .catch((error) =>
                 snackError({
@@ -190,14 +220,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     useEffect(() => {
         fetchShortCircuitLimitViolationTypes()
             .then((values) => {
-                setLimitViolationTypeOptions(
-                    values.map((v: string) => {
-                        return {
-                            value: v,
-                            label: intl.formatMessage({ id: v }),
-                        };
-                    })
-                );
+                setFilterEnums((prevFilterEnums) => ({
+                    ...prevFilterEnums,
+                    limitType: values,
+                }));
             })
             .catch((error) =>
                 snackError({
@@ -218,11 +244,18 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             <ShortCircuitAnalysisResultTable
                 result={result}
                 analysisType={analysisType}
-                updateFilter={updateFilter}
-                updateSort={setSort}
                 isFetching={isFetching}
-                faultTypeOptions={faultTypeOptions}
-                limitViolationTypeOptions={limitViolationTypeOptions}
+                sortProps={{
+                    onSortChanged,
+                    sortConfig,
+                }}
+                filterProps={{
+                    updateFilter,
+                    filterSelector,
+                }}
+                filterEnums={filterEnums}
+                onGridColumnsChanged={onGridColumnsChanged}
+                onRowDataUpdated={onRowDataUpdated}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

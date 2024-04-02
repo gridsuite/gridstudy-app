@@ -14,18 +14,23 @@ import {
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
-import { useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { GridReadyEvent } from 'ag-grid-community';
 
-export const ShortCircuitAnalysisOneBusResult = () => {
+interface ShortCircuitAnalysisOneBusResultProps {
+    onGridColumnsChanged: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (params: GridReadyEvent) => void;
+}
+
+export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
+    ShortCircuitAnalysisOneBusResultProps
+> = ({ onGridColumnsChanged, onRowDataUpdated }) => {
     const { snackError } = useSnackMessage();
 
-    const oneBusShortCircuitNotif = useSelector(
-        (state: ReduxState) => state.oneBusShortCircuitNotif
-    );
     const oneBusShortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
@@ -41,10 +46,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     useEffect(() => {
-        if (
-            !oneBusShortCircuitNotif ||
-            oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED
-        ) {
+        if (oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
 
@@ -65,13 +67,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             }
             setFaultResult(result?.faults[0]);
         });
-    }, [
-        snackError,
-        studyUuid,
-        currentNode,
-        oneBusShortCircuitNotif,
-        oneBusShortCircuitAnalysisStatus,
-    ]);
+    }, [snackError, studyUuid, currentNode, oneBusShortCircuitAnalysisStatus]);
 
     useEffect(() => {
         if (!faultResult || !feederResults) {
@@ -100,11 +96,12 @@ export const ShortCircuitAnalysisOneBusResult = () => {
             analysisStatus={oneBusShortCircuitAnalysisStatus}
             result={result}
             updateResult={updateResult}
-            shortCircuitNotif={oneBusShortCircuitNotif}
             customTablePaginationProps={{
                 labelRowsPerPageId:
                     'muiTablePaginationLabelRowsPerPageOneBusSCA',
             }}
+            onGridColumnsChanged={onGridColumnsChanged}
+            onRowDataUpdated={onRowDataUpdated}
         />
     );
 };

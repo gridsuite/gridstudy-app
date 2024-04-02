@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { isBlankOrEmpty } from 'components/utils/validation-functions';
-
 // add some little margin of error to 64bit doubles which have 15-17 decimal digits
 // this allows for computations or conversions which result in a number very close to a nice short decimal number to be shown as the nice number
 // in exchange for getting nicer shorter numbers more often, we choose to drop all precision beyond this limit to have uniform precision.
@@ -31,12 +29,3 @@ export const roundToPrecision = (num, precision) =>
     Number(num.toPrecision(precision));
 export const roundToDefaultPrecision = (num) =>
     roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
-
-export const unitToMicroUnit = (num) =>
-    isBlankOrEmpty(num) ? undefined : roundToDefaultPrecision(num * 1e6);
-export const microUnitToUnit = (num) =>
-    isBlankOrEmpty(num) ? undefined : roundToDefaultPrecision(num / 1e6);
-export const kiloUnitToUnit = (num) =>
-    isBlankOrEmpty(num) ? undefined : roundToDefaultPrecision(num * 1e3);
-export const unitToKiloUnit = (num) =>
-    isBlankOrEmpty(num) ? undefined : roundToDefaultPrecision(num / 1e3);

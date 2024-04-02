@@ -29,6 +29,8 @@ import {
     LEG_SIDE,
     SECTION_COUNT,
     CONNECT,
+    RATIO_TAP_CHANGER_TARGET_V,
+    TARGET_V,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
 
@@ -72,6 +74,7 @@ interface GeneratorRowData {
 interface TransformerRowData {
     ID: string;
     [RATIO_TAP_CHANGER_POSITION]: number | undefined;
+    [RATIO_TAP_CHANGER_TARGET_V]: number | undefined;
     [LEG_SIDE]: number | undefined;
 }
 
@@ -91,17 +94,19 @@ interface ShuntCompensatorRowData {
     ID: string;
     [SECTION_COUNT]: number | undefined;
     [CONNECT]: boolean | undefined;
+    [TARGET_V]: number | undefined;
 }
 
 interface GeneratorData {
     generatorId: string;
-    voltageSetpoint: number | undefined;
-    reactivePowerSetpoint: number | undefined;
+    targetV: number | undefined;
+    targetQ: number | undefined;
 }
 
 interface TransformerData {
     transformerId: string;
     ratioTapChangerPosition: number | undefined;
+    ratioTapChangerTargetV: number | undefined;
     legSide: number | undefined;
 }
 
@@ -121,6 +126,7 @@ interface ShuntCompensatorData {
     shuntCompensatorId: string;
     sectionCount: number | undefined;
     connect: boolean | undefined;
+    targetV: number | undefined;
 }
 
 interface EditData {
@@ -220,6 +226,14 @@ const VoltageInitModificationDialog: FunctionComponent<
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
+            {
+                headerName: intl.formatMessage({
+                    id: 'VoltageSetpointKV',
+                }),
+                field: RATIO_TAP_CHANGER_TARGET_V,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
         ];
     }, [intl]);
 
@@ -280,7 +294,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'SectionCount',
+                    id: 'numberOfSections',
                 }),
                 field: SECTION_COUNT,
                 cellRenderer: DefaultCellRenderer,
@@ -291,6 +305,14 @@ const VoltageInitModificationDialog: FunctionComponent<
                 field: CONNECT,
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'VoltageSetpointKV',
+                }),
+                field: TARGET_V,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
             },
         ];
     }, [intl]);
@@ -370,12 +392,11 @@ const VoltageInitModificationDialog: FunctionComponent<
                                 [VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
-                            if (check(m.voltageSetpoint)) {
-                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                            if (check(m.targetV)) {
+                                row[VOLTAGE_SET_POINT] = m.targetV;
                             }
-                            if (check(m.reactivePowerSetpoint)) {
-                                row[REACTIVE_POWER_SET_POINT] =
-                                    m.reactivePowerSetpoint;
+                            if (check(m.targetQ)) {
+                                row[REACTIVE_POWER_SET_POINT] = m.targetQ;
                             }
                             rowData.push(row);
                         });
@@ -388,11 +409,16 @@ const VoltageInitModificationDialog: FunctionComponent<
                             let row: TransformerRowData = {
                                 ID: m.transformerId,
                                 [RATIO_TAP_CHANGER_POSITION]: undefined,
+                                [RATIO_TAP_CHANGER_TARGET_V]: undefined,
                                 [LEG_SIDE]: undefined,
                             };
                             if (check(m.ratioTapChangerPosition)) {
                                 row[RATIO_TAP_CHANGER_POSITION] =
                                     m.ratioTapChangerPosition;
+                            }
+                            if (check(m.ratioTapChangerTargetV)) {
+                                row[RATIO_TAP_CHANGER_TARGET_V] =
+                                    m.ratioTapChangerTargetV;
                             }
                             if (m.legSide) {
                                 row[LEG_SIDE] = m.legSide;
@@ -456,12 +482,16 @@ const VoltageInitModificationDialog: FunctionComponent<
                                     ID: m.shuntCompensatorId,
                                     [SECTION_COUNT]: undefined,
                                     [CONNECT]: false,
+                                    [TARGET_V]: undefined,
                                 };
                                 if (check(m.sectionCount)) {
                                     row[SECTION_COUNT] = m.sectionCount;
                                 }
                                 if (m.connect) {
                                     row[CONNECT] = m.connect;
+                                }
+                                if (check(m.targetV)) {
+                                    row[TARGET_V] = m.targetV;
                                 }
                                 rowData.push(row);
                             }

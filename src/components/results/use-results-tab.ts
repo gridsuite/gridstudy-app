@@ -5,29 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect } from 'react';
+import ComputingType from 'components/computing-status/computing-type';
+import { IService } from 'components/result-view-tab';
+import { StudyView } from 'components/study-pane';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
-
-export enum ResultsTabsLevel {
-    ROOT = 0,
-    ONE = 1,
-}
 
 export enum ResultsTabsRootLevel {
     LOADFLOW = 0,
     SECURITY_ANALYSIS = 1,
     SENSITIVITY_ANALYSIS = 2,
-    SHORTCIRCUIT_ANALYSIS = 3,
-    DYNAMIC_SIMULATION = 4,
-    VOLTAGE_INIT = 5,
+    NON_EVACUATED_ENERGY = 3,
+    SHORTCIRCUIT_ANALYSIS = 4,
+    DYNAMIC_SIMULATION = 5,
+    VOLTAGE_INIT = 6,
 }
 
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)
 type ResultsTabsLevelOne = ShortCircuitAnalysisResultTabs;
 
 export type ResultTabIndexRedirection =
-    | [ResultsTabsRootLevel, ResultsTabsLevelOne]
-    | null;
+    | ResultsTabsRootLevel
+    | ResultsTabsLevelOne;
 
 /**
  * handles redirection to specific tab
@@ -37,11 +38,60 @@ export type ResultTabIndexRedirection =
  */
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
-    setTabIndex: (index: number) => void,
-    tabLevel: ResultsTabsLevel
-) => {
+    setTabIndex: React.Dispatch<React.SetStateAction<number>>,
+    view: string
+): Dispatch<SetStateAction<Boolean>> => {
+    const [redirectionLock, setRedirectionLock] =
+        useResultsTabRedirectionLock();
+
     useEffect(() => {
-        resultTabIndexRedirection?.[tabLevel] &&
-            setTabIndex(resultTabIndexRedirection[tabLevel]);
-    }, [tabLevel, resultTabIndexRedirection, setTabIndex]);
+        if (view !== StudyView.RESULTS && !redirectionLock) {
+            setTabIndex(resultTabIndexRedirection);
+        }
+    }, [resultTabIndexRedirection, setTabIndex, view, redirectionLock]);
+
+    return setRedirectionLock;
+};
+
+const useResultsTabRedirectionLock = (): [
+    Boolean,
+    Dispatch<SetStateAction<Boolean>>
+] => {
+    const lastCompletedComputation: string = useSelector(
+        (state: ReduxState) => state.lastCompletedComputation
+    );
+    const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
+
+    useEffect(() => {
+        //we ought to release the redirection lock if the user launches a new computation
+        setRedirectionLock(false);
+    }, [lastCompletedComputation]);
+
+    return [redirectionLock, setRedirectionLock];
+};
+
+//function to convert computing type to the index corresponding to the resulting computation tab.
+//the list of services must also be passed as parameter because its content is dynamic depending on the state of the application (e.g. developer mode disabled)
+export const computingTypeToRootTabRedirection = (
+    computingType: ComputingType,
+    availableServices?: IService[]
+): ResultTabIndexRedirection => {
+    return availableServices
+        ? availableServices
+              .map((service) => service.computingType)
+              .findIndex((computations) => computations.includes(computingType))
+        : ResultsTabsRootLevel.LOADFLOW;
+};
+
+export const computingTypeToShortcircuitTabRedirection = (
+    computingType: ComputingType | undefined
+): ResultTabIndexRedirection => {
+    switch (computingType) {
+        case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:
+            return ShortCircuitAnalysisResultTabs.ALL_BUSES;
+        case ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS:
+            return ShortCircuitAnalysisResultTabs.ONE_BUS;
+        default:
+            return ShortCircuitAnalysisResultTabs.ALL_BUSES;
+    }
 };

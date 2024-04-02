@@ -5,6 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+export const EQUIPMENT_INFOS_OPERATION = {
+    CREATION: 'CREATION',
+    MODIFICATION: 'MODIFICATION',
+};
+
 export const EQUIPMENT_INFOS_TYPES = {
     LIST: { type: 'LIST' },
     MAP: { type: 'MAP' },
@@ -17,6 +22,7 @@ export const EQUIPMENT_TYPES = {
     SUBSTATION: 'SUBSTATION',
     VOLTAGE_LEVEL: 'VOLTAGE_LEVEL',
     LINE: 'LINE',
+    TIE_LINE: 'TIE_LINE',
     TWO_WINDINGS_TRANSFORMER: 'TWO_WINDINGS_TRANSFORMER',
     THREE_WINDINGS_TRANSFORMER: 'THREE_WINDINGS_TRANSFORMER',
     HVDC_LINE: 'HVDC_LINE',

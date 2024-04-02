@@ -28,13 +28,13 @@ import { CustomMenuItem } from '../utils/custom-nested-menu';
 interface BusMenuProps {
     busId: string;
     handleRunShortcircuitAnalysis: (busId: string) => void;
-    handleOpenDynamicSimulationEventDialog: (
+    onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: string,
         dialogTitle: string
     ) => void;
     position: [number, number];
-    closeBusMenu: () => void;
+    onClose: () => void;
 }
 
 const styles = {
@@ -54,9 +54,9 @@ const styles = {
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
     handleRunShortcircuitAnalysis,
-    handleOpenDynamicSimulationEventDialog,
+    onOpenDynamicSimulationEventDialog,
     position,
-    closeBusMenu,
+    onClose,
 }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -73,14 +73,30 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         [currentNode, isAnyNodeBuilding]
     );
 
+    const computationStarting = useSelector(
+        (state: ReduxState) => state.computationStarting
+    );
+
     const oneBusShortcircuitAnalysisState = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    const handleClickRunShortcircuitAnalysis = useCallback(
-        () => handleRunShortcircuitAnalysis(busId),
-        [busId, handleRunShortcircuitAnalysis]
+    const handleClickRunShortcircuitAnalysis = useCallback(() => {
+        onClose();
+        handleRunShortcircuitAnalysis(busId);
+    }, [busId, onClose, handleRunShortcircuitAnalysis]);
+
+    const handleOpenDynamicSimulationEventDialog = useCallback(
+        (equipmentId: string, equipmentType: string, dialogTitle: string) => {
+            onClose();
+            onOpenDynamicSimulationEventDialog(
+                equipmentId,
+                equipmentType,
+                dialogTitle
+            );
+        },
+        [onClose, onOpenDynamicSimulationEventDialog]
     );
 
     return (
@@ -92,13 +108,14 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 top: position[1],
                 left: position[0],
             }}
-            onClose={closeBusMenu}
+            onClose={onClose}
         >
             <CustomMenuItem
                 sx={styles.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
                 disabled={
+                    computationStarting ||
                     oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
                     !isNodeEditable
                 }
@@ -119,7 +136,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
                     equipmentType={EQUIPMENT_TYPES.BUS}
-                    handleOpenDynamicSimulationEventDialog={
+                    onOpenDynamicSimulationEventDialog={
                         handleOpenDynamicSimulationEventDialog
                     }
                     disabled={!isNodeEditable}

@@ -7,71 +7,48 @@
 
 import { useCallback, useState } from 'react';
 
-export interface ISortConfig {
-    colKey: string;
-    sortWay: number;
+export type SortConfigType = {
+    colId: string;
+    sort: SortWay;
+    children?: boolean;
+};
+
+export type SortPropsType = {
+    onSortChanged: (sortConfig: SortConfigType) => void;
+    sortConfig: SortConfigType[];
+    initSort?: (colKey: string) => void;
+    children?: boolean;
+};
+
+export enum SortWay {
+    ASC = 'asc',
+    DESC = 'desc',
 }
 
-type DataKeyToSortKey = Record<string, string>;
+export const useAgGridSort = (
+    initSortConfig: SortConfigType
+): SortPropsType => {
+    const [sortConfig, setSortConfig] = useState<SortConfigType[]>([
+        initSortConfig,
+    ]);
 
-export const SORT_WAYS = {
-    asc: 1,
-    desc: -1,
-};
-
-export const getSortValue = (sortWay: number) => {
-    if (sortWay > 0) {
-        return 'asc';
-    } else {
-        return 'desc';
-    }
-};
-
-const getKeyByValue = (
-    object: Record<string, any>,
-    value: any
-): string | undefined => {
-    return Object.keys(object).find((key) => object[key] === value);
-};
-
-const getSortConfig = (
-    dataKeyToSortKey: DataKeyToSortKey | undefined,
-    colKey: string,
-    sortWay: number
-): ISortConfig => {
-    return {
-        colKey: dataKeyToSortKey
-            ? getKeyByValue(dataKeyToSortKey, colKey) || colKey
-            : colKey,
-        sortWay,
-    };
-};
-
-interface IUseAgGridSortProps {
-    dataKeyToSortKey?: DataKeyToSortKey;
-    initSortConfig: ISortConfig;
-}
-
-export const useAgGridSort = ({
-    dataKeyToSortKey,
-    initSortConfig,
-}: IUseAgGridSortProps) => {
-    const { colKey: initColKey, sortWay: initSortWay } = initSortConfig;
-
-    const [sortConfig, setSortConfig] = useState<ISortConfig>(
-        getSortConfig(dataKeyToSortKey, initColKey, initSortWay)
-    );
-
-    const onSortChanged = useCallback(
-        (colKey: string, sortWay: number) =>
-            setSortConfig(getSortConfig(dataKeyToSortKey, colKey, sortWay)),
-        [dataKeyToSortKey]
-    );
+    const onSortChanged = useCallback((newSortConfig: SortConfigType) => {
+        setSortConfig((prevSortConfig) =>
+            prevSortConfig
+                // for now, we can have only one parent sort and one children sort
+                .filter(
+                    (sort) =>
+                        (sort.children ?? false) !==
+                        (newSortConfig.children ?? false)
+                )
+                .concat(newSortConfig)
+        );
+    }, []);
 
     const initSort = useCallback(
         (colKey: string) =>
-            setSortConfig(getSortConfig(dataKeyToSortKey, colKey, initSortWay)),
-        [dataKeyToSortKey, initSortWay]
+            setSortConfig([{ colId: colKey, sort: initSortConfig.sort }]),
+        [initSortConfig.sort]
     );
 
     return { onSortChanged, sortConfig, initSort };

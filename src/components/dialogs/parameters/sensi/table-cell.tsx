@@ -6,15 +6,29 @@
  */
 
 import { TableCell } from '@mui/material';
-import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import React from 'react';
-import { SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import {
+    SelectInput,
+    SwitchInput,
+    FloatInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
+import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import { fetchElementsMetadata } from 'services/explore';
 
 function EditableTableCell(
     arrayFormName: string,
     rowIndex: number,
-    column: any
+    column: any,
+    onRowChanged: (a: boolean, source: string) => void
 ) {
+    const handleDirectoryItemsChange = () => {
+        onRowChanged(true, 'directory');
+    };
+    const handleSwitchInputChange = () => {
+        onRowChanged(true, 'switch');
+    };
     return (
         <TableCell
             key={column.dataKey}
@@ -31,6 +45,10 @@ function EditableTableCell(
                     hideErrorMessage={true}
                     label={undefined}
                     itemFilter={undefined}
+                    onRowChanged={handleDirectoryItemsChange}
+                    fetchDirectoryContent={fetchDirectoryContent}
+                    fetchRootFolders={fetchRootFolders}
+                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
             {column.menuItems && (
@@ -42,10 +60,22 @@ function EditableTableCell(
                     fullWidth
                 />
             )}
-
             {column.checkboxItems && (
-                <SwitchInput
+                <span onChange={handleSwitchInputChange}>
+                    <SwitchInput
+                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    />
+                </span>
+            )}
+            {column.floatItems && (
+                <FloatInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                />
+            )}
+            {column.textItems && (
+                <TextInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    formProps={{ disabled: !column.editable }}
                 />
             )}
         </TableCell>

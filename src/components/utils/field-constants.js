@@ -8,33 +8,38 @@
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
 export const CONNECTIVITY = 'connectivity';
+export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
 export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
+export const NOMINAL_V = 'nominalV';
 export const TOPOLOGY_KIND = 'topologyKind';
 export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
+export const BUS_OR_BUSBAR_SECTION_ID = 'busOrBusbarSectionId';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'connected';
+export const CONNECTED1 = 'connected1';
+export const CONNECTED2 = 'connected2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
+export const CREATIONS_TABLE = 'creationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
-export const SERIES_RESISTANCE = 'seriesResistance';
-export const SERIES_REACTANCE = 'seriesReactance';
-export const MAGNETIZING_CONDUCTANCE = 'magnetizingConductance';
-export const MAGNETIZING_SUSCEPTANCE = 'magnetizingSusceptance';
+export const R = 'r';
+export const X = 'x';
+export const G = 'g';
+export const B = 'b';
 export const RATED_S = 'ratedS';
-export const RATED_VOLTAGE_1 = 'ratedVoltage1';
-export const RATED_VOLTAGE_2 = 'ratedVoltage2';
+
+export const RATED_U1 = 'ratedU1';
+export const RATED_U2 = 'ratedU2';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -44,15 +49,22 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
+export const MAX_ACTIVE_POWER = 'maxActivePower';
+export const MIN_ACTIVE_POWER = 'minActivePower';
+export const MAX_P = 'maxP';
+export const MIN_P = 'minP';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
 export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
+export const TARGET_P = 'targetP';
 export const VOLTAGE_REGULATION = 'voltageRegulation';
 export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
+export const TARGET_Q = 'targetQ';
 export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
-export const VOLTAGE_SET_POINT = 'voltageSetPoint';
-export const TRANSIENT_REACTANCE = 'transientReactance';
+export const VOLTAGE_SET_POINT = 'voltageSetpoint';
+export const TRANSIENT_REACTANCE = 'directTransX';
 export const Q_PERCENT = 'qPercent';
 export const FREQUENCY_REGULATION = 'frequencyRegulation';
+export const PARTICIPATE = 'participate';
 export const DROOP = 'droop';
 export const TRANSFORMER_REACTANCE = 'transformerReactance';
 export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
@@ -60,16 +72,17 @@ export const MARGINAL_COST = 'marginalCost';
 export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
 export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
 export const REACTIVE_LIMITS = 'reactiveLimits';
+export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
 export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
-export const Q_MAX_P = 'qmaxP';
-export const Q_MIN_P = 'qminP';
+export const MIN_Q = 'minQ';
+export const MAX_Q = 'maxQ';
 export const P = 'p';
 
 export const ENABLED = 'enabled';
-export const REGULATING = 'regulating';
+export const REGULATING = 'isRegulating';
 export const REGULATION_TYPE = 'regulationType';
 export const TARGET_DEADBAND = 'targetDeadband';
 export const LOW_TAP_POSITION = 'lowTapPosition';
@@ -89,7 +102,7 @@ export const STEPS_ALPHA = 'alpha';
 
 //tab ratio_tap_changer
 export const RATIO_TAP_CHANGER = 'ratioTapChanger';
-export const LOAD_TAP_CHANGING_CAPABILITIES = 'loadTapChangingCapabilities';
+export const LOAD_TAP_CHANGING_CAPABILITIES = 'hasLoadTapChangingCapabilities';
 export const TARGET_V = 'targetV';
 
 //tab phase_tap_changer
@@ -105,20 +118,16 @@ export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
     SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
 };
-export const SHUNT_COMPENSATOR_TYPES = {
-    REACTOR: { id: 'REACTOR', label: 'Reactor' },
-    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
-};
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
 export const MAX_SUSCEPTANCE = 'maxSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 //line
-export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
-export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
-export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
-export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
+export const G1 = 'g1';
+export const B1 = 'b1';
+export const G2 = 'g2';
+export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
@@ -158,11 +167,18 @@ export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
 
+export const COUNT = 'count';
+
 export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
+export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
 export const REGULATING_TERMINAL = 'regulatingTerminal';
+export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
+export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
+export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
+
 export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
 export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
@@ -232,6 +248,7 @@ export const FIXED_GENERATORS = 'constantQGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
 export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
+export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
 export const LEG_SIDE = 'legSide';
 
 export const PRIORITY = 'priority';
@@ -249,6 +266,7 @@ export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const MCS_SELECTED = 'connectedToHvdc';
+export const PROVIDER = 'provider';
 export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD =
     'flowFlowSensitivityValueThreshold';
 export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD =
@@ -273,8 +291,8 @@ export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';
 
 // VSC
-export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
-export const DC_RESISTANCE = 'dcResistance';
+export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
+export const REACTIVE_POWER = 'reactivePower';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
     'operatorActivePowerLimitSide1';
 export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 =
@@ -308,3 +326,30 @@ export const OPERATOR = 'operator';
 export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
 export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
 export const EQUIPMENT_FIELD = 'equipmentField';
+
+// non evacuated energy
+export const GENERATION_STAGES_KIND = 'energySource';
+export const GENERATION_STAGES_PERCENT_MAXP_1 = 'percentMaxP1';
+export const GENERATION_STAGES_PERCENT_MAXP_2 = 'percentMaxP2';
+export const GENERATION_STAGES_PERCENT_MAXP_3 = 'percentMaxP3';
+export const STAGES_DEFINITION_INDEX = 'stagesDefinitonIndex';
+export const PMAX_PERCENTS_INDEX = 'pMaxPercentsIndex';
+
+export const SENSITIVITY_THRESHOLD = 'sensitivityThreshold';
+export const GENERATORS_CAPPINGS_KIND = 'energySource';
+export const GENERATORS_CAPPINGS_FILTER = 'generators';
+
+export const BRANCHES = 'branches';
+export const MONITORED_BRANCHES_IST_N = 'istN';
+export const MONITORED_BRANCHES_LIMIT_NAME_N = 'limitNameN';
+export const MONITORED_BRANCHES_COEFF_N = 'nCoefficient';
+export const MONITORED_BRANCHES_IST_N_1 = 'istNm1';
+export const MONITORED_BRANCHES_LIMIT_NAME_N_1 = 'limitNameNm1';
+export const MONITORED_BRANCHES_COEFF_N_1 = 'nm1Coefficient';
+
+export const GENERATORS_CAPPINGS = 'generatorsCappings';
+export const STAGES_SELECTION = 'stagesSelection';
+export const STAGES_DEFINITION = 'stagesDefinition';
+export const STAGES_DEFINITION_GENERATORS = 'generators';
+export const PMAX_PERCENTS = 'pMaxPercents';
+export const GENERATORS_LIMIT = 'generatorsCappings';

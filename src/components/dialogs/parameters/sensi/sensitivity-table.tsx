@@ -20,6 +20,14 @@ import { useIntl } from 'react-intl';
 import { UseFieldArrayReturn, useFormContext } from 'react-hook-form';
 import TableRowComponent from './table-row';
 import { IColumnsDef } from './columns-definitions';
+import {
+    ACTIVATED,
+    COUNT,
+    HVDC_LINES,
+    INJECTIONS,
+    MONITORED_BRANCHES,
+    PSTS,
+} from '../../../utils/field-constants';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -29,6 +37,10 @@ interface SensitivityTableProps {
     columnsDefinition: IColumnsDef[];
     tableHeight: number;
     createRows: (a: number) => void;
+    disableAdd?: boolean;
+    disableDelete: boolean;
+    onFormChanged: (a: boolean) => void;
+    onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
@@ -36,6 +48,10 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     columnsDefinition,
     tableHeight,
     createRows,
+    disableAdd,
+    disableDelete = false,
+    onFormChanged,
+    onChangeParams,
 }) => {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -48,14 +64,54 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
         append(createRows(1));
     }, [append, createRows, currentRows.length]);
 
+    const fetchCount = useCallback(
+        (arrayFormName: string, index: number, source: string) => {
+            const row = getValues(arrayFormName)[index];
+            const isActivated = row[ACTIVATED];
+            const hasMonitoredBranches = row[MONITORED_BRANCHES]?.length > 0;
+            const hasInjections =
+                row[INJECTIONS]?.length > 0 ||
+                row[HVDC_LINES]?.length > 0 ||
+                row[PSTS]?.length > 0;
+            if (source === 'switch' && hasMonitoredBranches && hasInjections) {
+                if (isActivated) {
+                    onChangeParams(row, arrayFormName, index);
+                } else {
+                    onFormChanged(true);
+                }
+            }
+            if (source === 'directory' && isActivated) {
+                if (hasMonitoredBranches && hasInjections) {
+                    onChangeParams(row, arrayFormName, index);
+                } else if (
+                    (!hasMonitoredBranches || !hasInjections) &&
+                    row.count === 0
+                ) {
+                    onFormChanged(false);
+                } else if (!hasMonitoredBranches || !hasInjections) {
+                    onFormChanged(true);
+                }
+            }
+        },
+        [onChangeParams, onFormChanged, getValues]
+    );
+
     const handleDeleteButton = useCallback(
         (index: number) => {
             const currentRowsValues = getValues(arrayFormName);
+            let isFormChanged = false;
             if (index >= 0 && index < currentRowsValues.length) {
+                if (
+                    currentRowsValues[index][COUNT] &&
+                    currentRowsValues[index][ACTIVATED]
+                ) {
+                    isFormChanged = true;
+                }
                 remove(index);
             }
+            isFormChanged && onFormChanged(true);
         },
-        [arrayFormName, getValues, remove]
+        [arrayFormName, getValues, onFormChanged, remove]
     );
 
     return (
@@ -81,9 +137,14 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 id: 'AddRows',
                             })}
                         >
-                            <IconButton onClick={handleAddRowsButton}>
-                                <AddCircleIcon />
-                            </IconButton>
+                            <span>
+                                <IconButton
+                                    disabled={disableAdd}
+                                    onClick={handleAddRowsButton}
+                                >
+                                    <AddCircleIcon />
+                                </IconButton>
+                            </span>
                         </Tooltip>
                     </TableCell>
                 </TableHead>
@@ -96,6 +157,8 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                                 row={row}
                                 index={index}
                                 handleDeleteButton={handleDeleteButton}
+                                disableDelete={disableDelete}
+                                fetchCount={fetchCount}
                             />
                         )
                     )}

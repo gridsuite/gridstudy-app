@@ -13,8 +13,7 @@ import {
     getRequestParamFromList,
 } from '../utils';
 
-export const PREFIX_STUDY_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/study';
+export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 export const getStudyUrl = (studyUuid) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}`;
@@ -184,14 +183,6 @@ export function searchEquipmentsInfos(
     );
 }
 
-export function fetchLimitViolations(studyUuid, currentNodeUuid) {
-    console.info(`Fetching limit violations ...`);
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/limit-violations';
-    return backendFetchJson(url);
-}
-
 export function fetchContingencyCount(
     studyUuid,
     currentNodeUuid,
@@ -262,6 +253,16 @@ export function getAvailableComponentLibraries() {
     return backendFetchJson(getAvailableComponentLibrariesUrl);
 }
 
+export function unbuildNode(studyUuid, currentNodeUuid) {
+    console.info(
+        'Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/unbuild';
+    console.debug(url);
+    return backendFetchText(url, { method: 'post' });
+}
+
 export function buildNode(studyUuid, currentNodeUuid) {
     console.info(
         'Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
@@ -301,4 +302,14 @@ export function getOptionalServices() {
     const url = PREFIX_STUDY_QUERIES + '/v1/optional-services';
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function getServersInfos() {
+    console.info('get backend servers informations');
+    return backendFetchJson(
+        PREFIX_STUDY_QUERIES + '/v1/servers/about?view=study'
+    ).catch((reason) => {
+        console.error('Error while fetching the servers infos : ' + reason);
+        return reason;
+    });
 }

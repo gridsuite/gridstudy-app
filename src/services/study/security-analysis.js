@@ -12,6 +12,7 @@ import {
 } from './index';
 import {
     backendFetch,
+    backendFetchFile,
     backendFetchJson,
     backendFetchText,
     getRequestParamFromList,
@@ -74,9 +75,7 @@ export function fetchSecurityAnalysisResult(
 
     const params = new URLSearchParams({ resultType });
 
-    if (sort?.colKey && sort?.sortValue) {
-        params.append('sort', `${sort.colKey},${sort.sortValue}`);
-    }
+    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
@@ -91,6 +90,41 @@ export function fetchSecurityAnalysisResult(
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
 }
+
+export function downloadSecurityAnalysisResultZippedCsv(
+    studyUuid,
+    currentNodeUuid,
+    queryParams,
+    headers,
+    enumValueTranslations
+) {
+    console.info(
+        `Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/security-analysis/result/csv`;
+
+    const { resultType } = queryParams || {};
+
+    const params = new URLSearchParams({ resultType });
+
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendFetchFile(urlWithParams, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            headers,
+            enumValueTranslations: enumValueTranslations,
+        }),
+    });
+}
+
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         `Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`
@@ -99,13 +133,6 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/security-analysis/status';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
-export function fetchSecurityAnalysisProvider(studyUuid) {
-    console.info('fetch security analysis provider');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
     console.debug(url);
     return backendFetchText(url);
 }

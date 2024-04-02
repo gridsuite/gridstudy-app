@@ -23,10 +23,13 @@ interface CustomAGGGridStyleProps {
 interface CustomAGGridProps extends AgGridReactProps, CustomAGGGridStyleProps {}
 
 const styles = {
-    grid: {
+    grid: (theme: Theme) => ({
         width: 'auto',
         height: '100%',
         position: 'relative',
+
+        '--ag-value-change-value-highlight-background-color':
+            theme.aggridValueChangeHighlightBackgroundColor,
 
         //overrides the default computed max heigt for ag grid default selector editor to make it more usable
         //can be removed if a custom selector editor is implemented
@@ -39,7 +42,11 @@ const styles = {
             {
                 visibility: 'hidden',
             },
-    },
+        //removes border on focused cell - using "suppressCellFocus" Aggrid option causes side effects and breaks field edition
+        '& .ag-cell-focus, .ag-cell': {
+            border: 'none !important',
+        },
+    }),
     noBorderRight: {
         // hides right border for header of "Edit" column due to column being pinned
         '& .ag-pinned-left-header': {
@@ -54,6 +61,18 @@ const styles = {
             background: 'none',
         },
     }),
+};
+
+// We have to define a minWidth to column to activate this feature
+const onColumnResized = (params: ColumnResizedEvent) => {
+    const { column, finished } = params;
+    const colDefinedMinWidth = column?.getColDef()?.minWidth;
+    if (column && colDefinedMinWidth && finished) {
+        const newWidth = column?.getActualWidth();
+        if (newWidth < colDefinedMinWidth) {
+            column?.setActualWidth(colDefinedMinWidth);
+        }
+    }
 };
 
 export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
@@ -81,24 +100,12 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             [intl]
         );
 
-        // We have to define a minWidth to column to activate this feature
-        const onColumnResized = (params: ColumnResizedEvent) => {
-            const { column, finished } = params;
-            const colDefinedMinWidth = column?.getColDef()?.minWidth;
-            if (column && colDefinedMinWidth && finished) {
-                const newWidth = column?.getActualWidth();
-                if (newWidth < colDefinedMinWidth) {
-                    column?.setActualWidth(colDefinedMinWidth);
-                }
-            }
-        };
-
         return (
             <Box
                 sx={mergeSx(
                     styles.grid,
                     shouldHidePinnedHeaderRightBorder && styles.noBorderRight,
-                    showOverlay && styles.overlayBackground(theme)
+                    showOverlay && styles.overlayBackground
                 )}
                 className={theme.aggrid}
             >
@@ -112,6 +119,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     }
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     onColumnResized={onColumnResized}
+                    enableCellTextSelection
                     {...props}
                 />
             </Box>

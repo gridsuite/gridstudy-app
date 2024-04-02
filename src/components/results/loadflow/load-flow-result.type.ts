@@ -5,7 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ColDef } from 'ag-grid-community';
+import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { UUID } from 'crypto';
+import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
 
 export interface ComponentResult {
@@ -14,15 +17,24 @@ export interface ComponentResult {
     synchronousComponentNum: number;
     status: string;
     iterationCount: number;
-    slackBusId: string;
-    slackBusActivePowerMismatch: number;
+    slackBusResults: SlackBusResult[];
     distributedActivePower: number;
 }
+export interface SlackBusResult {
+    id: string;
+    activePowerMismatch: number;
+}
+
 export interface LoadFlowResult {
     resultUuid: UUID;
     writeTimeStamp: Date;
     componentResults: ComponentResult[];
 }
+
+export type QueryParamsType = Record<
+    string,
+    string | number | SortConfigType | FilterSelectorType[]
+>;
 
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',
@@ -31,22 +43,30 @@ export enum LimitTypes {
 }
 export interface LoadFlowTabProps {
     studyUuid: UUID;
-    nodeUuid: UUID | undefined;
+    nodeUuid: UUID;
 }
-export interface LoadflowResultProps extends LoadFlowTabProps {
+
+export interface LoadflowResultTap {
+    isLoadingResult: boolean;
+    columnDefs: ColDef<any>[];
+    tableName: string;
+}
+export interface LoadflowResultProps extends LoadflowResultTap {
     result: LoadFlowResult;
-    tabIndex: number;
-    isWaiting: boolean;
+}
+
+export interface LimitViolationResultProps extends LoadflowResultTap {
+    result: OverloadedEquipment[];
 }
 
 export interface OverloadedEquipment {
     overload: number;
-    name: string;
+    subjectId: string;
     value: number;
     actualOverloadDuration: number | null;
     upComingOverloadDuration: number | null;
     limit: number;
-    limitName: string | null;
+    limitName: string | null | undefined;
     side: string | undefined;
     limitType: string;
 }
@@ -56,6 +76,7 @@ export interface OverloadedEquipmentFromBack {
     limitName: string | null;
     actualOverloadDuration: 300;
     upComingOverloadDuration: 300;
+    overload: number;
     value: number;
     side: BranchSide | '';
     limitType: LimitTypes;

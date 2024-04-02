@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     EDITED_FIELD,
@@ -21,21 +28,21 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText' },
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText' },
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText' },
-        { id: 'VOLTAGE_SET_POINT', label: 'VoltageText' },
+        { id: 'VOLTAGE_SET_POINT', label: 'GeneratorTargetV' },
         {
             id: 'PLANNED_ACTIVE_POWER_SET_POINT',
             label: 'PlannedActivePowerSetPointForm',
         },
-        { id: 'MARGINAL_COST', label: 'MarginalCost' },
-        { id: 'PLANNED_OUTAGE_RATE', label: 'PlannedOutageRate' },
-        { id: 'FORCED_OUTAGE_RATE', label: 'ForcedOutageRate' },
-        { id: 'DROOP', label: 'Droop' },
+        { id: 'MARGINAL_COST', label: 'marginalCost' },
+        { id: 'PLANNED_OUTAGE_RATE', label: 'plannedOutageRate' },
+        { id: 'FORCED_OUTAGE_RATE', label: 'forcedOutageRate' },
+        { id: 'DROOP', label: 'ActivePowerRegulationDroop' },
         { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm' },
         {
             id: 'STEP_UP_TRANSFORMER_REACTANCE',
             label: 'TransformerReactanceForm',
         },
-        { id: 'Q_PERCENT', label: 'QPercentText' },
+        { id: 'Q_PERCENT', label: 'ReactivePercentageVoltageRegulation' },
     ],
     [EQUIPMENT_TYPES.BATTERY]: [
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText' },
@@ -45,9 +52,9 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'DROOP', label: 'Droop' },
     ],
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
-        { id: 'MAXIMUM_SECTION_COUNT', label: 'MaximumSectionCount' },
-        { id: 'SECTION_COUNT', label: 'ShuntSectionCount' },
-        { id: 'MAXIMUM_SUSCEPTANCE', label: 'MaxShuntSusceptance' },
+        { id: 'MAXIMUM_SECTION_COUNT', label: 'maximumSectionCount' },
+        { id: 'SECTION_COUNT', label: 'sectionCount' },
+        { id: 'MAXIMUM_SUSCEPTANCE', label: 'maxSusceptance' },
         { id: 'MAXIMUM_Q_AT_NOMINAL_VOLTAGE', label: 'maxQAtNominalV' },
     ],
     [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [
@@ -67,6 +74,23 @@ export const EQUIPMENTS_FIELDS = {
         { id: 'ACTIVE_POWER', label: 'ActivePowerText' },
         { id: 'REACTIVE_POWER', label: 'ReactivePowerText' },
     ],
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
+        { id: 'R', label: 'SeriesResistanceText' },
+        { id: 'X', label: 'SeriesReactanceText' },
+        { id: 'G', label: 'G' },
+        { id: 'B', label: 'B' },
+        { id: 'RATED_U1', label: 'RatedU1' },
+        { id: 'RATED_U2', label: 'RatedU2' },
+        { id: 'RATED_S', label: 'RatedNominalPowerText' },
+        { id: 'TARGET_V', label: 'RatioTargetV' },
+        { id: 'RATIO_LOW_TAP_POSITION', label: 'RatioLowTapPosition' },
+        { id: 'RATIO_TAP_POSITION', label: 'RatioTapPosition' },
+        { id: 'RATIO_TARGET_DEADBAND', label: 'RatioDeadBand' },
+        { id: 'REGULATION_VALUE', label: 'PhaseRegulatingValue' },
+        { id: 'PHASE_LOW_TAP_POSITION', label: 'PhaseLowTapPosition' },
+        { id: 'PHASE_TAP_POSITION', label: 'PhaseTapPosition' },
+        { id: 'PHASE_TARGET_DEADBAND', label: 'PhaseDeadBand' },
+    ],
 };
 
 function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {
@@ -84,7 +108,8 @@ const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (
     value,
     context
 ) => {
-    if (!isNaN(parseFloat(value))) {
+    const newValue = value.replace(',', '.');
+    if (!isNaN(parseFloat(newValue))) {
         return true;
     }
 

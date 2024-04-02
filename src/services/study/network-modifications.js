@@ -15,7 +15,7 @@ import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
     BRANCH_SIDE,
-    BRANCH_STATUS_ACTION,
+    OPERATING_STATUS_ACTION,
 } from '../../components/network/constants';
 
 export function changeNetworkModificationOrder(
@@ -76,6 +76,26 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
+export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('uuids', modificationUuids);
+    urlSearchParams.append('onlyStashed', true);
+
+    const modificationDeleteUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications?' +
+        urlSearchParams.toString();
+
+    console.debug(modificationDeleteUrl);
+    return backendFetch(modificationDeleteUrl, {
+        method: 'DELETE',
+    });
+}
+
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     console.info('Creating groovy script (request network change)');
     const changeUrl =
@@ -95,50 +115,60 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     });
 }
 
-function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
-    const changeBranchStatusUrl =
+function changeOperatingStatus(studyUuid, currentNodeUuid, equipment, action) {
+    const changeOperatingStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-    console.debug('%s with action: %s', changeBranchStatusUrl, action);
-    return backendFetch(changeBranchStatusUrl, {
+    console.debug('%s with action: %s', changeOperatingStatusUrl, action);
+
+    let energizedVoltageLevelId;
+    switch (action) {
+        case OPERATING_STATUS_ACTION.ENERGISE_END_ONE:
+            energizedVoltageLevelId = equipment.voltageLevelId1;
+            break;
+        case OPERATING_STATUS_ACTION.ENERGISE_END_TWO:
+            energizedVoltageLevelId = equipment.voltageLevelId2;
+            break;
+        default:
+            energizedVoltageLevelId = undefined;
+    }
+
+    return backendFetch(changeOperatingStatusUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
-            equipmentId: branch.id,
-            energizedVoltageLevelId:
-                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-                    ? branch.voltageLevelId1
-                    : branch.voltageLevelId2,
+            type: MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type,
+            equipmentId: equipment.id,
+            energizedVoltageLevelId: energizedVoltageLevelId,
             action: action,
         }),
     });
 }
 
-export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('locking out branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+export function lockoutEquipment(studyUuid, currentNodeUuid, equipment) {
+    console.info('locking out equipment ' + equipment.id + ' ...');
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.LOCKOUT
+        equipment,
+        OPERATING_STATUS_ACTION.LOCKOUT
     );
 }
 
-export function tripBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('tripping branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+export function tripEquipment(studyUuid, currentNodeUuid, equipment) {
+    console.info('tripping equipment ' + equipment.id + ' ...');
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.TRIP
+        equipment,
+        OPERATING_STATUS_ACTION.TRIP
     );
 }
 
-export function energiseBranchEnd(
+export function energiseEquipmentEnd(
     studyUuid,
     currentNodeUuid,
     branch,
@@ -147,23 +177,23 @@ export function energiseBranchEnd(
     console.info(
         'energise branch ' + branch.id + ' on side ' + branchSide + ' ...'
     );
-    return changeBranchStatus(
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
         branch,
         branchSide === BRANCH_SIDE.ONE
-            ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-            : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
+            ? OPERATING_STATUS_ACTION.ENERGISE_END_ONE
+            : OPERATING_STATUS_ACTION.ENERGISE_END_TWO
     );
 }
 
-export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
+export function switchOnEquipment(studyUuid, currentNodeUuid, branch) {
     console.info('switching on branch ' + branch.id + ' ...');
-    return changeBranchStatus(
+    return changeOperatingStatus(
         studyUuid,
         currentNodeUuid,
         branch,
-        BRANCH_STATUS_ACTION.SWITCH_ON
+        OPERATING_STATUS_ACTION.SWITCH_ON
     );
 }
 
@@ -256,18 +286,19 @@ export function createBattery(
     connectionDirection,
     connectionPosition,
     connected,
-    minActivePower,
-    maxActivePower,
+    minP,
+    maxP,
     isReactiveCapabilityCurveOn,
-    minimumReactivePower,
-    maximumReactivePower,
+    minQ,
+    maxQ,
     reactiveCapabilityCurve,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
-    frequencyRegulation,
+    targetP,
+    targetQ,
+    participate,
     droop,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createBatteryUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -296,16 +327,17 @@ export function createBattery(
             connectionDirection,
             connectionPosition,
             connected,
-            minActivePower,
-            maxActivePower,
+            minP,
+            maxP,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-            minimumReactivePower,
-            maximumReactivePower,
+            minQ,
+            maxQ,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-            activePowerSetpoint,
-            reactivePowerSetpoint,
-            participate: frequencyRegulation,
+            targetP,
+            targetQ,
+            participate,
             droop,
+            properties,
         }),
     });
 }
@@ -315,19 +347,20 @@ export function modifyBattery(
     currentNodeUuid,
     batteryId,
     name,
-    minimumActivePower,
-    maximumActivePower,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
+    minP,
+    maxP,
+    targetP,
+    targetQ,
     voltageLevelId,
     busOrBusbarSectionId,
     modificationId,
-    frequencyRegulation,
+    participate,
     droop,
     isReactiveCapabilityCurveOn,
-    maximumReactivePower,
-    minimumReactivePower,
-    reactiveCapabilityCurve
+    maxQ,
+    minQ,
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -346,18 +379,19 @@ export function modifyBattery(
         equipmentName: toModificationOperation(name),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-        minActivePower: toModificationOperation(minimumActivePower),
-        maxActivePower: toModificationOperation(maximumActivePower),
-        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        reactivePowerSetpoint: toModificationOperation(reactivePowerSetpoint),
+        minP: toModificationOperation(minP),
+        maxP: toModificationOperation(maxP),
+        targetP: toModificationOperation(targetP),
+        targetQ: toModificationOperation(targetQ),
         reactiveCapabilityCurve: toModificationOperation(
             isReactiveCapabilityCurveOn
         ),
-        participate: toModificationOperation(frequencyRegulation),
+        participate: toModificationOperation(participate),
         droop: toModificationOperation(droop),
-        maximumReactivePower: toModificationOperation(maximumReactivePower),
-        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        maxQ: toModificationOperation(maxQ),
+        minQ: toModificationOperation(minQ),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -375,8 +409,8 @@ export function createLoad(
     id,
     name,
     loadType,
-    activePower,
-    reactivePower,
+    p0,
+    q0,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
@@ -384,7 +418,8 @@ export function createLoad(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -408,14 +443,15 @@ export function createLoad(
             equipmentId: id,
             equipmentName: name,
             loadType: loadType,
-            activePower: activePower,
-            reactivePower: reactivePower,
+            p0: p0,
+            q0: q0,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -426,12 +462,13 @@ export function modifyLoad(
     id,
     name,
     loadType,
-    activePower,
-    reactivePower,
+    p0,
+    q0,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -455,10 +492,11 @@ export function modifyLoad(
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
-            activePower: toModificationOperation(activePower),
-            reactivePower: toModificationOperation(reactivePower),
+            p0: toModificationOperation(p0),
+            q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+            properties,
         }),
     });
 }
@@ -469,13 +507,13 @@ export function modifyGenerator(
     generatorId,
     name,
     energySource,
-    minimumActivePower,
-    maximumActivePower,
-    ratedNominalPower,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
+    minP,
+    maxP,
+    ratedS,
+    targetP,
+    targetQ,
     voltageRegulation,
-    voltageSetpoint,
+    targetV,
     voltageLevelId,
     busOrBusbarSectionId,
     modificationId,
@@ -484,18 +522,19 @@ export function modifyGenerator(
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
-    transientReactance,
-    transformerReactance,
+    directTransX,
+    stepUpTransformerX,
     voltageRegulationType,
     regulatingTerminalId,
     regulatingTerminalType,
     regulatingTerminalVlId,
     isReactiveCapabilityCurveOn,
-    frequencyRegulation,
+    participate,
     droop,
-    maximumReactivePower,
-    minimumReactivePower,
-    reactiveCapabilityCurve
+    maxQ,
+    minQ,
+    reactiveCapabilityCurve,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -513,15 +552,13 @@ export function modifyGenerator(
         equipmentId: generatorId,
         equipmentName: toModificationOperation(name),
         energySource: toModificationOperation(energySource),
-        minActivePower: toModificationOperation(minimumActivePower),
-        maxActivePower: toModificationOperation(maximumActivePower),
-        ratedNominalPower: toModificationOperation(ratedNominalPower),
-        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        reactivePowerSetpoint: toModificationUnsetOperation(
-            reactivePowerSetpoint
-        ),
+        minP: toModificationOperation(minP),
+        maxP: toModificationOperation(maxP),
+        ratedS: toModificationOperation(ratedS),
+        targetP: toModificationOperation(targetP),
+        targetQ: toModificationUnsetOperation(targetQ),
         voltageRegulationOn: toModificationOperation(voltageRegulation),
-        voltageSetpoint: toModificationUnsetOperation(voltageSetpoint),
+        targetV: toModificationUnsetOperation(targetV),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
@@ -531,9 +568,8 @@ export function modifyGenerator(
         marginalCost: toModificationOperation(marginalCost),
         plannedOutageRate: toModificationOperation(plannedOutageRate),
         forcedOutageRate: toModificationOperation(forcedOutageRate),
-        transientReactance: toModificationOperation(transientReactance),
-        stepUpTransformerReactance:
-            toModificationOperation(transformerReactance),
+        directTransX: toModificationOperation(directTransX),
+        stepUpTransformerX: toModificationOperation(stepUpTransformerX),
         voltageRegulationType: toModificationOperation(voltageRegulationType),
         regulatingTerminalId: toModificationOperation(regulatingTerminalId),
         regulatingTerminalType: toModificationOperation(regulatingTerminalType),
@@ -541,11 +577,12 @@ export function modifyGenerator(
         reactiveCapabilityCurve: toModificationOperation(
             isReactiveCapabilityCurveOn
         ),
-        participate: toModificationOperation(frequencyRegulation),
+        participate: toModificationOperation(participate),
         droop: toModificationOperation(droop),
-        maximumReactivePower: toModificationOperation(maximumReactivePower),
-        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        maxQ: toModificationOperation(maxQ),
+        minQ: toModificationOperation(minQ),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+        properties,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -563,13 +600,13 @@ export function createGenerator(
     id,
     name,
     energySource,
-    minActivePower,
-    maxActivePower,
-    ratedNominalPower,
-    activePowerSetpoint,
-    reactivePowerSetpoint,
+    minP,
+    maxP,
+    ratedS,
+    targetP,
+    targetQ,
     voltageRegulationOn,
-    voltageSetpoint,
+    targetV,
     qPercent,
     voltageLevelId,
     busOrBusbarSectionId,
@@ -579,21 +616,22 @@ export function createGenerator(
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
-    transientReactance,
-    transformerReactance,
+    directTransX,
+    stepUpTransformerX,
     regulatingTerminalId,
     regulatingTerminalType,
     regulatingTerminalVlId,
     isReactiveCapabilityCurveOn,
-    frequencyRegulation,
+    participate,
     droop,
-    maximumReactivePower,
-    minimumReactivePower,
+    maxQ,
+    minQ,
     reactiveCapabilityCurve,
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -617,13 +655,13 @@ export function createGenerator(
             equipmentId: id,
             equipmentName: name,
             energySource: energySource,
-            minActivePower: minActivePower,
-            maxActivePower: maxActivePower,
-            ratedNominalPower: ratedNominalPower,
-            activePowerSetpoint: activePowerSetpoint,
-            reactivePowerSetpoint: reactivePowerSetpoint,
+            minP: minP,
+            maxP: maxP,
+            ratedS: ratedS,
+            targetP: targetP,
+            targetQ: targetQ,
             voltageRegulationOn: voltageRegulationOn,
-            voltageSetpoint: voltageSetpoint,
+            targetV: targetV,
             qPercent: qPercent,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
@@ -631,21 +669,22 @@ export function createGenerator(
             marginalCost: marginalCost,
             plannedOutageRate: plannedOutageRate,
             forcedOutageRate: forcedOutageRate,
-            transientReactance: transientReactance,
-            stepUpTransformerReactance: transformerReactance,
+            directTransX: directTransX,
+            stepUpTransformerX: stepUpTransformerX,
             regulatingTerminalId: regulatingTerminalId,
             regulatingTerminalType: regulatingTerminalType,
             regulatingTerminalVlId: regulatingTerminalVlId,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-            participate: frequencyRegulation,
+            participate: participate,
             droop: droop,
-            maximumReactivePower: maximumReactivePower,
-            minimumReactivePower: minimumReactivePower,
+            maxQ: maxQ,
+            minQ: minQ,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -666,7 +705,8 @@ export function createShuntCompensator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected
+    connected,
+    properties
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -700,6 +740,7 @@ export function createShuntCompensator(
             connectionName: connectionName,
             connectionPosition: connectionPosition,
             connected: connected,
+            properties,
         }),
     });
 }
@@ -716,7 +757,8 @@ export function modifyShuntCompensator(
     shuntCompensatorType,
     voltageLevelId,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -744,7 +786,8 @@ export function modifyShuntCompensator(
             maxSusceptance: toModificationOperation(maxSusceptance),
             maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
-            voltageLevelId: voltageLevelId,
+            voltageLevelId: toModificationOperation(voltageLevelId),
+            properties,
         }),
     });
 }
@@ -754,12 +797,12 @@ export function createLine(
     currentNodeUuid,
     lineId,
     lineName,
-    seriesResistance,
-    seriesReactance,
-    shuntConductance1,
-    shuntSusceptance1,
-    shuntConductance2,
-    shuntSusceptance2,
+    r,
+    x,
+    g1,
+    b1,
+    g2,
+    b2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -777,7 +820,8 @@ export function createLine(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -800,12 +844,12 @@ export function createLine(
             type: MODIFICATION_TYPES.LINE_CREATION.type,
             equipmentId: lineId,
             equipmentName: lineName,
-            seriesResistance: seriesResistance,
-            seriesReactance: seriesReactance,
-            shuntConductance1: shuntConductance1,
-            shuntSusceptance1: shuntSusceptance1,
-            shuntConductance2: shuntConductance2,
-            shuntSusceptance2: shuntSusceptance2,
+            r: r,
+            x: x,
+            g1: g1,
+            b1: b1,
+            g2: g2,
+            b2: b2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -826,6 +870,7 @@ export function createLine(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -835,16 +880,17 @@ export function modifyLine(
     currentNodeUuid,
     lineId,
     lineName,
-    seriesResistance,
-    seriesReactance,
-    shuntConductance1,
-    shuntSusceptance1,
-    shuntConductance2,
-    shuntSusceptance2,
+    r,
+    x,
+    g1,
+    b1,
+    g2,
+    b2,
     currentLimit1,
     currentLimit2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -867,14 +913,15 @@ export function modifyLine(
             type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
             equipmentId: lineId,
             equipmentName: toModificationOperation(lineName),
-            seriesResistance: toModificationOperation(seriesResistance),
-            seriesReactance: toModificationOperation(seriesReactance),
-            shuntConductance1: toModificationOperation(shuntConductance1),
-            shuntSusceptance1: toModificationOperation(shuntSusceptance1),
-            shuntConductance2: toModificationOperation(shuntConductance2),
-            shuntSusceptance2: toModificationOperation(shuntSusceptance2),
+            r: toModificationOperation(r),
+            x: toModificationOperation(x),
+            g1: toModificationOperation(g1),
+            b1: toModificationOperation(b1),
+            g2: toModificationOperation(g2),
+            b2: toModificationOperation(b2),
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
+            properties,
         }),
     });
 }
@@ -884,13 +931,13 @@ export function createTwoWindingsTransformer(
     currentNodeUuid,
     twoWindingsTransformerId,
     twoWindingsTransformerName,
-    seriesResistance,
-    seriesReactance,
-    magnetizingConductance,
-    magnetizingSusceptance,
+    r,
+    x,
+    g,
+    b,
     ratedS,
-    ratedVoltage1,
-    ratedVoltage2,
+    ratedU1,
+    ratedU2,
     currentLimit1,
     currentLimit2,
     voltageLevelId1,
@@ -908,7 +955,8 @@ export function createTwoWindingsTransformer(
     connectionPosition1,
     connectionPosition2,
     connected1,
-    connected2
+    connected2,
+    properties
 ) {
     let createTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -932,13 +980,13 @@ export function createTwoWindingsTransformer(
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
             equipmentId: twoWindingsTransformerId,
             equipmentName: twoWindingsTransformerName,
-            seriesResistance: seriesResistance,
-            seriesReactance: seriesReactance,
-            magnetizingConductance: magnetizingConductance,
-            magnetizingSusceptance: magnetizingSusceptance,
+            r: r,
+            x: x,
+            g: g,
+            b: b,
             ratedS: ratedS,
-            ratedVoltage1: ratedVoltage1,
-            ratedVoltage2: ratedVoltage2,
+            ratedU1: ratedU1,
+            ratedU2: ratedU2,
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
             voltageLevelId1: voltageLevelId1,
@@ -955,6 +1003,7 @@ export function createTwoWindingsTransformer(
             connectionPosition2: connectionPosition2,
             connected1: connected1,
             connected2: connected2,
+            properties,
         }),
     });
 }
@@ -964,19 +1013,20 @@ export function modifyTwoWindingsTransformer(
     currentNodeUuid,
     twoWindingsTransformerId,
     twoWindingsTransformerName,
-    seriesResistance,
-    seriesReactance,
-    magnetizingConductance,
-    magnetizingSusceptance,
+    r,
+    x,
+    g,
+    b,
     ratedS,
-    ratedVoltage1,
-    ratedVoltage2,
+    ratedU1,
+    ratedU2,
     currentLimit1,
     currentLimit2,
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modifyTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1000,17 +1050,18 @@ export function modifyTwoWindingsTransformer(
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
             equipmentId: twoWindingsTransformerId,
             equipmentName: twoWindingsTransformerName,
-            seriesResistance: seriesResistance,
-            seriesReactance: seriesReactance,
-            magnetizingConductance: magnetizingConductance,
-            magnetizingSusceptance: magnetizingSusceptance,
+            r: r,
+            x: x,
+            g: g,
+            b: b,
             ratedS: ratedS,
-            ratedVoltage1: ratedVoltage1,
-            ratedVoltage2: ratedVoltage2,
+            ratedU1: ratedU1,
+            ratedU2: ratedU2,
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+            properties,
         }),
     });
 }
@@ -1054,7 +1105,7 @@ export function createSubstation(
     currentNodeUuid,
     substationId,
     substationName,
-    substationCountry,
+    country,
     isUpdate = false,
     modificationUuid,
     properties
@@ -1063,16 +1114,12 @@ export function createSubstation(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
 
-    const asObj = !properties?.length
-        ? undefined
-        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
-
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
         equipmentId: substationId,
         equipmentName: substationName,
-        substationCountry: substationCountry === '' ? null : substationCountry,
-        properties: asObj,
+        country: country === '' ? null : country,
+        properties,
     });
 
     if (isUpdate) {
@@ -1092,12 +1139,72 @@ export function createSubstation(
     });
 }
 
+/**
+ * Formats the properties of an array of properties so it can be consumed by the backend.
+ * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean} | null>} - The modified properties.
+ */
+export function formatPropertiesForBackend(previousProperties, newProperties) {
+    if (JSON.stringify(previousProperties) === JSON.stringify(newProperties)) {
+        // return null so the backend does not update the properties
+        return null;
+    }
+
+    //take each attribute of previousProperties and convert it to and array of { 'name': aa, 'value': yy }
+    const previousPropertiesArray = Object.entries(previousProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+    const newPropertiesArray = Object.entries(newProperties).map(
+        ([name, value]) => ({ name, value })
+    );
+
+    const propertiesModifications = [];
+    previousPropertiesArray.forEach((previousPropertiePair) => {
+        const updatedProperty = newPropertiesArray.find(
+            (updatedObj) => updatedObj.name === previousPropertiePair.name
+        );
+
+        if (!updatedProperty) {
+            // The property has been deleted (does not exist in the new properties array)
+            propertiesModifications.push({
+                ...previousPropertiePair,
+                previousValue: previousPropertiePair.value,
+                value: null,
+                deletionMark: true,
+            });
+        } else if (updatedProperty.value !== previousPropertiePair.value) {
+            // the property exist in both the previous and the new properties array but has been modified
+            propertiesModifications.push({
+                ...updatedProperty,
+                added: false,
+                deletionMark: false,
+                previousValue: previousPropertiePair.value,
+            });
+        }
+    });
+
+    newPropertiesArray.forEach((newPropertie) => {
+        // The property has been added
+        const previousPropertie = previousPropertiesArray.find(
+            (oldObj) => oldObj.name === newPropertie.name
+        );
+        //the propertie is new ( does not exist in the previous properties array)
+        if (!previousPropertie) {
+            propertiesModifications.push({
+                ...newPropertie,
+                added: true,
+                deletionMark: false,
+            });
+        }
+    });
+    return propertiesModifications;
+}
+
 export function modifySubstation(
     studyUuid,
     currentNodeUuid,
     id,
     name,
-    substationCountry,
+    country,
     isUpdate = false,
     modificationUuid,
     properties
@@ -1123,7 +1230,7 @@ export function modifySubstation(
             type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
             equipmentId: id,
             equipmentName: toModificationOperation(name),
-            substationCountry: toModificationOperation(substationCountry),
+            country: toModificationOperation(country),
             properties: properties,
         }),
     });
@@ -1135,7 +1242,7 @@ export function createVoltageLevel({
     voltageLevelId,
     voltageLevelName,
     substationId,
-    nominalVoltage,
+    nominalV,
     lowVoltageLimit,
     highVoltageLimit,
     ipMin,
@@ -1146,6 +1253,7 @@ export function createVoltageLevel({
     couplingDevices,
     isUpdate,
     modificationUuid,
+    properties,
 }) {
     let createVoltageLevelUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1163,7 +1271,7 @@ export function createVoltageLevel({
         equipmentId: voltageLevelId,
         equipmentName: voltageLevelName,
         substationId: substationId,
-        nominalVoltage: nominalVoltage,
+        nominalV: nominalV,
         lowVoltageLimit: lowVoltageLimit,
         highVoltageLimit: highVoltageLimit,
         ipMin: ipMin,
@@ -1172,6 +1280,7 @@ export function createVoltageLevel({
         sectionCount: sectionCount,
         switchKinds: switchKinds,
         couplingDevices: couplingDevices,
+        properties,
     });
 
     return backendFetchText(createVoltageLevelUrl, {
@@ -1189,13 +1298,14 @@ export function modifyVoltageLevel(
     currentNodeUuid,
     voltageLevelId,
     voltageLevelName,
-    nominalVoltage,
+    nominalV,
     lowVoltageLimit,
     highVoltageLimit,
     lowShortCircuitCurrentLimit,
     highShortCircuitCurrentLimit,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1218,11 +1328,12 @@ export function modifyVoltageLevel(
             type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
             equipmentId: voltageLevelId,
             equipmentName: toModificationOperation(voltageLevelName),
-            nominalVoltage: toModificationOperation(nominalVoltage),
+            nominalV: toModificationOperation(nominalV),
             lowVoltageLimit: toModificationOperation(lowVoltageLimit),
             highVoltageLimit: toModificationOperation(highVoltageLimit),
             ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
             ipMax: toModificationOperation(highShortCircuitCurrentLimit),
+            properties,
         }),
     });
 }
@@ -1525,9 +1636,41 @@ export function deleteEquipment(
     });
 }
 
+export function deleteEquipmentByFilter(
+    studyUuid,
+    currentNodeUuid,
+    equipmentType,
+    filters,
+    modificationUuid
+) {
+    let deleteEquipmentUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (modificationUuid) {
+        deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating by filter deletion');
+    } else {
+        console.info('Creating by filter deletion');
+    }
+
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
+            filters: filters,
+            equipmentType: equipmentType,
+        }),
+    });
+}
+
 export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
     console.info(
-        'Fetching network modifications (matadata) for nodeUuid : ',
+        'Fetching network modifications (metadata) for nodeUuid : ',
         nodeUuid
     );
     const urlSearchParams = new URLSearchParams();
@@ -1572,13 +1715,13 @@ export function createVsc(
     currentNodeUuid,
     id,
     name,
-    dcNominalVoltage,
-    dcResistance,
-    maximumActivePower,
+    nominalV,
+    r,
+    maxP,
     operatorActivePowerLimitSide1,
     operatorActivePowerLimitSide2,
     convertersMode,
-    activePower,
+    activePowerSetpoint,
     angleDroopActivePowerControl,
     p0,
     droop,
@@ -1602,13 +1745,13 @@ export function createVsc(
         type: MODIFICATION_TYPES.VSC_CREATION.type,
         equipmentId: id,
         equipmentName: name,
-        dcNominalVoltage: dcNominalVoltage,
-        dcResistance: dcResistance,
-        maximumActivePower: maximumActivePower,
+        nominalV: nominalV,
+        r: r,
+        maxP: maxP,
         operatorActivePowerLimitFromSide1ToSide2: operatorActivePowerLimitSide1,
         operatorActivePowerLimitFromSide2ToSide1: operatorActivePowerLimitSide2,
         convertersMode: convertersMode,
-        activePower: activePower,
+        activePowerSetpoint: activePowerSetpoint,
         angleDroopActivePowerControl: angleDroopActivePowerControl,
         p0: p0,
         droop: droop,
@@ -1626,6 +1769,70 @@ export function createVsc(
     });
 }
 
+export function modifyVsc(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    operatorActivePowerLimitSide1,
+    operatorActivePowerLimitSide2,
+    convertersMode,
+    activePowerSetpoint,
+    angleDroopActivePowerControl,
+    p0,
+    droop,
+    converterStation1,
+    converterStation2,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating Vsc modification');
+    } else {
+        console.info('Creating Vsc modification');
+    }
+
+    const vscModification = {
+        type: MODIFICATION_TYPES.VSC_MODIFICATION.type,
+        equipmentId: id,
+        equipmentName: toModificationOperation(name),
+        nominalV: toModificationOperation(nominalV),
+        r: toModificationOperation(r),
+        maxP: toModificationOperation(maxP),
+        operatorActivePowerLimitFromSide1ToSide2: toModificationOperation(
+            operatorActivePowerLimitSide1
+        ),
+        operatorActivePowerLimitFromSide2ToSide1: toModificationOperation(
+            operatorActivePowerLimitSide2
+        ),
+        convertersMode: toModificationOperation(convertersMode),
+        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
+        angleDroopActivePowerControl: toModificationOperation(
+            angleDroopActivePowerControl
+        ),
+        p0: toModificationOperation(p0),
+        droop: toModificationOperation(droop),
+        converterStation1: converterStation1,
+        converterStation2: converterStation2,
+    }; //FIXME add missing informations
+
+    return backendFetchText(modificationUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vscModification),
+    });
+}
 export function modifyByFormula(
     studyUuid,
     currentNodeUuid,
@@ -1658,5 +1865,38 @@ export function modifyByFormula(
             'Content-Type': 'application/json',
         },
         body: body,
+    });
+}
+
+export function createTabularCreation(
+    studyUuid,
+    currentNodeUuid,
+    creationType,
+    creations,
+    isUpdate,
+    modificationUuid
+) {
+    let createTabularCreationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating tabular creation');
+    } else {
+        console.info('Creating tabular creation');
+    }
+
+    return backendFetchText(createTabularCreationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TABULAR_CREATION.type,
+            creationType: creationType,
+            creations: creations,
+        }),
     });
 }

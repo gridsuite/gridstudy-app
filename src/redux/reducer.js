@@ -33,18 +33,11 @@ import {
     SET_PARAMS_LOADED,
     STUDY_UPDATED,
     MAP_MANUAL_REFRESH,
+    MAP_BASEMAP,
     SUBSTATION_LAYOUT,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
     CHANGE_REORDERED_COLUMNS,
-    ADD_LOADFLOW_NOTIF,
-    RESET_LOADFLOW_NOTIF,
-    ADD_SA_NOTIF,
-    ADD_VOLTAGE_INIT_NOTIF,
-    RESET_SA_NOTIF,
-    RESET_VOLTAGE_INIT_NOTIF,
-    ADD_SENSI_NOTIF,
-    RESET_SENSI_NOTIF,
     COMPONENT_LIBRARY,
     FAVORITE_CONTINGENCY_LISTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -65,12 +58,6 @@ import {
     TOGGLE_PIN_DIAGRAM,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
-    ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
-    RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
-    ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF,
-    RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF,
-    ADD_DYNAMIC_SIMULATION_NOTIF,
-    RESET_DYNAMIC_SIMULATION_NOTIF,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     MAP_EQUIPMENTS_CREATED,
@@ -96,10 +83,18 @@ import {
     SET_OPTIONAL_SERVICES,
     SET_STUDY_INDEXATION_STATUS,
     STUDY_INDEXATION_STATUS,
-    SET_COMPUTATION_RUNNING,
+    SET_COMPUTATION_STARTING,
     MAP_DATA_LOADING,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
+    MAP_EQUIPMENTS_INITIALIZED,
+    SET_LAST_COMPLETED_COMPUTATION,
+    LOADFLOW_RESULT_FILTER,
+    SECURITY_ANALYSIS_RESULT_FILTER,
+    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+    SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    SPREADSHEET_FILTER,
+    DYNAMIC_SIMULATION_RESULT_FILTER,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -113,6 +108,8 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
+    MAP_BASEMAP_MAPBOX,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -142,6 +139,29 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from '../components/utils/optional-services';
+import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
+import {
+    LOADFLOW_CURRENT_LIMIT_VIOLATION,
+    LOADFLOW_RESULT,
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+    ALL_BUSES,
+    LOADFLOW_RESULT_STORE_FIELD,
+    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    TIMELINE,
+    SPREADSHEET_STORE_FIELD,
+    ONE_BUS,
+} from 'utils/store-filter-fields';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -152,6 +172,7 @@ const paramsInitialState = {
     [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_MAP_MANUAL_REFRESH]: false,
+    [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
     [PARAM_CENTER_LABEL]: false,
@@ -168,6 +189,7 @@ const initialComputingStatus = {
     [ComputingType.LOADFLOW]: RunningStatus.IDLE,
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
@@ -189,6 +211,24 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: null,
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
+};
+
+const initialSpreadsheetFilter = {
+    [EQUIPMENT_TYPES.SUBSTATION]: [],
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [],
+    [EQUIPMENT_TYPES.LINE]: [],
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [],
+    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: [],
+    [EQUIPMENT_TYPES.GENERATOR]: [],
+    [EQUIPMENT_TYPES.LOAD]: [],
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [],
+    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: [],
+    [EQUIPMENT_TYPES.BATTERY]: [],
+    [EQUIPMENT_TYPES.HVDC_LINE]: [],
+    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: [],
+    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
+    [EQUIPMENT_TYPES.DANGLING_LINE]: [],
+    [EQUIPMENT_TYPES.BUS]: [],
 };
 
 export const defaultOptionalServicesState = Object.keys(
@@ -217,13 +257,6 @@ const initialState = {
     showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
-    loadflowNotif: false,
-    saNotif: false,
-    voltageInitNotif: false,
-    sensiNotif: false,
-    allBusesShortCircuitNotif: false,
-    oneBusShortCircuitNotif: false,
-    dynamicSimulationNotif: false,
     fullScreenDiagram: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
@@ -237,18 +270,49 @@ const initialState = {
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     diagramStates: [],
     reloadMap: true,
+    isMapEquipmentsInitialized: false,
     updatedSubstationsIds: [],
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
-    computationRunning: false,
+    computationStarting: false,
     optionalServices: defaultOptionalServicesState,
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
+    lastCompletedComputation: null,
+    // Results filters
+    [LOADFLOW_RESULT_STORE_FIELD]: {
+        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [],
+        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [],
+        [LOADFLOW_RESULT]: [],
+    },
+    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
+        [SECURITY_ANALYSIS_RESULT_N]: [],
+        [SECURITY_ANALYSIS_RESULT_N_K]: [],
+    },
+    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
+        [SENSITIVITY_IN_DELTA_MW_N]: [],
+        [SENSITIVITY_IN_DELTA_MW_N_K]: [],
+        [SENSITIVITY_IN_DELTA_A_N]: [],
+        [SENSITIVITY_IN_DELTA_A_N_K]: [],
+        [SENSITIVITY_AT_NODE_N]: [],
+        [SENSITIVITY_AT_NODE_N_K]: [],
+    },
+    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
+        [ONE_BUS]: [],
+        [ALL_BUSES]: [],
+    },
+    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
+        [TIMELINE]: [],
+    },
+
+    // Spreadsheet filters
+    [SPREADSHEET_STORE_FIELD]: { ...initialSpreadsheetFilter },
+
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -282,6 +346,10 @@ export const reducer = createReducer(initialState, {
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
             newMapEquipments.completeLinesInfos();
+        }
+        if (action.newTieLines) {
+            newMapEquipments.tieLines = action.newTieLines;
+            newMapEquipments.completeTieLinesInfos();
         }
         if (action.newSubstations) {
             newMapEquipments.substations = action.newSubstations;
@@ -332,7 +400,8 @@ export const reducer = createReducer(initialState, {
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,
-                action.insertMode
+                action.insertMode,
+                action.referenceNodeId
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -428,6 +497,7 @@ export const reducer = createReducer(initialState, {
     [STUDY_UPDATED]: (state, action) => {
         state.studyUpdated = {
             force: 1 - state.studyUpdated.force,
+            type: action.eventData.headers.updateType,
             eventData: action.eventData,
         };
     },
@@ -532,8 +602,16 @@ export const reducer = createReducer(initialState, {
         state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
     },
 
+    [MAP_BASEMAP]: (state, action) => {
+        state[PARAM_MAP_BASEMAP] = action[PARAM_MAP_BASEMAP];
+    },
+
     [RESET_MAP_RELOADED]: (state) => {
         state.reloadMap = false;
+    },
+
+    [MAP_EQUIPMENTS_INITIALIZED]: (state, action) => {
+        state.isMapEquipmentsInitialized = action.newValue;
     },
 
     [SET_UPDATED_SUBSTATIONS_IDS]: (state, action) => {
@@ -542,62 +620,6 @@ export const reducer = createReducer(initialState, {
 
     [SET_DELETED_EQUIPMENTS]: (state, action) => {
         state.deletedEquipments = action.deletedEquipments;
-    },
-
-    [ADD_LOADFLOW_NOTIF]: (state) => {
-        state.loadflowNotif = true;
-    },
-
-    [RESET_LOADFLOW_NOTIF]: (state) => {
-        state.loadflowNotif = false;
-    },
-
-    [ADD_SA_NOTIF]: (state) => {
-        state.saNotif = true;
-    },
-
-    [RESET_SA_NOTIF]: (state) => {
-        state.saNotif = false;
-    },
-
-    [ADD_VOLTAGE_INIT_NOTIF]: (state) => {
-        state.voltageInitNotif = true;
-    },
-
-    [RESET_VOLTAGE_INIT_NOTIF]: (state) => {
-        state.voltageInitNotif = false;
-    },
-
-    [ADD_SENSI_NOTIF]: (state) => {
-        state.sensiNotif = true;
-    },
-
-    [RESET_SENSI_NOTIF]: (state) => {
-        state.sensiNotif = false;
-    },
-
-    [ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.allBusesShortCircuitNotif = true;
-    },
-
-    [RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.allBusesShortCircuitNotif = false;
-    },
-
-    [ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.oneBusShortCircuitNotif = true;
-    },
-
-    [RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.oneBusShortCircuitNotif = false;
-    },
-
-    [ADD_DYNAMIC_SIMULATION_NOTIF]: (state) => {
-        state.dynamicSimulationNotif = true;
-    },
-
-    [RESET_DYNAMIC_SIMULATION_NOTIF]: (state) => {
-        state.dynamicSimulationNotif = false;
     },
 
     [SUBSTATION_LAYOUT]: (state, action) => {
@@ -998,6 +1020,12 @@ export const reducer = createReducer(initialState, {
             const equipmentType = getEquipmentTypeFromUpdateType(updateType);
             const currentEquipment = state.spreadsheetNetwork[equipmentType];
 
+            // Format the updated equipments to match the table format
+            const formattedEquipments = formatFetchedEquipments(
+                equipmentType,
+                equipments
+            );
+
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment != null) {
                 //since substations data contains voltage level ones, they have to be treated separatly
@@ -1010,7 +1038,7 @@ export const reducer = createReducer(initialState, {
                             state.spreadsheetNetwork[
                                 EQUIPMENT_TYPES.VOLTAGE_LEVEL
                             ],
-                            equipments
+                            formattedEquipments
                         );
 
                     state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
@@ -1020,7 +1048,7 @@ export const reducer = createReducer(initialState, {
                 } else {
                     state.spreadsheetNetwork[equipmentType] = updateEquipments(
                         currentEquipment,
-                        equipments
+                        formattedEquipments
                     );
                 }
             }
@@ -1069,8 +1097,8 @@ export const reducer = createReducer(initialState, {
     [SET_COMPUTING_STATUS]: (state, action) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     },
-    [SET_COMPUTATION_RUNNING]: (state, action) => {
-        state.computationRunning = action.computationRunning;
+    [SET_COMPUTATION_STARTING]: (state, action) => {
+        state.computationStarting = action.computationStarting;
     },
 
     [SET_OPTIONAL_SERVICES]: (state, action) => {
@@ -1084,6 +1112,33 @@ export const reducer = createReducer(initialState, {
     },
     [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
         state.studyIndexationStatus = action.studyIndexationStatus;
+    },
+    [SET_LAST_COMPLETED_COMPUTATION]: (state, action) => {
+        state.lastCompletedComputation = action.lastCompletedComputation;
+    },
+    [LOADFLOW_RESULT_FILTER]: (state, action) => {
+        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] =
+            action[LOADFLOW_RESULT_STORE_FIELD];
+    },
+    [SECURITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
+    },
+    [SENSITIVITY_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
+    },
+    [SHORTCIRCUIT_ANALYSIS_RESULT_FILTER]: (state, action) => {
+        state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
+    },
+    [DYNAMIC_SIMULATION_RESULT_FILTER]: (state, action) => {
+        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] =
+            action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
+    },
+    [SPREADSHEET_FILTER]: (state, action) => {
+        state[SPREADSHEET_STORE_FIELD][action.filterTab] =
+            action[SPREADSHEET_STORE_FIELD];
     },
 });
 
@@ -1105,6 +1160,8 @@ function getEquipmentTypeFromUpdateType(updateType) {
     switch (updateType) {
         case 'lines':
             return EQUIPMENT_TYPES.LINE;
+        case 'tieLines':
+            return EQUIPMENT_TYPES.TIE_LINE;
         case 'twoWindingsTransformers':
             return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
         case 'threeWindingsTransformers':

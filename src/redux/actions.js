@@ -22,6 +22,7 @@ import {
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
     PARAM_MAP_MANUAL_REFRESH,
+    PARAM_MAP_BASEMAP,
     PARAM_DEVELOPER_MODE,
     PARAMS_LOADED,
 } from '../utils/config-params';
@@ -76,6 +77,7 @@ export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export function mapEquipmentsCreated(
     mapEquipments,
     newLines,
+    newTieLines,
     newSubstations,
     newHvdcLines
 ) {
@@ -83,6 +85,7 @@ export function mapEquipmentsCreated(
         type: MAP_EQUIPMENTS_CREATED,
         mapEquipments: mapEquipments,
         newLines: newLines,
+        newTieLines: newTieLines,
         newSubstations: newSubstations,
         newHvdcLines: newHvdcLines,
     };
@@ -124,13 +127,15 @@ export const NETWORK_MODIFICATION_TREE_NODE_MOVED =
 export function networkModificationTreeNodeMoved(
     networkModificationTreeNode,
     parentNodeId,
-    insertMode
+    insertMode,
+    referenceNodeId
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_MOVED,
-        networkModificationTreeNode: networkModificationTreeNode,
-        parentNodeId: parentNodeId,
-        insertMode: insertMode,
+        networkModificationTreeNode,
+        parentNodeId,
+        insertMode,
+        referenceNodeId,
     };
 }
 
@@ -334,6 +339,15 @@ export function selectMapManualRefresh(mapManualRefresh) {
     };
 }
 
+export const MAP_BASEMAP = 'MAP_BASEMAP';
+
+export function selectMapBaseMap(mapBaseMap) {
+    return {
+        type: MAP_BASEMAP,
+        [PARAM_MAP_BASEMAP]: mapBaseMap,
+    };
+}
+
 export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
 
 export function resetMapReloaded() {
@@ -342,96 +356,14 @@ export function resetMapReloaded() {
     };
 }
 
-export const ADD_LOADFLOW_NOTIF = 'ADD_LOADFLOW_NOTIF';
+export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 
-export function addLoadflowNotif() {
-    return { type: ADD_LOADFLOW_NOTIF };
+export function setMapEquipementsInitialized(newValue) {
+    return {
+        type: MAP_EQUIPMENTS_INITIALIZED,
+        newValue,
+    };
 }
-
-export const RESET_LOADFLOW_NOTIF = 'RESET_LOADFLOW_NOTIF';
-
-export function resetLoadflowNotif() {
-    return { type: RESET_LOADFLOW_NOTIF };
-}
-
-export const ADD_SA_NOTIF = 'ADD_SA_NOTIF';
-
-export function addSANotif() {
-    return { type: ADD_SA_NOTIF };
-}
-
-export const RESET_SA_NOTIF = 'RESET_SA_NOTIF';
-
-export function resetSANotif() {
-    return { type: RESET_SA_NOTIF };
-}
-
-export const ADD_VOLTAGE_INIT_NOTIF = 'ADD_VOLTAGE_INIT_NOTIF';
-
-export function addVoltageInitNotif() {
-    return { type: ADD_VOLTAGE_INIT_NOTIF };
-}
-
-export const RESET_VOLTAGE_INIT_NOTIF = 'RESET_VOLTAGE_INIT_NOTIF';
-
-export function resetVoltageInitNotif() {
-    return { type: RESET_VOLTAGE_INIT_NOTIF };
-}
-
-export const ADD_SENSI_NOTIF = 'ADD_SENSI_NOTIF';
-
-export function addSensiNotif() {
-    return { type: ADD_SENSI_NOTIF };
-}
-
-export const RESET_SENSI_NOTIF = 'RESET_SENSI_NOTIF';
-
-export function resetSensiNotif() {
-    return { type: RESET_SENSI_NOTIF };
-}
-
-export const ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF =
-    'ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF';
-
-export function addAllBusesShortCircuitNotif() {
-    return { type: ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF };
-}
-
-export const RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF =
-    'RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF';
-
-export function resetAllBusesShortCircuitNotif() {
-    return { type: RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF };
-}
-
-export const ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF =
-    'ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF';
-
-export function addOneBusShortCircuitNotif() {
-    return { type: ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF };
-}
-
-export const RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF =
-    'RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF';
-
-export function resetOneBusShortCircuitNotif() {
-    return { type: RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF };
-}
-
-// --- Dynamic simulation ACTION - BEGIN
-export const ADD_DYNAMIC_SIMULATION_NOTIF = 'ADD_DYNAMIC_SIMULATION_NOTIF';
-
-export function addDynamicSimulationNotif() {
-    return { type: ADD_DYNAMIC_SIMULATION_NOTIF };
-}
-
-export const RESET_DYNAMIC_SIMULATION_NOTIF = 'RESET_DYNAMIC_SIMULATION_NOTIF';
-
-export function resetDynamicSimulationNotif() {
-    return { type: RESET_DYNAMIC_SIMULATION_NOTIF };
-}
-
-// --- Dynamic simulation ACTION - END
 
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 
@@ -706,12 +638,12 @@ export function setComputingStatus(computingType, runningStatus) {
     };
 }
 
-export const SET_COMPUTATION_RUNNING = 'SET_COMPUTATION_RUNNING';
+export const SET_COMPUTATION_STARTING = 'SET_COMPUTATION_STARTING';
 
-export function setComputationRunning(computationRunning) {
+export function setComputationStarting(computationStarting) {
     return {
-        type: SET_COMPUTATION_RUNNING,
-        computationRunning: computationRunning,
+        type: SET_COMPUTATION_STARTING,
+        computationStarting: computationStarting,
     };
 }
 
@@ -747,5 +679,90 @@ export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
         nodeId: nodeId,
+    };
+}
+
+export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
+
+export function setLastCompletedComputation(lastCompletedComputation) {
+    return {
+        type: SET_LAST_COMPLETED_COMPUTATION,
+        lastCompletedComputation: lastCompletedComputation,
+    };
+}
+
+export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
+
+export function setLoadflowResultFilter(filterTab, loadflowResultFilter) {
+    return {
+        type: LOADFLOW_RESULT_FILTER,
+        filterTab: filterTab,
+        loadflowResultFilter: loadflowResultFilter,
+    };
+}
+
+export const SECURITY_ANALYSIS_RESULT_FILTER =
+    'SECURITY_ANALYSIS_RESULT_FILTER';
+
+export function setSecurityAnalysisResultFilter(
+    filterTab,
+    securityAnalysisResultFilter
+) {
+    return {
+        type: SECURITY_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        securityAnalysisResultFilter: securityAnalysisResultFilter,
+    };
+}
+
+export const SENSITIVITY_ANALYSIS_RESULT_FILTER =
+    'SENSITIVITY_ANALYSIS_RESULT_FILTER';
+
+export function setSensitivityAnalysisResultFilter(
+    filterTab,
+    sensitivityAnalysisResultFilter
+) {
+    return {
+        type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        sensitivityAnalysisResultFilter: sensitivityAnalysisResultFilter,
+    };
+}
+
+export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER =
+    'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
+
+export function setShortcircuitAnalysisResultFilter(
+    filterTab,
+    shortcircuitAnalysisResultFilter
+) {
+    return {
+        type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        shortcircuitAnalysisResultFilter: shortcircuitAnalysisResultFilter,
+    };
+}
+
+export const DYNAMIC_SIMULATION_RESULT_FILTER =
+    'DYNAMIC_SIMULATION_RESULT_FILTER';
+
+export function setDynamicSimulationResultFilter(
+    filterTab,
+    dynamicSimulationResultFilter
+) {
+    return {
+        type: DYNAMIC_SIMULATION_RESULT_FILTER,
+        filterTab: filterTab,
+        dynamicSimulationResultFilter: dynamicSimulationResultFilter,
+    };
+}
+
+export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
+
+export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {
+    return {
+        type: SPREADSHEET_FILTER,
+        filterTab: filterTab,
+        spreadsheetFilter: spreadsheetFilter,
     };
 }

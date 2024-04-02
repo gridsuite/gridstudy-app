@@ -119,13 +119,15 @@ export function fetchShortCircuitAnalysisPagedResults({
 
     urlSearchParams.append('page', page);
 
-    sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
+    sort?.map((value) =>
+        urlSearchParams.append('sort', `${value.colId},${value.sort}`)
+    );
 
     if (size) {
         urlSearchParams.append('size', size);
     }
 
-    if (filter.length) {
+    if (filter?.length) {
         urlSearchParams.append('filters', JSON.stringify(filter));
     }
 
@@ -159,6 +161,7 @@ export function setShortCircuitParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
 export function invalidateShortCircuitStatus(studyUuid) {
     console.info('invalidate short circuit status');
     const invalidateShortCircuitStatusUrl =
@@ -172,7 +175,7 @@ export function invalidateShortCircuitStatus(studyUuid) {
 export function fetchShortCircuitFaultTypes() {
     console.info('Fetch short-circuit fault types');
     const getShortCircuitParams =
-        process.env.REACT_APP_API_GATEWAY + '/shortcircuit/v1/fault-types';
+        import.meta.env.VITE_API_GATEWAY + '/shortcircuit/v1/fault-types';
     console.debug(getShortCircuitParams);
     return backendFetchJson(getShortCircuitParams);
 }
@@ -180,8 +183,36 @@ export function fetchShortCircuitFaultTypes() {
 export function fetchShortCircuitLimitViolationTypes() {
     console.info('Fetch short-circuit limit violation types');
     const getShortCircuitParams =
-        process.env.REACT_APP_API_GATEWAY +
+        import.meta.env.VITE_API_GATEWAY +
         '/shortcircuit/v1/limit-violation-types';
     console.debug(getShortCircuitParams);
     return backendFetchJson(getShortCircuitParams);
+}
+
+export function downloadShortCircuitResultZippedCsv(
+    studyUuid,
+    currentNodeUuid,
+    analysisType,
+    headersCsv,
+    enumValueTranslations
+) {
+    console.info(
+        `Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/shortcircuit/result/csv`;
+    const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
+    const param = new URLSearchParams({ type });
+    const urlWithParam = `${url}?${param.toString()}`;
+    console.debug(urlWithParam);
+    return backendFetch(urlWithParam, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ headersCsv, enumValueTranslations }),
+    });
 }

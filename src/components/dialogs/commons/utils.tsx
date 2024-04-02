@@ -6,9 +6,9 @@
  */
 
 export function getIdOrValue(value: { id: string; label: string } | string) {
-    return typeof value !== 'string' ? value?.id : value;
+    return typeof value !== 'string' ? value?.id ?? null : value;
 }
 
 export function getLabelOrValue(value: { id: string; label: string } | string) {
-    return typeof value !== 'string' ? value?.label : value;
+    return typeof value !== 'string' ? value?.label ?? null : value;
 }

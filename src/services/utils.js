@@ -108,43 +108,81 @@ export const backendFetchJson = (url, init, token) => {
     );
 };
 
+export const backendFetchFile = (url, init, token) => {
+    const initCopy = prepareRequest(init, token);
+    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.blob());
+};
+
+const FILE_TYPE = {
+    ZIP: 'ZIP',
+};
+export const downloadZipFile = (blob, fileName) => {
+    downloadFile(blob, fileName, FILE_TYPE.ZIP);
+};
+
+const downloadFile = (blob, filename, type) => {
+    let contentType;
+    if (type === FILE_TYPE.ZIP) {
+        contentType = 'application/octet-stream';
+    }
+    const href = window.URL.createObjectURL(new Blob([blob], { contentType }));
+    const link = document.createElement('a');
+    link.href = href;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+function fetchEnv() {
+    return fetch('env.json').then((res) => res.json());
+}
+
+export function fetchIdpSettings() {
+    return fetch('idpSettings.json');
+}
+
 export function fetchAuthorizationCodeFlowFeatureFlag() {
     console.info(`Fetching authorization code flow feature flag...`);
-    return fetch('env.json')
+    return fetchEnv()
+        .then((env) =>
+            fetch(env.appsMetadataServerUrl + '/authentication.json')
+        )
         .then((res) => res.json())
         .then((res) => {
-            return fetch(res.appsMetadataServerUrl + '/authentication.json')
-                .then((res) => res.json())
-                .then((res) => {
-                    console.log(
-                        `Authorization code flow is ${
-                            res.authorizationCodeFlowFeatureFlag
-                                ? 'enabled'
-                                : 'disabled'
-                        }`
-                    );
-                    return res.authorizationCodeFlowFeatureFlag;
-                })
-                .catch((error) => {
-                    console.error(error);
-                    console.warn(
-                        `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`
-                    );
-                    return false;
-                });
+            console.log(
+                `Authorization code flow is ${
+                    res.authorizationCodeFlowFeatureFlag
+                        ? 'enabled'
+                        : 'disabled'
+                }`
+            );
+            return res.authorizationCodeFlowFeatureFlag;
+        })
+        .catch((error) => {
+            console.error(error);
+            console.warn(
+                `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`
+            );
+            return false;
         });
 }
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return fetch('env.json')
-        .then((res) => res.json())
-        .then((res) => {
-            return fetch(
-                res.appsMetadataServerUrl + '/apps-metadata.json'
-            ).then((response) => {
-                return response.json();
-            });
+    return fetchEnv()
+        .then((env) => fetch(env.appsMetadataServerUrl + '/apps-metadata.json'))
+        .then((response) => response.json());
+}
+
+export function fetchVersion() {
+    console.info(`Fetching global metadata...`);
+    return fetchEnv()
+        .then((env) => fetch(env.appsMetadataServerUrl + '/version.json'))
+        .then((response) => response.json())
+        .catch((reason) => {
+            console.error('Error while fetching the version : ' + reason);
+            return reason;
         });
 }
 
@@ -182,9 +220,5 @@ export function getUrlWithToken(baseUrl) {
 
 export function fetchMapBoxToken() {
     console.info(`Fetching MapBoxToken...`);
-    return fetch('env.json')
-        .then((res) => res.json())
-        .then((res) => {
-            return res.mapBoxToken;
-        });
+    return fetchEnv().then((res) => res.mapBoxToken);
 }

@@ -163,7 +163,7 @@ export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
                     .nonNullable()
                     .test(
                         'activePowerSetPoint',
-                        'ActivePowerZeroOrBetweenMinAndMaxActivePower',
+                        'ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower',
                         (value, context) => {
                             const minActivePower =
                                 context.parent[MINIMUM_ACTIVE_POWER];

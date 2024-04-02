@@ -13,9 +13,18 @@ import {
     AutocompleteInput,
     ErrorInput,
     FieldErrorAlert,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import {
+    CONNECTED,
+    CONNECTED1,
+    CONNECTED2,
+    EQUIPMENT_ID,
+    MODIFICATIONS_TABLE,
+    TYPE,
+    VOLTAGE_REGULATION_ON,
+} from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
@@ -31,37 +40,81 @@ import {
 } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community/dist/lib/main';
-import { richTypeEquals } from 'components/utils/utils';
-import { getIdOrValue } from '../../commons/utils';
 
 const TabularModificationForm = () => {
     const intl = useIntl();
 
+    const { snackWarning } = useSnackMessage();
+
     const { setValue, clearErrors, getValues } = useFormContext();
 
-    const richTypeLabel = (rt: { id: string; label: string } | string) => {
-        return intl.formatMessage({ id: getIdOrValue(rt) });
-    };
+    const getTypeLabel = useCallback(
+        (type: string) =>
+            type === EQUIPMENT_TYPES.SHUNT_COMPENSATOR
+                ? intl.formatMessage({
+                      id: 'linearShuntCompensators',
+                  })
+                : intl.formatMessage({ id: type }),
+        [intl]
+    );
+
+    const handleComplete = useCallback(
+        (results: Papa.ParseResult<any>) => {
+            clearErrors(MODIFICATIONS_TABLE);
+            setValue(MODIFICATIONS_TABLE, results.data, {
+                shouldDirty: true,
+            });
+            // For shunt compensators, display warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
+            if (
+                results.data.some(
+                    (modification) =>
+                        modification.maxSusceptance &&
+                        (modification.shuntCompensatorType ||
+                            modification.maxQAtNominalV)
+                )
+            ) {
+                snackWarning({
+                    messageId: 'TabularModificationShuntWarning',
+                });
+            }
+        },
+        [clearErrors, setValue, snackWarning]
+    );
 
     const watchType = useWatch({
         name: TYPE,
     });
 
     const csvColumns = useMemo(() => {
+        return TABULAR_MODIFICATION_FIELDS[watchType];
+    }, [watchType]);
+
+    const csvTranslatedColumns = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
             return intl.formatMessage({ id: field });
         });
     }, [intl, watchType]);
 
-    const explanationComment = useMemo(
-        () =>
-            watchType === EQUIPMENT_TYPES.GENERATOR
-                ? intl.formatMessage({
-                      id: 'TabularModificationGeneratorSkeletonComment',
-                  })
-                : '',
-        [intl, watchType]
-    );
+    const commentLines = useMemo(() => {
+        let commentData: string[][] = [];
+        if (csvTranslatedColumns) {
+            // First comment line contains header translation
+            commentData.push(['#' + csvTranslatedColumns.join(',')]);
+            if (
+                !!intl.messages[
+                    'TabularModificationSkeletonComment.' + watchType
+                ]
+            ) {
+                // Optionally a second comment line, if present in translation file
+                commentData.push([
+                    intl.formatMessage({
+                        id: 'TabularModificationSkeletonComment.' + watchType,
+                    }),
+                ]);
+            }
+        }
+        return commentData;
+    }, [intl, watchType, csvTranslatedColumns]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -86,12 +139,7 @@ const TabularModificationForm = () => {
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 comments: '#',
-                complete: (results: Papa.ParseResult<object>) => {
-                    clearErrors(MODIFICATIONS_TABLE);
-                    setValue(MODIFICATIONS_TABLE, results.data, {
-                        shouldDirty: true,
-                    });
-                },
+                complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to modification field
                     const transformedHeader = TABULAR_MODIFICATION_FIELDS[
@@ -101,11 +149,13 @@ const TabularModificationForm = () => {
                     );
                     return transformedHeader ?? header;
                 },
+                transform: (value) => value.trim(),
             });
         }
     }, [
         clearErrors,
         getValues,
+        handleComplete,
         intl,
         selectedFile,
         selectedFileError,
@@ -127,12 +177,11 @@ const TabularModificationForm = () => {
 
     const equipmentTypeField = (
         <AutocompleteInput
-            isOptionEqualToValue={richTypeEquals}
             name={TYPE}
             label="Type"
             options={typesOptions}
             onChangeCallback={handleChange}
-            getOptionLabel={richTypeLabel}
+            getOptionLabel={(option: any) => getTypeLabel(option as string)}
             size={'small'}
             formProps={{ variant: 'filled' }}
         />
@@ -140,8 +189,6 @@ const TabularModificationForm = () => {
 
     const defaultColDef = useMemo(
         () => ({
-            flex: 1,
-            filter: true,
             sortable: true,
             resizable: false,
             lockPinned: true,
@@ -154,18 +201,23 @@ const TabularModificationForm = () => {
 
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
-            const colunmDef: ColDef = {};
-            if (field === 'equipmentId') {
-                colunmDef.pinned = true;
+            const columnDef: ColDef = {};
+            if (field === EQUIPMENT_ID) {
+                columnDef.pinned = true;
             }
-            colunmDef.field = field;
-            colunmDef.headerName = intl.formatMessage({ id: field });
-            if (field === 'voltageRegulationOn') {
-                colunmDef.cellRenderer = BooleanNullableCellRenderer;
+            columnDef.field = field;
+            columnDef.headerName = intl.formatMessage({ id: field });
+            if (
+                field === VOLTAGE_REGULATION_ON ||
+                field === CONNECTED ||
+                field === CONNECTED1 ||
+                field === CONNECTED2
+            ) {
+                columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
-                colunmDef.cellRenderer = DefaultCellRenderer;
+                columnDef.cellRenderer = DefaultCellRenderer;
             }
-            return colunmDef;
+            return columnDef;
         });
     }, [intl, watchType]);
 
@@ -179,8 +231,9 @@ const TabularModificationForm = () => {
                 <Grid item>
                     <CsvDownloader
                         columns={csvColumns}
-                        datas={[[explanationComment]]}
+                        datas={commentLines}
                         filename={watchType + '_skeleton'}
+                        disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />

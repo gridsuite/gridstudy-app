@@ -19,6 +19,7 @@ export const PARAM_LINE_FLOW_COLOR_MODE = 'lineFlowColorMode';
 export const PARAM_LINE_FLOW_ALERT_THRESHOLD = 'lineFlowAlertThreshold';
 export const PARAM_LIMIT_REDUCTION = 'limitReduction';
 export const PARAM_MAP_MANUAL_REFRESH = 'mapManualRefresh';
+export const PARAM_MAP_BASEMAP = 'mapBaseMap';
 export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
 export const PARAM_COMPONENT_LIBRARY = 'componentLibrary';
 export const PARAM_FLUX_CONVENTION = 'fluxConvention';
@@ -37,6 +38,11 @@ export const PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD =
     'highVoltageProportionalThreshold';
 export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD =
     'highVoltageAbsoluteThreshold';
+
+export const MAP_BASEMAP_MAPBOX = 'mapbox';
+export const MAP_BASEMAP_CARTO = 'carto';
+export const MAP_BASEMAP_CARTO_NOLABEL = 'cartonolabel';
+export const basemap_style_theme_key = (basemap) => basemap + 'Style';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 

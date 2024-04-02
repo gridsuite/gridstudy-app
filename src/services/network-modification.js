@@ -7,7 +7,8 @@
 
 import { backendFetch, backendFetchJson } from './utils';
 
-const PREFIX_NETWORK_MODIFICATION_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/network-modification`;
+const PREFIX_NETWORK_MODIFICATION_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/network-modification';
 
 export function fetchNetworkModification(modificationUuid) {
     const modificationFetchUrl = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/${encodeURIComponent(

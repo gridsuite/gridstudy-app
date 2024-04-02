@@ -14,8 +14,8 @@ import React, {
 } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
+    computingTypeToShortcircuitTabRedirection,
     ResultTabIndexRedirection,
-    ResultsTabsLevel,
     useResultsTab,
 } from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';
@@ -30,17 +30,40 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
+import { UUID } from 'crypto';
+import { GridReadyEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultTabProps {
-    resultTabIndexRedirection: ResultTabIndexRedirection;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    view: string;
+}
+
+function getDisplayedColumns(params: any) {
+    return params.api.columnModel.columnDefs
+        .filter((c: any) => !c.hide)
+        .map((c: any) => c.headerName);
 }
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
-> = ({ resultTabIndexRedirection }) => {
-    const [tabIndex, setTabIndex] = useState(
-        resultTabIndexRedirection?.[ResultsTabsLevel.ONE] ?? 0
+> = ({ studyUuid, nodeUuid, view }) => {
+    const lastCompletedComputation = useSelector(
+        (state: ReduxState) => state.lastCompletedComputation
     );
+
+    const [csvHeaders, setCsvHeaders] = useState([]);
+    const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
+
+    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
+        () =>
+            computingTypeToShortcircuitTabRedirection(lastCompletedComputation),
+        [lastCompletedComputation]
+    );
+
+    const [tabIndex, setTabIndex] = useState<number>(resultTabIndexRedirection);
+
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const AllBusesShortCircuitStatus = useSelector(
@@ -52,13 +75,19 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
-    useResultsTab(resultTabIndexRedirection, setTabIndex, ResultsTabsLevel.ONE);
+    const setRedirectionLock = useResultsTab(
+        resultTabIndexRedirection,
+        setTabIndex,
+        view
+    );
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
             setTabIndex(newIndex);
+            //when we manually browse results we ought to block further redirections until the next completed computation
+            setRedirectionLock(true);
         },
-        [setTabIndex]
+        [setTabIndex, setRedirectionLock]
     );
 
     const RESULTS_TAB_INDEX = 0;
@@ -93,6 +122,18 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         delay: RESULTS_LOADING_DELAY,
     });
 
+    const handleGridColumnsChanged = useCallback((params: GridReadyEvent) => {
+        if (params?.api) {
+            setCsvHeaders(getDisplayedColumns(params));
+        }
+    }, []);
+
+    const handleRowDataUpdated = useCallback((params: GridReadyEvent) => {
+        if (params?.api) {
+            setIsCsvButtonDisabled(params.api.getModel().getRowCount() === 0);
+        }
+    }, []);
+
     return (
         <>
             <Tabs value={tabIndex} onChange={handleTabChange}>
@@ -111,21 +152,46 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                     }
                 />
             </Tabs>
-
-            <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
-                <Tab label={<FormattedMessage id={'Results'} />} />
-                <Tab
-                    label={<FormattedMessage id={'ComputationResultsLogs'} />}
-                />
-            </Tabs>
-
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                }}
+            >
+                <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
+                    <Tab label={<FormattedMessage id={'Results'} />} />
+                    <Tab
+                        label={
+                            <FormattedMessage id={'ComputationResultsLogs'} />
+                        }
+                    />
+                </Tabs>
+                {resultOrLogIndex === RESULTS_TAB_INDEX &&
+                    (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ||
+                        tabIndex ===
+                            ShortCircuitAnalysisResultTabs.ONE_BUS) && (
+                        <ShortCircuitExportButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            csvHeaders={csvHeaders}
+                            analysisType={tabIndex}
+                            disabled={isCsvButtonDisabled}
+                        />
+                    )}
+            </Box>
             {resultOrLogIndex === RESULTS_TAB_INDEX &&
                 (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ? (
-                    <ShortCircuitAnalysisAllBusesResult />
+                    <ShortCircuitAnalysisAllBusesResult
+                        onGridColumnsChanged={handleGridColumnsChanged}
+                        onRowDataUpdated={handleRowDataUpdated}
+                    />
                 ) : (
-                    <ShortCircuitAnalysisOneBusResult />
+                    <ShortCircuitAnalysisOneBusResult
+                        onGridColumnsChanged={handleGridColumnsChanged}
+                        onRowDataUpdated={handleRowDataUpdated}
+                    />
                 ))}
-
             {resultOrLogIndex === LOGS_TAB_INDEX && (
                 <>
                     <Box sx={{ height: '4px' }}>

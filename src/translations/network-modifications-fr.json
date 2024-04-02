@@ -1,6 +1,7 @@
 {
     "network_modification/modificationsCount": "{hide, select, false {{count, plural, =0 {aucune modification} =1 {# modification} other {# modifications}}} other {...}}",
     "network_modifications/EQUIPMENT_DELETION": "Suppression de {computedLabel}",
+    "network_modifications/BY_FILTER_DELETION": "Suppression par filtre ({computedLabel})",
     "network_modifications/SUBSTATION_CREATION": "Création du site {computedLabel}",
     "network_modifications/SUBSTATION_MODIFICATION": "Modification du site {computedLabel}",
     "network_modifications/VOLTAGE_LEVEL_CREATION": "Création du poste {computedLabel}",
@@ -26,6 +27,7 @@
     "network_modifications/SHUNT_COMPENSATOR_MODIFICATION": "Modification d'un moyen de compensation {computedLabel}",
     "network_modifications/GENERATOR_SCALING": "Variation plan de production {computedLabel}",
     "network_modifications/VSC_CREATION": "Création du vsc {computedLabel}",
+    "network_modifications/VSC_MODIFICATION": "Modification du vsc {computedLabel}",
     "network_modifications/GROOVY_SCRIPT": "Modification par script",
     "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Ouverture de {computedLabel}} other {Fermeture de {computedLabel}}}} other {Modification de l'equipement {computedLabel}}}",
     "network_modifications/creatingModification": "Création de la modification en cours ...",
@@ -37,5 +39,11 @@
     "network_modifications/TABULAR_MODIFICATION": "Modification tabulaire - {computedLabel}",
     "network_modifications/tabular/GENERATOR_MODIFICATION": "modifications de générateurs",
     "network_modifications/tabular/LOAD_MODIFICATION": "modifications de consommations",
-    "network_modifications/BY_FORMULA_MODIFICATION": "Modification par formule {computedLabel}"
+    "network_modifications/BY_FORMULA_MODIFICATION": "Modification par formule {computedLabel}",    
+    "network_modifications/tabular/LINE_MODIFICATION": "modifications de lignes",
+    "network_modifications/tabular/BATTERY_MODIFICATION": "modifications de batteries",
+    "network_modifications/tabular/VOLTAGE_LEVEL_MODIFICATION": "modifications de postes",
+    "network_modifications/tabular/TWO_WINDINGS_TRANSFORMER_MODIFICATION": "modifications de transformateurs à 2 enroulements",
+    "network_modifications/tabular/SHUNT_COMPENSATOR_MODIFICATION": "modifications de MCS linéaires",
+  "network_modifications/tabular/SUBSTATION_MODIFICATION": "modifications de sites"
 }

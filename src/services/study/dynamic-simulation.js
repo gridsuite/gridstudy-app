@@ -44,7 +44,7 @@ export function startDynamicSimulation(
 
     console.debug({ startDynamicSimulationUrl, body });
 
-    return backendFetchJson(startDynamicSimulationUrl, {
+    return backendFetch(startDynamicSimulationUrl, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -76,21 +76,6 @@ export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationTimeSeriesMetadata(
-    studyUuid,
-    currentNodeUuid
-) {
-    console.info(
-        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/dynamic-simulation/result/timeseries/metadata';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function fetchDynamicSimulationResultTimeSeries(
     studyUuid,
     currentNodeUuid,
@@ -114,38 +99,6 @@ export function fetchDynamicSimulationResultTimeSeries(
 
     console.debug(url);
     return backendFetchJson(url);
-}
-
-export function fetchDynamicSimulationResultTimeLine(
-    studyUuid,
-    currentNodeUuid
-) {
-    console.info(
-        `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/dynamic-simulation/result/timeline';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
-    // fetch parallel different results
-    const timeseriesMetadataPromise = fetchDynamicSimulationTimeSeriesMetadata(
-        studyUuid,
-        currentNodeUuid
-    );
-    const statusPromise = fetchDynamicSimulationStatus(
-        studyUuid,
-        currentNodeUuid
-    );
-    return Promise.all([timeseriesMetadataPromise, statusPromise]).then(
-        ([timeseriesMetadatas, status]) => ({
-            timeseriesMetadatas,
-            status,
-        })
-    );
 }
 
 export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {

@@ -64,7 +64,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
 
     const handleCheckName = useCallback(
         (value: string) => {
-            if (value) {
+            if (value && props.activeDirectory) {
                 elementExists(props.activeDirectory, value, props.elementType)
                     .then((alreadyExist) => {
                         if (alreadyExist) {
