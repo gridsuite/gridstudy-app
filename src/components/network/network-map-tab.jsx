@@ -757,7 +757,7 @@ export const NetworkMapTab = ({
             });
             updatedTieLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updatedTieLines(
+                    mapEquipments.updateTieLines(
                         mapEquipments.checkAndGetValues(values),
                         isFullReload
                     );
