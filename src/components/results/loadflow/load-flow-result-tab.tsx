@@ -59,11 +59,30 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 import Glasspane from '../common/glasspane';
+import { mergeSx } from '../../utils/functions';
+
+const styles = {
+    flexWrapper: {
+        display: 'flex',
+    },
+    flexElement: {
+        flexGrow: 0,
+    },
+    show: {
+        display: 'inherit',
+    },
+    hide: {
+        display: 'none',
+    },
+    emptySpace: {
+        flexGrow: 1,
+    },
+};
 
 export interface GlobalFilter {
     nominalV?: string[];
     countryCode?: string[];
-    limitViolationsType?: string;
+    limitViolationsTypes?: string[];
 }
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
@@ -132,6 +151,34 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         );
     }, [mapEquipments]);
 
+    const getGlobalFilterParameter = useCallback(
+        (globalFilter: GlobalFilter | undefined) => {
+            let shouldSentParameter = false;
+            if (globalFilter) {
+                if (
+                    globalFilter.countryCode &&
+                    globalFilter.countryCode.length > 0
+                ) {
+                    shouldSentParameter = true;
+                }
+                if (globalFilter.nominalV && globalFilter.nominalV.length > 0) {
+                    shouldSentParameter = true;
+                }
+            }
+            if (!shouldSentParameter) {
+                return undefined;
+            }
+            return {
+                ...globalFilter,
+                limitViolationsTypes:
+                    tabIndex === 0
+                        ? [LimitTypes.CURRENT]
+                        : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
+            };
+        },
+        [tabIndex]
+    );
+
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =
             tabIndex === 0
@@ -154,14 +201,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                           value: limitTypeValues,
                       },
                   ];
-        let updatedGlobalFilters = undefined;
-        if (globalFilter && Object.keys(globalFilter).length > 0) {
-            updatedGlobalFilters = {
-                ...globalFilter,
-                limitViolationsType:
-                    tabIndex === 0 ? LimitTypes.CURRENT : 'VOLTAGE',
-            };
-        }
 
         return fetchLimitViolations(studyUuid, nodeUuid, {
             sort: sortConfig.map((sort) => ({
@@ -172,7 +211,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 updatedFilters,
                 mappingFields(tabIndex)
             ),
-            globalFilters: updatedGlobalFilters,
+            globalFilters: getGlobalFilterParameter(globalFilter),
         });
     }, [
         studyUuid,
@@ -181,6 +220,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         filterSelector,
         tabIndex,
         globalFilter,
+        getGlobalFilterParameter,
     ]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
@@ -296,11 +336,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     return (
         <>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={styles.flexWrapper}>
                 <Tabs
                     value={tabIndex}
                     onChange={handleTabChange}
-                    sx={{ flexGrow: 0 }}
+                    sx={styles.flexElement}
                 >
                     <Tab
                         label={
@@ -328,20 +368,19 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     />
                 </Tabs>
                 <Box
-                    sx={{
-                        flexGrow: 0,
-                        display:
-                            tabIndex === 0 || tabIndex === 1
-                                ? 'inherit'
-                                : 'none',
-                    }}
+                    sx={mergeSx(
+                        styles.flexElement,
+                        tabIndex === 0 || tabIndex === 1
+                            ? styles.show
+                            : styles.hide
+                    )}
                 >
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
                         filters={[...countriesFilter, ...voltageLevelsFilter]}
                     />
                 </Box>
-                <Box sx={{ flexGrow: 1 }}></Box>
+                <Box sx={styles.emptySpace}></Box>
             </Box>
 
             {tabIndex === 0 && (
