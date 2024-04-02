@@ -6,11 +6,6 @@
  */
 
 import * as React from 'react';
-import TreeView from '@mui/lab/TreeView';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import TreeItem from '@mui/lab/TreeItem';
-import { alpha, Checkbox } from '@mui/material';
 import {
     forwardRef,
     useCallback,
@@ -18,8 +13,11 @@ import {
     useMemo,
     useState,
 } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { alpha, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { treeItemClasses } from '@mui/lab';
+import { treeItemClasses, TreeView, TreeItem } from '@mui/x-tree-view';
 
 export const CheckState = {
     UNCHECKED: 0,
