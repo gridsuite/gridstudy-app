@@ -30,6 +30,9 @@ const backend_locale_fr = {
     SINGLE_PHASE: 'Monophasé',
     THREE_PHASE: 'Triphasé',
     TWO: 'Côté 2',
+
+    // Voltage init results
+    REACTIVE_SLACKS_OVER_THRESHOLD: `L'investissement réactif pour au moins un noeud électrique dépasse {threshold} MVar`,
 };
 
 export default backend_locale_fr;

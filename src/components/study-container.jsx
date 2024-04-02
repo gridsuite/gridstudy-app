@@ -191,6 +191,9 @@ const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
     'study_network_recreation_done';
 const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
 const HEADER_INDEXATION_STATUS = 'indexation_status';
+const HEADER_REACTIVE_SLACKS_OVER_THRESHOLD_LABEL =
+    'REACTIVE_SLACKS_OVER_THRESHOLD';
+const HEADER_REACTIVE_SLACKS_THRESHOLD_VALUE = 'reactiveSlacksThreshold';
 
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -309,8 +312,24 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
+            if (
+                updateTypeHeader === 'voltageInit_reactiveSlacksThresholdAlert'
+            ) {
+                snackWarning({
+                    messageId:
+                        eventData.headers[
+                            HEADER_REACTIVE_SLACKS_OVER_THRESHOLD_LABEL
+                        ],
+                    messageValues: {
+                        threshold:
+                            eventData.headers[
+                                HEADER_REACTIVE_SLACKS_THRESHOLD_VALUE
+                            ],
+                    },
+                });
+            }
         },
-        [snackError, userName]
+        [snackError, snackWarning, userName]
     );
 
     const connectNotifications = useCallback(

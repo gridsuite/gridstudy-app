@@ -14,6 +14,10 @@ import {
 import Alert from '@mui/material/Alert';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
+import { Grid } from '@mui/material';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { REACTIVE_SLACKS_THRESHOLD } from '../../../utils/field-constants';
+import { ReactivePowerAdornment } from '../../dialogUtils';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();
@@ -32,7 +36,11 @@ export const GeneralParameters = () => {
     );
 
     return (
-        <>
+        <Grid
+            style={{
+                paddingTop: '10px',
+            }}
+        >
             <Alert
                 sx={styles.adjustExistingLimitsInfo}
                 severity="info"
@@ -45,6 +53,17 @@ export const GeneralParameters = () => {
                 label={'VoltageInitParametersGeneralApplyModificationsLabel'}
                 onChange={setApplyModificationsValue}
             />
-        </>
+            <Grid item container direction={'row'} spacing={1} paddingTop={3}>
+                <Grid item xs={8} sx={styles.parameterName}>
+                    <FormattedMessage id={'ReactiveSlacksThreshold'} />
+                </Grid>
+                <Grid item xs={4}>
+                    <FloatInput
+                        name={`${GENERAL}.${REACTIVE_SLACKS_THRESHOLD}`}
+                        adornment={ReactivePowerAdornment}
+                    />
+                </Grid>
+            </Grid>
+        </Grid>
     );
 };
