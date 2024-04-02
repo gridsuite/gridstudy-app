@@ -326,7 +326,7 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Ajouter",
     "DynamicSimulationClose": "Fermer",
-    "DynamicSimulationFetchCountryError": "Une erreur est survenue lors du chargement des pays",
+    "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",

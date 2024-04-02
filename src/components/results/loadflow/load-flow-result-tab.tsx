@@ -60,10 +60,10 @@ import { fetchAllCountries } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 import Glasspane from '../common/glasspane';
 
-export interface FilterDto {
+export interface GlobalFilter {
     nominalV?: string[];
     countryCode?: string[];
-    limitViolationsType: string;
+    limitViolationsType?: string;
 }
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
@@ -97,7 +97,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>(
         []
     );
-    const [globalFilters, setGlobalFilters] = useState<FilterDto>();
+    const [globalFilter, setGlobalFilter] = useState<GlobalFilter>();
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums(hasFilter, setHasFilter);
@@ -116,22 +116,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'DynamicSimulationFetchCountryError',
+                    headerId: 'FetchCountryError',
                 });
             });
     }, [nodeUuid, studyUuid, snackError]);
 
     // load voltage levels
     useEffect(() => {
-        const voltageLevels = mapEquipments.getVoltageLevels();
-        const nominalVs: string[] = voltageLevels.map((element: any) =>
-            element.nominalV?.toString()
-        );
-        const uniqueNominalV = [...new Set(nominalVs)];
-
+        const nominalVs: number[] = mapEquipments.getNominalVoltages();
         setVoltageLevelsFilter(
-            uniqueNominalV.map((nominalV: string) => ({
-                label: nominalV,
+            nominalVs.map((nominalV: number) => ({
+                label: nominalV.toString(),
                 filterType: 'voltageLevel',
             }))
         );
@@ -160,9 +155,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                       },
                   ];
         let updatedGlobalFilters = undefined;
-        if (globalFilters && Object.keys(globalFilters).length > 0) {
+        if (globalFilter && Object.keys(globalFilter).length > 0) {
             updatedGlobalFilters = {
-                ...globalFilters,
+                ...globalFilter,
                 limitViolationsType:
                     tabIndex === 0 ? LimitTypes.CURRENT : 'VOLTAGE',
             };
@@ -185,7 +180,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         sortConfig,
         filterSelector,
         tabIndex,
-        globalFilters,
+        globalFilter,
     ]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
@@ -268,28 +263,25 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         setTabIndex(newTabIndex);
     };
 
-    const handleGlobalFilterChange = (value: any) => {
-        let formattedData: Partial<FilterDto> = {};
+    const handleGlobalFilterChange = (value: Filter[]) => {
+        let newGlobalFilter: GlobalFilter = {};
         if (value) {
-            // We update the format of the filter to reflect the DTO in the backend
-            formattedData = value.reduce(
-                (accumulator: FilterDto, currentItem: Filter) => {
-                    let key: keyof FilterDto;
-                    if (currentItem.filterType === 'voltageLevel') {
-                        key = 'nominalV';
-                    } else {
-                        key = 'countryCode';
-                    }
-                    if (!accumulator[key]) {
-                        accumulator[key] = [];
-                    }
-                    (accumulator[key] as string[]).push(currentItem.label);
-                    return accumulator;
-                },
-                {}
+            const nominalVs = new Set(
+                value
+                    .filter(
+                        (filter: Filter) => filter.filterType === 'voltageLevel'
+                    )
+                    .map((filter: Filter) => filter.label)
             );
+            const countryCodes = new Set(
+                value
+                    .filter((filter: Filter) => filter.filterType === 'country')
+                    .map((filter: Filter) => filter.label)
+            );
+            newGlobalFilter.nominalV = [...nominalVs];
+            newGlobalFilter.countryCode = [...countryCodes];
         }
-        setGlobalFilters(formattedData as FilterDto);
+        setGlobalFilter(newGlobalFilter);
     };
 
     const result = useMemo(() => {

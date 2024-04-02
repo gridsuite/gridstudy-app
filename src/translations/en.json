@@ -326,7 +326,7 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
-    "DynamicSimulationFetchCountryError": "An error occurred while fetching countries",
+    "FetchCountryError": "An error occurred while fetching countries",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",

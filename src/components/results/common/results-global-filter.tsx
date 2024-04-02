@@ -252,12 +252,11 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                     state: FilterOptionsState<Filter>
                 ) =>
                     options.filter((option) => {
-                        if (option.filterType === 'country') {
-                            return translate(option.label)
-                                .toLowerCase()
-                                .includes(state.inputValue.toLowerCase());
-                        }
-                        return option.label
+                        const labelToMatch =
+                            option.filterType === 'country'
+                                ? translate(option.label)
+                                : option.label;
+                        return labelToMatch
                             .toLowerCase()
                             .includes(state.inputValue.toLowerCase());
                     })
