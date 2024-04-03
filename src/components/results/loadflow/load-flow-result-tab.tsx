@@ -54,11 +54,14 @@ import {
     NumberCellRenderer,
     StatusCellRender,
 } from '../common/result-cell-renderers';
-import ResultsGlobalFilter, { Filter } from '../common/results-global-filter';
+import ResultsGlobalFilter, {
+    Filter,
+    FilterType,
+} from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
-import Glasspane from '../common/glasspane';
+import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
 
 const styles = {
@@ -118,7 +121,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         const nominalVs: number[] = mapEquipments.getNominalVoltages();
         return nominalVs.map((nominalV: number) => ({
             label: nominalV.toString(),
-            filterType: 'voltageLevel',
+            filterType: FilterType.VOLTAGE_LEVEL,
         }));
     }, [mapEquipments]);
 
@@ -134,7 +137,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 setCountriesFilter(
                     countryCodes.map((countryCode: string) => ({
                         label: countryCode,
-                        filterType: 'country',
+                        filterType: FilterType.COUNTRY,
                     }))
                 );
             })
@@ -304,13 +307,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             const nominalVs = new Set(
                 value
                     .filter(
-                        (filter: Filter) => filter.filterType === 'voltageLevel'
+                        (filter: Filter) =>
+                            filter.filterType === FilterType.VOLTAGE_LEVEL
                     )
                     .map((filter: Filter) => filter.label)
             );
             const countryCodes = new Set(
                 value
-                    .filter((filter: Filter) => filter.filterType === 'country')
+                    .filter(
+                        (filter: Filter) =>
+                            filter.filterType === FilterType.COUNTRY
+                    )
                     .map((filter: Filter) => filter.label)
             );
             newGlobalFilter.nominalV = [...nominalVs];
@@ -379,7 +386,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             </Box>
 
             {tabIndex === 0 && (
-                <Glasspane active={isLoadingResult}>
+                <GlassPane active={isLoadingResult}>
                     <LimitViolationResult
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
@@ -388,10 +395,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                             id: 'LoadFlowResultsCurrentViolations',
                         })}
                     />
-                </Glasspane>
+                </GlassPane>
             )}
             {tabIndex === 1 && (
-                <Glasspane active={isLoadingResult}>
+                <GlassPane active={isLoadingResult}>
                     <LimitViolationResult
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
@@ -400,7 +407,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                             id: 'LoadFlowResultsVoltageViolations',
                         })}
                     />
-                </Glasspane>
+                </GlassPane>
             )}
             {tabIndex === 2 && (
                 <LoadFlowResult

@@ -97,6 +97,11 @@ const styles = {
     },
 };
 
+export enum FilterType {
+    COUNTRY = 'country',
+    VOLTAGE_LEVEL = 'voltageLevel',
+}
+
 export interface Filter {
     label: string;
     filterType: string;
@@ -123,7 +128,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
 
     const getOptionLabel = useCallback(
         (option: Filter) =>
-            option.filterType === 'country'
+            option.filterType === FilterType.COUNTRY
                 ? translate(option.label)
                 : option.label + ' kV',
         [translate]
@@ -133,7 +138,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         (filter: Filter) =>
             mergeSx(
                 styles.chip,
-                filter.filterType === 'country'
+                filter.filterType === FilterType.COUNTRY
                     ? styles.chipCountry
                     : styles.chipVoltageLevel
             ),
@@ -253,7 +258,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 ) =>
                     options.filter((option) => {
                         const labelToMatch =
-                            option.filterType === 'country'
+                            option.filterType === FilterType.COUNTRY
                                 ? translate(option.label)
                                 : option.label;
                         return labelToMatch

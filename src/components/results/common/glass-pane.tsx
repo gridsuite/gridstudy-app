@@ -14,7 +14,7 @@ const styles = {
         height: '100%',
         width: '100%',
     },
-    glasspane: {
+    glassPane: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         display: 'block',
         zIndex: 19,
@@ -29,16 +29,16 @@ const styles = {
     },
 };
 
-interface GlasspaneProps {
+interface GlassPaneProps {
     active: boolean;
     children: ReactNode;
 }
 
-const Glasspane: FunctionComponent<GlasspaneProps> = ({ active, children }) => {
+const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children }) => {
     return (
         <Box sx={styles.wrapper}>
             {active && (
-                <Box sx={styles.glasspane}>
+                <Box sx={styles.glassPane}>
                     <CircularProgress size={64} sx={styles.circularProgress} />
                 </Box>
             )}
@@ -47,4 +47,4 @@ const Glasspane: FunctionComponent<GlasspaneProps> = ({ active, children }) => {
     );
 };
 
-export default Glasspane;
+export default GlassPane;
