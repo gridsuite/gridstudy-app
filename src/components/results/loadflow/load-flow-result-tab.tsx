@@ -82,7 +82,7 @@ const styles = {
 export interface GlobalFilter {
     nominalV?: string[];
     countryCode?: string[];
-    limitViolationsTypes?: string[];
+    limitViolationsTypes?: LimitTypes[];
 }
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
@@ -303,7 +303,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         setTabIndex(newTabIndex);
     };
 
-    const handleGlobalFilterChange = (value: Filter[]) => {
+    const handleGlobalFilterChange = useCallback((value: Filter[]) => {
         let newGlobalFilter: GlobalFilter = {};
         if (value) {
             const nominalVs = new Set(
@@ -322,7 +322,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             newGlobalFilter.countryCode = [...countryCodes];
         }
         setGlobalFilter(newGlobalFilter);
-    };
+    }, []);
 
     const result = useMemo(() => {
         if (loadflowResult === RunningStatus.FAILED || !loadflowResult) {
