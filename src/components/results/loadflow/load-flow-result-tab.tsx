@@ -118,12 +118,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
 
     const voltageLevelsFilter: Filter[] = useMemo(() => {
-        const nominalVs: number[] = mapEquipments.getNominalVoltages();
+        const nominalVs: number[] = mapEquipments?.nominalVoltages ?? [];
         return nominalVs.map((nominalV: number) => ({
             label: nominalV.toString(),
             filterType: FilterType.VOLTAGE_LEVEL,
         }));
-    }, [mapEquipments]);
+    }, [mapEquipments?.nominalVoltages]);
 
     const [globalFilter, setGlobalFilter] = useState<GlobalFilter>();
 
