@@ -22,33 +22,6 @@ import {
 } from 'react-router-dom';
 
 import { StudyView } from './study-pane';
-import {
-    changeDisplayedColumns,
-    changeLockedColumns,
-    changeReorderedColumns,
-    selectCenterLabelState,
-    selectComponentLibrary,
-    selectComputedLanguage,
-    selectDiagonalLabelState,
-    selectFavoriteContingencyLists,
-    selectLanguage,
-    selectLimitReduction,
-    selectLineFlowAlertThreshold,
-    selectLineFlowColorMode,
-    selectLineFlowMode,
-    selectLineFullPathState,
-    selectLineParallelPathState,
-    selectSubstationLayout,
-    selectTheme,
-    selectUseName,
-    selectFluxConvention,
-    selectMapManualRefresh,
-    selectMapBaseMap,
-    selectEnableDeveloperMode,
-    setParamsLoaded,
-    setOptionalServices,
-    limitReductionModified,
-} from '../redux/actions';
 
 import {
     AuthenticationRouter,
@@ -66,22 +39,22 @@ import {
     COMMON_APP_NAME,
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
+    PARAM_DEVELOPER_MODE,
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
+    PARAM_FLUX_CONVENTION,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
+    PARAM_MAP_BASEMAP,
+    PARAM_MAP_MANUAL_REFRESH,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
-    PARAM_FLUX_CONVENTION,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_MAP_BASEMAP,
-    PARAM_DEVELOPER_MODE,
-    PARAM_LIMIT_REDUCTION,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -105,7 +78,34 @@ import {
     fetchIdpSettings,
 } from '../services/utils';
 import { getOptionalServices } from '../services/study';
-import { defaultOptionalServicesState } from 'redux/reducer';
+import {
+    changeDisplayedColumns,
+    changeLockedColumns,
+    changeReorderedColumns,
+    limitReductionModified,
+    selectCenterLabelState,
+    selectComponentLibrary,
+    selectComputedLanguage,
+    selectDiagonalLabelState,
+    selectEnableDeveloperMode,
+    selectFavoriteContingencyLists,
+    selectFluxConvention,
+    selectLanguage,
+    selectLimitReduction,
+    selectLineFlowAlertThreshold,
+    selectLineFlowColorMode,
+    selectLineFlowMode,
+    selectLineFullPathState,
+    selectLineParallelPathState,
+    selectMapBaseMap,
+    selectMapManualRefresh,
+    selectSubstationLayout,
+    selectTheme,
+    selectUseName,
+    setOptionalServices,
+    setParamsLoaded,
+} from '../redux/actions';
+import { defaultOptionalServicesState } from '../redux/reducer';
 
 const noUserManager = { instance: null, error: null };
 

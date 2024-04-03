@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, elementType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ElementType } from '@gridsuite/commons-ui';
 import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
 import {
     Dispatch,
@@ -330,7 +330,7 @@ export const VoltageInitParameters = ({
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={getValues}
-                    parameterType={elementType.VOLTAGE_INIT_PARAMETERS}
+                    parameterType={ElementType.VOLTAGE_INIT_PARAMETERS}
                     parameterFormatter={(params: VoltageInitParametersForm) =>
                         fromVoltageInitParametersFormToParamValues(params)
                             .computationParameters
@@ -342,7 +342,7 @@ export const VoltageInitParameters = ({
                 <DirectoryItemSelector
                     open={openSelectParameterDialog}
                     onClose={handleLoadParameter}
-                    types={[elementType.VOLTAGE_INIT_PARAMETERS]}
+                    types={[ElementType.VOLTAGE_INIT_PARAMETERS]}
                     title={intl.formatMessage({
                         id: 'showSelectParameterDialog',
                     })}

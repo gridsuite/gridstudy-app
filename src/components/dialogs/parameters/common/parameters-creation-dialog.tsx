@@ -25,7 +25,7 @@ import { createParameter } from 'services/explore';
 import { Identifier } from '../voltageinit/voltage-init-utils';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
-import { elementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
@@ -172,7 +172,7 @@ const CreateParameterDialog = <T extends FieldValues>({
                 <DirectoryItemSelector
                     open={openDirectoryFolders}
                     onClose={setSelectedFolder}
-                    types={[elementType.DIRECTORY]}
+                    types={[ElementType.DIRECTORY]}
                     onlyLeaves={false}
                     multiselect={false}
                     validationButtonText={intl.formatMessage({

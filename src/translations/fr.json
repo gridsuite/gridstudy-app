@@ -412,6 +412,7 @@
     "yes": "Oui",
     "no": "Non",
     "Loading": "Charge (%)",
+    "undefinedValue": "indéfini",
 
     "HighVoltageLimit": "Limite tension haute",
     "HighVoltageLimitkV": "Limite tension haute (kV)",

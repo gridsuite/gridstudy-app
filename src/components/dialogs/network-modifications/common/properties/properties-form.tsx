@@ -117,12 +117,10 @@ const PropertiesForm = ({
     );
 
     return (
-        <>
-            <Grid container>
-                <GridSection title={'AdditionalInformation'} />
-                {additionalProps}
-            </Grid>
-        </>
+        <Grid container>
+            <GridSection title={'AdditionalInformation'} />
+            {additionalProps}
+        </Grid>
     );
 };
 
