@@ -147,7 +147,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     headerId: 'FetchCountryError',
                 });
             });
-    }, [nodeUuid, studyUuid, snackError]);
+    }, [nodeUuid, studyUuid, snackError, loadFlowStatus]);
 
     const getGlobalFilterParameter = useCallback(
         (globalFilter: GlobalFilter | undefined) => {
