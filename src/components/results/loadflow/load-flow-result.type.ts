@@ -66,7 +66,7 @@ export interface OverloadedEquipment {
     actualOverloadDuration: number | null;
     upComingOverloadDuration: number | null;
     limit: number;
-    limitName: string | null;
+    limitName: string | null | undefined;
     side: string | undefined;
     limitType: string;
 }
