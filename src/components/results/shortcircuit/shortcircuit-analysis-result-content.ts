@@ -17,7 +17,7 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     faultType: 'fault.faultType',
     connectableId: 'feederResults.connectableId',
     current: 'current',
-    limitType: 'limitViolations.limitType',
+    limitType: 'limitViolation.limitType',
     limitMin: 'ipMin',
     limitMax: 'ipMax',
     deltaCurrentIpMin: 'deltaCurrentIpMin',
