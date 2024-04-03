@@ -85,3 +85,9 @@ export const mapFieldsToColumnsFilter = (
         column: columnToFieldMapping[filter.column],
     }));
 };
+
+export enum BooleanFilterValue {
+    TRUE = 'true',
+    FALSE = 'false',
+    UNDEFINED = 'undefinedValue',
+}
