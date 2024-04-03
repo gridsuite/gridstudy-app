@@ -113,9 +113,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: ReduxState) => state.mapEquipments
     );
     const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>(
-        []
-    );
+
+    const voltageLevelsFilter: Filter[] = useMemo(() => {
+        const nominalVs: number[] = mapEquipments.getNominalVoltages();
+        return nominalVs.map((nominalV: number) => ({
+            label: nominalV.toString(),
+            filterType: 'voltageLevel',
+        }));
+    }, [mapEquipments]);
+
     const [globalFilter, setGlobalFilter] = useState<GlobalFilter>();
 
     const { loading: filterEnumsLoading, result: filterEnums } =
@@ -139,17 +145,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 });
             });
     }, [nodeUuid, studyUuid, snackError]);
-
-    // load voltage levels
-    useEffect(() => {
-        const nominalVs: number[] = mapEquipments.getNominalVoltages();
-        setVoltageLevelsFilter(
-            nominalVs.map((nominalV: number) => ({
-                label: nominalV.toString(),
-                filterType: 'voltageLevel',
-            }))
-        );
-    }, [mapEquipments]);
 
     const getGlobalFilterParameter = useCallback(
         (globalFilter: GlobalFilter | undefined) => {
