@@ -92,13 +92,13 @@ const generateDateString = () => {
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
 
-    return `${day}-${month}-${year}-${hours}-${minutes}-${seconds}`;
+    return `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
 };
 
 const formSchema = yup
     .object()
     .shape({
-        [FILTER_NAME]: yup.string().required(),
+        [FILTER_NAME]: yup.string().nullable(),
         [NAME]: yup.string().required(),
         equipmentType: yup.string().required(),
     })
