@@ -766,6 +766,15 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
+    /*
+     * The following functions' goal are to update state.diagramStates with nodes of the following type :
+     * { id: 'diagramID', svgType: 'SvgType of the diagram', state: 'ViewState of the diagram' }
+     *
+     * Depending on the diagram's svgType, the state.diagramStates is different.
+     * For Network Area Diagrams (SvgType.NETWORK_AREA_DIAGRAM), all the states should be the same.
+     * As an example, if one is PINNED, then all of them should be.
+     * For Single Line Diagrams (SvgType.VOLTAGE_LEVEL or SvgType.SUBSTATION), each diagram has its own state.
+     */
     builder.addCase(OPEN_DIAGRAM, (state, action) => {
         const diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
