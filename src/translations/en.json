@@ -410,6 +410,7 @@
     "yes": "Yes",
     "no": "No",
     "Loading": "Load (%)",
+    "undefinedValue": "undefined",
 
     "HighVoltageLimit": "High voltage limit",
     "HighVoltageLimitkV": "High voltage limit (kV)",

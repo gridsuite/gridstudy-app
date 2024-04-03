@@ -3,6 +3,22 @@ name: CI
 on: [push]
 
 jobs:
+    license-headers:
+      name: Check licenses headers
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/setup-node@v3
+        - name: Checkout sources
+          uses: actions/checkout@v2
+          with:
+              persist-credentials: false
+
+        - name: Check License Header (Check Mode)
+          uses: apache/skywalking-eyes/header@v0.5.0
+          with:
+            config: .github/config/.licenserc.yaml
+
     build-and-deploy:
         runs-on: ubuntu-latest
 
@@ -21,6 +37,7 @@ jobs:
                 NODE_OPTIONS: "--max_old_space_size=4096"
               run: |
                   npm install
+                  npm run licenses-check
                   npm run lint
                   npm run test
                   npm run build

@@ -6,8 +6,8 @@
  */
 
 import { ColDef } from 'ag-grid-community';
+import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { UUID } from 'crypto';
-import { FilterSelectorType } from 'hooks/use-aggrid-row-filter';
 import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
 
@@ -61,12 +61,12 @@ export interface LimitViolationResultProps extends LoadflowResultTap {
 
 export interface OverloadedEquipment {
     overload: number;
-    name: string;
+    subjectId: string;
     value: number;
     actualOverloadDuration: number | null;
     upComingOverloadDuration: number | null;
     limit: number;
-    limitName: string | null;
+    limitName: string | null | undefined;
     side: string | undefined;
     limitType: string;
 }
