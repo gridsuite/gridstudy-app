@@ -5,17 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, ElementType } from '@gridsuite/commons-ui';
-import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
+import {
+    CustomFormProvider,
+    DirectoryItemSelector,
+    ElementType,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles, TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
-import { SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
     FILTERS,
     FIXED_GENERATORS,
@@ -44,7 +49,6 @@ import {
     formatNewParams,
     fromVoltageInitParamsDataToFormValues,
 } from './voltage-init-utils';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { mergeSx } from 'components/utils/functions';
@@ -297,7 +301,7 @@ export const VoltageInitParameters = ({
 
     return (
         <>
-            <FormProvider validationSchema={formSchema} {...formMethods}>
+            <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid
                     xl={
                         tabValue === TAB_VALUES.voltageLimitsParamsTabValue
@@ -411,7 +415,7 @@ export const VoltageInitParameters = ({
                         </DialogActions>
                     </Grid>
                 </Grid>
-            </FormProvider>
+            </CustomFormProvider>
 
             {openCreateParameterDialog && (
                 <CreateParameterDialog

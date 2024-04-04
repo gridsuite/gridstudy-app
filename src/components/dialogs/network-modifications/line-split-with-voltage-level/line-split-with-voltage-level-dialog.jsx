@@ -5,23 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    BUS_OR_BUSBAR_SECTION,
     CONNECTIVITY,
+    ID,
     LINE1_ID,
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
-    VOLTAGE_LEVEL,
-    ID,
-    BUS_OR_BUSBAR_SECTION,
-    SLIDER_PERCENTAGE,
     LINE_TO_ATTACH_OR_SPLIT_ID,
+    SLIDER_PERCENTAGE,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
@@ -281,7 +281,7 @@ const LineSplitWithVoltageLevelDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -305,7 +305,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     allVoltageLevelOptions={voltageLevelOptions}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
