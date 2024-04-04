@@ -326,8 +326,7 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Ajouter",
     "DynamicSimulationClose": "Fermer",
-    "DynamicSimulationFetchCountryError": "Une erreur est survenue lors du chargement des pays",
-    "DynamicSimulationFetchEquipmentError": "Une erreur est survenue lors du chargement des ouvrages",
+    "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -467,6 +466,9 @@
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsStatus": "Statut",
     "ComputationResultsLogs": "Logs",
+
+    "results.globalFilter.fillerText": "Pays ou niveau de tension",
+    "results.globalFilter.recent": "Récents :",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
@@ -1337,5 +1339,5 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "    
 }
