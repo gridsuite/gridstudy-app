@@ -70,7 +70,6 @@ import {
     SELECTION_FOR_COPY,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_DELETED_EQUIPMENTS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
@@ -81,7 +80,6 @@ import {
     SET_PARAMS_LOADED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
-    SET_UPDATED_SUBSTATIONS_IDS,
     STOP_DIAGRAM_BLINK,
     STUDY_DISPLAY_MODE,
     STUDY_INDEXATION_STATUS,
@@ -96,6 +94,7 @@ import {
     SUBSTATION_LAYOUT,
     TOGGLE_PIN_DIAGRAM,
     UPDATE_EQUIPMENTS,
+    RESET_EQUIPMENTS_BY_TYPES,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -272,8 +271,6 @@ const initialState = {
     diagramStates: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
-    updatedSubstationsIds: [],
-    deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
@@ -622,14 +619,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isMapEquipmentsInitialized = action.newValue;
     });
 
-    builder.addCase(SET_UPDATED_SUBSTATIONS_IDS, (state, action) => {
-        state.updatedSubstationsIds = action.updatedSubstationsIds;
-    });
-
-    builder.addCase(SET_DELETED_EQUIPMENTS, (state, action) => {
-        state.deletedEquipments = action.deletedEquipments;
-    });
-
     builder.addCase(SUBSTATION_LAYOUT, (state, action) => {
         state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
     });
@@ -682,9 +671,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CURRENT_TREE_NODE, (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
-        // current node has changed, then will need to reload Geo Data
-        state.updatedSubstationsIds = [];
-        state.deletedEquipments = [];
         state.reloadMap = true;
     });
 
@@ -1116,6 +1102,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_EQUIPMENTS, (state) => {
         state.spreadsheetNetwork = { ...initialSpreadsheetNetworkState };
+    });
+    builder.addCase(RESET_EQUIPMENTS_BY_TYPES, (state, action) => {
+        action.equipmentTypes.forEach((equipmentType) => {
+            state.spreadsheetNetwork[equipmentType] = null;
+        });
     });
 
     builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state) => {
