@@ -5,20 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CheckboxSelect from './common/checkbox-select';
 import { useLocalizedCountries } from '../../../../utils/localized-countries-hook.js';
+import CheckboxAutocomplete from './common/checkbox-autocomplete.tsx';
 
-const CountrySelect = ({ value, options, onChange }) => {
+const CountryAutocomplete = ({ id, options, onChange }) => {
     const { translate } = useLocalizedCountries();
 
     return (
-        <CheckboxSelect
+        <CheckboxAutocomplete
+            id={id}
             options={options}
             getOptionLabel={(code) => translate(code)}
-            value={value}
             onChange={onChange}
         />
     );
 };
 
-export default CountrySelect;
+export default CountryAutocomplete;

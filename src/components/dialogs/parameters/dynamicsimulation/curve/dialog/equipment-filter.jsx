@@ -16,8 +16,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import CountrySelect from '../country-select';
-import CheckboxSelect from '../common/checkbox-select';
+import CountryAutocomplete from '../country-autocomplete';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
@@ -31,7 +30,7 @@ import {
     FieldType,
     OperatorType,
 } from '../../../../filter/expert/expert-filter.type';
-import VirtualizedCheckboxAutocomplete from '../common/virtualized-checkbox-autocomplete';
+import CheckboxAutocomplete from '../common/checkbox-autocomplete';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -94,10 +93,9 @@ const EquipmentFilter = forwardRef(
         );
 
         // --- Voltage levels, nominal voltages => lookup in mapEquipments which is loaded at booting up application --- //
-        const voltageLevels = mapEquipments.getVoltageLevels();
         const voltageLevelIds = useMemo(
-            () => voltageLevels.map((elem) => elem.id),
-            [voltageLevels]
+            () => mapEquipments.voltageLevels.map((elem) => elem.id),
+            [mapEquipments.voltageLevels]
         );
         const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
             []
@@ -109,7 +107,7 @@ const EquipmentFilter = forwardRef(
             []
         );
 
-        const nominalVoltages = mapEquipments.getNominalVoltages();
+        const nominalVoltages = mapEquipments.nominalVoltages;
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
             []
         );
@@ -138,7 +136,7 @@ const EquipmentFilter = forwardRef(
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'DynamicSimulationFetchCountryError',
+                        headerId: 'FetchCountryError',
                     });
                 });
         }, [currentNode.id, studyUuid, snackError]);
@@ -225,13 +223,20 @@ const EquipmentFilter = forwardRef(
         ]);
 
         useEffect(() => {
+            let ignore = false;
             if (gridReady && countriesFilterReady) {
                 equipmentsRef.current.api.showLoadingOverlay();
                 filteringEquipmentsAsync().then((equipments) => {
-                    setEquipmentRowData(equipments);
+                    // using ignore flag to cancel fetches that do not return in order
+                    if (!ignore) {
+                        setEquipmentRowData(equipments);
+                    }
                     equipmentsRef.current.api.hideOverlay();
                 });
             }
+            return () => {
+                ignore = true;
+            };
         }, [filteringEquipmentsAsync, gridReady, countriesFilterReady]);
 
         // grid configuration
@@ -333,12 +338,11 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
-                        <VirtualizedCheckboxAutocomplete
+                        <CheckboxAutocomplete
+                            id="voltage-level"
+                            virtualize
                             options={voltageLevelIds}
-                            getOptionLabel={(value) =>
-                                mapEquipments.getVoltageLevel(value)?.name ??
-                                value
-                            }
+                            getOptionLabel={(value) => value}
                             onChange={handleVoltageLevelChange}
                         />
                     </Grid>
@@ -353,8 +357,8 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
-                        <CountrySelect
-                            value={selectedCountries}
+                        <CountryAutocomplete
+                            id="country"
                             options={countries}
                             onChange={handleCountryChange}
                         />
@@ -370,12 +374,12 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
-                        <CheckboxSelect
+                        <CheckboxAutocomplete
+                            id="nominal-voltage"
                             options={nominalVoltages}
                             getOptionLabel={(value) =>
                                 `${value} ${NOMINAL_VOLTAGE_UNIT}`
                             }
-                            value={selectedNominalVoltages}
                             onChange={handleNominalVoltageChange}
                         />
                     </Grid>
