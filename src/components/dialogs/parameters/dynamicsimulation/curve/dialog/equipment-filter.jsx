@@ -63,6 +63,13 @@ const styles = {
         width: '100%',
         height: '100%',
     },
+    criteria: {
+        width: '100%',
+        height: '48px',
+    },
+    filtered: {
+        width: '100%',
+    },
 };
 
 const EquipmentFilter = forwardRef(
@@ -304,7 +311,7 @@ const EquipmentFilter = forwardRef(
         return (
             <>
                 {/* Equipment type */}
-                <Grid item container sx={{ width: '100%' }}>
+                <Grid item container sx={styles.criteria}>
                     <Grid item xs={6}>
                         <Typography>
                             <FormattedMessage
@@ -329,7 +336,7 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Post */}
-                <Grid item container sx={{ width: '100%' }}>
+                <Grid item container sx={styles.criteria}>
                     <Grid item xs={6}>
                         <Typography>
                             <FormattedMessage
@@ -348,7 +355,7 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Country */}
-                <Grid item container sx={{ width: '100%' }}>
+                <Grid item container sx={styles.criteria}>
                     <Grid item xs={6}>
                         <Typography>
                             <FormattedMessage
@@ -365,7 +372,7 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Tension */}
-                <Grid item container sx={{ width: '100%' }}>
+                <Grid item container sx={styles.criteria}>
                     <Grid item xs={6}>
                         <Typography>
                             <FormattedMessage
@@ -389,7 +396,7 @@ const EquipmentFilter = forwardRef(
                     item
                     container
                     xs
-                    sx={{ width: '100%' }}
+                    sx={styles.filtered}
                     direction={'column'}
                 >
                     <Grid>
