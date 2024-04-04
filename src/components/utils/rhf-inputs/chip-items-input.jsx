@@ -13,11 +13,12 @@ import {
     FieldLabel,
     MidFormError,
     OverflowableText,
-    useSnackMessage,
     RawReadOnlyInput,
+    useCustomFormContext,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import React, { useCallback, useState } from 'react';
-import { useController, useFieldArray, useFormContext } from 'react-hook-form';
+import { useController, useFieldArray } from 'react-hook-form';
 import { isFieldRequired } from '../utils';
 
 const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
@@ -32,7 +33,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
         name,
     });
 
-    const { validationSchema, getValues } = useFormContext();
+    const { validationSchema, getValues } = useCustomFormContext();
 
     const {
         fieldState: { error },
