@@ -10,6 +10,7 @@ import {
     ElementType,
     SubmitButton,
     useSnackMessage,
+    CustomFormProvider,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import {
@@ -217,7 +218,10 @@ export const VoltageInitParameters = ({
 
     return (
         <>
-            <CustomFormProvider validationSchema={voltageInitParametersFormSchema} {...formMethods}>
+            <CustomFormProvider
+                validationSchema={voltageInitParametersFormSchema}
+                {...formMethods}
+            >
                 <Grid
                     xl={tabValue === TabValue.VOLTAGE_LIMITS ? 12 : 6}
                     container
