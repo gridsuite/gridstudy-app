@@ -8,13 +8,21 @@
 import * as React from 'react';
 import { useState } from 'react';
 import TextField from '@mui/material/TextField';
-import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
+import Autocomplete, {
+    autocompleteClasses,
+    AutocompleteRenderInputParams,
+    AutocompleteRenderOptionState,
+} from '@mui/material/Autocomplete';
 import Popper from '@mui/material/Popper';
 import { lighten, styled, Theme } from '@mui/material/styles';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import Typography from '@mui/material/Typography';
-import { Checkbox, Chip } from '@mui/material';
+import { Checkbox } from '@mui/material';
 import { useDebounce } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
+
+// the virtualized component is customized from the MUI example
+// https://mui.com/material-ui/react-autocomplete/#virtualization
 
 const LISTBOX_PADDING = 8; // px
 
@@ -87,7 +95,7 @@ const ListboxComponent = React.forwardRef<
                     ref={gridRef}
                     outerElementType={OuterElementType}
                     innerElementType="ul"
-                    itemSize={(index) => itemSize}
+                    itemSize={(_index) => itemSize}
                     overscanCount={5}
                     itemCount={itemCount}
                 >
@@ -119,43 +127,125 @@ const styles = {
             width: 'inherit',
             height: 'inherit',
             zIndex: 20,
-            background: lighten(theme.palette.background.paper, 0.1),
+            backgroundColor: lighten(theme.palette.background.default, 0.16),
         },
-        '.MuiInputLabel-root': {
-            zIndex: 'inherit',
-            width: 'auto',
+        '&.Mui-focused': {
+            '.MuiInputLabel-root': {
+                zIndex: 21,
+                width: 'auto',
+            },
         },
     }),
 };
 
-interface CheckboxAutocompleteProps {
+interface CheckboxAutocompleteProps<T> {
     id?: string;
-    options: any[];
+    maxSelection?: number;
+    options: T[];
     virtualize?: boolean;
-    getOptionLabel: (option: any) => string;
-    onChange: (value: any[]) => void;
+    getOptionLabel: (option: T) => string;
+    onChange: (value: T[]) => void;
 }
 
-const CheckboxAutocomplete = ({
+const CheckboxAutocomplete: React.FC<
+    CheckboxAutocompleteProps<number | string>
+> = ({
     id = '',
+    maxSelection = 0,
     options,
     virtualize,
     getOptionLabel,
     onChange,
-}: CheckboxAutocompleteProps) => {
-    const [isFocusInput, setIsFocusInput] = useState<boolean>(false);
+}) => {
+    const intl = useIntl();
+
+    // make autocomplete as a controlled component in order to limit maximum selection
+    const [selectedOptions, setSelectedOptions] = useState<(number | string)[]>(
+        []
+    );
+
+    // used to manage search text
     const [inputValue, setInputValue] = useState<string>('');
+
+    // these states used as conditions to manage input label
+    const [isFocusInput, setIsFocusInput] = useState(false);
+    const [isMaxLimitReached, setMaxLimitReached] = useState(false);
 
     const debouncedOnChange = useDebounce(onChange, 500);
 
     const handleChange = (_event: React.SyntheticEvent, value: any) => {
-        debouncedOnChange(value);
+        if (!maxSelection || value.length <= maxSelection) {
+            setMaxLimitReached(false);
+            // cache the selected options
+            setSelectedOptions(value);
+
+            // propagate change to the parent
+            debouncedOnChange(value);
+        } else {
+            setMaxLimitReached(true);
+        }
+    };
+
+    const getInputLabel = () => {
+        if (!isFocusInput) {
+            return `${options?.length} ${intl.formatMessage({
+                id: 'options',
+            })}`;
+        } else {
+            if (isMaxLimitReached) {
+                return `${maxSelection} ${intl.formatMessage({
+                    id: 'maxSelection',
+                })}`;
+            }
+        }
+    };
+
+    const renderInput = (params: AutocompleteRenderInputParams) => (
+        <TextField
+            {...params}
+            label={getInputLabel()}
+            onChange={(event) => {
+                setInputValue(event.target.value);
+            }}
+            onFocus={() => {
+                setIsFocusInput(true);
+            }}
+            onBlur={() => {
+                setIsFocusInput(false);
+                setMaxLimitReached(false);
+            }}
+            color={isMaxLimitReached ? 'info' : undefined}
+        />
+    );
+
+    const renderOption = (
+        props: React.HTMLAttributes<HTMLElement>,
+        option: number | string,
+        state: AutocompleteRenderOptionState
+    ) =>
+        virtualize ? (
+            ([props, option, state.selected, getOptionLabel] as React.ReactNode)
+        ) : (
+            <Typography
+                component="li"
+                {...props}
+                noWrap
+                style={{
+                    ...props.style,
+                    top: (props.style?.top as number) + LISTBOX_PADDING,
+                }}
+            >
+                <Checkbox style={{ marginRight: 8 }} checked={state.selected} />
+                {getOptionLabel(option)}
+            </Typography>
+        );
+    const handleBlur = () => {
+        setInputValue('');
     };
 
     return (
         <Autocomplete
             id={`checkbox-autocomplete-${id}`}
-            getOptionLabel={getOptionLabel}
             sx={styles.autocomplete}
             multiple
             disableCloseOnSelect
@@ -164,63 +254,14 @@ const CheckboxAutocomplete = ({
             PopperComponent={StyledPopper}
             ListboxComponent={virtualize ? ListboxComponent : undefined}
             options={options}
+            noOptionsText={intl.formatMessage({ id: 'noOption' })}
+            getOptionLabel={getOptionLabel}
+            value={selectedOptions}
             onChange={handleChange}
             inputValue={inputValue}
-            onBlur={() => {
-                setInputValue('');
-            }}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    label={
-                        !isFocusInput ? `${options?.length} options` : undefined
-                    }
-                    onChange={(event) => {
-                        setInputValue(event.target.value);
-                    }}
-                    onFocus={() => {
-                        setIsFocusInput(true);
-                    }}
-                    onBlur={() => {
-                        setIsFocusInput(false);
-                    }}
-                />
-            )}
-            renderOption={(props, option, state) =>
-                virtualize ? (
-                    ([
-                        props,
-                        option,
-                        state.selected,
-                        getOptionLabel,
-                    ] as React.ReactNode)
-                ) : (
-                    <Typography
-                        component="li"
-                        {...props}
-                        noWrap
-                        style={{
-                            ...props.style,
-                            top: (props.style?.top as number) + LISTBOX_PADDING,
-                        }}
-                    >
-                        <Checkbox
-                            style={{ marginRight: 8 }}
-                            checked={state.selected}
-                        />
-                        {getOptionLabel(option)}
-                    </Typography>
-                )
-            }
-            renderTags={(value, getTagProps) =>
-                value.map((element, index) => (
-                    <Chip
-                        size={'small'}
-                        label={getOptionLabel(element)}
-                        {...getTagProps({ index })}
-                    />
-                ))
-            }
+            onBlur={handleBlur}
+            renderInput={renderInput}
+            renderOption={renderOption}
             limitTags={1}
         />
     );

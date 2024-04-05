@@ -205,6 +205,10 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
+    "noOption": "Pas d'options",
+    "maxSelection": "selections maximales",
+    "options": "options",
+
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
     "DynamicSimulationParametersChangeError": "Une erreur est survenue lors de changement des paramètres de la simulation dynamique",

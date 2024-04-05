@@ -65,7 +65,7 @@ const styles = {
     },
     criteria: {
         width: '100%',
-        height: '48px',
+        height: '56px',
     },
     filtered: {
         width: '100%',
@@ -276,7 +276,7 @@ const EquipmentFilter = forwardRef(
             };
         }, []);
 
-        const onGridReady = useCallback((params) => {
+        const onGridReady = useCallback((_params) => {
             setGridReady(true);
         }, []);
 
@@ -348,6 +348,7 @@ const EquipmentFilter = forwardRef(
                         <CheckboxAutocomplete
                             id="voltage-level"
                             virtualize
+                            maxSelection={10}
                             options={voltageLevelIds}
                             getOptionLabel={(value) => value}
                             onChange={handleVoltageLevelChange}
