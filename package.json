@@ -74,7 +74,6 @@
         "@types/eslint": "^7.29.0",
         "@types/eslint-config-prettier": "^6.11.3",
         "@types/identity-obj-proxy": "^3.0.2",
-        "@types/jest": "^29.5.12",
         "@types/license-checker": "^25.0.6",
         "@types/localized-countries": "^2.0.3",
         "@types/lucene-escape-query": "^1.0.2",
