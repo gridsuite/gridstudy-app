@@ -63,10 +63,7 @@ import {
     ShortCircuitParameters,
     useGetShortCircuitParameters,
 } from './dialogs/parameters/short-circuit-parameters';
-import {
-    useGetVoltageInitParameters,
-    VoltageInitParameters,
-} from './dialogs/parameters/voltageinit/voltage-init-parameters';
+import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import {
     SingleLineDiagramParameters,
     useGetAvailableComponentLibraries,
@@ -257,8 +254,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
-    const useVoltageInitParameters = useGetVoltageInitParameters();
-
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const handleChangeTab = (newValue: string) => {
@@ -351,7 +346,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             case TAB_VALUES.voltageInitParamsTabValue:
                 return (
                     <VoltageInitParameters
-                        useVoltageInitParameters={useVoltageInitParameters}
                         setHaveDirtyFields={setHaveDirtyFields}
                     />
                 );
@@ -367,7 +361,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         tabValue,
         useNonEvacuatedEnergyParameters,
         useShortCircuitParameters,
-        useVoltageInitParameters,
         user,
     ]);
 
