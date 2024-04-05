@@ -137,7 +137,7 @@ const EquipmentFilter = forwardRef(
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'DynamicSimulationFetchCountryError',
+                        headerId: 'FetchCountryError',
                     });
                 });
         }, [currentNode.id, studyUuid, snackError]);
