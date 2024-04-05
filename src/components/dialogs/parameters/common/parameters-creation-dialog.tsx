@@ -9,7 +9,12 @@ import { NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm, UseFormGetValues } from 'react-hook-form';
+import {
+    FieldValues,
+    FormProvider,
+    useForm,
+    UseFormGetValues,
+} from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -25,7 +30,7 @@ import {
 } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createParameter, fetchElementsMetadata } from 'services/explore';
-import { Identifier, VoltageInitForm } from '../voltageinit/voltage-init-utils';
+import { Identifier } from '../voltageinit/voltage-init-utils';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 
@@ -33,10 +38,10 @@ interface FormData {
     [NAME]: string;
 }
 
-interface CreateParameterProps {
+interface CreateParameterProps<T extends FieldValues> {
     open: boolean;
     onClose: () => void;
-    parameterValues: UseFormGetValues<VoltageInitForm> | any;
+    parameterValues: UseFormGetValues<T> | any;
     parameterType: string;
     parameterFormatter: (newParams: any) => any;
 }
@@ -52,13 +57,13 @@ const formSchema = yup
     })
     .required();
 
-const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
+const CreateParameterDialog = <T extends FieldValues>({
     open,
     onClose,
     parameterValues,
     parameterType,
     parameterFormatter,
-}) => {
+}: CreateParameterProps<T>) => {
     const intl = useIntl();
     const [defaultFolder, setDefaultFolder] = useState<Identifier>({
         id: null,
