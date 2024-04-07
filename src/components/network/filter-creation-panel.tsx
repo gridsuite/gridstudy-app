@@ -186,7 +186,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         <SelectInput
                             name={'equipmentType'}
                             options={Object.values(EXPERT_FILTER_EQUIPMENTS)}
-                            label={'equipmentType'}
+                            label={'EquipmentType'}
                             fullWidth
                             size={'medium'}
                             disableClearable={true}
