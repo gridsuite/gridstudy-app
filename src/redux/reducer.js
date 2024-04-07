@@ -284,7 +284,6 @@ const initialState = {
     ...paramsInitialState,
     limitReductionModified: false,
     lastCompletedComputation: null,
-    polygonCoordinate: [],
     // Results filters
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [],

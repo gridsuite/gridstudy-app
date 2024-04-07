@@ -1040,12 +1040,8 @@ export const NetworkMapTab = ({
             }}
             onFeaturesChanged={(features) => {
                 //check if the object is not empty
-                // onDrawModeChanged(Object.keys(features).length !== 0);
-                console.log('debug', 'features', features);
                 if (Object.keys(features).length !== 0) {
                     dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
-                } else {
-                    // dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
                 }
             }}
         />
