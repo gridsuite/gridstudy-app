@@ -213,15 +213,15 @@ const MapView = ({
                                         onChangeTab={onChangeTab}
                                         showInSpreadsheet={showInSpreadsheet}
                                         setErrorMessage={setErrorMessage}
-                                        onDrawModeChanged={(evt) => {
-                                            if (evt === true) {
+                                        onDrawModeChanged={(active) => {
+                                            if (active === true) {
                                                 dispatch(
                                                     setStudyDisplayMode(
                                                         STUDY_DISPLAY_MODE.MAP
                                                     )
                                                 );
                                             }
-                                            setIsDrawingMode(evt);
+                                            setIsDrawingMode(active);
                                         }}
                                     ></NetworkMapTab>
                                 </Box>
