@@ -118,21 +118,6 @@ export function createModifications(
  * Create Filter
  * @returns {Promise<Response>}
  */
-// {
-//     "type": "IDENTIFIER_LIST",
-//     "equipmentType": "VOLTAGE_LEVEL",
-//     "filterEquipmentsAttributes": [
-//       {
-//         "equipmentID": "fds"
-//       },
-//       {
-//         "equipmentID": "sf"
-//       },
-//       {
-//         "equipmentID": "fes"
-//       }
-//     ]
-//   }
 export function createFilter(
     newFilter: any,
     name: string,
