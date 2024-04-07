@@ -6,7 +6,11 @@
  */
 
 import { getStudyUrlWithNodeUuid } from './index';
-import { backendFetchJson, getQueryParamsList } from '../utils';
+import {
+    backendFetchJson,
+    getQueryParamsList,
+    getRequestParamFromList,
+} from '../utils';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
@@ -86,27 +90,29 @@ export function fetchEquipmentsIds(
     console.info(
         `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
-    let urlSearchParams = new URLSearchParams();
+    const substationsIdsParams = getRequestParamFromList(
+        substationsIds,
+        'substationsIds'
+    );
 
-    let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        'equipments-ids' +
-        '?' +
-        'equipmentType=' +
-        equipmentType +
-        getQueryParamsList(substationsIds, 'substationId');
-
+    const urlSearchParams = new URLSearchParams(substationsIdsParams);
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
-        fetchEquipmentsUrl =
-            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
     }
-    console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
+
+    urlSearchParams.append('equipmentType', equipmentType);
+
+    const fetchElementsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/equipments-ids' +
+        '?' +
+        urlSearchParams;
+
+    console.debug(fetchElementsUrl);
+    return backendFetchJson(fetchElementsUrl);
 }
 
 export function fetchLineOrTransformer(
