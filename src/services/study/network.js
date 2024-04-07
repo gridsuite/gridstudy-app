@@ -132,42 +132,6 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
-export function fetchNetworkElementsIds(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds,
-    equipmentType,
-    inUpstreamBuiltParentNode
-) {
-    console.info(
-        `Fetching network '${equipmentType}' elements ids of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}...`
-    );
-
-    const substationsIdsParams = getRequestParamFromList(
-        substationsIds,
-        'substationsIds'
-    );
-
-    const urlSearchParams = new URLSearchParams(substationsIdsParams);
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-
-    urlSearchParams.append('equipmentType', equipmentType);
-
-    const fetchElementsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/equipments-ids' +
-        '?' +
-        urlSearchParams;
-    console.log(fetchElementsUrl);
-
-    return backendFetchJson(fetchElementsUrl);
-}
-
 /* elements */
 export function fetchNetworkElementsInfos(
     studyUuid,
@@ -206,7 +170,6 @@ export function fetchNetworkElementsInfos(
 
     return backendFetchJson(fetchElementsUrl);
 }
-
 export function fetchNetworkElementInfos(
     studyUuid,
     currentNodeUuid,

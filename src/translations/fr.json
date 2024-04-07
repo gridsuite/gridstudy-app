@@ -205,7 +205,7 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
-    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer a dessiner un polygone. Entrer pour terminer ou echap pour annuler.",
+    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer a dessiner un polygone. Entrée pour terminer ou Échap pour annuler.",
 
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
@@ -986,7 +986,6 @@
     "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
     "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
     "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
-    "equipmentType": "Type d'ouvrage",
 
     "insertNetworkModificationNodeAbove": "au dessus dans la branche courante",
     "insertNetworkModificationNodeBelow": "en dessous dans la branche courante",

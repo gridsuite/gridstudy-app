@@ -8,7 +8,6 @@
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
-import { fetchNetworkElementsIds } from './network.js';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 
@@ -203,7 +202,7 @@ export async function createMapFilter(
                 throw new Error('No substations selected');
             }
             try {
-                const elements = await fetchNetworkElementsIds(
+                const elements = await fetchEquipmentsIds(
                     studyUuid,
                     currentNodeUuid,
                     substationsIds,

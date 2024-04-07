@@ -205,8 +205,7 @@
     "SelectAll": "All",
     "UnselectAll": "None",
 
-    "DrawingPolygonInstruction": "Click the map to draw a polygon. press enter to validate or escape to cancel",
-
+    "DrawingPolygonInstruction": "Click on the map to start drawing a polygon. Press Enter to finish or Esc to cancel.",
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -986,7 +985,6 @@
     "EquipmentCopied": "Data successfully copied from equipment {equipmentId}",
     "EquipmentCopyFailed404": "Equipment copy failed: the equipment was not found",
     "EquipmentCopyFailed": "Equipment copy failed",
-    "equipmentType": "Equipment type",
 
     "insertNetworkModificationNodeAbove": "above in the current branch",
     "insertNetworkModificationNodeBelow": "below in the current branch",
