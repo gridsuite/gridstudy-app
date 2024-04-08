@@ -15,7 +15,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { Grid, Typography, useTheme } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
@@ -117,7 +117,7 @@ const makeGetVariableLabel = (intl) => (elem) => {
 };
 
 const styles = {
-    grid: (theme) => ({
+    tree: (theme) => ({
         width: '100%',
         height: '100%',
         border: 'solid',
@@ -125,6 +125,20 @@ const styles = {
         borderColor: lighten(theme.palette.background.paper, 0.5),
         overflow: 'auto',
     }),
+    model: {
+        width: '100%',
+    },
+    modelTitle: (theme) => ({
+        marginBottom: theme.spacing(1),
+    }),
+    variable: {
+        width: '100%',
+        flexGrow: 1,
+    },
+    variableTree: {
+        maxHeight: '440px',
+        maxWidth: '50px',
+    },
 };
 
 const ModelFilter = forwardRef(
@@ -133,8 +147,6 @@ const ModelFilter = forwardRef(
 
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
-
-        const theme = useTheme();
 
         const [allModels, setAllModels] = useState([]);
         const [allVariables, setAllVariables] = useState({}); // a variables tree
@@ -238,7 +250,7 @@ const ModelFilter = forwardRef(
         return (
             <>
                 {/* Models used in a mapping */}
-                <Grid item container sx={{ width: '100%' }}>
+                <Grid item container sx={styles.model}>
                     <Grid item xs={6}>
                         <Typography>
                             <FormattedMessage
@@ -260,33 +272,22 @@ const ModelFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Variables which found in models used in a mapping */}
-                <Grid
-                    item
-                    sx={{ width: '100%', flexGrow: 1 }}
-                    container
-                    direction={'column'}
-                >
+                <Grid item sx={styles.variable} container direction={'column'}>
                     <Grid item>
-                        <Typography
-                            sx={{ marginBottom: theme.spacing(1) }}
-                            variant="subtitle1"
-                        >
+                        <Typography sx={styles.modelTitle} variant="subtitle1">
                             <FormattedMessage
                                 id={'DynamicSimulationCurveVariable'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
                     <Grid item xs>
-                        <Box sx={styles.grid}>
+                        <Box sx={styles.tree}>
                             <CheckboxTreeview
                                 ref={variablesRef}
                                 data={filteredVariables}
                                 getLabel={getVariableLabel}
                                 checkAll
-                                sx={{
-                                    maxHeight: '440px',
-                                    maxWidth: '50px',
-                                }}
+                                sx={styles.variableTree}
                             />
                         </Box>
                     </Grid>

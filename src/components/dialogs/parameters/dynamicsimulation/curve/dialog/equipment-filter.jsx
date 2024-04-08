@@ -67,10 +67,13 @@ const styles = {
         width: '100%',
         height: '56px',
     },
-    filtered: {
+    equipment: {
         width: '100%',
         flexGrow: 1,
     },
+    equipmentTitle: (theme) => ({
+        marginBottom: theme.spacing(1),
+    }),
 };
 
 const EquipmentFilter = forwardRef(
@@ -394,10 +397,10 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Equipments */}
-                <Grid item container sx={styles.filtered} direction={'column'}>
+                <Grid item container sx={styles.equipment} direction={'column'}>
                     <Grid item>
                         <Typography
-                            sx={{ marginBottom: theme.spacing(1) }}
+                            sx={styles.equipmentTitle}
                             variant="subtitle1"
                         >
                             <FormattedMessage
