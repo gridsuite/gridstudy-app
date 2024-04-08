@@ -10,7 +10,7 @@ const filter_locale_fr = {
     'filter.startsWith': 'Commence par',
     'filter.contains': 'Contient',
     'filter.notEqual': "N'est pas égal à",
-    'filter.equals': "Égal à",
+    'filter.equals': 'Égal à',
     'filter.lessThanOrEqual': 'Inférieur ou égal',
     'filter.greaterThanOrEqual': 'Supérieur ou égal',
     'filter.filterOoo': 'Filtrer...',
