@@ -10,6 +10,7 @@ import { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete, {
     autocompleteClasses,
+    AutocompleteProps,
     AutocompleteRenderInputParams,
     AutocompleteRenderOptionState,
 } from '@mui/material/Autocomplete';
@@ -138,24 +139,27 @@ const styles = {
     }),
 };
 
-interface CheckboxAutocompleteProps<T> {
+interface CheckboxAutocompleteProps<T>
+    extends Omit<
+        AutocompleteProps<T, true, false, false, any>,
+        'renderInput' | 'renderOption' | 'inputValue'
+    > {
     id?: string;
+    virtualize?: boolean;
     maxSelection?: number;
     options: T[];
-    virtualize?: boolean;
     getOptionLabel: (option: T) => string;
-    onChange: (value: T[]) => void;
+    onChangeCallback: (value: T[]) => void;
 }
 
-const CheckboxAutocomplete: React.FC<
-    CheckboxAutocompleteProps<number | string>
-> = ({
+const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
     id = '',
+    virtualize = false,
     maxSelection = 0,
     options,
-    virtualize,
     getOptionLabel,
-    onChange,
+    onChangeCallback,
+    ...rest
 }) => {
     const intl = useIntl();
 
@@ -171,7 +175,7 @@ const CheckboxAutocomplete: React.FC<
     const [isFocusInput, setIsFocusInput] = useState(false);
     const [isMaxLimitReached, setMaxLimitReached] = useState(false);
 
-    const debouncedOnChange = useDebounce(onChange, 500);
+    const debouncedOnChangeCallback = useDebounce(onChangeCallback, 500);
 
     const handleChange = (_event: React.SyntheticEvent, value: any) => {
         if (!maxSelection || value.length <= maxSelection) {
@@ -180,12 +184,14 @@ const CheckboxAutocomplete: React.FC<
             setSelectedOptions(value);
 
             // propagate change to the parent
-            debouncedOnChange(value);
+            debouncedOnChangeCallback(value);
         } else {
             setMaxLimitReached(true);
         }
     };
 
+    // when lost focus, show number of options
+    // when focused, check maxSelection reached to show infos
     const getInputLabel = () => {
         if (!isFocusInput) {
             return `${options?.length} ${intl.formatMessage({
@@ -220,7 +226,7 @@ const CheckboxAutocomplete: React.FC<
 
     const renderOption = (
         props: React.HTMLAttributes<HTMLElement>,
-        option: number | string,
+        option: any,
         state: AutocompleteRenderOptionState
     ) =>
         virtualize ? (
@@ -239,6 +245,7 @@ const CheckboxAutocomplete: React.FC<
                 {getOptionLabel(option)}
             </Typography>
         );
+
     const handleBlur = () => {
         setInputValue('');
     };
@@ -263,6 +270,7 @@ const CheckboxAutocomplete: React.FC<
             renderInput={renderInput}
             renderOption={renderOption}
             limitTags={1}
+            {...rest}
         />
     );
 };

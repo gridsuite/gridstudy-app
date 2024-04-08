@@ -16,7 +16,7 @@ const CountryAutocomplete = ({ id, options, onChange }) => {
             id={id}
             options={options}
             getOptionLabel={(code) => translate(code)}
-            onChange={onChange}
+            onChangeCallback={onChange}
         />
     );
 };

@@ -69,6 +69,7 @@ const styles = {
     },
     filtered: {
         width: '100%',
+        flexGrow: 1,
     },
 };
 
@@ -351,7 +352,7 @@ const EquipmentFilter = forwardRef(
                             maxSelection={10}
                             options={voltageLevelIds}
                             getOptionLabel={(value) => value}
-                            onChange={handleVoltageLevelChange}
+                            onChangeCallback={handleVoltageLevelChange}
                         />
                     </Grid>
                 </Grid>
@@ -388,19 +389,13 @@ const EquipmentFilter = forwardRef(
                             getOptionLabel={(value) =>
                                 `${value} ${NOMINAL_VOLTAGE_UNIT}`
                             }
-                            onChange={handleNominalVoltageChange}
+                            onChangeCallback={handleNominalVoltageChange}
                         />
                     </Grid>
                 </Grid>
                 {/* Equipments */}
-                <Grid
-                    item
-                    container
-                    xs
-                    sx={styles.filtered}
-                    direction={'column'}
-                >
-                    <Grid>
+                <Grid item container sx={styles.filtered} direction={'column'}>
+                    <Grid item>
                         <Typography
                             sx={{ marginBottom: theme.spacing(1) }}
                             variant="subtitle1"
@@ -413,7 +408,7 @@ const EquipmentFilter = forwardRef(
                             })`}
                         </Typography>
                     </Grid>
-                    <Grid xs>
+                    <Grid item xs>
                         <Box sx={styles.grid}>
                             <CustomAGGrid
                                 ref={equipmentsRef}
