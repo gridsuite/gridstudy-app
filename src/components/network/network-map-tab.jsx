@@ -1067,14 +1067,15 @@ export const NetworkMapTab = ({
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {!isDrawingPolygon && renderEquipmentMenu()}
-            {modificationDialogOpen &&
-                !isDrawingPolygon &&
-                renderModificationDialog()}
-            {deletionDialogOpen && !isDrawingPolygon && renderDeletionDialog()}
-            {choiceVoltageLevelsSubstationId &&
-                !isDrawingPolygon &&
-                renderVoltageLevelChoice()}
+            {!isDrawingPolygon && (
+                <>
+                    {renderEquipmentMenu()}
+                    {modificationDialogOpen && renderModificationDialog()}
+                    {deletionDialogOpen && renderDeletionDialog()}
+                    {choiceVoltageLevelsSubstationId &&
+                        renderVoltageLevelChoice()}
+                </>
+            )}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
         </>
