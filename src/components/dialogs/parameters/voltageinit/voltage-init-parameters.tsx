@@ -5,8 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage, ElementType } from '@gridsuite/commons-ui';
-import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
+import {
+    DirectoryItemSelector,
+    ElementType,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import {
     Dispatch,
     SetStateAction,
@@ -20,7 +25,6 @@ import { useSelector } from 'react-redux';
 import { styles, TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
-import { SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -30,20 +34,19 @@ import {
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import {
-    fromVoltageInitParametersFormToParamValues,
     fromStudyVoltageInitParamsDataToFormValues,
-    VoltageInitParam,
+    fromVoltageInitParametersFormToParamValues,
     fromVoltageInitParamsDataToFormValues,
+    VoltageInitParam,
 } from './voltage-init-utils';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { mergeSx } from 'components/utils/functions';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 import { GeneralParameters } from './general-parameters';
 import {
-    initialVoltageInitParametersForm,
     GENERAL,
+    initialVoltageInitParametersForm,
     TabValue,
     VoltageInitParametersForm,
     voltageInitParametersFormSchema,
@@ -214,7 +217,11 @@ export const VoltageInitParameters = ({
 
     return (
         <>
-            <FormProvider {...formMethods}>
+            <FormProvider
+                // @ts-ignore
+                validationSchema={voltageInitParametersFormSchema}
+                {...formMethods}
+            >
                 <Grid
                     xl={tabValue === TabValue.VOLTAGE_LIMITS ? 12 : 6}
                     container
