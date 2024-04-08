@@ -172,7 +172,7 @@ export async function createMapFilter(
         case EQUIPMENT_TYPES.SUBSTATION:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedSubstation()
+                networkMapref.current.getSelectedSubstations()
             );
             break;
         case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
