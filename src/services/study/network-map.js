@@ -202,7 +202,7 @@ export async function createMapFilter(
         case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
         case EQUIPMENT_TYPES.SWITCH:
             const substationsIds = networkMapref.current
-                .getSelectedSubstation()
+                .getSelectedSubstations()
                 .map((substation) => substation.id);
             if (substationsIds.length === 0) {
                 throw new Error('No substations selected');

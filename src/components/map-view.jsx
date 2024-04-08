@@ -213,7 +213,7 @@ const MapView = ({
                                         onChangeTab={onChangeTab}
                                         showInSpreadsheet={showInSpreadsheet}
                                         setErrorMessage={setErrorMessage}
-                                        onDrawModeChanged={(active) => {
+                                        onDrawPolygonModeActive={(active) => {
                                             if (active === true) {
                                                 dispatch(
                                                     setStudyDisplayMode(

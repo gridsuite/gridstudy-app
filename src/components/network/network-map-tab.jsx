@@ -97,7 +97,7 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     setErrorMessage,
-    onDrawModeChanged,
+    onDrawPolygonModeActive,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1036,11 +1036,11 @@ export const NetworkMapTab = ({
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
-            onDrawModeChanged={(active) => {
+            onDrawPolygonModeActive={(active) => {
                 setIsDrawingPolygon(active);
-                onDrawModeChanged(active);
+                onDrawPolygonModeActive(active);
             }}
-            onFeaturesChanged={(features) => {
+            onPolygonChanged={(features) => {
                 //check if the object is not empty
                 if (Object.keys(features).length !== 0) {
                     dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
@@ -1067,15 +1067,14 @@ export const NetworkMapTab = ({
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {!isDrawingPolygon && (
-                <>
-                    {renderEquipmentMenu()}
-                    {modificationDialogOpen && renderModificationDialog()}
-                    {deletionDialogOpen && renderDeletionDialog()}
-                    {choiceVoltageLevelsSubstationId &&
-                        renderVoltageLevelChoice()}
-                </>
-            )}
+            {!isDrawingPolygon && renderEquipmentMenu()}
+            {!isDrawingPolygon &&
+                modificationDialogOpen &&
+                renderModificationDialog()}
+            {!isDrawingPolygon && deletionDialogOpen && renderDeletionDialog()}
+            {!isDrawingPolygon &&
+                choiceVoltageLevelsSubstationId &&
+                renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
         </>
@@ -1093,7 +1092,7 @@ NetworkMapTab.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
-    onDrawModeChanged: PropTypes.func,
+    onDrawPolygonModeActive: PropTypes.func,
 };
 
 export default NetworkMapTab;
