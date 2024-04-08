@@ -184,6 +184,7 @@ export const NetworkMapTab = ({
         choiceVoltageLevelsSubstationId,
         setChoiceVoltageLevelsSubstationId,
     ] = useState(null);
+    const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef(null);
@@ -1035,8 +1036,9 @@ export const NetworkMapTab = ({
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
-            onDrawModeChanged={(evt) => {
-                onDrawModeChanged(evt);
+            onDrawModeChanged={(active) => {
+                setIsDrawingPolygon(active);
+                onDrawModeChanged(active);
             }}
             onFeaturesChanged={(features) => {
                 //check if the object is not empty
@@ -1065,10 +1067,14 @@ export const NetworkMapTab = ({
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {renderEquipmentMenu()}
-            {modificationDialogOpen && renderModificationDialog()}
-            {deletionDialogOpen && renderDeletionDialog()}
-            {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
+            {!isDrawingPolygon && renderEquipmentMenu()}
+            {modificationDialogOpen &&
+                !isDrawingPolygon &&
+                renderModificationDialog()}
+            {deletionDialogOpen && !isDrawingPolygon && renderDeletionDialog()}
+            {choiceVoltageLevelsSubstationId &&
+                !isDrawingPolygon &&
+                renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
         </>
