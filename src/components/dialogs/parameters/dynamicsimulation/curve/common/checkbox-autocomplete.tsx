@@ -59,22 +59,40 @@ const customOptionStyle = (originalStyle: React.CSSProperties) => ({
         : (originalStyle.top as number) + LISTBOX_PADDING,
 });
 
-function renderRow(props: ListChildComponentProps) {
-    const { data, index, style } = props;
-    const [optionProps, option, selected, getOptionLabel] = data[index];
+interface RowProps<T> {
+    props: React.HTMLAttributes<HTMLElement>;
+    option: T;
+    selected: boolean;
+    getOptionLabel: (option: T) => string;
+}
 
+const Row = ({ props, option, selected, getOptionLabel }: RowProps<any>) => {
     return (
         <Typography
             component="li"
-            {...optionProps}
+            {...props}
             noWrap
-            style={customOptionStyle(style)}
+            style={customOptionStyle(props.style ?? {})}
         >
             <Checkbox style={styles.checkbox} checked={selected} />
             {`${getOptionLabel(option)}`}
         </Typography>
     );
-}
+};
+
+const renderRow = (props: ListChildComponentProps) => {
+    const { data, index } = props;
+    const [optionProps, option, selected, getOptionLabel] = data[index];
+
+    return (
+        <Row
+            props={optionProps}
+            option={option}
+            selected={selected}
+            getOptionLabel={getOptionLabel}
+        />
+    );
+};
 
 const OuterElementContext = React.createContext({});
 
@@ -243,15 +261,12 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
         virtualize ? (
             ([props, option, state.selected, getOptionLabel] as React.ReactNode)
         ) : (
-            <Typography
-                component="li"
-                {...props}
-                noWrap
-                style={customOptionStyle(props.style ?? {})}
-            >
-                <Checkbox style={styles.checkbox} checked={state.selected} />
-                {getOptionLabel(option)}
-            </Typography>
+            <Row
+                props={props}
+                option={option}
+                selected={state.selected}
+                getOptionLabel={getOptionLabel}
+            />
         );
 
     const handleBlur = () => {
