@@ -173,10 +173,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: {
-                    ...numericFilterParams,
-                    parser: kiloUnitToUnit,
-                },
+                filterParams: numericFilterParams,
                 valueGetter: (params: ValueGetterParams) =>
                     unitToKiloUnit(params.data?.limitMin),
             }),
@@ -187,10 +184,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: {
-                    ...numericFilterParams,
-                    parser: kiloUnitToUnit,
-                },
+                filterParams: numericFilterParams,
                 valueGetter: (params: ValueGetterParams) =>
                     unitToKiloUnit(params.data?.limitMax),
             }),

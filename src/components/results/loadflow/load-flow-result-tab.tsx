@@ -41,6 +41,7 @@ import {
     makeData,
     mappingFields,
     mappingTabs,
+    convertFilterValues,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import {
@@ -186,12 +187,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         const existingFilterIndex = initialFilters.findIndex(
             (f) => f.column === 'limitType'
         );
-        const updatedFilters =
+        let updatedFilters = convertFilterValues(initialFilters, intl);
+        updatedFilters =
             existingFilterIndex !== -1 &&
-            initialFilters[existingFilterIndex]?.value.length !== 0
-                ? initialFilters
+            //@ts-ignore we know it's an array
+            updatedFilters[existingFilterIndex]?.value.length !== 0
+                ? updatedFilters
                 : [
-                      ...initialFilters,
+                      ...updatedFilters,
                       {
                           column: 'limitType',
                           dataType: FILTER_DATA_TYPES.TEXT,
@@ -219,6 +222,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         tabIndex,
         globalFilter,
         getGlobalFilterParameter,
+        intl,
     ]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {

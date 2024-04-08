@@ -5,13 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { IntlShape } from 'react-intl';
+import { NA_Value } from '../../spreadsheet/utils/cell-renderers';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
-export const translateLimitName = (
+export const translateLimitNameBackToFront = (
     limitName: string | null | undefined,
     intl: IntlShape
-) =>
-    limitName === PERMANENT_LIMIT_NAME
-        ? intl.formatMessage({ id: 'PermanentLimitName' })
-        : limitName;
+) => {
+    switch (limitName) {
+        case PERMANENT_LIMIT_NAME:
+            return intl.formatMessage({ id: 'PermanentLimitName' });
+        case NA_Value:
+            return intl.formatMessage({ id: 'Undefined' });
+        default:
+            return limitName;
+    }
+};
+
+export const translateLimitNameFrontToBack = (
+    limitName: string,
+    intl: IntlShape
+) => {
+    switch (limitName) {
+        case intl.formatMessage({ id: 'PermanentLimitName' }):
+            return PERMANENT_LIMIT_NAME;
+        case intl.formatMessage({ id: 'Undefined' }):
+            return NA_Value;
+        default:
+            return limitName;
+    }
+};

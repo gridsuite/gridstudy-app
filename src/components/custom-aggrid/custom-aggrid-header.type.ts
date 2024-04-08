@@ -51,7 +51,7 @@ export type FilterSelectorType = {
     column: string;
     dataType: string;
     type: string;
-    value: string | string[];
+    value: undefined | null | number | string | string[];
 };
 
 export type FilterStorePropsType = {
