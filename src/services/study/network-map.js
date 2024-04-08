@@ -175,18 +175,13 @@ export async function createMapFilter(
                 networkMapref.current.getSelectedSubstations()
             );
             break;
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-            equipementList = createEquipmentIdentifierList(
-                filter.equipmentType,
-                networkMapref.current.getSelectedVoltageLevel()
-            );
-            break;
         case EQUIPMENT_TYPES.LINE:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
                 networkMapref.current.getSelectedLines()
             );
             break;
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
         case EQUIPMENT_TYPES.BUS:
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
         case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
