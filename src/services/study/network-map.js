@@ -165,22 +165,18 @@ export async function createMapFilter(
     distDir,
     studyUuid,
     currentNodeUuid,
-    networkMapref
+    selectedEquipements
 ) {
     let equipementList = [];
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
-            equipementList = createEquipmentIdentifierList(
-                filter.equipmentType,
-                networkMapref.current.getSelectedSubstations()
-            );
-            break;
         case EQUIPMENT_TYPES.LINE:
             equipementList = createEquipmentIdentifierList(
                 filter.equipmentType,
-                networkMapref.current.getSelectedLines()
+                selectedEquipements
             );
             break;
+
         case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
         case EQUIPMENT_TYPES.BUS:
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
@@ -196,9 +192,9 @@ export async function createMapFilter(
         case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
         case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
         case EQUIPMENT_TYPES.SWITCH:
-            const substationsIds = networkMapref.current
-                .getSelectedSubstations()
-                .map((substation) => substation.id);
+            const substationsIds = selectedEquipements.map(
+                (substation) => substation.id
+            );
             if (substationsIds.length === 0) {
                 throw new Error('No substations selected');
             }

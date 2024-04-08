@@ -30,6 +30,7 @@ import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Typography } from '@mui/material';
+import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 
 const styles = {
     map: {
@@ -264,12 +265,20 @@ const MapView = ({
                                 <FilterCreationPanel
                                     onSaveFilter={async (filter, distDir) => {
                                         try {
+                                            //we want to calculate selectedLine or selectedSubstation only when needed
+                                            //call getSelectedLines if the user want to create a filter with lines
+                                            //for all others case we call getSelectedSubstations
+                                            const selectedEquipements =
+                                                filter.equipmentType ===
+                                                EQUIPMENT_TYPES.LINE
+                                                    ? networkMapref.current.getSelectedLines()
+                                                    : networkMapref.current.getSelectedSubstations();
                                             await createMapFilter(
                                                 filter,
                                                 distDir,
                                                 studyUuid,
                                                 currentNode.id,
-                                                networkMapref
+                                                selectedEquipements
                                             );
                                             snackInfo({
                                                 messageTxt: intl.formatMessage(
