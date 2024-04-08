@@ -218,7 +218,7 @@ const CheckboxTreeview = forwardRef(
                     key={elem.id}
                     nodeId={elem.id}
                     onClick={handleExpand}
-                    root={!elem.parentId}
+                    $root={!elem.parentId}
                     label={
                         <>
                             <Checkbox

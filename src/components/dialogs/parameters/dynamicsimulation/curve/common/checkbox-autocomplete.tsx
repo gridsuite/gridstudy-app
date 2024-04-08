@@ -22,22 +22,55 @@ import { Checkbox } from '@mui/material';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 
+const styles = {
+    autocomplete: (theme: Theme) => ({
+        '.MuiAutocomplete-inputRoot': {
+            height: '40px',
+            backgroundColor: 'unset', // prevents the field from changing size when selected with the keyboard
+        },
+        '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
+            position: 'absolute',
+            width: 'inherit',
+            height: 'inherit',
+            zIndex: 20,
+            backgroundColor: lighten(theme.palette.background.default, 0.16),
+        },
+        '&.Mui-focused': {
+            '.MuiInputLabel-root': {
+                zIndex: 21,
+                width: 'auto',
+            },
+        },
+    }),
+    checkbox: {
+        marginRight: 8,
+    },
+};
+
 // the virtualized component is customized from the MUI example
 // https://mui.com/material-ui/react-autocomplete/#virtualization
 
 const LISTBOX_PADDING = 8; // px
 
+const customOptionStyle = (originalStyle: React.CSSProperties) => ({
+    ...originalStyle,
+    top: isNaN(originalStyle.top as number)
+        ? 0
+        : (originalStyle.top as number) + LISTBOX_PADDING,
+});
+
 function renderRow(props: ListChildComponentProps) {
     const { data, index, style } = props;
     const [optionProps, option, selected, getOptionLabel] = data[index];
-    const inlineStyle = {
-        ...style,
-        top: (style.top as number) + LISTBOX_PADDING,
-    };
 
     return (
-        <Typography component="li" {...optionProps} noWrap style={inlineStyle}>
-            <Checkbox style={{ marginRight: 8 }} checked={selected} />
+        <Typography
+            component="li"
+            {...optionProps}
+            noWrap
+            style={customOptionStyle(style)}
+        >
+            <Checkbox style={styles.checkbox} checked={selected} />
             {`${getOptionLabel(option)}`}
         </Typography>
     );
@@ -116,28 +149,6 @@ const StyledPopper = styled(Popper)({
         },
     },
 });
-
-const styles = {
-    autocomplete: (theme: Theme) => ({
-        '.MuiAutocomplete-inputRoot': {
-            height: '40px',
-            backgroundColor: 'unset', // prevents the field from changing size when selected with the keyboard
-        },
-        '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
-            position: 'absolute',
-            width: 'inherit',
-            height: 'inherit',
-            zIndex: 20,
-            backgroundColor: lighten(theme.palette.background.default, 0.16),
-        },
-        '&.Mui-focused': {
-            '.MuiInputLabel-root': {
-                zIndex: 21,
-                width: 'auto',
-            },
-        },
-    }),
-};
 
 interface CheckboxAutocompleteProps<T>
     extends Omit<
@@ -236,12 +247,9 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
                 component="li"
                 {...props}
                 noWrap
-                style={{
-                    ...props.style,
-                    top: (props.style?.top as number) + LISTBOX_PADDING,
-                }}
+                style={customOptionStyle(props.style ?? {})}
             >
-                <Checkbox style={{ marginRight: 8 }} checked={state.selected} />
+                <Checkbox style={styles.checkbox} checked={state.selected} />
                 {getOptionLabel(option)}
             </Typography>
         );

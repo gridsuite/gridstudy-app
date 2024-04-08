@@ -262,12 +262,11 @@ const ModelFilter = forwardRef(
                 {/* Variables which found in models used in a mapping */}
                 <Grid
                     item
-                    xs
-                    sx={{ width: '100%' }}
+                    sx={{ width: '100%', flexGrow: 1 }}
                     container
                     direction={'column'}
                 >
-                    <Grid>
+                    <Grid item>
                         <Typography
                             sx={{ marginBottom: theme.spacing(1) }}
                             variant="subtitle1"
@@ -277,7 +276,7 @@ const ModelFilter = forwardRef(
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid xs>
+                    <Grid item xs>
                         <Box sx={styles.grid}>
                             <CheckboxTreeview
                                 ref={variablesRef}
