@@ -80,6 +80,7 @@ export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
 export const MIN_Q = 'minQ';
 export const MAX_Q = 'maxQ';
 export const P = 'p';
+export const V = 'v';
 
 export const ENABLED = 'enabled';
 export const REGULATING = 'isRegulating';
@@ -260,6 +261,7 @@ export const CONTAINER_ID = 'containerId';
 export const CONTAINER_NAME = 'containerName';
 
 export const REACTIVE_SLACKS_THRESHOLD = 'reactiveSlacksThreshold';
+export const UPDATE_BUS_VOLTAGE = 'updateBusVoltage';
 
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'equipmentInfos';

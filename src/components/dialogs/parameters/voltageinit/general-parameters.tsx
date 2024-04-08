@@ -16,7 +16,10 @@ import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { REACTIVE_SLACKS_THRESHOLD } from '../../../utils/field-constants';
+import {
+    REACTIVE_SLACKS_THRESHOLD,
+    UPDATE_BUS_VOLTAGE,
+} from '../../../utils/field-constants';
 import { ReactivePowerAdornment } from '../../dialogUtils';
 
 export const GeneralParameters = () => {
@@ -24,6 +27,10 @@ export const GeneralParameters = () => {
 
     const applyModificationsWatched = useWatch({
         name: `${GENERAL}.${GENERAL_APPLY_MODIFICATIONS}`,
+    });
+
+    const updateBusVoltageWatched = useWatch({
+        name: `${GENERAL}.${UPDATE_BUS_VOLTAGE}`,
     });
 
     const setApplyModificationsValue = useCallback(
@@ -35,6 +42,14 @@ export const GeneralParameters = () => {
         [setValue]
     );
 
+    const setUpdateBusVoltageValue = useCallback(
+        (_: ChangeEvent, checked: boolean) => {
+            setValue(`${GENERAL}.${UPDATE_BUS_VOLTAGE}`, checked, {
+                shouldDirty: true,
+            });
+        },
+        [setValue]
+    );
     return (
         <Grid
             style={{
@@ -52,6 +67,11 @@ export const GeneralParameters = () => {
                 value={applyModificationsWatched}
                 label={'VoltageInitParametersGeneralApplyModificationsLabel'}
                 onChange={setApplyModificationsValue}
+            />
+            <ParameterSwitch
+                value={updateBusVoltageWatched}
+                label={'VoltageInitParametersGeneralUpdateBusVoltageLabel'}
+                onChange={setUpdateBusVoltageValue}
             />
             <Grid item container direction={'row'} spacing={1} paddingTop={3}>
                 <Grid item xs={8} sx={styles.parameterName}>
