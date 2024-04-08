@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, MenuItem, Select, Typography, useTheme } from '@mui/material';
+import { Grid, MenuItem, Select, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     forwardRef,
@@ -87,7 +87,6 @@ const EquipmentFilter = forwardRef(
         const mapEquipments = useSelector((state) => state.mapEquipments);
 
         const intl = useIntl();
-        const theme = useTheme();
         const equipmentsRef = useRef();
 
         // --- Equipment types --- //
