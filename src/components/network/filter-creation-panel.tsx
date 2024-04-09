@@ -109,15 +109,15 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     };
 
     return (
-        <Box p={4}>
-            <Grid container>
-                <FormProvider
-                    {...{
-                        validationSchema: formSchema,
-                        removeOptional: true,
-                        ...formMethods,
-                    }}
-                >
+        <Box p={4} display="flex" flexDirection="column" height="100%">
+            <FormProvider
+                {...{
+                    validationSchema: formSchema,
+                    removeOptional: true,
+                    ...formMethods,
+                }}
+            >
+                <Grid container>
                     <GridSection title="createNewFilter" />
                     <Grid container paddingTop={2}>
                         <SelectInput
@@ -181,35 +181,35 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             fetchElementsInfos={fetchElementsMetadata}
                         />
                     </Grid>
-                    <Grid container paddingTop={2} justifyContent="flex-end">
-                        <Button onClick={onCancel} size={'large'}>
-                            {intl.formatMessage({
-                                id: 'cancel',
-                            })}
-                        </Button>
-                        <Box m={1} />
-                        <Button
-                            variant="contained"
-                            type={'submit'}
-                            onClick={() => {
-                                formMethods.trigger().then((isValid) => {
-                                    if (isValid) {
-                                        onSaveFilter(
-                                            formMethods.getValues() as IFilterCreation,
-                                            defaultFolder
-                                        );
-                                    }
-                                });
-                            }}
-                            size={'large'}
-                        >
-                            {intl.formatMessage({
-                                id: 'validate',
-                            })}
-                        </Button>
-                    </Grid>
-                </FormProvider>
-            </Grid>
+                </Grid>
+                <Grid container paddingTop={2} justifyContent="flex-end">
+                    <Button onClick={onCancel} size={'large'}>
+                        {intl.formatMessage({
+                            id: 'cancel',
+                        })}
+                    </Button>
+                    <Box m={1} />
+                    <Button
+                        variant="contained"
+                        type={'submit'}
+                        onClick={() => {
+                            formMethods.trigger().then((isValid) => {
+                                if (isValid) {
+                                    onSaveFilter(
+                                        formMethods.getValues() as IFilterCreation,
+                                        defaultFolder
+                                    );
+                                }
+                            });
+                        }}
+                        size={'large'}
+                    >
+                        {intl.formatMessage({
+                            id: 'validate',
+                        })}
+                    </Button>
+                </Grid>
+            </FormProvider>
         </Box>
     );
 };

@@ -97,7 +97,7 @@ export function fetchEquipmentsIds(
         equipmentType;
     if (substationsIds !== undefined && substationsIds.length > 0) {
         fetchEquipmentsUrl +=
-            '&' + getQueryParamsList(substationsIds, 'substationId');
+            '&' + getQueryParamsList(substationsIds, 'substationsIds');
     }
 
     if (inUpstreamBuiltParentNode !== undefined) {
