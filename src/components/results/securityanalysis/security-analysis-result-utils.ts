@@ -25,7 +25,6 @@ import {
     ContingencyCellRenderer,
     convertDuration,
     formatNAValue,
-    parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
 import {
     fetchSecurityAnalysisAvailableBranchSides,
