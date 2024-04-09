@@ -1342,5 +1342,6 @@
     "qPercent": "Reactive percentage",
     "frequencyRegulation": "Active power regulation",
     "droop": "Droop",
-    "FieldRequired": "At least one value is missing for required field : "
+    "FieldRequired": "At least one value is missing for required field : ",
+    "TieLines": "Tie lines"
 }
