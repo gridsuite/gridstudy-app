@@ -160,11 +160,7 @@ function createEquipmentIdentifierList(equipmentType, equipmentList) {
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
         filterEquipmentsAttributes: equipmentList.map((eqId) => {
-            if (eqId?.id) {
-                return { equipmentID: eqId.id };
-            } else {
-                return { equipmentID: eqId };
-            }
+            return { equipmentID: eqId };
         }),
     };
 }
