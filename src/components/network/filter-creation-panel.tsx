@@ -79,13 +79,18 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         });
     }, [studyUuid]);
 
-    useEffect(() => {
-        //Generate a new name every time the component is mounted
+    const generateFilterName = () => {
         formMethods.setValue(
             NAME,
-            'Generated-filter - ' + new Date().toISOString()
+            'Generated-filter-' + new Date().toISOString()
         );
-    }, [formMethods]);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        //Generate a new name every time the component is mounted
+        generateFilterName();
+    }, []);
 
     useEffect(() => {
         if (studyUuid) {
@@ -205,6 +210,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                                         formMethods.getValues() as IFilterCreation,
                                         defaultFolder
                                     );
+                                    generateFilterName();
                                 }
                             });
                         }}
