@@ -29,18 +29,6 @@ interface IFilterCreation {
     equipmentType: string | null;
 }
 
-const generateDateString = () => {
-    const now = new Date();
-    const day = now.getDate();
-    const month = now.getMonth() + 1; // getMonth() is zero-indexed, so we add 1
-    const year = now.getFullYear();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-
-    return `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
-};
-
 const formSchema = yup
     .object()
     .shape({
@@ -92,7 +80,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         //Generate a new name every time the component is mounted
         formMethods.setValue(
             NAME,
-            'Generated-filter - ' + generateDateString()
+            'Generated-filter - ' + new Date().toISOString()
         );
     }, [formMethods]);
 
