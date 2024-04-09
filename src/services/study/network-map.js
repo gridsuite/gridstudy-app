@@ -7,7 +7,6 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 
@@ -155,16 +154,12 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
  * - equipmentType: The type of the equipment, same as the input parameter.
  * - filterEquipmentsAttributes: An array of objects. Each object has a single property 'equipmentID' which is the ID of an equipment. The IDs are extracted from the input equipmentList.
  */
-function createEquipmentIdentifierList(equipmentType, equipmentList) {
+function createEquipmentIdentifiers(equipmentType, equipmentList) {
     return {
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
         filterEquipmentsAttributes: equipmentList.map((eqId) => {
-            if (eqId?.id) {
-                return { equipmentID: eqId.id };
-            } else {
-                return { equipmentID: eqId };
-            }
+            return { equipmentID: eqId };
         }),
     };
 }
@@ -175,38 +170,18 @@ export async function createMapFilter(
     currentNodeUuid,
     selectedEquipmentsIds
 ) {
-    let equipmentFilters = [];
-    switch (filter.equipmentType) {
-        case EQUIPMENT_TYPES.SUBSTATION:
-        case EQUIPMENT_TYPES.LINE:
-            equipmentFilters = createEquipmentIdentifierList(
-                filter.equipmentType,
-                selectedEquipmentsIds
-            );
-            break;
+    const elementsIds = await fetchEquipmentsIds(
+        studyUuid,
+        currentNodeUuid,
+        selectedEquipmentsIds,
+        filter.equipmentType,
+        false
+    );
 
-        default:
-            const substationsIds = selectedEquipmentsIds.map(
-                (substation) => substation.id
-            );
-            if (substationsIds.length === 0) {
-                throw new Error('No substations selected');
-            }
-
-            const elementsIds = await fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                substationsIds,
-                filter.equipmentType,
-                false
-            );
-
-            equipmentFilters = createEquipmentIdentifierList(
-                filter.equipmentType,
-                elementsIds
-            );
-            break;
-    }
+    const equipmentFilters = createEquipmentIdentifiers(
+        filter.equipmentType,
+        elementsIds
+    );
 
     if (
         equipmentFilters.filterEquipmentsAttributes === undefined ||

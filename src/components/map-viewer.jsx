@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -128,6 +128,17 @@ const MapViewer = ({
         onTableEquipementChanged(newTableEquipment);
         onChangeTab(1); // switch to spreadsheet view
     }
+
+    useEffect(() => {
+        //display a snackbar
+        if (isDrawingMode) {
+            snackInfo({
+                messageTxt: intl.formatMessage({
+                    id: 'DrawingPolygonInstruction',
+                }),
+            });
+        }
+    }, [isDrawingMode, intl, snackInfo]);
 
     function getMapWitdh(displayMode) {
         if (displayMode === STUDY_DISPLAY_MODE.DRAW) {
@@ -268,17 +279,32 @@ const MapViewer = ({
                                             //we want to calculate selectedLine or selectedSubstation only when needed
                                             //call getSelectedLines if the user want to create a filter with lines
                                             //for all others case we call getSelectedSubstations
-                                            const selectedEquipements =
+                                            const selectedEquipments =
                                                 filter.equipmentType ===
                                                 EQUIPMENT_TYPES.LINE
                                                     ? networkMapref.current.getSelectedLines()
                                                     : networkMapref.current.getSelectedSubstations();
+                                            const selectedEquipmentsIds =
+                                                selectedEquipments.map(
+                                                    (eq) => eq.id
+                                                );
+                                            if (
+                                                selectedEquipments.length === 0
+                                            ) {
+                                                snackError({
+                                                    messageTxt:
+                                                        'No substations selected',
+                                                    headerId:
+                                                        'FilterCreationError',
+                                                });
+                                                return;
+                                            }
                                             await createMapFilter(
                                                 filter,
                                                 distDir,
                                                 studyUuid,
                                                 currentNode.id,
-                                                selectedEquipements
+                                                selectedEquipmentsIds
                                             );
                                             snackInfo({
                                                 messageTxt: intl.formatMessage(
