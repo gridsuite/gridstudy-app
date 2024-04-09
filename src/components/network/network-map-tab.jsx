@@ -1061,20 +1061,23 @@ export const NetworkMapTab = ({
         );
     }
 
+    const shouldDisableMapInteraction =
+        !isDrawingPolygon && studyDisplayMode !== STUDY_DISPLAY_MODE.DRAW;
     return (
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {!isDrawingPolygon && renderEquipmentMenu()}
-            {!isDrawingPolygon &&
-                modificationDialogOpen &&
-                renderModificationDialog()}
-            {!isDrawingPolygon && deletionDialogOpen && renderDeletionDialog()}
-            {!isDrawingPolygon &&
-                choiceVoltageLevelsSubstationId &&
-                renderVoltageLevelChoice()}
+            {shouldDisableMapInteraction && (
+                <>
+                    {renderEquipmentMenu()}
+                    {modificationDialogOpen && renderModificationDialog()}
+                    {deletionDialogOpen && renderDeletionDialog()}
+                    {choiceVoltageLevelsSubstationId &&
+                        renderVoltageLevelChoice()}
+                </>
+            )}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
         </>
