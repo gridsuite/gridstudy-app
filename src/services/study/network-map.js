@@ -144,6 +144,17 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
     return backendFetchJson(fetchCountriesUrl);
 }
 
+/**
+ * Creates an object that represents a list of equipment identifiers.
+ *
+ * @param {string} equipmentType - The type of the equipment.
+ * @param {Array} equipmentList - The list of equipment. Each equipment can be either a string representing the equipment ID or an object with an 'id' property.
+ *
+ * @returns {Object} An object with the following properties:
+ * - type: A string that is always 'IDENTIFIER_LIST'.
+ * - equipmentType: The type of the equipment, same as the input parameter.
+ * - filterEquipmentsAttributes: An array of objects. Each object has a single property 'equipmentID' which is the ID of an equipment. The IDs are extracted from the input equipmentList.
+ */
 function createEquipmentIdentifierList(equipmentType, equipmentList) {
     return {
         type: 'IDENTIFIER_LIST',
