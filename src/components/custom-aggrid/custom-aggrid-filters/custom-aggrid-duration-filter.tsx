@@ -77,6 +77,9 @@ const CustomAggridDurationFilter: React.FC<ICustomAggridDurationFilter> = ({
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         const newValue = event.target.value;
+        if (Number(newValue) > 59) {
+            return;
+        } // Prevents seconds from being greater than 59
         setSeconds(newValue);
         const totalSeconds = Number(minutes) * 60 + Number(newValue);
         onChange(totalSeconds.toString());
@@ -99,8 +102,9 @@ const CustomAggridDurationFilter: React.FC<ICustomAggridDurationFilter> = ({
                     InputProps={{
                         type: 'number',
                         endAdornment: (
-                            <InputAdornment position="end">m</InputAdornment>
+                            <InputAdornment position="end">mn</InputAdornment>
                         ),
+                        inputProps: { min: 0 },
                     }}
                     sx={styles.noArrows}
                 />
@@ -119,6 +123,7 @@ const CustomAggridDurationFilter: React.FC<ICustomAggridDurationFilter> = ({
                         endAdornment: (
                             <InputAdornment position="end">s</InputAdornment>
                         ),
+                        inputProps: { min: 0, max: 59 },
                     }}
                     sx={styles.noArrows}
                 />
