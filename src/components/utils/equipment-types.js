@@ -40,6 +40,7 @@ export const EQUIPMENT_TYPES = {
     SWITCH: 'SWITCH',
 };
 
+//TODO merge the labels with the equipement types
 export function equipementTypeToLabel(equipmentType) {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.GENERATOR:
