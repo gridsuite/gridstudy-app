@@ -299,7 +299,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             filterParams: {
                 ...numericFilterParams,
                 isDuration: true,
-                parser: parseDuration,
             },
             valueGetter: (value: ValueGetterParams) =>
                 convertDuration(value.data.actualOverloadDuration),
@@ -309,7 +308,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'upComingOverloadDuration',
             sortProps,
             filterProps,
-            filterParams: { ...textFilterParams, parser: parseDuration },
+            filterParams: { ...numericFilterParams, isDuration: true },
             valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });

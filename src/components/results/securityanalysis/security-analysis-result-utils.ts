@@ -266,7 +266,6 @@ export const securityAnalysisTableNColumnsDefinition = (
             filterDataType: FILTER_DATA_TYPES.NUMBER,
             isDuration: true,
             filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-            parser: parseDuration,
         },
     }),
 
@@ -403,7 +402,6 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
                 isDuration: true,
                 filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                parser: parseDuration,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -546,7 +544,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 filterDataType: FILTER_DATA_TYPES.NUMBER,
                 isDuration: true,
                 filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                parser: parseDuration,
             },
         }),
         makeAgGridCustomHeaderColumn({

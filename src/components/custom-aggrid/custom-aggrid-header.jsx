@@ -28,6 +28,7 @@ import {
 import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
+import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
 
 const styles = {
     iconSize: {
@@ -135,6 +136,15 @@ const CustomHeaderComponent = ({
             value: parser ? parser(value) : value,
             type: selectedFilterComparator,
             dataType: filterDataType,
+        });
+    };
+
+    const handleFilterDurationChange = (value) => {
+        setSelectedFilterData(value);
+        debouncedUpdateFilter(field, {
+            value: value,
+            type: selectedFilterComparator,
+            dataType: FILTER_DATA_TYPES.NUMBER,
         });
     };
 
@@ -388,24 +398,31 @@ const CustomHeaderComponent = ({
                                     </MenuItem>
                                 ))}
                             </Select>
-                            <TextField
-                                size={'small'}
-                                fullWidth
-                                value={selectedFilterData || ''}
-                                onChange={handleFilterTextChange}
-                                placeholder={intl.formatMessage({
-                                    id: 'filter.filterOoo',
-                                })}
-                                inputProps={{
-                                    type: isNumberInput
-                                        ? FILTER_DATA_TYPES.NUMBER
-                                        : FILTER_DATA_TYPES.TEXT,
-                                }}
-                                sx={mergeSx(
-                                    styles.input,
-                                    isNumberInput && styles.noArrows
-                                )}
-                            />
+                            {isDuration ? (
+                                <CustomAggridDurationFilter
+                                    value={selectedFilterData}
+                                    onChange={handleFilterDurationChange}
+                                />
+                            ) : (
+                                <TextField
+                                    size={'small'}
+                                    fullWidth
+                                    value={selectedFilterData || ''}
+                                    onChange={handleFilterTextChange}
+                                    placeholder={intl.formatMessage({
+                                        id: 'filter.filterOoo',
+                                    })}
+                                    inputProps={{
+                                        type: isNumberInput
+                                            ? FILTER_DATA_TYPES.NUMBER
+                                            : FILTER_DATA_TYPES.TEXT,
+                                    }}
+                                    sx={mergeSx(
+                                        styles.input,
+                                        isNumberInput && styles.noArrows
+                                    )}
+                                />
+                            )}
                         </Grid>
                     )}
                 </Popover>
