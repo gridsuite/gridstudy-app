@@ -621,7 +621,6 @@
     "LINE": "Ligne",
     "TIE_LINE": "Ligne d'interconnexion",
     "SWITCH": "disjoncteur",
-    "CSPR": "CSPR",
     "TWO_WINDINGS_TRANSFORMER": "Transformateur à 2 enroulements",
     "THREE_WINDINGS_TRANSFORMER": "Transformateur à 3 enroulements",
     "GENERATOR": "Groupe",

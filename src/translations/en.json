@@ -620,7 +620,6 @@
     "LINE": "Line",
     "TIE_LINE": "Tie line",
     "SWITCH": "Switch",
-    "CSPR": "SVC",
     "TWO_WINDINGS_TRANSFORMER": "Two Windings Transformer",
     "THREE_WINDINGS_TRANSFORMER": "Three Windings Transformer",
     "GENERATOR": "Generator",
