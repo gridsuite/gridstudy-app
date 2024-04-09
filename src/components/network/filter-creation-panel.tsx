@@ -181,21 +181,13 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             fetchElementsInfos={fetchElementsMetadata}
                         />
                     </Grid>
-
-                    <Grid
-                        container
-                        paddingTop={2}
-                        justifyContent="space-between"
-                    >
-                        <Button
-                            variant="contained"
-                            onClick={onCancel}
-                            size={'large'}
-                        >
+                    <Grid container paddingTop={2} justifyContent="flex-end">
+                        <Button onClick={onCancel} size={'large'}>
                             {intl.formatMessage({
                                 id: 'cancel',
                             })}
                         </Button>
+                        <Box m={1} />
                         <Button
                             variant="contained"
                             type={'submit'}
