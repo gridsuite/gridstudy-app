@@ -205,7 +205,7 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
-    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer a dessiner un polygone. Entrée pour terminer ou Échap pour annuler.",
+    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Entrée pour terminer ou Échap pour annuler.",
 
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
