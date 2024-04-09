@@ -81,6 +81,7 @@ export const MIN_Q = 'minQ';
 export const MAX_Q = 'maxQ';
 export const P = 'p';
 export const V = 'v';
+export const ANGLE = 'angle';
 
 export const ENABLED = 'enabled';
 export const REGULATING = 'isRegulating';

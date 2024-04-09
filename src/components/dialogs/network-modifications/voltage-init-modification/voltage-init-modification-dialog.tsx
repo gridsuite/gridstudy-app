@@ -32,6 +32,7 @@ import {
     RATIO_TAP_CHANGER_TARGET_V,
     TARGET_V,
     V,
+    ANGLE,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
 
@@ -102,6 +103,7 @@ interface ShuntCompensatorRowData {
 interface BusRowData {
     ID: string;
     [V]: number | undefined;
+    [ANGLE]: number | undefined;
 }
 
 interface GeneratorData {
@@ -139,6 +141,7 @@ interface ShuntCompensatorData {
 interface BusData {
     busId: string;
     v: number | undefined;
+    angle: number | undefined;
 }
 
 interface EditData {
@@ -333,13 +336,19 @@ const VoltageInitModificationDialog: FunctionComponent<
     const busColumnDefs = useMemo(() => {
         return [
             {
-                headerName: intl.formatMessage({ id: 'ID' }),
+                headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'ID',
                 pinned: true,
             },
             {
-                headerName: intl.formatMessage({ id: 'VoltageText' }),
+                headerName: intl.formatMessage({ id: 'BusVoltage' }),
                 field: V,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'BusAngle' }),
+                field: 'angle',
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
@@ -533,9 +542,13 @@ const VoltageInitModificationDialog: FunctionComponent<
                             let row: BusRowData = {
                                 ID: m.busId,
                                 [V]: undefined,
+                                [ANGLE]: undefined,
                             };
                             if (check(m.v)) {
                                 row[V] = m.v;
+                            }
+                            if (check(m.angle)) {
+                                row[ANGLE] = m.angle;
                             }
                             rowData.push(row);
                         });
