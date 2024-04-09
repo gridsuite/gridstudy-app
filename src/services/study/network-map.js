@@ -183,17 +183,14 @@ export async function createMapFilter(
             break;
 
         default:
-            const substationsIds = selectedEquipmentsIds.map(
-                (substation) => substation.id
-            );
-            if (substationsIds.length === 0) {
+            if (selectedEquipmentsIds.length === 0) {
                 throw new Error('EmptySelection');
             }
 
             const elementsIds = await fetchEquipmentsIds(
                 studyUuid,
                 currentNodeUuid,
-                substationsIds,
+                selectedEquipmentsIds,
                 filter.equipmentType,
                 false
             );
