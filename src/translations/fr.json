@@ -1342,5 +1342,6 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+    "TieLines": "Interconnexions"
 }
