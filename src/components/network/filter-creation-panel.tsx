@@ -189,6 +189,15 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     >
                         <Button
                             variant="contained"
+                            onClick={onCancel}
+                            size={'large'}
+                        >
+                            {intl.formatMessage({
+                                id: 'cancel',
+                            })}
+                        </Button>
+                        <Button
+                            variant="contained"
                             type={'submit'}
                             onClick={() => {
                                 formMethods.trigger().then((isValid) => {
@@ -204,15 +213,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         >
                             {intl.formatMessage({
                                 id: 'validate',
-                            })}
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={onCancel}
-                            size={'large'}
-                        >
-                            {intl.formatMessage({
-                                id: 'cancel',
                             })}
                         </Button>
                     </Grid>
