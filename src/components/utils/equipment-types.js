@@ -57,7 +57,7 @@ export function equipementTypeToLabel(equipmentType) {
         case EQUIPMENT_TYPES.LINE:
             return 'Lines';
         case EQUIPMENT_TYPES.TIE_LINE:
-            return 'TieLine';
+            return 'TIE_LINE';
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
             return 'TwoWindingsTransformers';
         case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
