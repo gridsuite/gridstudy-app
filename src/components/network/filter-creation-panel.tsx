@@ -116,7 +116,13 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                 ...formMethods,
             }}
         >
-            <Box p={4} display="flex" justifyContent="space-between" flexDirection="column" height="100%">
+            <Box
+                p={4}
+                display="flex"
+                justifyContent="space-between"
+                flexDirection="column"
+                height="100%"
+            >
                 <Grid container>
                     <GridSection title="createNewFilter" />
                     <Grid container paddingTop={2}>

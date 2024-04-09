@@ -89,7 +89,7 @@ const MapViewer = ({
     const intl = useIntl();
     const dispatch = useDispatch();
     const [isDrawingMode, setIsDrawingMode] = useState(false);
-    const { snackInfo, snackError } = useSnackMessage();
+    const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
@@ -291,13 +291,13 @@ const MapViewer = ({
                                             if (
                                                 selectedEquipments.length === 0
                                             ) {
-                                                snackError({
+                                                snackWarning({
                                                     messageTxt:
                                                         intl.formatMessage({
                                                             id: 'EmptySelection',
                                                         }),
                                                     headerId:
-                                                        'FilterCreationError',
+                                                        'FilterCreationIgnored',
                                                 });
                                                 return;
                                             }

@@ -600,7 +600,7 @@
     "ConnectedComponent": "Connected component",
     "SynchronousComponent": "Synchronous component",
     "Setpoints": "Setpoints",
-    "EmptySelection": "Empty selection",
+    "EmptySelection": "No equipment is selected",
     "Connectivity": "Connectivity",
     "connected": "Connected",
     "connected1": "Connected 1",
@@ -925,6 +925,7 @@
 
     "FilterCreationError": "Error while creating a filter",
     "FilterCreationSuccess": "Filter successfully created",
+    "FilterCreationIgnored": "The creation of the filter didn't complete",
 
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",

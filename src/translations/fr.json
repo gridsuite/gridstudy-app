@@ -604,7 +604,7 @@
     "ConnectedComponent": "Composante connexe",
     "SynchronousComponent": "Composante synchrone",
     "Setpoints": "Consignes",
-    "EmptySelection": "Selection vide",
+    "EmptySelection": "Aucun équipement n'est selectionné",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
@@ -926,6 +926,7 @@
     "AllExplicitNamingFiltersError": "Tous les types de filtres doivent être par nommage lorsque le mode de variation est empilement ou ventilation",
     "FilterCreationError": "Erreur lors de la création d'un filtre",
     "FilterCreationSuccess": "Filtre créé avec succès",
+    "FilterCreationIgnored": "La création du filtre n'a pas abouti",
 
     "Tap": "Prise",
     "DeltaResistance": "Δ Résistance (%)",
