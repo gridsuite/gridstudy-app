@@ -172,7 +172,7 @@ export function invalidateShortCircuitStatus(studyUuid) {
     });
 }
 
-export function fetchShortCircuitFaultTypes() {
+export function fetchShortCircuitFaultTypes(studyUuid, nodeUuid) {
     console.info('Fetch short-circuit fault types');
     const getShortCircuitParams =
         import.meta.env.VITE_API_GATEWAY + '/shortcircuit/v1/fault-types';
@@ -180,7 +180,7 @@ export function fetchShortCircuitFaultTypes() {
     return backendFetchJson(getShortCircuitParams);
 }
 
-export function fetchShortCircuitLimitViolationTypes() {
+export function fetchShortCircuitLimitViolationTypes(studyUuid, nodeUuid) {
     console.info('Fetch short-circuit limit violation types');
     const getShortCircuitParams =
         import.meta.env.VITE_API_GATEWAY +

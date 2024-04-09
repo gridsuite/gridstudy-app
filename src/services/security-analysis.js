@@ -21,21 +21,24 @@ export function fetchSecurityAnalysisProviders() {
     return backendFetchJson(url);
 }
 
-export function fetchSecurityAnalysisAvailableLimitTypes() {
+export function fetchSecurityAnalysisAvailableLimitTypes(studyUuid, nodeUuid) {
     console.info('fetch available limit types');
     const url = getSecurityAnalysisUrl() + 'limit-types';
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchSecurityAnalysisAvailableBranchSides() {
+export function fetchSecurityAnalysisAvailableBranchSides(studyUuid, nodeUuid) {
     console.info('fetch available branch sides');
     const url = getSecurityAnalysisUrl() + 'branch-sides';
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchSecurityAnalysisAvailableComputationStatus() {
+export function fetchSecurityAnalysisAvailableComputationStatus(
+    studyUuid,
+    nodeUuid
+) {
     console.info('fetch available computation status');
     const url = getSecurityAnalysisUrl() + 'computation-status';
     console.debug(url);

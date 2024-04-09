@@ -6,6 +6,7 @@
  */
 
 import { backendFetchJson } from './utils';
+import { getStudyUrlWithNodeUuid } from './study/index.js';
 
 const PREFIX_LOADFLOW_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/loadflow';
@@ -29,23 +30,27 @@ export function getLoadFlowSpecificParametersDescription() {
     return backendFetchJson(getLoadFlowSpecificParametersUrl);
 }
 
-export function fetchLoadflowAvailableLimitTypes() {
+export function fetchLoadflowAvailableLimitTypes(studyUuid, nodeUuid) {
     console.info('fetch available limit types');
-    const url = getLoadFlowUrl() + 'limit-types';
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/limit-types`;
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchLoadflowAvailableBranchSides() {
+export function fetchLoadflowAvailableBranchSides(studyUuid, nodeUuid) {
     console.info('fetch available branch sides');
-    const url = getLoadFlowUrl() + 'branch-sides';
+
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/branch-sides`;
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchLoadflowAvailableComputationStatus() {
+export function fetchLoadflowAvailableComputationStatus(studyUuid, nodeUuid) {
     console.info('fetch available computation status');
-    const url = getLoadFlowUrl() + 'computation-status';
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        nodeUuid
+    )}/computation-status`;
     console.debug(url);
     return backendFetchJson(url);
 }
