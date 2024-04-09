@@ -137,3 +137,15 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
 }
+
+export function fetchAllNominalVoltages(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching all nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const fetchNominalVoltagesUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/nominal-voltages?inUpstreamBuiltParentNode=true';
+    console.debug(fetchNominalVoltagesUrl);
+    return backendFetchJson(fetchNominalVoltagesUrl);
+}
