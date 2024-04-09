@@ -16,7 +16,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
-import MapView from './map-view';
+import MapViewer from './map-viewer';
 
 const styles = {
     map: {
@@ -96,7 +96,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     display: props.view === StudyView.MAP ? null : 'none',
                 }}
             >
-                <MapView
+                <MapViewer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     view={props.view}
@@ -107,7 +107,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     }
                     onChangeTab={props.onChangeTab}
                     setErrorMessage={setErrorMessage}
-                ></MapView>
+                ></MapViewer>
             </div>
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy

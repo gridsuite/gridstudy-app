@@ -6,11 +6,7 @@
  */
 
 import { getStudyUrlWithNodeUuid } from './index';
-import {
-    backendFetchJson,
-    getQueryParamsList,
-    getRequestParamFromList,
-} from '../utils';
+import { backendFetchJson, getQueryParamsList } from '../utils';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
@@ -90,29 +86,30 @@ export function fetchEquipmentsIds(
     console.info(
         `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
-    const substationsIdsParams = getRequestParamFromList(
-        substationsIds,
-        'substationsIds'
-    );
+    let urlSearchParams = new URLSearchParams();
 
-    const urlSearchParams = new URLSearchParams(substationsIdsParams);
+    let fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/' +
+        'equipments-ids' +
+        '?' +
+        'equipmentType=' +
+        equipmentType;
+    if (substationsIds !== undefined && substationsIds.length > 0) {
+        fetchEquipmentsUrl +=
+            '&' + getQueryParamsList(substationsIds, 'substationId');
+    }
+
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
+        fetchEquipmentsUrl =
+            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
     }
-
-    urlSearchParams.append('equipmentType', equipmentType);
-
-    const fetchElementsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/equipments-ids' +
-        '?' +
-        urlSearchParams;
-
-    console.debug(fetchElementsUrl);
-    return backendFetchJson(fetchElementsUrl);
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
 export function fetchLineOrTransformer(
@@ -165,15 +162,15 @@ export async function createMapFilter(
     distDir,
     studyUuid,
     currentNodeUuid,
-    selectedEquipements
+    selectedEquipmentsIds
 ) {
-    let equipementList = [];
+    let equipementFilters = [];
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
         case EQUIPMENT_TYPES.LINE:
-            equipementList = createEquipmentIdentifierList(
+            equipementFilters = createEquipmentIdentifierList(
                 filter.equipmentType,
-                selectedEquipements
+                selectedEquipmentsIds
             );
             break;
 
@@ -192,29 +189,26 @@ export async function createMapFilter(
         case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
         case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
         case EQUIPMENT_TYPES.SWITCH:
-            const substationsIds = selectedEquipements.map(
+            const substationsIds = selectedEquipmentsIds.map(
                 (substation) => substation.id
             );
             if (substationsIds.length === 0) {
                 throw new Error('No substations selected');
             }
-            try {
-                const elements = await fetchEquipmentsIds(
-                    studyUuid,
-                    currentNodeUuid,
-                    substationsIds,
-                    filter.equipmentType,
-                    false
-                );
 
-                if (elements.length > 0) {
-                    equipementList = createEquipmentIdentifierList(
-                        filter.equipmentType,
-                        elements
-                    );
-                }
-            } catch (error) {
-                throw error;
+            const elementsIds = await fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                substationsIds,
+                filter.equipmentType,
+                false
+            );
+
+            if (elementsIds.length > 0) {
+                equipementFilters = createEquipmentIdentifierList(
+                    filter.equipmentType,
+                    elementsIds
+                );
             }
 
             break;
@@ -223,13 +217,13 @@ export async function createMapFilter(
             break;
     }
 
-    if (equipementList.filterEquipmentsAttributes?.length === 0) {
+    if (equipementFilters.filterEquipmentsAttributes?.length === 0) {
         throw new Error('No equipment selected');
     }
 
-    if (equipementList.filterEquipmentsAttributes.length > 0) {
+    if (equipementFilters.filterEquipmentsAttributes.length > 0) {
         await createFilter(
-            equipementList,
+            equipementFilters,
             filter[NAME],
             '',
             distDir.id?.toString() ?? ''

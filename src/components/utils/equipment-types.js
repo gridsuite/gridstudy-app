@@ -39,3 +39,58 @@ export const EQUIPMENT_TYPES = {
     LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
     SWITCH: 'SWITCH',
 };
+
+export const EXPERT_FILTER_EQUIPMENTS = {
+    GENERATOR: {
+        id: EQUIPMENT_TYPES.GENERATOR,
+        label: 'Generators',
+    },
+    LOAD: {
+        id: EQUIPMENT_TYPES.LOAD,
+        label: 'Loads',
+    },
+    BATTERY: {
+        id: EQUIPMENT_TYPES.BATTERY,
+        label: 'Batteries',
+    },
+    VOLTAGE_LEVEL: {
+        id: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+        label: 'VoltageLevels',
+    },
+    SUBSTATION: {
+        id: EQUIPMENT_TYPES.SUBSTATION,
+        label: 'Substations',
+    },
+    SHUNT_COMPENSATOR: {
+        id: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
+        label: 'ShuntCompensators',
+    },
+    LINE: {
+        id: EQUIPMENT_TYPES.LINE,
+        label: 'Lines',
+    },
+    TWO_WINDINGS_TRANSFORMER: {
+        id: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+        label: 'TwoWindingsTransformers',
+    },
+    THREE_WINDINGS_TRANSFORMER: {
+        id: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+        label: 'ThreeWindingsTransformers',
+    },
+    DANGLING_LINE: {
+        id: EQUIPMENT_TYPES.DANGLING_LINE,
+        label: 'DanglingLines',
+    },
+    LCC_CONVERTER_STATION: {
+        id: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+        label: 'LccConverterStations',
+    },
+    VSC_CONVERTER_STATION: {
+        id: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
+        label: 'VscConverterStations',
+    },
+    STATIC_VAR_COMPENSATOR: {
+        id: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
+        label: 'StaticVarCompensators',
+    },
+};

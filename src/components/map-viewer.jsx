@@ -75,7 +75,7 @@ const styles = {
         textAlign: 'center',
     },
 };
-const MapView = ({
+const MapViewer = ({
     studyUuid,
     currentNode,
     view,
@@ -308,4 +308,4 @@ const MapView = ({
     );
 };
 
-export default MapView;
+export default MapViewer;

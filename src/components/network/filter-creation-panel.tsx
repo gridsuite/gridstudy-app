@@ -21,61 +21,7 @@ import {
 import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
-
-const EXPERT_FILTER_EQUIPMENTS = {
-    GENERATOR: {
-        id: 'GENERATOR',
-        label: 'Generators',
-    },
-    LOAD: {
-        id: 'LOAD',
-        label: 'Loads',
-    },
-    BATTERY: {
-        id: 'BATTERY',
-        label: 'Batteries',
-    },
-    VOLTAGE_LEVEL: {
-        id: 'VOLTAGE_LEVEL',
-        label: 'VoltageLevels',
-    },
-    SUBSTATION: {
-        id: 'SUBSTATION',
-        label: 'Substations',
-    },
-    SHUNT_COMPENSATOR: {
-        id: 'SHUNT_COMPENSATOR',
-        label: 'ShuntCompensators',
-    },
-    LINE: {
-        id: 'LINE',
-        label: 'Lines',
-    },
-    TWO_WINDINGS_TRANSFORMER: {
-        id: 'TWO_WINDINGS_TRANSFORMER',
-        label: 'TwoWindingsTransformers',
-    },
-    THREE_WINDINGS_TRANSFORMER: {
-        id: 'THREE_WINDINGS_TRANSFORMER',
-        label: 'ThreeWindingsTransformers',
-    },
-    DANGLING_LINE: {
-        id: 'DANGLING_LINE',
-        label: 'DanglingLines',
-    },
-    LCC_CONVERTER_STATION: {
-        id: 'LCC_CONVERTER_STATION',
-        label: 'LccConverterStations',
-    },
-    VSC_CONVERTER_STATION: {
-        id: 'VSC_CONVERTER_STATION',
-        label: 'VscConverterStations',
-    },
-    STATIC_VAR_COMPENSATOR: {
-        id: 'STATIC_VAR_COMPENSATOR',
-        label: 'StaticVarCompensators',
-    },
-};
+import { EXPERT_FILTER_EQUIPMENTS } from '../utils/equipment-types';
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
@@ -119,7 +65,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     onCancel,
 }) => {
     const studyUuid = useSelector((state: any) => state.studyUuid);
-    const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
+    const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -157,7 +103,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     }, [fetchDefaultDirectoryForStudy, studyUuid]);
 
     const handleChangeFolder = () => {
-        setOpenDirectoryFolders(true);
+        setOpenDirectorySelector(true);
     };
     const setSelectedFolder = (folder: Identifier[]) => {
         if (folder && folder.length > 0) {
@@ -168,7 +114,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                 });
             }
         }
-        setOpenDirectoryFolders(false);
+        setOpenDirectorySelector(false);
     };
 
     return (
@@ -198,7 +144,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         <UniqueNameInput
                             name={NAME}
                             label={'Name'}
-                            elementType={'DIRECTORY'}
+                            elementType={ElementType.DIRECTORY}
                             activeDirectory={defaultFolder.id}
                             autoFocus
                         />
@@ -221,7 +167,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     </Grid>
                     <Grid container paddingTop={2}>
                         <DirectoryItemSelector
-                            open={openDirectoryFolders}
+                            open={openDirectorySelector}
                             onClose={setSelectedFolder}
                             types={[ElementType.DIRECTORY]}
                             onlyLeaves={false}
