@@ -21,7 +21,10 @@ import {
 import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
-import { EXPERT_FILTER_EQUIPMENTS } from '../utils/equipment-types';
+import {
+    equipementTypeToLabel,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
@@ -119,7 +122,14 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
-                            options={Object.values(EXPERT_FILTER_EQUIPMENTS)}
+                            options={Object.values(EQUIPMENT_TYPES).map(
+                                (value) => {
+                                    return {
+                                        id: value,
+                                        label: equipementTypeToLabel(value),
+                                    };
+                                }
+                            )}
                             label={'EquipmentType'}
                             fullWidth
                             size={'medium'}

@@ -40,57 +40,37 @@ export const EQUIPMENT_TYPES = {
     SWITCH: 'SWITCH',
 };
 
-export const EXPERT_FILTER_EQUIPMENTS = {
-    GENERATOR: {
-        id: EQUIPMENT_TYPES.GENERATOR,
-        label: 'Generators',
-    },
-    LOAD: {
-        id: EQUIPMENT_TYPES.LOAD,
-        label: 'Loads',
-    },
-    BATTERY: {
-        id: EQUIPMENT_TYPES.BATTERY,
-        label: 'Batteries',
-    },
-    VOLTAGE_LEVEL: {
-        id: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        label: 'VoltageLevels',
-    },
-    SUBSTATION: {
-        id: EQUIPMENT_TYPES.SUBSTATION,
-        label: 'Substations',
-    },
-    SHUNT_COMPENSATOR: {
-        id: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-        label: 'ShuntCompensators',
-    },
-    LINE: {
-        id: EQUIPMENT_TYPES.LINE,
-        label: 'Lines',
-    },
-    TWO_WINDINGS_TRANSFORMER: {
-        id: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-        label: 'TwoWindingsTransformers',
-    },
-    THREE_WINDINGS_TRANSFORMER: {
-        id: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-        label: 'ThreeWindingsTransformers',
-    },
-    DANGLING_LINE: {
-        id: EQUIPMENT_TYPES.DANGLING_LINE,
-        label: 'DanglingLines',
-    },
-    LCC_CONVERTER_STATION: {
-        id: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-        label: 'LccConverterStations',
-    },
-    VSC_CONVERTER_STATION: {
-        id: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-        label: 'VscConverterStations',
-    },
-    STATIC_VAR_COMPENSATOR: {
-        id: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-        label: 'StaticVarCompensators',
-    },
-};
+export function equipementTypeToLabel(equipmentType) {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.GENERATOR:
+            return 'Generators';
+        case EQUIPMENT_TYPES.LOAD:
+            return 'Loads';
+        case EQUIPMENT_TYPES.BATTERY:
+            return 'Batteries';
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            return 'VoltageLevels';
+        case EQUIPMENT_TYPES.SUBSTATION:
+            return 'Substations';
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            return 'ShuntCompensators';
+        case EQUIPMENT_TYPES.LINE:
+            return 'Lines';
+        case EQUIPMENT_TYPES.TIE_LINE:
+            return 'TieLine';
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            return 'TwoWindingsTransformers';
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+            return 'ThreeWindingsTransformers';
+        case EQUIPMENT_TYPES.DANGLING_LINE:
+            return 'DanglingLines';
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+            return 'LccConverterStations';
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+            return 'VscConverterStations';
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+            return 'StaticVarCompensators';
+        default:
+            return equipmentType;
+    }
+}
