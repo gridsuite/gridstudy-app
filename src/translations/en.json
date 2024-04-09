@@ -183,6 +183,9 @@
     "BusAngle": "Angle (°)",
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
+    "VoltageInitParametersGeneralTabLabel": "General",
+    "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
+    "VoltageInitParametersGeneralSaveInfo": "Settings of this tab won't be saved and will be set back to default if choosing from external settings",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
@@ -326,7 +329,7 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
-    "DynamicSimulationFetchCountryError": "An error occurred while fetching countries",
+    "FetchCountryError": "An error occurred while fetching countries",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
@@ -465,6 +468,9 @@
     "LoadFlowResultsVoltageViolations": "Voltage violations",
     "LoadFlowResultsStatus": "Status",
     "ComputationResultsLogs": "Logs",
+
+    "results.globalFilter.fillerText": "Country or voltage level",
+    "results.globalFilter.recent": "Recent:",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
