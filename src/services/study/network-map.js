@@ -9,6 +9,7 @@ import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
+import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -147,22 +148,27 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
  * Creates an object that represents a list of equipment identifiers.
  *
  * @param {string} equipmentType - The type of the equipment.
- * @param {Array} equipmentList - The list of equipment. Each equipment is a string representing the equipment ID
+ * @param {Array} equipmentList - The list of equipment. Each equipment can be either a string representing the equipment ID or an object with an 'id' property.
  *
  * @returns {Object} An object with the following properties:
  * - type: A string that is always 'IDENTIFIER_LIST'.
  * - equipmentType: The type of the equipment, same as the input parameter.
  * - filterEquipmentsAttributes: An array of objects. Each object has a single property 'equipmentID' which is the ID of an equipment. The IDs are extracted from the input equipmentList.
  */
-function createEquipmentIdentifiers(equipmentType, equipmentList) {
+function createEquipmentIdentifierList(equipmentType, equipmentList) {
     return {
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
         filterEquipmentsAttributes: equipmentList.map((eqId) => {
-            return { equipmentID: eqId };
+            if (eqId?.id) {
+                return { equipmentID: eqId.id };
+            } else {
+                return { equipmentID: eqId };
+            }
         }),
     };
 }
+
 export async function createMapFilter(
     filter,
     distDir,
@@ -170,19 +176,38 @@ export async function createMapFilter(
     currentNodeUuid,
     selectedEquipmentsIds
 ) {
-    const elementsIds = await fetchEquipmentsIds(
-        studyUuid,
-        currentNodeUuid,
-        selectedEquipmentsIds,
-        filter.equipmentType,
-        false
-    );
+    let equipmentFilters = [];
+    switch (filter.equipmentType) {
+        case EQUIPMENT_TYPES.SUBSTATION:
+        case EQUIPMENT_TYPES.LINE:
+            equipmentFilters = createEquipmentIdentifierList(
+                filter.equipmentType,
+                selectedEquipmentsIds
+            );
+            break;
 
-    const equipmentFilters = createEquipmentIdentifiers(
-        filter.equipmentType,
-        elementsIds
-    );
+        default:
+            const substationsIds = selectedEquipmentsIds.map(
+                (substation) => substation.id
+            );
+            if (substationsIds.length === 0) {
+                throw new Error('No substations selected');
+            }
 
+            const elementsIds = await fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                substationsIds,
+                filter.equipmentType,
+                false
+            );
+
+            equipmentFilters = createEquipmentIdentifierList(
+                filter.equipmentType,
+                elementsIds
+            );
+            break;
+    }
     if (
         equipmentFilters.filterEquipmentsAttributes === undefined ||
         equipmentFilters.filterEquipmentsAttributes?.length === 0
