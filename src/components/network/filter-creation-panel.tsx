@@ -109,14 +109,14 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     };
 
     return (
-        <Box p={4} display="flex" flexDirection="column" height="100%">
-            <FormProvider
-                {...{
-                    validationSchema: formSchema,
-                    removeOptional: true,
-                    ...formMethods,
-                }}
-            >
+        <FormProvider
+            {...{
+                validationSchema: formSchema,
+                removeOptional: true,
+                ...formMethods,
+            }}
+        >
+            <Box p={4} display="flex" justifyContent="space-between" flexDirection="column" height="100%">
                 <Grid container>
                     <GridSection title="createNewFilter" />
                     <Grid container paddingTop={2}>
@@ -209,8 +209,8 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         })}
                     </Button>
                 </Grid>
-            </FormProvider>
-        </Box>
+            </Box>
+        </FormProvider>
     );
 };
 
