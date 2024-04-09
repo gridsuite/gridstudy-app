@@ -187,7 +187,7 @@ export async function createMapFilter(
                 (substation) => substation.id
             );
             if (substationsIds.length === 0) {
-                throw new Error('No substations selected');
+                throw new Error('EmptySelection');
             }
 
             const elementsIds = await fetchEquipmentsIds(
@@ -208,7 +208,7 @@ export async function createMapFilter(
         equipmentFilters.filterEquipmentsAttributes === undefined ||
         equipmentFilters.filterEquipmentsAttributes?.length === 0
     ) {
-        throw new Error('No equipment selected');
+        throw new Error('EmptySelection');
     }
 
     await createFilter(

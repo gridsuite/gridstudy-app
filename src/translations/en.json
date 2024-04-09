@@ -600,6 +600,7 @@
     "ConnectedComponent": "Connected component",
     "SynchronousComponent": "Synchronous component",
     "Setpoints": "Setpoints",
+    "EmptySelection": "Empty selection",
     "Connectivity": "Connectivity",
     "connected": "Connected",
     "connected1": "Connected 1",

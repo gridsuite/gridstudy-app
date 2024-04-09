@@ -293,7 +293,9 @@ const MapViewer = ({
                                             ) {
                                                 snackError({
                                                     messageTxt:
-                                                        'No substations selected',
+                                                        intl.formatMessage({
+                                                            id: 'EmptySelection',
+                                                        }),
                                                     headerId:
                                                         'FilterCreationError',
                                                 });
@@ -318,7 +320,9 @@ const MapViewer = ({
                                             });
                                         } catch (error) {
                                             snackError({
-                                                messageTxt: error.message,
+                                                messageTxt: intl.formatMessage({
+                                                    id: error.message,
+                                                }),
                                                 headerId: 'FilterCreationError',
                                             });
                                         }
