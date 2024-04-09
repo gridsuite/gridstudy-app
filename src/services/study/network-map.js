@@ -175,31 +175,17 @@ export async function createMapFilter(
     currentNodeUuid,
     selectedEquipmentsIds
 ) {
-    let equipementFilters = [];
+    let equipmentFilters = [];
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
         case EQUIPMENT_TYPES.LINE:
-            equipementFilters = createEquipmentIdentifierList(
+            equipmentFilters = createEquipmentIdentifierList(
                 filter.equipmentType,
                 selectedEquipmentsIds
             );
             break;
 
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-        case EQUIPMENT_TYPES.BUS:
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
-        case EQUIPMENT_TYPES.BUSBAR_SECTION:
-        case EQUIPMENT_TYPES.GENERATOR:
-        case EQUIPMENT_TYPES.BATTERY:
-        case EQUIPMENT_TYPES.LOAD:
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-        case EQUIPMENT_TYPES.DANGLING_LINE:
-        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
-        case EQUIPMENT_TYPES.HVDC_CONVERTER_STATION:
-        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
-        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
-        case EQUIPMENT_TYPES.SWITCH:
+        default:
             const substationsIds = selectedEquipmentsIds.map(
                 (substation) => substation.id
             );
@@ -215,29 +201,24 @@ export async function createMapFilter(
                 false
             );
 
-            if (elementsIds.length > 0) {
-                equipementFilters = createEquipmentIdentifierList(
-                    filter.equipmentType,
-                    elementsIds
-                );
-            }
-
-            break;
-
-        default:
+            equipmentFilters = createEquipmentIdentifierList(
+                filter.equipmentType,
+                elementsIds
+            );
             break;
     }
 
-    if (equipementFilters.filterEquipmentsAttributes?.length === 0) {
+    if (
+        equipmentFilters.filterEquipmentsAttributes === undefined ||
+        equipmentFilters.filterEquipmentsAttributes?.length === 0
+    ) {
         throw new Error('No equipment selected');
     }
 
-    if (equipementFilters.filterEquipmentsAttributes.length > 0) {
-        await createFilter(
-            equipementFilters,
-            filter[NAME],
-            '',
-            distDir.id?.toString() ?? ''
-        );
-    }
+    await createFilter(
+        equipmentFilters,
+        filter[NAME],
+        '',
+        distDir.id?.toString() ?? ''
+    );
 }
