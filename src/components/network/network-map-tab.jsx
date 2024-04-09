@@ -112,6 +112,7 @@ export const NetworkMapTab = ({
         (state) => state.networkModificationTreeModel
     );
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
+
     const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
@@ -982,6 +983,7 @@ export const NetworkMapTab = ({
             equipmentType={EQUIPMENT_TYPES.LINE}
         />
     );
+
     const renderMap = () => (
         <NetworkMap
             ref={networkMapRef}

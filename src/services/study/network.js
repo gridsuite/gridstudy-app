@@ -170,6 +170,7 @@ export function fetchNetworkElementsInfos(
 
     return backendFetchJson(fetchElementsUrl);
 }
+
 export function fetchNetworkElementInfos(
     studyUuid,
     currentNodeUuid,

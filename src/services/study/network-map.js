@@ -147,7 +147,7 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
  * Creates an object that represents a list of equipment identifiers.
  *
  * @param {string} equipmentType - The type of the equipment.
- * @param {Array} equipmentList - The list of equipment. Each equipment can be either a string representing the equipment ID or an object with an 'id' property.
+ * @param {Array} equipmentList - The list of equipment. Each equipment is a string representing the equipment ID
  *
  * @returns {Object} An object with the following properties:
  * - type: A string that is always 'IDENTIFIER_LIST'.
