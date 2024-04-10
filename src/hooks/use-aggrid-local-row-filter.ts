@@ -43,24 +43,52 @@ export const useAggridLocalRowFilter = (
 
     const formatCustomFiltersForAgGrid = useCallback(
         (filters: FilterSelectorType[]) => {
-            const agGrifFilterModel: FilterModel = {};
+            const agGridFilterModel: FilterModel = {};
             filters.forEach((filter) => {
                 if (Array.isArray(filter.value)) {
                     //this case means that the filter is an enum
-                    agGrifFilterModel[filter.column] =
+                    agGridFilterModel[filter.column] =
                         generateEnumFilterModel(filter);
                 } else {
-                    agGrifFilterModel[filter.column] = {
-                        filterType: filter.dataType,
-                        type: filter.type,
-                        filter:
-                            filter.dataType === FILTER_DATA_TYPES.NUMBER
-                                ? Number(filter.value)
-                                : filter.value,
-                    };
+                    // Check if there's already an existing filter for this column
+                    if (
+                        agGridFilterModel[filter.column] &&
+                        filter.dataType === FILTER_DATA_TYPES.NUMBER
+                    ) {
+                        // If so, prepare the existing and new conditions using the current filter settings
+                        const existingCondition = {
+                            type: agGridFilterModel[filter.column].type,
+                            filter: agGridFilterModel[filter.column].filter,
+                            filterType: 'number',
+                        };
+                        const newCondition = {
+                            type: filter.type,
+                            filter: Number(filter.value),
+                            filterType: 'number',
+                        };
+
+                        // Set up the filter model with an 'OR' operator, including both existing and new conditions
+                        agGridFilterModel[filter.column] = {
+                            filterType: 'number',
+                            type: 'number',
+                            operator: 'OR',
+                            condition1: existingCondition, // Use the existing condition
+                            condition2: newCondition, // Add the new condition
+                        };
+                    } else {
+                        // If no existing filter for this column, create a new filter configuration
+                        agGridFilterModel[filter.column] = {
+                            filterType: filter.dataType,
+                            type: filter.type,
+                            filter:
+                                filter.dataType === FILTER_DATA_TYPES.NUMBER
+                                    ? Number(filter.value)
+                                    : filter.value,
+                        };
+                    }
                 }
             });
-            return agGrifFilterModel;
+            return agGridFilterModel;
         },
         [generateEnumFilterModel]
     );
@@ -90,13 +118,73 @@ export const useAggridLocalRowFilter = (
 
             // If all columns referenced by the filters exist, apply the filters
             if (allColumnsExist) {
+                const filterWithTolerance = addToleranceToFilter(filters);
                 // Format the filters for AG Grid and apply them using setFilterModel
-                const formattedFilters = formatCustomFiltersForAgGrid(filters);
+                const formattedFilters =
+                    formatCustomFiltersForAgGrid(filterWithTolerance);
                 gridRef.current.api.setFilterModel(formattedFilters);
             }
         },
         [formatCustomFiltersForAgGrid, gridRef]
     );
+
+    const addToleranceToFilter = (
+        filters: FilterSelectorType[],
+        tolerance: number = 0.00001
+    ): FilterSelectorType[] => {
+        return filters
+            .map((filter): FilterSelectorType | FilterSelectorType[] => {
+                // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
+                let valueAsNumber: number | string[] =
+                    typeof filter.value === 'string'
+                        ? parseFloat(filter.value)
+                        : filter.value;
+                // If the value is successfully converted to a number, apply tolerance adjustments
+                if (typeof valueAsNumber === 'number') {
+                    let facteur = Math.pow(10, 5);
+                    // Truncate the number to maintain precision
+                    let nombre1Tronque =
+                        Math.floor(valueAsNumber * facteur) / facteur;
+                    // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
+                    switch (filter.type) {
+                        case 'notEqual':
+                            // For 'notEqual', create two conditions: one for greaterThan and one for lessThan
+                            return [
+                                {
+                                    ...filter,
+                                    type: 'greaterThan',
+                                    value: (nombre1Tronque + tolerance).toFixed(
+                                        5
+                                    ),
+                                },
+                                {
+                                    ...filter,
+                                    type: 'lessThan',
+                                    value: (nombre1Tronque - tolerance).toFixed(
+                                        5
+                                    ),
+                                },
+                            ];
+                        case 'lessThanOrEqual':
+                            // For 'lessThanOrEqual', adjust the value upwards by the tolerance
+                            return {
+                                ...filter,
+                                value: (nombre1Tronque + tolerance).toFixed(5),
+                            };
+                        case 'greaterThanOrEqual':
+                            // For 'greaterThanOrEqual', adjust the value downwards by the tolerance
+                            return {
+                                ...filter,
+                                value: (nombre1Tronque - tolerance).toFixed(5),
+                            };
+                        default:
+                            return filter;
+                    }
+                }
+                return filter;
+            })
+            .flat(); // Flatten the array in case any filters were expanded into multiple conditions
+    };
 
     useEffect(() => {
         setFiltersInAgGrid(filterSelector);
