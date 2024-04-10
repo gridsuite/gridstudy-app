@@ -9,11 +9,7 @@ import { NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import {
-    FieldValues,
-    useForm,
-    UseFormGetValues,
-} from 'react-hook-form';
+import { FieldValues, useForm, UseFormGetValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
