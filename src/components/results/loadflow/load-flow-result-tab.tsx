@@ -60,7 +60,10 @@ import ResultsGlobalFilter, {
     FilterType,
 } from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchAllCountries } from '../../../services/study/network-map';
+import {
+    fetchAllCountries,
+    fetchAllNominalVoltages,
+} from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
@@ -113,18 +116,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         filterTab: mappingTabs(tabIndex),
         filterStoreAction: setLoadflowResultFilter,
     });
-    const mapEquipments = useSelector(
-        (state: ReduxState) => state.mapEquipments
-    );
-    const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
 
-    const voltageLevelsFilter: Filter[] = useMemo(() => {
-        const nominalVs: number[] = mapEquipments?.nominalVoltages ?? [];
-        return nominalVs.map((nominalV: number) => ({
-            label: nominalV.toString(),
-            filterType: FilterType.VOLTAGE_LEVEL,
-        }));
-    }, [mapEquipments?.nominalVoltages]);
+    const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
+    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>(
+        []
+    );
 
     const [globalFilter, setGlobalFilter] = useState<GlobalFilter>();
 
@@ -146,6 +142,21 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 snackError({
                     messageTxt: error.message,
                     headerId: 'FetchCountryError',
+                });
+            });
+        fetchAllNominalVoltages(studyUuid, nodeUuid)
+            .then((nominalVoltages) => {
+                setVoltageLevelsFilter(
+                    nominalVoltages.map((nominalV: number) => ({
+                        label: nominalV.toString(),
+                        filterType: FilterType.VOLTAGE_LEVEL,
+                    }))
+                );
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'FetchNominalVoltagesError',
                 });
             });
     }, [nodeUuid, studyUuid, snackError, loadFlowStatus]);

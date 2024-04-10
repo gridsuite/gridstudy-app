@@ -230,6 +230,7 @@ const initialSpreadsheetFilter = {
     [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
     [EQUIPMENT_TYPES.DANGLING_LINE]: [],
     [EQUIPMENT_TYPES.BUS]: [],
+    [EQUIPMENT_TYPES.TIE_LINE]: [],
 };
 
 export const defaultOptionalServicesState = Object.keys(

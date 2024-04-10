@@ -330,6 +330,7 @@
     "DynamicSimulationAdd": "Ajouter",
     "DynamicSimulationClose": "Fermer",
     "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
+    "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -1342,5 +1343,6 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+    "TieLines": "Interconnexions"
 }
