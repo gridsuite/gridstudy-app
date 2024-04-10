@@ -7,8 +7,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
 import {
     Paper,
     Popover,
@@ -43,12 +41,12 @@ const styles = {
 };
 
 const EquipmentPopover = ({
-    studyUuid,
-    anchorEl,
-    equipmentId,
-    equipmentType,
-    loadFlowStatus,
-}) => {
+                              studyUuid,
+                              anchorEl,
+                              equipmentId,
+                              equipmentType,
+                              loadFlowStatus,
+                          }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
@@ -152,11 +150,11 @@ const EquipmentPopover = ({
                                         Math.round(
                                             side === '1'
                                                 ? (Math.abs(equipmentInfo.i1) *
-                                                      100) /
-                                                      currentLimits.permanentLimit
+                                                    100) /
+                                                currentLimits.permanentLimit
                                                 : (Math.abs(equipmentInfo.i2) *
-                                                      100) /
-                                                      currentLimits.permanentLimit
+                                                    100) /
+                                                currentLimits.permanentLimit
                                         )
                                     )}
                                 </TableCell>
@@ -201,23 +199,23 @@ const EquipmentPopover = ({
                                             >
                                                 {side === '1'
                                                     ? formatValue(
-                                                          Math.round(
-                                                              (Math.abs(
-                                                                  equipmentInfo.i1
-                                                              ) *
-                                                                  100) /
-                                                                  temporaryLimit.value
-                                                          )
-                                                      )
+                                                        Math.round(
+                                                            (Math.abs(
+                                                                    equipmentInfo.i1
+                                                                ) *
+                                                                100) /
+                                                            temporaryLimit.value
+                                                        )
+                                                    )
                                                     : formatValue(
-                                                          Math.round(
-                                                              (Math.abs(
-                                                                  equipmentInfo.i2
-                                                              ) *
-                                                                  100) /
-                                                                  temporaryLimit.value
-                                                          )
-                                                      )}
+                                                        Math.round(
+                                                            (Math.abs(
+                                                                    equipmentInfo.i2
+                                                                ) *
+                                                                100) /
+                                                            temporaryLimit.value
+                                                        )
+                                                    )}
                                             </TableCell>
                                             <TableCell sx={styles.tableCells}>
                                                 {formatValue(
@@ -341,12 +339,6 @@ const EquipmentPopover = ({
                     open={Boolean(localAnchorEl)}
                     disableRestoreFocus
                 >
-                    {equipmentInfo === null && (
-                        <Box height={2} minWidth={100}>
-                            <LinearProgress />
-                        </Box>
-                    )}
-
                     {equipmentInfo !== null && (
                         <Grid
                             container
