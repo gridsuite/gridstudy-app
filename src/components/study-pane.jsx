@@ -5,35 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
-
-import { useSelector } from 'react-redux';
-
-import { darken } from '@mui/material/styles';
-import { STUDY_DISPLAY_MODE } from '../redux/actions';
+import React, { useState } from 'react';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import {
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-} from '../utils/config-params';
-import NetworkMapTab from './network/network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
-import { DiagramPane } from './diagrams/diagram-pane';
-import HorizontalToolbar from './horizontal-toolbar';
-import NetworkModificationTreePane from './network-modification-tree-pane';
-import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
-import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
+import MapViewer from './map-viewer';
 
 const styles = {
     map: {
@@ -41,17 +24,9 @@ const styles = {
         flexDirection: 'row',
         height: '100%',
     },
-    horizontalToolbar: (theme) => ({
-        backgroundColor: darken(theme.palette.background.paper, 0.2),
-        display: 'flex',
-        flexDirection: 'row',
-    }),
     error: (theme) => ({
         padding: theme.spacing(2),
     }),
-    rotate: {
-        animation: 'spin 1000ms infinite',
-    },
     '@global': {
         '@keyframes spin': {
             '0%': {
@@ -61,13 +36,6 @@ const styles = {
                 transform: 'rotate(-360deg)',
             },
         },
-    },
-    mapBelowDiagrams: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
     },
     table: {
         display: 'flex',
@@ -85,34 +53,11 @@ export const StudyView = {
 };
 
 const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
-    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
-
-    const lineParallelPath = useSelector(
-        (state) => state[PARAM_LINE_PARALLEL_PATH]
-    );
-
-    const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
-
-    const lineFlowColorMode = useSelector(
-        (state) => state[PARAM_LINE_FLOW_COLOR_MODE]
-    );
-
-    const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
-    );
-
-    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
         changed: false,
     });
-
-    const oneBusShortCircuitStatus = useSelector(
-        (state) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
-    );
 
     const { openDiagramView } = useDiagram();
 
@@ -124,115 +69,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             props.onChangeTab(0); // switch to map view
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         }
-    }
-
-    const openVoltageLevel = useCallback(
-        (vlId) => {
-            openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
-        },
-        [openDiagramView]
-    );
-
-    function showInSpreadsheet(equipment) {
-        let newTableEquipment = {
-            id: equipment.equipmentId,
-            type: equipment.equipmentType,
-            changed: !tableEquipment.changed,
-        };
-        setTableEquipment(newTableEquipment);
-        props.onChangeTab(1); // switch to spreadsheet view
-    }
-
-    function renderMapView() {
-        return (
-            <ReactFlowProvider>
-                <Box sx={styles.table}>
-                    <Box sx={styles.horizontalToolbar}>
-                        <HorizontalToolbar />
-                    </Box>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            flexGrow: 1,
-                            overflow: 'hidden',
-                        }}
-                    >
-                        <div
-                            style={{
-                                display:
-                                    studyDisplayMode === STUDY_DISPLAY_MODE.MAP
-                                        ? 'none'
-                                        : null,
-                                width:
-                                    studyDisplayMode ===
-                                    STUDY_DISPLAY_MODE.HYBRID
-                                        ? '50%'
-                                        : '100%',
-                            }}
-                        >
-                            <NetworkModificationTreePane
-                                studyUuid={studyUuid}
-                                studyMapTreeDisplay={studyDisplayMode}
-                            />
-                        </div>
-                        <Box
-                            sx={styles.map}
-                            style={{
-                                display:
-                                    studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                                        ? 'none'
-                                        : null,
-                                width:
-                                    studyDisplayMode ===
-                                    STUDY_DISPLAY_MODE.HYBRID
-                                        ? '50%'
-                                        : '100%',
-                            }}
-                        >
-                            <Box sx={styles.mapBelowDiagrams}>
-                                {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
-                                <NetworkMapTab
-                                    /* TODO do we move redux param to container */
-                                    studyUuid={studyUuid}
-                                    visible={
-                                        props.view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
-                                    }
-                                    lineFullPath={lineFullPath}
-                                    lineParallelPath={lineParallelPath}
-                                    lineFlowMode={lineFlowMode}
-                                    lineFlowColorMode={lineFlowColorMode}
-                                    lineFlowAlertThreshold={
-                                        lineFlowAlertThreshold
-                                    }
-                                    openVoltageLevel={openVoltageLevel}
-                                    /* TODO verif tableEquipment*/
-                                    currentNode={currentNode}
-                                    onChangeTab={props.onChangeTab}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    setErrorMessage={setErrorMessage}
-                                />
-                            </Box>
-
-                            <DiagramPane
-                                studyUuid={studyUuid}
-                                showInSpreadsheet={showInSpreadsheet}
-                                currentNode={currentNode}
-                                visible={
-                                    props.view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                                }
-                                oneBusShortCircuitStatus={
-                                    oneBusShortCircuitStatus
-                                }
-                            />
-                        </Box>
-                    </div>
-                </Box>
-            </ReactFlowProvider>
-        );
     }
 
     function renderTableView() {
@@ -260,7 +96,18 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     display: props.view === StudyView.MAP ? null : 'none',
                 }}
             >
-                {renderMapView()}
+                <MapViewer
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    view={props.view}
+                    openDiagramView={openDiagramView}
+                    tableEquipment={tableEquipment}
+                    onTableEquipementChanged={(newTableEquipment) =>
+                        setTableEquipment(newTableEquipment)
+                    }
+                    onChangeTab={props.onChangeTab}
+                    setErrorMessage={setErrorMessage}
+                ></MapViewer>
             </div>
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy
