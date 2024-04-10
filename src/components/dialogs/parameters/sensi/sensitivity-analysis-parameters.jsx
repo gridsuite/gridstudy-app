@@ -102,7 +102,7 @@ export const SensitivityAnalysisParameters = ({
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
-    const [providers, , , , params] = parametersBackend;
+    const [providers, , , , params, ,] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] =
