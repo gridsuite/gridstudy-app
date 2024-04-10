@@ -330,6 +330,7 @@
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
     "FetchCountryError": "An error occurred while fetching countries",
+    "FetchNominalVoltagesError": "An error occurred while fetching nominal voltages",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
@@ -1341,5 +1342,6 @@
     "qPercent": "Reactive percentage",
     "frequencyRegulation": "Active power regulation",
     "droop": "Droop",
-    "FieldRequired": "At least one value is missing for required field : "
+    "FieldRequired": "At least one value is missing for required field : ",
+    "TieLines": "Tie lines"
 }
