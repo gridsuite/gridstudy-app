@@ -13,46 +13,52 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as PropTypes from 'prop-types';
+import { ListItemButton } from '@mui/material';
 
 const ListItemWithDeleteButton = (props) => {
     const [isHoover, setHoover] = useState(false);
 
-    function handleHoover(enter) {
-        return setHoover(enter);
-    }
-
     return (
         <ListItem
-            role={undefined}
-            dense
-            button
-            onClick={props.onClick}
-            onMouseEnter={() => handleHoover(true)}
-            onMouseLeave={() => handleHoover(false)}
-            style={{
-                paddingTop: 0,
-                paddingBottom: 0,
-            }}
-        >
-            <ListItemIcon>
-                <Checkbox
-                    edge="start"
-                    size={'small'}
-                    checked={props.checked}
-                    tabIndex={-1}
-                    disableRipple
-                />
-            </ListItemIcon>
-            <ListItemText primary={props.primary} />
-            {props.removeFromList && isHoover && (
-                <IconButton onClick={props.removeFromList} size={'small'}>
-                    <DeleteIcon
+            onMouseEnter={() => setHoover(true)}
+            onMouseLeave={() => setHoover(false)}
+            disablePadding
+            secondaryAction={
+                props.removeFromList &&
+                isHoover && (
+                    <IconButton
                         style={{
                             alignItems: 'end',
                         }}
+                        edge="end"
+                        onClick={props.removeFromList}
+                        size={'small'}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                )
+            }
+        >
+            <ListItemButton
+                role={undefined}
+                onClick={props.onClick}
+                dense
+                sx={{
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                }}
+            >
+                <ListItemIcon>
+                    <Checkbox
+                        edge="start"
+                        size={'small'}
+                        checked={props.checked}
+                        tabIndex={-1}
+                        disableRipple
                     />
-                </IconButton>
-            )}
+                </ListItemIcon>
+                <ListItemText primary={props.primary} />
+            </ListItemButton>
         </ListItem>
     );
 };
