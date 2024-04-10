@@ -183,6 +183,9 @@
     "BusAngle": "Angle (°)",
     "VoltageInitStatus": "STATUT",
     "startVoltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
+    "VoltageInitParametersGeneralTabLabel": "Général",
+    "VoltageInitParametersGeneralApplyModificationsLabel": "Appliquer automatiquement la modification du plan de tension",
+    "VoltageInitParametersGeneralSaveInfo": "Les paramètres de cet onglet ne seront pas enregistrés et seront mis aux valeurs par défaut en cas de sélection de paramètres externes",
     "VoltageLimits": "Limites de tension",
     "VoltageLevelFilter": "Filtre poste",
     "LowVoltageLimitDefault": "Valeur par défaut limite basse",
@@ -328,7 +331,8 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Ajouter",
     "DynamicSimulationClose": "Fermer",
-    "DynamicSimulationFetchCountryError": "Une erreur est survenue lors du chargement des pays",
+    "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
+    "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -468,6 +472,9 @@
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsStatus": "Statut",
     "ComputationResultsLogs": "Logs",
+
+    "results.globalFilter.fillerText": "Pays ou niveau de tension",
+    "results.globalFilter.recent": "Récents :",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
@@ -1345,5 +1352,6 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "    
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+    "TieLines": "Interconnexions"
 }

@@ -86,10 +86,10 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         );
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         //Generate a new name every time the component is mounted
         generateFilterName();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {

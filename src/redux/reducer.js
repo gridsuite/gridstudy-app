@@ -17,6 +17,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
+    ADD_TO_RECENT_GLOBAL_FILTERS,
     ADD_NOTIFICATION,
     CENTER_LABEL,
     CENTER_ON_SUBSTATION,
@@ -229,6 +230,7 @@ const initialSpreadsheetFilter = {
     [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
     [EQUIPMENT_TYPES.DANGLING_LINE]: [],
     [EQUIPMENT_TYPES.BUS]: [],
+    [EQUIPMENT_TYPES.TIE_LINE]: [],
 };
 
 export const defaultOptionalServicesState = Object.keys(
@@ -283,6 +285,7 @@ const initialState = {
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
+    recentGlobalFilters: [],
     lastCompletedComputation: null,
     // Results filters
     [LOADFLOW_RESULT_STORE_FIELD]: {
@@ -1152,6 +1155,22 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_STUDY_INDEXATION_STATUS, (state, action) => {
         state.studyIndexationStatus = action.studyIndexationStatus;
+    });
+
+    builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action) => {
+        let newRecentGlobalFilters = [...state.recentGlobalFilters];
+        action.globalFilters.forEach((filter) => {
+            if (
+                !newRecentGlobalFilters.some(
+                    (obj) =>
+                        obj.label === filter.label &&
+                        obj.filterType === filter.filterType
+                )
+            ) {
+                newRecentGlobalFilters.push(filter);
+            }
+        });
+        state.recentGlobalFilters = newRecentGlobalFilters;
     });
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action) => {
