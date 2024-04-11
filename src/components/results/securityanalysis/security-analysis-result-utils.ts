@@ -48,7 +48,6 @@ import {
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
 } from 'utils/store-filter-fields';
-import { UUID } from 'crypto';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -616,8 +615,6 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 
 // We can use this custom hook for fetching enums for AutoComplete filter
 export const useFetchFiltersEnums = (
-    studyUuid: UUID,
-    nodeUuid: UUID,
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
 ): { error: boolean; loading: boolean; result: FilterEnumsType } => {
@@ -633,12 +630,9 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchSecurityAnalysisAvailableComputationStatus(
-                    studyUuid,
-                    nodeUuid
-                ),
-                fetchSecurityAnalysisAvailableLimitTypes(studyUuid, nodeUuid),
-                fetchSecurityAnalysisAvailableBranchSides(studyUuid, nodeUuid),
+                fetchSecurityAnalysisAvailableComputationStatus(),
+                fetchSecurityAnalysisAvailableLimitTypes(),
+                fetchSecurityAnalysisAvailableBranchSides(),
             ];
 
             setLoading(true);
@@ -664,7 +658,7 @@ export const useFetchFiltersEnums = (
                     setLoading(false);
                 });
         }
-    }, [hasResult, setFilter, studyUuid, nodeUuid]);
+    }, [hasResult, setFilter]);
 
     return { loading, result, error };
 };

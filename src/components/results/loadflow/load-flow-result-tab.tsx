@@ -79,7 +79,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
 
     const { loading: filterEnumsLoading, result: filterEnums } =
-        useFetchFiltersEnums(studyUuid, nodeUuid, hasFilter, setHasFilter);
+        useFetchFiltersEnums(hasFilter, setHasFilter);
 
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =

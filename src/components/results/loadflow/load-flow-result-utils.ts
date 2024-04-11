@@ -46,7 +46,6 @@ import {
     LOADFLOW_RESULT,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-filter-fields';
-import { UUID } from 'crypto';
 
 export const convertMillisecondsToMinutesSeconds = (
     durationInMilliseconds: number
@@ -180,8 +179,6 @@ export const makeData = (
 
 // We can use this custom hook for fetching enums for AutoComplete filter
 export const useFetchFiltersEnums = (
-    studyUuid: UUID,
-    nodeUuid: UUID,
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
 ): { error: boolean; loading: boolean; result: FilterEnumsType } => {
@@ -197,9 +194,9 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchLoadflowAvailableComputationStatus(studyUuid, nodeUuid),
-                fetchLoadflowAvailableLimitTypes(studyUuid, nodeUuid),
-                fetchLoadflowAvailableBranchSides(studyUuid, nodeUuid),
+                fetchLoadflowAvailableComputationStatus(),
+                fetchLoadflowAvailableLimitTypes(),
+                fetchLoadflowAvailableBranchSides(),
             ];
 
             setLoading(true);
@@ -225,7 +222,7 @@ export const useFetchFiltersEnums = (
                     setLoading(false);
                 });
         }
-    }, [hasResult, setFilter, studyUuid, nodeUuid]);
+    }, [hasResult, setFilter]);
 
     return { loading, result, error };
 };

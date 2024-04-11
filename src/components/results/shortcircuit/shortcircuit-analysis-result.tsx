@@ -202,7 +202,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     ]);
 
     useEffect(() => {
-        fetchShortCircuitFaultTypes(studyUuid, currentNode?.id)
+        fetchShortCircuitFaultTypes()
             .then((values) => {
                 setFilterEnums((prevFilterEnums) => ({
                     ...prevFilterEnums,
@@ -215,10 +215,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [intl, snackError, studyUuid, currentNode.id]);
+    }, [intl, snackError]);
 
     useEffect(() => {
-        fetchShortCircuitLimitViolationTypes(studyUuid, currentNode?.id)
+        fetchShortCircuitLimitViolationTypes()
             .then((values) => {
                 setFilterEnums((prevFilterEnums) => ({
                     ...prevFilterEnums,
@@ -231,7 +231,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [intl, snackError, studyUuid, currentNode.id]);
+    }, [intl, snackError]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,
