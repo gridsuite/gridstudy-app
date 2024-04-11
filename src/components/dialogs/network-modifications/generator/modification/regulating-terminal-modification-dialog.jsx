@@ -19,7 +19,7 @@ import {
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
@@ -27,6 +27,7 @@ import RegulatingTerminalForm from 'components/dialogs/regulating-terminal/regul
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { fetchVoltageLevelsListInfos } from 'services/study/network';
 import { getRegulatingTerminalFormData } from 'components/dialogs/regulating-terminal/regulating-terminal-form-utils';
+import { CustomFormProvider } from '@gridsuite/commons-ui';
 
 const emptyFormData = {
     [VOLTAGE_LEVEL]: null,
@@ -137,7 +138,7 @@ const RegulatingTerminalModificationDialog = ({
     );
 
     return (
-        <FormProvider
+        <CustomFormProvider
             removeOptional={true}
             validationSchema={formSchema}
             {...formMethods}
@@ -162,7 +163,7 @@ const RegulatingTerminalModificationDialog = ({
                     }
                 </Grid>
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

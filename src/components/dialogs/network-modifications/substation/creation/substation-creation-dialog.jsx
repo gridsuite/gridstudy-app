@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import React, { useCallback, useEffect } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -26,10 +26,10 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { createSubstation } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    emptyProperties,
     copyEquipmentPropertiesForCreation,
-    getPropertiesFromModification,
     creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 
@@ -131,7 +131,7 @@ const SubstationCreationDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -155,7 +155,7 @@ const SubstationCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
