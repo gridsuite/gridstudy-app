@@ -7,8 +7,8 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { FormProvider, useForm } from 'react-hook-form';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -19,11 +19,11 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
-    TABULAR_MODIFICATION_TYPES,
-    formatModification,
-    getEquipmentTypeFromModificationType,
     convertValueFromBackToFront,
     convertValueFromFrontToBack,
+    formatModification,
+    getEquipmentTypeFromModificationType,
+    TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
 
@@ -140,7 +140,7 @@ const TabularModificationDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
@@ -156,7 +156,7 @@ const TabularModificationDialog = ({
             >
                 <TabularModificationForm />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

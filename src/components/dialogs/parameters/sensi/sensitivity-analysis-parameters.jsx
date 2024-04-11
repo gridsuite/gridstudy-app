@@ -6,29 +6,33 @@
  */
 
 import {
+    CustomFormProvider,
+    DirectoryItemSelector,
+    ElementType,
     SelectInput,
     SubmitButton,
-    ElementType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Grid, Button, DialogActions } from '@mui/material';
+import { Button, DialogActions, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
+    ACTIVATED,
     ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    CONTINGENCIES,
-    EQUIPMENTS_IN_VOLTAGE_REGULATION,
     CONTAINER_ID,
     CONTAINER_NAME,
+    CONTINGENCIES,
+    COUNT,
+    DISTRIBUTION_TYPE,
+    EQUIPMENTS_IN_VOLTAGE_REGULATION,
     FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
     FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
     HVDC_LINES,
     ID,
-    DISTRIBUTION_TYPE,
     INJECTIONS,
     MONITORED_BRANCHES,
     NAME,
@@ -37,20 +41,18 @@ import {
     PARAMETER_SENSI_INJECTIONS_SET,
     PARAMETER_SENSI_NODES,
     PARAMETER_SENSI_PST,
+    PROVIDER,
     PSTS,
+    SENSI_INJECTIONS_SET,
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
-    ACTIVATED,
-    PROVIDER,
-    SENSI_INJECTIONS_SET,
-    COUNT,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
+    fetchSensitivityAnalysisParameters,
+    getSensitivityAnalysisFactorsCount,
     getSensitivityAnalysisParameters,
     setSensitivityAnalysisParameters,
-    getSensitivityAnalysisFactorsCount,
-    fetchSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
@@ -70,7 +72,6 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
@@ -554,7 +555,7 @@ export const SensitivityAnalysisParameters = ({
 
     return (
         <>
-            <FormProvider validationSchema={formSchema} {...formMethods}>
+            <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid
                     container
                     sx={{ height: '100%' }}
@@ -637,7 +638,7 @@ export const SensitivityAnalysisParameters = ({
                         </DialogActions>
                     </Grid>
                 </Grid>
-            </FormProvider>
+            </CustomFormProvider>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
                     open={openCreateParameterDialog}

@@ -5,21 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    CONNECTED,
     CONNECTIVITY,
     DROOP,
     ENERGY_SOURCE,
@@ -40,6 +40,7 @@ import {
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
@@ -47,11 +48,10 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-    REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import {
-    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
@@ -76,10 +76,10 @@ import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { createGenerator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    emptyProperties,
     copyEquipmentPropertiesForCreation,
-    getPropertiesFromModification,
     creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 
@@ -355,7 +355,7 @@ const GeneratorCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -383,7 +383,7 @@ const GeneratorCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
