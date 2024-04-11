@@ -297,7 +297,6 @@ const BaseEquipmentMenu = ({
                     </CustomNestedMenuItem>
                 </>
             )}
-
             {/* menus for equipment voltage level */}
             {equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL && equipment && (
                 <>

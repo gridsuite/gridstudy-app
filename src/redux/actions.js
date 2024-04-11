@@ -505,6 +505,7 @@ export const STUDY_DISPLAY_MODE = {
     MAP: 'Map',
     TREE: 'Tree',
     HYBRID: 'Hybrid',
+    DRAW: 'Draw',
 };
 
 export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
@@ -679,6 +680,15 @@ export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
         nodeId: nodeId,
+    };
+}
+
+export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
+
+export function addToRecentGlobalFilters(globalFilters) {
+    return {
+        type: ADD_TO_RECENT_GLOBAL_FILTERS,
+        globalFilters: globalFilters,
     };
 }
 

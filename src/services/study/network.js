@@ -492,3 +492,13 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
         exportFormat;
     return getUrlWithToken(url);
 }
+
+export function fetchTieLines(studyUuid, currentNodeUuid, substationsIds) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.TIE_LINE,
+        EQUIPMENT_INFOS_TYPES.TAB.type
+    );
+}

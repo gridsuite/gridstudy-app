@@ -7,8 +7,8 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { FormProvider, useForm } from 'react-hook-form';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -23,10 +23,10 @@ import { createTabularCreation } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
 import TabularCreationForm from './tabular-creation-form';
 import {
-    TABULAR_CREATION_TYPES,
-    getEquipmentTypeFromCreationType,
     convertCreationFieldFromBackToFront,
     convertCreationFieldFromFrontToBack,
+    getEquipmentTypeFromCreationType,
+    TABULAR_CREATION_TYPES,
 } from './tabular-creation-utils';
 import { useIntl } from 'react-intl';
 import { formatModification } from '../tabular-modification/tabular-modification-utils';
@@ -155,7 +155,7 @@ const TabularCreationDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
@@ -172,7 +172,7 @@ const TabularCreationDialog = ({
             >
                 <TabularCreationForm />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

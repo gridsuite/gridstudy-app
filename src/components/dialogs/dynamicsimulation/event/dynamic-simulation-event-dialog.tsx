@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,7 +26,7 @@ import {
     fetchDynamicSimulationEvent,
     saveDynamicSimulationEvent,
 } from '../../../../services/dynamic-simulation';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 
 export type DynamicSimulationEventDialogProps = {
@@ -225,12 +225,7 @@ export const DynamicSimulationEventDialog = (
     const open = defaultOpen ?? waitingOpen;
 
     return (
-        <FormProvider
-            {...{
-                validationSchema: formSchema,
-                ...formMethods,
-            }}
-        >
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClose={onClose}
@@ -254,6 +249,6 @@ export const DynamicSimulationEventDialog = (
                     event={event}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };

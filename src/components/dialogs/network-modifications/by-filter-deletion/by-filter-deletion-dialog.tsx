@@ -8,14 +8,14 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
-    TYPE,
     FILTERS,
     ID,
     NAME,
     SPECIFIC_METADATA,
+    TYPE,
 } from '../../../utils/field-constants';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { FormProvider, useForm } from 'react-hook-form';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import ModificationDialog from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -33,7 +33,7 @@ import {
 const formSchema = yup
     .object()
     .shape({
-        [TYPE]: yup.string().required(),
+        [TYPE]: yup.mixed<keyof typeof EQUIPMENT_TYPES>().required(),
         [FILTERS]: yup
             .array()
             .of(
@@ -82,7 +82,7 @@ const ByFilterDeletionDialog: FunctionComponent<
 
     const formMethods = useForm<ByFilterDeletionFormData>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<ByFilterDeletionFormData>(formSchema),
     });
 
     const { reset } = formMethods;
@@ -136,12 +136,7 @@ const ByFilterDeletionDialog: FunctionComponent<
     });
 
     return (
-        <FormProvider
-            {...{
-                validationSchema: formSchema,
-                ...formMethods,
-            }}
-        >
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -158,7 +153,7 @@ const ByFilterDeletionDialog: FunctionComponent<
             >
                 <ByFilterDeletionForm />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
