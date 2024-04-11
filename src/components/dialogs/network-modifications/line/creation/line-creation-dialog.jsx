@@ -5,14 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    TextInput,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
+    B1,
+    B2,
     BUS_OR_BUSBAR_SECTION,
+    CHARACTERISTICS,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
-    CONNECTED,
     CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
@@ -20,31 +27,28 @@ import {
     CURRENT_LIMITS_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    PERMANENT_LIMIT,
     G1,
     G2,
-    B1,
-    B2,
-    VOLTAGE_LEVEL,
-    CHARACTERISTICS,
     LIMITS,
-    TEMPORARY_LIMITS,
-    TAB_HEADER,
-    TOTAL_RESISTANCE,
-    TOTAL_REACTANCE,
-    TOTAL_SUSCEPTANCE,
+    PERMANENT_LIMIT,
     R,
+    TAB_HEADER,
+    TEMPORARY_LIMITS,
+    TOTAL_REACTANCE,
+    TOTAL_RESISTANCE,
+    TOTAL_SUSCEPTANCE,
+    VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import {
-    UNDEFINED_CONNECTION_DIRECTION,
     FORM_LOADING_DELAY,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -75,7 +79,6 @@ import {
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import { TextInput } from '@gridsuite/commons-ui';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -430,7 +433,7 @@ const LineCreationDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -486,7 +489,7 @@ const LineCreationDialog = ({
                     onSave={handleLineSegmentsBuildSubmit}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

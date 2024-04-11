@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -26,15 +26,15 @@ import {
     NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_ID,
-    SWITCHES_BETWEEN_SECTIONS,
     SWITCH_KIND,
     SWITCH_KINDS,
+    SWITCHES_BETWEEN_SECTIONS,
     TOPOLOGY_KIND,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
@@ -268,7 +268,7 @@ const VoltageLevelCreationDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -295,7 +295,7 @@ const VoltageLevelCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

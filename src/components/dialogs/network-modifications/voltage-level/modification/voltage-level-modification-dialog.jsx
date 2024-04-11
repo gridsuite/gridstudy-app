@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
@@ -21,7 +21,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
@@ -239,7 +239,7 @@ const VoltageLevelModificationDialog = ({
     });
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
@@ -278,7 +278,7 @@ const VoltageLevelModificationDialog = ({
                     />
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
