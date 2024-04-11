@@ -30,7 +30,7 @@ export const translateLimitNameFrontToBack = (
     switch (limitName) {
         case intl.formatMessage({ id: 'PermanentLimitName' }):
             return PERMANENT_LIMIT_NAME;
-        case intl.formatMessage({ id: 'Undefined' }):
+        case intl.formatMessage({ id: 'Undefined' }).toUpperCase(): // we need to upper if we want to match because we only store capslock values
             return NA_Value;
         default:
             return limitName;
