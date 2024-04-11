@@ -14,6 +14,7 @@ import {
     ADDED,
 } from 'components/utils/field-constants';
 import { fetchAppsAndUrls } from '../../../../../services/utils';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 export type Property = {
     [NAME]: string | null;
@@ -92,7 +93,7 @@ export const getPropertiesFromModification = (
                   return {
                       [NAME]: p[NAME],
                       [VALUE]: p[VALUE],
-                      [PREVIOUS_VALUE]: null,
+                      [PREVIOUS_VALUE]: p[PREVIOUS_VALUE],
                       [ADDED]: p[ADDED],
                       [DELETION_MARK]: p[DELETION_MARK],
                   };
@@ -164,7 +165,7 @@ export const mergeModificationAndEquipmentProperties = (
 
 export const toModificationProperties = (properties: Properties) => {
     const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
-        (p: Property) => p.value !== null || p[DELETION_MARK]
+        (p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
     );
     return filteredProperties?.length === 0 ? undefined : filteredProperties;
 };

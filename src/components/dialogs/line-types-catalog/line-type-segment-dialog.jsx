@@ -7,22 +7,23 @@
 
 import React, { useCallback } from 'react';
 import {
-    SEGMENTS,
     SEGMENT_DISTANCE_VALUE,
-    SEGMENT_TYPE_VALUE,
-    SEGMENT_TYPE_ID,
-    SEGMENT_RESISTANCE,
     SEGMENT_REACTANCE,
+    SEGMENT_RESISTANCE,
     SEGMENT_SUSCEPTANCE,
+    SEGMENT_TYPE_ID,
+    SEGMENT_TYPE_VALUE,
+    SEGMENTS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LineTypeSegmentForm } from './line-type-segment-form';
+import { CustomFormProvider } from '@gridsuite/commons-ui';
 
 export const emptyLineSegment = {
     [SEGMENT_DISTANCE_VALUE]: null,
@@ -84,7 +85,7 @@ const LineTypeSegmentDialog = ({ ...dialogProps }) => {
      * RENDER
      */
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="lg"
@@ -95,7 +96,7 @@ const LineTypeSegmentDialog = ({ ...dialogProps }) => {
             >
                 <LineTypeSegmentForm />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
