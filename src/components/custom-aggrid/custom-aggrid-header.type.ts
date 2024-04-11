@@ -34,7 +34,6 @@ type FilterParams = {
     isDuration?: boolean;
     filterComparators?: string[];
     debounceMs?: number;
-    parser?: (value: string) => void;
     filterEnums?: FilterEnumsType;
 };
 
@@ -47,11 +46,15 @@ export interface CustomColDef extends ColDef {
     getEnumLabel?: (value: string) => string;
     isCountry?: boolean;
 }
-export type FilterSelectorType = {
-    column: string;
+
+export type FilterDataType = {
     dataType: string;
     type: string;
     value: undefined | null | number | string | string[];
+};
+
+export type FilterSelectorType = FilterDataType & {
+    column: string;
 };
 
 export type FilterStorePropsType = {
