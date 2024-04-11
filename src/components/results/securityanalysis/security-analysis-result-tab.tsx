@@ -236,7 +236,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
-        useFetchFiltersEnums(studyUuid, nodeUuid, hasFilter, setHasFilter);
+        useFetchFiltersEnums(hasFilter, setHasFilter);
 
     useEffect(() => {
         if (result) {
