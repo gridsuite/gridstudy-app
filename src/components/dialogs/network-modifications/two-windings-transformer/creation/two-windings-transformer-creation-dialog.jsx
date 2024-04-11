@@ -5,30 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
 import {
+    B,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    CONNECTED,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
+    CURRENT_LIMITS_1,
+    CURRENT_LIMITS_2,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FLOW_SET_POINT_REGULATING_VALUE,
+    G,
     ID,
+    LIMITS,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    G,
-    B,
+    PERMANENT_LIMIT,
     PHASE_TAP_CHANGER,
+    R,
     RATED_S,
     RATED_U1,
     RATED_U2,
@@ -41,14 +46,14 @@ import {
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
+    TEMPORARY_LIMITS,
     VOLTAGE_LEVEL,
-    R,
     X,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialogUtils';
@@ -83,13 +88,6 @@ import {
     getTwoWindingsTransformerValidationSchema,
 } from './characteristics-pane/two-windings-transformer-creation-characteristics-pane-utils';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import {
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
-    LIMITS,
-    PERMANENT_LIMIT,
-    TEMPORARY_LIMITS,
-} from 'components/utils/field-constants';
 import {
     getLimitsEmptyFormData,
     getLimitsFormData,
@@ -778,7 +776,7 @@ const TwoWindingsTransformerCreationDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -814,7 +812,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

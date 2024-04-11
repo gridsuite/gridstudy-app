@@ -5,11 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
 import { styles } from './parameters';
-import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LineSeparator } from '../dialogUtils';
 import {
@@ -33,7 +37,7 @@ import {
     SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
     SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
 } from '../../utils/field-constants';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
@@ -228,7 +232,7 @@ export const ShortCircuitParameters = ({
     }, [formState, setHaveDirtyFields]);
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Grid sx={{ height: '100%' }}>
                 <Grid container paddingTop={1} paddingBottom={1}>
                     <LineSeparator />
@@ -252,6 +256,6 @@ export const ShortCircuitParameters = ({
                     <FormattedMessage id="validate" />
                 </SubmitButton>
             </Grid>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };

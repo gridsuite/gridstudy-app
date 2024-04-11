@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -29,9 +29,9 @@ import { modifySubstation } from '../../../../../services/study/network-modifica
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    mergeModificationAndEquipmentProperties,
     emptyProperties,
     getPropertiesFromModification,
+    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -188,7 +188,7 @@ const SubstationModificationDialog = ({
     });
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             {...formMethods}
             removeOptional={true}
@@ -229,7 +229,7 @@ const SubstationModificationDialog = ({
                     />
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

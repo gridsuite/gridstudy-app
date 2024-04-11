@@ -6,8 +6,12 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { TextInput, useSnackMessage } from '@gridsuite/commons-ui';
-import { FormProvider, useForm } from 'react-hook-form';
+import {
+    CustomFormProvider,
+    TextInput,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
@@ -15,16 +19,16 @@ import {
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
-    NOMINAL_V,
-    R,
     DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
     MAX_P,
+    NOMINAL_V,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
+    R,
 } from '../../../../utils/field-constants';
 import Grid from '@mui/material/Grid';
 import {
@@ -264,7 +268,7 @@ const VscCreationDialog = ({
     );
 
     return (
-        <FormProvider {...formMethods} validationSchema={formSchema}>
+        <CustomFormProvider {...formMethods} validationSchema={formSchema}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -299,7 +303,7 @@ const VscCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
