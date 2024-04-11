@@ -11,39 +11,39 @@ import { FormattedMessage } from 'react-intl';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters, {
-    formSchema as timeDelayFormSchema,
     emptyFormData as timeDelayEmptyFormData,
+    formSchema as timeDelayFormSchema,
     START_TIME,
     STOP_TIME,
 } from './time-delay-parameters';
 import SolverParameters, {
-    formSchema as solverFormSchema,
     emptyFormData as solverEmptyFormData,
+    formSchema as solverFormSchema,
     SOLVER_ID,
     SOLVERS,
 } from './solver-parameters';
 import MappingParameters, {
-    formSchema as mappingFormSchema,
     emptyFormData as mappingEmptyFormData,
+    formSchema as mappingFormSchema,
     MAPPING,
 } from './mapping-parameters';
 import { LineSeparator } from '../../dialogUtils';
 import {
     DropDown,
     LabelledButton,
+    styles,
     TabPanel,
     useParametersBackend,
-    styles,
 } from '../parameters';
 import NetworkParameters, {
-    formSchema as networkFormSchema,
     emptyFormData as networkEmptyFormData,
+    formSchema as networkFormSchema,
     NETWORK,
 } from './network-parameters';
 import CurveParameters, {
-    formSchema as curveFormSchema,
-    emptyFormData as curveEmptyFormData,
     CURVES,
+    emptyFormData as curveEmptyFormData,
+    formSchema as curveFormSchema,
 } from './curve-parameters';
 import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 import {
@@ -56,9 +56,9 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../../utils/functions';
-import { SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 
 const TAB_VALUES = {
@@ -235,7 +235,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     }, [formState, setHaveDirtyFields]);
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Grid sx={{ height: '100%' }}>
                 <Grid
                     key="dsParameters"
@@ -395,7 +395,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                     <FormattedMessage id={'validate'} />
                 </SubmitButton>
             </Grid>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
