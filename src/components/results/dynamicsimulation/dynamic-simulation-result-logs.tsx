@@ -14,17 +14,9 @@ import ComputingType from '../../computing-status/computing-type';
 import RunningStatus from '../../utils/running-status';
 import { useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useIntl } from 'react-intl';
-import { Box, Typography } from '@mui/material';
+import Overlay from '../common/Overlay';
 
-const styles = {
-    overlay: {
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-};
-const DynamicSimulationResultLog = memo(() => {
+const DynamicSimulationResultLogs = memo(() => {
     const dynamicSimulationStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
@@ -48,17 +40,13 @@ const DynamicSimulationResultLog = memo(() => {
     }, [dynamicSimulationStatus, messages]);
     return (
         <>
-            {overlayMessage ? (
-                <Box sx={styles.overlay}>
-                    <Typography variant={'body2'}>{overlayMessage}</Typography>
-                </Box>
-            ) : (
+            <Overlay message={overlayMessage}>
                 <ComputationReportViewer
                     reportType={REPORT_TYPES.DYNAMIC_SIMULATION}
                 />
-            )}
+            </Overlay>
         </>
     );
 });
 
-export default DynamicSimulationResultLog;
+export default DynamicSimulationResultLogs;

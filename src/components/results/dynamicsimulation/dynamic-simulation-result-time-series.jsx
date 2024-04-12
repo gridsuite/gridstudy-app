@@ -8,7 +8,7 @@
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
 import React, { memo, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -23,16 +23,11 @@ import {
     getNoRowsMessage,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
+import Overlay from '../common/Overlay';
 
 const styles = {
     root: {
         height: '100%',
-    },
-    overlay: {
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
     },
     addButton: (theme) => ({
         borderRadius: '50%',
@@ -127,11 +122,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
                     <LinearProgress />
                 </Box>
             )}
-            {overlayMessage ? (
-                <Box sx={styles.overlay}>
-                    <Typography variant={'body2'}>{overlayMessage}</Typography>
-                </Box>
-            ) : (
+            <Overlay message={overlayMessage}>
                 <Box sx={styles.root}>
                     <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                         {/* tab headers */}
@@ -213,7 +204,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
                         ))}
                     </Box>
                 </Box>
-            )}
+            </Overlay>
         </>
     );
 });
