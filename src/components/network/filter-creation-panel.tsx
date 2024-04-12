@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
+    CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
     SelectInput,
@@ -15,7 +16,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { Identifier } from '../dialogs/parameters/voltageinit/voltage-init-utils';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -120,12 +121,10 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     };
 
     return (
-        <FormProvider
-            {...{
-                validationSchema: formSchema,
-                removeOptional: true,
-                ...formMethods,
-            }}
+        <CustomFormProvider
+            removeOptional={true}
+            validationSchema={formSchema}
+            {...formMethods}
         >
             <Box
                 p={4}
@@ -228,7 +227,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     </Button>
                 </Grid>
             </Box>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

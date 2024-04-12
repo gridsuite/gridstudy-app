@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import {
@@ -22,22 +22,22 @@ import {
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
-    NOMINAL_V,
-    R,
     DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
+    MAX_P,
+    MAX_Q,
+    MIN_Q,
+    NOMINAL_V,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P,
     P0,
-    MAX_Q,
-    MIN_Q,
+    R,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
-    MAX_P,
 } from '../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -50,6 +50,7 @@ import {
     getConverterStationModificationFormEditData,
     getVscConverterStationEmptyFormData,
     getVscConverterStationModificationSchema,
+    ReactiveCapabilityCurvePointsData,
 } from '../converter-station/converter-station-utils';
 import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -62,8 +63,7 @@ import {
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-utils';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 
 const formSchema = yup
     .object()
@@ -327,12 +327,10 @@ const VscModificationDialog: React.FC<any> = ({
     };
 
     return (
-        <FormProvider
-            {...{
-                validationSchema: formSchema,
-                removeOptional: true,
-                ...formMethods,
-            }}
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
         >
             <ModificationDialog
                 fullWidth
@@ -381,7 +379,7 @@ const VscModificationDialog: React.FC<any> = ({
                     ></VscModificationForm>
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
