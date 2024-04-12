@@ -30,11 +30,6 @@ import {
     VoltageInitParametersForm,
 } from './voltage-init-parameters-form';
 
-export type Identifier = {
-    [ID]: UUID | null;
-    [NAME]: string | null;
-};
-
 type FilterIdentifier = {
     [FILTER_ID]: UUID;
     [FILTER_NAME]: string;
