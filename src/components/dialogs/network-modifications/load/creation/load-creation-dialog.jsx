@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     EQUIPMENT_ID,
@@ -16,7 +16,7 @@ import {
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -28,8 +28,8 @@ import {
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import {
-    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
@@ -38,10 +38,10 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    emptyProperties,
     copyEquipmentPropertiesForCreation,
-    getPropertiesFromModification,
     creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 
@@ -192,7 +192,7 @@ const LoadCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -220,7 +220,7 @@ const LoadCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

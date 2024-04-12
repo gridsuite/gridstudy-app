@@ -5,22 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
+    ADDITIONAL_PROPERTIES,
+    B,
     CHARACTERISTICS,
     CURRENT_LIMITER_REGULATING_VALUE,
+    CURRENT_LIMITS_1,
+    CURRENT_LIMITS_2,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_NAME,
     FLOW_SET_POINT_REGULATING_VALUE,
+    G,
     ID,
+    LIMITS,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    G,
-    B,
+    PERMANENT_LIMIT,
     PHASE_TAP_CHANGER,
+    R,
     RATED_S,
     RATED_U1,
     RATED_U2,
@@ -33,14 +39,13 @@ import {
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
+    TEMPORARY_LIMITS,
     VOLTAGE_LEVEL,
     X,
-    R,
-    ADDITIONAL_PROPERTIES,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialogUtils';
 import {
@@ -59,13 +64,6 @@ import {
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import {
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
-    LIMITS,
-    PERMANENT_LIMIT,
-    TEMPORARY_LIMITS,
-} from 'components/utils/field-constants';
 import LimitsPane from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
@@ -811,7 +809,7 @@ const TwoWindingsTransformerModificationDialog = ({
     );
 
     return (
-        <FormProvider
+        <CustomFormProvider
             removeOptional={true}
             validationSchema={formSchema}
             {...formMethods}
@@ -916,7 +914,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     </>
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

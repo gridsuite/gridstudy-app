@@ -6,48 +6,49 @@
  */
 
 import {
+    CustomFormProvider,
     SelectInput,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Grid, Button, DialogActions } from '@mui/material';
+import { Button, DialogActions, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
-    CONTINGENCIES,
+    ACTIVATED,
+    BRANCHES,
     CONTAINER_ID,
     CONTAINER_NAME,
-    ID,
-    MONITORED_BRANCHES,
-    NAME,
-    ACTIVATED,
-    PROVIDER,
-    GENERATORS_CAPPINGS,
+    CONTINGENCIES,
     GENERATION_STAGES_KIND,
     GENERATION_STAGES_PERCENT_MAXP_1,
     GENERATION_STAGES_PERCENT_MAXP_2,
     GENERATION_STAGES_PERCENT_MAXP_3,
-    GENERATORS_CAPPINGS_KIND,
+    GENERATORS_CAPPINGS,
     GENERATORS_CAPPINGS_FILTER,
-    MONITORED_BRANCHES_IST_N,
-    MONITORED_BRANCHES_LIMIT_NAME_N,
+    GENERATORS_CAPPINGS_KIND,
+    GENERATORS_LIMIT,
+    ID,
+    MONITORED_BRANCHES,
     MONITORED_BRANCHES_COEFF_N,
-    MONITORED_BRANCHES_IST_N_1,
-    MONITORED_BRANCHES_LIMIT_NAME_N_1,
     MONITORED_BRANCHES_COEFF_N_1,
+    MONITORED_BRANCHES_IST_N,
+    MONITORED_BRANCHES_IST_N_1,
+    MONITORED_BRANCHES_LIMIT_NAME_N,
+    MONITORED_BRANCHES_LIMIT_NAME_N_1,
+    NAME,
+    PMAX_PERCENTS,
+    PMAX_PERCENTS_INDEX,
+    PROVIDER,
     SENSITIVITY_THRESHOLD,
     STAGES_DEFINITION,
-    STAGES_SELECTION,
     STAGES_DEFINITION_GENERATORS,
-    PMAX_PERCENTS,
-    GENERATORS_LIMIT,
     STAGES_DEFINITION_INDEX,
-    PMAX_PERCENTS_INDEX,
-    BRANCHES,
+    STAGES_SELECTION,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
@@ -57,16 +58,16 @@ import {
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import { LineSeparator } from '../../dialogUtils';
 import {
-    getGenerationStagesDefinitionParams,
-    getGenerationStagesDefinitionFormSchema,
-    getGenerationStagesSelectionParams,
-    getGenerationStagesSelectionFormSchema,
-    getGeneratorsCappingsParams,
-    getGeneratorsCappingsFormSchema,
-    getMonitoredBranchesParams,
-    getMonitoredBranchesFormSchema,
-    getContingenciesParams,
     getContingenciesFormSchema,
+    getContingenciesParams,
+    getGenerationStagesDefinitionFormSchema,
+    getGenerationStagesDefinitionParams,
+    getGenerationStagesSelectionFormSchema,
+    getGenerationStagesSelectionParams,
+    getGeneratorsCappingsFormSchema,
+    getGeneratorsCappingsParams,
+    getMonitoredBranchesFormSchema,
+    getMonitoredBranchesParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 
@@ -475,7 +476,7 @@ export const NonEvacuatedEnergyParameters = ({
 
     return (
         <>
-            <FormProvider validationSchema={formSchema} {...formMethods}>
+            <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container spacing={1} paddingTop={1}>
                     <Grid item xs={8} sx={styles.parameterName}>
                         <FormattedMessage id="Provider" />
@@ -525,7 +526,7 @@ export const NonEvacuatedEnergyParameters = ({
                         </SubmitButton>
                     </DialogActions>
                 </Grid>
-            </FormProvider>
+            </CustomFormProvider>
         </>
     );
 };

@@ -7,6 +7,9 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
+import { createFilter } from '../explore';
+import { NAME } from '../../components/utils/field-constants.js';
+import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -64,8 +67,9 @@ export function fetchVoltageLevelEquipments(
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map' +
-        '/voltage-level-equipments/' +
+        '/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
+        '/equipments' +
         '?' +
         getQueryParamsList(substationsIds, 'substationId') +
         urlSearchParams.toString();
@@ -91,8 +95,11 @@ export function fetchEquipmentsIds(
         'equipments-ids' +
         '?' +
         'equipmentType=' +
-        equipmentType +
-        getQueryParamsList(substationsIds, 'substationId');
+        equipmentType;
+    if (substationsIds !== undefined && substationsIds.length > 0) {
+        fetchEquipmentsUrl +=
+            '&' + getQueryParamsList(substationsIds, 'substationsIds');
+    }
 
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
@@ -136,6 +143,78 @@ export function fetchAllCountries(studyUuid, currentNodeUuid) {
         '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
+}
+
+/**
+ * Creates an object that represents a list of equipment identifiers.
+ *
+ * @param {string} equipmentType - The type of the equipment.
+ * @param {Array} equipmentList - The list of equipment. Each equipment is a string representing the equipment ID
+ *
+ * @returns {Object} An object with the following properties:
+ * - type: A string that is always 'IDENTIFIER_LIST'.
+ * - equipmentType: The type of the equipment, same as the input parameter.
+ * - filterEquipmentsAttributes: An array of objects. Each object has a single property 'equipmentID' which is the ID of an equipment. The IDs are extracted from the input equipmentList.
+ */
+function createEquipmentIdentifierList(equipmentType, equipmentList) {
+    return {
+        type: 'IDENTIFIER_LIST',
+        equipmentType: equipmentType,
+        filterEquipmentsAttributes: equipmentList.map((eqId) => {
+            return { equipmentID: eqId };
+        }),
+    };
+}
+
+export async function createMapFilter(
+    filter,
+    distDir,
+    studyUuid,
+    currentNodeUuid,
+    selectedEquipmentsIds
+) {
+    let equipmentFilters = [];
+    switch (filter.equipmentType) {
+        case EQUIPMENT_TYPES.SUBSTATION:
+        case EQUIPMENT_TYPES.LINE:
+            equipmentFilters = createEquipmentIdentifierList(
+                filter.equipmentType,
+                selectedEquipmentsIds
+            );
+            break;
+
+        default:
+            if (selectedEquipmentsIds.length === 0) {
+                throw new Error('EmptySelection');
+            }
+
+            const elementsIds = await fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                selectedEquipmentsIds,
+                filter.equipmentType,
+                false
+            );
+
+            equipmentFilters = createEquipmentIdentifierList(
+                filter.equipmentType,
+                elementsIds
+            );
+            break;
+    }
+    if (
+        equipmentFilters.filterEquipmentsAttributes === undefined ||
+        equipmentFilters.filterEquipmentsAttributes?.length === 0
+    ) {
+        throw new Error('EmptySelection');
+    }
+
+    await createFilter(
+        equipmentFilters,
+        filter[NAME],
+        '',
+        distDir.id?.toString() ?? ''
+    );
 }
 
 export function fetchAllNominalVoltages(studyUuid, currentNodeUuid) {
