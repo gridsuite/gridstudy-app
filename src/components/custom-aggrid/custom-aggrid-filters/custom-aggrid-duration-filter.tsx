@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import { ChangeEvent, FunctionComponent, useCallback, useState } from 'react';
 import {
     Grid,
     InputAdornment,
@@ -16,8 +16,10 @@ import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 
 const styles = {
-    iconSize: {
-        fontSize: '1rem',
+    containerStyle: {
+        width: '250px',
+    },
+    iconStyle: {
         padding: '0',
     },
     flexCenter: {
@@ -37,64 +39,79 @@ const styles = {
 };
 
 interface ICustomAggridDurationFilter {
-    value: string | undefined; // duration in seconds as a string
-    onChange: (value: string | undefined) => void;
+    value?: string; // duration in seconds as a string
+    onChange: (value?: string) => void;
 }
 
-const CustomAggridDurationFilter: React.FC<ICustomAggridDurationFilter> = ({
-    value,
-    onChange,
-}) => {
+const CustomAggridDurationFilter: FunctionComponent<
+    ICustomAggridDurationFilter
+> = ({ value, onChange }) => {
     const intl = useIntl();
-    const [minutes, setMinutes] = useState('');
-    const [seconds, setSeconds] = useState('');
 
-    useEffect(() => {
+    // Initialize minutes and seconds based on the initial value prop
+    const parseInitialValue = useCallback(() => {
         if (value !== undefined && value !== '') {
             const numericValue = Number(value);
             if (!isNaN(numericValue)) {
-                const mins = Math.floor(numericValue / 60).toString();
-                const secs = (numericValue % 60).toString();
-                setMinutes(mins);
-                setSeconds(secs);
+                return {
+                    minutes: Math.floor(numericValue / 60).toString(),
+                    seconds: (numericValue % 60).toString(),
+                };
             }
-        } else {
-            setMinutes('');
-            setSeconds('');
         }
+        return { minutes: '', seconds: '' };
     }, [value]);
+    const { minutes: initialMinutes, seconds: initialSeconds } =
+        parseInitialValue();
+    const [minutes, setMinutes] = useState(initialMinutes);
+    const [seconds, setSeconds] = useState(initialSeconds);
 
-    const handleMinutesChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const newValue = event.target.value;
-        setMinutes(newValue);
-        const totalSeconds = Number(newValue) * 60 + Number(seconds);
-        onChange(totalSeconds.toString());
-    };
+    const handleTimeChange = useCallback(
+        (newMinutes: string, newSeconds: string) => {
+            // If both minutes and seconds are empty, clear the value
+            if (newMinutes === '' && newSeconds === '') {
+                onChange('');
+            } else {
+                const totalSeconds =
+                    Number(newMinutes) * 60 + Number(newSeconds);
+                onChange(totalSeconds.toString());
+            }
+        },
+        [onChange]
+    );
 
-    const handleSecondsChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const newValue = event.target.value;
-        if (Number(newValue) > 59) {
-            return;
-        } // Prevents seconds from being greater than 59
-        setSeconds(newValue);
-        const totalSeconds = Number(minutes) * 60 + Number(newValue);
-        onChange(totalSeconds.toString());
-    };
+    const handleMinutesChange = useCallback(
+        (event: ChangeEvent<HTMLInputElement>) => {
+            const newValue = event.target.value;
+            setMinutes(newValue);
+            handleTimeChange(newValue, seconds);
+        },
+        [handleTimeChange, seconds]
+    );
 
-    const clearValue = () => {
+    const handleSecondsChange = useCallback(
+        (event: ChangeEvent<HTMLInputElement>) => {
+            const newValue = event.target.value;
+            if (Number(newValue) > 59) {
+                return;
+            } // Prevents seconds from being greater than 59
+            setSeconds(newValue);
+            handleTimeChange(minutes, newValue);
+        },
+        [handleTimeChange, minutes]
+    );
+
+    const clearValue = useCallback(() => {
         onChange(''); // Clears the value
         setMinutes(''); // Reset minutes state
         setSeconds(''); // Reset seconds state
-    };
+    }, [onChange]);
 
     return (
-        <Grid item container columns={12} sx={{ width: '250px' }}>
+        <Grid item container columns={12} sx={styles.containerStyle}>
             <Grid item flex={1}>
                 <TextField
+                    fullWidth
                     size="small"
                     value={minutes}
                     onChange={handleMinutesChange}
@@ -114,6 +131,7 @@ const CustomAggridDurationFilter: React.FC<ICustomAggridDurationFilter> = ({
             </Grid>
             <Grid item flex={1}>
                 <TextField
+                    fullWidth
                     size="small"
                     value={seconds}
                     onChange={handleSecondsChange}
@@ -130,7 +148,7 @@ const CustomAggridDurationFilter: React.FC<ICustomAggridDurationFilter> = ({
             </Grid>
             {value !== undefined && value !== '' && (
                 <Grid item xs={1} sx={styles.flexCenter} ml={0.5}>
-                    <IconButton onClick={clearValue} sx={styles.iconSize}>
+                    <IconButton onClick={clearValue} sx={styles.iconStyle}>
                         <ClearIcon />
                     </IconButton>
                 </Grid>
