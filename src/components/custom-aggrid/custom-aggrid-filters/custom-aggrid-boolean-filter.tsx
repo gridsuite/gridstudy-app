@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent } from 'react';
-import { IconButton, MenuItem, Select, Theme } from '@mui/material';
+import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
@@ -14,11 +14,11 @@ import { BooleanFilterValue } from '../custom-aggrid-header-utils';
 import { mergeSx } from 'components/utils/functions';
 
 const styles = {
-    input: (theme: Theme) => ({
+    input: {
         minWidth: '250px',
         maxWidth: '40%',
         paddingRight: '0px',
-    }),
+    },
 };
 
 interface ICustomAggridBooleanFilter {
