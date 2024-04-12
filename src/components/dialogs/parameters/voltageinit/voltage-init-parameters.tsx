@@ -10,6 +10,7 @@ import {
     ElementType,
     SubmitButton,
     useSnackMessage,
+    CustomFormProvider,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import {
@@ -26,7 +27,7 @@ import { styles, TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
     getVoltageInitStudyParameters,
     updateVoltageInitParameters,
@@ -217,8 +218,7 @@ export const VoltageInitParameters = ({
 
     return (
         <>
-            <FormProvider
-                // @ts-ignore
+            <CustomFormProvider
                 validationSchema={voltageInitParametersFormSchema}
                 {...formMethods}
             >
@@ -330,7 +330,7 @@ export const VoltageInitParameters = ({
                         </DialogActions>
                     </Grid>
                 </Grid>
-            </FormProvider>
+            </CustomFormProvider>
 
             {openCreateParameterDialog && (
                 <CreateParameterDialog
