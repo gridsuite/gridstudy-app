@@ -51,7 +51,12 @@ export const useUpdateEquipments = (props: FetchEquipmentsPropsType): void => {
             // study partial update :
             // loading equipments involved in the study modification and updating the network
             const { substationsIds, deletedEquipments, impactedElementTypes } =
-                parseStudyNotification(studyUpdatedForce.eventData.payload);
+                parseStudyNotification(
+                    JSON.parse(
+                        // @ts-ignore
+                        studyUpdatedForce.eventData.payload
+                    ) as NetworkImpactsInfos
+                );
 
             if (impactedElementTypes?.includes(EQUIPMENT_TYPES.SUBSTATION)) {
                 // We need to reload all the network
