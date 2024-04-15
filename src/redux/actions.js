@@ -46,15 +46,15 @@ export function updateEquipments(equipments) {
     };
 }
 
-export const DELETE_EQUIPMENT = 'DELETE_EQUIPMENT';
+export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 
-export function deleteEquipment(equipmentType, equipmentId) {
+export function deleteEquipments(equipments) {
     return {
-        type: DELETE_EQUIPMENT,
-        equipmentId: equipmentId,
-        equipmentType: equipmentType,
+        type: DELETE_EQUIPMENTS,
+        equipments
     };
 }
+
 
 export const RESET_EQUIPMENTS = 'RESET_EQUIPMENTS';
 

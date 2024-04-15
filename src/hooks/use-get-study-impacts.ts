@@ -23,7 +23,7 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
 /**
  * Custom hook that consume the update notification 'study' and return the impacts of the study
  */
-export const useUpdateStudyImpacts = (): StudyImpactsWithReset => {
+export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const studyUpdatedForce = useSelector(
         (state: ReduxState) => state.studyUpdated
     );

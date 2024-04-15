@@ -6,11 +6,11 @@
  */
 
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { useUpdateStudyImpacts } from 'hooks/use-update-study-impacts';
+import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    deleteEquipment,
+    deleteEquipments,
     loadEquipments,
     resetEquipments,
     resetEquipmentsByTypes,
@@ -38,7 +38,7 @@ export const useSpreadsheetEquipments = (
         resetImpactedSubstationsIds,
         resetDeletedEquipments,
         resetImpactedElementTypes,
-    } = useUpdateStudyImpacts();
+    } = useGetStudyImpacts();
 
     const shouldFetchEquipments = !equipments;
 
@@ -87,8 +87,12 @@ export const useSpreadsheetEquipments = (
             resetImpactedSubstationsIds();
         }
         if (deletedEquipments.length > 0) {
-            deletedEquipments.forEach(({ equipmentType, equipmentId }) => {
-                if (equipmentId && equipmentType) {
+            const equipmentsToDelete = deletedEquipments
+                .filter(
+                    ({ equipmentType, equipmentId }) =>
+                        equipmentType && equipmentId
+                )
+                .map(({ equipmentType, equipmentId }) => {
                     console.info(
                         'removing equipment with id=',
                         equipmentId,
@@ -96,9 +100,13 @@ export const useSpreadsheetEquipments = (
                         equipmentType,
                         ' from the network'
                     );
-                    dispatch(deleteEquipment(equipmentType, equipmentId));
-                }
-            });
+                    return { equipmentType, equipmentId };
+                });
+
+            if (equipmentsToDelete.length > 0) {
+                dispatch(deleteEquipments(equipmentsToDelete));
+            }
+
             resetDeletedEquipments();
         }
     }, [

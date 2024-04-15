@@ -56,7 +56,7 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
-import { useUpdateStudyImpacts } from 'hooks/use-update-study-impacts';
+import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -698,7 +698,7 @@ export const NetworkMapTab = ({
         resetImpactedSubstationsIds,
         resetDeletedEquipments,
         resetImpactedElementTypes,
-    } = useUpdateStudyImpacts();
+    } = useGetStudyImpacts();
 
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -727,10 +727,10 @@ export const NetworkMapTab = ({
                 EQUIPMENT_TYPES.TIE_LINE,
                 EQUIPMENT_TYPES.HVDC_LINE,
             ];
-            const impactMapEquipmentTypes = impactedElementTypes?.filter(
+            const impactedMapEquipmentTypes = impactedElementTypes?.filter(
                 (type) => mapEquipmentsTypes.includes(type)
             );
-            const isMapCollectionImpact = impactMapEquipmentTypes?.length > 0;
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
             const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
 
             if (!isMapCollectionImpact && !hasSubstationsImpacted) {

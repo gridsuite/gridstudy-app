@@ -30,7 +30,6 @@ import {
     COMPONENT_LIBRARY,
     CURRENT_TREE_NODE,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    DELETE_EQUIPMENT,
     DIAGONAL_LABEL,
     ENABLE_DEVELOPER_MODE,
     FAVORITE_CONTINGENCY_LISTS,
@@ -95,6 +94,7 @@ import {
     TOGGLE_PIN_DIAGRAM,
     UPDATE_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
+    DELETE_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1074,31 +1074,38 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(DELETE_EQUIPMENT, (state, action) => {
-        const equipmentToDeleteId = action.equipmentId;
-        const equipmentToDeleteType = action.equipmentType;
+    builder.addCase(DELETE_EQUIPMENTS, (state, action) => {
+        action.equipments.forEach(
+            ({
+                equipmentType: equipmentToDeleteType,
+                equipmentId: equipmentToDeleteId,
+            }) => {
+                const currentEquipments =
+                    state.spreadsheetNetwork[equipmentToDeleteType];
+                if (currentEquipments != null) {
+                    // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
+                    if (
+                        equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL
+                    ) {
+                        const currentSubstations =
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.SUBSTATION
+                            ];
+                        if (currentSubstations != null) {
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.SUBSTATION
+                            ] = updateSubstationAfterVLDeletion(
+                                currentSubstations,
+                                equipmentToDeleteId
+                            );
+                        }
+                    }
 
-        const currentEquipments =
-            state.spreadsheetNetwork[equipmentToDeleteType];
-        if (currentEquipments != null) {
-            // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-            if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
-                const currentSubstations =
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION];
-                if (currentSubstations != null) {
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
-                        updateSubstationAfterVLDeletion(
-                            currentSubstations,
-                            equipmentToDeleteId
-                        );
+                    state.spreadsheetNetwork[equipmentToDeleteType] =
+                        deleteEquipment(currentEquipments, equipmentToDeleteId);
                 }
             }
-
-            state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
-                currentEquipments,
-                equipmentToDeleteId
-            );
-        }
+        );
     });
 
     builder.addCase(RESET_EQUIPMENTS, (state) => {
