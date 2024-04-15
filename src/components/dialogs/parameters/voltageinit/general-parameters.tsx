@@ -16,8 +16,8 @@ import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { REACTIVE_SLACKS_THRESHOLD } from '../../../utils/field-constants';
 import { ReactivePowerAdornment } from '../../dialogUtils';
+import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();
@@ -36,11 +36,7 @@ export const GeneralParameters = () => {
     );
 
     return (
-        <Grid
-            style={{
-                paddingTop: '10px',
-            }}
-        >
+        <Grid>
             <Alert
                 sx={styles.adjustExistingLimitsInfo}
                 severity="info"

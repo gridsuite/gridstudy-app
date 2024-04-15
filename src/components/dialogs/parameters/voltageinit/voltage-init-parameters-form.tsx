@@ -13,7 +13,6 @@ import {
     ID,
     LOW_VOLTAGE_LIMIT,
     NAME,
-    REACTIVE_SLACKS_THRESHOLD,
     SELECTED,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
@@ -21,6 +20,7 @@ import {
     VOLTAGE_LIMITS_MODIFICATION,
 } from '../../../utils/field-constants';
 import { isBlankOrEmpty } from '../../../utils/validation-functions';
+import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
 
 export const GENERAL = 'GENERAL';
 export const GENERAL_APPLY_MODIFICATIONS = 'GENERAL_APPLY_MODIFICATIONS';

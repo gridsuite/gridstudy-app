@@ -320,22 +320,18 @@ export function StudyContainer({ view, onChangeTab }) {
                 return;
             }
             const payload = JSON.parse(eventData.payload);
-            if (payload.alertLevel === 'INFO') {
-                snackInfo({
-                    messageId: payload.messageId,
-                    messageValues: payload.attributes,
-                });
-            } else if (payload.alertLevel === 'WARNING') {
-                snackWarning({
-                    messageId: payload.messageId,
-                    messageValues: payload.attributes,
-                });
+            let snackMethod;
+            if (payload.alertLevel === 'WARNING') {
+                snackMethod = snackWarning;
             } else if (payload.alertLevel === 'ERROR') {
-                snackError({
-                    messageId: payload.messageId,
-                    messageValues: payload.attributes,
-                });
+                snackMethod = snackError;
+            } else {
+                snackMethod = snackInfo;
             }
+            snackMethod({
+                messageId: payload.messageId,
+                messageValues: payload.attributes,
+            });
         },
         [snackInfo, snackWarning, snackError, userName]
     );

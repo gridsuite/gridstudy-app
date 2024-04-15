@@ -259,8 +259,6 @@ export const CONNECT = 'connect';
 export const CONTAINER_ID = 'containerId';
 export const CONTAINER_NAME = 'containerName';
 
-export const REACTIVE_SLACKS_THRESHOLD = 'reactiveSlacksThreshold';
-
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
 export const DELETION_SPECIFIC_TYPE = 'specificType';
