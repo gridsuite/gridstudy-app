@@ -209,8 +209,9 @@
     "UnselectAll": "None",
 
     "DrawingPolygonInstruction": "Click on the map to start drawing a polygon. Press Enter to finish or Esc to cancel.",
-    "noOption": "No Options",
-    "maxSelection": "maximum selection",
+
+    "noOption": "No options",
+    "maxSelection": "selections maximum",
     "options": "options",
 
     "DynamicSimulation": "Dynamic simulation",

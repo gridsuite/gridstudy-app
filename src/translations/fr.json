@@ -211,7 +211,7 @@
     "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Entrée pour terminer ou Échap pour annuler.",
 
     "noOption": "Pas d'options",
-    "maxSelection": "selections maximales",
+    "maxSelection": "sélections maximum",
     "options": "options",
 
     "DynamicSimulation": "Simulation dynamique",

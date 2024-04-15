@@ -19,8 +19,8 @@ import { lighten, styled, Theme } from '@mui/material/styles';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import Typography from '@mui/material/Typography';
 import { Checkbox } from '@mui/material';
-import { useDebounce } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -59,37 +59,42 @@ const customOptionStyle = (originalStyle: React.CSSProperties) => ({
         : (originalStyle.top as number) + LISTBOX_PADDING,
 });
 
-interface RowProps<T> {
-    props: React.HTMLAttributes<HTMLElement>;
+interface RowProps<T> extends React.HTMLAttributes<HTMLElement> {
     option: T;
     selected: boolean;
     getOptionLabel: (option: T) => string;
 }
 
-const Row = ({ props, option, selected, getOptionLabel }: RowProps<any>) => {
+const Row = ({
+    option,
+    selected,
+    getOptionLabel,
+    style,
+    ...otherProps
+}: RowProps<any>) => {
     return (
         <Typography
             component="li"
-            {...props}
+            {...otherProps}
             noWrap
-            style={customOptionStyle(props.style ?? {})}
+            style={customOptionStyle(style ?? {})}
         >
             <Checkbox style={styles.checkbox} checked={selected} />
-            {`${getOptionLabel(option)}`}
+            {getOptionLabel(option)}
         </Typography>
     );
 };
 
 const renderRow = (props: ListChildComponentProps) => {
     const { data, index } = props;
-    const [optionProps, option, selected, getOptionLabel] = data[index];
+    const [option, selected, getOptionLabel, otherProps] = data[index];
 
     return (
         <Row
-            props={optionProps}
             option={option}
             selected={selected}
             getOptionLabel={getOptionLabel}
+            {...otherProps}
         />
     );
 };
@@ -188,7 +193,7 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
     options,
     getOptionLabel,
     onChangeCallback,
-    ...rest
+    ...otherProps
 }) => {
     const intl = useIntl();
 
@@ -249,7 +254,7 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
                 setIsFocusInput(false);
                 setMaxLimitReached(false);
             }}
-            color={isMaxLimitReached ? 'info' : undefined}
+            color={isMaxLimitReached ? 'warning' : undefined}
         />
     );
 
@@ -259,13 +264,13 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
         state: AutocompleteRenderOptionState
     ) =>
         virtualize ? (
-            ([props, option, state.selected, getOptionLabel] as React.ReactNode)
+            ([option, state.selected, getOptionLabel, props] as React.ReactNode)
         ) : (
             <Row
-                props={props}
                 option={option}
                 selected={state.selected}
                 getOptionLabel={getOptionLabel}
+                {...props}
             />
         );
 
@@ -293,7 +298,7 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
             renderInput={renderInput}
             renderOption={renderOption}
             limitTags={1}
-            {...rest}
+            {...otherProps}
         />
     );
 };

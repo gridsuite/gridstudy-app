@@ -152,7 +152,7 @@ const EquipmentFilter = forwardRef(
         }, [currentNode.id, studyUuid, snackError]);
 
         // fetching and filtering equipments by filters
-        const filteringEquipmentsAsync = useCallback(() => {
+        const filteringEquipmentsFetcher = useMemo(() => {
             const buildExpertRules = (
                 voltageLevelIds,
                 countries,
@@ -211,17 +211,8 @@ const EquipmentFilter = forwardRef(
                 ),
             };
 
-            // evaluate by filter-server
-            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter)
-                .then((equipments) => {
-                    return equipments;
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FilterEvaluationError',
-                    });
-                });
+            // the fetcher which evaluates a filter by filter-server
+            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter);
         }, [
             studyUuid,
             currentNode.id,
@@ -236,18 +227,25 @@ const EquipmentFilter = forwardRef(
             let ignore = false;
             if (gridReady && countriesFilterReady) {
                 equipmentsRef.current.api.showLoadingOverlay();
-                filteringEquipmentsAsync().then((equipments) => {
-                    // using ignore flag to cancel fetches that do not return in order
-                    if (!ignore) {
-                        setEquipmentRowData(equipments);
-                    }
-                    equipmentsRef.current.api.hideOverlay();
-                });
+                filteringEquipmentsFetcher
+                    .then((equipments) => {
+                        // using ignore flag to cancel fetches that do not return in order
+                        if (!ignore) {
+                            setEquipmentRowData(equipments);
+                        }
+                        equipmentsRef.current.api.hideOverlay();
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'FilterEvaluationError',
+                        });
+                    });
             }
             return () => {
                 ignore = true;
             };
-        }, [filteringEquipmentsAsync, gridReady, countriesFilterReady]);
+        }, [filteringEquipmentsFetcher, gridReady, countriesFilterReady]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
