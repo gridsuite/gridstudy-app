@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -21,19 +21,20 @@ import {
     FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
     MARGINAL_COST,
+    MAX_Q,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
+    MIN_Q,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    MAX_Q,
-    MIN_Q,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
@@ -41,7 +42,6 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-    REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
@@ -73,11 +73,11 @@ import { modifyGenerator } from '../../../../../services/study/network-modificat
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    mergeModificationAndEquipmentProperties,
     emptyProperties,
     getPropertiesFromModification,
-    toModificationProperties,
+    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
+    toModificationProperties,
 } from '../../common/properties/property-utils';
 
 const emptyFormData = {
@@ -447,7 +447,7 @@ const GeneratorModificationDialog = ({
     });
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
@@ -491,7 +491,7 @@ const GeneratorModificationDialog = ({
                     />
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

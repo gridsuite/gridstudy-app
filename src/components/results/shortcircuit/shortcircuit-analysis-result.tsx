@@ -32,6 +32,7 @@ import {
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
     mappingTabs,
+    convertFilterValues,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -146,12 +147,16 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
+        const updatedFilters = filterSelector
+            ? convertFilterValues(filterSelector)
+            : null;
+
         const selector = {
             page,
             size: rowsPerPage,
-            filter: filterSelector
+            filter: updatedFilters
                 ? mapFieldsToColumnsFilter(
-                      filterSelector,
+                      updatedFilters,
                       fromFrontColumnToBackKeys
                   )
                 : null,

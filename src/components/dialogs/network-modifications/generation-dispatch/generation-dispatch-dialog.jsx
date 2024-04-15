@@ -5,25 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
-    LOSS_COEFFICIENT,
     DEFAULT_OUTAGE_RATE,
-    GENERATORS_WITHOUT_OUTAGE,
-    GENERATORS_WITH_FIXED_ACTIVE_POWER,
-    ID,
-    NAME,
+    FREQUENCY_RESERVE,
     GENERATORS_FILTERS,
     GENERATORS_FREQUENCY_RESERVES,
-    FREQUENCY_RESERVE,
-    SUBSTATIONS_GENERATORS_ORDERING,
+    GENERATORS_WITH_FIXED_ACTIVE_POWER,
+    GENERATORS_WITHOUT_OUTAGE,
+    ID,
+    LOSS_COEFFICIENT,
+    NAME,
     SUBSTATION_IDS,
+    SUBSTATIONS_GENERATORS_ORDERING,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import ModificationDialog from '../../commons/modificationDialog';
@@ -181,7 +181,7 @@ const GenerationDispatchDialog = ({
     });
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
@@ -204,7 +204,7 @@ const GenerationDispatchDialog = ({
                     studyUuid={studyUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
