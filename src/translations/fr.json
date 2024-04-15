@@ -208,6 +208,8 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
+    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Entrée pour terminer ou Échap pour annuler.",
+
     "noOption": "Pas d'options",
     "maxSelection": "selections maximales",
     "options": "options",
@@ -334,6 +336,7 @@
     "DynamicSimulationAdd": "Ajouter",
     "DynamicSimulationClose": "Fermer",
     "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
+    "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -612,6 +615,7 @@
     "ConnectedComponent": "Composante connexe",
     "SynchronousComponent": "Composante synchrone",
     "Setpoints": "Consignes",
+    "EmptySelection": "Aucun équipement n'est selectionné",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
@@ -627,6 +631,8 @@
     "SUBSTATION": "Site",
     "VOLTAGE_LEVEL": "Poste",
     "LINE": "Ligne",
+    "TIE_LINE": "Ligne d'interconnexion",
+    "SWITCH": "disjoncteur",
     "TWO_WINDINGS_TRANSFORMER": "Transformateur à 2 enroulements",
     "THREE_WINDINGS_TRANSFORMER": "Transformateur à 3 enroulements",
     "GENERATOR": "Groupe",
@@ -929,6 +935,9 @@
     "variations": "Variations",
     "GeneratorScalingError": "Erreur lors de la création de la variation du plan de production",
     "AllExplicitNamingFiltersError": "Tous les types de filtres doivent être par nommage lorsque le mode de variation est empilement ou ventilation",
+    "FilterCreationError": "Erreur lors de la création d'un filtre",
+    "FilterCreationSuccess": "Filtre créé avec succès",
+    "FilterCreationIgnored": "La création du filtre n'a pas abouti",
 
     "Tap": "Prise",
     "DeltaResistance": "Δ Résistance (%)",
@@ -1091,6 +1100,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "P cible",
     "CreateVariation": "Ajouter Variation",
+    "createNewFilter": "Créer un filtre",
     "ActiveVariationMode": "Mode variation de l'actif",
     "ReactiveVariationMode": "Mode variation du réactif",
     "RegularDistribution": "Équirépartition",
@@ -1346,5 +1356,6 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : "
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+    "TieLines": "Interconnexions"
 }

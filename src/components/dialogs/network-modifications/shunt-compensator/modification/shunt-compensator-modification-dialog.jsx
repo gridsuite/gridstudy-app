@@ -5,24 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import {
+    ADDITIONAL_PROPERTIES,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     EQUIPMENT_NAME,
-    MAXIMUM_SECTION_COUNT,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
+    MAXIMUM_SECTION_COUNT,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
-    ADDITIONAL_PROPERTIES,
 } from '../../../../utils/field-constants';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -261,7 +261,7 @@ const ShuntCompensatorModificationDialog = ({
     );
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             {...formMethods}
             removeOptional={true}
@@ -305,7 +305,7 @@ const ShuntCompensatorModificationDialog = ({
                         />
                     )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

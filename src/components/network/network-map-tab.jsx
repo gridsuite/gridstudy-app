@@ -31,7 +31,12 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import {
+    resetMapReloaded,
+    setMapDataLoading,
+    setStudyDisplayMode,
+    STUDY_DISPLAY_MODE,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -64,19 +69,20 @@ const styles = {
         bottom: '30px',
         zIndex: 0,
         '&:hover': {
-            zIndex: 1,
+            zIndex: 2,
         },
     },
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
-        zIndex: 1,
+        zIndex: 2,
     },
 };
 
 const NODE_CHANGED_ERROR =
     'Node has changed or is not built anymore. The Promise is rejected.';
 export const NetworkMapTab = ({
+    networkMapRef,
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
@@ -91,6 +97,7 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     setErrorMessage,
+    onDrawPolygonModeActive,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -178,6 +185,7 @@ export const NetworkMapTab = ({
         choiceVoltageLevelsSubstationId,
         setChoiceVoltageLevelsSubstationId,
     ] = useState(null);
+    const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef(null);
@@ -979,6 +987,7 @@ export const NetworkMapTab = ({
 
     const renderMap = () => (
         <NetworkMap
+            ref={networkMapRef}
             mapEquipments={mapEquipments}
             geoData={geoData}
             updatedLines={[
@@ -1030,6 +1039,16 @@ export const NetworkMapTab = ({
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
+            onDrawPolygonModeActive={(active) => {
+                setIsDrawingPolygon(active);
+                onDrawPolygonModeActive(active);
+            }}
+            onPolygonChanged={(features) => {
+                //check if the object is not empty
+                if (Object.keys(features).length !== 0) {
+                    dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
+                }
+            }}
         />
     );
 
@@ -1045,16 +1064,23 @@ export const NetworkMapTab = ({
         );
     }
 
+    const shouldDisableMapInteraction =
+        !isDrawingPolygon && studyDisplayMode !== STUDY_DISPLAY_MODE.DRAW;
     return (
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {renderEquipmentMenu()}
-            {modificationDialogOpen && renderModificationDialog()}
-            {deletionDialogOpen && renderDeletionDialog()}
-            {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
+            {shouldDisableMapInteraction && (
+                <>
+                    {renderEquipmentMenu()}
+                    {modificationDialogOpen && renderModificationDialog()}
+                    {deletionDialogOpen && renderDeletionDialog()}
+                    {choiceVoltageLevelsSubstationId &&
+                        renderVoltageLevelChoice()}
+                </>
+            )}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
         </>
@@ -1072,6 +1098,7 @@ NetworkMapTab.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
+    onDrawPolygonModeActive: PropTypes.func,
 };
 
 export default NetworkMapTab;
