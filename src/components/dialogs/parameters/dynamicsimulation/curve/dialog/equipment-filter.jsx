@@ -317,14 +317,14 @@ const EquipmentFilter = forwardRef(
             <>
                 {/* Equipment type */}
                 <Grid item container sx={styles.criteria}>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurveEquipmentType'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={8}>
                         <Select
                             labelId={'DynamicSimulationCurveEquipmentType'}
                             value={equipmentType}
@@ -342,14 +342,14 @@ const EquipmentFilter = forwardRef(
                 </Grid>
                 {/* Post */}
                 <Grid item container sx={styles.criteria}>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurvePost'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={8}>
                         <CheckboxAutocomplete
                             id="voltage-level"
                             virtualize
@@ -362,14 +362,14 @@ const EquipmentFilter = forwardRef(
                 </Grid>
                 {/* Country */}
                 <Grid item container sx={styles.criteria}>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurveCountry'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={8}>
                         <CountryAutocomplete
                             id="country"
                             options={countries}
@@ -379,14 +379,14 @@ const EquipmentFilter = forwardRef(
                 </Grid>
                 {/* Tension */}
                 <Grid item container sx={styles.criteria}>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurveTension'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={8}>
                         <CheckboxAutocomplete
                             id="nominal-voltage"
                             options={nominalVoltages}
