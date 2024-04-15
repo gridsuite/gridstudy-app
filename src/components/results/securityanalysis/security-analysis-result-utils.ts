@@ -733,8 +733,6 @@ export const convertFilterValues = (
                         intl
                     ),
                 };
-            case 'acceptableDuration':
-                return { ...filter, value: parseDuration(filter.value) };
             default:
                 return filter;
         }
