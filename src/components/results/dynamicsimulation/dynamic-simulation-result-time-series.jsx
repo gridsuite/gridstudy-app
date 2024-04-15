@@ -195,7 +195,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
                                 <DynamicSimulationResultChart
                                     groupId={`${tab.id}`}
                                     timeseriesMetadatas={
-                                        result.timeseriesMetadatas
+                                        result?.timeseriesMetadatas
                                     }
                                     selected={selectedIndex === index}
                                     loadTimeSeries={loadTimeSeries}
