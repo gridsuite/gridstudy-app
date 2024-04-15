@@ -51,10 +51,9 @@ export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 export function deleteEquipments(equipments) {
     return {
         type: DELETE_EQUIPMENTS,
-        equipments
+        equipments,
     };
 }
-
 
 export const RESET_EQUIPMENTS = 'RESET_EQUIPMENTS';
 
