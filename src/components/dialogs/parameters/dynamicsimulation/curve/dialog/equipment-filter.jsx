@@ -217,7 +217,6 @@ const EquipmentFilter = forwardRef(
             studyUuid,
             currentNode.id,
             equipmentType,
-            snackError,
             selectedVoltageLevelIds,
             selectedCountries,
             selectedNominalVoltages,
@@ -245,7 +244,12 @@ const EquipmentFilter = forwardRef(
             return () => {
                 ignore = true;
             };
-        }, [filteringEquipmentsFetcher, gridReady, countriesFilterReady]);
+        }, [
+            filteringEquipmentsFetcher,
+            gridReady,
+            countriesFilterReady,
+            snackError,
+        ]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
