@@ -35,6 +35,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
+    FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
@@ -42,7 +43,10 @@ import {
     FilterPropsType,
 } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { translateLimitName } from '../common/utils';
+import {
+    translateLimitNameFrontToBack,
+    translateLimitNameBackToFront,
+} from '../common/utils';
 import {
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -93,7 +97,7 @@ export const flattenNmKResultsContingencies = (
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    limitName: translateLimitName(
+                    limitName: translateLimitNameBackToFront(
                         limitViolation.limitName,
                         intl
                     ),
@@ -141,7 +145,7 @@ export const flattenNmKResultsConstraints = (
                                   id: limitViolation.limitType,
                               })
                             : '',
-                        limitName: translateLimitName(
+                        limitName: translateLimitNameBackToFront(
                             limitViolation.limitName,
                             intl
                         ),
@@ -206,10 +210,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterProps,
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterComparators: [
-                FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                FILTER_TEXT_COMPARATORS.CONTAINS,
-            ],
+            filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
         },
     }),
 
@@ -346,10 +347,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
+                filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -488,10 +486,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
+                filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -722,6 +717,28 @@ export const mappingColumnToField = (resultType: RESULT_TYPE) => {
         case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
             return FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS;
     }
+};
+
+export const convertFilterValues = (
+    intl: IntlShape,
+    filterSelector: FilterSelectorType[]
+) => {
+    return filterSelector.map((filter) => {
+        switch (filter.column) {
+            case 'limitName':
+                return {
+                    ...filter,
+                    value: translateLimitNameFrontToBack(
+                        filter.value as string,
+                        intl
+                    ),
+                };
+            case 'acceptableDuration':
+                return { ...filter, value: parseDuration(filter.value) };
+            default:
+                return filter;
+        }
+    });
 };
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
