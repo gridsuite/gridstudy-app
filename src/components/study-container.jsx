@@ -54,7 +54,6 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
-import { useUpdateEquipments } from 'hooks/use-update-equipments';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -236,7 +235,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentNodeRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id);
-    useUpdateEquipments({ studyUuid, currentNodeUuid: currentNode?.id });
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -313,6 +311,29 @@ export function StudyContainer({ view, onChangeTab }) {
         [snackError, userName]
     );
 
+    const sendAlert = useCallback(
+        (eventData) => {
+            const userId = eventData.headers[USER_HEADER];
+            if (userId !== userName) {
+                return;
+            }
+            const payload = JSON.parse(eventData.payload);
+            let snackMethod;
+            if (payload.alertLevel === 'WARNING') {
+                snackMethod = snackWarning;
+            } else if (payload.alertLevel === 'ERROR') {
+                snackMethod = snackError;
+            } else {
+                snackMethod = snackInfo;
+            }
+            snackMethod({
+                messageId: payload.messageId,
+                messageValues: payload.attributes,
+            });
+        },
+        [snackInfo, snackWarning, snackError, userName]
+    );
+
     const connectNotifications = useCallback(
         (studyUuid) => {
             console.info(`Connecting to notifications '${studyUuid}'...`);
@@ -323,6 +344,11 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
+                const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+                if (updateTypeHeader === 'STUDY_ALERT') {
+                    sendAlert(eventData);
+                    return; // here, we do not want to update the redux state
+                }
                 displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
@@ -354,7 +380,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications]
+        [dispatch, displayErrorNotifications, sendAlert]
     );
 
     const fetchStudyPath = useCallback(() => {
