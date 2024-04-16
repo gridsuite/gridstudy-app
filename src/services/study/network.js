@@ -160,6 +160,10 @@ export function fetchNetworkElementsInfos(
 
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
+    const additionalParams = new Map();
+    additionalParams.forEach((key, value) =>
+        urlSearchParams.append(`additionalParams[${key}]`, value)
+    );
 
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -192,10 +196,14 @@ export function fetchNetworkElementInfos(
     }
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
+    const additionalParams = new Map();
     if (operation) {
-        urlSearchParams.append('operation', operation);
+        additionalParams.set('operation', operation);
     }
 
+    additionalParams.forEach((key, value) =>
+        urlSearchParams.append(`additionalParams[${key}]`, value)
+    );
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/elements/' +
