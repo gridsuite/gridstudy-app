@@ -253,7 +253,7 @@ export function StudyContainer({ view, onChangeTab }) {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
             const userId = eventData.headers[USER_HEADER];
-            if (userId !== userName) {
+            if (userId != null && userId !== userName) {
                 return;
             }
             if (updateTypeHeader === 'loadflow_failed') {
