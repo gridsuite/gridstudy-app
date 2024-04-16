@@ -7,10 +7,10 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../services/utils';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
@@ -141,7 +141,7 @@ const ByFormulaDialog = ({
     );
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -157,7 +157,7 @@ const ByFormulaDialog = ({
             >
                 <ByFormulaForm />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

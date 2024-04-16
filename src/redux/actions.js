@@ -46,13 +46,12 @@ export function updateEquipments(equipments) {
     };
 }
 
-export const DELETE_EQUIPMENT = 'DELETE_EQUIPMENT';
+export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 
-export function deleteEquipment(equipmentType, equipmentId) {
+export function deleteEquipments(equipments) {
     return {
-        type: DELETE_EQUIPMENT,
-        equipmentId: equipmentId,
-        equipmentType: equipmentType,
+        type: DELETE_EQUIPMENTS,
+        equipments,
     };
 }
 
@@ -61,6 +60,15 @@ export const RESET_EQUIPMENTS = 'RESET_EQUIPMENTS';
 export function resetEquipments() {
     return {
         type: RESET_EQUIPMENTS,
+    };
+}
+
+export const RESET_EQUIPMENTS_BY_TYPES = 'RESET_EQUIPMENTS_BY_TYPES';
+
+export function resetEquipmentsByTypes(equipmentTypes) {
+    return {
+        type: RESET_EQUIPMENTS_BY_TYPES,
+        equipmentTypes: equipmentTypes,
     };
 }
 
@@ -505,6 +513,7 @@ export const STUDY_DISPLAY_MODE = {
     MAP: 'Map',
     TREE: 'Tree',
     HYBRID: 'Hybrid',
+    DRAW: 'Draw',
 };
 
 export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
@@ -607,24 +616,6 @@ export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels) {
     return {
         type: NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         nbVoltageLevels: nbVoltageLevels,
-    };
-}
-
-export const SET_UPDATED_SUBSTATIONS_IDS = 'SET_UPDATED_SUBSTATIONS_IDS';
-
-export function setUpdatedSubstationsIds(updatedSubstationsIds) {
-    return {
-        type: SET_UPDATED_SUBSTATIONS_IDS,
-        updatedSubstationsIds: updatedSubstationsIds,
-    };
-}
-
-export const SET_DELETED_EQUIPMENTS = 'SET_DELETED_EQUIPMENTS';
-
-export function setDeletedEquipments(deletedEquipments) {
-    return {
-        type: SET_DELETED_EQUIPMENTS,
-        deletedEquipments: deletedEquipments,
     };
 }
 

@@ -30,7 +30,6 @@ import {
     COMPONENT_LIBRARY,
     CURRENT_TREE_NODE,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    DELETE_EQUIPMENT,
     DIAGONAL_LABEL,
     ENABLE_DEVELOPER_MODE,
     FAVORITE_CONTINGENCY_LISTS,
@@ -70,7 +69,6 @@ import {
     SELECTION_FOR_COPY,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_DELETED_EQUIPMENTS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
@@ -81,7 +79,6 @@ import {
     SET_PARAMS_LOADED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
-    SET_UPDATED_SUBSTATIONS_IDS,
     STOP_DIAGRAM_BLINK,
     STUDY_DISPLAY_MODE,
     STUDY_INDEXATION_STATUS,
@@ -96,6 +93,8 @@ import {
     SUBSTATION_LAYOUT,
     TOGGLE_PIN_DIAGRAM,
     UPDATE_EQUIPMENTS,
+    RESET_EQUIPMENTS_BY_TYPES,
+    DELETE_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -230,6 +229,7 @@ const initialSpreadsheetFilter = {
     [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
     [EQUIPMENT_TYPES.DANGLING_LINE]: [],
     [EQUIPMENT_TYPES.BUS]: [],
+    [EQUIPMENT_TYPES.TIE_LINE]: [],
 };
 
 export const defaultOptionalServicesState = Object.keys(
@@ -272,8 +272,6 @@ const initialState = {
     diagramStates: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
-    updatedSubstationsIds: [],
-    deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
@@ -622,14 +620,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isMapEquipmentsInitialized = action.newValue;
     });
 
-    builder.addCase(SET_UPDATED_SUBSTATIONS_IDS, (state, action) => {
-        state.updatedSubstationsIds = action.updatedSubstationsIds;
-    });
-
-    builder.addCase(SET_DELETED_EQUIPMENTS, (state, action) => {
-        state.deletedEquipments = action.deletedEquipments;
-    });
-
     builder.addCase(SUBSTATION_LAYOUT, (state, action) => {
         state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
     });
@@ -682,9 +672,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CURRENT_TREE_NODE, (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
-        // current node has changed, then will need to reload Geo Data
-        state.updatedSubstationsIds = [];
-        state.deletedEquipments = [];
         state.reloadMap = true;
     });
 
@@ -1087,35 +1074,47 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(DELETE_EQUIPMENT, (state, action) => {
-        const equipmentToDeleteId = action.equipmentId;
-        const equipmentToDeleteType = action.equipmentType;
+    builder.addCase(DELETE_EQUIPMENTS, (state, action) => {
+        action.equipments.forEach(
+            ({
+                equipmentType: equipmentToDeleteType,
+                equipmentId: equipmentToDeleteId,
+            }) => {
+                const currentEquipments =
+                    state.spreadsheetNetwork[equipmentToDeleteType];
+                if (currentEquipments != null) {
+                    // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
+                    if (
+                        equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL
+                    ) {
+                        const currentSubstations =
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.SUBSTATION
+                            ];
+                        if (currentSubstations != null) {
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.SUBSTATION
+                            ] = updateSubstationAfterVLDeletion(
+                                currentSubstations,
+                                equipmentToDeleteId
+                            );
+                        }
+                    }
 
-        const currentEquipments =
-            state.spreadsheetNetwork[equipmentToDeleteType];
-        if (currentEquipments != null) {
-            // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-            if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
-                const currentSubstations =
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION];
-                if (currentSubstations != null) {
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
-                        updateSubstationAfterVLDeletion(
-                            currentSubstations,
-                            equipmentToDeleteId
-                        );
+                    state.spreadsheetNetwork[equipmentToDeleteType] =
+                        deleteEquipment(currentEquipments, equipmentToDeleteId);
                 }
             }
-
-            state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
-                currentEquipments,
-                equipmentToDeleteId
-            );
-        }
+        );
     });
 
     builder.addCase(RESET_EQUIPMENTS, (state) => {
         state.spreadsheetNetwork = { ...initialSpreadsheetNetworkState };
+    });
+    builder.addCase(RESET_EQUIPMENTS_BY_TYPES, (state, action) => {
+        action.equipmentTypes.forEach((equipmentType) => {
+            state.spreadsheetNetwork[equipmentType] = null;
+        });
     });
 
     builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state) => {

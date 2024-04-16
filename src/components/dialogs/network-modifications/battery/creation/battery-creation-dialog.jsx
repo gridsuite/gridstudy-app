@@ -5,40 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
+    ACTIVE_POWER_SET_POINT,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
+    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    CONNECTION_NAME,
-    CONNECTIVITY,
-    ID,
-    VOLTAGE_LEVEL,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTION_DIRECTION,
-    CONNECTION_POSITION,
-    CONNECTED,
-    ACTIVE_POWER_SET_POINT,
-    REACTIVE_POWER_SET_POINT,
-    MAXIMUM_REACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
     FREQUENCY_REGULATION,
-    DROOP,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
+    ID,
+    MAXIMUM_ACTIVE_POWER,
+    MAXIMUM_REACTIVE_POWER,
+    MINIMUM_ACTIVE_POWER,
+    MINIMUM_REACTIVE_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
+    REACTIVE_POWER_SET_POINT,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import {
-    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import BatteryCreationForm from './battery-creation-form';
@@ -47,14 +47,16 @@ import {
     FORM_LOADING_DELAY,
     UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
-import { getActivePowerSetPointSchema } from '../../../set-points/set-points-utils';
+import {
+    getActivePowerSetPointSchema,
+    getFrequencyRegulationSchema,
+} from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
 import { createBattery } from '../../../../../services/study/network-modifications';
@@ -246,7 +248,7 @@ const BatteryCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -274,7 +276,7 @@ const BatteryCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

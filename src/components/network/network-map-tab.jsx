@@ -31,7 +31,12 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import {
+    resetMapReloaded,
+    setMapDataLoading,
+    setStudyDisplayMode,
+    STUDY_DISPLAY_MODE,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -51,6 +56,7 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
+import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -64,19 +70,20 @@ const styles = {
         bottom: '30px',
         zIndex: 0,
         '&:hover': {
-            zIndex: 1,
+            zIndex: 2,
         },
     },
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
-        zIndex: 1,
+        zIndex: 2,
     },
 };
 
 const NODE_CHANGED_ERROR =
     'Node has changed or is not built anymore. The Promise is rejected.';
 export const NetworkMapTab = ({
+    networkMapRef,
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
@@ -91,6 +98,7 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     setErrorMessage,
+    onDrawPolygonModeActive,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -159,14 +167,6 @@ export const NetworkMapTab = ({
         (state) => state.isMapEquipmentsInitialized
     );
 
-    const deletedEquipments = useSelector((state) => state.deletedEquipments);
-
-    const updatedSubstationsIds = useSelector(
-        (state) => state.updatedSubstationsIds
-    );
-    const [isUpdatedSubstationsApplied, setIsUpdatedSubstationsApplied] =
-        useState(false);
-
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
         equipment: null,
@@ -178,6 +178,7 @@ export const NetworkMapTab = ({
         choiceVoltageLevelsSubstationId,
         setChoiceVoltageLevelsSubstationId,
     ] = useState(null);
+    const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef(null);
@@ -690,6 +691,15 @@ export const NetworkMapTab = ({
         }
     }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
 
+    const {
+        impactedSubstationsIds,
+        deletedEquipments,
+        impactedElementTypes,
+        resetImpactedSubstationsIds,
+        resetDeletedEquipments,
+        resetImpactedElementTypes,
+    } = useGetStudyImpacts();
+
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
@@ -707,22 +717,35 @@ export const NetworkMapTab = ({
     const updateMapEquipments = useCallback(
         (currentNodeAtReloadCalling) => {
             if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+                dispatch(resetMapReloaded());
+                return Promise.reject();
+            }
+
+            const mapEquipmentsTypes = [
+                EQUIPMENT_TYPES.SUBSTATION,
+                EQUIPMENT_TYPES.LINE,
+                EQUIPMENT_TYPES.TIE_LINE,
+                EQUIPMENT_TYPES.HVDC_LINE,
+            ];
+            const impactedMapEquipmentTypes = impactedElementTypes?.filter(
+                (type) => mapEquipmentsTypes.includes(type)
+            );
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
+            const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
+
+            if (!isMapCollectionImpact && !hasSubstationsImpacted) {
+                resetImpactedElementTypes();
+                dispatch(resetMapReloaded());
                 return Promise.reject();
             }
             console.info('Update map equipments');
             dispatch(setMapDataLoading(true));
+
             const updatedSubstationsToSend =
-                !refIsMapManualRefreshEnabled.current &&
-                !isUpdatedSubstationsApplied &&
-                updatedSubstationsIds?.length > 0
-                    ? updatedSubstationsIds
+                !isMapCollectionImpact && hasSubstationsImpacted
+                    ? impactedSubstationsIds
                     : undefined;
 
-            if (updatedSubstationsToSend) {
-                setIsUpdatedSubstationsApplied(true);
-            }
-
-            dispatch(resetMapReloaded());
             const isFullReload = !updatedSubstationsToSend;
             const [
                 updatedSubstations,
@@ -734,6 +757,9 @@ export const NetworkMapTab = ({
                 currentNode,
                 updatedSubstationsToSend
             );
+            dispatch(resetMapReloaded());
+            resetImpactedElementTypes();
+            resetImpactedSubstationsIds();
 
             updatedSubstations.then((values) => {
                 if (
@@ -785,10 +811,12 @@ export const NetworkMapTab = ({
         [
             currentNode,
             dispatch,
-            isUpdatedSubstationsApplied,
             mapEquipments,
             studyUuid,
-            updatedSubstationsIds,
+            impactedElementTypes,
+            impactedSubstationsIds,
+            resetImpactedElementTypes,
+            resetImpactedSubstationsIds,
         ]
     );
 
@@ -813,10 +841,6 @@ export const NetworkMapTab = ({
     }, [isInitialized, studyUpdatedForce, updateMapEquipments]);
 
     useEffect(() => {
-        setIsUpdatedSubstationsApplied(false);
-    }, [updatedSubstationsIds]);
-
-    useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
             return;
         }
@@ -827,8 +851,9 @@ export const NetworkMapTab = ({
                     deletedEquipment?.equipmentId
                 );
             });
+            resetDeletedEquipments();
         }
-    }, [deletedEquipments, mapEquipments]);
+    }, [deletedEquipments, mapEquipments, resetDeletedEquipments]);
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
@@ -876,7 +901,6 @@ export const NetworkMapTab = ({
         isMapEquipmentsInitialized,
         isInitialized,
         reloadMapNeeded,
-        updatedSubstationsIds,
     ]);
 
     useEffect(() => {
@@ -979,6 +1003,7 @@ export const NetworkMapTab = ({
 
     const renderMap = () => (
         <NetworkMap
+            ref={networkMapRef}
             mapEquipments={mapEquipments}
             geoData={geoData}
             updatedLines={[
@@ -1030,6 +1055,16 @@ export const NetworkMapTab = ({
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
+            onDrawPolygonModeActive={(active) => {
+                setIsDrawingPolygon(active);
+                onDrawPolygonModeActive(active);
+            }}
+            onPolygonChanged={(features) => {
+                //check if the object is not empty
+                if (Object.keys(features).length !== 0) {
+                    dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
+                }
+            }}
         />
     );
 
@@ -1045,16 +1080,23 @@ export const NetworkMapTab = ({
         );
     }
 
+    const shouldDisableMapInteraction =
+        !isDrawingPolygon && studyDisplayMode !== STUDY_DISPLAY_MODE.DRAW;
     return (
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {renderEquipmentMenu()}
-            {modificationDialogOpen && renderModificationDialog()}
-            {deletionDialogOpen && renderDeletionDialog()}
-            {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
+            {shouldDisableMapInteraction && (
+                <>
+                    {renderEquipmentMenu()}
+                    {modificationDialogOpen && renderModificationDialog()}
+                    {deletionDialogOpen && renderDeletionDialog()}
+                    {choiceVoltageLevelsSubstationId &&
+                        renderVoltageLevelChoice()}
+                </>
+            )}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
         </>
@@ -1072,6 +1114,7 @@ NetworkMapTab.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
+    onDrawPolygonModeActive: PropTypes.func,
 };
 
 export default NetworkMapTab;
