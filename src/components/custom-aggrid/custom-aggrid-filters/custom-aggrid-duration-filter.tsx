@@ -127,7 +127,7 @@ const CustomAggridDurationFilter: FunctionComponent<
                 />
             </Grid>
             <Grid item xs={1} sx={styles.flexCenter}>
-                <Typography variant="h6">:</Typography>
+                <Typography variant="body1">:</Typography>
             </Grid>
             <Grid item flex={1}>
                 <TextField
@@ -148,7 +148,13 @@ const CustomAggridDurationFilter: FunctionComponent<
             </Grid>
             {value !== undefined && value !== '' && (
                 <Grid item xs={1} sx={styles.flexCenter} ml={0.5}>
-                    <IconButton onClick={clearValue} sx={styles.iconStyle}>
+                    <IconButton
+                        onClick={clearValue}
+                        sx={styles.iconStyle}
+                        aria-label={intl.formatMessage({
+                            id: 'resetToDefault',
+                        })}
+                    >
                         <ClearIcon />
                     </IconButton>
                 </Grid>
