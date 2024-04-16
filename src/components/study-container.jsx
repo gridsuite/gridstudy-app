@@ -54,7 +54,6 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
-import { useUpdateEquipments } from 'hooks/use-update-equipments';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -236,7 +235,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentNodeRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id);
-    useUpdateEquipments({ studyUuid, currentNodeUuid: currentNode?.id });
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
