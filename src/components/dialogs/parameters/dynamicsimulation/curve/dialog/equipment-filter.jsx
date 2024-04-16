@@ -56,6 +56,63 @@ const getTopologyKindIfNecessary = (equipmentType) => {
         : {};
 };
 
+const buildExpertRules = (voltageLevelIds, countries, nominalVoltages) => {
+    const rules = [];
+
+    // create rule IN for voltageLevelIds
+    if (voltageLevelIds && voltageLevelIds.length > 0) {
+        const voltageLevelIdsRule = {
+            field: FieldType.VOLTAGE_LEVEL_ID,
+            operator: OperatorType.IN,
+            values: voltageLevelIds,
+            dataType: DataType.STRING,
+        };
+        rules.push(voltageLevelIdsRule);
+    }
+
+    // create rule IN for countries
+    if (countries && countries.length > 0) {
+        const countriesRule = {
+            field: FieldType.COUNTRY,
+            operator: OperatorType.IN,
+            values: countries,
+            dataType: DataType.ENUM,
+        };
+        rules.push(countriesRule);
+    }
+
+    // create rule IN for nominalVoltages
+    if (nominalVoltages && nominalVoltages.length > 0) {
+        const nominalVoltagesRule = {
+            field: FieldType.NOMINAL_VOLTAGE,
+            operator: OperatorType.IN,
+            values: nominalVoltages,
+            dataType: DataType.NUMBER,
+        };
+        rules.push(nominalVoltagesRule);
+    }
+
+    return {
+        combinator: CombinatorType.AND,
+        dataType: DataType.COMBINATOR,
+        rules,
+    };
+};
+
+const buildExpertFilter = (
+    equipmentType,
+    voltageLevelIds,
+    countries,
+    nominalVoltages
+) => {
+    return {
+        ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
+        type: 'EXPERT',
+        equipmentType: equipmentType,
+        rules: buildExpertRules(voltageLevelIds, countries, nominalVoltages),
+    };
+};
+
 const NOMINAL_VOLTAGE_UNIT = 'kV';
 
 const styles = {
@@ -153,63 +210,12 @@ const EquipmentFilter = forwardRef(
 
         // fetching and filtering equipments by filters
         const filteringEquipmentsFetcher = useMemo(() => {
-            const buildExpertRules = (
-                voltageLevelIds,
-                countries,
-                nominalVoltages
-            ) => {
-                const rules = [];
-
-                // create rule IN for voltageLevelIds
-                if (voltageLevelIds && voltageLevelIds.length > 0) {
-                    const voltageLevelIdsRule = {
-                        field: FieldType.VOLTAGE_LEVEL_ID,
-                        operator: OperatorType.IN,
-                        values: voltageLevelIds,
-                        dataType: DataType.STRING,
-                    };
-                    rules.push(voltageLevelIdsRule);
-                }
-
-                // create rule IN for countries
-                if (countries && countries.length > 0) {
-                    const countriesRule = {
-                        field: FieldType.COUNTRY,
-                        operator: OperatorType.IN,
-                        values: countries,
-                        dataType: DataType.ENUM,
-                    };
-                    rules.push(countriesRule);
-                }
-
-                // create rule IN for nominalVoltages
-                if (nominalVoltages && nominalVoltages.length > 0) {
-                    const nominalVoltagesRule = {
-                        field: FieldType.NOMINAL_VOLTAGE,
-                        operator: OperatorType.IN,
-                        values: nominalVoltages,
-                        dataType: DataType.NUMBER,
-                    };
-                    rules.push(nominalVoltagesRule);
-                }
-
-                return {
-                    combinator: CombinatorType.AND,
-                    dataType: DataType.COMBINATOR,
-                    rules,
-                };
-            };
-
-            const expertFilter = {
-                ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
-                type: 'EXPERT',
-                equipmentType: equipmentType,
-                rules: buildExpertRules(
-                    selectedVoltageLevelIds,
-                    selectedCountries,
-                    selectedNominalVoltages
-                ),
-            };
+            const expertFilter = buildExpertFilter(
+                equipmentType,
+                selectedVoltageLevelIds,
+                selectedCountries,
+                selectedNominalVoltages
+            );
 
             // the fetcher which evaluates a filter by filter-server
             return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter);
