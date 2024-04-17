@@ -333,6 +333,7 @@
     "DynamicSimulationClose": "Fermer",
     "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
     "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
+    "FetchVoltageLevelsError": "Une erreur est survenue lors du chargement des postes",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
