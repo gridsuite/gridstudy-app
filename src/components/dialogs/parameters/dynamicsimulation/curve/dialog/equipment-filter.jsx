@@ -252,14 +252,14 @@ const EquipmentFilter = forwardRef(
         useEffect(() => {
             let ignore = false;
             if (gridReady) {
-                equipmentsRef.current.api.showLoadingOverlay();
+                equipmentsRef?.current?.api?.showLoadingOverlay();
                 filteringEquipmentsFetcher
                     .then((equipments) => {
                         // using ignore flag to cancel fetches that do not return in order
                         if (!ignore) {
                             setEquipmentRowData(equipments);
                         }
-                        equipmentsRef.current.api.hideOverlay();
+                        equipmentsRef?.current?.api?.hideOverlay();
                     })
                     .catch((error) => {
                         snackError({
