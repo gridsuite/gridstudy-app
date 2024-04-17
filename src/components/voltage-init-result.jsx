@@ -75,6 +75,11 @@ const styles = {
     totalTypography: {
         marginLeft: '10px',
     },
+    reactiveSlacksOverThresholdTypography: {
+        marginLeft: '80px',
+        fontWeight: 'bold',
+        color: 'orange',
+    },
 };
 
 const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
@@ -184,7 +189,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         ];
     }, []);
 
-    function renderTotalReactiveSlacks(reactiveSlacks) {
+    function renderHeaderReactiveSlacks(result) {
         const calculateTotal = (reactiveSlacks, isPositive) => {
             return reactiveSlacks
                 ? reactiveSlacks
@@ -200,8 +205,8 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 : 0;
         };
 
-        const totalInjection = calculateTotal(reactiveSlacks, false);
-        const totalConsumption = calculateTotal(reactiveSlacks, true);
+        const totalInjection = calculateTotal(result.reactiveSlacks, false);
+        const totalConsumption = calculateTotal(result.reactiveSlacks, true);
         return (
             <Stack
                 direction={'row'}
@@ -223,6 +228,19 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <Typography sx={styles.totalTypography}>
                     {totalConsumption.toFixed(2)} MVar
                 </Typography>
+
+                {result.reactiveSlacksOverThreshold && (
+                    <Typography
+                        sx={styles.reactiveSlacksOverThresholdTypography}
+                    >
+                        <FormattedMessage
+                            id={'REACTIVE_SLACKS_OVER_THRESHOLD'}
+                            values={{
+                                threshold: result.reactiveSlacksThreshold,
+                            }}
+                        />
+                    </Typography>
+                )}
             </Stack>
         );
     }
@@ -279,17 +297,17 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         ];
     }, [intl]);
 
-    function renderReactiveSlacksTable(reactiveSlacks) {
+    function renderReactiveSlacksTable(result) {
         return (
             <>
-                {renderTotalReactiveSlacks(reactiveSlacks)}
+                {renderHeaderReactiveSlacks(result)}
 
                 <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={reactiveSlacksColumnDefs}
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
-                    rows={reactiveSlacks}
+                    rows={result.reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
                     skipColumnHeaders={true}
                 />
@@ -360,12 +378,12 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                             }
                         >
                             <Tab
-                                label={intl.formatMessage({ id: 'Indicators' })}
-                            />
-                            <Tab
                                 label={intl.formatMessage({
                                     id: 'ReactiveSlacks',
                                 })}
+                            />
+                            <Tab
+                                label={intl.formatMessage({ id: 'Indicators' })}
                             />
                             {enableDeveloperMode && (
                                 <Tab
@@ -416,10 +434,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 <div style={{ flexGrow: 1 }}>
                     {result &&
                         tabIndex === 0 &&
-                        renderIndicatorsTable(result.indicators)}
+                        renderReactiveSlacksTable(result)}
                     {result &&
                         tabIndex === 1 &&
-                        renderReactiveSlacksTable(result.reactiveSlacks)}
+                        renderIndicatorsTable(result.indicators)}
                     {result &&
                         tabIndex === 2 &&
                         enableDeveloperMode &&

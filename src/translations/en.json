@@ -337,6 +337,7 @@
     "DynamicSimulationClose": "Close",
     "FetchCountryError": "An error occurred while fetching countries",
     "FetchNominalVoltagesError": "An error occurred while fetching nominal voltages",
+    "FetchVoltageLevelsError": "An error occurred while fetching voltage levels",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
@@ -1357,5 +1358,7 @@
     "frequencyRegulation": "Active power regulation",
     "droop": "Droop",
     "FieldRequired": "At least one value is missing for required field : ",
+    "ReactiveSlacksThreshold": "Alert threshold on reactive slacks",
+    "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
     "TieLines": "Tie lines"
 }

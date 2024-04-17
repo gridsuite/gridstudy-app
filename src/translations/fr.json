@@ -337,6 +337,7 @@
     "DynamicSimulationClose": "Fermer",
     "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
     "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
+    "FetchVoltageLevelsError": "Une erreur est survenue lors du chargement des postes",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -1357,5 +1358,7 @@
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
     "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+    "ReactiveSlacksThreshold": "Seuil d'alerte sur les investissements réactifs",
+    "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
     "TieLines": "Interconnexions"
 }

@@ -59,19 +59,19 @@ const customOptionStyle = (originalStyle: React.CSSProperties) => ({
         : (originalStyle.top as number) + LISTBOX_PADDING,
 });
 
-interface RowProps<T> extends React.HTMLAttributes<HTMLElement> {
-    option: T;
+interface RowProps<Value = any> extends React.HTMLAttributes<HTMLElement> {
+    option: Value;
     selected: boolean;
-    getOptionLabel: (option: T) => string;
+    getOptionLabel: (option: Value) => string;
 }
 
-const Row = ({
+const Row = <Value = any,>({
     option,
     selected,
     getOptionLabel,
     style,
     ...otherProps
-}: RowProps<any>) => {
+}: RowProps<Value>) => {
     return (
         <Typography
             component="li"
@@ -173,28 +173,28 @@ const StyledPopper = styled(Popper)({
     },
 });
 
-interface CheckboxAutocompleteProps<T>
+interface CheckboxAutocompleteProps<Value = any>
     extends Omit<
-        AutocompleteProps<T, true, false, false, any>,
-        'renderInput' | 'renderOption' | 'inputValue'
+        AutocompleteProps<Value, true, false, false, any>,
+        'renderInput' | 'renderOption' | 'inputValue' | 'onChange'
     > {
     id?: string;
     virtualize?: boolean;
     maxSelection?: number;
-    options: T[];
-    getOptionLabel: (option: T) => string;
-    onChangeCallback: (value: T[]) => void;
+    options: Value[];
+    getOptionLabel: (option: Value) => string;
+    onChange: (value: Value[]) => void;
 }
 
-const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
+const CheckboxAutocomplete = <Value = any,>({
     id = '',
     virtualize = false,
     maxSelection = 0,
     options,
     getOptionLabel,
-    onChangeCallback,
+    onChange,
     ...otherProps
-}) => {
+}: CheckboxAutocompleteProps<Value>) => {
     const intl = useIntl();
 
     // used to manage search text
@@ -204,11 +204,11 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
     const [isFocusInput, setIsFocusInput] = useState(false);
     const [isMaxLimitReached, setMaxLimitReached] = useState(false);
 
-    const handleChange = (_event: React.SyntheticEvent, value: any) => {
+    const handleChange = (_event: React.SyntheticEvent, value: Value[]) => {
         if (!maxSelection || value.length <= maxSelection) {
             setMaxLimitReached(false);
             // propagate change to the parent
-            onChangeCallback(value);
+            onChange(value);
         } else {
             setMaxLimitReached(true);
         }
@@ -250,7 +250,7 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
 
     const renderOption = (
         props: React.HTMLAttributes<HTMLElement>,
-        option: any,
+        option: Value,
         state: AutocompleteRenderOptionState
     ) =>
         virtualize ? (
