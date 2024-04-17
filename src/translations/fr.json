@@ -186,6 +186,7 @@
     "VoltageInitParametersGeneralTabLabel": "Général",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Appliquer automatiquement la modification du plan de tension",
     "VoltageInitParametersGeneralSaveInfo": "Les paramètres de cet onglet ne seront pas enregistrés et seront mis aux valeurs par défaut en cas de sélection de paramètres externes",
+    "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Mettre à jour tension des nœuds électriques",
     "VoltageLimits": "Limites de tension",
     "VoltageLevelFilter": "Filtre poste",
     "LowVoltageLimitDefault": "Valeur par défaut limite basse",

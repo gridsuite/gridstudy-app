@@ -186,6 +186,7 @@
     "VoltageInitParametersGeneralTabLabel": "General",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
     "VoltageInitParametersGeneralSaveInfo": "Settings of this tab won't be saved and will be set back to default if choosing from external settings",
+    "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Update bus voltage",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
