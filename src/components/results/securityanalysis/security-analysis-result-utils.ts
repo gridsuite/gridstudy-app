@@ -25,7 +25,6 @@ import {
     ContingencyCellRenderer,
     convertDuration,
     formatNAValue,
-    parseDuration,
 } from 'components/spreadsheet/utils/cell-renderers';
 import {
     fetchSecurityAnalysisAvailableBranchSides,
@@ -734,8 +733,6 @@ export const convertFilterValues = (
                         intl
                     ),
                 };
-            case 'acceptableDuration':
-                return { ...filter, value: parseDuration(filter.value) };
             default:
                 return filter;
         }

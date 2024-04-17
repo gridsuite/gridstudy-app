@@ -22,7 +22,6 @@ import { BranchSide } from '../../utils/constants';
 import {
     convertDuration,
     formatNAValue,
-    parseDuration,
 } from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -252,9 +251,6 @@ export const convertFilterValues = (
                         intl
                     ),
                 };
-            case 'actualOverloadDuration':
-            case 'upComingOverloadDuration':
-                return { ...filter, value: parseDuration(filter.value) };
             default:
                 return filter;
         }
