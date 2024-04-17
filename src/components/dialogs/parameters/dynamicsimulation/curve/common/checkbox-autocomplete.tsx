@@ -20,7 +20,7 @@ import { ListChildComponentProps, VariableSizeList } from 'react-window';
 import Typography from '@mui/material/Typography';
 import { Checkbox } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -80,7 +80,7 @@ const Row = ({
             style={customOptionStyle(style ?? {})}
         >
             <Checkbox style={styles.checkbox} checked={selected} />
-            {getOptionLabel(option)}
+            <OverflowableText text={getOptionLabel(option)} />
         </Typography>
     );
 };
@@ -197,11 +197,6 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
 }) => {
     const intl = useIntl();
 
-    // make autocomplete as a controlled component in order to limit maximum selection
-    const [selectedOptions, setSelectedOptions] = useState<(number | string)[]>(
-        []
-    );
-
     // used to manage search text
     const [inputValue, setInputValue] = useState<string>('');
 
@@ -209,16 +204,11 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
     const [isFocusInput, setIsFocusInput] = useState(false);
     const [isMaxLimitReached, setMaxLimitReached] = useState(false);
 
-    const debouncedOnChangeCallback = useDebounce(onChangeCallback, 500);
-
     const handleChange = (_event: React.SyntheticEvent, value: any) => {
         if (!maxSelection || value.length <= maxSelection) {
             setMaxLimitReached(false);
-            // cache the selected options
-            setSelectedOptions(value);
-
             // propagate change to the parent
-            debouncedOnChangeCallback(value);
+            onChangeCallback(value);
         } else {
             setMaxLimitReached(true);
         }
@@ -291,7 +281,6 @@ const CheckboxAutocomplete: React.FC<CheckboxAutocompleteProps<any>> = ({
             options={options}
             noOptionsText={intl.formatMessage({ id: 'noOption' })}
             getOptionLabel={getOptionLabel}
-            value={selectedOptions}
             onChange={handleChange}
             inputValue={inputValue}
             onBlur={handleBlur}

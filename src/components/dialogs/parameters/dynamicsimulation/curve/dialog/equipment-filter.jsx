@@ -361,6 +361,7 @@ const EquipmentFilter = forwardRef(
                             virtualize
                             maxSelection={10}
                             options={voltageLevelIds}
+                            value={selectedVoltageLevelIds}
                             getOptionLabel={(value) => value}
                             onChangeCallback={handleVoltageLevelChange}
                         />
@@ -379,6 +380,7 @@ const EquipmentFilter = forwardRef(
                         <CountryAutocomplete
                             id="country"
                             options={countries}
+                            value={selectedCountries}
                             onChange={handleCountryChange}
                         />
                     </Grid>
@@ -396,6 +398,7 @@ const EquipmentFilter = forwardRef(
                         <CheckboxAutocomplete
                             id="nominal-voltage"
                             options={nominalVoltages}
+                            value={selectedNominalVoltages}
                             getOptionLabel={(value) =>
                                 `${value} ${NOMINAL_VOLTAGE_UNIT}`
                             }
