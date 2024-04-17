@@ -6,7 +6,7 @@
  */
 
 import { useLocalizedCountries } from '../../../../utils/localized-countries-hook.js';
-import CheckboxAutocomplete from './common/checkbox-autocomplete.tsx';
+import CheckboxAutocomplete from '../../../../utils/checkbox-autocomplete/checkbox-autocomplete.tsx';
 
 const CountryAutocomplete = ({ id, options, onChange }) => {
     const { translate } = useLocalizedCountries();

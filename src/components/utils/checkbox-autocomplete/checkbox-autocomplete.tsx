@@ -7,20 +7,24 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete, {
+import {
+    Autocomplete,
     autocompleteClasses,
     AutocompleteProps,
     AutocompleteRenderInputParams,
     AutocompleteRenderOptionState,
-} from '@mui/material/Autocomplete';
-import Popper from '@mui/material/Popper';
-import { lighten, styled, Theme } from '@mui/material/styles';
-import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import Typography from '@mui/material/Typography';
-import { Checkbox } from '@mui/material';
+    lighten,
+    Popper,
+    styled,
+    TextField,
+    Theme,
+} from '@mui/material';
 import { useIntl } from 'react-intl';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import VirtualizedList from './virtualized-list';
+import CheckboxItem from './checkbox-item';
+
+// the virtualized component is customized from the MUI example
+// https://mui.com/material-ui/react-autocomplete/#virtualization
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -32,137 +36,18 @@ const styles = {
             position: 'absolute',
             width: 'inherit',
             height: 'inherit',
-            zIndex: 20,
+            zIndex: 20, // jump up to avoid input zone pushed down below component
             backgroundColor: lighten(theme.palette.background.default, 0.16),
         },
         '&.Mui-focused': {
             '.MuiInputLabel-root': {
-                zIndex: 21,
+                zIndex: 21, // jump up to show max limit text
                 width: 'auto',
             },
         },
     }),
-    checkbox: {
-        marginRight: 8,
-    },
 };
-
-// the virtualized component is customized from the MUI example
-// https://mui.com/material-ui/react-autocomplete/#virtualization
-
-const LISTBOX_PADDING = 8; // px
-
-const customOptionStyle = (originalStyle: React.CSSProperties) => ({
-    ...originalStyle,
-    top: isNaN(originalStyle.top as number)
-        ? 0
-        : (originalStyle.top as number) + LISTBOX_PADDING,
-});
-
-interface RowProps<Value = any> extends React.HTMLAttributes<HTMLElement> {
-    option: Value;
-    selected: boolean;
-    getOptionLabel: (option: Value) => string;
-}
-
-const Row = <Value = any,>({
-    option,
-    selected,
-    getOptionLabel,
-    style,
-    ...otherProps
-}: RowProps<Value>) => {
-    return (
-        <Typography
-            component="li"
-            {...otherProps}
-            noWrap
-            style={customOptionStyle(style ?? {})}
-        >
-            <Checkbox style={styles.checkbox} checked={selected} />
-            <OverflowableText text={getOptionLabel(option)} />
-        </Typography>
-    );
-};
-
-const renderRow = (props: ListChildComponentProps) => {
-    const { data, index } = props;
-    const [option, selected, getOptionLabel, otherProps] = data[index];
-
-    return (
-        <Row
-            option={option}
-            selected={selected}
-            getOptionLabel={getOptionLabel}
-            {...otherProps}
-        />
-    );
-};
-
-const OuterElementContext = React.createContext({});
-
-const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
-    const outerProps = React.useContext(OuterElementContext);
-    return <div ref={ref} {...props} {...outerProps} />;
-});
-
-function useResetCache(data: any) {
-    const ref = React.useRef<VariableSizeList>(null);
-    React.useEffect(() => {
-        if (ref.current != null) {
-            ref.current.resetAfterIndex(0, true);
-        }
-    }, [data]);
-    return ref;
-}
-
-// Adapter for react-window
-const ListboxComponent = React.forwardRef<
-    HTMLDivElement,
-    React.HTMLAttributes<HTMLElement>
->(function ListboxComponent(props, ref) {
-    const { children, ...other } = props;
-    const itemData: React.ReactElement[] = [];
-    (children as React.ReactElement[]).forEach(
-        (item: React.ReactElement & { children?: React.ReactElement[] }) => {
-            itemData.push(item);
-            itemData.push(...(item.children || []));
-        }
-    );
-
-    const itemCount = itemData.length;
-    const itemSize = 48;
-
-    const getHeight = () => {
-        if (itemCount > 8) {
-            return 8 * itemSize;
-        }
-        return itemData.length * itemSize;
-    };
-
-    const gridRef = useResetCache(itemCount);
-
-    return (
-        <div ref={ref}>
-            <OuterElementContext.Provider value={other}>
-                <VariableSizeList
-                    itemData={itemData}
-                    height={getHeight() + 2 * LISTBOX_PADDING}
-                    width="100%"
-                    ref={gridRef}
-                    outerElementType={OuterElementType}
-                    innerElementType="ul"
-                    itemSize={(_index) => itemSize}
-                    overscanCount={5}
-                    itemCount={itemCount}
-                >
-                    {renderRow}
-                </VariableSizeList>
-            </OuterElementContext.Provider>
-        </div>
-    );
-});
-
+// to reset all default alignments
 const StyledPopper = styled(Popper)({
     [`& .${autocompleteClasses.listbox}`]: {
         boxSizing: 'border-box',
@@ -173,7 +58,7 @@ const StyledPopper = styled(Popper)({
     },
 });
 
-interface CheckboxAutocompleteProps<Value = any>
+interface CheckboxAutocompleteProps<Value>
     extends Omit<
         AutocompleteProps<Value, true, false, false, any>,
         'renderInput' | 'renderOption' | 'inputValue' | 'onChange'
@@ -186,7 +71,7 @@ interface CheckboxAutocompleteProps<Value = any>
     onChange: (value: Value[]) => void;
 }
 
-const CheckboxAutocomplete = <Value = any,>({
+const CheckboxAutocomplete = <Value,>({
     id = '',
     virtualize = false,
     maxSelection = 0,
@@ -256,7 +141,7 @@ const CheckboxAutocomplete = <Value = any,>({
         virtualize ? (
             ([option, state.selected, getOptionLabel, props] as React.ReactNode)
         ) : (
-            <Row
+            <CheckboxItem
                 option={option}
                 selected={state.selected}
                 getOptionLabel={getOptionLabel}
@@ -277,7 +162,7 @@ const CheckboxAutocomplete = <Value = any,>({
             size="small"
             disableListWrap
             PopperComponent={StyledPopper}
-            ListboxComponent={virtualize ? ListboxComponent : undefined}
+            ListboxComponent={virtualize ? VirtualizedList : undefined}
             options={options}
             noOptionsText={intl.formatMessage({ id: 'noOption' })}
             getOptionLabel={getOptionLabel}

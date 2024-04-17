@@ -33,8 +33,8 @@ import {
     FieldType,
     OperatorType,
 } from '../../../../filter/expert/expert-filter.type';
-import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network.js';
-import CheckboxAutocomplete from '../common/checkbox-autocomplete';
+import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network';
+import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -64,7 +64,7 @@ const buildExpertRules = (voltageLevelIds, countries, nominalVoltages) => {
     const rules = [];
 
     // create rule IN for voltageLevelIds
-    if (voltageLevelIds && voltageLevelIds.length > 0) {
+    if (voltageLevelIds?.length) {
         const voltageLevelIdsRule = {
             field: FieldType.VOLTAGE_LEVEL_ID,
             operator: OperatorType.IN,
@@ -75,7 +75,7 @@ const buildExpertRules = (voltageLevelIds, countries, nominalVoltages) => {
     }
 
     // create rule IN for countries
-    if (countries && countries.length > 0) {
+    if (countries?.length) {
         const countriesRule = {
             field: FieldType.COUNTRY,
             operator: OperatorType.IN,
@@ -86,7 +86,7 @@ const buildExpertRules = (voltageLevelIds, countries, nominalVoltages) => {
     }
 
     // create rule IN for nominalVoltages
-    if (nominalVoltages && nominalVoltages.length > 0) {
+    if (nominalVoltages.length) {
         const nominalVoltagesRule = {
             field: FieldType.NOMINAL_VOLTAGE,
             operator: OperatorType.IN,
@@ -141,7 +141,6 @@ const EquipmentFilter = forwardRef(
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
-        const [countriesFilterReady, setCountriesFilterReady] = useState(false);
 
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
@@ -191,8 +190,9 @@ const EquipmentFilter = forwardRef(
             setSelectedCountries(selectedCountries);
         }, []);
 
-        // Load voltage level IDs
+        // fetching options in different criterias
         useEffect(() => {
+            // Load voltage level IDs
             fetchVoltageLevelsListInfos(studyUuid, currentNode.id)
                 .then((voltageLevels) => {
                     const vlMap = new Map();
@@ -206,10 +206,8 @@ const EquipmentFilter = forwardRef(
                         headerId: 'FetchVoltageLevelsError',
                     });
                 });
-        }, [studyUuid, currentNode, snackError]);
 
-        // Load nominal voltages
-        useEffect(() => {
+            // Load nominal voltages
             fetchAllNominalVoltages(studyUuid, currentNode.id)
                 .then((nominalVoltages) => setNominalVoltages(nominalVoltages))
                 .catch((error) => {
@@ -218,27 +216,19 @@ const EquipmentFilter = forwardRef(
                         headerId: 'FetchNominalVoltagesError',
                     });
                 });
-        }, [currentNode.id, studyUuid, snackError]);
 
-        // load countries
-        useEffect(() => {
+            // load countries
             fetchAllCountries(studyUuid, currentNode.id)
-                .then((countryCodes) => {
-                    // update countries states
-                    setCountries(countryCodes);
-
-                    // update loading state
-                    setCountriesFilterReady(true);
-                })
+                .then((countryCodes) => setCountries(countryCodes))
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [currentNode.id, studyUuid, snackError]);
+        }, [studyUuid, currentNode, snackError]);
 
-        // fetching and filtering equipments by filters
+        // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
             const expertFilter = buildExpertFilter(
                 equipmentType,
@@ -258,9 +248,10 @@ const EquipmentFilter = forwardRef(
             selectedNominalVoltages,
         ]);
 
+        // fetching filtered equipments
         useEffect(() => {
             let ignore = false;
-            if (gridReady && countriesFilterReady) {
+            if (gridReady) {
                 equipmentsRef.current.api.showLoadingOverlay();
                 filteringEquipmentsFetcher
                     .then((equipments) => {
@@ -280,12 +271,7 @@ const EquipmentFilter = forwardRef(
             return () => {
                 ignore = true;
             };
-        }, [
-            filteringEquipmentsFetcher,
-            gridReady,
-            countriesFilterReady,
-            snackError,
-        ]);
+        }, [filteringEquipmentsFetcher, gridReady, snackError]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
