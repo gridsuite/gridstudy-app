@@ -14,6 +14,10 @@ import {
 import Alert from '@mui/material/Alert';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
+import { Grid } from '@mui/material';
+import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
+import { ParameterFloat } from '../widget/parameter-float';
+import { ReactivePowerAdornment } from '../../dialogUtils';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();
@@ -32,7 +36,7 @@ export const GeneralParameters = () => {
     );
 
     return (
-        <>
+        <Grid>
             <Alert
                 sx={styles.adjustExistingLimitsInfo}
                 severity="info"
@@ -45,6 +49,12 @@ export const GeneralParameters = () => {
                 label={'VoltageInitParametersGeneralApplyModificationsLabel'}
                 onChange={setApplyModificationsValue}
             />
-        </>
+            <ParameterFloat
+                name={`${GENERAL}.${REACTIVE_SLACKS_THRESHOLD}`}
+                style={styles.parameterName}
+                label={'ReactiveSlacksThreshold'}
+                adornment={ReactivePowerAdornment}
+            />
+        </Grid>
     );
 };
