@@ -78,6 +78,7 @@ const styles = {
     reactiveSlacksOverThresholdTypography: {
         marginLeft: '80px',
         fontWeight: 'bold',
+        color: 'orange',
     },
 };
 
@@ -204,7 +205,6 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 : 0;
         };
 
-        console.log('result = ', result);
         const totalInjection = calculateTotal(result.reactiveSlacks, false);
         const totalConsumption = calculateTotal(result.reactiveSlacks, true);
         return (
@@ -229,12 +229,12 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     {totalConsumption.toFixed(2)} MVar
                 </Typography>
 
-                {result.reactiveSlacksOverThresholdLabel && (
+                {result.reactiveSlacksOverThreshold && (
                     <Typography
                         sx={styles.reactiveSlacksOverThresholdTypography}
                     >
                         <FormattedMessage
-                            id={result.reactiveSlacksOverThresholdLabel}
+                            id={'REACTIVE_SLACKS_OVER_THRESHOLD'}
                             values={{
                                 threshold: result.reactiveSlacksThreshold,
                             }}

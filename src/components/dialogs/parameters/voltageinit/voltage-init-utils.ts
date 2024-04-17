@@ -16,12 +16,11 @@ import {
     NAME,
     PRIORITY,
     SELECTED,
+    UPDATE_BUS_VOLTAGE,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS_DEFAULT,
     VOLTAGE_LIMITS_MODIFICATION,
-    REACTIVE_SLACKS_THRESHOLD,
-    UPDATE_BUS_VOLTAGE,
 } from 'components/utils/field-constants';
 import { UUID } from 'crypto';
 import {
@@ -33,6 +32,7 @@ import {
     TabValue,
     VoltageInitParametersForm,
 } from './voltage-init-parameters-form';
+import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
 
 export type Identifier = {
     [ID]: UUID | null;

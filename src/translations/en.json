@@ -185,8 +185,8 @@
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "VoltageInitParametersGeneralTabLabel": "General",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
-    "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Update bus voltage",
     "VoltageInitParametersGeneralSaveInfo": "Settings of this tab won't be saved and will be set back to default if choosing from external settings",
+    "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Update bus voltage",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
@@ -209,6 +209,7 @@
     "SelectAll": "All",
     "UnselectAll": "None",
 
+    "DrawingPolygonInstruction": "Click on the map to start drawing a polygon. Press Enter to finish or Esc to cancel.",
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -330,7 +331,9 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
-    "DynamicSimulationFetchCountryError": "An error occurred while fetching countries",
+    "FetchCountryError": "An error occurred while fetching countries",
+    "FetchNominalVoltagesError": "An error occurred while fetching nominal voltages",
+    "FetchVoltageLevelsError": "An error occurred while fetching voltage levels",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
@@ -470,6 +473,9 @@
     "LoadFlowResultsStatus": "Status",
     "ComputationResultsLogs": "Logs",
 
+    "results.globalFilter.fillerText": "Country or voltage level",
+    "results.globalFilter.recent": "Recent:",
+
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
     "status": "Status",
@@ -603,6 +609,7 @@
     "ConnectedComponent": "Connected component",
     "SynchronousComponent": "Synchronous component",
     "Setpoints": "Setpoints",
+    "EmptySelection": "No equipment is selected",
     "Connectivity": "Connectivity",
     "connected": "Connected",
     "connected1": "Connected 1",
@@ -621,6 +628,8 @@
     "SUBSTATION": "Substation",
     "VOLTAGE_LEVEL": "Voltage Level",
     "LINE": "Line",
+    "TIE_LINE": "Tie line",
+    "SWITCH": "Switch",
     "TWO_WINDINGS_TRANSFORMER": "Two Windings Transformer",
     "THREE_WINDINGS_TRANSFORMER": "Three Windings Transformer",
     "GENERATOR": "Generator",
@@ -923,6 +932,10 @@
     "GeneratorScalingError": "Error while creating a generator scaling",
     "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
 
+    "FilterCreationError": "Error while creating a filter",
+    "FilterCreationSuccess": "Filter successfully created",
+    "FilterCreationIgnored": "The creation of the filter didn't complete",
+
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
     "DeltaReactance": "Δ Reactance (%)",
@@ -1084,6 +1097,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "Target P",
     "CreateVariation": "Add Variation",
+    "createNewFilter": "Create a filter",
     "ActiveVariationMode": "Active variation mode",
     "ReactiveVariationMode": "Reactive variation mode",
     "RegularDistribution": "Regular distribution",
@@ -1341,6 +1355,6 @@
     "droop": "Droop",
     "FieldRequired": "At least one value is missing for required field : ",
     "ReactiveSlacksThreshold": "Alert threshold on reactive slacks",
-    "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0"
-
+    "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
+    "TieLines": "Tie lines"
 }

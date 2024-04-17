@@ -54,7 +54,6 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
-import { useUpdateEquipments } from 'hooks/use-update-equipments';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -191,9 +190,6 @@ const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
     'study_network_recreation_done';
 const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
 const HEADER_INDEXATION_STATUS = 'indexation_status';
-const HEADER_REACTIVE_SLACKS_OVER_THRESHOLD_LABEL =
-    'REACTIVE_SLACKS_OVER_THRESHOLD';
-const HEADER_REACTIVE_SLACKS_THRESHOLD_VALUE = 'reactiveSlacksThreshold';
 
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -239,7 +235,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentNodeRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id);
-    useUpdateEquipments({ studyUuid, currentNodeUuid: currentNode?.id });
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -258,7 +253,7 @@ export function StudyContainer({ view, onChangeTab }) {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
             const userId = eventData.headers[USER_HEADER];
-            if (userId !== userName) {
+            if (userId != null && userId !== userName) {
                 return;
             }
             if (updateTypeHeader === 'loadflow_failed') {
@@ -312,24 +307,31 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
-            if (
-                updateTypeHeader === 'voltageInit_reactiveSlacksThresholdAlert'
-            ) {
-                snackWarning({
-                    messageId:
-                        eventData.headers[
-                            HEADER_REACTIVE_SLACKS_OVER_THRESHOLD_LABEL
-                        ],
-                    messageValues: {
-                        threshold:
-                            eventData.headers[
-                                HEADER_REACTIVE_SLACKS_THRESHOLD_VALUE
-                            ],
-                    },
-                });
-            }
         },
-        [snackError, snackWarning, userName]
+        [snackError, userName]
+    );
+
+    const sendAlert = useCallback(
+        (eventData) => {
+            const userId = eventData.headers[USER_HEADER];
+            if (userId !== userName) {
+                return;
+            }
+            const payload = JSON.parse(eventData.payload);
+            let snackMethod;
+            if (payload.alertLevel === 'WARNING') {
+                snackMethod = snackWarning;
+            } else if (payload.alertLevel === 'ERROR') {
+                snackMethod = snackError;
+            } else {
+                snackMethod = snackInfo;
+            }
+            snackMethod({
+                messageId: payload.messageId,
+                messageValues: payload.attributes,
+            });
+        },
+        [snackInfo, snackWarning, snackError, userName]
     );
 
     const connectNotifications = useCallback(
@@ -342,6 +344,11 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
+                const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+                if (updateTypeHeader === 'STUDY_ALERT') {
+                    sendAlert(eventData);
+                    return; // here, we do not want to update the redux state
+                }
                 displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
@@ -373,7 +380,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications]
+        [dispatch, displayErrorNotifications, sendAlert]
     );
 
     const fetchStudyPath = useCallback(() => {

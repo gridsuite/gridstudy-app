@@ -21,6 +21,7 @@ import {
     fetchTwoWindingsTransformers,
     fetchVoltageLevels,
     fetchVscConverterStations,
+    fetchTieLines,
 } from '../../services/study/network';
 
 export const EQUIPMENT_FETCHERS = {
@@ -44,4 +45,5 @@ export const EQUIPMENT_FETCHERS = {
     LCC_CONVERTER_STATION: [fetchLccConverterStations],
     SWITCH: [],
     BUS: [fetchBuses],
+    TIE_LINE: [fetchTieLines],
 };

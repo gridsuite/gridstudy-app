@@ -28,6 +28,7 @@ import {
 import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
+import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
 
 const styles = {
     iconSize: {
@@ -72,7 +73,6 @@ const CustomHeaderComponent = ({
         debounceMs = 1000, // used to debounce the api call to not fetch the back end too fast
         filterSelector, // used to detect a tab change on the agGrid table
         updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
-        parser, // Used to convert the value displayed in the table into its actual value
         isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
     } = filterParams;
     const {
@@ -132,9 +132,18 @@ const CustomHeaderComponent = ({
         setSelectedFilterData(value);
 
         debouncedUpdateFilter(field, {
-            value: parser ? parser(value) : value,
+            value: value,
             type: selectedFilterComparator,
             dataType: filterDataType,
+        });
+    };
+
+    const handleFilterDurationChange = (value) => {
+        setSelectedFilterData(value);
+        debouncedUpdateFilter(field, {
+            value: value,
+            type: selectedFilterComparator,
+            dataType: FILTER_DATA_TYPES.NUMBER,
         });
     };
 
@@ -155,7 +164,7 @@ const CustomHeaderComponent = ({
         const newType = event.target.value;
         setSelectedFilterComparator(newType);
         debouncedUpdateFilter(field, {
-            value: parser ? parser(selectedFilterData) : selectedFilterData,
+            value: selectedFilterData,
             type: newType,
             dataType: filterDataType,
         });
@@ -388,24 +397,31 @@ const CustomHeaderComponent = ({
                                     </MenuItem>
                                 ))}
                             </Select>
-                            <TextField
-                                size={'small'}
-                                fullWidth
-                                value={selectedFilterData || ''}
-                                onChange={handleFilterTextChange}
-                                placeholder={intl.formatMessage({
-                                    id: 'filter.filterOoo',
-                                })}
-                                inputProps={{
-                                    type: isNumberInput
-                                        ? FILTER_DATA_TYPES.NUMBER
-                                        : FILTER_DATA_TYPES.TEXT,
-                                }}
-                                sx={mergeSx(
-                                    styles.input,
-                                    isNumberInput && styles.noArrows
-                                )}
-                            />
+                            {isDuration ? (
+                                <CustomAggridDurationFilter
+                                    value={selectedFilterData}
+                                    onChange={handleFilterDurationChange}
+                                />
+                            ) : (
+                                <TextField
+                                    size={'small'}
+                                    fullWidth
+                                    value={selectedFilterData || ''}
+                                    onChange={handleFilterTextChange}
+                                    placeholder={intl.formatMessage({
+                                        id: 'filter.filterOoo',
+                                    })}
+                                    inputProps={{
+                                        type: isNumberInput
+                                            ? FILTER_DATA_TYPES.NUMBER
+                                            : FILTER_DATA_TYPES.TEXT,
+                                    }}
+                                    sx={mergeSx(
+                                        styles.input,
+                                        isNumberInput && styles.noArrows
+                                    )}
+                                />
+                            )}
                         </Grid>
                     )}
                 </Popover>
@@ -440,7 +456,6 @@ CustomHeaderComponent.propTypes = {
         updateFilter: PropTypes.func,
         customFilterOptions: PropTypes.arrayOf(PropTypes.string),
         filterSelector: PropTypes.array,
-        parser: PropTypes.func,
     }),
 };
 

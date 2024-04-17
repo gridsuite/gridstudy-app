@@ -260,8 +260,6 @@ export const CONNECT = 'connect';
 
 export const CONTAINER_ID = 'containerId';
 export const CONTAINER_NAME = 'containerName';
-
-export const REACTIVE_SLACKS_THRESHOLD = 'reactiveSlacksThreshold';
 export const UPDATE_BUS_VOLTAGE = 'updateBusVoltage';
 
 // HVDC deletion

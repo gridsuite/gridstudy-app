@@ -5,24 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    CONNECTIVITY,
+    CHARACTERISTICS_CHOICE,
+    CHARACTERISTICS_CHOICES,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    CONNECTED,
-    CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
-    SHUNT_COMPENSATOR_TYPE,
-    SECTION_COUNT,
-    MAXIMUM_SECTION_COUNT,
-    MAX_SUSCEPTANCE,
+    CONNECTIVITY,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
     MAX_Q_AT_NOMINAL_V,
+    MAX_SUSCEPTANCE,
+    MAXIMUM_SECTION_COUNT,
+    SECTION_COUNT,
+    SHUNT_COMPENSATOR_TYPE,
 } from 'components/utils/field-constants';
 import {
     EQUIPMENT_INFOS_OPERATION,
@@ -30,25 +30,25 @@ import {
 } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
-    UNDEFINED_CONNECTION_DIRECTION,
     FORM_LOADING_DELAY,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import {
-    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import {
-    getCharacteristicsFormData,
     getCharacteristicsCreateFormDataFromSearchCopy,
     getCharacteristicsEmptyFormData,
+    getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
@@ -237,7 +237,7 @@ const ShuntCompensatorCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -264,7 +264,7 @@ const ShuntCompensatorCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
