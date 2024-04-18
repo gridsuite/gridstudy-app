@@ -16,6 +16,7 @@ import {
     FilterStorePropsType,
     FILTER_DATA_TYPES,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { countDecimalPlaces } from 'utils/rounding';
 
 interface FilterModel {
     [colId: string]: any;
@@ -25,7 +26,6 @@ export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     filterStoreParam: FilterStorePropsType
 ): UseAggridRowFilterOutputType => {
-    const decimalPrecision: number = 5;
     const columns = gridRef.current?.api?.getColumnDefs();
     const { updateFilter, filterSelector } =
         useAggridRowFilter(filterStoreParam);
@@ -133,6 +133,7 @@ export const useAggridLocalRowFilter = (
         filters: FilterSelectorType[],
         tolerance: number = 0.00001
     ): FilterSelectorType[] => {
+        const decimalPrecision: number = countDecimalPlaces(tolerance);
         return filters
             .map((filter): FilterSelectorType | FilterSelectorType[] => {
                 // Attempt to convert filter value to a number if it's a string, otherwise keep it as is

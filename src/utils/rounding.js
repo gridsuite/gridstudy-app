@@ -29,3 +29,25 @@ export const roundToPrecision = (num, precision) =>
     Number(num.toPrecision(precision));
 export const roundToDefaultPrecision = (num) =>
     roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
+
+/**
+ * Counts the number of decimal places in a given number.
+ * Converts the number to a string and checks for a decimal point.
+ * If a decimal point is found, it returns the length of the sequence following the decimal point.
+ * Returns 0 if there is no decimal part.
+ * @param {number} number - The number whose decimal places are to be counted.
+ * @returns {number} The number of decimal places in the input number.
+ */
+export const countDecimalPlaces = (number) => {
+    // Convert the number to a string for easier manipulation
+    const numberAsString = number.toString();
+
+    // Check if the number has a decimal part
+    if (numberAsString.includes('.')) {
+        // Return the length of the part after the decimal point
+        return numberAsString.split('.')[1].length;
+    }
+
+    // If the number does not have a decimal part, return 0
+    return 0;
+};
