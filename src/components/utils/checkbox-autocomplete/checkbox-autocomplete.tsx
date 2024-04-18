@@ -60,7 +60,7 @@ const StyledPopper = styled(Popper)({
 
 interface CheckboxAutocompleteProps<Value>
     extends Omit<
-        AutocompleteProps<Value, true, false, false, any>,
+        AutocompleteProps<Value, true, false, false>,
         'renderInput' | 'renderOption' | 'inputValue' | 'onChange'
     > {
     id?: string;

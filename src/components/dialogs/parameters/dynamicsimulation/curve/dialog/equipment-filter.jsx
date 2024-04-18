@@ -13,7 +13,6 @@ import React, {
     useEffect,
     useImperativeHandle,
     useMemo,
-    useRef,
     useState,
 } from 'react';
 import CountryAutocomplete from '../country-autocomplete';
@@ -86,7 +85,7 @@ const buildExpertRules = (voltageLevelIds, countries, nominalVoltages) => {
     }
 
     // create rule IN for nominalVoltages
-    if (nominalVoltages.length) {
+    if (nominalVoltages?.length) {
         const nominalVoltagesRule = {
             field: FieldType.NOMINAL_VOLTAGE,
             operator: OperatorType.IN,
@@ -140,13 +139,12 @@ const styles = {
 const EquipmentFilter = forwardRef(
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
-        const [gridReady, setGridReady] = useState(false);
+        const [gridApi, setGridApi] = useState();
 
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
 
         const intl = useIntl();
-        const equipmentsRef = useRef();
 
         // --- Equipment types --- //
         const [equipmentType, setEquipmentType] =
@@ -167,28 +165,25 @@ const EquipmentFilter = forwardRef(
         const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
             []
         );
-        const handleVoltageLevelChange = useCallback(
-            (selectedVoltageLevelIds) => {
-                setSelectedVoltageLevelIds(selectedVoltageLevelIds);
-            },
-            []
-        );
+        const handleVoltageLevelChange = (selectedVoltageLevelIds) => {
+            setSelectedVoltageLevelIds(selectedVoltageLevelIds);
+        };
 
         const [nominalVoltages, setNominalVoltages] = useState([]);
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
             []
         );
 
-        const handleNominalVoltageChange = useCallback((selectedTensionIds) => {
-            setSelectedNominalVoltages(selectedTensionIds);
-        }, []);
+        const handleNominalVoltageChange = (selectedNominalVoltages) => {
+            setSelectedNominalVoltages(selectedNominalVoltages);
+        };
 
         // --- country (i.e. countryCode) => fetch from network-map-server --- //
         const [countries, setCountries] = useState([]);
         const [selectedCountries, setSelectedCountries] = useState([]);
-        const handleCountryChange = useCallback((selectedCountries) => {
+        const handleCountryChange = (selectedCountries) => {
             setSelectedCountries(selectedCountries);
-        }, []);
+        };
 
         // fetching options in different criterias
         useEffect(() => {
@@ -226,7 +221,7 @@ const EquipmentFilter = forwardRef(
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [studyUuid, currentNode, snackError]);
+        }, [studyUuid, currentNode.id, snackError]);
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
@@ -251,15 +246,15 @@ const EquipmentFilter = forwardRef(
         // fetching filtered equipments
         useEffect(() => {
             let ignore = false;
-            if (gridReady) {
-                equipmentsRef?.current?.api?.showLoadingOverlay();
+            if (gridApi) {
+                gridApi.showLoadingOverlay();
                 filteringEquipmentsFetcher
                     .then((equipments) => {
                         // using ignore flag to cancel fetches that do not return in order
                         if (!ignore) {
                             setEquipmentRowData(equipments);
                         }
-                        equipmentsRef?.current?.api?.hideOverlay();
+                        gridApi.hideOverlay();
                     })
                     .catch((error) => {
                         snackError({
@@ -271,7 +266,7 @@ const EquipmentFilter = forwardRef(
             return () => {
                 ignore = true;
             };
-        }, [filteringEquipmentsFetcher, gridReady, snackError]);
+        }, [filteringEquipmentsFetcher, gridApi, snackError]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
@@ -303,14 +298,14 @@ const EquipmentFilter = forwardRef(
             };
         }, []);
 
-        const onGridReady = useCallback((_params) => {
-            setGridReady(true);
-        }, []);
+        const onGridReady = (params) => {
+            setGridApi(params.api);
+        };
 
-        const handleEquipmentSelectionChanged = useCallback(() => {
-            const selectedRows = equipmentsRef.current.api.getSelectedRows();
+        const handleEquipmentSelectionChanged = () => {
+            const selectedRows = gridApi.getSelectedRows();
             setSelectedRowsLength(selectedRows.length);
-        }, []);
+        };
 
         // expose some api for the component by using ref
         useImperativeHandle(
@@ -318,11 +313,11 @@ const EquipmentFilter = forwardRef(
             () => ({
                 api: {
                     getSelectedEquipments: () => {
-                        return equipmentsRef.current.api.getSelectedRows();
+                        return gridApi.getSelectedRows();
                     },
                 },
             }),
-            []
+            [gridApi]
         );
 
         // config overlay when fetching from back
@@ -442,7 +437,6 @@ const EquipmentFilter = forwardRef(
                     <Grid item xs>
                         <Box sx={styles.grid}>
                             <CustomAGGrid
-                                ref={equipmentsRef}
                                 rowData={equipmentRowData}
                                 columnDefs={columnDefs}
                                 defaultColDef={defaultColDef}
