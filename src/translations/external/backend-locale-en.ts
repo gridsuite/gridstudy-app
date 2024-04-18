@@ -30,6 +30,9 @@ const backend_locale_en = {
     SINGLE_PHASE: 'Single-phase',
     THREE_PHASE: 'Three-phase',
     TWO: 'Side 2',
+
+    // Voltage init results
+    REACTIVE_SLACKS_OVER_THRESHOLD: `Reactive slack exceeds {threshold} MVar for at least one bus`,
 };
 
 export default backend_locale_en;

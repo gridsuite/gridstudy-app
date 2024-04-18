@@ -14,8 +14,8 @@ import {
     SPECIFIC_METADATA,
     TYPE,
 } from '../../../utils/field-constants';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { FormProvider, useForm } from 'react-hook-form';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import ModificationDialog from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -136,12 +136,7 @@ const ByFilterDeletionDialog: FunctionComponent<
     });
 
     return (
-        <FormProvider
-            {...{
-                validationSchema: formSchema,
-                ...formMethods,
-            }}
-        >
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -158,7 +153,7 @@ const ByFilterDeletionDialog: FunctionComponent<
             >
                 <ByFilterDeletionForm />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

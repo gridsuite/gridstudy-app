@@ -15,7 +15,7 @@ import { IntlShape, useIntl } from 'react-intl';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { MAX_INT32 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
-import { translateLimitName } from '../common/utils';
+import { translateLimitNameBackToFront } from '../common/utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
@@ -36,7 +36,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
                           limitViolation?.acceptableDuration === MAX_INT32
                               ? null
                               : limitViolation?.acceptableDuration,
-                      limitName: translateLimitName(
+                      limitName: translateLimitNameBackToFront(
                           limitViolation?.limitName,
                           intl
                       ),

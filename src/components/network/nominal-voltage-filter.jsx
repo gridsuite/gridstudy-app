@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
+import { ListItemButton } from '@mui/material';
 
 const styles = {
     nominalVoltageZone: {
@@ -100,27 +101,29 @@ const NominalVoltageFilter = ({
                 </ListItem>
                 {nominalVoltages.map((value) => {
                     return (
-                        <ListItem
-                            sx={styles.nominalVoltageItem}
-                            key={value}
-                            button
-                            onClick={handleToggle([value], true)}
-                            disabled={!filteredNominalVoltages}
-                        >
-                            <Checkbox
-                                color="default"
-                                sx={styles.nominalVoltageCheck}
-                                checked={
-                                    !filteredNominalVoltages ||
-                                    filteredNominalVoltages.indexOf(value) !==
-                                        -1
-                                }
-                            />
-                            <ListItemText
-                                sx={styles.nominalVoltageText}
-                                disableTypography
-                                primary={`${value} kV`}
-                            />
+                        <ListItem sx={styles.nominalVoltageItem} key={value}>
+                            <ListItemButton
+                                role={undefined}
+                                dense
+                                onClick={handleToggle([value], true)}
+                                disabled={!filteredNominalVoltages}
+                            >
+                                <Checkbox
+                                    color="default"
+                                    sx={styles.nominalVoltageCheck}
+                                    checked={
+                                        !filteredNominalVoltages ||
+                                        filteredNominalVoltages.indexOf(
+                                            value
+                                        ) !== -1
+                                    }
+                                />
+                                <ListItemText
+                                    sx={styles.nominalVoltageText}
+                                    disableTypography
+                                    primary={`${value} kV`}
+                                />
+                            </ListItemButton>
                         </ListItem>
                     );
                 })}

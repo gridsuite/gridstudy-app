@@ -18,12 +18,16 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { AutocompleteInput, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    CustomFormProvider,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
 } from '../../../services/study/dynamic-simulation';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getIdOrSelf, gridItem } from '../dialogUtils';
 
@@ -150,7 +154,7 @@ const DynamicSimulationParametersSelector = (props) => {
     };
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -177,7 +181,7 @@ const DynamicSimulationParametersSelector = (props) => {
                 </DialogContent>
                 <DialogActions>{renderButtons()}</DialogActions>
             </Dialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

@@ -5,29 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
+    ADDITIONAL_PROPERTIES,
     DROOP,
     EQUIPMENT_NAME,
     FREQUENCY_REGULATION,
+    MAX_Q,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
+    MIN_Q,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     P,
-    MAX_Q,
-    MIN_Q,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_POWER_SET_POINT,
     REACTIVE_LIMITS,
-    ADDITIONAL_PROPERTIES,
+    REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
 import BatteryModificationForm from './battery-modification-form';
@@ -357,7 +357,7 @@ const BatteryModificationDialog = ({
     });
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
@@ -399,7 +399,7 @@ const BatteryModificationDialog = ({
                     />
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

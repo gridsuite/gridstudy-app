@@ -31,6 +31,8 @@ import {
     CONNECT,
     RATIO_TAP_CHANGER_TARGET_V,
     TARGET_V,
+    V,
+    ANGLE,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
 
@@ -48,6 +50,7 @@ export const EquipmentTypeTabs = {
     STATIC_VAR_COMPENSATOR_TAB: 2,
     VSC_CONVERTER_STATION_TAB: 3,
     SHUNT_COMPENSATOR_TAB: 4,
+    BUS_TAB: 5,
 };
 
 enum FetchStatus {
@@ -97,6 +100,12 @@ interface ShuntCompensatorRowData {
     [TARGET_V]: number | undefined;
 }
 
+interface BusRowData {
+    ID: string;
+    [V]: number | undefined;
+    [ANGLE]: number | undefined;
+}
+
 interface GeneratorData {
     generatorId: string;
     targetV: number | undefined;
@@ -129,12 +138,19 @@ interface ShuntCompensatorData {
     targetV: number | undefined;
 }
 
+interface BusData {
+    busId: string;
+    v: number | undefined;
+    angle: number | undefined;
+}
+
 interface EditData {
     generators: GeneratorData[];
     transformers: TransformerData[];
     staticVarCompensators: StaticVarCompensatorData[];
     vscConverterStations: VscConverterStationData[];
     shuntCompensators: ShuntCompensatorData[];
+    buses: BusData[];
 }
 
 interface VoltageInitModificationProps {
@@ -317,6 +333,28 @@ const VoltageInitModificationDialog: FunctionComponent<
         ];
     }, [intl]);
 
+    const busColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'BusId' }),
+                field: 'ID',
+                pinned: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'BusVoltage' }),
+                field: V,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'BusAngle' }),
+                field: 'angle',
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+        ];
+    }, [intl]);
+
     const equipmentTabs = (
         <Box
             sx={{
@@ -340,6 +378,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         label={<FormattedMessage id="VscConverterStations" />}
                     />
                     <Tab label={<FormattedMessage id="ShuntCompensators" />} />
+                    <Tab label={<FormattedMessage id="Buses" />} />
                 </Tabs>
             </Grid>
         </Box>
@@ -496,6 +535,23 @@ const VoltageInitModificationDialog: FunctionComponent<
                                 rowData.push(row);
                             }
                         );
+                    } else if (currentTab === EquipmentTypeTabs.BUS_TAB) {
+                        columnDefs = busColumnDefs;
+                        tableName = 'Buses';
+                        editData.buses.forEach((m: BusData) => {
+                            let row: BusRowData = {
+                                ID: m.busId,
+                                [V]: undefined,
+                                [ANGLE]: undefined,
+                            };
+                            if (check(m.v)) {
+                                row[V] = m.v;
+                            }
+                            if (check(m.angle)) {
+                                row[ANGLE] = m.angle;
+                            }
+                            rowData.push(row);
+                        });
                     }
                 }
                 return { rowData, columnDefs, tableName };
@@ -537,13 +593,14 @@ const VoltageInitModificationDialog: FunctionComponent<
         [
             editData,
             editDataFetchStatus,
+            defaultColDef,
+            onRowDataUpdated,
             generatorsColumnDefs,
             transformersColumnDefs,
             staticVarCompensatorsColumnDefs,
             vscConverterStationsColumnDefs,
             shuntCompensatorsColumnDefs,
-            defaultColDef,
-            onRowDataUpdated,
+            busColumnDefs,
         ]
     );
 
