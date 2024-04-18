@@ -714,39 +714,12 @@ export const NetworkMapTab = ({
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
 
-    const updateMapEquipments = useCallback(
-        (currentNodeAtReloadCalling) => {
+    const reloadMapEquipments = useCallback(
+        (currentNodeAtReloadCalling, substationsIds) => {
             if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-                dispatch(resetMapReloaded());
                 return Promise.reject();
             }
 
-            const mapEquipmentsTypes = [
-                EQUIPMENT_TYPES.SUBSTATION,
-                EQUIPMENT_TYPES.LINE,
-                EQUIPMENT_TYPES.TIE_LINE,
-                EQUIPMENT_TYPES.HVDC_LINE,
-            ];
-            const impactedMapEquipmentTypes = impactedElementTypes?.filter(
-                (type) => mapEquipmentsTypes.includes(type)
-            );
-            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
-            const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
-
-            if (!isMapCollectionImpact && !hasSubstationsImpacted) {
-                resetImpactedElementTypes();
-                dispatch(resetMapReloaded());
-                return Promise.reject();
-            }
-            console.info('Update map equipments');
-            dispatch(setMapDataLoading(true));
-
-            const updatedSubstationsToSend =
-                !isMapCollectionImpact && hasSubstationsImpacted
-                    ? impactedSubstationsIds
-                    : undefined;
-
-            const isFullReload = !updatedSubstationsToSend;
             const [
                 updatedSubstations,
                 updatedLines,
@@ -755,11 +728,10 @@ export const NetworkMapTab = ({
             ] = mapEquipments.reloadImpactedSubstationsEquipments(
                 studyUuid,
                 currentNode,
-                updatedSubstationsToSend
+                substationsIds
             );
-            dispatch(resetMapReloaded());
-            resetImpactedElementTypes();
-            resetImpactedSubstationsIds();
+
+            const isFullReload = !substationsIds;
 
             updatedSubstations.then((values) => {
                 if (
@@ -808,6 +780,48 @@ export const NetworkMapTab = ({
                 dispatch(setMapDataLoading(false));
             });
         },
+        [currentNode, dispatch, mapEquipments, studyUuid]
+    );
+
+    const updateMapEquipments = useCallback(
+        (currentNodeAtReloadCalling) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+                dispatch(resetMapReloaded());
+                return Promise.reject();
+            }
+
+            const mapEquipmentsTypes = [
+                EQUIPMENT_TYPES.SUBSTATION,
+                EQUIPMENT_TYPES.LINE,
+                EQUIPMENT_TYPES.TIE_LINE,
+                EQUIPMENT_TYPES.HVDC_LINE,
+            ];
+            const impactedMapEquipmentTypes = impactedElementTypes?.filter(
+                (type) => mapEquipmentsTypes.includes(type)
+            );
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
+            const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
+
+            if (!isMapCollectionImpact && !hasSubstationsImpacted) {
+                dispatch(resetMapReloaded());
+                return Promise.reject();
+            }
+            console.info('Update map equipments');
+            dispatch(setMapDataLoading(true));
+
+            const updatedSubstationsToSend =
+                !isMapCollectionImpact && hasSubstationsImpacted
+                    ? impactedSubstationsIds
+                    : undefined;
+
+            dispatch(resetMapReloaded());
+            resetImpactedElementTypes();
+            resetImpactedSubstationsIds();
+            return reloadMapEquipments(
+                currentNodeAtReloadCalling,
+                updatedSubstationsToSend
+            );
+        },
         [
             currentNode,
             dispatch,
@@ -817,6 +831,7 @@ export const NetworkMapTab = ({
             impactedSubstationsIds,
             resetImpactedElementTypes,
             resetImpactedSubstationsIds,
+            reloadMapEquipments,
         ]
     );
 
@@ -835,10 +850,10 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflowResult'
             ) {
-                updateMapEquipments(currentNodeRef.current);
+                reloadMapEquipments(currentNodeRef.current);
             }
         }
-    }, [isInitialized, studyUpdatedForce, updateMapEquipments]);
+    }, [isInitialized, studyUpdatedForce, reloadMapEquipments]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
