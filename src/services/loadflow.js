@@ -30,27 +30,15 @@ export function getLoadFlowSpecificParametersDescription() {
     return backendFetchJson(getLoadFlowSpecificParametersUrl);
 }
 
-export function fetchLoadflowAvailableLimitTypes(studyUuid, nodeUuid) {
-    console.info('fetch available limit types');
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/limit-types`;
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchLoadflowAvailableBranchSides(studyUuid, nodeUuid) {
-    console.info('fetch available branch sides');
-
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/branch-sides`;
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchLoadflowAvailableComputationStatus(studyUuid, nodeUuid) {
-    console.info('fetch available computation status');
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        nodeUuid
-    )}/computation-status`;
+export function fetchLoadflowAvailableFilterEnumValues(
+    studyUuid,
+    nodeUuid,
+    filterEnum
+) {
+    console.info('fetch available filter values');
+    const url =
+        `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/loadflow?filterEnum=` +
+        encodeURIComponent(filterEnum);
     console.debug(url);
     return backendFetchJson(url);
 }

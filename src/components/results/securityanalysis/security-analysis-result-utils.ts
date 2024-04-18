@@ -26,11 +26,7 @@ import {
     convertDuration,
     formatNAValue,
 } from 'components/spreadsheet/utils/cell-renderers';
-import {
-    fetchSecurityAnalysisAvailableBranchSides,
-    fetchSecurityAnalysisAvailableComputationStatus,
-    fetchSecurityAnalysisAvailableLimitTypes,
-} from '../../../services/security-analysis';
+import { fetchSecurityAnalysisAvailableFilterEnumValues } from '../../../services/security-analysis';
 import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -624,12 +620,21 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchSecurityAnalysisAvailableComputationStatus(
+                fetchSecurityAnalysisAvailableFilterEnumValues(
                     studyUuid,
-                    nodeUuid
+                    nodeUuid,
+                    'computation-status'
                 ),
-                fetchSecurityAnalysisAvailableLimitTypes(studyUuid, nodeUuid),
-                fetchSecurityAnalysisAvailableBranchSides(studyUuid, nodeUuid),
+                fetchSecurityAnalysisAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    'limit-types'
+                ),
+                fetchSecurityAnalysisAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    'branch-sides'
+                ),
             ];
 
             setLoading(true);

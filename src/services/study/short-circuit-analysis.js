@@ -172,21 +172,19 @@ export function invalidateShortCircuitStatus(studyUuid) {
     });
 }
 
-export function fetchShortCircuitFaultTypes(studyUuid, nodeUuid) {
-    console.info('Fetch short-circuit fault types');
-    const getShortCircuitParams =
-        import.meta.env.VITE_API_GATEWAY + '/shortcircuit/v1/fault-types';
-    console.debug(getShortCircuitParams);
-    return backendFetchJson(getShortCircuitParams);
-}
-
-export function fetchShortCircuitLimitViolationTypes(studyUuid, nodeUuid) {
-    console.info('Fetch short-circuit limit violation types');
-    const getShortCircuitParams =
-        import.meta.env.VITE_API_GATEWAY +
-        '/shortcircuit/v1/limit-violation-types';
-    console.debug(getShortCircuitParams);
-    return backendFetchJson(getShortCircuitParams);
+export function fetchShortCircuitAvailableFilterEnumValues(
+    studyUuid,
+    nodeUuid,
+    filterEnum
+) {
+    console.info('Fetch available filter values');
+    const url =
+        `${getStudyUrlWithNodeUuid(
+            studyUuid,
+            nodeUuid
+        )}/shortcircuit?filterEnum=` + encodeURIComponent(filterEnum);
+    console.debug(url);
+    return backendFetchJson(url);
 }
 
 export function downloadShortCircuitResultZippedCsv(

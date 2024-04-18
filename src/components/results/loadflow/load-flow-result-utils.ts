@@ -34,11 +34,7 @@ import {
     FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useEffect, useState } from 'react';
-import {
-    fetchLoadflowAvailableBranchSides,
-    fetchLoadflowAvailableComputationStatus,
-    fetchLoadflowAvailableLimitTypes,
-} from 'services/loadflow';
+import { fetchLoadflowAvailableFilterEnumValues } from 'services/loadflow';
 import {
     translateLimitNameBackToFront,
     translateLimitNameFrontToBack,
@@ -207,9 +203,21 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchLoadflowAvailableComputationStatus(studyUuid, nodeUuid),
-                fetchLoadflowAvailableLimitTypes(studyUuid, nodeUuid),
-                fetchLoadflowAvailableBranchSides(studyUuid, nodeUuid),
+                fetchLoadflowAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    'computation-status'
+                ),
+                fetchLoadflowAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    'limit-types'
+                ),
+                fetchLoadflowAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    'branch-sides'
+                ),
             ];
 
             setLoading(true);

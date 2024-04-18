@@ -23,8 +23,7 @@ import React, {
 } from 'react';
 import {
     fetchShortCircuitAnalysisPagedResults,
-    fetchShortCircuitFaultTypes,
-    fetchShortCircuitLimitViolationTypes,
+    fetchShortCircuitAvailableFilterEnumValues,
 } from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
@@ -207,7 +206,11 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     ]);
 
     useEffect(() => {
-        fetchShortCircuitFaultTypes(studyUuid, currentNode?.id)
+        fetchShortCircuitAvailableFilterEnumValues(
+            studyUuid,
+            currentNode?.id,
+            'fault-types'
+        )
             .then((values) => {
                 setFilterEnums((prevFilterEnums) => ({
                     ...prevFilterEnums,
@@ -223,7 +226,11 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     }, [intl, snackError, studyUuid, currentNode.id]);
 
     useEffect(() => {
-        fetchShortCircuitLimitViolationTypes(studyUuid, currentNode?.id)
+        fetchShortCircuitAvailableFilterEnumValues(
+            studyUuid,
+            currentNode?.id,
+            'limit-violation-types'
+        )
             .then((values) => {
                 setFilterEnums((prevFilterEnums) => ({
                     ...prevFilterEnums,

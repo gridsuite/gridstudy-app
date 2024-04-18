@@ -6,6 +6,7 @@
  */
 
 import { backendFetchJson } from './utils';
+import { getStudyUrlWithNodeUuid } from './study/index.js';
 
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/security-analysis';
@@ -21,26 +22,17 @@ export function fetchSecurityAnalysisProviders() {
     return backendFetchJson(url);
 }
 
-export function fetchSecurityAnalysisAvailableLimitTypes(studyUuid, nodeUuid) {
-    console.info('fetch available limit types');
-    const url = getSecurityAnalysisUrl() + 'limit-types';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchSecurityAnalysisAvailableBranchSides(studyUuid, nodeUuid) {
-    console.info('fetch available branch sides');
-    const url = getSecurityAnalysisUrl() + 'branch-sides';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchSecurityAnalysisAvailableComputationStatus(
+export function fetchSecurityAnalysisAvailableFilterEnumValues(
     studyUuid,
-    nodeUuid
+    nodeUuid,
+    filterEnum
 ) {
-    console.info('fetch available computation status');
-    const url = getSecurityAnalysisUrl() + 'computation-status';
+    console.info('fetch available filter values');
+    const url =
+        `${getStudyUrlWithNodeUuid(
+            studyUuid,
+            nodeUuid
+        )}/security-analysis?filterEnum=` + encodeURIComponent(filterEnum);
     console.debug(url);
     return backendFetchJson(url);
 }
