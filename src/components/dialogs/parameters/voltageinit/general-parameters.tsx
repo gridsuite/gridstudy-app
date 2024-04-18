@@ -18,6 +18,7 @@ import { Grid } from '@mui/material';
 import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
 import { ParameterFloat } from '../widget/parameter-float';
 import { ReactivePowerAdornment } from '../../dialogUtils';
+import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();
@@ -26,9 +27,22 @@ export const GeneralParameters = () => {
         name: `${GENERAL}.${GENERAL_APPLY_MODIFICATIONS}`,
     });
 
+    const updateBusVoltageWatched = useWatch({
+        name: `${GENERAL}.${UPDATE_BUS_VOLTAGE}`,
+    });
+
     const setApplyModificationsValue = useCallback(
         (_: ChangeEvent, checked: boolean) => {
             setValue(`${GENERAL}.${GENERAL_APPLY_MODIFICATIONS}`, checked, {
+                shouldDirty: true,
+            });
+        },
+        [setValue]
+    );
+
+    const setUpdateBusVoltageValue = useCallback(
+        (_: ChangeEvent, checked: boolean) => {
+            setValue(`${GENERAL}.${UPDATE_BUS_VOLTAGE}`, checked, {
                 shouldDirty: true,
             });
         },
@@ -48,6 +62,11 @@ export const GeneralParameters = () => {
                 value={applyModificationsWatched}
                 label={'VoltageInitParametersGeneralApplyModificationsLabel'}
                 onChange={setApplyModificationsValue}
+            />
+            <ParameterSwitch
+                value={updateBusVoltageWatched}
+                label={'VoltageInitParametersGeneralUpdateBusVoltageLabel'}
+                onChange={setUpdateBusVoltageValue}
             />
             <ParameterFloat
                 name={`${GENERAL}.${REACTIVE_SLACKS_THRESHOLD}`}

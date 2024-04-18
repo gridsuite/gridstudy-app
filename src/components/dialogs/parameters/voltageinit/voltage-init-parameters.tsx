@@ -11,6 +11,7 @@ import {
     SubmitButton,
     useSnackMessage,
     CustomFormProvider,
+    TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import {
@@ -174,10 +175,10 @@ export const VoltageInitParameters = ({
     }, [reset, resetVoltageInitParameters, onValidationError]);
 
     const handleLoadParameter = useCallback(
-        (newParams: { id: UUID }[]) => {
+        (newParams: TreeViewFinderNodeProps[]) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
-                getVoltageInitParameters(newParams[0].id)
+                getVoltageInitParameters(newParams[0].id as UUID)
                     .then((parameters: any) => {
                         console.info(
                             `loading the following voltage init parameters : ${JSON.stringify(
@@ -354,7 +355,7 @@ export const VoltageInitParameters = ({
                         id: 'showSelectParameterDialog',
                     })}
                     onlyLeaves={true}
-                    multiselect={false}
+                    multiSelect={false}
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
