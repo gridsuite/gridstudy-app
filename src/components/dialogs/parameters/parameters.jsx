@@ -259,7 +259,7 @@ export const useParametersBackend = (
     backendFetchSpecificParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
 
     const providersRef = useRef(INITIAL_PROVIDERS);
     const [provider, setProvider] = useState();
@@ -364,7 +364,12 @@ export const useParametersBackend = (
     const resetParameters = useCallback(
         (callBack) => {
             backendUpdateParameters(studyUuid, null)
-                .then(() => {
+                .then((response) => {
+                    if (response.status === 204) {
+                        snackWarning({
+                            headerId: 'reset' + type + 'ParametersWarning',
+                        });
+                    }
                     return backendFetchParameters(studyUuid)
                         .then((params) => {
                             setParams(params);
@@ -392,6 +397,7 @@ export const useParametersBackend = (
             backendUpdateParameters,
             backendFetchParameters,
             snackError,
+            snackWarning,
             setParams,
         ]
     );

@@ -49,6 +49,8 @@ const errors_locale_en = {
         'An error occurred while updating the sensitivity analysis parameters',
     updateSensitivityAnalysisProviderError:
         'An error occured when updating sensitivity analysis provider',
+    resetLoadFlowParametersWarning:
+        'Impossible to retrieve the load flow parameters defined in the user profile (default values are used)',
 };
 
 export default errors_locale_en;
