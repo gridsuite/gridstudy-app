@@ -152,7 +152,7 @@ export const NetworkMapTab = ({
     */
     const temporaryGeoDataIdsRef = useRef();
 
-    const disabled = !visible || !isNodeBuilt(currentNode);
+    const disabled = !isNodeBuilt(currentNode);
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
