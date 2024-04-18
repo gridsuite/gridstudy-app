@@ -16,6 +16,7 @@ import {
     NAME,
     PRIORITY,
     SELECTED,
+    UPDATE_BUS_VOLTAGE,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS_DEFAULT,
@@ -24,11 +25,14 @@ import {
 import { UUID } from 'crypto';
 import {
     DEFAULT_GENERAL_APPLY_MODIFICATIONS,
+    DEFAULT_REACTIVE_SLACKS_THRESHOLD,
+    DEFAULT_UPDATE_BUS_VOLTAGE,
     GENERAL,
     GENERAL_APPLY_MODIFICATIONS,
     TabValue,
     VoltageInitParametersForm,
 } from './voltage-init-parameters-form';
+import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
 
 type FilterIdentifier = {
     [FILTER_ID]: UUID;
@@ -44,6 +48,8 @@ type VoltageLimitParam = {
 export type VoltageInitParam = {
     applyModifications: boolean;
     computationParameters: {
+        [UPDATE_BUS_VOLTAGE]: boolean;
+        [REACTIVE_SLACKS_THRESHOLD]: number;
         [VOLTAGE_LIMITS_MODIFICATION]: VoltageLimitParam[];
         [VOLTAGE_LIMITS_DEFAULT]: VoltageLimitParam[];
         [FIXED_GENERATORS]: FilterIdentifier[];
@@ -60,6 +66,12 @@ export const fromVoltageInitParametersFormToParamValues = (
             newParams?.[GENERAL]?.[GENERAL_APPLY_MODIFICATIONS] ??
             DEFAULT_GENERAL_APPLY_MODIFICATIONS,
         computationParameters: {
+            [UPDATE_BUS_VOLTAGE]:
+                newParams?.[GENERAL]?.[UPDATE_BUS_VOLTAGE] ??
+                DEFAULT_UPDATE_BUS_VOLTAGE,
+            [REACTIVE_SLACKS_THRESHOLD]:
+                newParams?.[GENERAL]?.[REACTIVE_SLACKS_THRESHOLD] ??
+                DEFAULT_REACTIVE_SLACKS_THRESHOLD,
             [VOLTAGE_LIMITS_MODIFICATION]:
                 newParams.voltageLimitsModification?.map((voltageLimit) => {
                     return {
@@ -131,6 +143,8 @@ export const fromVoltageInitParamsDataToFormValues = (
     return {
         [TabValue.GENERAL]: {
             [GENERAL_APPLY_MODIFICATIONS]: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
+            [UPDATE_BUS_VOLTAGE]: parameters[UPDATE_BUS_VOLTAGE],
+            [REACTIVE_SLACKS_THRESHOLD]: parameters.reactiveSlacksThreshold,
         },
         [VOLTAGE_LIMITS_MODIFICATION]:
             parameters?.voltageLimitsModification?.map((voltageLimit) => {
@@ -191,6 +205,11 @@ export const fromStudyVoltageInitParamsDataToFormValues = (
     return {
         [TabValue.GENERAL]: {
             [GENERAL_APPLY_MODIFICATIONS]: parameters.applyModifications,
+            [UPDATE_BUS_VOLTAGE]:
+                parameters?.computationParameters?.[UPDATE_BUS_VOLTAGE] ??
+                DEFAULT_UPDATE_BUS_VOLTAGE,
+            [REACTIVE_SLACKS_THRESHOLD]:
+                parameters?.computationParameters?.reactiveSlacksThreshold,
         },
         [VOLTAGE_LIMITS_MODIFICATION]:
             parameters?.computationParameters?.voltageLimitsModification?.map(

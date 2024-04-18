@@ -22,17 +22,16 @@ import { BranchSide } from '../../utils/constants';
 import {
     convertDuration,
     formatNAValue,
-    NA_Value,
-    parseDuration,
 } from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
+    FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    FILTER_DATA_TYPES,
+    FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useEffect, useState } from 'react';
 import {
@@ -40,7 +39,10 @@ import {
     fetchLoadflowAvailableComputationStatus,
     fetchLoadflowAvailableLimitTypes,
 } from 'services/loadflow';
-import { translateLimitName, PERMANENT_LIMIT_NAME } from '../common/utils';
+import {
+    translateLimitNameBackToFront,
+    translateLimitNameFrontToBack,
+} from '../common/utils';
 import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
     LOADFLOW_RESULT,
@@ -109,6 +111,11 @@ const textFilterParams = {
     ],
 };
 
+const translatedFilterParams = {
+    filterDataType: FILTER_DATA_TYPES.TEXT,
+    filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+};
+
 const numericFilterParams = {
     filterDataType: FILTER_DATA_TYPES.NUMBER,
     filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
@@ -170,7 +177,10 @@ export const makeData = (
             upComingOverloadDuration:
                 overloadedEquipment.upComingOverloadDuration,
             limit: overloadedEquipment.limit,
-            limitName: translateLimitName(overloadedEquipment.limitName, intl),
+            limitName: translateLimitNameBackToFront(
+                overloadedEquipment.limitName,
+                intl
+            ),
             side: convertSide(overloadedEquipment.side, intl),
             limitType: overloadedEquipment.limitType,
         };
@@ -227,23 +237,32 @@ export const useFetchFiltersEnums = (
     return { loading, result, error };
 };
 
+export const convertFilterValues = (
+    filterSelector: FilterSelectorType[],
+    intl: IntlShape
+) => {
+    return filterSelector.map((filter) => {
+        switch (filter.column) {
+            case 'limitName':
+                return {
+                    ...filter,
+                    value: translateLimitNameFrontToBack(
+                        filter.value as string,
+                        intl
+                    ),
+                };
+            default:
+                return filter;
+        }
+    });
+};
+
 export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
     filterEnums: FilterEnumsType
 ): ColDef[] => {
-    const convertLimitNameFrontToBack = (limitName: string) => {
-        const limitNameMapping = {
-            [intl.formatMessage({ id: 'Undefined' })]: NA_Value,
-            [intl.formatMessage({ id: 'PermanentLimitName' })]:
-                PERMANENT_LIMIT_NAME,
-        };
-        if (limitNameMapping[limitName]) {
-            return limitNameMapping[limitName];
-        }
-        return limitName;
-    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
@@ -257,10 +276,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'limitName',
             sortProps,
             filterProps,
-            filterParams: {
-                ...textFilterParams,
-                parser: convertLimitNameFrontToBack,
-            },
+            filterParams: translatedFilterParams,
             valueFormatter: (params: ValueFormatterParams) =>
                 formatNAValue(params.value, intl),
         }),
@@ -299,7 +315,6 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             filterParams: {
                 ...numericFilterParams,
                 isDuration: true,
-                parser: parseDuration,
             },
             valueGetter: (value: ValueGetterParams) =>
                 convertDuration(value.data.actualOverloadDuration),
@@ -309,7 +324,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'upComingOverloadDuration',
             sortProps,
             filterProps,
-            filterParams: { ...textFilterParams, parser: parseDuration },
+            filterParams: {
+                ...numericFilterParams,
+                isDuration: true,
+            },
             valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });

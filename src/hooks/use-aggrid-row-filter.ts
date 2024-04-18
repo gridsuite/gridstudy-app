@@ -6,13 +6,12 @@
  */
 
 import {
+    FilterDataType,
     FilterSelectorType,
     FilterStorePropsType,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-type FilterDataType = { value: string; type: string; dataType: string };
 
 export type FilterEnumsType = Record<string, string[] | null>;
 

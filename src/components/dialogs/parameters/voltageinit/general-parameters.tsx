@@ -14,12 +14,21 @@ import {
 import Alert from '@mui/material/Alert';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
+import { Grid } from '@mui/material';
+import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
+import { ParameterFloat } from '../widget/parameter-float';
+import { ReactivePowerAdornment } from '../../dialogUtils';
+import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();
 
     const applyModificationsWatched = useWatch({
         name: `${GENERAL}.${GENERAL_APPLY_MODIFICATIONS}`,
+    });
+
+    const updateBusVoltageWatched = useWatch({
+        name: `${GENERAL}.${UPDATE_BUS_VOLTAGE}`,
     });
 
     const setApplyModificationsValue = useCallback(
@@ -31,8 +40,17 @@ export const GeneralParameters = () => {
         [setValue]
     );
 
+    const setUpdateBusVoltageValue = useCallback(
+        (_: ChangeEvent, checked: boolean) => {
+            setValue(`${GENERAL}.${UPDATE_BUS_VOLTAGE}`, checked, {
+                shouldDirty: true,
+            });
+        },
+        [setValue]
+    );
+
     return (
-        <>
+        <Grid>
             <Alert
                 sx={styles.adjustExistingLimitsInfo}
                 severity="info"
@@ -45,6 +63,17 @@ export const GeneralParameters = () => {
                 label={'VoltageInitParametersGeneralApplyModificationsLabel'}
                 onChange={setApplyModificationsValue}
             />
-        </>
+            <ParameterSwitch
+                value={updateBusVoltageWatched}
+                label={'VoltageInitParametersGeneralUpdateBusVoltageLabel'}
+                onChange={setUpdateBusVoltageValue}
+            />
+            <ParameterFloat
+                name={`${GENERAL}.${REACTIVE_SLACKS_THRESHOLD}`}
+                style={styles.parameterName}
+                label={'ReactiveSlacksThreshold'}
+                adornment={ReactivePowerAdornment}
+            />
+        </Grid>
     );
 };
