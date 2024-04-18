@@ -23,7 +23,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
-import { fetchAllCountries } from '../../../../../../services/study/network-map';
+import {
+    fetchAllCountries,
+    fetchAllNominalVoltages,
+} from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter } from '../../../../../../services/study/filter';
 import {
     CombinatorType,
@@ -31,6 +34,7 @@ import {
     FieldType,
     OperatorType,
 } from '../../../../filter/expert/expert-filter.type';
+import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network.js';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -73,7 +77,6 @@ const EquipmentFilter = forwardRef(
 
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
-        const mapEquipments = useSelector((state) => state.mapEquipments);
 
         const intl = useIntl();
         const theme = useTheme();
@@ -92,12 +95,9 @@ const EquipmentFilter = forwardRef(
             [onChangeEquipmentType]
         );
 
-        // --- Voltage levels, nominal voltages => lookup in mapEquipments which is loaded at booting up application --- //
-        const voltageLevels = mapEquipments.getVoltageLevels();
-        const voltageLevelIds = useMemo(
-            () => voltageLevels.map((elem) => elem.id),
-            [voltageLevels]
-        );
+        // Map of VL names by ID
+        const [voltageLevelsMap, setVoltageLevelsMap] = useState(new Map());
+        const [voltageLevelIds, setVoltageLevelIds] = useState([]);
         const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
             []
         );
@@ -108,7 +108,7 @@ const EquipmentFilter = forwardRef(
             []
         );
 
-        const nominalVoltages = mapEquipments.getNominalVoltages();
+        const [nominalVoltages, setNominalVoltages] = useState([]);
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
             []
         );
@@ -123,6 +123,35 @@ const EquipmentFilter = forwardRef(
         const handleCountryChange = useCallback((selectedCountries) => {
             setSelectedCountries(selectedCountries);
         }, []);
+
+        // Load voltage level IDs
+        useEffect(() => {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode.id)
+                .then((voltageLevels) => {
+                    const vlMap = new Map();
+                    voltageLevels.forEach((vl) => vlMap.set(vl.id, vl.name));
+                    setVoltageLevelsMap(vlMap);
+                    setVoltageLevelIds([...vlMap.keys()]);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'FetchVoltageLevelsError',
+                    });
+                });
+        }, [studyUuid, currentNode, snackError]);
+
+        // Load nominal voltages
+        useEffect(() => {
+            fetchAllNominalVoltages(studyUuid, currentNode.id)
+                .then((nominalVoltages) => setNominalVoltages(nominalVoltages))
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'FetchNominalVoltagesError',
+                    });
+                });
+        }, [currentNode.id, studyUuid, snackError]);
 
         // load countries
         useEffect(() => {
@@ -336,8 +365,7 @@ const EquipmentFilter = forwardRef(
                             value={selectedVoltageLevelIds}
                             options={voltageLevelIds}
                             getOptionLabel={(value) =>
-                                mapEquipments.getVoltageLevel(value)?.name ??
-                                value
+                                voltageLevelsMap.get(value) ?? value
                             }
                             onChange={handleVoltageLevelChange}
                         />
