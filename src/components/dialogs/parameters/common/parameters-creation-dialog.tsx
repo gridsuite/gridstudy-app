@@ -22,12 +22,13 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createParameter, fetchElementsMetadata } from 'services/explore';
-import { Identifier } from '../voltageinit/voltage-init-utils';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
+import { UUID } from 'crypto';
 
 interface FormData {
     [NAME]: string;
@@ -60,10 +61,8 @@ const CreateParameterDialog = <T extends FieldValues>({
     parameterFormatter,
 }: CreateParameterProps<T>) => {
     const intl = useIntl();
-    const [defaultFolder, setDefaultFolder] = useState<Identifier>({
-        id: null,
-        name: null,
-    });
+    const [defaultFolder, setDefaultFolder] =
+        useState<TreeViewFinderNodeProps>();
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
 
@@ -101,23 +100,23 @@ const CreateParameterDialog = <T extends FieldValues>({
 
     const onSubmit = useCallback(
         (values: FormData) => {
-            if (defaultFolder.id) {
+            if (defaultFolder?.id) {
                 createParameter(
                     parameterFormatter(parameterValues()),
                     values.name,
                     parameterType,
-                    defaultFolder.id
+                    defaultFolder?.id as UUID
                 );
             }
         },
-        [defaultFolder.id, parameterType, parameterValues, parameterFormatter]
+        [defaultFolder?.id, parameterType, parameterValues, parameterFormatter]
     );
 
     const handleChangeFolder = () => {
         setOpenDirectoryFolders(true);
     };
 
-    const setSelectedFolder = (folder: Identifier[]) => {
+    const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder && folder.length > 0) {
             if (folder[0].id !== defaultFolder?.id) {
                 setDefaultFolder({
@@ -164,7 +163,7 @@ const CreateParameterDialog = <T extends FieldValues>({
                     name={NAME}
                     label={'Name'}
                     elementType={parameterType}
-                    activeDirectory={defaultFolder.id}
+                    activeDirectory={defaultFolder?.id as UUID}
                     autoFocus
                 />
                 {folderChooser}
@@ -174,7 +173,7 @@ const CreateParameterDialog = <T extends FieldValues>({
                     onClose={setSelectedFolder}
                     types={[ElementType.DIRECTORY]}
                     onlyLeaves={false}
-                    multiselect={false}
+                    multiSelect={false}
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}

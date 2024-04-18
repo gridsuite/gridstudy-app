@@ -34,11 +34,6 @@ import {
 } from './voltage-init-parameters-form';
 import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
 
-export type Identifier = {
-    [ID]: UUID | null;
-    [NAME]: string | null;
-};
-
 type FilterIdentifier = {
     [FILTER_ID]: UUID;
     [FILTER_NAME]: string;
