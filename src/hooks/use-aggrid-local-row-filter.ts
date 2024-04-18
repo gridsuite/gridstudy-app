@@ -25,6 +25,7 @@ export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     filterStoreParam: FilterStorePropsType
 ): UseAggridRowFilterOutputType => {
+    const decimalPrecision: number = 5;
     const columns = gridRef.current?.api?.getColumnDefs();
     const { updateFilter, filterSelector } =
         useAggridRowFilter(filterStoreParam);
@@ -135,15 +136,15 @@ export const useAggridLocalRowFilter = (
         return filters
             .map((filter): FilterSelectorType | FilterSelectorType[] => {
                 // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
-                let valueAsNumber: number | string[] =
+                let valueAsNumber: number | string[] | null | undefined =
                     typeof filter.value === 'string'
                         ? parseFloat(filter.value)
                         : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
-                    let facteur = Math.pow(10, 5);
+                    let facteur = Math.pow(10, decimalPrecision);
                     // Truncate the number to maintain precision
-                    let nombre1Tronque =
+                    let truncatedNumber =
                         Math.floor(valueAsNumber * facteur) / facteur;
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
@@ -153,29 +154,33 @@ export const useAggridLocalRowFilter = (
                                 {
                                     ...filter,
                                     type: 'greaterThan',
-                                    value: (nombre1Tronque + tolerance).toFixed(
-                                        5
-                                    ),
+                                    value: (
+                                        truncatedNumber + tolerance
+                                    ).toFixed(decimalPrecision),
                                 },
                                 {
                                     ...filter,
                                     type: 'lessThan',
-                                    value: (nombre1Tronque - tolerance).toFixed(
-                                        5
-                                    ),
+                                    value: (
+                                        truncatedNumber - tolerance
+                                    ).toFixed(decimalPrecision),
                                 },
                             ];
                         case 'lessThanOrEqual':
                             // For 'lessThanOrEqual', adjust the value upwards by the tolerance
                             return {
                                 ...filter,
-                                value: (nombre1Tronque + tolerance).toFixed(5),
+                                value: (truncatedNumber + tolerance).toFixed(
+                                    decimalPrecision
+                                ),
                             };
                         case 'greaterThanOrEqual':
                             // For 'greaterThanOrEqual', adjust the value downwards by the tolerance
                             return {
                                 ...filter,
-                                value: (nombre1Tronque - tolerance).toFixed(5),
+                                value: (truncatedNumber - tolerance).toFixed(
+                                    decimalPrecision
+                                ),
                             };
                         default:
                             return filter;
