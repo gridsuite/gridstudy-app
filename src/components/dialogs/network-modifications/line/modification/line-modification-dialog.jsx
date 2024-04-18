@@ -6,28 +6,28 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ADDITIONAL_PROPERTIES,
+    B1,
+    B2,
     CHARACTERISTICS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     EQUIPMENT_NAME,
+    G1,
+    G2,
     LIMITS,
     PERMANENT_LIMIT,
     R,
-    G1,
-    G2,
-    B1,
-    B2,
     TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
     X,
 } from 'components/utils/field-constants';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import yup from 'components/utils/yup-config';
@@ -68,6 +68,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
     LIMITS_TAB: 1,
@@ -419,7 +420,7 @@ const LineModificationDialog = ({
     );
 
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
@@ -478,7 +479,7 @@ const LineModificationDialog = ({
                     </>
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

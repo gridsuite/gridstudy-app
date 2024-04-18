@@ -9,29 +9,34 @@ import { NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm, UseFormGetValues } from 'react-hook-form';
+import { FieldValues, useForm, UseFormGetValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { fetchPath } from 'services/directory';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import {
+    fetchDirectoryContent,
+    fetchPath,
+    fetchRootFolders,
+} from 'services/directory';
+import {
+    CustomFormProvider,
+    DirectoryItemSelector,
+    ElementType,
+} from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
-import { createParameter } from 'services/explore';
-import { Identifier, VoltageInitForm } from '../voltageinit/voltage-init-utils';
+import { createParameter, fetchElementsMetadata } from 'services/explore';
+import { Identifier } from '../voltageinit/voltage-init-utils';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
-import { ElementType } from '@gridsuite/commons-ui';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 
 interface FormData {
     [NAME]: string;
 }
 
-interface CreateParameterProps {
+interface CreateParameterProps<T extends FieldValues> {
     open: boolean;
     onClose: () => void;
-    parameterValues: UseFormGetValues<VoltageInitForm> | any;
+    parameterValues: UseFormGetValues<T> | any;
     parameterType: string;
     parameterFormatter: (newParams: any) => any;
 }
@@ -47,13 +52,13 @@ const formSchema = yup
     })
     .required();
 
-const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
+const CreateParameterDialog = <T extends FieldValues>({
     open,
     onClose,
     parameterValues,
     parameterType,
     parameterFormatter,
-}) => {
+}: CreateParameterProps<T>) => {
     const intl = useIntl();
     const [defaultFolder, setDefaultFolder] = useState<Identifier>({
         id: null,
@@ -144,7 +149,7 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
     );
 
     return (
-        <FormProvider {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 open={open}
@@ -181,7 +186,7 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
                     fetchElementsInfos={fetchElementsMetadata}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

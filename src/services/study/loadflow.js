@@ -117,13 +117,17 @@ export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
 
 export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
     console.info(`Fetching limit violations ...`);
-    const { sort, filters } = queryParams || {};
+    const { sort, filters, globalFilters } = queryParams || {};
     const params = new URLSearchParams({});
 
     sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
+    }
+
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        params.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url =

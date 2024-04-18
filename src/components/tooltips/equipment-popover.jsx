@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
 import {
     Paper,
     Popover,
@@ -31,6 +29,7 @@ import {
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { mergeSx } from '../utils/functions';
 import { unitToMicroUnit } from 'utils/unit-converter';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     tableCells: {
@@ -53,40 +52,57 @@ const EquipmentPopover = ({
     const intl = useIntl();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
 
-    useEffect(() => {
-        if (equipmentId && equipmentId !== '') {
+    const getNetworkElementInfos = useCallback(
+        (equipmentId, equipmentType, currentNodeId, studyUuid) => {
             fetchNetworkElementInfos(
                 studyUuid,
-                currentNode.id,
+                currentNodeId,
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.TOOLTIP.type,
                 equipmentId,
                 true
             ).then((value) => {
                 setEquipmentInfo(value);
+                // When multiple rerender happens on the svg, the anchorEl can be already removed from the DOM
+                // which will cause the popover to jump all over the place during a few frames, so we wait for the
+                // debounced fetch to end to fix that effect.
+                if (document.contains(anchorEl)) {
+                    setLocalAnchorEl(anchorEl);
+                } else {
+                    setLocalAnchorEl(null);
+                }
             });
+        },
+        [anchorEl]
+    );
+
+    const debouncedNetworkElementInfos = useDebounce(
+        getNetworkElementInfos,
+        200
+    );
+
+    useEffect(() => {
+        if (equipmentId && equipmentId !== '') {
+            debouncedNetworkElementInfos(
+                equipmentId,
+                equipmentType,
+                currentNode.id,
+                studyUuid
+            );
         } else {
             setEquipmentInfo(null);
         }
-    }, [equipmentId, equipmentType, currentNode.id, studyUuid]);
+    }, [
+        debouncedNetworkElementInfos,
+        equipmentId,
+        equipmentType,
+        currentNode.id,
+        studyUuid,
+    ]);
 
     const handlePopoverClose = () => {
         setEquipmentInfo(null);
     };
-
-    //When multiple rerender happens on the svg the anchorEl can be already removed from the dom
-    //which will cause the popover to jump all over the place during a few frames so we wait a little to avoid
-    //that effect
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (document.contains(anchorEl)) {
-                setLocalAnchorEl(anchorEl);
-            } else {
-                setLocalAnchorEl(null);
-            }
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [anchorEl]);
 
     const formatValue = (value, fixed) => {
         if (value != null && !Number.isNaN(value)) {
@@ -323,12 +339,6 @@ const EquipmentPopover = ({
                     open={Boolean(localAnchorEl)}
                     disableRestoreFocus
                 >
-                    {equipmentInfo === null && (
-                        <Box height={2} minWidth={100}>
-                            <LinearProgress />
-                        </Box>
-                    )}
-
                     {equipmentInfo !== null && (
                         <Grid
                             container

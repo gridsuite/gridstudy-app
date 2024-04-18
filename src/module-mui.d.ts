@@ -14,6 +14,15 @@ import {
 // https://mui.com/material-ui/customization/theming/#typescript
 declare module '@mui/material/styles' {
     export * from '@mui/material/styles';
+    interface PaletteExtension {
+        cancelButtonColor: { main: string };
+        tabBackground: string;
+    }
+    export interface Palette extends MuiPalette, Required<PaletteExtension> {}
+    export interface PaletteOptions
+        extends MuiPaletteOptions,
+            Partial<PaletteExtension> {}
+
     interface ThemeExtension {
         aggrid: string;
         aggridValueChangeHighlightBackgroundColor: string;
@@ -25,6 +34,9 @@ declare module '@mui/material/styles' {
         };
         overlay: {
             background: string;
+        };
+        palette: {
+            tabBackground: string;
         };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}

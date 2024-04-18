@@ -5,35 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import PropTypes from 'prop-types';
 import {
     ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,
-    REPLACING_LINE_1_ID,
-    REPLACING_LINE_2_ID,
-    REPLACING_LINE_1_NAME,
-    REPLACING_LINE_2_NAME,
-    VOLTAGE_LEVEL_ID,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTIVITY,
+    ID,
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
-    CONNECTIVITY,
+    REPLACING_LINE_1_ID,
+    REPLACING_LINE_1_NAME,
+    REPLACING_LINE_2_ID,
+    REPLACING_LINE_2_NAME,
     VOLTAGE_LEVEL,
-    ID,
-    BUS_OR_BUSBAR_SECTION,
+    VOLTAGE_LEVEL_ID,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import React, { useCallback, useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
+    getConnectivityData,
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityWithoutPositionValidationSchema,
-    getConnectivityData,
 } from '../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -150,7 +150,7 @@ const LinesAttachToSplitLinesDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -170,7 +170,7 @@ const LinesAttachToSplitLinesDialog = ({
                     studyUuid={studyUuid}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
