@@ -22,7 +22,7 @@ import { useIntl } from 'react-intl';
 import VirtualizedList from './virtualized-list';
 import CheckboxItem from './checkbox-item';
 
-// the virtualized component is customized from the MUI example
+// virtualized component CheckboxAutocomplete is customized from the MUI example
 // https://mui.com/material-ui/react-autocomplete/#virtualization
 
 const styles = {
@@ -60,7 +60,12 @@ const StyledPopper = styled(Popper)({
 interface CheckboxAutocompleteProps<Value>
     extends Omit<
         AutocompleteProps<Value, true, false, false>,
-        'renderInput' | 'renderOption' | 'inputValue' | 'onChange'
+        | 'ListboxComponent'
+        | 'renderInput'
+        | 'renderOption'
+        | 'inputValue'
+        | 'onChange'
+        | 'onBlur'
     > {
     id?: string;
     virtualize?: boolean;
@@ -89,7 +94,7 @@ const CheckboxAutocomplete = <Value,>({
     const [isMaxLimitReached, setMaxLimitReached] = useState(false);
 
     const handleChange = (_event: SyntheticEvent, value: Value[]) => {
-        if (!maxSelection || value.length <= maxSelection) {
+        if (maxSelection === undefined || value.length <= maxSelection) {
             setMaxLimitReached(false);
             // propagate change to the parent
             onChange(value);
@@ -156,22 +161,22 @@ const CheckboxAutocomplete = <Value,>({
         <Autocomplete
             id={`checkbox-autocomplete-${id}`}
             sx={styles.autocomplete}
-            multiple
             disableCloseOnSelect
             size="small"
             disableListWrap
             PopperComponent={StyledPopper}
-            ListboxComponent={virtualize ? VirtualizedList : undefined}
             options={options}
             noOptionsText={intl.formatMessage({ id: 'noOption' })}
             getOptionLabel={getOptionLabel}
-            onChange={handleChange}
-            inputValue={inputValue}
-            onBlur={handleBlur}
-            renderInput={renderInput}
-            renderOption={renderOption}
             limitTags={1}
             {...otherProps}
+            // props should not be overridden
+            ListboxComponent={virtualize ? VirtualizedList : undefined}
+            renderInput={renderInput}
+            renderOption={renderOption}
+            inputValue={inputValue}
+            onChange={handleChange}
+            onBlur={handleBlur}
         />
     );
 };

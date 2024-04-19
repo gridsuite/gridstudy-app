@@ -16,6 +16,9 @@ import {
     useContext,
 } from 'react';
 
+// component VirtualizedList is customized from ListboxComponent in the MUI example
+// https://mui.com/material-ui/react-autocomplete/#virtualization
+
 const OuterElementContext = createContext({});
 
 const OuterElementType = forwardRef<HTMLDivElement>((props, ref) => {

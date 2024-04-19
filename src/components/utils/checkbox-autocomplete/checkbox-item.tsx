@@ -9,6 +9,10 @@ import { HTMLAttributes } from 'react';
 import { Checkbox, Typography } from '@mui/material';
 import { OverflowableText } from '@gridsuite/commons-ui';
 
+// component CheckboxItem is extracted and customized from renderRow in the MUI example
+// in order to reuse also in Autocomplete without virtualization
+// https://mui.com/material-ui/react-autocomplete/#virtualization
+
 const styles = {
     checkbox: {
         marginRight: 8,

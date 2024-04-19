@@ -8,6 +8,9 @@
 import { VariableSizeList } from 'react-window';
 import { useEffect, useRef } from 'react';
 
+// the hook is taken from the MUI example
+// https://mui.com/material-ui/react-autocomplete/#virtualization
+
 export default function useResetCache(data: unknown) {
     const ref = useRef<VariableSizeList>(null);
     useEffect(() => {

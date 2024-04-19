@@ -8,6 +8,9 @@
 import { ListChildComponentProps } from 'react-window';
 import CheckboxItem from './checkbox-item';
 
+// VirtualizedListItem component is customized from renderRow in the MUI example
+// https://mui.com/material-ui/react-autocomplete/#virtualization
+
 export const LISTBOX_PADDING = 8; // px
 
 const VirtualizedListItem = ({
