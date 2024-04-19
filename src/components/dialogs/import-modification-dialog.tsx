@@ -6,8 +6,12 @@
  */
 
 import { useIntl } from 'react-intl';
-import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    useSnackMessage,
+    DirectoryItemSelector,
+    TreeViewFinderNodeProps,
+} from '@gridsuite/commons-ui';
 import { CopyType } from '../graph/menus/network-modification-node-editor';
 import { copyOrMoveModifications } from '../../services/study';
 import { UUID } from 'crypto';
@@ -36,7 +40,9 @@ const ImportModificationDialog: FunctionComponent<
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const processSelectedElements = (selectedElements: any[]) => {
+    const processSelectedElements = (
+        selectedElements: TreeViewFinderNodeProps[]
+    ) => {
         const copyInfos = {
             copyType: CopyType.COPY,
         };
@@ -64,7 +70,7 @@ const ImportModificationDialog: FunctionComponent<
             open={open}
             onClose={processSelectedElements}
             types={[ElementType.MODIFICATION]}
-            multiselect={true}
+            multiSelect={true}
             title={intl.formatMessage({
                 id: 'ModificationsSelection',
             })}
