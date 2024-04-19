@@ -143,10 +143,10 @@ export const useAggridLocalRowFilter = (
                         : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
-                    let facteur = Math.pow(10, decimalPrecision);
+                    let factor = Math.pow(10, decimalPrecision);
                     // Truncate the number to maintain precision
                     let truncatedNumber =
-                        Math.floor(valueAsNumber * facteur) / facteur;
+                        Math.floor(valueAsNumber * factor) / factor;
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
                         case 'notEqual':
