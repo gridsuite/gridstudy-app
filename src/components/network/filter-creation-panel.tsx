@@ -12,10 +12,10 @@ import {
     DirectoryItemSelector,
     ElementType,
     SelectInput,
+    TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { Identifier } from '../dialogs/parameters/voltageinit/voltage-init-utils';
 import { useForm } from 'react-hook-form';
 import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
@@ -32,6 +32,7 @@ import {
     equipementTypeToLabel,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
+import { UUID } from 'crypto';
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
@@ -54,7 +55,10 @@ const emptyFormData = {
 };
 
 type FilterCreationPanelProps = {
-    onSaveFilter: (data: IFilterCreation, distDir: Identifier) => void;
+    onSaveFilter: (
+        data: IFilterCreation,
+        distDir: TreeViewFinderNodeProps
+    ) => void;
     onCancel: () => void;
 };
 
@@ -70,10 +74,8 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         resolver: yupResolver(formSchema),
     });
 
-    const [defaultFolder, setDefaultFolder] = useState<Identifier>({
-        id: null,
-        name: null,
-    });
+    const [defaultFolder, setDefaultFolder] =
+        useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchPath(studyUuid).then((res) => {
@@ -108,7 +110,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     const handleChangeFolder = () => {
         setOpenDirectorySelector(true);
     };
-    const setSelectedFolder = (folder: Identifier[]) => {
+    const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder && folder.length > 0) {
             if (folder[0].id !== defaultFolder?.id) {
                 setDefaultFolder({
@@ -159,7 +161,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             name={NAME}
                             label={'Name'}
                             elementType={ElementType.DIRECTORY}
-                            activeDirectory={defaultFolder.id}
+                            activeDirectory={defaultFolder?.id as UUID}
                             autoFocus
                         />
                     </Grid>
@@ -175,7 +177,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
 
                         <Typography m={1} component="span">
                             <Box fontWeight={'fontWeightBold'}>
-                                {defaultFolder.name}
+                                {defaultFolder?.name}
                             </Box>
                         </Typography>
                     </Grid>
@@ -185,7 +187,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             onClose={setSelectedFolder}
                             types={[ElementType.DIRECTORY]}
                             onlyLeaves={false}
-                            multiselect={false}
+                            multiSelect={false}
                             validationButtonText={intl.formatMessage({
                                 id: 'validate',
                             })}
@@ -210,7 +212,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         type={'submit'}
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
-                                if (isValid) {
+                                if (isValid && defaultFolder) {
                                     onSaveFilter(
                                         formMethods.getValues() as IFilterCreation,
                                         defaultFolder
