@@ -7,12 +7,13 @@
 
 import { Grid, MenuItem, Select, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, {
+import {
     forwardRef,
     useCallback,
     useEffect,
     useImperativeHandle,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import CountryAutocomplete from '../country-autocomplete';
@@ -139,12 +140,13 @@ const styles = {
 const EquipmentFilter = forwardRef(
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
-        const [gridApi, setGridApi] = useState();
+        const [gridReady, setGridReady] = useState(false);
 
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
 
         const intl = useIntl();
+        const equipmentsRef = useRef();
 
         // --- Equipment types --- //
         const [equipmentType, setEquipmentType] =
@@ -236,15 +238,15 @@ const EquipmentFilter = forwardRef(
         // fetching filtered equipments
         useEffect(() => {
             let ignore = false;
-            if (gridApi) {
-                gridApi.showLoadingOverlay();
+            if (gridReady) {
+                equipmentsRef.current?.api.showLoadingOverlay();
                 filteringEquipmentsFetcher
                     .then((equipments) => {
                         // using ignore flag to cancel fetches that do not return in order
                         if (!ignore) {
                             setEquipmentRowData(equipments);
                         }
-                        gridApi.hideOverlay();
+                        equipmentsRef.current?.api.hideOverlay();
                     })
                     .catch((error) => {
                         snackError({
@@ -256,7 +258,7 @@ const EquipmentFilter = forwardRef(
             return () => {
                 ignore = true;
             };
-        }, [filteringEquipmentsFetcher, gridApi, snackError]);
+        }, [filteringEquipmentsFetcher, gridReady, snackError]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
@@ -288,14 +290,14 @@ const EquipmentFilter = forwardRef(
             };
         }, []);
 
-        const onGridReady = useCallback((event) => {
-            setGridApi(event.api);
+        const onGridReady = useCallback((_event) => {
+            setGridReady(true);
         }, []);
 
         const handleEquipmentSelectionChanged = useCallback(() => {
-            const selectedRows = gridApi.getSelectedRows();
+            const selectedRows = equipmentsRef.current?.api.getSelectedRows();
             setSelectedRowsLength(selectedRows.length);
-        }, [gridApi]);
+        }, []);
 
         // expose some api for the component by using ref
         useImperativeHandle(
@@ -303,11 +305,11 @@ const EquipmentFilter = forwardRef(
             () => ({
                 api: {
                     getSelectedEquipments: () => {
-                        return gridApi.getSelectedRows();
+                        return equipmentsRef.current?.api.getSelectedRows();
                     },
                 },
             }),
-            [gridApi]
+            []
         );
 
         // config overlay when fetching from back
@@ -427,6 +429,7 @@ const EquipmentFilter = forwardRef(
                     <Grid item xs>
                         <Box sx={styles.grid}>
                             <CustomAGGrid
+                                ref={equipmentsRef}
                                 rowData={equipmentRowData}
                                 columnDefs={columnDefs}
                                 defaultColDef={defaultColDef}
