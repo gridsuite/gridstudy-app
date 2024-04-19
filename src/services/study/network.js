@@ -197,7 +197,7 @@ export function fetchNetworkElementInfos(
         additionalParams.set('operation', operation);
     }
 
-    additionalParams.forEach((key, value) =>
+    additionalParams.forEach((value, key) =>
         urlSearchParams.append(`additionalParams[${key}]`, value)
     );
     const fetchElementsUrl =
