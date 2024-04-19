@@ -16,10 +16,8 @@ import {
     useRef,
     useState,
 } from 'react';
-import CountryAutocomplete from '../country-autocomplete';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import {
@@ -27,97 +25,14 @@ import {
     fetchAllNominalVoltages,
 } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter } from '../../../../../../services/study/filter';
-import {
-    CombinatorType,
-    DataType,
-    FieldType,
-    OperatorType,
-} from '../../../../filter/expert/expert-filter.type';
 import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
-
-export const CURVE_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.LOAD,
-    EQUIPMENT_TYPES.BUS,
-    EQUIPMENT_TYPES.BUSBAR_SECTION,
-];
-
-// this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
-export const getReferencedEquipmentTypeForModel = (equipmentType) => {
-    // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
-    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION
-        ? EQUIPMENT_TYPES.BUS
-        : equipmentType;
-};
-
-// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
-const getTopologyKindIfNecessary = (equipmentType) => {
-    return equipmentType === EQUIPMENT_TYPES.BUS
-        ? {
-              topologyKind: 'BUS_BREAKER',
-          }
-        : {};
-};
-
-const buildExpertRules = (voltageLevelIds, countries, nominalVoltages) => {
-    const rules = [];
-
-    // create rule IN for voltageLevelIds
-    if (voltageLevelIds?.length) {
-        const voltageLevelIdsRule = {
-            field: FieldType.VOLTAGE_LEVEL_ID,
-            operator: OperatorType.IN,
-            values: voltageLevelIds,
-            dataType: DataType.STRING,
-        };
-        rules.push(voltageLevelIdsRule);
-    }
-
-    // create rule IN for countries
-    if (countries?.length) {
-        const countriesRule = {
-            field: FieldType.COUNTRY,
-            operator: OperatorType.IN,
-            values: countries,
-            dataType: DataType.ENUM,
-        };
-        rules.push(countriesRule);
-    }
-
-    // create rule IN for nominalVoltages
-    if (nominalVoltages?.length) {
-        const nominalVoltagesRule = {
-            field: FieldType.NOMINAL_VOLTAGE,
-            operator: OperatorType.IN,
-            values: nominalVoltages,
-            dataType: DataType.NUMBER,
-        };
-        rules.push(nominalVoltagesRule);
-    }
-
-    return {
-        combinator: CombinatorType.AND,
-        dataType: DataType.COMBINATOR,
-        rules,
-    };
-};
-
-const buildExpertFilter = (
-    equipmentType,
-    voltageLevelIds,
-    countries,
-    nominalVoltages
-) => {
-    return {
-        ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
-        type: 'EXPERT',
-        equipmentType: equipmentType,
-        rules: buildExpertRules(voltageLevelIds, countries, nominalVoltages),
-    };
-};
-
-const NOMINAL_VOLTAGE_UNIT = 'kV';
+import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
+import {
+    buildExpertFilter,
+    CURVE_EQUIPMENT_TYPES,
+    NOMINAL_VOLTAGE_UNIT,
+} from './curve-selector-utils';
 
 const styles = {
     grid: {
@@ -176,6 +91,7 @@ const EquipmentFilter = forwardRef(
         // --- country (i.e. countryCode) => fetch from network-map-server --- //
         const [countries, setCountries] = useState([]);
         const [selectedCountries, setSelectedCountries] = useState([]);
+        const { translate } = useLocalizedCountries();
 
         // fetching options in different criterias
         useEffect(() => {
@@ -239,6 +155,7 @@ const EquipmentFilter = forwardRef(
         useEffect(() => {
             let ignore = false;
             if (gridReady) {
+                // when close dialog, the current ref may be null => so check with '?'
                 equipmentsRef.current?.api.showLoadingOverlay();
                 filteringEquipmentsFetcher
                     .then((equipments) => {
@@ -382,10 +299,11 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid item xs={8}>
-                        <CountryAutocomplete
+                        <CheckboxAutocomplete
                             id="country"
                             options={countries}
                             value={selectedCountries}
+                            getOptionLabel={(value) => translate(value)}
                             onChange={setSelectedCountries}
                         />
                     </Grid>

@@ -60,6 +60,7 @@ const StyledPopper = styled(Popper)({
 interface CheckboxAutocompleteProps<Value>
     extends Omit<
         AutocompleteProps<Value, true, false, false>,
+        | 'multiple'
         | 'ListboxComponent'
         | 'renderInput'
         | 'renderOption'
@@ -94,7 +95,7 @@ const CheckboxAutocomplete = <Value,>({
     const [isMaxLimitReached, setMaxLimitReached] = useState(false);
 
     const handleChange = (_event: SyntheticEvent, value: Value[]) => {
-        if (maxSelection === undefined || value.length <= maxSelection) {
+        if (!maxSelection || value.length <= maxSelection) {
             setMaxLimitReached(false);
             // propagate change to the parent
             onChange(value);
@@ -171,6 +172,7 @@ const CheckboxAutocomplete = <Value,>({
             limitTags={1}
             {...otherProps}
             // props should not be overridden
+            multiple
             ListboxComponent={virtualize ? VirtualizedList : undefined}
             renderInput={renderInput}
             renderOption={renderOption}
