@@ -6,62 +6,66 @@
  */
 
 import { VariableSizeList } from 'react-window';
-import React from 'react';
 import useResetCache from './use-reset-cache';
-import VirtualizedListItem from './virtualized-list-item';
-import { LISTBOX_PADDING } from './checkbox-item';
+import VirtualizedListItem, { LISTBOX_PADDING } from './virtualized-list-item';
+import {
+    createContext,
+    forwardRef,
+    HTMLAttributes,
+    ReactElement,
+    useContext,
+} from 'react';
 
-const OuterElementContext = React.createContext({});
+const OuterElementContext = createContext({});
 
-const OuterElementType = React.forwardRef<HTMLDivElement>((props, ref) => {
-    const outerProps = React.useContext(OuterElementContext);
+const OuterElementType = forwardRef<HTMLDivElement>((props, ref) => {
+    const outerProps = useContext(OuterElementContext);
     return <div ref={ref} {...props} {...outerProps} />;
 });
 
 // Adapter for react-window
-const VirtualizedList = React.forwardRef<
-    HTMLDivElement,
-    React.HTMLAttributes<HTMLElement>
->(function ListboxComponent(props, ref) {
-    const { children, ...other } = props;
-    const itemData: React.ReactElement[] = [];
-    (children as React.ReactElement[]).forEach(
-        (item: React.ReactElement & { children?: React.ReactElement[] }) => {
-            itemData.push(item);
-            itemData.push(...(item.children || []));
-        }
-    );
+const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
+    (props, ref) => {
+        const { children, ...otherProps } = props;
+        const itemData: ReactElement[] = [];
+        (children as ReactElement[]).forEach(
+            (item: ReactElement & { children?: ReactElement[] }) => {
+                itemData.push(item);
+                itemData.push(...(item.children ?? []));
+            }
+        );
 
-    const itemCount = itemData.length;
-    const itemSize = 48;
+        const itemCount = itemData.length;
+        const itemSize = 48;
 
-    const getHeight = () => {
-        if (itemCount > 8) {
-            return 8 * itemSize;
-        }
-        return itemData.length * itemSize;
-    };
+        const getHeight = () => {
+            if (itemCount > 8) {
+                return 8 * itemSize;
+            }
+            return itemCount * itemSize;
+        };
 
-    const gridRef = useResetCache(itemCount);
+        const gridRef = useResetCache(itemCount);
 
-    return (
-        <div ref={ref}>
-            <OuterElementContext.Provider value={other}>
-                <VariableSizeList
-                    itemData={itemData}
-                    height={getHeight() + 2 * LISTBOX_PADDING}
-                    width="100%"
-                    ref={gridRef}
-                    outerElementType={OuterElementType}
-                    innerElementType="ul"
-                    itemSize={(_index) => itemSize}
-                    overscanCount={5}
-                    itemCount={itemCount}
-                    children={VirtualizedListItem}
-                />
-            </OuterElementContext.Provider>
-        </div>
-    );
-});
+        return (
+            <div ref={ref}>
+                <OuterElementContext.Provider value={otherProps}>
+                    <VariableSizeList
+                        itemData={itemData}
+                        height={getHeight() + 2 * LISTBOX_PADDING}
+                        width="100%"
+                        ref={gridRef}
+                        outerElementType={OuterElementType}
+                        innerElementType="ul"
+                        itemSize={(_index) => itemSize}
+                        overscanCount={5}
+                        itemCount={itemCount}
+                        children={VirtualizedListItem}
+                    />
+                </OuterElementContext.Provider>
+            </div>
+        );
+    }
+);
 
 export default VirtualizedList;

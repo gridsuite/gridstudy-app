@@ -5,26 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as React from 'react';
+import { HTMLAttributes } from 'react';
 import { Checkbox, Typography } from '@mui/material';
 import { OverflowableText } from '@gridsuite/commons-ui';
 
-export const LISTBOX_PADDING = 8; // px
-
 const styles = {
     checkbox: {
-        marginRight: LISTBOX_PADDING,
+        marginRight: 8,
     },
 };
 
-export const customItemStyle = (originalStyle: React.CSSProperties) => ({
-    ...originalStyle,
-    top: isNaN(originalStyle.top as number)
-        ? 0
-        : (originalStyle.top as number) + LISTBOX_PADDING,
-});
-
-interface CheckboxItemProps<Value> extends React.HTMLAttributes<HTMLElement> {
+interface CheckboxItemProps<Value> extends HTMLAttributes<HTMLElement> {
     option: Value;
     selected: boolean;
     getOptionLabel: (option: Value) => string;
@@ -34,16 +25,10 @@ const CheckboxItem = <Value,>({
     option,
     selected,
     getOptionLabel,
-    style,
     ...otherProps
 }: CheckboxItemProps<Value>) => {
     return (
-        <Typography
-            component="li"
-            {...otherProps}
-            noWrap
-            style={customItemStyle(style ?? {})}
-        >
+        <Typography component="li" {...otherProps} noWrap>
             <Checkbox style={styles.checkbox} checked={selected} />
             <OverflowableText text={getOptionLabel(option)} />
         </Typography>

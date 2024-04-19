@@ -8,16 +8,24 @@
 import { ListChildComponentProps } from 'react-window';
 import CheckboxItem from './checkbox-item';
 
-const VirtualizedListItem = (props: ListChildComponentProps) => {
-    const { data, index } = props;
-    const [option, selected, getOptionLabel, otherProps] = data[index];
+export const LISTBOX_PADDING = 8; // px
 
+const VirtualizedListItem = ({
+    data,
+    index,
+    style,
+}: ListChildComponentProps) => {
+    const [option, selected, getOptionLabel, itemProps] = data[index];
     return (
         <CheckboxItem
             option={option}
             selected={selected}
             getOptionLabel={getOptionLabel}
-            {...otherProps}
+            style={{
+                ...style,
+                top: Number(style.top) + LISTBOX_PADDING,
+            }}
+            {...itemProps}
         />
     );
 };

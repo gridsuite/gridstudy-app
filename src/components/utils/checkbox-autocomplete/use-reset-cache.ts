@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as React from 'react';
 import { VariableSizeList } from 'react-window';
+import { useEffect, useRef } from 'react';
 
-export default function useResetCache(data: any) {
-    const ref = React.useRef<VariableSizeList>(null);
-    React.useEffect(() => {
+export default function useResetCache(data: unknown) {
+    const ref = useRef<VariableSizeList>(null);
+    useEffect(() => {
         if (ref.current != null) {
             ref.current.resetAfterIndex(0, true);
         }

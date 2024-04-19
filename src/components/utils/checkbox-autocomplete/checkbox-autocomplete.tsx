@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as React from 'react';
-import { useState } from 'react';
+import { HTMLAttributes, ReactNode, SyntheticEvent, useState } from 'react';
 import {
     Autocomplete,
     autocompleteClasses,
@@ -89,7 +88,7 @@ const CheckboxAutocomplete = <Value,>({
     const [isFocusInput, setIsFocusInput] = useState(false);
     const [isMaxLimitReached, setMaxLimitReached] = useState(false);
 
-    const handleChange = (_event: React.SyntheticEvent, value: Value[]) => {
+    const handleChange = (_event: SyntheticEvent, value: Value[]) => {
         if (!maxSelection || value.length <= maxSelection) {
             setMaxLimitReached(false);
             // propagate change to the parent
@@ -134,12 +133,12 @@ const CheckboxAutocomplete = <Value,>({
     );
 
     const renderOption = (
-        props: React.HTMLAttributes<HTMLElement>,
+        props: HTMLAttributes<HTMLElement>,
         option: Value,
         state: AutocompleteRenderOptionState
     ) =>
         virtualize ? (
-            ([option, state.selected, getOptionLabel, props] as React.ReactNode)
+            ([option, state.selected, getOptionLabel, props] as ReactNode)
         ) : (
             <CheckboxItem
                 option={option}

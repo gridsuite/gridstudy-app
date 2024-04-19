@@ -165,25 +165,15 @@ const EquipmentFilter = forwardRef(
         const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
             []
         );
-        const handleVoltageLevelChange = (selectedVoltageLevelIds) => {
-            setSelectedVoltageLevelIds(selectedVoltageLevelIds);
-        };
 
         const [nominalVoltages, setNominalVoltages] = useState([]);
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
             []
         );
 
-        const handleNominalVoltageChange = (selectedNominalVoltages) => {
-            setSelectedNominalVoltages(selectedNominalVoltages);
-        };
-
         // --- country (i.e. countryCode) => fetch from network-map-server --- //
         const [countries, setCountries] = useState([]);
         const [selectedCountries, setSelectedCountries] = useState([]);
-        const handleCountryChange = (selectedCountries) => {
-            setSelectedCountries(selectedCountries);
-        };
 
         // fetching options in different criterias
         useEffect(() => {
@@ -298,14 +288,14 @@ const EquipmentFilter = forwardRef(
             };
         }, []);
 
-        const onGridReady = (params) => {
-            setGridApi(params.api);
-        };
+        const onGridReady = useCallback((event) => {
+            setGridApi(event.api);
+        }, []);
 
-        const handleEquipmentSelectionChanged = () => {
+        const handleEquipmentSelectionChanged = useCallback(() => {
             const selectedRows = gridApi.getSelectedRows();
             setSelectedRowsLength(selectedRows.length);
-        };
+        }, [gridApi]);
 
         // expose some api for the component by using ref
         useImperativeHandle(
@@ -376,7 +366,7 @@ const EquipmentFilter = forwardRef(
                             getOptionLabel={(value) =>
                                 voltageLevelsMap.get(value) ?? value
                             }
-                            onChange={handleVoltageLevelChange}
+                            onChange={setSelectedVoltageLevelIds}
                         />
                     </Grid>
                 </Grid>
@@ -394,7 +384,7 @@ const EquipmentFilter = forwardRef(
                             id="country"
                             options={countries}
                             value={selectedCountries}
-                            onChange={handleCountryChange}
+                            onChange={setSelectedCountries}
                         />
                     </Grid>
                 </Grid>
@@ -415,7 +405,7 @@ const EquipmentFilter = forwardRef(
                             getOptionLabel={(value) =>
                                 `${value} ${NOMINAL_VOLTAGE_UNIT}`
                             }
-                            onChange={handleNominalVoltageChange}
+                            onChange={setSelectedNominalVoltages}
                         />
                     </Grid>
                 </Grid>
