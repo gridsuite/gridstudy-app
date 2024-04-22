@@ -25,7 +25,7 @@ import {
     fetchAllNominalVoltages,
 } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter } from '../../../../../../services/study/filter';
-import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network';
+import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import {
@@ -96,27 +96,22 @@ const EquipmentFilter = forwardRef(
         // fetching options in different criterias
         useEffect(() => {
             // Load voltage level IDs
-            fetchVoltageLevelsListInfos(studyUuid, currentNode.id)
+            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id)
                 .then((voltageLevels) => {
                     const vlMap = new Map();
-                    voltageLevels.forEach((vl) => vlMap.set(vl.id, vl.name));
+                    const nvSet = new Set();
+                    voltageLevels.forEach((vl) => {
+                        vlMap.set(vl.id, vl.name);
+                        nvSet.add(vl.nominalV);
+                    });
                     setVoltageLevelsMap(vlMap);
+                    setNominalVoltages([...nvSet.values()].sort());
                     setVoltageLevelIds([...vlMap.keys()]);
                 })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'FetchVoltageLevelsError',
-                    });
-                });
-
-            // Load nominal voltages
-            fetchAllNominalVoltages(studyUuid, currentNode.id)
-                .then((nominalVoltages) => setNominalVoltages(nominalVoltages))
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchNominalVoltagesError',
                     });
                 });
 
