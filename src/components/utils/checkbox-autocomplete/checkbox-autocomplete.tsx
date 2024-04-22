@@ -44,6 +44,9 @@ const styles = {
                 width: 'auto',
             },
         },
+        '&:not(.Mui-focused) .MuiAutocomplete-tag': {
+            maxWidth: 'calc(100% - 32px)', // reduce 32px to avoid the number of hidden tags, e.g +2, shown in a new line
+        },
     }),
 };
 // to reset all default alignments
@@ -60,6 +63,7 @@ const StyledPopper = styled(Popper)({
 interface CheckboxAutocompleteProps<Value>
     extends Omit<
         AutocompleteProps<Value, true, false, false>,
+        | 'limitTags'
         | 'multiple'
         | 'ListboxComponent'
         | 'renderInput'
@@ -169,9 +173,9 @@ const CheckboxAutocomplete = <Value,>({
             options={options}
             noOptionsText={intl.formatMessage({ id: 'noOption' })}
             getOptionLabel={getOptionLabel}
-            limitTags={1}
             {...otherProps}
             // props should not be overridden
+            limitTags={1}
             multiple
             ListboxComponent={virtualize ? VirtualizedList : undefined}
             renderInput={renderInput}

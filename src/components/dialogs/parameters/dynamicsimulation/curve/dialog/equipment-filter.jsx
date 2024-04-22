@@ -163,13 +163,15 @@ const EquipmentFilter = forwardRef(
                         if (!ignore) {
                             setEquipmentRowData(equipments);
                         }
-                        equipmentsRef.current?.api.hideOverlay();
                     })
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
                             headerId: 'FilterEvaluationError',
                         });
+                    })
+                    .finally(() => {
+                        equipmentsRef.current?.api.hideOverlay();
                     });
             }
             return () => {
