@@ -6,9 +6,7 @@
  */
 
 import { Grid, Typography } from '@mui/material';
-import EquipmentFilter, {
-    getReferencedEquipmentTypeForModel,
-} from './equipment-filter';
+import EquipmentFilter from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, {
@@ -19,6 +17,7 @@ import React, {
     useState,
 } from 'react';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
 
 const styles = {
     h6: (theme) => ({

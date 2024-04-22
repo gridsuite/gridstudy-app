@@ -25,13 +25,6 @@ export const getEnumLabelById = (enumValues, id) => {
     return enumValue?.label;
 };
 
-// When using Typescript, you can't get the validation schema from useFormContext (because it is a custom prop)
-// this method can be used instead in Typescript files
-export const isFieldFromContextRequired = (fieldName, formContext, values) => {
-    const { validationSchema } = formContext;
-    return isFieldRequired(fieldName, validationSchema, values);
-};
-
 export const isFieldRequired = (fieldName, schema, values) => {
     const { schema: fieldSchema, parent: parentValues } =
         getIn(schema, fieldName, values) || {};
