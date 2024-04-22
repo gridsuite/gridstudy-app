@@ -131,11 +131,11 @@ export const convertDuration = (duration) => {
     const seconds = duration % 60;
 
     if (seconds === 0) {
-        return minutes + "'";
+        return minutes + ' mn';
     }
 
     if (minutes === 0) {
-        return seconds + '"';
+        return seconds + ' s';
     }
 
     return `${minutes}' ${seconds}"`;

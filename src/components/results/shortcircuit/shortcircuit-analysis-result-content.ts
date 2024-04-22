@@ -7,6 +7,8 @@
 
 import { ALL_BUSES, ONE_BUS } from 'utils/store-filter-fields';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
+import { FilterSelectorType } from '../../custom-aggrid/custom-aggrid-header.type';
+import { kiloUnitToUnit } from '../../../utils/unit-converter';
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
@@ -17,7 +19,7 @@ export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     faultType: 'fault.faultType',
     connectableId: 'feederResults.connectableId',
     current: 'current',
-    limitType: 'limitViolations.limitType',
+    limitType: 'firstLimitViolation.limitType',
     limitMin: 'ipMin',
     limitMax: 'ipMax',
     deltaCurrentIpMin: 'deltaCurrentIpMin',
@@ -42,4 +44,19 @@ export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {
         default:
             return '';
     }
+};
+
+export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
+    return filterSelector.map((filter) => {
+        switch (filter.column) {
+            case 'limitMin':
+            case 'limitMax':
+                return {
+                    ...filter,
+                    value: kiloUnitToUnit(filter.value),
+                };
+            default:
+                return filter;
+        }
+    });
 };

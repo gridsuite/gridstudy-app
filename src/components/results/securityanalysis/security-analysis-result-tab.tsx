@@ -39,6 +39,7 @@ import {
     getIdType,
     mappingColumnToField,
     getStoreFields,
+    convertFilterValues,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -50,6 +51,7 @@ import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-d
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { setSecurityAnalysisResultFilter } from 'redux/actions';
 import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import { useIntl } from 'react-intl/lib';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -81,6 +83,7 @@ const styles = {
 export const SecurityAnalysisResultTab: FunctionComponent<
     SecurityAnalysisTabProps
 > = ({ studyUuid, nodeUuid, openVoltageLevelDiagram }) => {
+    const intl = useIntl();
     const [tabIndex, setTabIndex] = useState(0);
     const [nmkType, setNmkType] = useState(
         NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
@@ -153,9 +156,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             }
 
             if (filterSelector) {
+                const updatedFilters = convertFilterValues(
+                    intl,
+                    filterSelector
+                );
                 const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['filters'] = mapFieldsToColumnsFilter(
-                    filterSelector,
+                    updatedFilters,
                     columnToFieldMapping
                 );
             }
@@ -166,7 +173,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams
             );
         },
-        [page, tabIndex, rowsPerPage, sortConfig, filterSelector, resultType]
+        [
+            page,
+            tabIndex,
+            rowsPerPage,
+            sortConfig,
+            filterSelector,
+            resultType,
+            intl,
+        ]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(

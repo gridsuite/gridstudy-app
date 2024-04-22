@@ -6,7 +6,7 @@
  */
 
 import { Dialog, DialogActions } from '@mui/material';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import CreateRuleForm from './create-rule-form';
 import {
     getCreateRuleValidationSchema,
@@ -18,7 +18,7 @@ import {
     LOW_TAP_POSITION,
 } from 'components/utils/field-constants';
 import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, CustomFormProvider } from '@gridsuite/commons-ui';
 
 const emptyFormData = getCreateRuteEmptyFormData();
 const formSchema = getCreateRuleValidationSchema();
@@ -49,7 +49,7 @@ export const CreateRuleDialog = (props) => {
 
     return (
         <Dialog open={props.openCreateRuleDialog} fullWidth={true}>
-            <FormProvider validationSchema={formSchema} {...formMethods}>
+            <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <CreateRuleForm {...props} />
                 <DialogActions>
                     <CancelButton onClick={handleCloseDialog} />
@@ -58,7 +58,7 @@ export const CreateRuleDialog = (props) => {
                         allowNegativeValues={allowNegativeValues}
                     />
                 </DialogActions>
-            </FormProvider>
+            </CustomFormProvider>
         </Dialog>
     );
 };

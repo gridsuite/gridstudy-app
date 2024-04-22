@@ -2,6 +2,7 @@
     "onlyAllow" : [
         "MPL-2.0",
         "MIT",
+        "Zlib",
         "BSD-3-Clause",
         "BSD-2-Clause",
         "0BSD",
@@ -19,6 +20,7 @@
     ],
     "excludePackages": [
         "@mapbox/jsonlint-lines-primitives@2.0.2",
-        "cartocolor@4.0.2"
+        "cartocolor@4.0.2",
+        "rw@0.1.4"
     ]
 }

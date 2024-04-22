@@ -11,14 +11,13 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { BooleanFilterValue } from '../custom-aggrid-header-utils';
+import { mergeSx } from 'components/utils/functions';
 
 const styles = {
-    iconSize: {
-        fontSize: '1rem',
-    },
     input: {
         minWidth: '250px',
         maxWidth: '40%',
+        paddingRight: '0px',
     },
 };
 
@@ -43,14 +42,15 @@ const CustomAggridBooleanFilter: FunctionComponent<
             size={'small'}
             value={value || ''}
             onChange={handleValueChange}
-            sx={styles.input}
+            sx={mergeSx(styles.input, {
+                '& .MuiSelect-iconOutlined': {
+                    display: value ? 'none' : '',
+                },
+            })}
             endAdornment={
                 value && (
-                    <IconButton
-                        onClick={() => onChange('')}
-                        sx={styles.iconSize}
-                    >
-                        <ClearIcon />
+                    <IconButton onClick={() => onChange('')}>
+                        <ClearIcon fontSize={'small'} />
                     </IconButton>
                 )
             }

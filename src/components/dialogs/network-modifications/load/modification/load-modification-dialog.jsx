@@ -5,20 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
-    P0,
     ADDITIONAL_PROPERTIES,
     EQUIPMENT_NAME,
     LOAD_TYPE,
+    P0,
     Q0,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -31,11 +31,11 @@ import {
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
-    mergeModificationAndEquipmentProperties,
     emptyProperties,
     getPropertiesFromModification,
-    toModificationProperties,
+    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
+    toModificationProperties,
 } from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 
@@ -209,7 +209,7 @@ const LoadModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <FormProvider
+        <CustomFormProvider
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
@@ -248,7 +248,7 @@ const LoadModificationDialog = ({
                     />
                 )}
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 

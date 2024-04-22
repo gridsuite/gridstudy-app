@@ -9,6 +9,7 @@ const filter_locale_en = {
     // Used in the AgGrid custom filters
     'filter.startsWith': 'Starts with',
     'filter.contains': 'Contains',
+    'filter.equals': 'Equals',
     'filter.notEqual': 'Not equal',
     'filter.lessThanOrEqual': 'Less than or equal to',
     'filter.greaterThanOrEqual': 'Greater than or equal to',

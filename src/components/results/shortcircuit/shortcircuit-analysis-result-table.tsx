@@ -39,7 +39,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { kiloUnitToUnit, unitToKiloUnit } from '../../../utils/unit-converter';
+import { unitToKiloUnit } from '../../../utils/unit-converter';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -146,7 +146,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-                sortProps: { ...sortProps, children: true },
+                sortProps: isAllBusesAnalysisType
+                    ? { ...sortProps, children: true }
+                    : sortProps,
                 filterProps: filterProps,
                 filterParams: textFilterParams,
             }),
@@ -173,10 +175,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: {
-                    ...numericFilterParams,
-                    parser: kiloUnitToUnit,
-                },
+                filterParams: numericFilterParams,
                 valueGetter: (params: ValueGetterParams) =>
                     unitToKiloUnit(params.data?.limitMin),
             }),
@@ -187,10 +186,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 fractionDigits: 2,
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: {
-                    ...numericFilterParams,
-                    parser: kiloUnitToUnit,
-                },
+                filterParams: numericFilterParams,
                 valueGetter: (params: ValueGetterParams) =>
                     unitToKiloUnit(params.data?.limitMax),
             }),

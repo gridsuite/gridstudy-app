@@ -9,29 +9,35 @@ import { NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm, UseFormGetValues } from 'react-hook-form';
+import { FieldValues, useForm, UseFormGetValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { fetchPath } from 'services/directory';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import {
+    fetchDirectoryContent,
+    fetchPath,
+    fetchRootFolders,
+} from 'services/directory';
+import {
+    CustomFormProvider,
+    DirectoryItemSelector,
+    ElementType,
+    TreeViewFinderNodeProps,
+} from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
-import { createParameter } from 'services/explore';
-import { Identifier, VoltageInitForm } from '../voltageinit/voltage-init-utils';
+import { createParameter, fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
-import { ElementType } from '@gridsuite/commons-ui';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
+import { UUID } from 'crypto';
 
 interface FormData {
     [NAME]: string;
 }
 
-interface CreateParameterProps {
+interface CreateParameterProps<T extends FieldValues> {
     open: boolean;
     onClose: () => void;
-    parameterValues: UseFormGetValues<VoltageInitForm> | any;
+    parameterValues: UseFormGetValues<T> | any;
     parameterType: string;
     parameterFormatter: (newParams: any) => any;
 }
@@ -47,18 +53,16 @@ const formSchema = yup
     })
     .required();
 
-const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
+const CreateParameterDialog = <T extends FieldValues>({
     open,
     onClose,
     parameterValues,
     parameterType,
     parameterFormatter,
-}) => {
+}: CreateParameterProps<T>) => {
     const intl = useIntl();
-    const [defaultFolder, setDefaultFolder] = useState<Identifier>({
-        id: null,
-        name: null,
-    });
+    const [defaultFolder, setDefaultFolder] =
+        useState<TreeViewFinderNodeProps>();
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
 
@@ -96,23 +100,23 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
 
     const onSubmit = useCallback(
         (values: FormData) => {
-            if (defaultFolder.id) {
+            if (defaultFolder?.id) {
                 createParameter(
                     parameterFormatter(parameterValues()),
                     values.name,
                     parameterType,
-                    defaultFolder.id
+                    defaultFolder?.id as UUID
                 );
             }
         },
-        [defaultFolder.id, parameterType, parameterValues, parameterFormatter]
+        [defaultFolder?.id, parameterType, parameterValues, parameterFormatter]
     );
 
     const handleChangeFolder = () => {
         setOpenDirectoryFolders(true);
     };
 
-    const setSelectedFolder = (folder: Identifier[]) => {
+    const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder && folder.length > 0) {
             if (folder[0].id !== defaultFolder?.id) {
                 setDefaultFolder({
@@ -144,7 +148,7 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
     );
 
     return (
-        <FormProvider {...formMethods}>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 open={open}
@@ -159,7 +163,7 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
                     name={NAME}
                     label={'Name'}
                     elementType={parameterType}
-                    activeDirectory={defaultFolder.id}
+                    activeDirectory={defaultFolder?.id as UUID}
                     autoFocus
                 />
                 {folderChooser}
@@ -169,7 +173,7 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
                     onClose={setSelectedFolder}
                     types={[ElementType.DIRECTORY]}
                     onlyLeaves={false}
-                    multiselect={false}
+                    multiSelect={false}
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
@@ -181,7 +185,7 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
                     fetchElementsInfos={fetchElementsMetadata}
                 />
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormProvider>
     );
 };
 
