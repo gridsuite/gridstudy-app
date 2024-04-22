@@ -209,7 +209,11 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
-    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Entrée pour terminer ou Échap pour annuler.",
+    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Appuyez sur Entrée pour terminer ou Échap pour annuler.",
+
+    "noOption": "Pas d'options",
+    "maxSelection": "sélections maximum",
+    "options": "options",
 
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",

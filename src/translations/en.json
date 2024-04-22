@@ -210,6 +210,11 @@
     "UnselectAll": "None",
 
     "DrawingPolygonInstruction": "Click on the map to start drawing a polygon. Press Enter to finish or Esc to cancel.",
+
+    "noOption": "No options",
+    "maxSelection": "selections maximum",
+    "options": "options",
+
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
