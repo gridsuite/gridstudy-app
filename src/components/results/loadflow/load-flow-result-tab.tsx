@@ -103,7 +103,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const [tabIndex, setTabIndex] = useState(0);
     const [hasFilter, setHasFilter] = useState<boolean>(false);
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
+        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const { onSortChanged, sortConfig, initSort } = useAgGridSort({
@@ -436,7 +436,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 (loadFlowStatus === RunningStatus.SUCCEED ||
                     loadFlowStatus === RunningStatus.FAILED) && (
                     <ComputationReportViewer
-                        reportType={REPORT_TYPES.LOADFLOW}
+                        reportType={REPORT_TYPES.LOAD_FLOW}
                     />
                 )}
         </>

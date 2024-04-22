@@ -34,7 +34,6 @@ import {
     FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useEffect, useState } from 'react';
-import { fetchLoadflowAvailableFilterEnumValues } from 'services/loadflow';
 import {
     translateLimitNameBackToFront,
     translateLimitNameFrontToBack,
@@ -45,6 +44,8 @@ import {
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-filter-fields';
 import { UUID } from 'crypto';
+import { fetchAvailableFilterEnumValues } from '../../../services/study';
+import computingType from '../../computing-status/computing-type';
 
 export const convertMillisecondsToMinutesSeconds = (
     durationInMilliseconds: number
@@ -203,19 +204,22 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchLoadflowAvailableFilterEnumValues(
+                fetchAvailableFilterEnumValues(
                     studyUuid,
                     nodeUuid,
+                    computingType.LOAD_FLOW,
                     'computation-status'
                 ),
-                fetchLoadflowAvailableFilterEnumValues(
+                fetchAvailableFilterEnumValues(
                     studyUuid,
                     nodeUuid,
+                    computingType.LOAD_FLOW,
                     'limit-types'
                 ),
-                fetchLoadflowAvailableFilterEnumValues(
+                fetchAvailableFilterEnumValues(
                     studyUuid,
                     nodeUuid,
+                    computingType.LOAD_FLOW,
                     'branch-sides'
                 ),
             ];

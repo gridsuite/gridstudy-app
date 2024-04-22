@@ -172,21 +172,6 @@ export function invalidateShortCircuitStatus(studyUuid) {
     });
 }
 
-export function fetchShortCircuitAvailableFilterEnumValues(
-    studyUuid,
-    nodeUuid,
-    filterEnum
-) {
-    console.info('Fetch available filter values');
-    const url =
-        `${getStudyUrlWithNodeUuid(
-            studyUuid,
-            nodeUuid
-        )}/shortcircuit?filterEnum=` + encodeURIComponent(filterEnum);
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function downloadShortCircuitResultZippedCsv(
     studyUuid,
     currentNodeUuid,

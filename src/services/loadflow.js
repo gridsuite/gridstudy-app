@@ -6,7 +6,6 @@
  */
 
 import { backendFetchJson } from './utils';
-import { getStudyUrlWithNodeUuid } from './study/index.js';
 
 const PREFIX_LOADFLOW_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/loadflow';
@@ -28,19 +27,6 @@ export function getLoadFlowSpecificParametersDescription() {
         getLoadFlowUrl() + 'specific-parameters';
     console.debug(getLoadFlowSpecificParametersUrl);
     return backendFetchJson(getLoadFlowSpecificParametersUrl);
-}
-
-export function fetchLoadflowAvailableFilterEnumValues(
-    studyUuid,
-    nodeUuid,
-    filterEnum
-) {
-    console.info('fetch available filter values');
-    const url =
-        `${getStudyUrlWithNodeUuid(studyUuid, nodeUuid)}/loadflow?filterEnum=` +
-        encodeURIComponent(filterEnum);
-    console.debug(url);
-    return backendFetchJson(url);
 }
 
 export function fetchLoadFlowParameters(parameterUuid) {

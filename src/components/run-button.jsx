@@ -61,14 +61,14 @@ const RunButton = ({
     }, [selectedRunnable, getStatus]);
 
     function isButtonDisable() {
-        if (selectedRunnable === ComputingType.LOADFLOW) {
+        if (selectedRunnable === ComputingType.LOAD_FLOW) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
         } else if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
-                getStatus(ComputingType.LOADFLOW) !== RunningStatus.SUCCEED
+                getStatus(ComputingType.LOAD_FLOW) !== RunningStatus.SUCCEED
             );
         } else {
             // We can run only 1 computation at a time

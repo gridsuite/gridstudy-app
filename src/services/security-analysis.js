@@ -6,7 +6,6 @@
  */
 
 import { backendFetchJson } from './utils';
-import { getStudyUrlWithNodeUuid } from './study/index.js';
 
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/security-analysis';
@@ -18,21 +17,6 @@ function getSecurityAnalysisUrl() {
 export function fetchSecurityAnalysisProviders() {
     console.info('fetch security analysis providers');
     const url = getSecurityAnalysisUrl() + 'providers';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchSecurityAnalysisAvailableFilterEnumValues(
-    studyUuid,
-    nodeUuid,
-    filterEnum
-) {
-    console.info('fetch available filter values');
-    const url =
-        `${getStudyUrlWithNodeUuid(
-            studyUuid,
-            nodeUuid
-        )}/security-analysis?filterEnum=` + encodeURIComponent(filterEnum);
     console.debug(url);
     return backendFetchJson(url);
 }

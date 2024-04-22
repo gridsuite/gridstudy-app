@@ -21,10 +21,7 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import {
-    fetchShortCircuitAnalysisPagedResults,
-    fetchShortCircuitAvailableFilterEnumValues,
-} from '../../../services/study/short-circuit-analysis';
+import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
     DEFAULT_PAGE_COUNT,
@@ -48,6 +45,8 @@ import { GridReadyEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import { fetchAvailableFilterEnumValues } from '../../../services/study';
+import computingType from '../../computing-status/computing-type';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -206,9 +205,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     ]);
 
     useEffect(() => {
-        fetchShortCircuitAvailableFilterEnumValues(
+        fetchAvailableFilterEnumValues(
             studyUuid,
             currentNode?.id,
+            computingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
             'fault-types'
         )
             .then((values) => {
@@ -226,9 +226,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     }, [intl, snackError, studyUuid, currentNode.id]);
 
     useEffect(() => {
-        fetchShortCircuitAvailableFilterEnumValues(
+        fetchAvailableFilterEnumValues(
             studyUuid,
             currentNode?.id,
+            computingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
             'limit-violation-types'
         )
             .then((values) => {

@@ -152,7 +152,7 @@ const TableWrapper = (props) => {
     const { snackError } = useSnackMessage();
 
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const allDisplayedColumnsNames = useSelector(

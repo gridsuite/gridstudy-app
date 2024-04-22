@@ -26,7 +26,6 @@ import {
     convertDuration,
     formatNAValue,
 } from 'components/spreadsheet/utils/cell-renderers';
-import { fetchSecurityAnalysisAvailableFilterEnumValues } from '../../../services/security-analysis';
 import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -48,6 +47,8 @@ import {
     SECURITY_ANALYSIS_RESULT_N_K,
 } from 'utils/store-filter-fields';
 import { UUID } from 'crypto';
+import { fetchAvailableFilterEnumValues } from '../../../services/study';
+import computingType from '../../computing-status/computing-type';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -620,19 +621,22 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchSecurityAnalysisAvailableFilterEnumValues(
+                fetchAvailableFilterEnumValues(
                     studyUuid,
                     nodeUuid,
+                    computingType.SECURITY_ANALYSIS,
                     'computation-status'
                 ),
-                fetchSecurityAnalysisAvailableFilterEnumValues(
+                fetchAvailableFilterEnumValues(
                     studyUuid,
                     nodeUuid,
+                    computingType.SECURITY_ANALYSIS,
                     'limit-types'
                 ),
-                fetchSecurityAnalysisAvailableFilterEnumValues(
+                fetchAvailableFilterEnumValues(
                     studyUuid,
                     nodeUuid,
+                    computingType.SECURITY_ANALYSIS,
                     'branch-sides'
                 ),
             ];
