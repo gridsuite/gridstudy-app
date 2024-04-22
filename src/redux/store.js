@@ -12,5 +12,5 @@ export const store = createStore(reducer);
 
 // to avoid to reset the state with HMR
 if (import.meta.env.DEV && import.meta.hot) {
-    import.meta.hot.accept('./reducer', () => store.replaceReducer(reducer))
+    import.meta.hot.accept('./reducer', () => store.replaceReducer(reducer));
 }
