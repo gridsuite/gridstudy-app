@@ -9,3 +9,8 @@ import { legacy_createStore as createStore } from 'redux';
 import { reducer } from './reducer';
 
 export const store = createStore(reducer);
+
+// to avoid to reset the state with HMR
+if (import.meta.env.DEV && import.meta.hot) {
+    import.meta.hot.accept('./reducer', () => store.replaceReducer(reducer))
+}
