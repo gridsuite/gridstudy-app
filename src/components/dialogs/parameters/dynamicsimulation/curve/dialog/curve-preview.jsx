@@ -131,7 +131,7 @@ const CurvePreview = forwardRef((props, ref) => {
                     {` (${selectedRowsLength} / ${rowData.length})`}
                 </Typography>
             </Grid>
-            <Grid xs>
+            <Grid item xs>
                 <Box sx={styles.grid}>
                     <CustomAGGrid
                         ref={gridRef}
