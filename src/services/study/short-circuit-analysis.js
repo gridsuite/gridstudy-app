@@ -73,16 +73,13 @@ export function fetchShortCircuitAnalysisResult({
     studyUuid,
     currentNodeUuid,
     type,
-    mode,
 }) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
     console.info(
         `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
-
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('mode', mode);
     if (analysisType) {
         urlSearchParams.append('type', analysisType);
     }
