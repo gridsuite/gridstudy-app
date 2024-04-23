@@ -102,7 +102,9 @@ const EquipmentFilter = forwardRef(
                         nvSet.add(vl.nominalV);
                     });
                     setVoltageLevelsMap(vlMap);
-                    setNominalVoltages([...nvSet.values()].sort());
+                    setNominalVoltages(
+                        [...nvSet.values()].sort((nv1, nv2) => nv1 - nv2)
+                    );
                     setVoltageLevelIds([...vlMap.keys()]);
                 })
                 .catch((error) => {
