@@ -56,6 +56,7 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
+import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -151,7 +152,7 @@ export const NetworkMapTab = ({
     */
     const temporaryGeoDataIdsRef = useRef();
 
-    const disabled = !visible || !isNodeBuilt(currentNode);
+    const disabled = !isNodeBuilt(currentNode);
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
@@ -165,14 +166,6 @@ export const NetworkMapTab = ({
     const isMapEquipmentsInitialized = useSelector(
         (state) => state.isMapEquipmentsInitialized
     );
-
-    const deletedEquipments = useSelector((state) => state.deletedEquipments);
-
-    const updatedSubstationsIds = useSelector(
-        (state) => state.updatedSubstationsIds
-    );
-    const [isUpdatedSubstationsApplied, setIsUpdatedSubstationsApplied] =
-        useState(false);
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -698,6 +691,15 @@ export const NetworkMapTab = ({
         }
     }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
 
+    const {
+        impactedSubstationsIds,
+        deletedEquipments,
+        impactedElementTypes,
+        resetImpactedSubstationsIds,
+        resetDeletedEquipments,
+        resetImpactedElementTypes,
+    } = useGetStudyImpacts();
+
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
@@ -712,26 +714,12 @@ export const NetworkMapTab = ({
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
 
-    const updateMapEquipments = useCallback(
-        (currentNodeAtReloadCalling) => {
+    const reloadMapEquipments = useCallback(
+        (currentNodeAtReloadCalling, substationsIds) => {
             if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
                 return Promise.reject();
             }
-            console.info('Update map equipments');
-            dispatch(setMapDataLoading(true));
-            const updatedSubstationsToSend =
-                !refIsMapManualRefreshEnabled.current &&
-                !isUpdatedSubstationsApplied &&
-                updatedSubstationsIds?.length > 0
-                    ? updatedSubstationsIds
-                    : undefined;
 
-            if (updatedSubstationsToSend) {
-                setIsUpdatedSubstationsApplied(true);
-            }
-
-            dispatch(resetMapReloaded());
-            const isFullReload = !updatedSubstationsToSend;
             const [
                 updatedSubstations,
                 updatedLines,
@@ -740,8 +728,10 @@ export const NetworkMapTab = ({
             ] = mapEquipments.reloadImpactedSubstationsEquipments(
                 studyUuid,
                 currentNode,
-                updatedSubstationsToSend
+                substationsIds
             );
+
+            const isFullReload = !substationsIds;
 
             updatedSubstations.then((values) => {
                 if (
@@ -790,13 +780,58 @@ export const NetworkMapTab = ({
                 dispatch(setMapDataLoading(false));
             });
         },
+        [currentNode, dispatch, mapEquipments, studyUuid]
+    );
+
+    const updateMapEquipments = useCallback(
+        (currentNodeAtReloadCalling) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+                dispatch(resetMapReloaded());
+                return Promise.reject();
+            }
+
+            const mapEquipmentsTypes = [
+                EQUIPMENT_TYPES.SUBSTATION,
+                EQUIPMENT_TYPES.LINE,
+                EQUIPMENT_TYPES.TIE_LINE,
+                EQUIPMENT_TYPES.HVDC_LINE,
+            ];
+            const impactedMapEquipmentTypes = impactedElementTypes?.filter(
+                (type) => mapEquipmentsTypes.includes(type)
+            );
+            const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
+            const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
+
+            if (!isMapCollectionImpact && !hasSubstationsImpacted) {
+                dispatch(resetMapReloaded());
+                return Promise.reject();
+            }
+            console.info('Update map equipments');
+            dispatch(setMapDataLoading(true));
+
+            const updatedSubstationsToSend =
+                !isMapCollectionImpact && hasSubstationsImpacted
+                    ? impactedSubstationsIds
+                    : undefined;
+
+            dispatch(resetMapReloaded());
+            resetImpactedElementTypes();
+            resetImpactedSubstationsIds();
+            return reloadMapEquipments(
+                currentNodeAtReloadCalling,
+                updatedSubstationsToSend
+            );
+        },
         [
             currentNode,
             dispatch,
-            isUpdatedSubstationsApplied,
             mapEquipments,
             studyUuid,
-            updatedSubstationsIds,
+            impactedElementTypes,
+            impactedSubstationsIds,
+            resetImpactedElementTypes,
+            resetImpactedSubstationsIds,
+            reloadMapEquipments,
         ]
     );
 
@@ -815,14 +850,10 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflowResult'
             ) {
-                updateMapEquipments(currentNodeRef.current);
+                reloadMapEquipments(currentNodeRef.current);
             }
         }
-    }, [isInitialized, studyUpdatedForce, updateMapEquipments]);
-
-    useEffect(() => {
-        setIsUpdatedSubstationsApplied(false);
-    }, [updatedSubstationsIds]);
+    }, [isInitialized, studyUpdatedForce, reloadMapEquipments]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
@@ -835,8 +866,9 @@ export const NetworkMapTab = ({
                     deletedEquipment?.equipmentId
                 );
             });
+            resetDeletedEquipments();
         }
-    }, [deletedEquipments, mapEquipments]);
+    }, [deletedEquipments, mapEquipments, resetDeletedEquipments]);
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
@@ -884,7 +916,6 @@ export const NetworkMapTab = ({
         isMapEquipmentsInitialized,
         isInitialized,
         reloadMapNeeded,
-        updatedSubstationsIds,
     ]);
 
     useEffect(() => {

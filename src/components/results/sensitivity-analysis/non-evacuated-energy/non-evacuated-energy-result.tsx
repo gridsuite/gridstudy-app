@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
 import { RunningStatus } from '../../../utils/running-status';
+import fileSaver from 'file-saver';
 
 const styles = {
     buttonExportResult: {
@@ -24,7 +25,6 @@ export const NonEvacuatedEnergyResult: FunctionComponent<
     NonEvacuatedEnergyResultProps
 > = ({ result, status }) => {
     const exportResult = useCallback(() => {
-        const fileSaver = require('file-saver');
         const blob = new Blob([JSON.stringify(result, null, 2)], {
             type: 'application/json',
         });

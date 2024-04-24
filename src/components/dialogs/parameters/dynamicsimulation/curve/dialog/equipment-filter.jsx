@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, MenuItem, Select, Typography, useTheme } from '@mui/material';
+import { Grid, MenuItem, Select, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, {
+import {
     forwardRef,
     useCallback,
     useEffect,
@@ -16,67 +16,48 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import CountrySelect from '../country-select';
-import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter } from '../../../../../../services/study/filter';
+import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
+import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
+import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import {
-    CombinatorType,
-    DataType,
-    FieldType,
-    OperatorType,
-} from '../../../../filter/expert/expert-filter.type';
-
-export const CURVE_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.LOAD,
-    EQUIPMENT_TYPES.BUS,
-    EQUIPMENT_TYPES.BUSBAR_SECTION,
-];
-
-// this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
-export const getReferencedEquipmentTypeForModel = (equipmentType) => {
-    // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
-    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION
-        ? EQUIPMENT_TYPES.BUS
-        : equipmentType;
-};
-
-// this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
-const getTopologyKindIfNecessary = (equipmentType) => {
-    return equipmentType === EQUIPMENT_TYPES.BUS
-        ? {
-              topologyKind: 'BUS_BREAKER',
-          }
-        : {};
-};
-
-const NOMINAL_VOLTAGE_UNIT = 'kV';
+    buildExpertFilter,
+    CURVE_EQUIPMENT_TYPES,
+    NOMINAL_VOLTAGE_UNIT,
+} from './curve-selector-utils';
 
 const styles = {
     grid: {
         width: '100%',
         height: '100%',
     },
+    criteria: {
+        width: '100%',
+        height: '56px',
+    },
+    equipment: {
+        width: '100%',
+        flexGrow: 1,
+    },
+    equipmentTitle: (theme) => ({
+        marginBottom: theme.spacing(1),
+    }),
 };
 
 const EquipmentFilter = forwardRef(
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
-        const [countriesFilterReady, setCountriesFilterReady] = useState(false);
 
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
-        const mapEquipments = useSelector((state) => state.mapEquipments);
 
         const intl = useIntl();
-        const theme = useTheme();
         const equipmentsRef = useRef();
 
         // --- Equipment types --- //
@@ -92,146 +73,105 @@ const EquipmentFilter = forwardRef(
             [onChangeEquipmentType]
         );
 
-        // --- Voltage levels, nominal voltages => lookup in mapEquipments which is loaded at booting up application --- //
-        const voltageLevels = mapEquipments.getVoltageLevels();
-        const voltageLevelIds = useMemo(
-            () => voltageLevels.map((elem) => elem.id),
-            [voltageLevels]
-        );
+        // Map of VL names by ID
+        const [voltageLevelsMap, setVoltageLevelsMap] = useState(new Map());
+        const [voltageLevelIds, setVoltageLevelIds] = useState([]);
         const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState(
             []
         );
-        const handleVoltageLevelChange = useCallback(
-            (selectedVoltageLevelIds) => {
-                setSelectedVoltageLevelIds(selectedVoltageLevelIds);
-            },
-            []
-        );
 
-        const nominalVoltages = mapEquipments.getNominalVoltages();
+        const [nominalVoltages, setNominalVoltages] = useState([]);
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState(
             []
         );
 
-        const handleNominalVoltageChange = useCallback((selectedTensionIds) => {
-            setSelectedNominalVoltages(selectedTensionIds);
-        }, []);
-
         // --- country (i.e. countryCode) => fetch from network-map-server --- //
         const [countries, setCountries] = useState([]);
         const [selectedCountries, setSelectedCountries] = useState([]);
-        const handleCountryChange = useCallback((selectedCountries) => {
-            setSelectedCountries(selectedCountries);
-        }, []);
+        const { translate } = useLocalizedCountries();
 
-        // load countries
+        // fetching options in different criterias
         useEffect(() => {
-            fetchAllCountries(studyUuid, currentNode.id)
-                .then((countryCodes) => {
-                    // update countries states
-                    setCountries(countryCodes);
-
-                    // update loading state
-                    setCountriesFilterReady(true);
+            // Load voltage level IDs
+            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id)
+                .then((voltageLevels) => {
+                    const vlMap = new Map();
+                    const nvSet = new Set();
+                    voltageLevels.forEach((vl) => {
+                        vlMap.set(vl.id, vl.name);
+                        nvSet.add(vl.nominalV);
+                    });
+                    setVoltageLevelsMap(vlMap);
+                    setNominalVoltages(
+                        [...nvSet.values()].sort((nv1, nv2) => nv1 - nv2)
+                    );
+                    setVoltageLevelIds([...vlMap.keys()]);
                 })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'FetchVoltageLevelsError',
+                    });
+                });
+
+            // load countries
+            fetchAllCountries(studyUuid, currentNode.id)
+                .then((countryCodes) => setCountries(countryCodes))
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [currentNode.id, studyUuid, snackError]);
+        }, [studyUuid, currentNode.id, snackError]);
 
-        // fetching and filtering equipments by filters
-        const filteringEquipmentsAsync = useCallback(() => {
-            const buildExpertRules = (
-                voltageLevelIds,
-                countries,
-                nominalVoltages
-            ) => {
-                const rules = [];
+        // build fetcher which filters equipments
+        const filteringEquipmentsFetcher = useMemo(() => {
+            const expertFilter = buildExpertFilter(
+                equipmentType,
+                selectedVoltageLevelIds,
+                selectedCountries,
+                selectedNominalVoltages
+            );
 
-                // create rule IN for voltageLevelIds
-                if (voltageLevelIds && voltageLevelIds.length > 0) {
-                    const voltageLevelIdsRule = {
-                        field: FieldType.VOLTAGE_LEVEL_ID,
-                        operator: OperatorType.IN,
-                        values: voltageLevelIds,
-                        dataType: DataType.STRING,
-                    };
-                    rules.push(voltageLevelIdsRule);
-                }
-
-                // create rule IN for countries
-                if (countries && countries.length > 0) {
-                    const countriesRule = {
-                        field: FieldType.COUNTRY,
-                        operator: OperatorType.IN,
-                        values: countries,
-                        dataType: DataType.ENUM,
-                    };
-                    rules.push(countriesRule);
-                }
-
-                // create rule IN for nominalVoltages
-                if (nominalVoltages && nominalVoltages.length > 0) {
-                    const nominalVoltagesRule = {
-                        field: FieldType.NOMINAL_VOLTAGE,
-                        operator: OperatorType.IN,
-                        values: nominalVoltages,
-                        dataType: DataType.NUMBER,
-                    };
-                    rules.push(nominalVoltagesRule);
-                }
-
-                return {
-                    combinator: CombinatorType.AND,
-                    dataType: DataType.COMBINATOR,
-                    rules,
-                };
-            };
-
-            const expertFilter = {
-                ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
-                type: 'EXPERT',
-                equipmentType: equipmentType,
-                rules: buildExpertRules(
-                    selectedVoltageLevelIds,
-                    selectedCountries,
-                    selectedNominalVoltages
-                ),
-            };
-
-            // evaluate by filter-server
-            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter)
-                .then((equipments) => {
-                    return equipments;
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FilterEvaluationError',
-                    });
-                });
+            // the fetcher which evaluates a filter by filter-server
+            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter);
         }, [
             studyUuid,
             currentNode.id,
             equipmentType,
-            snackError,
             selectedVoltageLevelIds,
             selectedCountries,
             selectedNominalVoltages,
         ]);
 
+        // fetching filtered equipments
         useEffect(() => {
-            if (gridReady && countriesFilterReady) {
-                equipmentsRef.current.api.showLoadingOverlay();
-                filteringEquipmentsAsync().then((equipments) => {
-                    setEquipmentRowData(equipments);
-                    equipmentsRef.current.api.hideOverlay();
-                });
+            let ignore = false;
+            if (gridReady) {
+                // when close dialog, the current ref may be null => so check with '?'
+                equipmentsRef.current?.api.showLoadingOverlay();
+                filteringEquipmentsFetcher
+                    .then((equipments) => {
+                        // using ignore flag to cancel fetches that do not return in order
+                        if (!ignore) {
+                            setEquipmentRowData(equipments);
+                        }
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'FilterEvaluationError',
+                        });
+                    })
+                    .finally(() => {
+                        equipmentsRef.current?.api.hideOverlay();
+                    });
             }
-        }, [filteringEquipmentsAsync, gridReady, countriesFilterReady]);
+            return () => {
+                ignore = true;
+            };
+        }, [filteringEquipmentsFetcher, gridReady, snackError]);
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
@@ -263,12 +203,12 @@ const EquipmentFilter = forwardRef(
             };
         }, []);
 
-        const onGridReady = useCallback((params) => {
+        const onGridReady = useCallback((_event) => {
             setGridReady(true);
         }, []);
 
         const handleEquipmentSelectionChanged = useCallback(() => {
-            const selectedRows = equipmentsRef.current.api.getSelectedRows();
+            const selectedRows = equipmentsRef.current?.api.getSelectedRows();
             setSelectedRowsLength(selectedRows.length);
         }, []);
 
@@ -278,7 +218,7 @@ const EquipmentFilter = forwardRef(
             () => ({
                 api: {
                     getSelectedEquipments: () => {
-                        return equipmentsRef.current.api.getSelectedRows();
+                        return equipmentsRef.current?.api.getSelectedRows();
                     },
                 },
             }),
@@ -298,15 +238,15 @@ const EquipmentFilter = forwardRef(
         return (
             <>
                 {/* Equipment type */}
-                <Grid item container sx={{ width: '100%' }}>
-                    <Grid item xs={6}>
+                <Grid item container sx={styles.criteria}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurveEquipmentType'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={8}>
                         <Select
                             labelId={'DynamicSimulationCurveEquipmentType'}
                             value={equipmentType}
@@ -323,74 +263,73 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Post */}
-                <Grid item container sx={{ width: '100%' }}>
-                    <Grid item xs={6}>
+                <Grid item container sx={styles.criteria}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurvePost'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
-                        <CheckboxSelect
-                            value={selectedVoltageLevelIds}
+                    <Grid item xs={8}>
+                        <CheckboxAutocomplete
+                            id="voltage-level"
+                            virtualize
+                            maxSelection={10}
                             options={voltageLevelIds}
+                            value={selectedVoltageLevelIds}
                             getOptionLabel={(value) =>
-                                mapEquipments.getVoltageLevel(value)?.name ??
-                                value
+                                voltageLevelsMap.get(value) ?? value
                             }
-                            onChange={handleVoltageLevelChange}
+                            onChange={setSelectedVoltageLevelIds}
                         />
                     </Grid>
                 </Grid>
                 {/* Country */}
-                <Grid item container sx={{ width: '100%' }}>
-                    <Grid item xs={6}>
+                <Grid item container sx={styles.criteria}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurveCountry'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
-                        <CountrySelect
-                            value={selectedCountries}
+                    <Grid item xs={8}>
+                        <CheckboxAutocomplete
+                            id="country"
                             options={countries}
-                            onChange={handleCountryChange}
+                            value={selectedCountries}
+                            getOptionLabel={(value) => translate(value)}
+                            onChange={setSelectedCountries}
                         />
                     </Grid>
                 </Grid>
                 {/* Tension */}
-                <Grid item container sx={{ width: '100%' }}>
-                    <Grid item xs={6}>
+                <Grid item container sx={styles.criteria}>
+                    <Grid item xs={4}>
                         <Typography>
                             <FormattedMessage
                                 id={'DynamicSimulationCurveTension'}
                             ></FormattedMessage>
                         </Typography>
                     </Grid>
-                    <Grid item xs={6}>
-                        <CheckboxSelect
+                    <Grid item xs={8}>
+                        <CheckboxAutocomplete
+                            id="nominal-voltage"
                             options={nominalVoltages}
+                            value={selectedNominalVoltages}
                             getOptionLabel={(value) =>
                                 `${value} ${NOMINAL_VOLTAGE_UNIT}`
                             }
-                            value={selectedNominalVoltages}
-                            onChange={handleNominalVoltageChange}
+                            onChange={setSelectedNominalVoltages}
                         />
                     </Grid>
                 </Grid>
                 {/* Equipments */}
-                <Grid
-                    item
-                    container
-                    xs
-                    sx={{ width: '100%' }}
-                    direction={'column'}
-                >
-                    <Grid>
+                <Grid item container sx={styles.equipment} direction={'column'}>
+                    <Grid item>
                         <Typography
-                            sx={{ marginBottom: theme.spacing(1) }}
+                            sx={styles.equipmentTitle}
                             variant="subtitle1"
                         >
                             <FormattedMessage
@@ -401,7 +340,7 @@ const EquipmentFilter = forwardRef(
                             })`}
                         </Typography>
                     </Grid>
-                    <Grid xs>
+                    <Grid item xs>
                         <Box sx={styles.grid}>
                             <CustomAGGrid
                                 ref={equipmentsRef}

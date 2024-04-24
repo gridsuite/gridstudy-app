@@ -54,7 +54,6 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
             studyUuid,
             currentNodeUuid: currentNode?.id,
             type: ShortCircuitAnalysisType.ONE_BUS,
-            mode: 'BASIC',
         }).then((result: SCAResult | null) => {
             if (result?.faults.length !== 1) {
                 snackError({

@@ -14,17 +14,21 @@ import {
     LOW_VOLTAGE_LIMIT,
     NAME,
     SELECTED,
+    UPDATE_BUS_VOLTAGE,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS_DEFAULT,
     VOLTAGE_LIMITS_MODIFICATION,
 } from '../../../utils/field-constants';
 import { isBlankOrEmpty } from '../../../utils/validation-functions';
+import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
 
 export const GENERAL = 'GENERAL';
 export const GENERAL_APPLY_MODIFICATIONS = 'GENERAL_APPLY_MODIFICATIONS';
 
 export const DEFAULT_GENERAL_APPLY_MODIFICATIONS = true;
+export const DEFAULT_UPDATE_BUS_VOLTAGE = true;
+export const DEFAULT_REACTIVE_SLACKS_THRESHOLD = 500;
 
 export enum TabValue {
     GENERAL = 'GENERAL',
@@ -35,6 +39,8 @@ export enum TabValue {
 export const initialVoltageInitParametersForm: VoltageInitParametersForm = {
     [GENERAL]: {
         [GENERAL_APPLY_MODIFICATIONS]: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
+        [UPDATE_BUS_VOLTAGE]: DEFAULT_UPDATE_BUS_VOLTAGE,
+        [REACTIVE_SLACKS_THRESHOLD]: DEFAULT_REACTIVE_SLACKS_THRESHOLD,
     },
     [VOLTAGE_LIMITS_MODIFICATION]: [],
     [VOLTAGE_LIMITS_DEFAULT]: [],
@@ -46,6 +52,11 @@ export const initialVoltageInitParametersForm: VoltageInitParametersForm = {
 export const voltageInitParametersFormSchema = yup.object().shape({
     [TabValue.GENERAL]: yup.object().shape({
         [GENERAL_APPLY_MODIFICATIONS]: yup.boolean().required(),
+        [UPDATE_BUS_VOLTAGE]: yup.boolean().required(),
+        [REACTIVE_SLACKS_THRESHOLD]: yup
+            .number()
+            .min(0, 'ReactiveSlacksThresholdMustBeGreaterOrEqualToZero')
+            .required(),
     }),
     [VOLTAGE_LIMITS_MODIFICATION]: yup.array().of(
         yup.object().shape({

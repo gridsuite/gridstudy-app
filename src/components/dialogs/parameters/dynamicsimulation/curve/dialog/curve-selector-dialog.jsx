@@ -91,6 +91,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                     sx={mergeSx(styles.scrollableGrid, {
                         maxWidth: 'xl',
                         height: '100%',
+                        maxHeight: '100%',
                     })}
                 >
                     <Grid item container xs={8} spacing={theme.spacing(1)}>

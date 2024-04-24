@@ -49,6 +49,8 @@ const errors_locale_fr = {
         "Une erreur est survenue lors de la mise a jour des paramètres de l'analyse de sensibilité",
     updateSensitivityAnalysisProviderError:
         "Une erreur est survenue lors de la mise a jour du fournisseur courant d'analyse de sensibilité",
+    resetLoadFlowParametersWarning:
+        'Impossible de récupérer les paramètres de calcul de répartition définis dans le profil utilisateur (les valeurs par défaut sont appliquées)',
 };
 
 export default errors_locale_fr;

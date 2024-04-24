@@ -323,6 +323,21 @@ export function fetchVoltageLevelsListInfos(
     );
 }
 
+export function fetchVoltageLevelsMapInfos(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+        EQUIPMENT_INFOS_TYPES.MAP.type,
+        true
+    );
+}
+
 export function fetchTwoWindingsTransformers(
     studyUuid,
     currentNodeUuid,

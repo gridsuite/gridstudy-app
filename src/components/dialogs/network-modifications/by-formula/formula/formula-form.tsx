@@ -24,7 +24,11 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
+import {
+    fetchDirectoryContent,
+    fetchPath,
+    fetchRootFolders,
+} from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
 interface FormulaProps {
@@ -59,6 +63,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             fetchDirectoryContent={fetchDirectoryContent}
             fetchRootFolders={fetchRootFolders}
             fetchElementsInfos={fetchElementsMetadata}
+            fetchDirectoryElementPath={fetchPath}
         />
     );
 

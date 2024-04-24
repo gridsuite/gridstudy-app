@@ -186,6 +186,7 @@
     "VoltageInitParametersGeneralTabLabel": "Général",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Appliquer automatiquement la modification du plan de tension",
     "VoltageInitParametersGeneralSaveInfo": "Les paramètres de cet onglet ne seront pas enregistrés et seront mis aux valeurs par défaut en cas de sélection de paramètres externes",
+    "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Mettre à jour tension des nœuds électriques",
     "VoltageLimits": "Limites de tension",
     "VoltageLevelFilter": "Filtre poste",
     "LowVoltageLimitDefault": "Valeur par défaut limite basse",
@@ -208,7 +209,11 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
-    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Entrée pour terminer ou Échap pour annuler.",
+    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Appuyez sur Entrée pour terminer ou Échap pour annuler.",
+
+    "noOption": "Pas d'options",
+    "maxSelection": "sélections maximum",
+    "options": "options",
 
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
@@ -333,6 +338,7 @@
     "DynamicSimulationClose": "Fermer",
     "FetchCountryError": "Une erreur est survenue lors du chargement des pays",
     "FetchNominalVoltagesError": "Une erreur est survenue lors du chargement des tensions nominales",
+    "FetchVoltageLevelsError": "Une erreur est survenue lors du chargement des postes",
     "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
     "DynamicSimulationEventPropertySide": "Uniquement Côté",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Durée du court-circuit",
@@ -1353,5 +1359,7 @@
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
     "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+    "ReactiveSlacksThreshold": "Seuil d'alerte sur les investissements réactifs",
+    "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
     "TieLines": "Interconnexions"
 }

@@ -186,6 +186,7 @@
     "VoltageInitParametersGeneralTabLabel": "General",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
     "VoltageInitParametersGeneralSaveInfo": "Settings of this tab won't be saved and will be set back to default if choosing from external settings",
+    "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Update bus voltage",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
@@ -209,6 +210,11 @@
     "UnselectAll": "None",
 
     "DrawingPolygonInstruction": "Click on the map to start drawing a polygon. Press Enter to finish or Esc to cancel.",
+
+    "noOption": "No options",
+    "maxSelection": "selections maximum",
+    "options": "options",
+
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -332,6 +338,7 @@
     "DynamicSimulationClose": "Close",
     "FetchCountryError": "An error occurred while fetching countries",
     "FetchNominalVoltagesError": "An error occurred while fetching nominal voltages",
+    "FetchVoltageLevelsError": "An error occurred while fetching voltage levels",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
@@ -1352,5 +1359,7 @@
     "frequencyRegulation": "Active power regulation",
     "droop": "Droop",
     "FieldRequired": "At least one value is missing for required field : ",
+    "ReactiveSlacksThreshold": "Alert threshold on reactive slacks",
+    "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
     "TieLines": "Tie lines"
 }
