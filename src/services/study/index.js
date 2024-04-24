@@ -326,7 +326,7 @@ export function fetchAvailableFilterEnumValues(
         nodeUuid
     )}/computation/result/enum-values?computingType=${encodeURIComponent(
         computingType
-    )}&filterEnum=${encodeURIComponent(filterEnum)}`;
+    )}&enumName=${encodeURIComponent(filterEnum)}`;
     console.debug(url);
     return backendFetchJson(url);
 }
