@@ -324,7 +324,7 @@ export function fetchAvailableFilterEnumValues(
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
         nodeUuid
-    )}?computingType=${encodeURIComponent(
+    )}/computation/result/enum-values?computingType=${encodeURIComponent(
         computingType
     )}&filterEnum=${encodeURIComponent(filterEnum)}`;
     console.debug(url);
