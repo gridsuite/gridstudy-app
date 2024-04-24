@@ -208,7 +208,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         fetchAvailableFilterEnumValues(
             studyUuid,
             currentNode?.id,
-            computingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+            computingType.SHORT_CIRCUIT,
             'fault-types'
         )
             .then((values) => {
@@ -229,7 +229,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         fetchAvailableFilterEnumValues(
             studyUuid,
             currentNode?.id,
-            computingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+            computingType.SHORT_CIRCUIT,
             'limit-violation-types'
         )
             .then((values) => {
