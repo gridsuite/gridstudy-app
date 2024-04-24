@@ -89,7 +89,7 @@ const CheckboxSelect = ({
                 } else if (selectedOptions.length > 1) {
                     return `${getOptionLabel(
                         selectedOptions[selectedOptions.length - 1]
-                    )} ...`;
+                    )} (+${selectedOptions.length - 1})`;
                 }
                 return '';
             }}
