@@ -51,3 +51,16 @@ export const countDecimalPlaces = (number) => {
     // If the number does not have a decimal part, return 0
     return 0;
 };
+
+export const truncateNumber = (value, decimalPrecision) => {
+    // Calculate the factor based on the decimal precision (e.g., 100 for two decimal places)
+    let factor = Math.pow(10, decimalPrecision);
+
+    // Truncate the number to maintain precision
+    // Here, 'value' is multiplied by a factor before being floored.
+    // This truncation helps in eliminating floating point arithmetic issues like 0.1 + 0.2 not exactly equaling 0.3.
+    // After flooring, the value is divided by the same factor to revert it to its original scale but truncated.
+    let truncatedNumber = Math.floor(value * factor) / factor;
+
+    return truncatedNumber;
+};

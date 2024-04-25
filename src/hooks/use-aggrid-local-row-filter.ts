@@ -16,7 +16,7 @@ import {
     FilterStorePropsType,
     FILTER_DATA_TYPES,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { countDecimalPlaces } from 'utils/rounding';
+import { countDecimalPlaces, truncateNumber } from 'utils/rounding';
 
 interface FilterModel {
     [colId: string]: any;
@@ -43,42 +43,29 @@ export const useAggridLocalRowFilter = (
     );
 
     const formatCustomFiltersForAgGrid = useCallback(
-        (filters: FilterSelectorType[]) => {
+        (filters: FilterSelectorType[]): FilterModel => {
             const agGridFilterModel: FilterModel = {};
-            filters.forEach((filter) => {
-                if (Array.isArray(filter.value)) {
-                    //this case means that the filter is an enum
-                    agGridFilterModel[filter.column] =
-                        generateEnumFilterModel(filter);
-                } else {
-                    // Check if there's already an existing filter for this column
-                    if (
-                        agGridFilterModel[filter.column] &&
-                        filter.dataType === FILTER_DATA_TYPES.NUMBER
-                    ) {
-                        // If so, prepare the existing and new conditions using the current filter settings
-                        const existingCondition = {
-                            type: agGridFilterModel[filter.column].type,
-                            filter: agGridFilterModel[filter.column].filter,
-                            filterType: 'number',
-                        };
-                        const newCondition = {
-                            type: filter.type,
-                            filter: Number(filter.value),
-                            filterType: 'number',
-                        };
+            const groupedFilters: { [key: string]: FilterSelectorType[] } = {};
 
-                        // Set up the filter model with an 'OR' operator, including both existing and new conditions
-                        agGridFilterModel[filter.column] = {
-                            filterType: 'number',
-                            type: 'number',
-                            operator: 'OR',
-                            condition1: existingCondition, // Use the existing condition
-                            condition2: newCondition, // Add the new condition
-                        };
+            // Group filters by column
+            filters.forEach((filter) => {
+                if (groupedFilters[filter.column]) {
+                    groupedFilters[filter.column].push(filter);
+                } else {
+                    groupedFilters[filter.column] = [filter];
+                }
+            });
+
+            // Transform groups of filters into a FilterModel
+            Object.keys(groupedFilters).forEach((column) => {
+                const filters = groupedFilters[column];
+                if (filters.length === 1) {
+                    const filter = filters[0];
+                    if (Array.isArray(filter.value)) {
+                        agGridFilterModel[column] =
+                            generateEnumFilterModel(filter);
                     } else {
-                        // If no existing filter for this column, create a new filter configuration
-                        agGridFilterModel[filter.column] = {
+                        agGridFilterModel[column] = {
                             filterType: filter.dataType,
                             type: filter.type,
                             filter:
@@ -87,8 +74,42 @@ export const useAggridLocalRowFilter = (
                                     : filter.value,
                         };
                     }
+                } else {
+                    // Multiple filters on the same column
+                    const conditions = filters.map((filter) => ({
+                        filterType: filter.dataType,
+                        type: filter.type,
+                        filter:
+                            filter.dataType === FILTER_DATA_TYPES.NUMBER
+                                ? Number(filter.value)
+                                : filter.value,
+                    }));
+
+                    // Create a combined filter model with 'OR' for all conditions
+                    agGridFilterModel[column] = {
+                        filterType: filters[0].dataType,
+                        operator: 'OR',
+                        condition1: conditions[0],
+                        condition2: conditions[1],
+                        // Dynamically add additional conditions if more than two filters are specified
+                        // Each additional condition is added as 'condition3', 'condition4', etc.
+                        ...conditions
+                            .slice(2)
+                            .reduce(
+                                (
+                                    acc: FilterModel,
+                                    condition: FilterModel,
+                                    index: number
+                                ) => {
+                                    acc[`condition${index + 3}`] = condition;
+                                    return acc;
+                                },
+                                {}
+                            ),
+                    };
                 }
             });
+
             return agGridFilterModel;
         },
         [generateEnumFilterModel]
@@ -143,10 +164,11 @@ export const useAggridLocalRowFilter = (
                         : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
-                    let factor = Math.pow(10, decimalPrecision);
-                    // Truncate the number to maintain precision
-                    let truncatedNumber =
-                        Math.floor(valueAsNumber * factor) / factor;
+                    // Call the truncateNumber function to accurately truncate 'valueAsNumber' to 'decimalPrecision' decimal places.
+                    let truncatedNumber = truncateNumber(
+                        valueAsNumber,
+                        decimalPrecision
+                    );
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
                         case 'notEqual':
