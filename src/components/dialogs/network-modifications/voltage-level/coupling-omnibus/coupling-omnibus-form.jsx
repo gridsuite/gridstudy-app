@@ -59,11 +59,6 @@ export const CouplingOmnibusForm = () => {
             fieldProps={{ sectionOptions }}
             addButtonLabel={'AddCoupling_Omnibus'}
             initialValue={couplingOmnibusCreation}
-            disabled={
-                !watchBusBarCount ||
-                !watchSectionCount ||
-                (watchBusBarCount === 1 && watchSectionCount === 1)
-            }
         />
     );
 };
