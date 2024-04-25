@@ -140,14 +140,17 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
-                            options={Object.values(EQUIPMENT_TYPES).map(
-                                (value) => {
+                            options={Object.values(EQUIPMENT_TYPES)
+                                .filter(
+                                    (type) =>
+                                        !type.includes(EQUIPMENT_TYPES.BUS)
+                                )
+                                .map((value) => {
                                     return {
                                         id: value,
                                         label: equipementTypeToLabel(value),
                                     };
-                                }
-                            )}
+                                })}
                             label={'EquipmentType'}
                             fullWidth
                             size={'medium'}
