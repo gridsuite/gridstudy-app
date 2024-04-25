@@ -89,23 +89,19 @@ export const useAggridLocalRowFilter = (
                     agGridFilterModel[column] = {
                         filterType: filters[0].dataType,
                         operator: 'OR',
-                        condition1: conditions[0],
-                        condition2: conditions[1],
-                        // Dynamically add additional conditions if more than two filters are specified
-                        // Each additional condition is added as 'condition3', 'condition4', etc.
-                        ...conditions
-                            .slice(2)
-                            .reduce(
-                                (
-                                    acc: FilterModel,
-                                    condition: FilterModel,
-                                    index: number
-                                ) => {
-                                    acc[`condition${index + 3}`] = condition;
-                                    return acc;
-                                },
-                                {}
-                            ),
+                        // Dynamically add additional conditions
+                        // Each additional condition is added as 'condition1', 'condition2', etc.
+                        ...conditions.reduce(
+                            (
+                                acc: FilterModel,
+                                condition: FilterModel,
+                                index: number
+                            ) => {
+                                acc[`condition${index + 1}`] = condition;
+                                return acc;
+                            },
+                            {}
+                        ),
                     };
                 }
             });
