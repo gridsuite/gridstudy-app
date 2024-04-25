@@ -33,6 +33,8 @@ import {
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
+import CircularProgress from '@mui/material/CircularProgress';
+import FolderOutlined from '@mui/icons-material/FolderOutlined';
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
@@ -66,6 +68,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     onSaveFilter,
     onCancel,
 }) => {
+    const [savingState, setSavingState] = useState(false);
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
@@ -136,7 +139,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                 height="100%"
             >
                 <Grid container>
-                    <GridSection title="createNewFilter" />
+                    <GridSection title="editZone" />
                     <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
@@ -163,23 +166,29 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             elementType={ElementType.DIRECTORY}
                             activeDirectory={defaultFolder?.id as UUID}
                             autoFocus
+                            formProps={{ variant: 'standard' }}
                         />
                     </Grid>
                     <Grid container paddingTop={2}>
+                        {/* icon directory */}
+
+                        <Typography m={1} component="span">
+                            <Box
+                                fontWeight={'fontWeightBold'}
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <FolderOutlined />
+                                <span>&nbsp;{defaultFolder?.name}&nbsp;</span>
+                            </Box>
+                        </Typography>
                         <Button
                             onClick={handleChangeFolder}
                             variant="contained"
                         >
-                            <FormattedMessage
-                                id={'showSelectDirectoryDialog'}
-                            />
+                            <FormattedMessage id={'button.changeType'} />
                         </Button>
-
-                        <Typography m={1} component="span">
-                            <Box fontWeight={'fontWeightBold'}>
-                                {defaultFolder?.name}
-                            </Box>
-                        </Typography>
                     </Grid>
                     <Grid container paddingTop={2}>
                         <DirectoryItemSelector
@@ -208,24 +217,27 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     </Button>
                     <Box m={1} />
                     <Button
-                        variant="contained"
+                        variant="outlined"
                         type={'submit'}
+                        disabled={!formMethods.formState.isValid || savingState}
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
+                                    setSavingState(true);
                                     onSaveFilter(
                                         formMethods.getValues() as IFilterCreation,
                                         defaultFolder
                                     );
                                     generateFilterName();
+                                    setSavingState(false);
                                 }
                             });
                         }}
                         size={'large'}
                     >
-                        {intl.formatMessage({
-                            id: 'validate',
-                        })}
+                        {(savingState && <CircularProgress size={24} />) || (
+                            <FormattedMessage id="save" />
+                        )}
                     </Button>
                 </Grid>
             </Box>

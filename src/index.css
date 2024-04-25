@@ -506,3 +506,9 @@ code {
 .react-flow__node > .MuiButton-root {
     width: 100%;
 }
+
+/* overide the default color of the draw button */
+.mapbox-gl-draw_ctrl-draw-btn.active,
+.mapbox-gl-draw_ctrl-draw-btn.active:hover {
+    background-color:lightblue !important;
+}
