@@ -140,7 +140,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         <IntegerInput name={SECTION_COUNT} label={'numberOfSections'} />
     );
 
-    const displayOmnibus = !!watchBusBarCount || !!watchSectionCount;
+    const displayOmnibus = watchBusBarCount > 1 || watchSectionCount > 1;
 
     const couplingOmnibusForm = <CouplingOmnibusForm />;
 
