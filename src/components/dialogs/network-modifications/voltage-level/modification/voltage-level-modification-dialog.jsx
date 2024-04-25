@@ -35,8 +35,8 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -100,18 +100,7 @@ const VoltageLevelModificationDialog = ({
     });
 
     const { reset, resetField, getValues } = formMethods;
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
+
     useEffect(() => {
         if (editData) {
             if (editData?.equipmentId) {
@@ -164,7 +153,10 @@ const VoltageLevelModificationDialog = ({
                             reset((formValues) => ({
                                 ...formValues,
                                 [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(voltageLevel),
+                                    getConcatenatedProperties(
+                                        voltageLevel,
+                                        getValues
+                                    ),
                             }));
                             //TODO We display the previous value of the substation id in the substation field because we can't change it
                             // To be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
@@ -184,13 +176,7 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            resetField,
-            reset,
-            getConcatenatedProperties,
-        ]
+        [studyUuid, currentNodeUuid, resetField, reset, getValues]
     );
 
     useEffect(() => {

@@ -6,12 +6,12 @@
  */
 import yup from 'components/utils/yup-config';
 import {
+    ADDED,
     ADDITIONAL_PROPERTIES,
     DELETION_MARK,
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-    ADDED,
 } from 'components/utils/field-constants';
 import { fetchAppsAndUrls } from '../../../../../services/utils';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
@@ -119,6 +119,18 @@ export const copyEquipmentPropertiesForCreation = (
             : [],
     };
 };
+
+export function getConcatenatedProperties(
+    equipment: any,
+    getValues: (name: string) => any
+): any {
+    // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
+    const modificationProperties = getValues(ADDITIONAL_PROPERTIES);
+    return mergeModificationAndEquipmentProperties(
+        modificationProperties,
+        equipment
+    );
+}
 
 /*
     We first load modification properties (empty at creation but could be filled later on), then we load properties

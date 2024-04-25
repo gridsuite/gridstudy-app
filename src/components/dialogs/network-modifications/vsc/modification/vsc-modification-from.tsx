@@ -24,6 +24,7 @@ import Grid from '@mui/material/Grid';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
+import PropertiesForm from '../../common/properties/properties-form';
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -148,6 +149,7 @@ export const VscModificationForm: FunctionComponent<
                     }}
                 />
             </Box>
+            <PropertiesForm isModification={true} />
         </>
     );
 };

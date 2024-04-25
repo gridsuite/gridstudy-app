@@ -42,8 +42,8 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -113,18 +113,6 @@ const ShuntCompensatorModificationDialog = ({
         },
         [reset]
     );
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
 
     // If we only change the characteristics choice without changing the corresponding fields,
     // we keep the validate button disable: if we choose "susceptance", we have to add a value for
@@ -175,7 +163,10 @@ const ShuntCompensatorModificationDialog = ({
                             reset((formValues) => ({
                                 ...formValues,
                                 [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(shuntCompensator),
+                                    getConcatenatedProperties(
+                                        shuntCompensator,
+                                        getValues
+                                    ),
                             }));
                         }
                         setLoading(false);
@@ -199,13 +190,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [
-            currentNode?.id,
-            snackError,
-            studyUuid,
-            reset,
-            getConcatenatedProperties,
-        ]
+        [currentNode.id, snackError, studyUuid, reset, getValues]
     );
 
     useEffect(() => {
