@@ -171,7 +171,8 @@ const MapViewer = ({
                 <div
                     style={{
                         display:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.TREE
+                            studyDisplayMode === STUDY_DISPLAY_MODE.TREE ||
+                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
@@ -179,8 +180,10 @@ const MapViewer = ({
                             studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
                                 ? '50%'
                                 : '100%',
+                        backgroundColor: 'gray',
                     }}
                 >
+                    tree
                     {/* <ReactFlowProvider>
                         <NetworkModificationTreePane
                             studyUuid={studyUuid}
@@ -203,14 +206,13 @@ const MapViewer = ({
                         backgroundColor: 'blue',
                     }}
                 >
-                    {/* <Box
-                        sx={styles.map}
+                    <Box
                         style={{
                             display:
                                 studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                                     ? 'none'
                                     : null,
-                            width: getMapWitdh(studyDisplayMode),
+                            width: '100%',
                         }}
                     >
                         <Box>
@@ -332,7 +334,7 @@ const MapViewer = ({
                                 onCancel={onCancelFunction}
                             ></FilterCreationPanel>
                         </Box>
-                    )} */}
+                    )}
                 </div>
             </div>
         </Box>
