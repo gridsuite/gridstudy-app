@@ -28,7 +28,7 @@ function NetworkAreaDiagramContent(props) {
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     /**

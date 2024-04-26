@@ -61,7 +61,7 @@ import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 
 export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const securityAnalysisStatus = useSelector(
@@ -208,11 +208,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         }
 
         return {
-            [ComputingType.LOADFLOW]: {
+            [ComputingType.LOAD_FLOW]: {
                 messageId: 'LoadFlow',
                 startComputation() {
                     startComputationAsync(
-                        ComputingType.LOADFLOW,
+                        ComputingType.LOAD_FLOW,
                         null,
                         () =>
                             startLoadFlow(
@@ -226,7 +226,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(ComputingType.LOADFLOW, () =>
+                    actionOnRunnables(ComputingType.LOAD_FLOW, () =>
                         stopLoadFlow(studyUuid, currentNode?.id)
                     );
                 },
@@ -375,7 +375,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const getRunningStatus = useCallback(
         (computingType) => {
             switch (computingType) {
-                case ComputingType.LOADFLOW:
+                case ComputingType.LOAD_FLOW:
                     return loadFlowStatus;
                 case ComputingType.SECURITY_ANALYSIS:
                     return securityAnalysisStatus;
@@ -407,7 +407,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            ComputingType.LOADFLOW,
+            ComputingType.LOAD_FLOW,
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up
                 ? [ComputingType.SECURITY_ANALYSIS]
                 : []),
