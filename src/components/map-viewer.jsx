@@ -54,6 +54,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        backgroundColor: 'white',
     },
     drawInfo: {
         position: 'absolute',
@@ -152,189 +153,198 @@ const MapViewer = ({
         dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
     }, [dispatch]);
     return (
-        <ReactFlowProvider>
-            <Box sx={styles.table}>
-                <Box sx={styles.horizontalToolbar}>
-                    <HorizontalToolbar />
-                </Box>
+        <Box sx={styles.table}>
+            <Box sx={styles.horizontalToolbar}>
+                <HorizontalToolbar />
+            </Box>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    overflow: 'hidden',
+                    backgroundColor: 'red',
+                    width: '100%',
+                    height: '100%',
+                }}
+            >
+                {/* Tree */}
                 <div
                     style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexGrow: 1,
-                        overflow: 'hidden',
+                        // display:
+                        //     studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
+                        //     studyDisplayMode === STUDY_DISPLAY_MODE.DRAW
+                        //         ? 'flex'
+                        //         : 'none',
+                        height: '100%',
+                        // flex:
+                        //     studyDisplayMode === STUDY_DISPLAY_MODE.TREE
+                        //         ? 1
+                        //         : 0,
+                        flexBasis:
+                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                                ? '50%'
+                            : null,
+                        backgroundColor: 'white',
                     }}
                 >
-                    <div
+                    {/* <ReactFlowProvider>
+                        <NetworkModificationTreePane
+                            studyUuid={studyUuid}
+                            studyMapTreeDisplay={studyDisplayMode}
+                        />
+                    </ReactFlowProvider> */}
+                </div>
+                {/* Map */}
+                <div
+                    style={{
+                        display:
+                            studyDisplayMode === STUDY_DISPLAY_MODE.TREE
+                                ? 'none'
+                                : 'null',
+                        flexDirection: 'row',
+                        flexBasis:
+                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                                ? '50%'
+                                : null,
+                        height: '100%',
+                        // flex:
+                        //     studyDisplayMode === STUDY_DISPLAY_MODE.MAP ? 1 : 0,
+                        backgroundColor: 'blue',
+                    }}
+                >
+                    {/* <Box
+                        sx={styles.map}
                         style={{
                             display:
-                                studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
-                                studyDisplayMode === STUDY_DISPLAY_MODE.DRAW
+                                studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                                     ? 'none'
                                     : null,
                             width: getMapWitdh(studyDisplayMode),
                         }}
                     >
-                        <NetworkModificationTreePane
-                            studyUuid={studyUuid}
-                            studyMapTreeDisplay={studyDisplayMode}
-                        />
-                    </div>
-                    <div
-                        style={{
-                            display:
-                                studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                                    ? 'none'
-                                    : 'flex',
-                            flexDirection: 'row',
-                            flexGrow: 1,
-                            width: '100%',
-                        }}
-                    >
-                        <Box
-                            sx={styles.map}
-                            style={{
-                                display:
-                                    studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                                        ? 'none'
-                                        : null,
-                                width: getMapWitdh(studyDisplayMode),
-                            }}
-                        >
-                            <Box>
-                                <Box sx={styles.mapBelowDiagrams}>
-                                    <NetworkMapTab
-                                        networkMapRef={networkMapref}
-                                        /* TODO do we move redux param to container */
-                                        studyUuid={studyUuid}
-                                        visible={
-                                            view === StudyView.MAP &&
-                                            studyDisplayMode !==
-                                                STUDY_DISPLAY_MODE.TREE
-                                        }
-                                        lineFullPath={lineFullPath}
-                                        lineParallelPath={lineParallelPath}
-                                        lineFlowMode={lineFlowMode}
-                                        lineFlowColorMode={lineFlowColorMode}
-                                        lineFlowAlertThreshold={
-                                            lineFlowAlertThreshold
-                                        }
-                                        openVoltageLevel={openVoltageLevel}
-                                        /* TODO verif tableEquipment*/
-                                        currentNode={currentNode}
-                                        onChangeTab={onChangeTab}
-                                        showInSpreadsheet={showInSpreadsheet}
-                                        setErrorMessage={setErrorMessage}
-                                        onDrawPolygonModeActive={(active) => {
-                                            if (active === true) {
-                                                dispatch(
-                                                    setStudyDisplayMode(
-                                                        STUDY_DISPLAY_MODE.MAP
-                                                    )
-                                                );
-                                            }
-                                            setIsDrawingMode(active);
-                                        }}
-                                    ></NetworkMapTab>
-                                </Box>
-                            </Box>
-
-                            <DiagramPane
-                                studyUuid={studyUuid}
-                                showInSpreadsheet={showInSpreadsheet}
-                                currentNode={currentNode}
-                                visible={
-                                    view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                                }
-                                oneBusShortCircuitStatus={
-                                    oneBusShortCircuitStatus
-                                }
-                            />
-                            {isDrawingMode && (
-                                <Box style={styles.drawInfo}>
-                                    <Typography
-                                        style={styles.instructionsMessage}
-                                    >
-                                        {intl.formatMessage({
-                                            id: 'DrawingPolygonInstruction',
-                                        })}
-                                    </Typography>
-                                </Box>
-                            )}
-                        </Box>
-                        {studyDisplayMode === STUDY_DISPLAY_MODE.DRAW && (
-                            <Box
-                                style={{
-                                    display:
+                        <Box>
+                            <Box sx={styles.mapBelowDiagrams}>
+                                <NetworkMapTab
+                                    networkMapRef={networkMapref}
+                                    studyUuid={studyUuid}
+                                    visible={
+                                        view === StudyView.MAP &&
                                         studyDisplayMode !==
-                                        STUDY_DISPLAY_MODE.DRAW
-                                            ? 'none'
-                                            : null,
-                                }}
-                            >
-                                <FilterCreationPanel
-                                    onSaveFilter={async (filter, distDir) => {
-                                        try {
-                                            //we want to calculate selectedLine or selectedSubstation only when needed
-                                            //call getSelectedLines if the user want to create a filter with lines
-                                            //for all others case we call getSelectedSubstations
-                                            const selectedEquipments =
-                                                filter.equipmentType ===
-                                                EQUIPMENT_TYPES.LINE
-                                                    ? networkMapref.current.getSelectedLines()
-                                                    : networkMapref.current.getSelectedSubstations();
-                                            const selectedEquipmentsIds =
-                                                selectedEquipments.map(
-                                                    (eq) => eq.id
-                                                );
-                                            if (
-                                                selectedEquipments.length === 0
-                                            ) {
-                                                snackWarning({
-                                                    messageTxt:
-                                                        intl.formatMessage({
-                                                            id: 'EmptySelection',
-                                                        }),
-                                                    headerId:
-                                                        'FilterCreationIgnored',
-                                                });
-                                                return;
-                                            }
-                                            await createMapFilter(
-                                                filter,
-                                                distDir,
-                                                studyUuid,
-                                                currentNode.id,
-                                                selectedEquipmentsIds
+                                            STUDY_DISPLAY_MODE.TREE
+                                    }
+                                    lineFullPath={lineFullPath}
+                                    lineParallelPath={lineParallelPath}
+                                    lineFlowMode={lineFlowMode}
+                                    lineFlowColorMode={lineFlowColorMode}
+                                    lineFlowAlertThreshold={
+                                        lineFlowAlertThreshold
+                                    }
+                                    openVoltageLevel={openVoltageLevel}
+                                    currentNode={currentNode}
+                                    onChangeTab={onChangeTab}
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    setErrorMessage={setErrorMessage}
+                                    onDrawPolygonModeActive={(active) => {
+                                        if (active === true) {
+                                            dispatch(
+                                                setStudyDisplayMode(
+                                                    STUDY_DISPLAY_MODE.MAP
+                                                )
                                             );
-                                            snackInfo({
-                                                messageTxt: intl.formatMessage(
-                                                    {
-                                                        id: 'FilterCreationSuccess',
-                                                    },
-                                                    {
-                                                        filterName: filter.name,
-                                                    }
-                                                ),
-                                            });
-                                        } catch (error) {
-                                            snackError({
-                                                messageTxt: intl.formatMessage({
-                                                    id: error.message,
-                                                }),
-                                                headerId: 'FilterCreationError',
-                                            });
                                         }
+                                        setIsDrawingMode(active);
                                     }}
-                                    onCancel={onCancelFunction}
-                                ></FilterCreationPanel>
+                                ></NetworkMapTab>
+                            </Box>
+                        </Box>
+
+                        <DiagramPane
+                            studyUuid={studyUuid}
+                            showInSpreadsheet={showInSpreadsheet}
+                            currentNode={currentNode}
+                            visible={
+                                view === StudyView.MAP &&
+                                studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                            }
+                            oneBusShortCircuitStatus={oneBusShortCircuitStatus}
+                        />
+                        {isDrawingMode && (
+                            <Box style={styles.drawInfo}>
+                                <Typography style={styles.instructionsMessage}>
+                                    {intl.formatMessage({
+                                        id: 'DrawingPolygonInstruction',
+                                    })}
+                                </Typography>
                             </Box>
                         )}
-                    </div>
+                    </Box>
+                    {studyDisplayMode === STUDY_DISPLAY_MODE.DRAW && (
+                        <Box
+                            style={{
+                                display:
+                                    studyDisplayMode !== STUDY_DISPLAY_MODE.DRAW
+                                        ? 'none'
+                                        : null,
+                            }}
+                        >
+                            <FilterCreationPanel
+                                onSaveFilter={async (filter, distDir) => {
+                                    try {
+                                        //we want to calculate selectedLine or selectedSubstation only when needed
+                                        //call getSelectedLines if the user want to create a filter with lines
+                                        //for all others case we call getSelectedSubstations
+                                        const selectedEquipments =
+                                            filter.equipmentType ===
+                                            EQUIPMENT_TYPES.LINE
+                                                ? networkMapref.current.getSelectedLines()
+                                                : networkMapref.current.getSelectedSubstations();
+                                        const selectedEquipmentsIds =
+                                            selectedEquipments.map(
+                                                (eq) => eq.id
+                                            );
+                                        if (selectedEquipments.length === 0) {
+                                            snackWarning({
+                                                messageTxt: intl.formatMessage({
+                                                    id: 'EmptySelection',
+                                                }),
+                                                headerId:
+                                                    'FilterCreationIgnored',
+                                            });
+                                            return;
+                                        }
+                                        await createMapFilter(
+                                            filter,
+                                            distDir,
+                                            studyUuid,
+                                            currentNode.id,
+                                            selectedEquipmentsIds
+                                        );
+                                        snackInfo({
+                                            messageTxt: intl.formatMessage(
+                                                {
+                                                    id: 'FilterCreationSuccess',
+                                                },
+                                                {
+                                                    filterName: filter.name,
+                                                }
+                                            ),
+                                        });
+                                    } catch (error) {
+                                        snackError({
+                                            messageTxt: intl.formatMessage({
+                                                id: error.message,
+                                            }),
+                                            headerId: 'FilterCreationError',
+                                        });
+                                    }
+                                }}
+                                onCancel={onCancelFunction}
+                            ></FilterCreationPanel>
+                        </Box>
+                    )} */}
                 </div>
-            </Box>
-        </ReactFlowProvider>
+            </div>
+        </Box>
     );
 };
 
