@@ -143,7 +143,8 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             options={Object.values(EQUIPMENT_TYPES)
                                 .filter(
                                     (type) =>
-                                        !type.includes(EQUIPMENT_TYPES.BUS)
+                                        !type.includes(EQUIPMENT_TYPES.BUS) &&
+                                        !type.includes(EQUIPMENT_TYPES.SWITCH)
                                 )
                                 .map((value) => {
                                     return {
