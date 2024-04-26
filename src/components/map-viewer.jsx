@@ -54,7 +54,6 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        backgroundColor: 'white',
     },
     drawInfo: {
         position: 'absolute',
@@ -141,13 +140,6 @@ const MapViewer = ({
         }
     }, [isDrawingMode, intl, snackInfo]);
 
-    function getMapWitdh(displayMode) {
-        if (displayMode === STUDY_DISPLAY_MODE.DRAW) {
-            return '80%';
-        } else {
-            return '100%';
-        }
-    }
     const onCancelFunction = useCallback(() => {
         networkMapref.current.cleanDraw();
         dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
@@ -162,7 +154,6 @@ const MapViewer = ({
                     display: 'flex',
                     flexDirection: 'row',
                     overflow: 'hidden',
-                    backgroundColor: 'red',
                     width: '100%',
                     height: '100%',
                 }}
@@ -180,16 +171,14 @@ const MapViewer = ({
                             studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
                                 ? '50%'
                                 : '100%',
-                        backgroundColor: 'gray',
                     }}
                 >
-                    tree
-                    {/* <ReactFlowProvider>
+                    <ReactFlowProvider>
                         <NetworkModificationTreePane
                             studyUuid={studyUuid}
                             studyMapTreeDisplay={studyDisplayMode}
                         />
-                    </ReactFlowProvider> */}
+                    </ReactFlowProvider>
                 </div>
                 {/* Map */}
                 <div
@@ -203,52 +192,42 @@ const MapViewer = ({
                                 ? '50%'
                                 : '100%',
                         height: '100%',
-                        backgroundColor: 'blue',
                     }}
                 >
                     <Box
                         style={{
-                            display:
-                                studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                                    ? 'none'
-                                    : null,
                             width: '100%',
                         }}
                     >
-                        <Box>
-                            <Box sx={styles.mapBelowDiagrams}>
-                                <NetworkMapTab
-                                    networkMapRef={networkMapref}
-                                    studyUuid={studyUuid}
-                                    visible={
-                                        view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
+                        <Box sx={styles.mapBelowDiagrams}>
+                            <NetworkMapTab
+                                networkMapRef={networkMapref}
+                                studyUuid={studyUuid}
+                                visible={
+                                    view === StudyView.MAP &&
+                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                }
+                                lineFullPath={lineFullPath}
+                                lineParallelPath={lineParallelPath}
+                                lineFlowMode={lineFlowMode}
+                                lineFlowColorMode={lineFlowColorMode}
+                                lineFlowAlertThreshold={lineFlowAlertThreshold}
+                                openVoltageLevel={openVoltageLevel}
+                                currentNode={currentNode}
+                                onChangeTab={onChangeTab}
+                                showInSpreadsheet={showInSpreadsheet}
+                                setErrorMessage={setErrorMessage}
+                                onDrawPolygonModeActive={(active) => {
+                                    if (active === true) {
+                                        dispatch(
+                                            setStudyDisplayMode(
+                                                STUDY_DISPLAY_MODE.MAP
+                                            )
+                                        );
                                     }
-                                    lineFullPath={lineFullPath}
-                                    lineParallelPath={lineParallelPath}
-                                    lineFlowMode={lineFlowMode}
-                                    lineFlowColorMode={lineFlowColorMode}
-                                    lineFlowAlertThreshold={
-                                        lineFlowAlertThreshold
-                                    }
-                                    openVoltageLevel={openVoltageLevel}
-                                    currentNode={currentNode}
-                                    onChangeTab={onChangeTab}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    setErrorMessage={setErrorMessage}
-                                    onDrawPolygonModeActive={(active) => {
-                                        if (active === true) {
-                                            dispatch(
-                                                setStudyDisplayMode(
-                                                    STUDY_DISPLAY_MODE.MAP
-                                                )
-                                            );
-                                        }
-                                        setIsDrawingMode(active);
-                                    }}
-                                ></NetworkMapTab>
-                            </Box>
+                                    setIsDrawingMode(active);
+                                }}
+                            ></NetworkMapTab>
                         </Box>
 
                         <DiagramPane
