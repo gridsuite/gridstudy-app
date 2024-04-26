@@ -170,21 +170,15 @@ const MapViewer = ({
                 {/* Tree */}
                 <div
                     style={{
-                        // display:
-                        //     studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
-                        //     studyDisplayMode === STUDY_DISPLAY_MODE.DRAW
-                        //         ? 'flex'
-                        //         : 'none',
+                        display:
+                            studyDisplayMode === STUDY_DISPLAY_MODE.TREE
+                                ? 'flex'
+                                : 'none',
                         height: '100%',
-                        // flex:
-                        //     studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                        //         ? 1
-                        //         : 0,
                         flexBasis:
                             studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
                                 ? '50%'
-                            : null,
-                        backgroundColor: 'white',
+                                : '100%',
                     }}
                 >
                     {/* <ReactFlowProvider>
@@ -198,17 +192,14 @@ const MapViewer = ({
                 <div
                     style={{
                         display:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                                ? 'none'
-                                : 'null',
-                        flexDirection: 'row',
+                            studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                ? 'flex'
+                                : 'none',
                         flexBasis:
                             studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
                                 ? '50%'
-                                : null,
+                                : '100%',
                         height: '100%',
-                        // flex:
-                        //     studyDisplayMode === STUDY_DISPLAY_MODE.MAP ? 1 : 0,
                         backgroundColor: 'blue',
                     }}
                 >
