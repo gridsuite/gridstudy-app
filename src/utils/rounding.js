@@ -29,3 +29,38 @@ export const roundToPrecision = (num, precision) =>
     Number(num.toPrecision(precision));
 export const roundToDefaultPrecision = (num) =>
     roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
+
+/**
+ * Counts the number of decimal places in a given number.
+ * Converts the number to a string and checks for a decimal point.
+ * If a decimal point is found, it returns the length of the sequence following the decimal point.
+ * Returns 0 if there is no decimal part.
+ * @param {number} number - The number whose decimal places are to be counted.
+ * @returns {number} The number of decimal places in the input number.
+ */
+export const countDecimalPlaces = (number) => {
+    // Convert the number to a string for easier manipulation
+    const numberAsString = number.toString();
+
+    // Check if the number has a decimal part
+    if (numberAsString.includes('.')) {
+        // Return the length of the part after the decimal point
+        return numberAsString.split('.')[1].length;
+    }
+
+    // If the number does not have a decimal part, return 0
+    return 0;
+};
+
+export const truncateNumber = (value, decimalPrecision) => {
+    // Calculate the factor based on the decimal precision (e.g., 100 for two decimal places)
+    let factor = Math.pow(10, decimalPrecision);
+
+    // Truncate the number to maintain precision
+    // Here, 'value' is multiplied by a factor before being floored.
+    // This truncation helps in eliminating floating point arithmetic issues like 0.1 + 0.2 not exactly equaling 0.3.
+    // After flooring, the value is divided by the same factor to revert it to its original scale but truncated.
+    let truncatedNumber = Math.floor(value * factor) / factor;
+
+    return truncatedNumber;
+};
