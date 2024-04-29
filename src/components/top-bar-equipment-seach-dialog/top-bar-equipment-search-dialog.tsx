@@ -9,12 +9,14 @@ import {
     EquipmentItem,
     equipmentStyles,
 } from '@gridsuite/commons-ui';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useCallback, useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import { useSearchMatchingEquipments } from './search-matching-equipments';
+import { useSearchMatchingEquipments } from './use-search-matching-equipments';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/types';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { useDisabledSearchReason } from './use-disabled-search-reason';
+import { useSearchEvent } from './use-search-event';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -34,14 +36,8 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
-    const studyDisplayMode = useSelector(
-        (state: ReduxState) => state.studyDisplayMode
-    );
-    const studyIndexationStatus = useSelector(
-        (state: ReduxState) => state.studyIndexationStatus
-    );
     const intl = useIntl();
-    const user = useSelector((state: ReduxState) => state.user);
+
     const {
         debouncedSearchMatchingEquipments: searchMatchingEquipments,
         equipmentsFound,
@@ -49,41 +45,13 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         studyUuid: studyUuid,
         nodeUuid: currentNode?.id,
     });
+    const disabledSearchReason = useDisabledSearchReason();
 
-    useEffect(() => {
-        if (user) {
-            const openSearch = (e: KeyboardEvent) => {
-                if (
-                    e.ctrlKey &&
-                    e.shiftKey &&
-                    (e.key === 'F' || e.key === 'f')
-                ) {
-                    e.preventDefault();
-                    setIsDialogSearchOpen(true);
-                }
-            };
-            document.addEventListener('keydown', openSearch);
-            return () => document.removeEventListener('keydown', openSearch);
-        }
-    }, [user, setIsDialogSearchOpen]);
+    const enableSearchDialog = useCallback(() => {
+        setIsDialogSearchOpen(true);
+    }, [setIsDialogSearchOpen]);
 
-    function getDisableReason() {
-        if (studyDisplayMode === StudyDisplayMode.TREE) {
-            return intl.formatMessage({
-                id: 'UnsupportedView',
-            });
-        } else if (!isNodeBuilt(currentNode)) {
-            return intl.formatMessage({
-                id: 'InvalidNode',
-            });
-        } else if (studyIndexationStatus !== StudyIndexationStatus.INDEXED) {
-            return intl.formatMessage({
-                id: 'waitingStudyIndexation',
-            });
-        } else {
-            return '';
-        }
-    }
+    useSearchEvent(enableSearchDialog);
 
     return (
         <ElementSearchDialog
@@ -106,8 +74,8 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     suffixRenderer={CustomSuffixRenderer}
                 />
             )}
-            searchTermDisabled={getDisableReason() !== ''}
-            searchTermDisableReason={getDisableReason()}
+            searchTermDisabled={disabledSearchReason !== ''}
+            searchTermDisableReason={disabledSearchReason}
         />
     );
 };

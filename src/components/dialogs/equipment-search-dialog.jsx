@@ -14,7 +14,7 @@ import {
 } from '@gridsuite/commons-ui';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/search-matching-equipments';
+import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
 
 /**
  * Dialog to search equipment with a given type
