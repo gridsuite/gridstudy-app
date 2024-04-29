@@ -131,7 +131,11 @@ const CreateParameterDialog = <T extends FieldValues>({
     const folderChooser = (
         <Grid container item>
             <Grid item>
-                <Button onClick={handleChangeFolder} variant="contained">
+                <Button
+                    onClick={handleChangeFolder}
+                    variant="contained"
+                    size={'small'}
+                >
                     <FormattedMessage id={'showSelectDirectoryDialog'} />
                 </Button>
             </Grid>
