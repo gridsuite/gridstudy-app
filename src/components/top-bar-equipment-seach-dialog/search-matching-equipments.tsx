@@ -6,26 +6,50 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
+import {
+    EquipmentInfos,
+    EquipmentType,
+    Identifiable,
+    getEquipmentsInfosForSearchBar,
+} from '@gridsuite/commons-ui';
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
-import { useNameOrId } from './equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
+import { UUID } from 'crypto';
+import { Equipment } from '@gridsuite/commons-ui/dist/utils/types';
+
+interface UseSearchMatchingEquipmentsProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    inUpstreamBuiltParentNode?: boolean;
+    equipmentType?: EquipmentType;
+    makeItems?: (
+        equipmentsInfos: Equipment[],
+        getNameOrId: (e: Identifiable) => string
+    ) => EquipmentInfos[];
+}
 
 export const useSearchMatchingEquipments = (
-    studyUuid,
-    nodeUuid,
-    inUpstreamBuiltParentNode,
-    equipmentType,
-    makeItems = getEquipmentsInfosForSearchBar
+    props: UseSearchMatchingEquipmentsProps
 ) => {
+    const {
+        studyUuid,
+        nodeUuid,
+        inUpstreamBuiltParentNode,
+        equipmentType,
+        makeItems = getEquipmentsInfosForSearchBar,
+    } = props;
+
     const { snackError } = useSnackMessage();
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const [equipmentsFound, setEquipmentsFound] = useState<EquipmentInfos[]>(
+        []
+    );
     const lastSearchTermRef = useRef('');
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
     const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
+        (searchTerm: string) => {
             lastSearchTermRef.current = searchTerm;
             searchEquipmentsInfos(
                 studyUuid,
@@ -68,5 +92,5 @@ export const useSearchMatchingEquipments = (
         setEquipmentsFound([]);
     }, [equipmentType]);
 
-    return [debouncedSearchMatchingEquipments, equipmentsFound];
+    return { debouncedSearchMatchingEquipments, equipmentsFound };
 };

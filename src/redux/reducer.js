@@ -80,8 +80,6 @@ import {
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
     STOP_DIAGRAM_BLINK,
-    STUDY_DISPLAY_MODE,
-    STUDY_INDEXATION_STATUS,
     LOADFLOW_RESULT_FILTER,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
@@ -162,6 +160,7 @@ import {
     SPREADSHEET_STORE_FIELD,
     ONE_BUS,
 } from 'utils/store-filter-fields';
+import { StudyIndexationStatus, StudyDisplayMode } from './reducer.type';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -268,7 +267,7 @@ const initialState = {
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
-    studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
+    studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
@@ -279,7 +278,7 @@ const initialState = {
     computationStarting: false,
     optionalServices: defaultOptionalServicesState,
     oneBusShortCircuitAnalysisDiagram: null,
-    studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
+    studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
     recentGlobalFilters: [],
@@ -739,13 +738,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SET_STUDY_DISPLAY_MODE, (state, action) => {
-        if (
-            Object.values(STUDY_DISPLAY_MODE).includes(action.studyDisplayMode)
-        ) {
+        if (Object.values(StudyDisplayMode).includes(action.studyDisplayMode)) {
             // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
             // Some actions in the TREE display mode could change this value after that
             // ex: change current Node, current Node updated ...
-            if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
+            if (action.studyDisplayMode === StudyDisplayMode.TREE) {
                 state.reloadMap = false;
             }
 

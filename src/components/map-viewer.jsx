@@ -14,7 +14,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params.js';
-import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions.js';
+import { setStudyDisplayMode } from '../redux/actions.js';
 import { DiagramType } from './diagrams/diagram-common.js';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { Box } from '@mui/system';
@@ -31,6 +31,7 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Typography } from '@mui/material';
 import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 const styles = {
     map: {
@@ -141,7 +142,7 @@ const MapViewer = ({
     }, [isDrawingMode, intl, snackInfo]);
 
     function getMapWitdh(displayMode) {
-        if (displayMode === STUDY_DISPLAY_MODE.DRAW) {
+        if (displayMode === StudyDisplayMode.DRAW) {
             return '80%';
         } else {
             return '100%';
@@ -149,7 +150,7 @@ const MapViewer = ({
     }
     const onCancelFunction = useCallback(() => {
         networkMapref.current.cleanDraw();
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+        dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
     }, [dispatch]);
     return (
         <ReactFlowProvider>
@@ -168,8 +169,8 @@ const MapViewer = ({
                     <div
                         style={{
                             display:
-                                studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
-                                studyDisplayMode === STUDY_DISPLAY_MODE.DRAW
+                                studyDisplayMode === StudyDisplayMode.MAP ||
+                                studyDisplayMode === StudyDisplayMode.DRAW
                                     ? 'none'
                                     : null,
                             width: getMapWitdh(studyDisplayMode),
@@ -183,7 +184,7 @@ const MapViewer = ({
                     <div
                         style={{
                             display:
-                                studyDisplayMode === STUDY_DISPLAY_MODE.TREE
+                                studyDisplayMode === StudyDisplayMode.TREE
                                     ? 'none'
                                     : 'flex',
                             flexDirection: 'row',
@@ -195,7 +196,7 @@ const MapViewer = ({
                             sx={styles.map}
                             style={{
                                 display:
-                                    studyDisplayMode === STUDY_DISPLAY_MODE.TREE
+                                    studyDisplayMode === StudyDisplayMode.TREE
                                         ? 'none'
                                         : null,
                                 width: getMapWitdh(studyDisplayMode),
@@ -210,7 +211,7 @@ const MapViewer = ({
                                         visible={
                                             view === StudyView.MAP &&
                                             studyDisplayMode !==
-                                                STUDY_DISPLAY_MODE.TREE
+                                                StudyDisplayMode.TREE
                                         }
                                         lineFullPath={lineFullPath}
                                         lineParallelPath={lineParallelPath}
@@ -229,7 +230,7 @@ const MapViewer = ({
                                             if (active === true) {
                                                 dispatch(
                                                     setStudyDisplayMode(
-                                                        STUDY_DISPLAY_MODE.MAP
+                                                        StudyDisplayMode.MAP
                                                     )
                                                 );
                                             }
@@ -245,7 +246,7 @@ const MapViewer = ({
                                 currentNode={currentNode}
                                 visible={
                                     view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                    studyDisplayMode !== StudyDisplayMode.TREE
                                 }
                                 oneBusShortCircuitStatus={
                                     oneBusShortCircuitStatus
@@ -263,12 +264,12 @@ const MapViewer = ({
                                 </Box>
                             )}
                         </Box>
-                        {studyDisplayMode === STUDY_DISPLAY_MODE.DRAW && (
+                        {studyDisplayMode === StudyDisplayMode.DRAW && (
                             <Box
                                 style={{
                                     display:
                                         studyDisplayMode !==
-                                        STUDY_DISPLAY_MODE.DRAW
+                                        StudyDisplayMode.DRAW
                                             ? 'none'
                                             : null,
                                 }}

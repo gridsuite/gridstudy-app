@@ -7,32 +7,16 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
-    ElementSearchDialog,
-    EquipmentItem,
-    equipmentStyles,
     LIGHT_THEME,
     logout,
     OverflowableText,
-    TagRenderer,
     TopBar,
 } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { StudyView } from './study-pane';
-import {
-    Badge,
-    Box,
-    Button,
-    IconButton,
-    Tab,
-    Tabs,
-    Tooltip,
-} from '@mui/material';
-import {
-    GpsFixed as GpsFixedIcon,
-    Search,
-    Timeline as TimelineIcon,
-} from '@mui/icons-material';
+import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
+import { Search, Settings } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     PARAM_LANGUAGE,
@@ -42,31 +26,16 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
-import {
-    centerOnSubstation,
-    openDiagram,
-    STUDY_DISPLAY_MODE,
-    STUDY_INDEXATION_STATUS,
-} from '../redux/actions';
-import {
-    DiagramType,
-    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
-    useDiagram,
-} from './diagrams/diagram-common';
+import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { useParameterState } from './dialogs/parameters/parameters';
-import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { getServersInfos } from '../services/study';
-import { fetchNetworkElementInfos } from '../services/study/network';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from './utils/equipment-types';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 
-import { Settings } from '@mui/icons-material';
+import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 
 const styles = {
     currentNodeBox: {
@@ -106,96 +75,6 @@ const STUDY_VIEWS = [
     StudyView.PARAMETERS,
 ];
 
-const CustomSuffixRenderer = ({ props, element }) => {
-    const dispatch = useDispatch();
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const networkAreaDiagramNbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels
-    );
-    const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth
-    );
-
-    const centerOnSubstationCB = useCallback(
-        (e, element) => {
-            e.stopPropagation();
-            if (!studyUuid || !currentNode) {
-                return;
-            }
-            let substationIdPromise;
-            if (element.type === EQUIPMENT_TYPES.SUBSTATION) {
-                substationIdPromise = Promise.resolve(element.id);
-            } else {
-                substationIdPromise = fetchNetworkElementInfos(
-                    studyUuid,
-                    currentNode.id,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-                    EQUIPMENT_INFOS_TYPES.LIST.type,
-                    element.id,
-                    true
-                ).then((vl) => vl.substationId);
-            }
-            substationIdPromise.then((substationId) => {
-                dispatch(centerOnSubstation(substationId));
-                props.onClose && props.onClose();
-                e.stopPropagation();
-            });
-        },
-        [dispatch, props, studyUuid, currentNode]
-    );
-
-    const openNetworkAreaDiagramCB = useCallback(
-        (e, element) => {
-            dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
-            props.onClose && props.onClose();
-            e.stopPropagation();
-        },
-        [dispatch, props]
-    );
-
-    if (
-        element.type === EQUIPMENT_TYPES.SUBSTATION ||
-        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL
-    ) {
-        return (
-            <>
-                {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL && (
-                    <IconButton
-                        disabled={
-                            networkAreaDiagramNbVoltageLevels >
-                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
-                            networkAreaDiagramDepth !== 0
-                        }
-                        onClick={(e) => openNetworkAreaDiagramCB(e, element)}
-                        size={'small'}
-                    >
-                        <TimelineIcon fontSize={'small'} />
-                    </IconButton>
-                )}
-                <IconButton
-                    disabled={
-                        (!studyUuid || !currentNode) &&
-                        element.type !== EQUIPMENT_TYPES.SUBSTATION
-                    }
-                    onClick={(e) => centerOnSubstationCB(e, element)}
-                    size={'small'}
-                >
-                    <GpsFixedIcon fontSize={'small'} />
-                </IconButton>
-            </>
-        );
-    } else {
-        return (
-            <TagRenderer
-                styles={equipmentStyles}
-                props={props}
-                element={element}
-            />
-        );
-    }
-};
-
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
@@ -204,11 +83,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const theme = useSelector((state) => state[PARAM_THEME]);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-    const studyIndexationStatus = useSelector(
-        (state) => state.studyIndexationStatus
-    );
 
+    const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const notificationsCount = useComputationResultsCount();
@@ -217,12 +93,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [useNameLocal, handleChangeUseName] =
         useParameterState(PARAM_USE_NAME);
 
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
-
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
-
-    const [searchMatchingEquipments, equipmentsFound] =
-        useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -247,41 +118,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             });
         }
     }, [user]);
-
-    useEffect(() => {
-        if (user) {
-            const openSearch = (e) => {
-                if (
-                    e.ctrlKey &&
-                    e.shiftKey &&
-                    (e.key === 'F' || e.key === 'f')
-                ) {
-                    e.preventDefault();
-                    setDialogSearchOpen(true);
-                }
-            };
-            document.addEventListener('keydown', openSearch);
-            return () => document.removeEventListener('keydown', openSearch);
-        }
-    }, [user]);
-
-    function getDisableReason() {
-        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
-            return intl.formatMessage({
-                id: 'UnsupportedView',
-            });
-        } else if (!isNodeBuilt(currentNode)) {
-            return intl.formatMessage({
-                id: 'InvalidNode',
-            });
-        } else if (studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED) {
-            return intl.formatMessage({
-                id: 'waitingStudyIndexation',
-            });
-        } else {
-            return '';
-        }
-    }
 
     return (
         <>
@@ -375,7 +211,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                 <Button
                                     color="inherit"
                                     size="large"
-                                    onClick={() => setDialogSearchOpen(true)}
+                                    onClick={() => setIsDialogSearchOpen(true)}
                                 >
                                     <Search />
                                 </Button>
@@ -396,31 +232,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             </TopBar>
 
             {studyUuid && (
-                <>
-                    <ElementSearchDialog
-                        open={isDialogSearchOpen}
-                        onClose={() => setDialogSearchOpen(false)}
-                        searchingLabel={intl.formatMessage({
-                            id: 'equipment_search/label',
-                        })}
-                        onSearchTermChange={searchMatchingEquipments}
-                        onSelectionChange={(element) => {
-                            setDialogSearchOpen(false);
-                            showVoltageLevelDiagram(element);
-                        }}
-                        elementsFound={equipmentsFound}
-                        renderElement={(props) => (
-                            <EquipmentItem
-                                styles={equipmentStyles}
-                                {...props}
-                                key={'ei-' + props.element.key}
-                                suffixRenderer={CustomSuffixRenderer}
-                            />
-                        )}
-                        searchTermDisabled={getDisableReason() !== ''}
-                        searchTermDisableReason={getDisableReason()}
-                    />
-                </>
+                <TopBarEquipmentSearchDialog
+                    showVoltageLevelDiagram={showVoltageLevelDiagram}
+                    isDialogSearchOpen={isDialogSearchOpen}
+                    setIsDialogSearchOpen={setIsDialogSearchOpen}
+                />
             )}
         </>
     );

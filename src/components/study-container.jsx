@@ -20,7 +20,6 @@ import {
     resetEquipments,
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
-    STUDY_INDEXATION_STATUS,
     limitReductionModified,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
@@ -54,6 +53,7 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
+import { StudyIndexationStatus } from 'redux/reducer.type';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -514,7 +514,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     // if indexation is done then look for the next built node.
                     // This is to avoid future fetch on variants removed during reindexation process
                     if (
-                        initIndexationStatus === STUDY_INDEXATION_STATUS.INDEXED
+                        initIndexationStatus === StudyIndexationStatus.INDEXED
                     ) {
                         firstSelectedNode =
                             getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
@@ -551,16 +551,16 @@ export function StudyContainer({ view, onChangeTab }) {
         return fetchStudyIndexationStatus(studyUuid)
             .then((status) => {
                 switch (status) {
-                    case STUDY_INDEXATION_STATUS.INDEXED: {
+                    case StudyIndexationStatus.INDEXED: {
                         dispatch(setStudyIndexationStatus(status));
                         setIsStudyIndexationPending(false);
                         break;
                     }
-                    case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
+                    case StudyIndexationStatus.INDEXING_ONGOING: {
                         dispatch(setStudyIndexationStatus(status));
                         break;
                     }
-                    case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
+                    case StudyIndexationStatus.NOT_INDEXED: {
                         dispatch(setStudyIndexationStatus(status));
                         reindexAllStudy(studyUuid)
                             .catch((error) => {
@@ -684,7 +684,7 @@ export function StudyContainer({ view, onChangeTab }) {
             if (
                 studyUpdatedForce.eventData.headers?.[
                     HEADER_INDEXATION_STATUS
-                ] === STUDY_INDEXATION_STATUS.INDEXED
+                ] === StudyIndexationStatus.INDEXED
             ) {
                 snackInfo({
                     headerId: 'studyIndexationDone',
@@ -694,7 +694,7 @@ export function StudyContainer({ view, onChangeTab }) {
             if (
                 studyUpdatedForce.eventData.headers?.[
                     HEADER_INDEXATION_STATUS
-                ] === STUDY_INDEXATION_STATUS.NOT_INDEXED
+                ] === StudyIndexationStatus.NOT_INDEXED
             ) {
                 snackWarning({
                     headerId: 'studyIndexationNotIndexed',
@@ -835,8 +835,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     studyPending ||
                     !paramsLoaded ||
                     !isStudyNetworkFound ||
-                    (studyIndexationStatus !==
-                        STUDY_INDEXATION_STATUS.INDEXED &&
+                    (studyIndexationStatus !== StudyIndexationStatus.INDEXED &&
                         isStudyIndexationPending)
                 } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
                 message={'LoadingRemoteData'}

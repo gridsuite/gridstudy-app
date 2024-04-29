@@ -15,6 +15,19 @@ export enum UpdateTypes {
     STUDY = 'study',
 }
 
+export enum StudyIndexationStatus {
+    NOT_INDEXED = 'NOT_INDEXED',
+    INDEXING_ONGOING = 'INDEXING_ONGOING',
+    INDEXED = 'INDEXED',
+}
+
+export enum StudyDisplayMode {
+    MAP = 'Map',
+    TREE = 'Tree',
+    HYBRID = 'Hybrid',
+    DRAW = 'Draw',
+}
+
 export interface ReduxState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID;
@@ -31,6 +44,10 @@ export interface ReduxState {
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: Filter[];
     mapEquipments: any;
+    networkAreaDiagramNbVoltageLevels: number;
+    networkAreaDiagramDepth: number;
+    studyDisplayMode: StudyDisplayMode;
+    studyIndexationStatus: StudyIndexationStatus;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
