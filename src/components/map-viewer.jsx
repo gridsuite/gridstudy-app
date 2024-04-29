@@ -265,74 +265,70 @@ const MapViewer = ({
                             >
                                 {studyDisplayMode ===
                                     STUDY_DISPLAY_MODE.DRAW && (
-                                    <Box>
-                                        <FilterCreationPanel
-                                            onSaveFilter={async (
-                                                filter,
-                                                distDir
-                                            ) => {
-                                                try {
-                                                    //we want to calculate selectedLine or selectedSubstation only when needed
-                                                    //call getSelectedLines if the user want to create a filter with lines
-                                                    //for all others case we call getSelectedSubstations
-                                                    const selectedEquipments =
-                                                        filter.equipmentType ===
-                                                        EQUIPMENT_TYPES.LINE
-                                                            ? networkMapref.current.getSelectedLines()
-                                                            : networkMapref.current.getSelectedSubstations();
-                                                    const selectedEquipmentsIds =
-                                                        selectedEquipments.map(
-                                                            (eq) => eq.id
-                                                        );
-                                                    if (
-                                                        selectedEquipments.length ===
-                                                        0
-                                                    ) {
-                                                        snackWarning({
-                                                            messageTxt:
-                                                                intl.formatMessage(
-                                                                    {
-                                                                        id: 'EmptySelection',
-                                                                    }
-                                                                ),
-                                                            headerId:
-                                                                'FilterCreationIgnored',
-                                                        });
-                                                        return;
-                                                    }
-                                                    await createMapFilter(
-                                                        filter,
-                                                        distDir,
-                                                        studyUuid,
-                                                        currentNode.id,
-                                                        selectedEquipmentsIds
+                                    <FilterCreationPanel
+                                        onSaveFilter={async (
+                                            filter,
+                                            distDir
+                                        ) => {
+                                            try {
+                                                //we want to calculate selectedLine or selectedSubstation only when needed
+                                                //call getSelectedLines if the user want to create a filter with lines
+                                                //for all others case we call getSelectedSubstations
+                                                const selectedEquipments =
+                                                    filter.equipmentType ===
+                                                    EQUIPMENT_TYPES.LINE
+                                                        ? networkMapref.current.getSelectedLines()
+                                                        : networkMapref.current.getSelectedSubstations();
+                                                const selectedEquipmentsIds =
+                                                    selectedEquipments.map(
+                                                        (eq) => eq.id
                                                     );
-                                                    snackInfo({
-                                                        messageTxt:
-                                                            intl.formatMessage(
-                                                                {
-                                                                    id: 'FilterCreationSuccess',
-                                                                },
-                                                                {
-                                                                    filterName:
-                                                                        filter.name,
-                                                                }
-                                                            ),
-                                                    });
-                                                } catch (error) {
-                                                    snackError({
+                                                if (
+                                                    selectedEquipments.length ===
+                                                    0
+                                                ) {
+                                                    snackWarning({
                                                         messageTxt:
                                                             intl.formatMessage({
-                                                                id: error.message,
+                                                                id: 'EmptySelection',
                                                             }),
                                                         headerId:
-                                                            'FilterCreationError',
+                                                            'FilterCreationIgnored',
                                                     });
+                                                    return;
                                                 }
-                                            }}
-                                            onCancel={onCancelFunction}
-                                        ></FilterCreationPanel>
-                                    </Box>
+                                                await createMapFilter(
+                                                    filter,
+                                                    distDir,
+                                                    studyUuid,
+                                                    currentNode.id,
+                                                    selectedEquipmentsIds
+                                                );
+                                                snackInfo({
+                                                    messageTxt:
+                                                        intl.formatMessage(
+                                                            {
+                                                                id: 'FilterCreationSuccess',
+                                                            },
+                                                            {
+                                                                filterName:
+                                                                    filter.name,
+                                                            }
+                                                        ),
+                                                });
+                                            } catch (error) {
+                                                snackError({
+                                                    messageTxt:
+                                                        intl.formatMessage({
+                                                            id: error.message,
+                                                        }),
+                                                    headerId:
+                                                        'FilterCreationError',
+                                                });
+                                            }
+                                        }}
+                                        onCancel={onCancelFunction}
+                                    ></FilterCreationPanel>
                                 )}
                             </Box>
                         </Box>
