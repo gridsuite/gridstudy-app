@@ -67,7 +67,7 @@ const styles = {
     divNominalVoltageFilter: {
         position: 'absolute',
         right: '10px',
-        bottom: '10px', // Adjust the value to position it correctly
+        bottom: '30px',
         zIndex: 0,
         '&:hover': {
             zIndex: 2,

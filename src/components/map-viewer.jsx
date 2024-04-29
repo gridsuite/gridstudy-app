@@ -145,7 +145,6 @@ const MapViewer = ({
         dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
     }, [dispatch]);
 
-    const aTestCondition = true;
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>
