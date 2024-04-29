@@ -77,7 +77,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             <div
                 className="singlestretch-child"
                 style={{
-                    // display: props.view === StudyView.MAP ? null : 'none',
+                    display: props.view === StudyView.MAP ? null : 'none',
                 }}
             >
                 <MapViewer
