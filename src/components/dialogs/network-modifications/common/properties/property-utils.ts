@@ -6,15 +6,15 @@
  */
 import yup from 'components/utils/yup-config';
 import {
+    ADDED,
     ADDITIONAL_PROPERTIES,
     DELETION_MARK,
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-    ADDED,
 } from 'components/utils/field-constants';
-import { fetchAppsAndUrls } from '../../../../../services/utils';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import { fetchStudyMetadata } from 'services/metadata';
 
 export type Property = {
     [NAME]: string | null;
@@ -36,37 +36,19 @@ type Equipment = {
     properties: Record<string, string> | undefined;
 };
 
-interface Metadata {
-    name: string;
-    url: string;
-    appColor: string;
-    hiddenInAppsMenu: boolean;
-    resources: unknown;
-}
-
-interface StudyMetadata extends Metadata {
-    name: 'Study';
-    predefinedEquipmentProperties: {
-        [networkElementType: string]: PredefinedProperties;
-    };
-}
-
-const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
-    return metadata.name === 'Study';
-};
-
 export const fetchPredefinedProperties = (
     networkElementType: string
 ): Promise<PredefinedProperties | undefined> => {
-    return fetchAppsAndUrls().then((res: [Metadata]) => {
-        const studyMetadata = res.filter(isStudyMetadata);
-        if (!studyMetadata) {
-            return Promise.reject('Study entry could not be found in metadata');
-        }
-
-        return studyMetadata[0].predefinedEquipmentProperties?.[
+    return fetchStudyMetadata().then((studyMetadata) => {
+        return studyMetadata.predefinedEquipmentProperties?.[
             networkElementType
-        ]; // There should be only one study metadata
+        ];
+    });
+};
+
+export const fetchDefaultCountry = (): Promise<string | undefined> => {
+    return fetchStudyMetadata().then((studyMetadata) => {
+        return studyMetadata.defaultCountry;
     });
 };
 
