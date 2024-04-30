@@ -506,6 +506,7 @@
     "Equipment": "Ouvrage",
     "Constraint": "Contrainte",
     "EquipmentType": "Type d'ouvrage",
+    "selectionType": "Type de sélection",
 
     "Loads": "Consommations",
     "Batteries": "Batteries",
@@ -938,7 +939,9 @@
     "GeneratorScalingError": "Erreur lors de la création de la variation du plan de production",
     "AllExplicitNamingFiltersError": "Tous les types de filtres doivent être par nommage lorsque le mode de variation est empilement ou ventilation",
     "FilterCreationError": "Erreur lors de la création d'un filtre",
+    "ContingencyListCreationError": "Erreur lors de la création d'une liste d'aléas",
     "FilterCreationSuccess": "Filtre créé avec succès",
+    "ContingencyListCreationSuccess": "Liste d'aléas créée avec succès",
     "FilterCreationIgnored": "La création du filtre n'a pas abouti",
     "ContingencyListCreationIgnored": "La création de la liste d'aléas n'a pas abouti",
 

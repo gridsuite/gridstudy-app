@@ -169,9 +169,8 @@ function createEquipmentIdentifierList(equipmentType, equipmentList) {
         }),
     };
 }
-function createIdentifiersList(equipments) {
-    console.log('====== ??', equipments);
-    const identifierLists = equipments.map((eq) => {
+function createIdentifiersList(selectedEquipments) {
+    const identifierLists = selectedEquipments.map((eq) => {
         return {
             type: 'LIST',
             contingencyId: eq.name ? eq.name : eq.id,
@@ -185,6 +184,7 @@ function createIdentifiersList(equipments) {
     });
     return identifierLists;
 }
+
 function createIdentifierContingencyList(contingencyListName, equipmentList) {
     const identifiersList = createIdentifiersList(equipmentList);
     return {
@@ -205,19 +205,14 @@ export async function createMapFilter(
     currentNodeUuid,
     selectedEquipmentsIds
 ) {
-    console.log('createMapFilter =======');
     let equipmentFilters = [];
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
         case EQUIPMENT_TYPES.LINE:
-            console.log('case line or substation =======');
-            console.log('selectedEquipmentsIds =======', selectedEquipmentsIds);
-
             equipmentFilters = createEquipmentIdentifierList(
                 filter.equipmentType,
                 selectedEquipmentsIds
             );
-            console.log('equipmentFilters =======', equipmentFilters);
 
             break;
 
@@ -246,7 +241,7 @@ export async function createMapFilter(
     ) {
         throw new Error('EmptySelection');
     }
-    console.log('createFilter ', equipmentFilters);
+
     await createFilter(
         equipmentFilters,
         filter[NAME],
@@ -265,8 +260,11 @@ export async function createMapContingencyList(
     switch (contingencyList.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
         case EQUIPMENT_TYPES.LINE:
-            equipmentContingencyList =
-                createEquipmentIdentifierList(selectedEquipments);
+            equipmentContingencyList = createIdentifierContingencyList(
+                contingencyList.name,
+                selectedEquipments
+            );
+
             break;
 
         default:
@@ -274,29 +272,36 @@ export async function createMapContingencyList(
                 throw new Error('EmptySelection');
             }
 
-            const elements = await fetchNetworkElementsInfos(
+            const selectedEquipmentsIds = selectedEquipments.map(
+                (element) => element.id
+            );
+            const elementsIds = await fetchNetworkElementsInfos(
                 studyUuid,
                 currentNodeUuid,
-                selectedEquipments.map((eq) => eq.id),
+                selectedEquipmentsIds,
                 contingencyList.equipmentType,
                 EQUIPMENT_INFOS_TYPES.MAP.type,
                 false
             );
-            equipmentContingencyList = createEquipmentIdentifierList(elements);
-            console.log('===== ', equipmentContingencyList);
 
+            if (elementsIds?.length === 0) {
+                throw new Error('EmptySelection');
+            }
+            equipmentContingencyList = createIdentifierContingencyList(
+                contingencyList.name,
+                elementsIds
+            );
             break;
     }
-    console.log('hehehehehe ', equipmentContingencyList);
     if (
         equipmentContingencyList === undefined ||
         equipmentContingencyList?.length === 0
     ) {
         throw new Error('EmptySelection');
     }
-    console.log('$$$$$$$ ', equipmentContingencyList + '***');
+
     await createContingencyList(
-        createIdentifierContingencyList(equipmentContingencyList),
+        equipmentContingencyList,
         contingencyList[NAME],
         '',
         distDir.id?.toString() ?? ''

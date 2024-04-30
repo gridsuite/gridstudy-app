@@ -143,17 +143,11 @@ const MapViewer = ({
         }
     }, [isDrawingMode, intl, snackInfo]);
 
-    function getMapWitdh(displayMode) {
-        if (displayMode === STUDY_DISPLAY_MODE.DRAW) {
-            return '80%';
-        } else {
-            return '100%';
-        }
-    }
     const onCancelFunction = useCallback(() => {
         networkMapref.current.cleanDraw();
         dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
     }, [dispatch]);
+
     return (
         <ReactFlowProvider>
             <Box sx={styles.table}>
@@ -164,18 +158,24 @@ const MapViewer = ({
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        flexGrow: 1,
                         overflow: 'hidden',
+                        width: '100%',
+                        height: '100%',
                     }}
                 >
+                    {/* Tree */}
                     <div
                         style={{
                             display:
-                                studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
-                                studyDisplayMode === STUDY_DISPLAY_MODE.DRAW
-                                    ? 'none'
-                                    : null,
-                            width: getMapWitdh(studyDisplayMode),
+                                studyDisplayMode === STUDY_DISPLAY_MODE.TREE ||
+                                studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                                    ? 'flex'
+                                    : 'none',
+                            height: '100%',
+                            flexBasis:
+                                studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                                    ? '50%'
+                                    : '100%',
                         }}
                     >
                         <NetworkModificationTreePane
@@ -183,32 +183,47 @@ const MapViewer = ({
                             studyMapTreeDisplay={studyDisplayMode}
                         />
                     </div>
+                    {/* Map */}
                     <div
                         style={{
                             display:
-                                studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                                    ? 'none'
-                                    : 'flex',
-                            flexDirection: 'row',
-                            flexGrow: 1,
-                            width: '100%',
+                                studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                    ? 'flex'
+                                    : 'none',
+                            flexBasis:
+                                studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                                    ? '50%'
+                                    : '100%',
+                            height: '100%',
                         }}
                     >
                         <Box
-                            sx={styles.map}
                             style={{
-                                display:
-                                    studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                                        ? 'none'
-                                        : null,
-                                width: getMapWitdh(studyDisplayMode),
+                                width: '100%',
                             }}
                         >
-                            <Box>
-                                <Box sx={styles.mapBelowDiagrams}>
+                            {/* TODO make filter panel take only 20% */}
+                            <Box
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                }}
+                            >
+                                <Box
+                                    style={{
+                                        position: 'relative',
+                                        width:
+                                            studyDisplayMode ===
+                                            STUDY_DISPLAY_MODE.DRAW
+                                                ? '80%'
+                                                : '100%',
+                                        height: '100%',
+                                    }}
+                                >
                                     <NetworkMapTab
                                         networkMapRef={networkMapref}
-                                        /* TODO do we move redux param to container */
                                         studyUuid={studyUuid}
                                         visible={
                                             view === StudyView.MAP &&
@@ -223,7 +238,6 @@ const MapViewer = ({
                                             lineFlowAlertThreshold
                                         }
                                         openVoltageLevel={openVoltageLevel}
-                                        /* TODO verif tableEquipment*/
                                         currentNode={currentNode}
                                         onChangeTab={onChangeTab}
                                         showInSpreadsheet={showInSpreadsheet}
@@ -239,6 +253,103 @@ const MapViewer = ({
                                             setIsDrawingMode(active);
                                         }}
                                     ></NetworkMapTab>
+                                </Box>
+
+                                <Box
+                                    style={{
+                                        width:
+                                            studyDisplayMode ===
+                                            STUDY_DISPLAY_MODE.DRAW
+                                                ? '20%'
+                                                : '0%',
+                                        height: '100%',
+                                    }}
+                                >
+                                    {studyDisplayMode ===
+                                        STUDY_DISPLAY_MODE.DRAW && (
+                                        <FilterCreationPanel
+                                            onSaveSelection={async (
+                                                selection,
+                                                distDir
+                                            ) => {
+                                                const isFilter =
+                                                    selection.selectionType ===
+                                                    SELECTION_TYPES.FILTER;
+
+                                                try {
+                                                    //we want to calculate selectedLine or selectedSubstation only when needed
+                                                    //call getSelectedLines if the user want to create a filter with lines
+                                                    //for all others case we call getSelectedSubstations
+                                                    const selectedEquipments =
+                                                        selection.equipmentType ===
+                                                        EQUIPMENT_TYPES.LINE
+                                                            ? networkMapref.current.getSelectedLines()
+                                                            : networkMapref.current.getSelectedSubstations();
+                                                    const selectedEquipmentsIds =
+                                                        selectedEquipments.map(
+                                                            (eq) => eq.id
+                                                        );
+                                                    if (
+                                                        selectedEquipments.length ===
+                                                        0
+                                                    ) {
+                                                        snackWarning({
+                                                            messageTxt:
+                                                                intl.formatMessage(
+                                                                    {
+                                                                        id: 'EmptySelection',
+                                                                    }
+                                                                ),
+                                                            headerId: isFilter
+                                                                ? 'FilterCreationIgnored'
+                                                                : 'ContingencyListCreationIgnored',
+                                                        });
+                                                        return;
+                                                    }
+                                                    if (isFilter) {
+                                                        await createMapFilter(
+                                                            selection,
+                                                            distDir,
+                                                            studyUuid,
+                                                            currentNode.id,
+                                                            selectedEquipmentsIds
+                                                        );
+                                                    } else {
+                                                        console.log(
+                                                            selectedEquipments,
+                                                            '  == selectedEquipments'
+                                                        );
+                                                        await createMapContingencyList(
+                                                            selection,
+                                                            distDir,
+                                                            studyUuid,
+                                                            currentNode.id,
+                                                            selectedEquipments
+                                                        );
+                                                    }
+                                                    snackInfo({
+                                                        messageTxt:
+                                                            intl.formatMessage({
+                                                                id: isFilter
+                                                                    ? 'FilterCreationSuccess'
+                                                                    : 'ContingencyListCreationSuccess',
+                                                            }),
+                                                    });
+                                                } catch (error) {
+                                                    snackError({
+                                                        messageTxt:
+                                                            intl.formatMessage({
+                                                                id: error.message,
+                                                            }),
+                                                        headerId: isFilter
+                                                            ? 'FilterCreationError'
+                                                            : 'ContingencyListCreationError',
+                                                    });
+                                                }
+                                            }}
+                                            onCancel={onCancelFunction}
+                                        ></FilterCreationPanel>
+                                    )}
                                 </Box>
                             </Box>
 
@@ -266,99 +377,6 @@ const MapViewer = ({
                                 </Box>
                             )}
                         </Box>
-                        {studyDisplayMode === STUDY_DISPLAY_MODE.DRAW && (
-                            <Box
-                                style={{
-                                    display:
-                                        studyDisplayMode !==
-                                        STUDY_DISPLAY_MODE.DRAW
-                                            ? 'none'
-                                            : null,
-                                }}
-                            >
-                                <FilterCreationPanel
-                                    onSaveSelection={async (
-                                        selection,
-                                        distDir
-                                    ) => {
-                                        const isFilter =
-                                            selection.selectionType ===
-                                            SELECTION_TYPES.FILTER;
-                                            console.log('$$$$$$$$$$$$$$$ selection',isFilter)
-
-                                        try {
-                                            //we want to calculate selectedLine or selectedSubstation only when needed
-                                            //call getSelectedLines if the user want to create a filter with lines
-                                            //for all others case we call getSelectedSubstations
-                                            const selectedEquipments =
-                                                selection.equipmentType ===
-                                                EQUIPMENT_TYPES.LINE
-                                                    ? networkMapref.current.getSelectedLines()
-                                                    : networkMapref.current.getSelectedSubstations();
-                                            const selectedEquipmentsIds =
-                                                selectedEquipments.map(
-                                                    (eq) => eq.id
-                                                );
-                                                console.log('$$$$$$$$$$$$$$$ selectedEquipmentsIds',selectedEquipmentsIds)
-
-                                            if (
-                                                selectedEquipments.length === 0
-                                            ) {
-                                                snackWarning({
-                                                    messageTxt:
-                                                        intl.formatMessage({
-                                                            id: 'EmptySelection',
-                                                        }),
-                                                    headerId: isFilter
-                                                        ? 'FilterCreationIgnored'
-                                                        : 'ContingencyListCreationIgnored',
-                                                });
-                                                return;
-                                            }
-                                            if (isFilter) {
-                                                console.log('$$$$$$$$$$$$$$$ here',selection)
-
-                                                await createMapFilter(
-                                                    selection,
-                                                    distDir,
-                                                    studyUuid,
-                                                    currentNode.id,
-                                                    selectedEquipmentsIds
-                                                );
-                                            } else {
-                                                await createMapContingencyList(
-                                                    selection,
-                                                    distDir,
-                                                    studyUuid,
-                                                    currentNode.id,
-                                                    selectedEquipments
-                                                );
-                                            }
-
-                                            snackInfo({
-                                                messageTxt: intl.formatMessage(
-                                                    {
-                                                        id: 'FilterCreationSuccess',
-                                                    },
-                                                    {
-                                                        SelectionName:
-                                                            selection.name,
-                                                    }
-                                                ),
-                                            });
-                                        } catch (error) {
-                                            snackError({
-                                                messageTxt: intl.formatMessage({
-                                                    id: error.message,
-                                                }),
-                                                headerId: 'FilterCreationError',
-                                            });
-                                        }
-                                    }}
-                                    onCancel={onCancelFunction}
-                                ></FilterCreationPanel>
-                            </Box>
-                        )}
                     </div>
                 </div>
             </Box>

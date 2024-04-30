@@ -505,6 +505,7 @@
     "Equipment": "Equipment",
     "Constraint": "Constraint",
     "EquipmentType": "Equipment type",
+    "selectionType": "Selection type",
 
     "Loads": "Loads",
     "Batteries": "Batteries",
@@ -938,7 +939,9 @@
     "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
 
     "FilterCreationError": "Error while creating a filter",
+    "ContingencyListCreationError": "Error while creating a contingency list",
     "FilterCreationSuccess": "Filter successfully created",
+    "ContingencyListCreationSuccess": "Contingency list successfully created",
     "FilterCreationIgnored": "The creation of the filter didn't complete",
     "ContingencyListCreationIgnored": "The creation of the contingency list didn't complete",
 
