@@ -29,7 +29,6 @@ import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Typography } from '@mui/material';
 import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 
 const styles = {
