@@ -23,14 +23,17 @@ import NetworkModificationTreePane from './network-modification-tree-pane.jsx';
 import NetworkMapTab from './network/network-map-tab.jsx';
 import { DiagramPane } from './diagrams/diagram-pane.jsx';
 import FilterCreationPanel from './network/filter-creation-panel';
-import { createMapFilter } from '../services/study/network-map.js';
+import {
+    createMapContingencyList,
+    createMapFilter,
+} from '../services/study/network-map.js';
 import { StudyView } from './study-pane.jsx';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Typography } from '@mui/material';
-import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import { EQUIPMENT_TYPES, SELECTION_TYPES } from './utils/equipment-types.js';
 
 const styles = {
     map: {
@@ -274,13 +277,21 @@ const MapViewer = ({
                                 }}
                             >
                                 <FilterCreationPanel
-                                    onSaveFilter={async (filter, distDir) => {
+                                    onSaveSelection={async (
+                                        selection,
+                                        distDir
+                                    ) => {
+                                        const isFilter =
+                                            selection.selectionType ===
+                                            SELECTION_TYPES.FILTER;
+                                            console.log('$$$$$$$$$$$$$$$ selection',isFilter)
+
                                         try {
                                             //we want to calculate selectedLine or selectedSubstation only when needed
                                             //call getSelectedLines if the user want to create a filter with lines
                                             //for all others case we call getSelectedSubstations
                                             const selectedEquipments =
-                                                filter.equipmentType ===
+                                                selection.equipmentType ===
                                                 EQUIPMENT_TYPES.LINE
                                                     ? networkMapref.current.getSelectedLines()
                                                     : networkMapref.current.getSelectedSubstations();
@@ -288,6 +299,8 @@ const MapViewer = ({
                                                 selectedEquipments.map(
                                                     (eq) => eq.id
                                                 );
+                                                console.log('$$$$$$$$$$$$$$$ selectedEquipmentsIds',selectedEquipmentsIds)
+
                                             if (
                                                 selectedEquipments.length === 0
                                             ) {
@@ -296,25 +309,40 @@ const MapViewer = ({
                                                         intl.formatMessage({
                                                             id: 'EmptySelection',
                                                         }),
-                                                    headerId:
-                                                        'FilterCreationIgnored',
+                                                    headerId: isFilter
+                                                        ? 'FilterCreationIgnored'
+                                                        : 'ContingencyListCreationIgnored',
                                                 });
                                                 return;
                                             }
-                                            await createMapFilter(
-                                                filter,
-                                                distDir,
-                                                studyUuid,
-                                                currentNode.id,
-                                                selectedEquipmentsIds
-                                            );
+                                            if (isFilter) {
+                                                console.log('$$$$$$$$$$$$$$$ here',selection)
+
+                                                await createMapFilter(
+                                                    selection,
+                                                    distDir,
+                                                    studyUuid,
+                                                    currentNode.id,
+                                                    selectedEquipmentsIds
+                                                );
+                                            } else {
+                                                await createMapContingencyList(
+                                                    selection,
+                                                    distDir,
+                                                    studyUuid,
+                                                    currentNode.id,
+                                                    selectedEquipments
+                                                );
+                                            }
+
                                             snackInfo({
                                                 messageTxt: intl.formatMessage(
                                                     {
                                                         id: 'FilterCreationSuccess',
                                                     },
                                                     {
-                                                        filterName: filter.name,
+                                                        SelectionName:
+                                                            selection.name,
                                                     }
                                                 ),
                                             });

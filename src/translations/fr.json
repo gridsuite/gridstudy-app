@@ -361,7 +361,7 @@
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
-
+    "contingencyList" : "Liste d'aléas",
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
@@ -940,6 +940,7 @@
     "FilterCreationError": "Erreur lors de la création d'un filtre",
     "FilterCreationSuccess": "Filtre créé avec succès",
     "FilterCreationIgnored": "La création du filtre n'a pas abouti",
+    "ContingencyListCreationIgnored": "La création de la liste d'aléas n'a pas abouti",
 
     "Tap": "Prise",
     "DeltaResistance": "Δ Résistance (%)",

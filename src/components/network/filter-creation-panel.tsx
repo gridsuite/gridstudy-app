@@ -17,7 +17,11 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
-import { FILTER_NAME, NAME } from 'components/utils/field-constants';
+import {
+    SELECTION_NAME,
+    NAME,
+    SELECTION_TYPE,
+} from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -31,39 +35,44 @@ import { useSelector } from 'react-redux';
 import {
     equipementTypeToLabel,
     EQUIPMENT_TYPES,
+    SELECTION_TYPES,
+    selectionTypeToLabel,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
 
-interface IFilterCreation {
-    [FILTER_NAME]: string | null;
+interface IFilterSelection {
+    [SELECTION_NAME]: string | null;
     [NAME]: string;
     equipmentType: string | null;
+    [SELECTION_TYPE]: string | null;
 }
 
 const formSchema = yup
     .object()
     .shape({
-        [FILTER_NAME]: yup.string().nullable(),
+        [SELECTION_NAME]: yup.string().nullable(),
         [NAME]: yup.string().required(),
         equipmentType: yup.string().required(),
+        [SELECTION_TYPE]: yup.string().required(),
     })
     .required();
 const emptyFormData = {
-    [FILTER_NAME]: '',
+    [SELECTION_NAME]: '',
     [NAME]: '',
     equipmentType: '',
+    [SELECTION_TYPE]: '',
 };
 
-type FilterCreationPanelProps = {
-    onSaveFilter: (
-        data: IFilterCreation,
+type SelectionCreationPanelProps = {
+    onSaveSelection: (
+        data: IFilterSelection,
         distDir: TreeViewFinderNodeProps
     ) => void;
     onCancel: () => void;
 };
 
-const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
-    onSaveFilter,
+const FilterCreationPanel: React.FC<SelectionCreationPanelProps> = ({
+    onSaveSelection,
     onCancel,
 }) => {
     const studyUuid = useSelector((state: any) => state.studyUuid);
@@ -88,7 +97,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         });
     }, [studyUuid]);
 
-    const generateFilterName = () => {
+    const generateSelectionName = () => {
         formMethods.setValue(
             NAME,
             'Generated-filter-' + new Date().toISOString()
@@ -97,7 +106,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
 
     useEffect(() => {
         //Generate a new name every time the component is mounted
-        generateFilterName();
+        generateSelectionName();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -137,6 +146,24 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
             >
                 <Grid container>
                     <GridSection title="createNewFilter" />
+                    <Grid container paddingTop={2}>
+                        <SelectInput
+                            name={SELECTION_TYPE}
+                            options={Object.values(SELECTION_TYPES).map(
+                                (value) => {
+                                    return {
+                                        id: value,
+                                        label: selectionTypeToLabel(value),
+                                    };
+                                }
+                            )}
+                            label={SELECTION_TYPE}
+                            fullWidth
+                            size={'medium'}
+                            disableClearable={true}
+                            formProps={{ style: { fontStyle: 'italic' } }}
+                        />
+                    </Grid>
                     <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
@@ -213,11 +240,11 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
-                                    onSaveFilter(
-                                        formMethods.getValues() as IFilterCreation,
+                                    onSaveSelection(
+                                        formMethods.getValues() as IFilterSelection,
                                         defaultFolder
                                     );
-                                    generateFilterName();
+                                    generateSelectionName();
                                 }
                             });
                         }}

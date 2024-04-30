@@ -361,7 +361,7 @@
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
-
+    "contingencyList" : "Contingency list",
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",
@@ -940,6 +940,7 @@
     "FilterCreationError": "Error while creating a filter",
     "FilterCreationSuccess": "Filter successfully created",
     "FilterCreationIgnored": "The creation of the filter didn't complete",
+    "ContingencyListCreationIgnored": "The creation of the contingency list didn't complete",
 
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",

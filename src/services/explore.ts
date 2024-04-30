@@ -124,6 +124,7 @@ export function createFilter(
     description: string,
     parentDirectoryUuid: string
 ) {
+    console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description);
@@ -138,4 +139,30 @@ export function createFilter(
             body: JSON.stringify(newFilter),
         }
     );
+}
+/**
+ * Create Contingency List
+ * @returns {Promise<Response>}
+ */
+export function createContingencyList(
+    newContingencyList: any[],
+    contingencyListName: string,
+    description: string,
+    parentDirectoryUuid: string
+) {
+    console.info('Creating a new contingency list...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const createContingencyListUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/identifier-contingency-lists/' +
+        encodeURIComponent(contingencyListName) +
+        '?' +
+        urlSearchParams.toString();
+    return backendFetch(createContingencyListUrl, {
+        method: 'post',
+        body: JSON.stringify(newContingencyList),
+    });
 }

@@ -7,9 +7,13 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { createFilter } from '../explore';
+import { createContingencyList, createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../components/utils/equipment-types.js';
+import { fetchNetworkElementsInfos } from './network';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -165,6 +169,34 @@ function createEquipmentIdentifierList(equipmentType, equipmentList) {
         }),
     };
 }
+function createIdentifiersList(equipments) {
+    console.log('====== ??', equipments);
+    const identifierLists = equipments.map((eq) => {
+        return {
+            type: 'LIST',
+            contingencyId: eq.name ? eq.name : eq.id,
+            identifierList: [
+                {
+                    type: 'ID_BASED',
+                    identifier: eq.id,
+                },
+            ],
+        };
+    });
+    return identifierLists;
+}
+function createIdentifierContingencyList(contingencyListName, equipmentList) {
+    const identifiersList = createIdentifiersList(equipmentList);
+    return {
+        identifierContingencyList: {
+            type: 'identifier',
+            version: '1.2',
+            name: contingencyListName,
+            identifiers: identifiersList,
+        },
+        type: 'IDENTIFIERS',
+    };
+}
 
 export async function createMapFilter(
     filter,
@@ -173,14 +205,20 @@ export async function createMapFilter(
     currentNodeUuid,
     selectedEquipmentsIds
 ) {
+    console.log('createMapFilter =======');
     let equipmentFilters = [];
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
         case EQUIPMENT_TYPES.LINE:
+            console.log('case line or substation =======');
+            console.log('selectedEquipmentsIds =======', selectedEquipmentsIds);
+
             equipmentFilters = createEquipmentIdentifierList(
                 filter.equipmentType,
                 selectedEquipmentsIds
             );
+            console.log('equipmentFilters =======', equipmentFilters);
+
             break;
 
         default:
@@ -208,10 +246,58 @@ export async function createMapFilter(
     ) {
         throw new Error('EmptySelection');
     }
-
+    console.log('createFilter ', equipmentFilters);
     await createFilter(
         equipmentFilters,
         filter[NAME],
+        '',
+        distDir.id?.toString() ?? ''
+    );
+}
+export async function createMapContingencyList(
+    contingencyList,
+    distDir,
+    studyUuid,
+    currentNodeUuid,
+    selectedEquipments
+) {
+    let equipmentContingencyList = [];
+    switch (contingencyList.equipmentType) {
+        case EQUIPMENT_TYPES.SUBSTATION:
+        case EQUIPMENT_TYPES.LINE:
+            equipmentContingencyList =
+                createEquipmentIdentifierList(selectedEquipments);
+            break;
+
+        default:
+            if (selectedEquipments.length === 0) {
+                throw new Error('EmptySelection');
+            }
+
+            const elements = await fetchNetworkElementsInfos(
+                studyUuid,
+                currentNodeUuid,
+                selectedEquipments.map((eq) => eq.id),
+                contingencyList.equipmentType,
+                EQUIPMENT_INFOS_TYPES.MAP.type,
+                false
+            );
+            equipmentContingencyList = createEquipmentIdentifierList(elements);
+            console.log('===== ', equipmentContingencyList);
+
+            break;
+    }
+    console.log('hehehehehe ', equipmentContingencyList);
+    if (
+        equipmentContingencyList === undefined ||
+        equipmentContingencyList?.length === 0
+    ) {
+        throw new Error('EmptySelection');
+    }
+    console.log('$$$$$$$ ', equipmentContingencyList + '***');
+    await createContingencyList(
+        createIdentifierContingencyList(equipmentContingencyList),
+        contingencyList[NAME],
         '',
         distDir.id?.toString() ?? ''
     );

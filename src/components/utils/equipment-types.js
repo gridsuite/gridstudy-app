@@ -18,6 +18,11 @@ export const EQUIPMENT_INFOS_TYPES = {
     TOOLTIP: { type: 'TOOLTIP' },
 };
 
+export const SELECTION_TYPES = {
+    FILTER: 'FILTER',
+    CONTIGENCY_LIST: 'CONTINGENCY_LIST',
+};
+
 export const EQUIPMENT_TYPES = {
     SUBSTATION: 'SUBSTATION',
     VOLTAGE_LEVEL: 'VOLTAGE_LEVEL',
@@ -39,6 +44,16 @@ export const EQUIPMENT_TYPES = {
     LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
     SWITCH: 'SWITCH',
 };
+export function selectionTypeToLabel(selectionType) {
+    switch (selectionType) {
+        case SELECTION_TYPES.CONTIGENCY_LIST:
+            return 'contingencyList';
+        case SELECTION_TYPES.FILTER:
+            return 'filter';
+        default:
+            return selectionType;
+    }
+}
 
 //TODO merge the labels with the equipement types
 export function equipementTypeToLabel(equipmentType) {
