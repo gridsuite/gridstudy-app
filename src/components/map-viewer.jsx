@@ -89,7 +89,8 @@ const MapViewer = ({
     const intl = useIntl();
     const dispatch = useDispatch();
     const [isDrawingMode, setIsDrawingMode] = useState(false);
-    const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError, snackWarning, closeSnackbar } =
+        useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
@@ -129,16 +130,24 @@ const MapViewer = ({
         onChangeTab(1); // switch to spreadsheet view
     }
 
+    const [instructionSnakbar, setInstructionSnackbar] = useState(undefined);
     useEffect(() => {
         //display a snackbar
-        if (isDrawingMode) {
-            snackInfo({
-                messageTxt: intl.formatMessage({
-                    id: 'DrawingPolygonInstruction',
-                }),
-            });
+        if (isDrawingMode && !instructionSnakbar) {
+            setInstructionSnackbar(
+                snackInfo({
+                    messageTxt: intl.formatMessage({
+                        id: 'DrawingPolygonInstruction',
+                    }),
+                    persistent: true,
+                })
+            );
         }
-    }, [isDrawingMode, intl, snackInfo]);
+        if (!isDrawingMode && instructionSnakbar) {
+            closeSnackbar(instructionSnakbar);
+            setInstructionSnackbar(undefined);
+        }
+    }, [isDrawingMode, intl, snackInfo, instructionSnakbar, closeSnackbar]);
 
     const onCancelFunction = useCallback(() => {
         networkMapref.current.cleanDraw();
@@ -343,15 +352,6 @@ const MapViewer = ({
                             }
                             oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                         />
-                        {isDrawingMode && (
-                            <Box style={styles.drawInfo}>
-                                <Typography style={styles.instructionsMessage}>
-                                    {intl.formatMessage({
-                                        id: 'DrawingPolygonInstruction',
-                                    })}
-                                </Typography>
-                            </Box>
-                        )}
                     </Box>
                 </div>
             </div>
