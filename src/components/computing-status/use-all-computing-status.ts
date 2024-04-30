@@ -200,7 +200,7 @@ export const useAllComputingStatus = (
         voltageInitStatusInvalidations,
         voltageInitStatusCompletions,
         getVoltageInitRunningStatus,
-        ComputingType.VOLTAGE_INIT,
+        ComputingType.VOLTAGE_INITIALIZATION,
         voltageInitAvailability
     );
 };

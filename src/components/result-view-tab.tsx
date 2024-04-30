@@ -248,7 +248,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             },
             {
                 id: 'VoltageInit',
-                computingType: [ComputingType.VOLTAGE_INIT],
+                computingType: [ComputingType.VOLTAGE_INITIALIZATION],
                 displayed:
                     voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,

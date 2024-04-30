@@ -359,7 +359,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 {(status === RunningStatus.SUCCEED ||
                     status === RunningStatus.FAILED) && (
                     <ComputationReportViewer
-                        reportType={REPORT_TYPES.VOLTAGE_INIT}
+                        reportType={REPORT_TYPES.VOLTAGE_INITIALIZATION}
                     />
                 )}
             </>

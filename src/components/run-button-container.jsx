@@ -84,7 +84,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const voltageInitStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
 
     const [showContingencyListSelector, setShowContingencyListSelector] =
@@ -340,11 +340,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
             },
-            [ComputingType.VOLTAGE_INIT]: {
+            [ComputingType.VOLTAGE_INITIALIZATION]: {
                 messageId: 'VoltageInit',
                 startComputation() {
                     startComputationAsync(
-                        ComputingType.VOLTAGE_INIT,
+                        ComputingType.VOLTAGE_INITIALIZATION,
                         null,
                         () => startVoltageInit(studyUuid, currentNode?.id),
                         () => {},
@@ -353,7 +353,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(ComputingType.VOLTAGE_INIT, () =>
+                    actionOnRunnables(ComputingType.VOLTAGE_INITIALIZATION, () =>
                         stopVoltageInit(studyUuid, currentNode?.id)
                     );
                 },
@@ -384,7 +384,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     return allBusesShortCircuitAnalysisStatus;
                 case ComputingType.DYNAMIC_SIMULATION:
                     return dynamicSimulationStatus;
-                case ComputingType.VOLTAGE_INIT:
+                case ComputingType.VOLTAGE_INITIALIZATION:
                     return voltageInitStatus;
                 default:
                     return null;
@@ -423,7 +423,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 ? [ComputingType.DYNAMIC_SIMULATION]
                 : []),
             ...(voltageInitAvailability === OptionalServicesStatus.Up
-                ? [ComputingType.VOLTAGE_INIT]
+                ? [ComputingType.VOLTAGE_INITIALIZATION]
                 : []),
         ];
     }, [
