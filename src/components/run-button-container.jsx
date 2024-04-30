@@ -353,8 +353,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(ComputingType.VOLTAGE_INITIALIZATION, () =>
-                        stopVoltageInit(studyUuid, currentNode?.id)
+                    actionOnRunnables(
+                        ComputingType.VOLTAGE_INITIALIZATION,
+                        () => stopVoltageInit(studyUuid, currentNode?.id)
                     );
                 },
             },

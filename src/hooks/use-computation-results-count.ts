@@ -50,7 +50,8 @@ export const useComputationResultsCount = () => {
     );
 
     const voltageInitStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
 
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)
