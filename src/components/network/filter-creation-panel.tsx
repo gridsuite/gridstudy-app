@@ -97,18 +97,27 @@ const FilterCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         });
     }, [studyUuid]);
 
-    const generateSelectionName = () => {
-        formMethods.setValue(
-            NAME,
-            'Generated-filter-' + new Date().toISOString()
-        );
-    };
+    const watchSelectionType = formMethods.watch(SELECTION_TYPE);
+
+    const generateSelectionName = useCallback(
+        (selectionType: any) => {
+            const selectionName =
+                selectionType === SELECTION_TYPES.FILTER
+                    ? 'Generated-filter-'
+                    : 'Generated-contingency-list';
+            formMethods.setValue(
+                NAME,
+                selectionName + new Date().toISOString()
+            );
+        },
+        [formMethods]
+    );
 
     useEffect(() => {
-        //Generate a new name every time the component is mounted
-        generateSelectionName();
+        //Generate a new name every time the component is mounted, selection type changed
+        generateSelectionName(watchSelectionType);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [watchSelectionType]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -164,50 +173,55 @@ const FilterCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                             formProps={{ style: { fontStyle: 'italic' } }}
                         />
                     </Grid>
-                    <Grid container paddingTop={2}>
-                        <SelectInput
-                            name={'equipmentType'}
-                            options={Object.values(EQUIPMENT_TYPES).map(
-                                (value) => {
-                                    return {
-                                        id: value,
-                                        label: equipementTypeToLabel(value),
-                                    };
-                                }
-                            )}
-                            label={'EquipmentType'}
-                            fullWidth
-                            size={'medium'}
-                            disableClearable={true}
-                            formProps={{ style: { fontStyle: 'italic' } }}
-                        />
-                    </Grid>
+                    {watchSelectionType !== '' && (
+                        <>
+                            <Grid container paddingTop={2}>
+                                <SelectInput
+                                    name={'equipmentType'}
+                                    options={Object.values(EQUIPMENT_TYPES).map(
+                                        (value) => ({
+                                            id: value,
+                                            label: equipementTypeToLabel(value),
+                                        })
+                                    )}
+                                    label={'EquipmentType'}
+                                    fullWidth
+                                    size={'medium'}
+                                    disableClearable={true}
+                                    formProps={{
+                                        style: { fontStyle: 'italic' },
+                                    }}
+                                />
+                            </Grid>
 
-                    <Grid container paddingTop={2}>
-                        <UniqueNameInput
-                            name={NAME}
-                            label={'Name'}
-                            elementType={ElementType.DIRECTORY}
-                            activeDirectory={defaultFolder?.id as UUID}
-                            autoFocus
-                        />
-                    </Grid>
-                    <Grid container paddingTop={2}>
-                        <Button
-                            onClick={handleChangeFolder}
-                            variant="contained"
-                        >
-                            <FormattedMessage
-                                id={'showSelectDirectoryDialog'}
-                            />
-                        </Button>
+                            <Grid container paddingTop={2}>
+                                <UniqueNameInput
+                                    name={NAME}
+                                    label={'Name'}
+                                    elementType={ElementType.DIRECTORY}
+                                    activeDirectory={defaultFolder?.id as UUID}
+                                    autoFocus
+                                />
+                            </Grid>
+                            <Grid container paddingTop={2}>
+                                <Button
+                                    onClick={handleChangeFolder}
+                                    variant="contained"
+                                >
+                                    <FormattedMessage
+                                        id={'showSelectDirectoryDialog'}
+                                    />
+                                </Button>
 
-                        <Typography m={1} component="span">
-                            <Box fontWeight={'fontWeightBold'}>
-                                {defaultFolder?.name}
-                            </Box>
-                        </Typography>
-                    </Grid>
+                                <Typography m={1} component="span">
+                                    <Box fontWeight={'fontWeightBold'}>
+                                        {defaultFolder?.name}
+                                    </Box>
+                                </Typography>
+                            </Grid>
+                        </>
+                    )}
+
                     <Grid container paddingTop={2}>
                         <DirectoryItemSelector
                             open={openDirectorySelector}
@@ -240,11 +254,10 @@ const FilterCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
-                                    onSaveSelection(
-                                        formMethods.getValues() as IFilterSelection,
-                                        defaultFolder
-                                    );
-                                    generateSelectionName();
+                                    const data =
+                                        formMethods.getValues() as IFilterSelection;
+                                    onSaveSelection(data, defaultFolder);
+                                    generateSelectionName(data[SELECTION_TYPE]);
                                 }
                             });
                         }}
