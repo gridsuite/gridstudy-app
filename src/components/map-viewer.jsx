@@ -109,7 +109,7 @@ const MapViewer = ({
 
     const oneBusShortCircuitStatus = useSelector(
         (state) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const openVoltageLevel = useCallback(

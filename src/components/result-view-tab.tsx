@@ -232,7 +232,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 id: 'ShortCircuitAnalysis',
                 computingType: [
                     ComputingType.SHORT_CIRCUIT,
-                    ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.SHORT_CIRCUIT_ONE_BUS,
                 ],
                 displayed:
                     shortCircuitAvailability === OptionalServicesStatus.Up,

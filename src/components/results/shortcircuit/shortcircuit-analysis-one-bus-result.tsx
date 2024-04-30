@@ -33,7 +33,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
 
     const oneBusShortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);

@@ -229,7 +229,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             state.computingStatus[
                 analysisType === ShortCircuitAnalysisType.ALL_BUSES
                     ? ComputingType.SHORT_CIRCUIT
-                    : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+                    : ComputingType.SHORT_CIRCUIT_ONE_BUS
             ]
     );
 
