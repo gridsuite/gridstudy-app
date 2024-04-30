@@ -41,7 +41,7 @@ export const useComputationResultsCount = () => {
 
     const allBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const dynamicSimulationStatus = useSelector(

@@ -231,7 +231,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'ShortCircuitAnalysis',
                 computingType: [
-                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.SHORT_CIRCUIT,
                     ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
                 ],
                 displayed:

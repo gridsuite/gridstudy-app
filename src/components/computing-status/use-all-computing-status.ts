@@ -167,7 +167,7 @@ export const useAllComputingStatus = (
         shortCircuitAnalysisStatusInvalidations,
         shortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
-        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+        ComputingType.SHORT_CIRCUIT,
         shortCircuitAvailability
     );
 

@@ -77,8 +77,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     );
 
     const allBusesShortCircuitAnalysisStatus = useSelector(
-        (state) =>
-            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const dynamicSimulationStatus = useSelector(
@@ -288,11 +287,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
             },
-            [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: {
+            [ComputingType.SHORT_CIRCUIT]: {
                 messageId: 'ShortCircuitAnalysis',
                 startComputation() {
                     startComputationAsync(
-                        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+                        ComputingType.SHORT_CIRCUIT,
                         null,
                         () =>
                             startShortCircuitAnalysis(
@@ -305,10 +304,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(
-                        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
-                        () =>
-                            stopShortCircuitAnalysis(studyUuid, currentNode?.id)
+                    actionOnRunnables(ComputingType.SHORT_CIRCUIT, () =>
+                        stopShortCircuitAnalysis(studyUuid, currentNode?.id)
                     );
                 },
             },
@@ -383,7 +380,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     return sensitivityAnalysisStatus;
                 case ComputingType.NON_EVACUATED_ENERGY_ANALYSIS:
                     return nonEvacuatedEnergyStatus;
-                case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:
+                case ComputingType.SHORT_CIRCUIT:
                     return allBusesShortCircuitAnalysisStatus;
                 case ComputingType.DYNAMIC_SIMULATION:
                     return dynamicSimulationStatus;
@@ -419,7 +416,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 ? [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
                 : []),
             ...(shortCircuitAvailability === OptionalServicesStatus.Up
-                ? [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+                ? [ComputingType.SHORT_CIRCUIT]
                 : []),
             ...(dynamicSimulationAvailability === OptionalServicesStatus.Up &&
             enableDeveloperMode

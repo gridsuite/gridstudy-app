@@ -68,7 +68,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
 
     const AllBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
     const OneBusShortCircuitStatus = useSelector(
         (state: ReduxState) =>
@@ -202,7 +202,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                             reportType={
                                 tabIndex ===
                                 ShortCircuitAnalysisResultTabs.ALL_BUSES
-                                    ? REPORT_TYPES.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+                                    ? REPORT_TYPES.SHORT_CIRCUIT
                                     : REPORT_TYPES.ONE_BUS_SHORTCIRCUIT_ANALYSIS
                             }
                         />

@@ -87,7 +87,7 @@ export const computingTypeToShortcircuitTabRedirection = (
     computingType: ComputingType | undefined
 ): ResultTabIndexRedirection => {
     switch (computingType) {
-        case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:
+        case ComputingType.SHORT_CIRCUIT:
             return ShortCircuitAnalysisResultTabs.ALL_BUSES;
         case ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS:
             return ShortCircuitAnalysisResultTabs.ONE_BUS;
