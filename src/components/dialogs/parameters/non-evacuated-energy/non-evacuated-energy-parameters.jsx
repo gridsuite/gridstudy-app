@@ -7,7 +7,7 @@
 
 import {
     CustomFormProvider,
-    SelectInput,
+    MuiSelectInput,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -482,16 +482,15 @@ export const NonEvacuatedEnergyParameters = ({
                         <FormattedMessage id="Provider" />
                     </Grid>
                     <Grid item xs={4} sx={styles.controlItem}>
-                        <SelectInput
+                        <MuiSelectInput
                             name={PROVIDER}
-                            disableClearable
                             size="small"
                             options={Object.values(providers).map(
                                 (provider) => {
                                     return { id: provider, label: provider };
                                 }
                             )}
-                        ></SelectInput>
+                        />
                     </Grid>
                 </Grid>
                 <Grid
