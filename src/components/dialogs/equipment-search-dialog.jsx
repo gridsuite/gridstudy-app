@@ -33,15 +33,13 @@ const EquipmentSearchDialog = ({
 }) => {
     const intl = useIntl();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const {
-        debouncedSearchMatchingEquipments: searchMatchingEquipments,
-        equipmentsFound,
-    } = useSearchMatchingEquipments({
-        studyUuid: studyUuid,
-        nodeUuid: currentNodeUuid,
-        inUpstreamBuiltParentNode: true,
-        equipmentType: equipmentType,
-    });
+    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
+        useSearchMatchingEquipments({
+            studyUuid: studyUuid,
+            nodeUuid: currentNodeUuid,
+            inUpstreamBuiltParentNode: true,
+            equipmentType: equipmentType,
+        });
 
     return (
         <ElementSearchDialog
@@ -50,7 +48,8 @@ const EquipmentSearchDialog = ({
             searchingLabel={intl.formatMessage({
                 id: 'equipment_search/label',
             })}
-            onSearchTermChange={searchMatchingEquipments}
+            searchTerm={searchTerm}
+            onSearchTermChange={updateSearchTerm}
             onSelectionChange={(element) => {
                 onSelectionChange(element);
             }}
@@ -62,6 +61,7 @@ const EquipmentSearchDialog = ({
                     key={props.element.key}
                 />
             )}
+            isLoading={isLoading}
         />
     );
 };

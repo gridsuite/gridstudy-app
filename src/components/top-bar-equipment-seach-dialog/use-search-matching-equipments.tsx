@@ -42,29 +42,36 @@ export const useSearchMatchingEquipments = (
     } = props;
 
     const { snackError } = useSnackMessage();
+    const [isLoading, setIsLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [equipmentsFound, setEquipmentsFound] = useState<EquipmentInfos[]>(
         []
     );
     const lastSearchTermRef = useRef('');
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
+    console.log('IN CURRENT NODE UUIDE', nodeUuid);
     const searchMatchingEquipments = useCallback(
-        (searchTerm: string) => {
-            lastSearchTermRef.current = searchTerm;
+        (newSearchTerm: string) => {
+            lastSearchTermRef.current = newSearchTerm;
             searchEquipmentsInfos(
                 studyUuid,
                 nodeUuid,
-                searchTerm,
+                newSearchTerm,
                 getUseNameParameterKey,
                 inUpstreamBuiltParentNode,
                 equipmentType
             )
                 .then((infos) => {
-                    if (searchTerm === lastSearchTermRef.current) {
+                    if (newSearchTerm === lastSearchTermRef.current) {
                         setEquipmentsFound(makeItems(infos, getNameOrId));
+                        setIsLoading(false);
                     } // else ignore results of outdated fetch
                 })
                 .catch((error) => {
+                    if (newSearchTerm === lastSearchTermRef.current) {
+                        setIsLoading(false);
+                    } // else ignore errors of outdated fetch if changing "isLoading state"
                     snackError({
                         messageTxt: error.message,
                         headerId: 'equipmentsSearchingError',
@@ -88,9 +95,18 @@ export const useSearchMatchingEquipments = (
         SEARCH_FETCH_TIMEOUT_MILLIS
     );
 
+    const updateSearchTerm = useCallback(
+        (newSearchTerm: string) => {
+            setSearchTerm(newSearchTerm);
+            setIsLoading(true);
+            debouncedSearchMatchingEquipments(newSearchTerm);
+        },
+        [debouncedSearchMatchingEquipments]
+    );
+
     useEffect(() => {
         setEquipmentsFound([]);
     }, [equipmentType]);
 
-    return { debouncedSearchMatchingEquipments, equipmentsFound };
+    return { searchTerm, updateSearchTerm, equipmentsFound, isLoading };
 };
