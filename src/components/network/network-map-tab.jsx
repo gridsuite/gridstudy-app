@@ -6,13 +6,7 @@
  */
 
 import { NetworkMap, GeoData } from '@powsybl/diagram-viewer';
-import React, {
-    useCallback,
-    useEffect,
-    useState,
-    useRef,
-    useMemo,
-} from 'react';
+import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import withOperatingStatusMenu from '../menus/operating-status-menu';
 import BaseEquipmentMenu from '../menus/base-equipment-menu';
@@ -34,7 +28,6 @@ import {
 import {
     resetMapReloaded,
     setMapDataLoading,
-    setStudyDisplayMode,
     STUDY_DISPLAY_MODE,
 } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
@@ -99,6 +92,8 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     setErrorMessage,
     onDrawPolygonModeActive,
+    onPolygonChanged,
+    onDrawEvent,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1075,10 +1070,10 @@ export const NetworkMapTab = ({
                 onDrawPolygonModeActive(active);
             }}
             onPolygonChanged={(features) => {
-                //check if the object is not empty
-                if (Object.keys(features).length !== 0) {
-                    dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.DRAW));
-                }
+                onPolygonChanged(features);
+            }}
+            onDrawEvent={(event) => {
+                onDrawEvent(event);
             }}
         />
     );
@@ -1130,6 +1125,8 @@ NetworkMapTab.propTypes = {
     onSubstationMenuClick: PropTypes.func,
     mapRef: PropTypes.any,
     onDrawPolygonModeActive: PropTypes.func,
+    onPolygonChanged: PropTypes.func,
+    onDrawEvent: PropTypes.func,
 };
 
 export default NetworkMapTab;

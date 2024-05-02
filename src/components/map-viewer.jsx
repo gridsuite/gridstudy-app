@@ -15,6 +15,7 @@ import {
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params.js';
 import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions.js';
+import { DRAW_EVENT } from '@powsybl/diagram-viewer';
 import { DiagramType } from './diagrams/diagram-common.js';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { Box } from '@mui/system';
@@ -94,6 +95,8 @@ const MapViewer = ({
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
+    const [shouldOpenFilterCreationPanel, setShouldOpenFilterCreationPanel] =
+        useState(false);
 
     const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
 
@@ -220,11 +223,9 @@ const MapViewer = ({
                             <Box
                                 style={{
                                     position: 'relative',
-                                    width:
-                                        studyDisplayMode ===
-                                        STUDY_DISPLAY_MODE.DRAW
-                                            ? '80%'
-                                            : '100%',
+                                    width: shouldOpenFilterCreationPanel
+                                        ? '80%'
+                                        : '100%',
                                     height: '100%',
                                 }}
                             >
@@ -258,21 +259,59 @@ const MapViewer = ({
                                         }
                                         setIsDrawingMode(active);
                                     }}
+                                    onPolygonChanged={(features) => {
+                                        //check if the object is not empty
+                                        // if (
+                                        //     Object.keys(features).length !== 0
+                                        // ) {
+                                        //     dispatch(
+                                        //         setStudyDisplayMode(
+                                        //             STUDY_DISPLAY_MODE.DRAW
+                                        //         )
+                                        //     );
+                                        // }
+                                    }}
+                                    onDrawEvent={(event) => {
+                                        console.log('on draw event: ' + event);
+                                        switch (event) {
+                                            case DRAW_EVENT.DELETE:
+                                                console.log(
+                                                    'on delete polygon'
+                                                );
+                                                setShouldOpenFilterCreationPanel(
+                                                    false
+                                                );
+                                                break;
+                                            case DRAW_EVENT.CREATE:
+                                                console.log(
+                                                    'on create polygon'
+                                                );
+                                                setShouldOpenFilterCreationPanel(
+                                                    true
+                                                );
+                                                break;
+                                            case DRAW_EVENT.UPDATE:
+                                                console.log(
+                                                    'on update polygon'
+                                                );
+
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }}
                                 ></NetworkMapTab>
                             </Box>
 
                             <Box
                                 style={{
-                                    width:
-                                        studyDisplayMode ===
-                                        STUDY_DISPLAY_MODE.DRAW
-                                            ? '20%'
-                                            : '0%',
+                                    width: shouldOpenFilterCreationPanel
+                                        ? '20%'
+                                        : '0%',
                                     height: '100%',
                                 }}
                             >
-                                {studyDisplayMode ===
-                                    STUDY_DISPLAY_MODE.DRAW && (
+                                {shouldOpenFilterCreationPanel && (
                                     <FilterCreationPanel
                                         onSaveFilter={async (
                                             filter,
