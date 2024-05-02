@@ -106,7 +106,7 @@ export interface CurrentTreeNode {
 }
 
 export interface ComputingStatus {
-    [ComputingType.LOADFLOW]: RunningStatus;
+    [ComputingType.LOAD_FLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
     [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;

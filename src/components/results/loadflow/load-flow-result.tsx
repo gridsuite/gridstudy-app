@@ -37,7 +37,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const intl = useIntl();
 
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
+        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const gridRef = useRef();
