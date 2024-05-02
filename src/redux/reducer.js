@@ -100,7 +100,7 @@ import {
     getLocalStorageTheme,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
-} from './local-storage';
+} from './local-storage/local-storage';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_MAPBOX,

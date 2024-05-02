@@ -36,6 +36,7 @@ import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
+import { addToLocalStorageSearchEquipmentHistory } from 'redux/local-storage/search-equipment-history';
 
 const styles = {
     currentNodeBox: {
@@ -98,6 +99,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
+            addToLocalStorageSearchEquipmentHistory(studyUuid, optionInfos);
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION) {
                 openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
@@ -108,7 +110,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 );
             }
         },
-        [onChangeTab, openDiagramView]
+        [onChangeTab, openDiagramView, studyUuid]
     );
 
     useEffect(() => {

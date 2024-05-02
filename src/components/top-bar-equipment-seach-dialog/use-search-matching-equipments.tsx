@@ -11,8 +11,9 @@ import {
     EquipmentType,
     Identifiable,
     getEquipmentsInfosForSearchBar,
+    useSnackMessage,
+    useDebounce,
 } from '@gridsuite/commons-ui';
-import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
@@ -50,9 +51,14 @@ export const useSearchMatchingEquipments = (
     const lastSearchTermRef = useRef('');
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
-    console.log('IN CURRENT NODE UUIDE', nodeUuid);
     const searchMatchingEquipments = useCallback(
         (newSearchTerm: string) => {
+            if (newSearchTerm.length === 0) {
+                setEquipmentsFound([]);
+                setIsLoading(false);
+                return;
+            }
+
             lastSearchTermRef.current = newSearchTerm;
             searchEquipmentsInfos(
                 studyUuid,

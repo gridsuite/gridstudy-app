@@ -2,16 +2,17 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import {
     ElementSearchDialog,
+    EquipmentInfos,
     EquipmentItem,
     equipmentStyles,
 } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
-import { useSearchMatchingEquipments } from './use-search-matching-equipments';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/types';
 import { useDisabledSearchReason } from './use-disabled-search-reason';
 import { useSearchEvent } from './use-search-event';
+import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-equipments';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -27,16 +28,15 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         setIsDialogSearchOpen,
         showVoltageLevelDiagram,
     } = props;
+    const intl = useIntl();
+
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
 
-    console.log('CURRENT NODE', currentNode);
-    const intl = useIntl();
-
-    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
-        useSearchMatchingEquipments({
+    const { searchTerm, updateSearchTerm, equipmentsToReturn, isLoading } =
+        useTopBarSearchMatchingEquipment({
             studyUuid: studyUuid,
             nodeUuid: currentNode?.id,
         });
@@ -45,6 +45,14 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const enableSearchDialog = useCallback(() => {
         setIsDialogSearchOpen(true);
     }, [setIsDialogSearchOpen]);
+
+    const onSelectionChange = useCallback(
+        (element: EquipmentInfos) => {
+            setIsDialogSearchOpen(false);
+            showVoltageLevelDiagram(element);
+        },
+        [setIsDialogSearchOpen, showVoltageLevelDiagram]
+    );
 
     useSearchEvent(enableSearchDialog);
 
@@ -57,11 +65,8 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             })}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
-            onSelectionChange={(element) => {
-                setIsDialogSearchOpen(false);
-                showVoltageLevelDiagram(element);
-            }}
-            elementsFound={equipmentsFound}
+            onSelectionChange={onSelectionChange}
+            elementsFound={equipmentsToReturn}
             renderElement={(props) => (
                 <EquipmentItem
                     styles={equipmentStyles}
