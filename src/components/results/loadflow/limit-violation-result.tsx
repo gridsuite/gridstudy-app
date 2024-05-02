@@ -43,7 +43,7 @@ export const LimitViolationResult: FunctionComponent<
     const gridRef = useRef();
 
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
+        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] =

@@ -21,11 +21,7 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import {
-    fetchShortCircuitAnalysisPagedResults,
-    fetchShortCircuitFaultTypes,
-    fetchShortCircuitLimitViolationTypes,
-} from '../../../services/study/short-circuit-analysis';
+import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
     DEFAULT_PAGE_COUNT,
@@ -49,6 +45,8 @@ import { GridReadyEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import { fetchAvailableFilterEnumValues } from '../../../services/study';
+import computingType from '../../computing-status/computing-type';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -207,7 +205,12 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     ]);
 
     useEffect(() => {
-        fetchShortCircuitFaultTypes()
+        fetchAvailableFilterEnumValues(
+            studyUuid,
+            currentNode?.id,
+            computingType.SHORT_CIRCUIT,
+            'fault-types'
+        )
             .then((values) => {
                 setFilterEnums((prevFilterEnums) => ({
                     ...prevFilterEnums,
@@ -220,10 +223,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [intl, snackError]);
+    }, [intl, snackError, studyUuid, currentNode.id]);
 
     useEffect(() => {
-        fetchShortCircuitLimitViolationTypes()
+        fetchAvailableFilterEnumValues(
+            studyUuid,
+            currentNode?.id,
+            computingType.SHORT_CIRCUIT,
+            'limit-violation-types'
+        )
             .then((values) => {
                 setFilterEnums((prevFilterEnums) => ({
                     ...prevFilterEnums,
@@ -236,7 +244,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [intl, snackError]);
+    }, [intl, snackError, studyUuid, currentNode.id]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,

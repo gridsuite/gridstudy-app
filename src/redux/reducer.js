@@ -186,7 +186,7 @@ const paramsInitialState = {
 };
 
 const initialComputingStatus = {
-    [ComputingType.LOADFLOW]: RunningStatus.IDLE,
+    [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,

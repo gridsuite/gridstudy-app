@@ -169,23 +169,6 @@ export function invalidateShortCircuitStatus(studyUuid) {
     });
 }
 
-export function fetchShortCircuitFaultTypes() {
-    console.info('Fetch short-circuit fault types');
-    const getShortCircuitParams =
-        import.meta.env.VITE_API_GATEWAY + '/shortcircuit/v1/fault-types';
-    console.debug(getShortCircuitParams);
-    return backendFetchJson(getShortCircuitParams);
-}
-
-export function fetchShortCircuitLimitViolationTypes() {
-    console.info('Fetch short-circuit limit violation types');
-    const getShortCircuitParams =
-        import.meta.env.VITE_API_GATEWAY +
-        '/shortcircuit/v1/limit-violation-types';
-    console.debug(getShortCircuitParams);
-    return backendFetchJson(getShortCircuitParams);
-}
-
 export function downloadShortCircuitResultZippedCsv(
     studyUuid,
     currentNodeUuid,
