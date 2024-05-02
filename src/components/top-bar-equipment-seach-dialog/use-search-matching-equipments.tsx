@@ -13,12 +13,12 @@ import {
     getEquipmentsInfosForSearchBar,
     useSnackMessage,
     useDebounce,
+    Equipment,
 } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
 import { UUID } from 'crypto';
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/types';
 
 interface UseSearchMatchingEquipmentsProps {
     studyUuid: UUID;

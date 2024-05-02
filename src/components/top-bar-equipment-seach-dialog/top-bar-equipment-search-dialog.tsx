@@ -11,11 +11,11 @@ import {
     EquipmentInfos,
     EquipmentItem,
     equipmentStyles,
+    Equipment,
 } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/types';
 import { useDisabledSearchReason } from './use-disabled-search-reason';
 import { useSearchEvent } from './use-search-event';
 import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-equipments';
