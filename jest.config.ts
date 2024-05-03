@@ -13,7 +13,9 @@ const config: Config = {
         '^.+\\.svg\\?react$|@powsybl/diagram-viewer': 'jest-svg-transformer',
         '^.+\\.(css|less|scss)$': 'identity-obj-proxy',
     },
-    transformIgnorePatterns: ['node_modules/(?!@gridsuite/commons-ui)'], // transform from ESM
+    transformIgnorePatterns: [
+        'node_modules/(?!@gridsuite/commons-ui|react-dnd|dnd-core|@react-dnd)',
+    ], // transform from ESM
     moduleDirectories: ['node_modules', 'src'], // to allow absolute path from ./src
     setupFiles: ['<rootDir>/jest.setup.ts'],
 };
