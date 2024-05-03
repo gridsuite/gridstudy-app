@@ -142,7 +142,7 @@ const MapViewer = ({
                     messageTxt: intl.formatMessage({
                         id: 'DrawingPolygonInstruction',
                     }),
-                    persistent: true,
+                    persist: true,
                 })
             );
         }
