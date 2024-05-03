@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
@@ -121,6 +121,23 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         }
         setOpenDirectorySelector(false);
     };
+    const equipmentTypesOptions = useMemo(() => {
+        const equipmentTypesToExclude = new Set([
+            EQUIPMENT_TYPES.SWITCH,
+            EQUIPMENT_TYPES.BUS,
+        ]);
+
+        return Object.values(EQUIPMENT_TYPES)
+            .filter(
+                (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
+            )
+            .map((value) => {
+                return {
+                    id: value,
+                    label: equipementTypeToLabel(value),
+                };
+            });
+    }, []);
 
     return (
         <CustomFormProvider
@@ -140,18 +157,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
-                            options={Object.values(EQUIPMENT_TYPES)
-                                .filter(
-                                    (type) =>
-                                        !type.includes(EQUIPMENT_TYPES.BUS) &&
-                                        !type.includes(EQUIPMENT_TYPES.SWITCH)
-                                )
-                                .map((value) => {
-                                    return {
-                                        id: value,
-                                        label: equipementTypeToLabel(value),
-                                    };
-                                })}
+                            options={equipmentTypesOptions}
                             label={'EquipmentType'}
                             fullWidth
                             size={'medium'}
