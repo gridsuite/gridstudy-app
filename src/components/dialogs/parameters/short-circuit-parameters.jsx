@@ -198,7 +198,7 @@ export const ShortCircuitParameters = ({
                 shouldDirty: true,
             });
             setValue(SHORT_CIRCUIT_WITH_LOADS, false, { shouldDirty: true });
-            setValue(SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS, true, {
+            setValue(SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS, predefinedParameter !== PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL, {
                 shouldDirty: true,
             });
             setValue(SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS, false, {
@@ -209,9 +209,9 @@ export const ShortCircuitParameters = ({
             });
             const initalVoltageProfileMode =
                 predefinedParameter ===
-                PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP
-                    ? INITIAL_VOLTAGE.NOMINAL
-                    : INITIAL_VOLTAGE.CEI909;
+                PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909
+                    ? INITIAL_VOLTAGE.CEI909
+                    : INITIAL_VOLTAGE.NOMINAL;
 
             setValue(
                 SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,

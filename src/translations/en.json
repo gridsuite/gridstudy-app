@@ -1294,6 +1294,7 @@
     "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
     "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with nominal voltage profile",
     "iccMaxWithCEIPredefinedParams": "ISC max with standard IEC 909",
+    "iscMinWithNominalVoltageProfilePredefinedParams": "ISC min with nominal voltage profile",
     "nominalInitialVoltageProfileMode": "Nominal",
     "cei909InitialVoltageProfileMode": "IEC 909",
     "undefined": "undefined",

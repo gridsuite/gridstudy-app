@@ -17,6 +17,10 @@ export const intlPredefinedParametersOptions = () => [
         id: 'ICC_MAX_WITH_CEI909',
         label: 'iccMaxWithCEIPredefinedParams',
     },
+    {
+        id: 'ICC_MIN_WITH_NOMINAL',
+        label: 'iscMinWithNominalVoltageProfilePredefinedParams',
+    },
 ];
 
 export const intlInitialVoltageProfileMode = () => {
