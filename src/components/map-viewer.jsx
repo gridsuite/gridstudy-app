@@ -114,7 +114,8 @@ const MapViewer = ({
         (state) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
-
+    const [previousStudyDisplayMode, setPreviousStudyDisplayMode] =
+        useState(undefined);
     const openVoltageLevel = useCallback(
         (vlId) => {
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
@@ -151,10 +152,27 @@ const MapViewer = ({
         }
     }, [isDrawingMode, intl, snackInfo, instructionSnakbar, closeSnackbar]);
 
+    const onDrawingModeEnter = useCallback(
+        (active) => {
+            // save the previous mode so we can restore it when the user cancel the drawing
+            if (previousStudyDisplayMode === undefined) {
+                setPreviousStudyDisplayMode(studyDisplayMode);
+            }
+            if (active === true) {
+                dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+            }
+            setIsDrawingMode(active);
+        },
+        [dispatch, previousStudyDisplayMode, studyDisplayMode]
+    );
+
     const onCancelFunction = useCallback(() => {
         networkMapref.current.cleanDraw();
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
-    }, [dispatch]);
+        if (previousStudyDisplayMode !== undefined) {
+            dispatch(setStudyDisplayMode(previousStudyDisplayMode));
+            setPreviousStudyDisplayMode(undefined);
+        }
+    }, [dispatch, previousStudyDisplayMode]);
 
     return (
         <Box sx={styles.table}>
@@ -249,52 +267,21 @@ const MapViewer = ({
                                     onChangeTab={onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     setErrorMessage={setErrorMessage}
-                                    onDrawPolygonModeActive={(active) => {
-                                        if (active === true) {
-                                            dispatch(
-                                                setStudyDisplayMode(
-                                                    STUDY_DISPLAY_MODE.MAP
-                                                )
-                                            );
-                                        }
-                                        setIsDrawingMode(active);
-                                    }}
-                                    onPolygonChanged={(features) => {
-                                        //check if the object is not empty
-                                        // if (
-                                        //     Object.keys(features).length !== 0
-                                        // ) {
-                                        //     dispatch(
-                                        //         setStudyDisplayMode(
-                                        //             STUDY_DISPLAY_MODE.DRAW
-                                        //         )
-                                        //     );
-                                        // }
-                                    }}
+                                    onDrawPolygonModeActive={onDrawingModeEnter}
+                                    onPolygonChanged={() => {}}
                                     onDrawEvent={(event) => {
-                                        console.log('on draw event: ' + event);
                                         switch (event) {
                                             case DRAW_EVENT.DELETE:
-                                                console.log(
-                                                    'on delete polygon'
-                                                );
                                                 setShouldOpenFilterCreationPanel(
                                                     false
                                                 );
                                                 break;
                                             case DRAW_EVENT.CREATE:
-                                                console.log(
-                                                    'on create polygon'
-                                                );
                                                 setShouldOpenFilterCreationPanel(
                                                     true
                                                 );
                                                 break;
                                             case DRAW_EVENT.UPDATE:
-                                                console.log(
-                                                    'on update polygon'
-                                                );
-
                                                 break;
                                             default:
                                                 break;
