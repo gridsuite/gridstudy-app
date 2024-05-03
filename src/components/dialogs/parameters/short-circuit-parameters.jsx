@@ -198,9 +198,14 @@ export const ShortCircuitParameters = ({
                 shouldDirty: true,
             });
             setValue(SHORT_CIRCUIT_WITH_LOADS, false, { shouldDirty: true });
-            setValue(SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS, predefinedParameter !== PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL, {
-                shouldDirty: true,
-            });
+            setValue(
+                SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
+                predefinedParameter !==
+                    PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL,
+                {
+                    shouldDirty: true,
+                }
+            );
             setValue(SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS, false, {
                 shouldDirty: true,
             });
