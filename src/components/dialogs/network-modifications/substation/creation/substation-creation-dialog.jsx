@@ -29,6 +29,7 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     emptyProperties,
+    fetchDefaultCountry,
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -64,7 +65,7 @@ const SubstationCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const fromSearchCopyToFormValues = (substation) => {
         reset(
@@ -96,6 +97,18 @@ const SubstationCreationDialog = ({
             });
         }
     }, [reset, editData]);
+
+    // We set the default country if there is one
+    useEffect(() => {
+        fetchDefaultCountry().then((country) => {
+            if (country) {
+                reset({
+                    ...getValues,
+                    [COUNTRY]: country,
+                });
+            }
+        });
+    }, [reset, getValues]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);

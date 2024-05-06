@@ -16,21 +16,8 @@ import {
 } from 'components/utils/field-constants';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
 import PropertiesForm from '../../common/properties/properties-form';
-import { fetchDefaultCountry } from 'components/dialogs/network-modifications/common/properties/property-utils';
-import { useFormContext } from 'react-hook-form';
 
 const SubstationCreationForm = () => {
-    const { setValue } = useFormContext();
-
-    // We set the default country if there is one
-    useEffect(() => {
-        fetchDefaultCountry().then((country) => {
-            if (country) {
-                setValue(COUNTRY, country);
-            }
-        });
-    }, [setValue]);
-
     const substationIdField = (
         <TextInput
             name={EQUIPMENT_ID}
