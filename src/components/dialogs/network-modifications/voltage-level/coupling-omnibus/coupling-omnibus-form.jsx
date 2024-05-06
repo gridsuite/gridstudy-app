@@ -45,6 +45,7 @@ export const CouplingOmnibusForm = () => {
     }, [watchVoltageLevelID, watchBusBarCount, watchSectionCount]);
 
     useEffect(() => {
+        // the cleanup function is triggered every time sectionOptions changes and when unmounting
         return () => setValue(COUPLING_OMNIBUS, []);
     }, [sectionOptions, setValue]);
 
