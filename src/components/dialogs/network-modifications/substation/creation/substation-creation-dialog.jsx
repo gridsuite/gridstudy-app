@@ -103,7 +103,7 @@ const SubstationCreationDialog = ({
         fetchDefaultCountry().then((country) => {
             if (country) {
                 reset({
-                    ...getValues,
+                    ...getValues(),
                     [COUNTRY]: country,
                 });
             }
