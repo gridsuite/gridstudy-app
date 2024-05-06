@@ -16,7 +16,7 @@ import RunningStatus from 'components/utils/running-status';
  */
 export const useComputationResultsCount = () => {
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
+        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const securityAnalysisStatus = useSelector(

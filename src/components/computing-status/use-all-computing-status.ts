@@ -124,7 +124,7 @@ export const useAllComputingStatus = (
         loadFlowStatusInvalidations,
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
-        ComputingType.LOADFLOW
+        ComputingType.LOAD_FLOW
     );
 
     useComputingStatus(

@@ -35,11 +35,6 @@ import {
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useEffect, useState } from 'react';
 import {
-    fetchLoadflowAvailableBranchSides,
-    fetchLoadflowAvailableComputationStatus,
-    fetchLoadflowAvailableLimitTypes,
-} from 'services/loadflow';
-import {
     translateLimitNameBackToFront,
     translateLimitNameFrontToBack,
 } from '../common/utils';
@@ -48,6 +43,9 @@ import {
     LOADFLOW_RESULT,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-filter-fields';
+import { UUID } from 'crypto';
+import { fetchAvailableFilterEnumValues } from '../../../services/study';
+import computingType from '../../computing-status/computing-type';
 
 export const convertMillisecondsToMinutesSeconds = (
     durationInMilliseconds: number
@@ -189,6 +187,8 @@ export const makeData = (
 
 // We can use this custom hook for fetching enums for AutoComplete filter
 export const useFetchFiltersEnums = (
+    studyUuid: UUID,
+    nodeUuid: UUID,
     hasResult: boolean = false,
     setFilter: (value: boolean) => void
 ): { error: boolean; loading: boolean; result: FilterEnumsType } => {
@@ -204,9 +204,24 @@ export const useFetchFiltersEnums = (
         if (!hasResult) {
             const promises = [
                 // We can add another fetch for other enums
-                fetchLoadflowAvailableComputationStatus(),
-                fetchLoadflowAvailableLimitTypes(),
-                fetchLoadflowAvailableBranchSides(),
+                fetchAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    computingType.LOAD_FLOW,
+                    'computation-status'
+                ),
+                fetchAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    computingType.LOAD_FLOW,
+                    'limit-types'
+                ),
+                fetchAvailableFilterEnumValues(
+                    studyUuid,
+                    nodeUuid,
+                    computingType.LOAD_FLOW,
+                    'branch-sides'
+                ),
             ];
 
             setLoading(true);
@@ -232,7 +247,7 @@ export const useFetchFiltersEnums = (
                     setLoading(false);
                 });
         }
-    }, [hasResult, setFilter]);
+    }, [hasResult, setFilter, studyUuid, nodeUuid]);
 
     return { loading, result, error };
 };

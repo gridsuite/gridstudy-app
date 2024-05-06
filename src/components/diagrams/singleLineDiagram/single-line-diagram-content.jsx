@@ -96,7 +96,7 @@ function SingleLineDiagramContent(props) {
         (state) => state.computationStarting
     );
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const [
