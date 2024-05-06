@@ -125,6 +125,9 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         const equipmentTypesToExclude = new Set([
             EQUIPMENT_TYPES.SWITCH,
             EQUIPMENT_TYPES.BUS,
+            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.BUSBAR_SECTION,
+            EQUIPMENT_TYPES.TIE_LINE,
         ]);
 
         return Object.values(EQUIPMENT_TYPES)
