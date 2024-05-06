@@ -71,7 +71,7 @@ type SelectionCreationPanelProps = {
     onCancel: () => void;
 };
 
-const FilterCreationPanel: React.FC<SelectionCreationPanelProps> = ({
+const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     onSaveSelection,
     onCancel,
 }) => {
@@ -273,4 +273,4 @@ const FilterCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     );
 };
 
-export default FilterCreationPanel;
+export default SelectionCreationPanel;

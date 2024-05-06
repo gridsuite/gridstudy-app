@@ -124,7 +124,7 @@ export function createFilter(
     description: string,
     parentDirectoryUuid: string
 ) {
-    console.info('Creating a new contingency list...');
+    console.info('Creating a new filter...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description);

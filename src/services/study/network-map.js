@@ -169,6 +169,7 @@ function createEquipmentIdentifierList(equipmentType, equipmentList) {
         }),
     };
 }
+
 function createIdentifiersList(selectedEquipments) {
     const identifierLists = selectedEquipments.map((eq) => {
         return {
@@ -280,7 +281,7 @@ export async function createMapContingencyList(
                 currentNodeUuid,
                 selectedEquipmentsIds,
                 contingencyList.equipmentType,
-                EQUIPMENT_INFOS_TYPES.MAP.type,
+                EQUIPMENT_INFOS_TYPES.LIST.type,
                 false
             );
 

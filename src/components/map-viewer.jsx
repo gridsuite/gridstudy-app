@@ -22,7 +22,6 @@ import HorizontalToolbar from './horizontal-toolbar.jsx';
 import NetworkModificationTreePane from './network-modification-tree-pane.jsx';
 import NetworkMapTab from './network/network-map-tab.jsx';
 import { DiagramPane } from './diagrams/diagram-pane.jsx';
-import FilterCreationPanel from './network/filter-creation-panel';
 import {
     createMapContingencyList,
     createMapFilter,
@@ -34,6 +33,7 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Typography } from '@mui/material';
 import { EQUIPMENT_TYPES, SELECTION_TYPES } from './utils/equipment-types.js';
+import SelectionCreationPanel from './network/selection-creation-panel.tsx';
 
 const styles = {
     map: {
@@ -147,6 +147,104 @@ const MapViewer = ({
         networkMapref.current.cleanDraw();
         dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
     }, [dispatch]);
+
+    const createFilter = async (selection, distDir, selectedEquipmentsIds) => {
+        try {
+            await createMapFilter(
+                selection,
+                distDir,
+                studyUuid,
+                currentNode.id,
+                selectedEquipmentsIds
+            );
+            snackInfo({
+                messageTxt: intl.formatMessage({
+                    id: 'FilterCreationSuccess',
+                }),
+            });
+        } catch (error) {
+            snackWarning({
+                messageTxt: intl.formatMessage({
+                    id: error.message,
+                }),
+                headerId: 'FilterCreationError',
+            });
+        }
+    };
+
+    const createContingencyList = async (
+        selection,
+        distDir,
+        selectedEquipments
+    ) => {
+        try {
+            await createMapContingencyList(
+                selection,
+                distDir,
+                studyUuid,
+                currentNode.id,
+                selectedEquipments
+            );
+            snackInfo({
+                messageTxt: intl.formatMessage({
+                    id: 'ContingencyListCreationSuccess',
+                }),
+            });
+        } catch (error) {
+            snackWarning({
+                messageTxt: intl.formatMessage({
+                    id: error.message,
+                }),
+                headerId: 'ContingencyListCreationError',
+            });
+        }
+    };
+
+    const onSaveSelection = async (selection, distDir) => {
+        const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
+
+        try {
+            //we want to calculate selectedLine or selectedSubstation only when needed
+            //call getSelectedLines if the user want to create a filter with lines
+            //for all others case we call getSelectedSubstations
+            const selectedEquipments =
+                selection.equipmentType === EQUIPMENT_TYPES.LINE
+                    ? networkMapref.current.getSelectedLines()
+                    : networkMapref.current.getSelectedSubstations();
+            const selectedEquipmentsIds = selectedEquipments.map((eq) => eq.id);
+
+            if (selectedEquipments.length === 0) {
+                snackWarning({
+                    messageTxt: intl.formatMessage({
+                        id: 'EmptySelection',
+                    }),
+                    headerId: isFilter
+                        ? 'FilterCreationIgnored'
+                        : 'ContingencyListCreationIgnored',
+                });
+                return;
+            }
+
+            if (isFilter) {
+                await createFilter(selection, distDir, selectedEquipmentsIds);
+            } else {
+                await createContingencyList(
+                    selection,
+                    distDir,
+                    selectedEquipments
+                );
+            }
+        } catch (error) {
+            snackError({
+                messageTxt: intl.formatMessage({
+                    id: error.message,
+                }),
+                headerId: isFilter
+                    ? 'FilterCreationError'
+                    : 'ContingencyListCreationError',
+            });
+        }
+    };
 
     return (
         <ReactFlowProvider>
@@ -267,88 +365,10 @@ const MapViewer = ({
                                 >
                                     {studyDisplayMode ===
                                         STUDY_DISPLAY_MODE.DRAW && (
-                                        <FilterCreationPanel
-                                            onSaveSelection={async (
-                                                selection,
-                                                distDir
-                                            ) => {
-                                                const isFilter =
-                                                    selection.selectionType ===
-                                                    SELECTION_TYPES.FILTER;
-
-                                                try {
-                                                    //we want to calculate selectedLine or selectedSubstation only when needed
-                                                    //call getSelectedLines if the user want to create a filter with lines
-                                                    //for all others case we call getSelectedSubstations
-                                                    const selectedEquipments =
-                                                        selection.equipmentType ===
-                                                        EQUIPMENT_TYPES.LINE
-                                                            ? networkMapref.current.getSelectedLines()
-                                                            : networkMapref.current.getSelectedSubstations();
-                                                    const selectedEquipmentsIds =
-                                                        selectedEquipments.map(
-                                                            (eq) => eq.id
-                                                        );
-                                                    if (
-                                                        selectedEquipments.length ===
-                                                        0
-                                                    ) {
-                                                        snackWarning({
-                                                            messageTxt:
-                                                                intl.formatMessage(
-                                                                    {
-                                                                        id: 'EmptySelection',
-                                                                    }
-                                                                ),
-                                                            headerId: isFilter
-                                                                ? 'FilterCreationIgnored'
-                                                                : 'ContingencyListCreationIgnored',
-                                                        });
-                                                        return;
-                                                    }
-                                                    if (isFilter) {
-                                                        await createMapFilter(
-                                                            selection,
-                                                            distDir,
-                                                            studyUuid,
-                                                            currentNode.id,
-                                                            selectedEquipmentsIds
-                                                        );
-                                                    } else {
-                                                        console.log(
-                                                            selectedEquipments,
-                                                            '  == selectedEquipments'
-                                                        );
-                                                        await createMapContingencyList(
-                                                            selection,
-                                                            distDir,
-                                                            studyUuid,
-                                                            currentNode.id,
-                                                            selectedEquipments
-                                                        );
-                                                    }
-                                                    snackInfo({
-                                                        messageTxt:
-                                                            intl.formatMessage({
-                                                                id: isFilter
-                                                                    ? 'FilterCreationSuccess'
-                                                                    : 'ContingencyListCreationSuccess',
-                                                            }),
-                                                    });
-                                                } catch (error) {
-                                                    snackError({
-                                                        messageTxt:
-                                                            intl.formatMessage({
-                                                                id: error.message,
-                                                            }),
-                                                        headerId: isFilter
-                                                            ? 'FilterCreationError'
-                                                            : 'ContingencyListCreationError',
-                                                    });
-                                                }
-                                            }}
+                                        <SelectionCreationPanel
+                                            onSaveSelection={onSaveSelection}
                                             onCancel={onCancelFunction}
-                                        ></FilterCreationPanel>
+                                        ></SelectionCreationPanel>
                                     )}
                                 </Box>
                             </Box>
