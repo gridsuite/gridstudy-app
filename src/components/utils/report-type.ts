@@ -7,6 +7,8 @@
 
 import { ComputingType } from '../computing-status/computing-type';
 
+// must be in-sync with ReportType in study-server
+
 export const REPORT_TYPES = {
     ...ComputingType,
     NETWORK_MODIFICATION: 'NETWORK_MODIFICATION',

@@ -27,7 +27,7 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<
 > = ({ onGridColumnsChanged, onRowDataUpdated }) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const [result, setResult] = useState<SCAFaultResult[]>([]);
