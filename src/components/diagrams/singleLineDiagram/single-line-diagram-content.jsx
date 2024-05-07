@@ -271,7 +271,7 @@ function SingleLineDiagramContent(props) {
         (busId) => {
             dispatch(
                 setComputingStatus(
-                    ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.SHORT_CIRCUIT_ONE_BUS,
                     RunningStatus.RUNNING
                 )
             );
@@ -285,7 +285,7 @@ function SingleLineDiagramContent(props) {
                     });
                     dispatch(
                         setComputingStatus(
-                            ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                            ComputingType.SHORT_CIRCUIT_ONE_BUS,
                             RunningStatus.FAILED
                         )
                     );
