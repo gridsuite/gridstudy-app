@@ -313,3 +313,20 @@ export function getServersInfos() {
         return reason;
     });
 }
+
+export function fetchAvailableFilterEnumValues(
+    studyUuid,
+    nodeUuid,
+    computingType,
+    filterEnum
+) {
+    console.info('fetch available filter values');
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        nodeUuid
+    )}/computation/result/enum-values?computingType=${encodeURIComponent(
+        computingType
+    )}&enumName=${encodeURIComponent(filterEnum)}`;
+    console.debug(url);
+    return backendFetchJson(url);
+}

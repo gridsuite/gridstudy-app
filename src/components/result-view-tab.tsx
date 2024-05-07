@@ -200,7 +200,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         return [
             {
                 id: 'LoadFlow',
-                computingType: [ComputingType.LOADFLOW],
+                computingType: [ComputingType.LOAD_FLOW],
                 displayed: true,
                 renderResult: renderLoadFlowResult,
             },
@@ -274,7 +274,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
             computingTypeToRootTabRedirection(
-                lastCompletedComputation ?? ComputingType.LOADFLOW,
+                lastCompletedComputation ?? ComputingType.LOAD_FLOW,
                 services
             ),
         [lastCompletedComputation, services]
