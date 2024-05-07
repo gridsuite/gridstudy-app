@@ -36,12 +36,12 @@ export const useComputationResultsCount = () => {
 
     const oneBusallBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const allBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const dynamicSimulationStatus = useSelector(
@@ -50,7 +50,8 @@ export const useComputationResultsCount = () => {
     );
 
     const voltageInitStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.VOLTAGE_INIT]
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
 
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)
