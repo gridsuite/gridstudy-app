@@ -121,7 +121,7 @@ export const copyEquipmentPropertiesForCreation = (
 };
 
 export function getConcatenatedProperties(
-    equipment: any,
+    equipment: Equipment,
     getValues: (name: string) => any
 ): any {
     // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
