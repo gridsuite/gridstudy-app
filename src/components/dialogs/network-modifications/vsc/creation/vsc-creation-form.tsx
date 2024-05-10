@@ -17,7 +17,6 @@ import ConverterStationPane from '../converter-station/converter-station-pane';
 import { VSC_CREATION_TABS } from './vsc-creation-dialog';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer.type';
-import PropertiesForm from '../../common/properties/properties-form';
 
 interface VscCreationFormProps {
     tabIndex: number;
@@ -56,7 +55,6 @@ const VscCreationForm: FunctionComponent<VscCreationFormProps> = ({
                     stationLabel={'converterStation2'}
                 />
             </Box>
-            <PropertiesForm />
         </>
     );
 };
