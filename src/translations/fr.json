@@ -1222,10 +1222,8 @@
 
     "Connect": "Reconnexion ?",
     "connected": "Connecté",
-    "connected1": "Connecté Or",
-    "connected2": "Connecté Ex",
-    "ConnectedSide1": "Connecté 1",
-    "ConnectedSide2": "Connecté 2",
+    "Connected1": "Connecté 1",
+    "Connected2": "Connecté 2",
     "ConnectedT3WSide1": "Connecté 1",
     "ConnectedT3WSide2": "Connecté 2",
     "ConnectedT3WSide3": "Connecté 3",

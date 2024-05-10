@@ -1222,8 +1222,8 @@
     "dialog.button.leave": "Leave",
 
     "Connect": "Reconnect ?",
-    "ConnectedSide1": "Connected 1",
-    "ConnectedSide2": "Connected 2",
+    "Connected1": "Connected 1",
+    "Connected2": "Connected 2",
     "ConnectedT3WSide1": "Connected 1",
     "ConnectedT3WSide2": "Connected 2",
     "ConnectedT3WSide3": "Connected 3",
