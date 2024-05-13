@@ -201,7 +201,7 @@ export const ShortCircuitParameters = ({
             setValue(
                 SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
                 predefinedParameter !==
-                    PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL,
+                    PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP,
                 {
                     shouldDirty: true,
                 }

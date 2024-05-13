@@ -166,14 +166,14 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
     useEffect(() => {
         // in order to show the right status we need to check the predefinedParams and initial voltage profile mode values
-        // show success only if ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL or ICC_MAX_WITH_CEI909 to CEI909 or ICC_MIN_WITH_NOMINAL is associated to NOMINAL
+        // show success only if ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL or ICC_MAX_WITH_CEI909 to CEI909 or ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL
         const isIccMaxWithNominalVoltageMap =
             watchPredefinedParams ===
             PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP;
 
         const isIccMinWithNominal =
             watchPredefinedParams ===
-            PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL;
+            PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP;
 
         const isInitialVoltageNominal =
             watchInitialVoltageProfileMode === INITIAL_VOLTAGE.NOMINAL;

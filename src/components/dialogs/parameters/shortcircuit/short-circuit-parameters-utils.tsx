@@ -18,8 +18,8 @@ export const intlPredefinedParametersOptions = () => [
         label: 'iccMaxWithCEIPredefinedParams',
     },
     {
-        id: 'ICC_MIN_WITH_NOMINAL',
-        label: 'iscMinWithNominalVoltageProfilePredefinedParams',
+        id: 'ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP',
+        label: 'iscMinWithNominalVoltageMapPredefinedParams',
     },
 ];
 
