@@ -15,7 +15,7 @@ import {
     SECTION_COUNT,
 } from 'components/utils/field-constants';
 import { CouplingOmnibusCreation } from './coupling-omnibus-creation';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { buildNewBusbarSections } from 'components/utils/utils';
 
@@ -44,12 +44,9 @@ export const CouplingOmnibusForm = () => {
         return [];
     }, [watchVoltageLevelID, watchBusBarCount, watchSectionCount]);
 
-    const sectionOptionsRef = useRef(sectionOptions);
     useEffect(() => {
-        if (sectionOptionsRef.current !== sectionOptions) {
-            setValue(COUPLING_OMNIBUS, []);
-        }
-        sectionOptionsRef.current = sectionOptions;
+        // the cleanup function is triggered every time sectionOptions changes and when unmounting
+        return () => setValue(COUPLING_OMNIBUS, []);
     }, [sectionOptions, setValue]);
 
     return (
@@ -59,11 +56,6 @@ export const CouplingOmnibusForm = () => {
             fieldProps={{ sectionOptions }}
             addButtonLabel={'AddCoupling_Omnibus'}
             initialValue={couplingOmnibusCreation}
-            disabled={
-                !watchBusBarCount ||
-                !watchSectionCount ||
-                (watchBusBarCount === 1 && watchSectionCount === 1)
-            }
         />
     );
 };
