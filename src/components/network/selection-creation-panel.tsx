@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
@@ -140,6 +140,34 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         setOpenDirectorySelector(false);
     };
 
+    const equipmentTypesOptions = useMemo(() => {
+        const equipmentTypesToExclude =
+            watchSelectionType === SELECTION_TYPES.FILTER
+                ? new Set([
+                      EQUIPMENT_TYPES.SWITCH,
+                      EQUIPMENT_TYPES.BUS,
+                      EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
+                      EQUIPMENT_TYPES.BUSBAR_SECTION,
+                      EQUIPMENT_TYPES.TIE_LINE,
+                  ])
+                : new Set([
+                      EQUIPMENT_TYPES.SWITCH,
+                      EQUIPMENT_TYPES.BUS,
+                      EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
+                  ]);
+
+        return Object.values(EQUIPMENT_TYPES)
+            .filter(
+                (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
+            )
+            .map((value) => {
+                return {
+                    id: value,
+                    label: equipementTypeToLabel(value),
+                };
+            });
+    }, [watchSelectionType]);
+
     return (
         <CustomFormProvider
             removeOptional={true}
@@ -178,12 +206,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                             <Grid container paddingTop={2}>
                                 <SelectInput
                                     name={'equipmentType'}
-                                    options={Object.values(EQUIPMENT_TYPES).map(
-                                        (value) => ({
-                                            id: value,
-                                            label: equipementTypeToLabel(value),
-                                        })
-                                    )}
+                                    options={equipmentTypesOptions}
                                     label={'EquipmentType'}
                                     fullWidth
                                     size={'medium'}
