@@ -104,6 +104,13 @@ export const useSearchMatchingEquipments = (
     const updateSearchTerm = useCallback(
         (newSearchTerm: string) => {
             setSearchTerm(newSearchTerm);
+            // if user input is empty, return empty array and set isLoading to false without debouncing
+            if (newSearchTerm.length === 0) {
+                setEquipmentsFound([]);
+                setIsLoading(false);
+                return;
+            }
+
             setIsLoading(true);
             debouncedSearchMatchingEquipments(newSearchTerm);
         },
