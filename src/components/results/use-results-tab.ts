@@ -14,13 +14,13 @@ import { ReduxState } from 'redux/reducer.type';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 
 export enum ResultsTabsRootLevel {
-    LOADFLOW = 0,
+    LOAD_FLOW = 0,
     SECURITY_ANALYSIS = 1,
     SENSITIVITY_ANALYSIS = 2,
     NON_EVACUATED_ENERGY = 3,
     SHORTCIRCUIT_ANALYSIS = 4,
     DYNAMIC_SIMULATION = 5,
-    VOLTAGE_INIT = 6,
+    VOLTAGE_INITIALIZATION = 6,
 }
 
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)
@@ -34,7 +34,7 @@ export type ResultTabIndexRedirection =
  * handles redirection to specific tab
  * @param resultTabIndexRedirection array holding the desired tabs to be redirected to [2, 1] would redirect to tab number 2, subtab number 1
  * @param setTabIndex setter allowing to set the tab in the current component
- * @param tabLevel tab level of the current component
+ * @param view display context (cf StudyView)
  */
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
@@ -80,16 +80,16 @@ export const computingTypeToRootTabRedirection = (
         ? availableServices
               .map((service) => service.computingType)
               .findIndex((computations) => computations.includes(computingType))
-        : ResultsTabsRootLevel.LOADFLOW;
+        : ResultsTabsRootLevel.LOAD_FLOW;
 };
 
 export const computingTypeToShortcircuitTabRedirection = (
     computingType: ComputingType | undefined
 ): ResultTabIndexRedirection => {
     switch (computingType) {
-        case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:
+        case ComputingType.SHORT_CIRCUIT:
             return ShortCircuitAnalysisResultTabs.ALL_BUSES;
-        case ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS:
+        case ComputingType.SHORT_CIRCUIT_ONE_BUS:
             return ShortCircuitAnalysisResultTabs.ONE_BUS;
         default:
             return ShortCircuitAnalysisResultTabs.ALL_BUSES;
