@@ -35,18 +35,18 @@ export default class LogReport {
             this.id = undefined;
             this.uniqueId = uuid4();
         } else if (reportType === LogReportType.NodeReport) {
-            this.id = jsonReporter?.taskValues?.id?.value; // not unique for all nodes
-            this.uniqueId = jsonReporter.taskKey; // then use taskkey as unique Id
+            this.id = jsonReporter?.values?.id?.value; // not unique for all nodes
+            this.uniqueId = jsonReporter.messageKey; // then use taskkey as unique Id
         } else {
-            this.id = jsonReporter?.taskValues?.id?.value; // unique for all subreports
+            this.id = jsonReporter?.values?.id?.value; // unique for all subreports
             this.uniqueId = this.id;
         }
-        this.key = jsonReporter.taskKey;
+        this.key = jsonReporter.messageKey;
         this.title = LogReportItem.resolveTemplateMessage(
-            jsonReporter.defaultName,
-            jsonReporter.taskValues
+            jsonReporter.messageTemplate,
+            jsonReporter.values
         );
-        this.subReports = [];
+        this.children = [];
         this.logs = [];
         this.parentReportId = parentReportId;
         // The different severities for this report (not including the subreports)
@@ -76,8 +76,8 @@ export default class LogReport {
         return this.key;
     }
 
-    getSubReports() {
-        return this.subReports;
+    getChildren() {
+        return this.children;
     }
 
     getLogs() {
@@ -94,7 +94,7 @@ export default class LogReport {
 
     getAllLogs() {
         return this.getLogs().concat(
-            this.getSubReports().flatMap((r) => r.getAllLogs())
+            this.getChildren().flatMap((r) => r.getAllLogs())
         );
     }
 
@@ -103,15 +103,18 @@ export default class LogReport {
             reportType === LogReportType.GlobalReport
                 ? LogReportType.NodeReport
                 : LogReportType.SubReport;
-        jsonReporter.subReporters.map((value) =>
-            this.subReports.push(new LogReport(childType, value, this.uniqueId))
-        );
-        jsonReporter.reports.map((value) =>
-            this.logs.push(new LogReportItem(value, this.uniqueId))
-        );
+        jsonReporter.children.forEach((value) => {
+            if (value.children.length > 0) {
+                this.children.push(
+                    new LogReport(childType, value, this.uniqueId)
+                );
+            } else {
+                this.logs.push(new LogReportItem(value, this.uniqueId));
+            }
+        });
 
         // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
-        jsonReporter.taskValues?.severityList?.value
+        jsonReporter.values?.severityList?.value
             .split(/[[,\]]/)
             .filter((e) => e.length)
             .map((es) => es.trim())
@@ -133,7 +136,7 @@ export default class LogReport {
     initAllSeverityList() {
         let logSeverityList = this.getSeverityList();
 
-        this.getSubReports()
+        this.getChildren()
             .map((e) => e.initAllSeverityList())
             .forEach((e) => {
                 logSeverityList = [...new Set([...logSeverityList, ...e])];
