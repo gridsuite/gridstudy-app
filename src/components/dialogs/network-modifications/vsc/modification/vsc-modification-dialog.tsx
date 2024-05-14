@@ -164,7 +164,10 @@ const VscModificationDialog: React.FC<any> = ({
 
     const onEquipmentIdChange = useCallback(
         (equipementId: string | null) => {
-            if (equipementId) {
+            if (!equipmentId) {
+                setValuesAndEmptyOthers();
+                setVcsToModify(null);
+            } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
@@ -231,28 +234,29 @@ const VscModificationDialog: React.FC<any> = ({
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch((_error) => {
-                        setVcsToModify(null);
-                        if (_error.status !== 404) {
+                        setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setVcsToModify(null);
                             reset(emptyFormData);
                         }
-                        setDataFetchStatus(FetchStatus.FAILED);
                     });
-            } else {
-                setValuesAndEmptyOthers();
-                setVcsToModify(null);
             }
         },
         [
+            equipmentId,
+            setValuesAndEmptyOthers,
             studyUuid,
             currentNodeUuid,
             setValue,
             getValues,
+            editData?.equipmentId,
             reset,
-            setValuesAndEmptyOthers,
         ]
     );
     useEffect(() => {
-        onEquipmentIdChange(equipmentId);
+        if (equipmentId) {
+            onEquipmentIdChange(equipmentId);
+        }
     }, [equipmentId, onEquipmentIdChange]);
 
     const onSubmit = (hvdcLine: any) => {
