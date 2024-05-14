@@ -177,8 +177,7 @@ export function fetchNetworkElementInfos(
     elementType,
     infoType,
     elementId,
-    inUpstreamBuiltParentNode,
-    operation
+    inUpstreamBuiltParentNode
 ) {
     console.info(
         `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
@@ -192,10 +191,11 @@ export function fetchNetworkElementInfos(
     }
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
-    if (operation) {
-        urlSearchParams.append('operation', operation);
-    }
+    const optionalParams = new Map();
 
+    optionalParams.forEach((value, key) =>
+        urlSearchParams.append(`optionalParameters[${key}]`, value)
+    );
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/elements/' +

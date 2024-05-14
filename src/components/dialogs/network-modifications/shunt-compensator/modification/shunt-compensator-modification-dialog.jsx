@@ -32,7 +32,6 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
 import {
-    EQUIPMENT_INFOS_OPERATION,
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
@@ -165,30 +164,32 @@ const ShuntCompensatorModificationDialog = ({
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true,
-                    EQUIPMENT_INFOS_OPERATION.MODIFICATION
+                    true
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            setShuntCompensatorInfos(shuntCompensator);
-                            setDataFetchStatus(FetchStatus.SUCCEED);
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(shuntCompensator),
-                            }));
+                            if (!shuntCompensator.isLinear) {
+                                snackError({
+                                    headerId: 'ShuntCompensatorNonlinearError',
+                                });
+                                setSelectedId(null);
+                            } else {
+                                setShuntCompensatorInfos(shuntCompensator);
+                                setDataFetchStatus(FetchStatus.SUCCEED);
+                                reset((formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]:
+                                        getConcatenatedProperties(
+                                            shuntCompensator
+                                        ),
+                                }));
+                            }
                         }
                         setLoading(false);
                     })
                     .catch((error) => {
                         setShuntCompensatorInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        if (error.status === 501) {
-                            snackError({
-                                headerId: 'ShuntCompensatorNonlinearError',
-                            });
-                            setSelectedId(null);
-                        }
                         if (error.status === 404) {
                             setIdExists(true);
                         }
