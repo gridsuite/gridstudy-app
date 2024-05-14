@@ -36,10 +36,14 @@ import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
 import PropertiesForm from '../../common/properties/properties-form';
+import { useWatch } from 'react-hook-form';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const [substations, setSubstations] = useState([]);
+
+    const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
+    const watchSectionCount = useWatch({ name: SECTION_COUNT });
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -136,6 +140,8 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         <IntegerInput name={SECTION_COUNT} label={'numberOfSections'} />
     );
 
+    const displayOmnibus = watchBusBarCount > 1 || watchSectionCount > 1;
+
     const couplingOmnibusForm = <CouplingOmnibusForm />;
 
     return (
@@ -163,8 +169,12 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                 {gridItem(sectionCountField, 4)}
                 <SwitchesBetweenSections />
             </Grid>
-            <GridSection title={'Coupling_Omnibus'} />
-            <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
+            {displayOmnibus && (
+                <>
+                    <GridSection title={'Coupling_Omnibus'} />
+                    <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
+                </>
+            )}
             <PropertiesForm networkElementType={'voltageLevel'} />
         </>
     );
