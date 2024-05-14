@@ -60,6 +60,13 @@ import { createVsc } from '../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const formSchema = yup
     .object()
@@ -70,6 +77,7 @@ const formSchema = yup
         ...getVscConverterStationSchema(CONVERTER_STATION_1),
         ...getVscConverterStationSchema(CONVERTER_STATION_2),
     })
+    .concat(creationPropertiesSchema)
     .required();
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -77,6 +85,7 @@ const emptyFormData = {
     ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, false),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2),
+    ...emptyProperties,
 };
 
 export const VSC_CREATION_TABS = {
@@ -130,6 +139,7 @@ const VscCreationDialog = ({
                 CONVERTER_STATION_2,
                 hvdcLine.converterStation2
             ),
+            ...copyEquipmentPropertiesForCreation(hvdcLine),
         });
     };
 
@@ -201,6 +211,7 @@ const VscCreationDialog = ({
                     CONVERTER_STATION_2,
                     editData.converterStation2
                 ),
+                ...getPropertiesFromModification(editData.properties),
             });
         }
     }, [editData, reset]);
@@ -255,6 +266,7 @@ const VscCreationDialog = ({
                 hvdcLineTab[DROOP],
                 converterStation1,
                 converterStation2,
+                toModificationProperties(hvdcLine),
                 !!editData,
                 editData?.uuid ?? null
             ).catch((error) => {
