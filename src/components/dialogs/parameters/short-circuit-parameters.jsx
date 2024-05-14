@@ -257,6 +257,7 @@ export const ShortCircuitParameters = ({
                 <SubmitButton
                     variant="outlined"
                     onClick={handleSubmit(onSubmit)}
+                    disabled={!formState.isValid || formState.isSubmitting}
                 >
                     <FormattedMessage id="validate" />
                 </SubmitButton>
