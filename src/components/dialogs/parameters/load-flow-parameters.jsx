@@ -522,8 +522,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
 
     const resetLfParametersAndLfProvider = useCallback(() => {
         setSpecificCurrentParams({});
-        resetParameters();
-        resetProvider();
+        resetParameters().then(resetProvider);
     }, [resetParameters, resetProvider]);
 
     const resetLfParameters = useCallback(() => {
