@@ -186,14 +186,14 @@ const paramsInitialState = {
 };
 
 const initialComputingStatus = {
-    [ComputingType.LOADFLOW]: RunningStatus.IDLE,
+    [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
-    [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
-    [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.SHORT_CIRCUIT]: RunningStatus.IDLE,
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
-    [ComputingType.VOLTAGE_INIT]: RunningStatus.IDLE,
+    [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
 };
 
 const initialSpreadsheetNetworkState = {

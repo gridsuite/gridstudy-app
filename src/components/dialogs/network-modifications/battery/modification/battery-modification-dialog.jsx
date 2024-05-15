@@ -58,8 +58,8 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -120,19 +120,6 @@ const BatteryModificationDialog = ({
     });
 
     const { reset, getValues, setValue } = formMethods;
-
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
@@ -263,7 +250,7 @@ const BatteryModificationDialog = ({
                             reset((formValues) => ({
                                 ...formValues,
                                 [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(value),
+                                    getConcatenatedProperties(value, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -285,7 +272,6 @@ const BatteryModificationDialog = ({
             setValue,
             setValuesAndEmptyOthers,
             reset,
-            getConcatenatedProperties,
         ]
     );
 

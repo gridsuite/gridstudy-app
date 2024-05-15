@@ -124,7 +124,7 @@ export const useAllComputingStatus = (
         loadFlowStatusInvalidations,
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
-        ComputingType.LOADFLOW
+        ComputingType.LOAD_FLOW
     );
 
     useComputingStatus(
@@ -167,7 +167,7 @@ export const useAllComputingStatus = (
         shortCircuitAnalysisStatusInvalidations,
         shortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
-        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+        ComputingType.SHORT_CIRCUIT,
         shortCircuitAvailability
     );
 
@@ -178,7 +178,7 @@ export const useAllComputingStatus = (
         oneBusShortCircuitAnalysisStatusInvalidations,
         oneBusShortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
-        ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+        ComputingType.SHORT_CIRCUIT_ONE_BUS,
         shortCircuitAvailability
     );
 
@@ -200,7 +200,7 @@ export const useAllComputingStatus = (
         voltageInitStatusInvalidations,
         voltageInitStatusCompletions,
         getVoltageInitRunningStatus,
-        ComputingType.VOLTAGE_INIT,
+        ComputingType.VOLTAGE_INITIALIZATION,
         voltageInitAvailability
     );
 };

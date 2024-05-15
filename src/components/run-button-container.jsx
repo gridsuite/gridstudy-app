@@ -61,7 +61,7 @@ import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 
 export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const securityAnalysisStatus = useSelector(
@@ -77,15 +77,14 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     );
 
     const allBusesShortCircuitAnalysisStatus = useSelector(
-        (state) =>
-            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const dynamicSimulationStatus = useSelector(
         (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const voltageInitStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
 
     const [showContingencyListSelector, setShowContingencyListSelector] =
@@ -208,11 +207,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         }
 
         return {
-            [ComputingType.LOADFLOW]: {
+            [ComputingType.LOAD_FLOW]: {
                 messageId: 'LoadFlow',
                 startComputation() {
                     startComputationAsync(
-                        ComputingType.LOADFLOW,
+                        ComputingType.LOAD_FLOW,
                         null,
                         () =>
                             startLoadFlow(
@@ -226,7 +225,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(ComputingType.LOADFLOW, () =>
+                    actionOnRunnables(ComputingType.LOAD_FLOW, () =>
                         stopLoadFlow(studyUuid, currentNode?.id)
                     );
                 },
@@ -288,11 +287,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
             },
-            [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: {
+            [ComputingType.SHORT_CIRCUIT]: {
                 messageId: 'ShortCircuitAnalysis',
                 startComputation() {
                     startComputationAsync(
-                        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
+                        ComputingType.SHORT_CIRCUIT,
                         null,
                         () =>
                             startShortCircuitAnalysis(
@@ -305,10 +304,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(
-                        ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
-                        () =>
-                            stopShortCircuitAnalysis(studyUuid, currentNode?.id)
+                    actionOnRunnables(ComputingType.SHORT_CIRCUIT, () =>
+                        stopShortCircuitAnalysis(studyUuid, currentNode?.id)
                     );
                 },
             },
@@ -343,11 +340,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
             },
-            [ComputingType.VOLTAGE_INIT]: {
+            [ComputingType.VOLTAGE_INITIALIZATION]: {
                 messageId: 'VoltageInit',
                 startComputation() {
                     startComputationAsync(
-                        ComputingType.VOLTAGE_INIT,
+                        ComputingType.VOLTAGE_INITIALIZATION,
                         null,
                         () => startVoltageInit(studyUuid, currentNode?.id),
                         () => {},
@@ -356,8 +353,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(ComputingType.VOLTAGE_INIT, () =>
-                        stopVoltageInit(studyUuid, currentNode?.id)
+                    actionOnRunnables(
+                        ComputingType.VOLTAGE_INITIALIZATION,
+                        () => stopVoltageInit(studyUuid, currentNode?.id)
                     );
                 },
             },
@@ -375,7 +373,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const getRunningStatus = useCallback(
         (computingType) => {
             switch (computingType) {
-                case ComputingType.LOADFLOW:
+                case ComputingType.LOAD_FLOW:
                     return loadFlowStatus;
                 case ComputingType.SECURITY_ANALYSIS:
                     return securityAnalysisStatus;
@@ -383,11 +381,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     return sensitivityAnalysisStatus;
                 case ComputingType.NON_EVACUATED_ENERGY_ANALYSIS:
                     return nonEvacuatedEnergyStatus;
-                case ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS:
+                case ComputingType.SHORT_CIRCUIT:
                     return allBusesShortCircuitAnalysisStatus;
                 case ComputingType.DYNAMIC_SIMULATION:
                     return dynamicSimulationStatus;
-                case ComputingType.VOLTAGE_INIT:
+                case ComputingType.VOLTAGE_INITIALIZATION:
                     return voltageInitStatus;
                 default:
                     return null;
@@ -407,7 +405,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            ComputingType.LOADFLOW,
+            ComputingType.LOAD_FLOW,
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up
                 ? [ComputingType.SECURITY_ANALYSIS]
                 : []),
@@ -419,14 +417,14 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 ? [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
                 : []),
             ...(shortCircuitAvailability === OptionalServicesStatus.Up
-                ? [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+                ? [ComputingType.SHORT_CIRCUIT]
                 : []),
             ...(dynamicSimulationAvailability === OptionalServicesStatus.Up &&
             enableDeveloperMode
                 ? [ComputingType.DYNAMIC_SIMULATION]
                 : []),
             ...(voltageInitAvailability === OptionalServicesStatus.Up
-                ? [ComputingType.VOLTAGE_INIT]
+                ? [ComputingType.VOLTAGE_INITIALIZATION]
                 : []),
         ];
     }, [

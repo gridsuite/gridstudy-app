@@ -102,7 +102,7 @@ export const NetworkMapTab = ({
     const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel

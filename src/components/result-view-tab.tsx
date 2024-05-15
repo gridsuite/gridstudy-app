@@ -200,7 +200,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         return [
             {
                 id: 'LoadFlow',
-                computingType: [ComputingType.LOADFLOW],
+                computingType: [ComputingType.LOAD_FLOW],
                 displayed: true,
                 renderResult: renderLoadFlowResult,
             },
@@ -231,8 +231,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'ShortCircuitAnalysis',
                 computingType: [
-                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
-                    ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.SHORT_CIRCUIT,
+                    ComputingType.SHORT_CIRCUIT_ONE_BUS,
                 ],
                 displayed:
                     shortCircuitAvailability === OptionalServicesStatus.Up,
@@ -248,7 +248,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             },
             {
                 id: 'VoltageInit',
-                computingType: [ComputingType.VOLTAGE_INIT],
+                computingType: [ComputingType.VOLTAGE_INITIALIZATION],
                 displayed:
                     voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,
@@ -274,7 +274,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
             computingTypeToRootTabRedirection(
-                lastCompletedComputation ?? ComputingType.LOADFLOW,
+                lastCompletedComputation ?? ComputingType.LOAD_FLOW,
                 services
             ),
         [lastCompletedComputation, services]

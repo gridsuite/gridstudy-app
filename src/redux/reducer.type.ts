@@ -106,14 +106,14 @@ export interface CurrentTreeNode {
 }
 
 export interface ComputingStatus {
-    [ComputingType.LOADFLOW]: RunningStatus;
+    [ComputingType.LOAD_FLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
     [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
-    [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
-    [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
+    [ComputingType.SHORT_CIRCUIT]: RunningStatus;
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
-    [ComputingType.VOLTAGE_INIT]: RunningStatus;
+    [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
 }
 
 export interface User {
