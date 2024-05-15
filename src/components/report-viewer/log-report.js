@@ -104,7 +104,7 @@ export default class LogReport {
                 ? LogReportType.NodeReport
                 : LogReportType.SubReport;
         jsonReporter.children.forEach((value) => {
-            if (value.children.length > 0) {
+            if (value.children.length > 0 || value.values?.id !== undefined) {
                 this.children.push(
                     new LogReport(childType, value, this.uniqueId)
                 );
