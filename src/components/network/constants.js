@@ -42,6 +42,8 @@ export const REGULATION_TYPES = {
 export const UPDATE_TYPE = [
     'creatingInProgress',
     'updatingInProgress',
+    'stashingInProgress',
+    'restoringInProgress',
     'deletingInProgress',
 ];
 

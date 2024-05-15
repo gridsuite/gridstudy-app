@@ -72,6 +72,10 @@ const network_modifications_locale_fr = {
         'Suppression de la modification en cours ...',
     'network_modifications.updatingModification':
         'Mise à jour de la modification en cours ...',
+    'network_modifications.stashingModification':
+        'Mise en corbeille de la modification en cours ...',
+    'network_modifications.restoringModification':
+        'Restauration de la modification en cours ...',
     'network_modifications.modifications':
         'Mise à jour de la liste des modifications en cours ...',
     'network_modifications.GENERATION_DISPATCH':
