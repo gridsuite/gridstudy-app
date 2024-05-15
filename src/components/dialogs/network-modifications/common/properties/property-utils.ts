@@ -6,18 +6,18 @@
  */
 import yup from 'components/utils/yup-config';
 import {
+    ADDED,
     ADDITIONAL_PROPERTIES,
     DELETION_MARK,
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-    ADDED,
 } from 'components/utils/field-constants';
-import { fetchAppsAndUrls } from '../../../../../services/utils';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import { fetchStudyMetadata } from 'services/metadata';
 
 export type Property = {
-    [NAME]: string | null;
+    [NAME]: string;
     [VALUE]: string | null;
     [PREVIOUS_VALUE]: string | null;
     [DELETION_MARK]: boolean;
@@ -36,37 +36,19 @@ type Equipment = {
     properties: Record<string, string> | undefined;
 };
 
-interface Metadata {
-    name: string;
-    url: string;
-    appColor: string;
-    hiddenInAppsMenu: boolean;
-    resources: unknown;
-}
-
-interface StudyMetadata extends Metadata {
-    name: 'Study';
-    predefinedEquipmentProperties: {
-        [networkElementType: string]: PredefinedProperties;
-    };
-}
-
-const isStudyMetadata = (metadata: Metadata): metadata is StudyMetadata => {
-    return metadata.name === 'Study';
-};
-
 export const fetchPredefinedProperties = (
     networkElementType: string
 ): Promise<PredefinedProperties | undefined> => {
-    return fetchAppsAndUrls().then((res: [Metadata]) => {
-        const studyMetadata = res.filter(isStudyMetadata);
-        if (!studyMetadata) {
-            return Promise.reject('Study entry could not be found in metadata');
-        }
-
-        return studyMetadata[0].predefinedEquipmentProperties?.[
+    return fetchStudyMetadata().then((studyMetadata) => {
+        return studyMetadata.predefinedEquipmentProperties?.[
             networkElementType
-        ]; // There should be only one study metadata
+        ];
+    });
+};
+
+export const fetchDefaultCountry = (): Promise<string | undefined> => {
+    return fetchStudyMetadata().then((studyMetadata) => {
+        return studyMetadata.defaultCountry;
     });
 };
 
@@ -76,7 +58,7 @@ export const emptyProperties: Properties = {
 
 export const initializedProperty = (): Property => {
     return {
-        [NAME]: null,
+        [NAME]: '',
         [VALUE]: null,
         [PREVIOUS_VALUE]: null,
         [DELETION_MARK]: false,
@@ -119,6 +101,18 @@ export const copyEquipmentPropertiesForCreation = (
             : [],
     };
 };
+
+export function getConcatenatedProperties(
+    equipment: Equipment,
+    getValues: (name: string) => any
+): any {
+    // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
+    const modificationProperties = getValues(ADDITIONAL_PROPERTIES);
+    return mergeModificationAndEquipmentProperties(
+        modificationProperties,
+        equipment
+    );
+}
 
 /*
     We first load modification properties (empty at creation but could be filled later on), then we load properties
