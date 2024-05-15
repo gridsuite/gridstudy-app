@@ -20,7 +20,7 @@ const dynamic_mapping_models_en = {
     'models.GeneratorPV': 'PV generator',
     'models.LoadAlphaBeta': 'Voltage-dependent load',
     'models.LoadPQ': 'PQ load',
-    'models.CurrentLimitAutomaton': 'Current-limiter automaton',
+    'models.OverloadManagementSystem': 'Overload Management System',
     'models.TapChangerBlockingAutomaton': 'Block tap-changers automaton',
     'models.StaticVarCompensator': 'Static var compensator',
     'models.DefaultBus': 'Bus',
