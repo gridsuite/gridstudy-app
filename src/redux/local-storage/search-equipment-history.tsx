@@ -59,7 +59,7 @@ export const addToLocalStorageSearchEquipmentHistory = (
     // then we keep only first {MAX_SEARCH_EQUIPMENT_HISTORY_SIZE} elements
     saveLocalStorageSearchEquipmentHistory(
         studyUuid,
-        currentHistory.slice(0, MAX_SEARCH_EQUIPMENT_HISTORY_SIZE - 1)
+        currentHistory.slice(0, MAX_SEARCH_EQUIPMENT_HISTORY_SIZE)
     );
 };
 

@@ -55,9 +55,10 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const onSelectionChange = useCallback(
         (element: EquipmentInfos) => {
             setIsDialogSearchOpen(false);
+            updateSearchTerm('');
             showVoltageLevelDiagram(element);
         },
-        [setIsDialogSearchOpen, showVoltageLevelDiagram]
+        [updateSearchTerm, setIsDialogSearchOpen, showVoltageLevelDiagram]
     );
 
     useSearchEvent(enableSearchDialog);
@@ -84,6 +85,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
             isLoading={isLoading}
+            isLoadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
         />
     );
 };
