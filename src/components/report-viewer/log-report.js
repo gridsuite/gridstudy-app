@@ -93,9 +93,9 @@ export default class LogReport {
     }
 
     getAllLogs() {
-        return this.getChildren()
-            .flatMap((r) => r.getAllLogs())
-            .concat(this.getLogs());
+        return this.getLogs().concat(
+            this.getChildren().flatMap((r) => r.getAllLogs())
+        );
     }
 
     init(reportType, jsonReporter) {
