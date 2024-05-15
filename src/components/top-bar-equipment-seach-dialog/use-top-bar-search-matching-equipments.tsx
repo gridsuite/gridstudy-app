@@ -18,7 +18,7 @@ export const useTopBarSearchMatchingEquipment = (
     props: UseTopBarSearchMatchingEquipmentProps
 ) => {
     const { nodeUuid, studyUuid } = props;
-    const { updateSearchTerm, equipmentsFound, isLoading, searchTerm } =
+    const { equipmentsFound, searchTerm, ...otherStates } =
         useSearchMatchingEquipments({
             studyUuid: studyUuid,
             nodeUuid: nodeUuid,
@@ -33,5 +33,5 @@ export const useTopBarSearchMatchingEquipment = (
         }
     }, [searchTerm, equipmentsFound, studyUuid]);
 
-    return { updateSearchTerm, equipmentsToReturn, isLoading, searchTerm };
+    return { ...otherStates, equipmentsFound: equipmentsToReturn, searchTerm };
 };

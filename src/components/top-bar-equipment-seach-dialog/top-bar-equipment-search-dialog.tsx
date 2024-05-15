@@ -41,7 +41,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         (state: ReduxState) => state.currentTreeNode
     );
 
-    const { searchTerm, updateSearchTerm, equipmentsToReturn, isLoading } =
+    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
         useTopBarSearchMatchingEquipment({
             studyUuid: studyUuid,
             nodeUuid: currentNode?.id,
@@ -72,7 +72,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={onSelectionChange}
-            elementsFound={equipmentsToReturn}
+            elementsFound={equipmentsFound}
             renderElement={(props) => (
                 <EquipmentItem
                     styles={equipmentStyles}

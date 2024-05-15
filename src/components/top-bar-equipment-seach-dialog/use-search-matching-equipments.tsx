@@ -9,11 +9,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     EquipmentInfos,
     EquipmentType,
-    Identifiable,
     getEquipmentsInfosForSearchBar,
     useSnackMessage,
     useDebounce,
-    Equipment,
 } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
@@ -25,22 +23,13 @@ interface UseSearchMatchingEquipmentsProps {
     nodeUuid: UUID;
     inUpstreamBuiltParentNode?: boolean;
     equipmentType?: EquipmentType;
-    makeItems?: (
-        equipmentsInfos: Equipment[],
-        getNameOrId: (e: Identifiable) => string
-    ) => EquipmentInfos[];
 }
 
 export const useSearchMatchingEquipments = (
     props: UseSearchMatchingEquipmentsProps
 ) => {
-    const {
-        studyUuid,
-        nodeUuid,
-        inUpstreamBuiltParentNode,
-        equipmentType,
-        makeItems = getEquipmentsInfosForSearchBar,
-    } = props;
+    const { studyUuid, nodeUuid, inUpstreamBuiltParentNode, equipmentType } =
+        props;
 
     const { snackError } = useSnackMessage();
     const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +59,9 @@ export const useSearchMatchingEquipments = (
             )
                 .then((infos) => {
                     if (newSearchTerm === lastSearchTermRef.current) {
-                        setEquipmentsFound(makeItems(infos, getNameOrId));
+                        setEquipmentsFound(
+                            getEquipmentsInfosForSearchBar(infos, getNameOrId)
+                        );
                         setIsLoading(false);
                     } // else ignore results of outdated fetch
                 })
@@ -89,7 +80,6 @@ export const useSearchMatchingEquipments = (
             nodeUuid,
             equipmentType,
             inUpstreamBuiltParentNode,
-            makeItems,
             snackError,
             getNameOrId,
             getUseNameParameterKey,

@@ -84,7 +84,7 @@ export const getLocalStorageSearchEquipmentHistory = (studyUuid: UUID) => {
     }
 };
 
-export const saveLocalStorageSearchEquipmentHistory = (
+const saveLocalStorageSearchEquipmentHistory = (
     studyUuid: UUID,
     equipments: EquipmentInfos[]
 ) => {
