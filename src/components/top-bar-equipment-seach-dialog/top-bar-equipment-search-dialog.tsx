@@ -19,6 +19,7 @@ import { CustomSuffixRenderer } from './custom-suffix-renderer';
 import { useDisabledSearchReason } from './use-disabled-search-reason';
 import { useSearchEvent } from './use-search-event';
 import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-equipments';
+import { addToLocalStorageSearchEquipmentHistory } from 'redux/local-storage/search-equipment-history';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -56,9 +57,15 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         (element: EquipmentInfos) => {
             setIsDialogSearchOpen(false);
             updateSearchTerm('');
+            addToLocalStorageSearchEquipmentHistory(studyUuid, element);
             showVoltageLevelDiagram(element);
         },
-        [updateSearchTerm, setIsDialogSearchOpen, showVoltageLevelDiagram]
+        [
+            updateSearchTerm,
+            setIsDialogSearchOpen,
+            showVoltageLevelDiagram,
+            studyUuid,
+        ]
     );
 
     useSearchEvent(enableSearchDialog);
@@ -85,7 +92,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
             isLoading={isLoading}
-            isLoadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
+            loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
         />
     );
 };

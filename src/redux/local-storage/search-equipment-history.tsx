@@ -78,6 +78,10 @@ export const getLocalStorageSearchEquipmentHistory = (studyUuid: UUID) => {
 
         return validatedCurrentHistory;
     } catch (e) {
+        console.error(
+            'An error occured while getting search equipments history - Linked local storage has been emptied.'
+        );
+        console.error(e);
         // if an error is caught when validating or parsing JSON, emptying local storage to prevent blocking bug
         saveLocalStorageSearchEquipmentHistory(studyUuid, []);
         return [];
