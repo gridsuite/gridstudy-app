@@ -113,8 +113,7 @@ const MapViewer = ({
     const oneBusShortCircuitStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
-    const [previousStudyDisplayMode, setPreviousStudyDisplayMode] =
-        useState(undefined);
+    const previousStudyDisplayMode = useRef(undefined);
     const openVoltageLevel = useCallback(
         (vlId) => {
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
@@ -154,8 +153,8 @@ const MapViewer = ({
     const onDrawingModeEnter = useCallback(
         (active) => {
             // save the previous mode so we can restore it when the user cancel the drawing
-            if (previousStudyDisplayMode === undefined) {
-                setPreviousStudyDisplayMode(studyDisplayMode);
+            if (previousStudyDisplayMode.current === undefined) {
+                previousStudyDisplayMode.current = studyDisplayMode;
             }
             if (active === true) {
                 dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
@@ -167,9 +166,9 @@ const MapViewer = ({
 
     const onCancelFunction = useCallback(() => {
         networkMapref.current.cleanDraw();
-        if (previousStudyDisplayMode !== undefined) {
-            dispatch(setStudyDisplayMode(previousStudyDisplayMode));
-            setPreviousStudyDisplayMode(undefined);
+        if (previousStudyDisplayMode.current !== undefined) {
+            dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
+            previousStudyDisplayMode.current = undefined;
         }
     }, [dispatch, previousStudyDisplayMode]);
 
