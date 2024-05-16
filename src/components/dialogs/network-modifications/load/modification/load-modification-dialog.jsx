@@ -32,8 +32,8 @@ import { modifyLoad } from '../../../../../services/study/network-modifications'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -112,20 +112,6 @@ const LoadModificationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (!equipmentId) {
@@ -147,7 +133,7 @@ const LoadModificationDialog = ({
                             reset((formValues) => ({
                                 ...formValues,
                                 [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(load),
+                                    getConcatenatedProperties(load, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -161,7 +147,7 @@ const LoadModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getConcatenatedProperties, editData]
+        [studyUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {
