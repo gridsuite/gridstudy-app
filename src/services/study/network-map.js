@@ -92,25 +92,26 @@ export function fetchEquipmentsIds(
     let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/' +
-        'equipments-ids' +
-        '?' +
-        'equipmentType=' +
-        equipmentType;
-    if (substationsIds !== undefined && substationsIds.length > 0) {
-        fetchEquipmentsUrl +=
-            '&' + getQueryParamsList(substationsIds, 'substationsIds');
-    }
-
+        'equipments-ids';
+    const elementInfos = {
+        elementType: equipmentType,
+        substationsIds: substationsIds !== undefined && substationsIds,
+    };
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
         fetchEquipmentsUrl =
-            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
+            fetchEquipmentsUrl + '?' + urlSearchParams.toString();
     }
     console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
+    console.log('elementInfos: ', elementInfos);
+    return backendFetchJson(fetchEquipmentsUrl, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(elementInfos),
+    });
 }
 
 export function fetchLineOrTransformer(
