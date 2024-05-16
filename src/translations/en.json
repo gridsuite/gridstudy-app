@@ -1361,5 +1361,8 @@
     "FieldRequired": "At least one value is missing for required field : ",
     "ReactiveSlacksThreshold": "Alert threshold on reactive slacks",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
-    "TieLines": "Tie lines"
+    "TieLines": "Tie lines",
+    "ShuntCompensatorActivationThreshold": "Alert threshold on shunt compensator activation",
+    "ShuntCompensatorActivationThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
+    "ShuntCompensatorActivationThresholdDescription": "Threshold (in MVar) above which the difference between discretized and optimal value for shunt compensator activation is considered significant (and will thus be recorded in the functional logs)"
 }
