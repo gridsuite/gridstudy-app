@@ -63,8 +63,8 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -279,19 +279,6 @@ const LineModificationDialog = ({
         ]
     );
 
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
-
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [emptyFormData, reset]);
@@ -331,7 +318,10 @@ const LineModificationDialog = ({
                                             ),
                                     }),
                                     [ADDITIONAL_PROPERTIES]:
-                                        getConcatenatedProperties(line),
+                                        getConcatenatedProperties(
+                                            line,
+                                            getValues
+                                        ),
                                 }));
                             }
                         }
@@ -354,7 +344,7 @@ const LineModificationDialog = ({
             editData,
             reset,
             emptyFormData,
-            getConcatenatedProperties,
+            getValues,
         ]
     );
 
