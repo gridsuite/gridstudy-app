@@ -8,15 +8,17 @@
 import Grid from '@mui/material/Grid';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import React from 'react';
-import { TextInput } from '@gridsuite/commons-ui';
+import { TextInput, useLocalizedCountries } from '@gridsuite/commons-ui';
 import { COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
+import { useParameterState } from '../../../parameters/parameters.jsx';
+import { PARAM_LANGUAGE } from '../../../../../utils/config-params.js';
 
 const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
-    const { translate } = useLocalizedCountries();
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate } = useLocalizedCountries(language);
 
     const substationIdField = (
         <TextField

@@ -20,12 +20,12 @@ import {
     ElementType,
     FlatParameters,
     useSnackMessage,
+    useLocalizedCountries,
 } from '@gridsuite/commons-ui';
-import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_LIMIT_REDUCTION,
+  PARAM_DEVELOPER_MODE,
+  PARAM_LIMIT_REDUCTION, PARAM_LANGUAGE
 } from '../../../utils/config-params';
 import { ParameterType, ParamLine, ParameterGroup } from './widget';
 import { mergeSx } from '../../utils/functions';
@@ -36,7 +36,8 @@ import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
 const CountrySelector = ({ value, label, callback }) => {
-    const { translate, countryCodes } = useLocalizedCountries();
+  const [language] = useParameterState(PARAM_LANGUAGE);
+  const { translate, countryCodes } = useLocalizedCountries(language);
 
     return (
         <>

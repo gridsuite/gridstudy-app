@@ -17,19 +17,20 @@ import {
     useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, useLocalizedCountries } from '@gridsuite/commons-ui';
 import { Box } from '@mui/system';
 import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
-import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import {
     buildExpertFilter,
     CURVE_EQUIPMENT_TYPES,
     NOMINAL_VOLTAGE_UNIT,
 } from './curve-selector-utils';
+import { useParameterState } from '../../../parameters.jsx';
+import { PARAM_LANGUAGE } from '../../../../../../utils/config-params.js';
 
 const styles = {
     grid: {
@@ -88,7 +89,8 @@ const EquipmentFilter = forwardRef(
         // --- country (i.e. countryCode) => fetch from network-map-server --- //
         const [countries, setCountries] = useState([]);
         const [selectedCountries, setSelectedCountries] = useState([]);
-        const { translate } = useLocalizedCountries();
+        const [language] = useParameterState(PARAM_LANGUAGE);
+        const { translate } = useLocalizedCountries(language);
 
         // fetching options in different criterias
         useEffect(() => {

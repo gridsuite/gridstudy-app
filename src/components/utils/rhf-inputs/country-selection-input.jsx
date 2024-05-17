@@ -5,11 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { useLocalizedCountries } from '../localized-countries-hook';
+import {
+    AutocompleteInput,
+    useLocalizedCountries,
+} from '@gridsuite/commons-ui';
+import { useParameterState } from '../../dialogs/parameters/parameters.jsx';
+import { PARAM_LANGUAGE } from '../../../utils/config-params.js';
 
 const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
-    const { translate, countryCodes } = useLocalizedCountries();
+  const [language] = useParameterState(PARAM_LANGUAGE);
+  const { translate, countryCodes } = useLocalizedCountries(language);
 
     return (
         <AutocompleteInput

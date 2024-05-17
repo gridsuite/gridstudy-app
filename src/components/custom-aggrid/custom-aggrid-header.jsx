@@ -26,9 +26,11 @@ import {
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useLocalizedCountries } from '@gridsuite/commons-ui';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
+import { useParameterState } from '../dialogs/parameters/parameters.jsx';
+import { PARAM_LANGUAGE } from '../../utils/config-params.js';
 
 const styles = {
     iconSize: {
@@ -80,7 +82,8 @@ const CustomHeaderComponent = ({
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
 
-    const { translate } = useLocalizedCountries();
+  const [language] = useParameterState(PARAM_LANGUAGE);
+  const { translate } = useLocalizedCountries(language);
 
     const isBooleanFilter = filterDataType === FILTER_DATA_TYPES.BOOLEAN;
     const isAutoCompleteFilter =

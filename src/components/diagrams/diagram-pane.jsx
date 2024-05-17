@@ -45,7 +45,7 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, useLocalizedCountries } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import {
@@ -55,8 +55,8 @@ import {
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UpdateTypes } from '../../redux/reducer.type';
+import { useParameterState } from '../dialogs/parameters/parameters.jsx';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -352,7 +352,8 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
-    const { translate } = useLocalizedCountries();
+  const [language] = useParameterState(PARAM_LANGUAGE);
+  const { translate } = useLocalizedCountries(language);
 
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.

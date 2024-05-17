@@ -11,11 +11,13 @@ import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useLocalizedCountries } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { Theme } from '@mui/material';
 import { ReduxState } from '../../../redux/reducer.type';
+import { useParameterState } from '../../dialogs/parameters/parameters';
+import { PARAM_LANGUAGE } from '../../../utils/config-params';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -120,7 +122,8 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
     filters = emptyArray,
 }) => {
     const intl = useIntl();
-    const { translate } = useLocalizedCountries();
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate } = useLocalizedCountries(language);
     const dispatch = useDispatch();
     const recentGlobalFilters = useSelector(
         (state: ReduxState) => state.recentGlobalFilters

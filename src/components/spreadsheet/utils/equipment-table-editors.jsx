@@ -21,9 +21,11 @@ import {
     checkValidationsAndRefreshCells,
     deepUpdateValue,
 } from './equipment-table-utils';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useLocalizedCountries } from '@gridsuite/commons-ui';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
+import { useParameterState } from '../../dialogs/parameters/parameters.jsx';
+import { PARAM_LANGUAGE } from '../../../utils/config-params.js';
 
 export const GeneratorRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }, ref) => {
@@ -459,7 +461,8 @@ export const EnumListField = forwardRef(
 
 export const SelectCountryField = forwardRef(({ gridContext, colDef }, ref) => {
     const [value, setValue] = useState(null);
-    const { translate, countryCodes } = useLocalizedCountries();
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate, countryCodes } = useLocalizedCountries(language);
 
     useImperativeHandle(
         ref,

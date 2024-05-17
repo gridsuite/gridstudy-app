@@ -26,7 +26,10 @@ import {
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+import {
+    PARAM_FLUX_CONVENTION,
+    PARAM_LANGUAGE,
+} from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
     EditableCellRenderer,
@@ -89,8 +92,9 @@ import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-ag
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useLocalizedCountries } from '@gridsuite/commons-ui';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
+import { useParameterState } from '../dialogs/parameters/parameters.jsx';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -147,7 +151,8 @@ const TableWrapper = (props) => {
     const gridRef = useRef();
     const timerRef = useRef(null);
     const intl = useIntl();
-    const { translate } = useLocalizedCountries();
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate } = useLocalizedCountries(language);
 
     const { snackError } = useSnackMessage();
 
