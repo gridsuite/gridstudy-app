@@ -51,6 +51,7 @@ const EquipmentSearchDialog = ({
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={(element) => {
+                updateSearchTerm('');
                 onSelectionChange(element);
             }}
             elementsFound={equipmentsFound}
