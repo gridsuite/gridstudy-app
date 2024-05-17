@@ -82,8 +82,8 @@ const CustomHeaderComponent = ({
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
 
-  const [language] = useParameterState(PARAM_LANGUAGE);
-  const { translate } = useLocalizedCountries(language);
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate } = useLocalizedCountries(language);
 
     const isBooleanFilter = filterDataType === FILTER_DATA_TYPES.BOOLEAN;
     const isAutoCompleteFilter =

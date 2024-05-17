@@ -13,8 +13,8 @@ import { useParameterState } from '../../dialogs/parameters/parameters.jsx';
 import { PARAM_LANGUAGE } from '../../../utils/config-params.js';
 
 const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
-  const [language] = useParameterState(PARAM_LANGUAGE);
-  const { translate, countryCodes } = useLocalizedCountries(language);
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate, countryCodes } = useLocalizedCountries(language);
 
     return (
         <AutocompleteInput

@@ -352,8 +352,8 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
-  const [language] = useParameterState(PARAM_LANGUAGE);
-  const { translate } = useLocalizedCountries(language);
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate } = useLocalizedCountries(language);
 
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.

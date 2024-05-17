@@ -24,8 +24,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import {
-  PARAM_DEVELOPER_MODE,
-  PARAM_LIMIT_REDUCTION, PARAM_LANGUAGE
+    PARAM_DEVELOPER_MODE,
+    PARAM_LIMIT_REDUCTION,
+    PARAM_LANGUAGE,
 } from '../../../utils/config-params';
 import { ParameterType, ParamLine, ParameterGroup } from './widget';
 import { mergeSx } from '../../utils/functions';
@@ -36,8 +37,8 @@ import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
 import { fetchElementsMetadata } from 'services/explore';
 
 const CountrySelector = ({ value, label, callback }) => {
-  const [language] = useParameterState(PARAM_LANGUAGE);
-  const { translate, countryCodes } = useLocalizedCountries(language);
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate, countryCodes } = useLocalizedCountries(language);
 
     return (
         <>

@@ -14,8 +14,8 @@ interface CountryCellRendererProps {
 }
 
 const CountryCellRenderer: React.FC<CountryCellRendererProps> = ({ value }) => {
-  const [language] = useParameterState(PARAM_LANGUAGE);
-  const { translate } = useLocalizedCountries(language);
+    const [language] = useParameterState(PARAM_LANGUAGE);
+    const { translate } = useLocalizedCountries(language);
     const countryName = translate(value);
     return <span>{countryName}</span>;
 };
