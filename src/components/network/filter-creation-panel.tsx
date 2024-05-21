@@ -127,6 +127,8 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
             EQUIPMENT_TYPES.BUS,
             EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
             EQUIPMENT_TYPES.BUSBAR_SECTION,
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
             EQUIPMENT_TYPES.TIE_LINE,
         ]);
 
