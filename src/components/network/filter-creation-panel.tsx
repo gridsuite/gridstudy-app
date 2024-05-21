@@ -59,7 +59,8 @@ const emptyFormData = {
 type FilterCreationPanelProps = {
     onSaveFilter: (
         data: IFilterCreation,
-        distDir: TreeViewFinderNodeProps
+        distDir: TreeViewFinderNodeProps,
+        setSavingState: (state: boolean) => void
     ) => void;
     onCancel: () => void;
 };
@@ -168,7 +169,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             fullWidth
                             size={'medium'}
                             disableClearable={true}
-                            formProps={{ style: { fontStyle: 'italic' } }}
                         />
                     </Grid>
 
@@ -237,13 +237,12 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
-                                    setSavingState(true);
                                     onSaveFilter(
                                         formMethods.getValues() as IFilterCreation,
-                                        defaultFolder
+                                        defaultFolder,
+                                        setSavingState
                                     );
                                     generateFilterName();
-                                    setSavingState(false);
                                 }
                             });
                         }}

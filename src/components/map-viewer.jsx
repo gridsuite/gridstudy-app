@@ -74,6 +74,12 @@ const styles = {
         overflowWrap: 'break-word',
         textAlign: 'center',
     },
+    mapAndTreeContainer: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+    },
 };
 const MapViewer = ({
     studyUuid,
@@ -150,18 +156,57 @@ const MapViewer = ({
         }
     }, [isDrawingMode, intl, snackInfo, instructionSnakbar, closeSnackbar]);
 
-    const onDrawingModeEnter = useCallback(
-        (active) => {
-            // save the previous mode so we can restore it when the user cancel the drawing
-            if (previousStudyDisplayMode.current === undefined) {
-                previousStudyDisplayMode.current = studyDisplayMode;
+    const onSaveFilter = useCallback(
+        async (filter, distDir, setIsLoading) => {
+            setIsLoading(true);
+            try {
+                //we want to calculate selectedLine or selectedSubstation only when needed
+                //call getSelectedLines if the user want to create a filter with lines
+                //for all others case we call getSelectedSubstations
+                const selectedEquipments =
+                    filter.equipmentType === EQUIPMENT_TYPES.LINE
+                        ? networkMapref.current.getSelectedLines()
+                        : networkMapref.current.getSelectedSubstations();
+                const selectedEquipmentsIds = selectedEquipments.map(
+                    (eq) => eq.id
+                );
+                if (selectedEquipments.length === 0) {
+                    snackWarning({
+                        messageTxt: intl.formatMessage({
+                            id: 'EmptySelection',
+                        }),
+                        headerId: 'FilterCreationIgnored',
+                    });
+                    return;
+                }
+                await createMapFilter(
+                    filter,
+                    distDir,
+                    studyUuid,
+                    currentNode.id,
+                    selectedEquipmentsIds
+                );
+                snackInfo({
+                    messageTxt: intl.formatMessage(
+                        {
+                            id: 'FilterCreationSuccess',
+                        },
+                        {
+                            filterName: filter.name,
+                        }
+                    ),
+                });
+            } catch (error) {
+                snackError({
+                    messageTxt: intl.formatMessage({
+                        id: error.message,
+                    }),
+                    headerId: 'FilterCreationError',
+                });
             }
-            if (active === true) {
-                dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
-            }
-            setIsDrawingMode(active);
+            setIsLoading(false);
         },
-        [dispatch, previousStudyDisplayMode, studyDisplayMode]
+        [currentNode.id, intl, snackError, snackInfo, snackWarning, studyUuid]
     );
 
     const onCancelFunction = useCallback(() => {
@@ -172,23 +217,31 @@ const MapViewer = ({
         }
     }, [dispatch, previousStudyDisplayMode]);
 
+    const onDrawingModeEnter = useCallback((active) => {
+        setIsDrawingMode(active);
+    }, []);
+
+    // When the user enter the drawing mode, we need to switch the study display mode to map
+    // and save the previous mode so we can restore it when the user cancel the drawing
+    useEffect(() => {
+        if (isDrawingMode === true) {
+            // save the previous mode so we can restore it when the user cancel the drawing
+            if (previousStudyDisplayMode.current === undefined) {
+                previousStudyDisplayMode.current = studyDisplayMode;
+            }
+            dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+        }
+    }, [dispatch, isDrawingMode, studyDisplayMode]);
+
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>
                 <HorizontalToolbar />
             </Box>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    overflow: 'hidden',
-                    width: '100%',
-                    height: '100%',
-                }}
-            >
+            <Box sx={styles.mapAndTreeContainer}>
                 {/* Tree */}
-                <div
-                    style={{
+                <Box
+                    sx={{
                         display:
                             studyDisplayMode === STUDY_DISPLAY_MODE.TREE ||
                             studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
@@ -207,9 +260,9 @@ const MapViewer = ({
                             studyMapTreeDisplay={studyDisplayMode}
                         />
                     </ReactFlowProvider>
-                </div>
+                </Box>
                 {/* Map */}
-                <div
+                <Box
                     style={{
                         display:
                             studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
@@ -298,67 +351,7 @@ const MapViewer = ({
                             >
                                 {shouldOpenFilterCreationPanel && (
                                     <FilterCreationPanel
-                                        onSaveFilter={async (
-                                            filter,
-                                            distDir
-                                        ) => {
-                                            try {
-                                                //we want to calculate selectedLine or selectedSubstation only when needed
-                                                //call getSelectedLines if the user want to create a filter with lines
-                                                //for all others case we call getSelectedSubstations
-                                                const selectedEquipments =
-                                                    filter.equipmentType ===
-                                                    EQUIPMENT_TYPES.LINE
-                                                        ? networkMapref.current.getSelectedLines()
-                                                        : networkMapref.current.getSelectedSubstations();
-                                                const selectedEquipmentsIds =
-                                                    selectedEquipments.map(
-                                                        (eq) => eq.id
-                                                    );
-                                                if (
-                                                    selectedEquipments.length ===
-                                                    0
-                                                ) {
-                                                    snackWarning({
-                                                        messageTxt:
-                                                            intl.formatMessage({
-                                                                id: 'EmptySelection',
-                                                            }),
-                                                        headerId:
-                                                            'FilterCreationIgnored',
-                                                    });
-                                                    return;
-                                                }
-                                                await createMapFilter(
-                                                    filter,
-                                                    distDir,
-                                                    studyUuid,
-                                                    currentNode.id,
-                                                    selectedEquipmentsIds
-                                                );
-                                                snackInfo({
-                                                    messageTxt:
-                                                        intl.formatMessage(
-                                                            {
-                                                                id: 'FilterCreationSuccess',
-                                                            },
-                                                            {
-                                                                filterName:
-                                                                    filter.name,
-                                                            }
-                                                        ),
-                                                });
-                                            } catch (error) {
-                                                snackError({
-                                                    messageTxt:
-                                                        intl.formatMessage({
-                                                            id: error.message,
-                                                        }),
-                                                    headerId:
-                                                        'FilterCreationError',
-                                                });
-                                            }
-                                        }}
+                                        onSaveFilter={onSaveFilter}
                                         onCancel={onCancelFunction}
                                     ></FilterCreationPanel>
                                 )}
@@ -376,8 +369,8 @@ const MapViewer = ({
                             oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                         />
                     </Box>
-                </div>
-            </div>
+                </Box>
+            </Box>
         </Box>
     );
 };
