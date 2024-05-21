@@ -97,9 +97,9 @@ export default class LogReportItem {
     }
 
     constructor(jsonReport, reportId) {
-        this.key = jsonReport.reportKey;
+        this.key = jsonReport.message;
         this.log = LogReportItem.resolveTemplateMessage(
-            jsonReport.defaultMessage,
+            jsonReport.messageTemplate,
             jsonReport.values
         );
         this.reportId = reportId;
