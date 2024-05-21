@@ -68,10 +68,10 @@ export default function ReportViewer({
     const createReporterItem = useCallback(
         (logReport) => {
             reportTreeData.current[logReport.getUniqueId()] = logReport;
-            if (logReport.getSubReports().length > maxSubReports) {
+            if (logReport.getChildren().length > maxSubReports) {
                 console.warn(
                     'The number (%s) being greater than %s only the first %s subreports will be displayed',
-                    logReport.getSubReports().length,
+                    logReport.getChildren().length,
                     maxSubReports,
                     maxSubReports
                 );
@@ -85,7 +85,7 @@ export default function ReportViewer({
                     nodeId={logReport.getUniqueId().toString()}
                 >
                     {logReport
-                        .getSubReports()
+                        .getChildren()
                         .map((value) => createReporterItem(value))}
                 </ReportItem>
             );
@@ -105,10 +105,9 @@ export default function ReportViewer({
                 return reportData[0];
             }
             return {
-                taskKey: GLOBAL_NODE_TASK_KEY,
-                defaultName: GLOBAL_NODE_TASK_KEY,
-                reports: [],
-                subReporters: reportData,
+                messageKey: GLOBAL_NODE_TASK_KEY,
+                messageTemplate: GLOBAL_NODE_TASK_KEY,
+                children: reportData,
             };
         }
     };
@@ -139,7 +138,7 @@ export default function ReportViewer({
     );
 
     const buildLogReport = useCallback((jsonData) => {
-        return jsonData.taskKey === GLOBAL_NODE_TASK_KEY
+        return jsonData.messageKey === GLOBAL_NODE_TASK_KEY
             ? new LogReport(LogReportType.GlobalReport, jsonData)
             : new LogReport(LogReportType.NodeReport, jsonData);
     }, []);
@@ -189,7 +188,7 @@ export default function ReportViewer({
 
     useEffect(() => {
         const reportType =
-            jsonReportTree.taskKey === GLOBAL_NODE_TASK_KEY
+            jsonReportTree.messageKey === GLOBAL_NODE_TASK_KEY
                 ? LogReportType.GlobalReport
                 : LogReportType.NodeReport;
         rootReport.current = new LogReport(reportType, jsonReportTree);
