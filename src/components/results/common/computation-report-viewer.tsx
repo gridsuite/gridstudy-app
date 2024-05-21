@@ -43,7 +43,7 @@ export const ComputationReportViewer: FunctionComponent<
                     ? reportData[0]
                     : undefined;
             if (nodeName && singleReport) {
-                singleReport.defaultName = nodeName;
+                singleReport.messageTemplate = nodeName;
             }
             return singleReport;
         },
