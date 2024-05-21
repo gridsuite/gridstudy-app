@@ -106,7 +106,6 @@ export function fetchEquipmentsIds(
             fetchEquipmentsUrl + '?' + urlSearchParams.toString();
     }
     console.debug(fetchEquipmentsUrl);
-    console.log('elementInfos: ', elementInfos);
     return backendFetchJson(fetchEquipmentsUrl, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
