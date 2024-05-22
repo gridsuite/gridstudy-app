@@ -10,7 +10,7 @@ import Grid from '@mui/material/Grid';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
-    ElementType,
+    ElementType, FILTER_EQUIPMENTS,
     SelectInput,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
@@ -33,6 +33,7 @@ import {
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
+import {FormEquipment} from "@gridsuite/commons-ui/dist/components/filter/utils/filter-form-utils";
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
@@ -122,24 +123,11 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         setOpenDirectorySelector(false);
     };
     const equipmentTypesOptions = useMemo(() => {
-        const equipmentTypesToExclude = new Set([
-            EQUIPMENT_TYPES.SWITCH,
-            EQUIPMENT_TYPES.BUS,
-            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.BUSBAR_SECTION,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-            EQUIPMENT_TYPES.TIE_LINE,
-        ]);
-
-        return Object.values(EQUIPMENT_TYPES)
-            .filter(
-                (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
-            )
-            .map((value) => {
+        return Object.values(FILTER_EQUIPMENTS)
+            .map((formEquipment:FormEquipment) => {
                 return {
-                    id: value,
-                    label: equipementTypeToLabel(value),
+                    id: formEquipment.id,
+                    label: formEquipment.label,
                 };
             });
     }, []);
