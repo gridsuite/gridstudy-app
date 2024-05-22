@@ -733,7 +733,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected1',
+                id: 'connected1',
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -741,7 +741,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected2',
+                id: 'connected2',
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -1469,7 +1469,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected1',
+                id: 'connected1',
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -1477,7 +1477,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected2',
+                id: 'connected2',
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -3961,7 +3961,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected1',
+                id: 'connected1',
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -3969,7 +3969,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'Connected2',
+                id: 'connected2',
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,

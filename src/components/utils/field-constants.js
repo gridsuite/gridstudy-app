@@ -23,8 +23,8 @@ export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'connected';
-export const CONNECTED1 = 'Connected1';
-export const CONNECTED2 = 'Connected2';
+export const CONNECTED1 = 'connected1';
+export const CONNECTED2 = 'connected2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
