@@ -10,7 +10,8 @@ import Grid from '@mui/material/Grid';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
-    ElementType, FILTER_EQUIPMENTS,
+    ElementType,
+    FILTER_EQUIPMENTS,
     SelectInput,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
@@ -28,12 +29,8 @@ import {
 import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
-import {
-    equipementTypeToLabel,
-    EQUIPMENT_TYPES,
-} from '../utils/equipment-types';
 import { UUID } from 'crypto';
-import {FormEquipment} from "@gridsuite/commons-ui/dist/components/filter/utils/filter-form-utils";
+import { FormEquipment } from '@gridsuite/commons-ui/dist/components/filter/utils/filter-form-utils';
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
@@ -123,13 +120,14 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         setOpenDirectorySelector(false);
     };
     const equipmentTypesOptions = useMemo(() => {
-        return Object.values(FILTER_EQUIPMENTS)
-            .map((formEquipment:FormEquipment) => {
+        return Object.values(FILTER_EQUIPMENTS).map(
+            (equipment: FormEquipment) => {
                 return {
-                    id: formEquipment.id,
-                    label: formEquipment.label,
+                    id: equipment.id,
+                    label: equipment.label,
                 };
-            });
+            }
+        );
     }, []);
 
     return (
