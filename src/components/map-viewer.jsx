@@ -80,6 +80,12 @@ const styles = {
         display: 'flex',
         flexDirection: 'row',
     },
+    fullSizeFlexRow: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+    },
 };
 const MapViewer = ({
     studyUuid,
@@ -233,6 +239,21 @@ const MapViewer = ({
         }
     }, [dispatch, isDrawingMode, studyDisplayMode]);
 
+    const onDrawEvent = useCallback((event) => {
+        switch (event) {
+            case DRAW_EVENT.DELETE:
+                setShouldOpenFilterCreationPanel(false);
+                break;
+            case DRAW_EVENT.CREATE:
+                setShouldOpenFilterCreationPanel(true);
+                break;
+            case DRAW_EVENT.UPDATE:
+                break;
+            default:
+                break;
+        }
+    }, []);
+
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>
@@ -281,14 +302,7 @@ const MapViewer = ({
                         }}
                     >
                         {/* TODO make filter panel take only 20% */}
-                        <Box
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'row',
-                            }}
-                        >
+                        <Box style={styles.fullSizeFlexRow}>
                             <Box
                                 style={{
                                     position: 'relative',
@@ -320,24 +334,7 @@ const MapViewer = ({
                                     setErrorMessage={setErrorMessage}
                                     onDrawPolygonModeActive={onDrawingModeEnter}
                                     onPolygonChanged={() => {}}
-                                    onDrawEvent={(event) => {
-                                        switch (event) {
-                                            case DRAW_EVENT.DELETE:
-                                                setShouldOpenFilterCreationPanel(
-                                                    false
-                                                );
-                                                break;
-                                            case DRAW_EVENT.CREATE:
-                                                setShouldOpenFilterCreationPanel(
-                                                    true
-                                                );
-                                                break;
-                                            case DRAW_EVENT.UPDATE:
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }}
+                                    onDrawEvent={onDrawEvent}
                                 ></NetworkMapTab>
                             </Box>
 
