@@ -6,7 +6,11 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage, FetchStatus } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    FetchStatus,
+    fetchDirectoryElementPath,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -81,7 +85,6 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
-import { fetchPath } from '../../../services/directory';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
@@ -516,7 +519,7 @@ const NetworkModificationNodeEditor = () => {
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((pathArray) => {
+        fetchDirectoryElementPath(studyUuid).then((pathArray) => {
             if (pathArray?.length > 0) {
                 setStudyPath(pathArray);
             }

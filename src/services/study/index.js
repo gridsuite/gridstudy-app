@@ -13,6 +13,20 @@ import {
     getRequestParamFromList,
 } from '@gridsuite/commons-ui';
 
+// By moving above utils functions in commons-ui and removing import from services/utils
+// created multiple circular dependencies issues, so in the meantime its other
+// functions are being exported as a crutch... To be removed once circular
+// dependencies are fixed
+export {
+    fetchMapBoxToken,
+    getUrlWithToken,
+    fetchDefaultParametersValues,
+    fetchVersion,
+    fetchAuthorizationCodeFlowFeatureFlag,
+    fetchIdpSettings,
+    getToken,
+} from '../utils';
+
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 export const getStudyUrl = (studyUuid) =>

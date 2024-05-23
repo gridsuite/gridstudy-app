@@ -54,10 +54,10 @@ export const EquipmentTypeTabs = {
 };
 
 enum FetchStatus {
-  SUCCEED = 'SUCCEED',
-  FAILED = 'FAILED',
-  IDLE = 'IDLE',
-  RUNNING = 'RUNNING',
+    SUCCEED = 'SUCCEED',
+    FAILED = 'FAILED',
+    IDLE = 'IDLE',
+    RUNNING = 'RUNNING',
 }
 interface CloseFunction {
     (): void;

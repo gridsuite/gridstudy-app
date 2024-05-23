@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
+import { DirectoryItemsInput, fetchElementsInfos } from '@gridsuite/commons-ui';
 import {
     FILTERS,
     ID,
@@ -24,7 +24,6 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
-import { fetchElementsMetadata } from 'services/explore';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
@@ -52,7 +51,7 @@ const VariationForm = ({ name, index }) => {
     const updateMetadata = useCallback(
         (filtersWithoutMetadata) => {
             const ids = filtersWithoutMetadata.map((f) => f.id);
-            fetchElementsMetadata(ids, [], [])
+            fetchElementsInfos(ids, [], [])
                 .then((results) => {
                     const newFilters = filters.map((filter) => {
                         const filterWithMetadata = results.find(

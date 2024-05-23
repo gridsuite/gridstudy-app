@@ -24,7 +24,11 @@ import {
     limitReductionModified,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    useIntlRef,
+    useSnackMessage,
+    fetchDirectoryElementPath,
+} from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
     getFirstNodeOfType,
@@ -41,7 +45,6 @@ import {
     connectDeletedStudyNotificationsWebsocket,
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
-import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
@@ -384,7 +387,7 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     const fetchStudyPath = useCallback(() => {
-        fetchPath(studyUuid)
+        fetchDirectoryElementPath(studyUuid)
             .then((response) => {
                 const parentDirectoriesNames = response
                     .slice(1)

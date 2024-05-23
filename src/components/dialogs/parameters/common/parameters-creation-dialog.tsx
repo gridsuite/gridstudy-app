@@ -13,11 +13,11 @@ import { FieldValues, useForm, UseFormGetValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { fetchPath } from 'services/directory';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
@@ -74,7 +74,7 @@ const CreateParameterDialog = <T extends FieldValues>({
     const nameError = errors[NAME];
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((res) => {
+        fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
                 setDefaultFolder({
                     id: res[1].elementUuid,

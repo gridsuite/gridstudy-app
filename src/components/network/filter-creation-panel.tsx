@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    fetchDirectoryElementPath,
     SelectInput,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
@@ -20,9 +21,6 @@ import { useForm } from 'react-hook-form';
 import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    fetchPath,
-} from 'services/directory';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import {
@@ -75,7 +73,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((res) => {
+        fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
                 setDefaultFolder({
                     id: res[1].elementUuid,
