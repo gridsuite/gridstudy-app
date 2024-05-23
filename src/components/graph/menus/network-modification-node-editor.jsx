@@ -86,6 +86,7 @@ import { fetchPath } from '../../../services/directory';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
+import CreateModificationDialog from '../../dialogs/create-modification-dialog.tsx';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -188,7 +189,7 @@ const NetworkModificationNodeEditor = () => {
     );
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
-
+    const [createModifDialogOpen, setcreateModifDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
@@ -687,6 +688,10 @@ const NetworkModificationNodeEditor = () => {
         setImportDialogOpen(true);
     }, []);
 
+    const openCreateModificationsDialog = useCallback(() => {
+        setcreateModifDialogOpen(true);
+    }, []);
+
     const doDeleteModification = useCallback(() => {
         const selectedModificationsUuid = selectedItems.map(
             (item) => item.uuid
@@ -717,7 +722,7 @@ const NetworkModificationNodeEditor = () => {
         copiedModifications,
     ]);
 
-    const buildModificationCreationProps = (modification, description) => {
+    const buildModificationCreationProps = (modification, descriptionText) => {
         // Element name will be like the displayed modification name.
         // Note: having a unique name is done implicitly in explore-server
         const modificationComputedLabel = intl
@@ -731,12 +736,12 @@ const NetworkModificationNodeEditor = () => {
             .trim();
         return {
             elementUuid: modification.uuid,
-            description: description,
+            descriptionText: descriptionText,
             elementName: modificationComputedLabel,
         };
     };
 
-    const doCreateModificationsElements = () => {
+    const doCreateModificationsElements = ({ name, description }) => {
         // studyPath contains [studyElement, parentDirElement, parentDirElement, ..., RootDirElement]
         const STUDY_ELEMENT_INDEX = 0;
         const PARENT_DIRECTORY_INDEX = 1;
@@ -758,7 +763,7 @@ const NetworkModificationNodeEditor = () => {
                 .join('/');
         const studyFullName =
             studyDirName + '/' + studyPath[STUDY_ELEMENT_INDEX].elementName;
-        const description = intl.formatMessage(
+        const descriptionText = intl.formatMessage(
             { id: 'SaveModificationDescription' },
             {
                 nodePath: studyFullName + ':' + currentNode.data.label,
@@ -766,7 +771,7 @@ const NetworkModificationNodeEditor = () => {
         );
 
         const modificationPropsList = [...selectedItems].map((modification) =>
-            buildModificationCreationProps(modification, description)
+            buildModificationCreationProps(modification, descriptionText)
         );
 
         setSaveInProgress(true);
@@ -777,7 +782,12 @@ const NetworkModificationNodeEditor = () => {
                 studyDirectory: studyDirName,
             },
         });
-        createModifications(studyDirectoryUuid, modificationPropsList)
+        createModifications(
+            name,
+            description,
+            studyDirectoryUuid,
+            modificationPropsList
+        )
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
@@ -1077,6 +1087,16 @@ const NetworkModificationNodeEditor = () => {
             />
         );
     };
+    const renderCreateNetworkModificationsDialog = () => {
+        return (
+            <CreateModificationDialog
+                open={createModifDialogOpen}
+                onSave={doCreateModificationsElements}
+                onCancel={() => setcreateModifDialogOpen(false)}
+                close={() => setcreateModifDialogOpen(false)}
+            />
+        );
+    };
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
@@ -1129,7 +1149,7 @@ const NetworkModificationNodeEditor = () => {
                 <Tooltip title={<FormattedMessage id={'SaveModificationTo'} />}>
                     <span>
                         <IconButton
-                            onClick={doCreateModificationsElements}
+                            onClick={openCreateModificationsDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
                             disabled={
@@ -1238,7 +1258,7 @@ const NetworkModificationNodeEditor = () => {
             </Toolbar>
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
             {importDialogOpen && renderImportNetworkModificationsDialog()}
-
+            {createModifDialogOpen && renderCreateNetworkModificationsDialog()}
             {renderPaneSubtitle()}
 
             {renderNetworkModificationsList()}

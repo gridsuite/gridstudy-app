@@ -554,6 +554,8 @@
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
     "RestoreModifications": "Restaurer les modifications",
+    "SaveModifications": "Créer une modification réseau composée",
+    "descriptionProperty": "Description (optionnel)",
     "RestoreModificationText": "Veuillez sélectionner les modifications à restaurer",
     "DeleteModificationText": "{numberToDelete, plural, =0 {Aucune modification à supprimer.} =1 {Une modification va être définitivement supprimée.} other {# modifications vont être définitivement supprimées.}}",
     "HybridDisplay": "Affichage hybride",

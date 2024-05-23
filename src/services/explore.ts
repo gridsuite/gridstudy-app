@@ -97,10 +97,14 @@ export interface ModificationElementCreationProps {
 }
 
 export function createModifications(
+    name: string,
+    description: string,
     parentDirectoryUuid: UUID,
     modificationList: ModificationElementCreationProps[]
 ) {
     let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
