@@ -812,7 +812,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
-                id: 'RatedVoltageSide1',
+                id: 'ratedVoltage1KV',
                 field: 'ratedU1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -832,7 +832,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatedVoltageSide2',
+                id: 'ratedVoltage2KV',
                 field: 'ratedU2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
