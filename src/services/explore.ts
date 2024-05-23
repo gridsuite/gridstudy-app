@@ -9,7 +9,7 @@ import {
     backendFetch,
     backendFetchJson,
     getRequestParamFromList,
-} from './utils';
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 
 const PREFIX_EXPLORE_SERVER_QUERIES =

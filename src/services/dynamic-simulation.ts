@@ -10,7 +10,7 @@ import {
     backendFetch,
     backendFetchJson,
     getRequestParamFromList,
-} from './utils';
+} from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid } from './study';
 import { UUID } from 'crypto';
 import {

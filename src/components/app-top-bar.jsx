@@ -15,6 +15,7 @@ import {
     OverflowableText,
     TagRenderer,
     TopBar,
+    fetchAppsAndUrls,
 } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
@@ -62,7 +63,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
+import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 

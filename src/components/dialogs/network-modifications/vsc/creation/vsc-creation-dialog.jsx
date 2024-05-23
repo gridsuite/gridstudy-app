@@ -10,6 +10,7 @@ import {
     CustomFormProvider,
     TextInput,
     useSnackMessage,
+    FetchStatus,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -47,7 +48,6 @@ import {
     getVscHvdcLinePaneSchema,
     getVscHvdcLineTabFormData,
 } from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     getConverterStationCreationData,
     getConverterStationFormEditData,

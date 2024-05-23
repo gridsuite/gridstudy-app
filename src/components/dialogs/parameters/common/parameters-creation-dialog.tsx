@@ -13,11 +13,7 @@ import { FieldValues, useForm, UseFormGetValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    fetchDirectoryContent,
-    fetchPath,
-    fetchRootFolders,
-} from 'services/directory';
+import { fetchPath } from 'services/directory';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
@@ -25,7 +21,7 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
-import { createParameter, fetchElementsMetadata } from 'services/explore';
+import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 import { UUID } from 'crypto';
@@ -180,9 +176,6 @@ const CreateParameterDialog = <T extends FieldValues>({
                     title={intl.formatMessage({
                         id: 'showSelectDirectoryDialog',
                     })}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
                 />
             </ModificationDialog>
         </CustomFormProvider>

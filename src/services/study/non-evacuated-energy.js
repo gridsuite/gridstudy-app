@@ -10,7 +10,11 @@ import {
     getStudyUrlWithNodeUuid,
     PREFIX_STUDY_QUERIES,
 } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+} from '@gridsuite/commons-ui';
 
 export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     console.info(

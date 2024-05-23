@@ -14,7 +14,7 @@ import { LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, FetchStatus } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
@@ -22,7 +22,6 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
-import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';

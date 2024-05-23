@@ -10,7 +10,11 @@ import {
     toModificationOperation,
     toModificationUnsetOperation,
 } from '../../components/utils/utils';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+} from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
@@ -1837,6 +1841,7 @@ export function modifyVsc(
         body: JSON.stringify(vscModification),
     });
 }
+
 export function modifyByFormula(
     studyUuid,
     currentNodeUuid,

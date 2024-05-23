@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { fetchAppsAndUrls } from './utils';
+import { fetchAppsAndUrls } from '@gridsuite/commons-ui';
 import { PredefinedProperties } from 'components/dialogs/network-modifications/common/properties/property-utils';
 
 export interface Metadata {

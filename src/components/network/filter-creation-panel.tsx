@@ -21,11 +21,8 @@ import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    fetchDirectoryContent,
     fetchPath,
-    fetchRootFolders,
 } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import {
@@ -207,9 +204,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             title={intl.formatMessage({
                                 id: 'showSelectDirectoryDialog',
                             })}
-                            fetchDirectoryContent={fetchDirectoryContent}
-                            fetchRootFolders={fetchRootFolders}
-                            fetchElementsInfos={fetchElementsMetadata}
                         />
                     </Grid>
                 </Grid>

@@ -5,7 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    useSnackMessage,
+    FetchStatus,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -30,7 +34,6 @@ import ModificationDialog from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import { generationDispatch } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,

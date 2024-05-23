@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrlWithNodeUuid } from './index';
-import { backendFetchJson, getQueryParamsList } from '../utils';
+import { backendFetchJson, getQueryParamsList } from '@gridsuite/commons-ui';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';

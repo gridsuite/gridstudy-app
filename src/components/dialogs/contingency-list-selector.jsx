@@ -26,8 +26,6 @@ import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 function makeButton(onClick, message, disabled) {
@@ -247,9 +245,6 @@ const ContingencyListSelector = (props) => {
                 onClose={addFavorites}
                 types={CONTINGENCY_TYPES}
                 title={intl.formatMessage({ id: 'ContingencyListsSelection' })}
-                fetchDirectoryContent={fetchDirectoryContent}
-                fetchRootFolders={fetchRootFolders}
-                fetchElementsInfos={fetchElementsMetadata}
             />
         </>
     );

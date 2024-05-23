@@ -10,7 +10,11 @@ import {
     getStudyUrl,
     getStudyUrlWithNodeUuid,
 } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+} from '@gridsuite/commons-ui';
 
 const GET_PARAMETERS_PREFIX =
     import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';

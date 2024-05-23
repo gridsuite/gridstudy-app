@@ -7,7 +7,11 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    useSnackMessage,
+    FetchStatus,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -16,7 +20,6 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
-import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
     convertValueFromBackToFront,

@@ -13,10 +13,9 @@ import {
     useState,
 } from 'react';
 import { ExportButton } from '../../utils/export-button';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, downloadZipFile } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
-import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { UUID } from 'crypto';
 

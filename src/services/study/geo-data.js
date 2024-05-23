@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getQueryParamsList } from '../utils';
+import { backendFetchJson, getQueryParamsList } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid } from './index';
 
 export function fetchSubstationPositions(

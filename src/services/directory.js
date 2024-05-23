@@ -5,32 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getRequestParamFromList } from './utils';
+import {
+    backendFetchJson,
+    getRequestParamFromList,
+} from '@gridsuite/commons-ui';
 
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/directory';
-
-export function fetchRootFolders(types) {
-    console.info('Fetching Root Directories');
-
-    // Add params to Url
-    const typesParams = getRequestParamFromList(types, 'elementTypes');
-    const urlSearchParams = new URLSearchParams(typesParams);
-
-    const fetchRootFoldersUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/root-directories?${urlSearchParams}`;
-    return backendFetchJson(fetchRootFoldersUrl);
-}
-
-export function fetchDirectoryContent(directoryUuid, types) {
-    console.info("Fetching Folder content '%s'", directoryUuid);
-
-    // Add params to Url
-    const typesParams = getRequestParamFromList(types, 'elementTypes');
-    const urlSearchParams = new URLSearchParams(typesParams);
-
-    const fetchDirectoryContentUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements?${urlSearchParams}`;
-    return backendFetchJson(fetchDirectoryContentUrl);
-}
 
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');

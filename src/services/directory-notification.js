@@ -6,7 +6,8 @@
  */
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { getToken, getUrlWithToken, getWsBase } from './utils';
+import { getToken, getUrlWithToken } from './utils';
+import { getWsBase } from '@gridsuite/commons-ui';
 
 const PREFIX_DIRECTORY_NOTIFICATION_WS =
     import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
