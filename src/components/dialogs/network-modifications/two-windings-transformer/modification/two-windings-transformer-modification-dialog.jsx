@@ -110,8 +110,8 @@ import {
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -700,19 +700,6 @@ const TwoWindingsTransformerModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -763,7 +750,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                         ),
                                     }),
                                     [ADDITIONAL_PROPERTIES]:
-                                        getConcatenatedProperties(twt),
+                                        getConcatenatedProperties(
+                                            twt,
+                                            getValues
+                                        ),
                                 }));
                             }
                         }
@@ -778,14 +768,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            editData,
-            reset,
-            getConcatenatedProperties,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues]
     );
 
     useEffect(() => {

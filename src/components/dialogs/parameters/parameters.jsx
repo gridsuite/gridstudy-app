@@ -363,7 +363,7 @@ export const useParametersBackend = (
 
     const resetParameters = useCallback(
         (callBack) => {
-            backendUpdateParameters(studyUuid, null)
+            return backendUpdateParameters(studyUuid, null)
                 .then((response) => {
                     if (response.status === 204) {
                         snackWarning({
