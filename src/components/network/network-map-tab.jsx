@@ -5,58 +5,52 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NetworkMap, GeoData } from '@powsybl/diagram-viewer';
-import React, {
-    useCallback,
-    useEffect,
-    useState,
-    useRef,
-    useMemo,
-} from 'react';
+import { useTheme } from '@emotion/react';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import LinearProgress from '@mui/material/LinearProgress';
+import { Box } from '@mui/system';
+import { GeoData, NetworkMap } from '@powsybl/diagram-viewer';
+import ComputingType from 'components/computing-status/computing-type';
+import RunningStatus from 'components/utils/running-status';
+import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import PropTypes from 'prop-types';
-import withOperatingStatusMenu from '../menus/operating-status-menu';
-import BaseEquipmentMenu from '../menus/base-equipment-menu';
-import withEquipmentMenu from '../menus/equipment-menu';
-import VoltageLevelChoice from '../voltage-level-choice';
-import NominalVoltageFilter from './nominal-voltage-filter';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+    STUDY_DISPLAY_MODE,
+    resetMapReloaded,
+    setMapDataLoading,
+    setStudyDisplayMode,
+} from '../../redux/actions';
+import {
+    fetchLinePositions,
+    fetchSubstationPositions,
+} from '../../services/study/geo-data';
+import { deleteEquipment } from '../../services/study/network-modifications';
 import {
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import LineModificationDialog from '../dialogs/network-modifications/line/modification/line-modification-dialog';
+import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
+import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import {
     isNodeBuilt,
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import {
-    resetMapReloaded,
-    setMapDataLoading,
-    setStudyDisplayMode,
-    STUDY_DISPLAY_MODE,
-} from '../../redux/actions';
-import GSMapEquipments from './gs-map-equipments';
-import LinearProgress from '@mui/material/LinearProgress';
-import { UPDATE_TYPE_HEADER } from '../study-container';
-import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import LineModificationDialog from '../dialogs/network-modifications/line/modification/line-modification-dialog';
-import { deleteEquipment } from '../../services/study/network-modifications';
-import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
-import {
-    fetchLinePositions,
-    fetchSubstationPositions,
-} from '../../services/study/geo-data';
-import { Box } from '@mui/system';
-import { useMapBoxToken } from './network-map/use-mapbox-token';
+import BaseEquipmentMenu from '../menus/base-equipment-menu';
+import withEquipmentMenu from '../menus/equipment-menu';
+import withOperatingStatusMenu from '../menus/operating-status-menu';
+import { UPDATE_TYPE_HEADER } from '../study-container/study-container';
 import EquipmentPopover from '../tooltips/equipment-popover';
-import { useTheme } from '@emotion/react';
-import RunningStatus from 'components/utils/running-status';
-import ComputingType from 'components/computing-status/computing-type';
-import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import VoltageLevelChoice from '../voltage-level-choice';
+import GSMapEquipments from './gs-map-equipments';
+import { useMapBoxToken } from './network-map/use-mapbox-token';
+import NominalVoltageFilter from './nominal-voltage-filter';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;

@@ -5,31 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useComputingStatus } from './use-computing-status';
 import {
+    getDynamicSimulationRunningStatus,
+    getLoadFlowRunningStatus,
+    getNonEvacuatedEnergyRunningStatus,
     getSecurityAnalysisRunningStatus,
     getSensitivityAnalysisRunningStatus,
     getShortCircuitAnalysisRunningStatus,
-    getDynamicSimulationRunningStatus,
     getVoltageInitRunningStatus,
-    getLoadFlowRunningStatus,
-    getNonEvacuatedEnergyRunningStatus,
 } from '../utils/running-status';
+import { useComputingStatus } from './use-computing-status';
 
 import { UUID } from 'crypto';
-import { ComputingType } from './computing-type';
-import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
-import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
+import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
+import { fetchLoadFlowStatus } from '../../services/study/loadflow';
+import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
+import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
+import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import {
     fetchOneBusShortCircuitAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
 } from '../../services/study/short-circuit-analysis';
 import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
-import { fetchLoadFlowStatus } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
-import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
-import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
+import { ComputingType } from './computing-type';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 

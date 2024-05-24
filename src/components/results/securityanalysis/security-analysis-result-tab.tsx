@@ -5,53 +5,53 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    SyntheticEvent,
-    FunctionComponent,
-    useState,
-    useCallback,
-    useMemo,
-    useEffect,
-} from 'react';
-import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
-import { ReduxState } from '../../../redux/reducer.type';
+import { LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { Box } from '@mui/system';
-import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import React, {
+    FunctionComponent,
+    SyntheticEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import { FormattedMessage } from 'react-intl';
+import { useIntl } from 'react-intl/lib';
+import { useSelector } from 'react-redux';
+import { setSecurityAnalysisResultFilter } from 'redux/actions';
+import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
+import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { ReduxState } from '../../../redux/reducer.type';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
-import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
-import { RunningStatus } from '../../utils/running-status';
-import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputingType } from '../../computing-status/computing-type';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { useNodeData } from '../../study-container/study-container';
+import { REPORT_TYPES } from '../../utils/report-type';
+import { RunningStatus } from '../../utils/running-status';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
+import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
-import { ComputationReportViewer } from '../common/computation-report-viewer';
-import {
-    QueryParamsType,
-    SecurityAnalysisTabProps,
-} from './security-analysis.type';
 import {
     DEFAULT_PAGE_COUNT,
     NMK_TYPE,
     RESULT_TYPE,
-    useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
-    getIdType,
-    mappingColumnToField,
-    getStoreFields,
     convertFilterValues,
+    getIdType,
+    getStoreFields,
+    mappingColumnToField,
+    useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import { useNodeData } from '../../study-container';
-import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { REPORT_TYPES } from '../../utils/report-type';
-import { SecurityAnalysisExportButton } from './security-analysis-export-button';
+import {
+    QueryParamsType,
+    SecurityAnalysisTabProps,
+} from './security-analysis.type';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setSecurityAnalysisResultFilter } from 'redux/actions';
-import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
-import { useIntl } from 'react-intl/lib';
 
 const styles = {
     tabsAndToolboxContainer: {

@@ -5,185 +5,55 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane from './study-pane';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import * as PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAMS_LOADED } from '../utils/config-params';
+import { useParams } from 'react-router-dom';
+import { invalidateLoadFlowStatus } from 'services/study/loadflow';
+import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import {
-    closeStudy,
-    loadNetworkModificationTreeSuccess,
-    openStudy,
-    studyUpdated,
-    setCurrentTreeNode,
-    resetEquipments,
-    resetEquipmentsPostLoadflow,
-    setStudyIndexationStatus,
     STUDY_INDEXATION_STATUS,
     limitReductionModified,
-} from '../redux/actions';
-import WaitingLoader from './utils/waiting-loader';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-import NetworkModificationTreeModel from './graph/network-modification-tree-model';
+    loadNetworkModificationTreeSuccess,
+    resetEquipments,
+    resetEquipmentsPostLoadflow,
+    setCurrentTreeNode,
+    setStudyIndexationStatus,
+    studyUpdated,
+} from '../../redux/actions';
+import { fetchPath } from '../../services/directory';
+import { connectNotificationsWsUpdateDirectories } from '../../services/directory-notification';
+import { fetchCaseName } from '../../services/study';
+import {
+    fetchNetworkExistence,
+    fetchStudyIndexationStatus,
+} from '../../services/study/network';
+import { fetchNetworkModificationTree } from '../../services/study/tree-subtree';
+import { computeFullPath, computePageTitle } from '../../utils/compute-title';
+import { PARAMS_LOADED } from '../../utils/config-params';
+import { directoriesNotificationType } from '../../utils/directories-notification-type';
+import { useAllComputingStatus } from '../computing-status/use-all-computing-status';
+import NetworkModificationTreeModel from '../graph/network-modification-tree-model';
 import {
     getFirstNodeOfType,
     isNodeBuilt,
     isNodeRenamed,
     isSameNode,
-} from './graph/util/model-functions';
-import { RunningStatus } from './utils/running-status';
-import { computePageTitle, computeFullPath } from '../utils/compute-title';
-import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { BUILD_STATUS } from './network/constants';
-import { connectNotificationsWebsocket } from '../services/study-notification';
-import {
-    connectDeletedStudyNotificationsWebsocket,
-    connectNotificationsWsUpdateDirectories,
-} from '../services/directory-notification';
-import { fetchPath } from '../services/directory';
-import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchCaseName, fetchStudyExists } from '../services/study';
-import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
-import {
-    fetchNetworkExistence,
-    fetchStudyIndexationStatus,
-} from '../services/study/network';
-import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
-import { invalidateLoadFlowStatus } from 'services/study/loadflow';
+} from '../graph/util/model-functions';
+import { BUILD_STATUS } from '../network/constants';
 
+import { UUID } from 'crypto';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+import { ReduxState, StudyUpdatedEventData } from 'redux/reducer.type';
 import { HttpStatusCode } from 'utils/http-status-code';
-import { usePrevious } from './utils/utils';
-
-function isWorthUpdate(
-    studyUpdatedForce,
-    fetcher,
-    lastUpdateRef,
-    nodeUuidRef,
-    nodeUuid,
-    invalidations
-) {
-    const headers = studyUpdatedForce?.eventData?.headers;
-    const updateType = headers?.[UPDATE_TYPE_HEADER];
-    const node = headers?.['node'];
-    const nodes = headers?.['nodes'];
-    if (nodeUuidRef.current !== nodeUuid) {
-        return true;
-    }
-    if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
-        return true;
-    }
-    if (
-        studyUpdatedForce &&
-        lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce
-    ) {
-        return false;
-    }
-    if (!updateType) {
-        return false;
-    }
-    if (invalidations.indexOf(updateType) <= -1) {
-        return false;
-    }
-    if (node === undefined && nodes === undefined) {
-        return true;
-    }
-    if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
-        return true;
-    }
-
-    return false;
-}
-
-export function useNodeData(
-    studyUuid,
-    nodeUuid,
-    fetcher,
-    invalidations,
-    defaultValue,
-    resultConversion
-) {
-    const [result, setResult] = useState(defaultValue);
-    const [isPending, setIsPending] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(undefined);
-    const nodeUuidRef = useRef();
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const lastUpdateRef = useRef();
-
-    const update = useCallback(() => {
-        nodeUuidRef.current = nodeUuid;
-        setIsPending(true);
-        setErrorMessage(undefined);
-        fetcher(studyUuid, nodeUuid)
-            .then((res) => {
-                if (nodeUuidRef.current === nodeUuid) {
-                    setResult(resultConversion ? resultConversion(res) : res);
-                }
-            })
-            .catch((err) => {
-                setErrorMessage(err.message);
-                setResult(RunningStatus.FAILED);
-            })
-            .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
-
-    /* initial fetch and update */
-    useEffect(() => {
-        if (!studyUuid || !nodeUuid || !fetcher) {
-            return;
-        }
-        const isUpdateForUs = isWorthUpdate(
-            studyUpdatedForce,
-            fetcher,
-            lastUpdateRef,
-            nodeUuidRef,
-            nodeUuid,
-            invalidations
-        );
-        lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
-            update();
-        }
-    }, [
-        update,
-        fetcher,
-        nodeUuid,
-        invalidations,
-        studyUpdatedForce,
-        studyUuid,
-    ]);
-
-    return [result, isPending, setResult, errorMessage, update];
-}
-
-function useStudy(studyUuidRequest) {
-    const [studyUuid, setStudyUuid] = useState(undefined);
-    const [pending, setPending] = useState(true);
-    const [errMessage, setErrMessage] = useState(undefined);
-    const intlRef = useIntlRef();
-
-    useEffect(() => {
-        fetchStudyExists(studyUuidRequest)
-            .then(() => {
-                setStudyUuid(studyUuidRequest);
-            })
-            .catch((error) => {
-                if (error.status === HttpStatusCode.NOT_FOUND) {
-                    setErrMessage(
-                        intlRef.current.formatMessage(
-                            { id: 'studyNotFound' },
-                            { studyUuid: studyUuidRequest }
-                        )
-                    );
-                } else {
-                    setErrMessage(error.message);
-                }
-            })
-            .finally(() => setPending(false));
-    }, [studyUuidRequest, intlRef]);
-
-    return [studyUuid, pending, errMessage];
-}
+import StudyPane from '../study-pane';
+import WaitingLoader from '../utils/waiting-loader';
+import usePrevious from './hooks/usePrevious';
+import useStudy from './hooks/useStudy';
+import useWsConnection from './hooks/useWsConnection';
+import { PathType } from './type/path.type';
+import { ValueOf } from './type/utils.type';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
 const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
@@ -191,38 +61,33 @@ const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
 const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
 const HEADER_INDEXATION_STATUS = 'indexation_status';
 
-const ERROR_HEADER = 'error';
-const USER_HEADER = 'userId';
-// the delay before we consider the WS truly connected
-const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
-
-export function StudyContainer({ view, onChangeTab }) {
-    const websocketExpectedCloseRef = useRef();
+type StudyContainerProps = { view: unknown; onChangeTab: () => void };
+export function StudyContainer({ view, onChangeTab }: StudyContainerProps) {
     const intlRef = useIntlRef();
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
-        decodeURIComponent(useParams().studyUuid)
+        decodeURIComponent(useParams().studyUuid ?? '') as UUID
     );
-
-    const [studyName, setStudyName] = useState();
+    const wsConnected = useWsConnection(studyUuid);
+    const [studyName, setStudyName] = useState<string>();
     const prevStudyName = usePrevious(studyName);
-    const [studyPath, setStudyPath] = useState();
+    const [studyPath, setStudyPath] = useState<string>();
     const prevStudyPath = usePrevious(studyPath);
 
     // using a ref because this is not used for rendering, it is used in the websocket onMessage()
-    const studyParentDirectoriesUuidsRef = useRef([]);
+    const studyParentDirectoriesUuidsRef = useRef<UUID[]>([]);
 
-    const userName = useSelector((state) => state.user.profile.sub);
-    const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
+    const paramsLoaded = useSelector(
+        (state: ReduxState) => state[PARAMS_LOADED]
+    );
 
-    const [errorMessage, setErrorMessage] = useState(undefined);
+    const [errorMessage, setErrorMessage] = useState<string>();
 
     const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
     const studyIndexationStatus = useSelector(
-        (state) => state.studyIndexationStatus
+        (state: ReduxState) => state.studyIndexationStatus
     );
-    const studyIndexationStatusRef = useRef();
-    studyIndexationStatusRef.current = studyIndexationStatus;
+
     const [isStudyIndexationPending, setIsStudyIndexationPending] =
         useState(false);
 
@@ -230,161 +95,26 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const dispatch = useDispatch();
 
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
-    const currentNodeRef = useRef();
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
+    const previousNode = usePrevious(currentNode);
 
     useAllComputingStatus(studyUuid, currentNode?.id);
 
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
-    const [wsConnected, setWsConnected] = useState(false);
+    const studyUpdatedForce = useSelector(
+        (state: ReduxState) => state.studyUpdated
+    );
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
-
-    const wsRef = useRef();
+    const wsRef = useRef<ReconnectingWebSocket>();
 
     const isLimitReductionModified = useSelector(
-        (state) => state.limitReductionModified
-    );
-
-    const displayErrorNotifications = useCallback(
-        (eventData) => {
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
-            const errorMessage = eventData.headers[ERROR_HEADER];
-            const userId = eventData.headers[USER_HEADER];
-            if (userId != null && userId !== userName) {
-                return;
-            }
-            if (updateTypeHeader === 'loadflow_failed') {
-                snackError({
-                    headerId: 'LoadFlowError',
-                    messageTxt: errorMessage,
-                });
-            }
-            if (updateTypeHeader === 'buildFailed') {
-                snackError({
-                    headerId: 'NodeBuildingError',
-                    messageTxt: errorMessage,
-                });
-            }
-            if (updateTypeHeader === 'securityAnalysis_failed') {
-                snackError({
-                    headerId: 'securityAnalysisError',
-                    messageTxt: errorMessage,
-                });
-            }
-            if (updateTypeHeader === 'sensitivityAnalysis_failed') {
-                snackError({
-                    headerId: 'sensitivityAnalysisError',
-                    messageTxt: errorMessage,
-                });
-            }
-            if (updateTypeHeader === 'nonEvacuatedEnergy_failed') {
-                snackError({
-                    headerId: 'nonEvacuatedEnergyAnalysisError',
-                    messageTxt: errorMessage,
-                });
-            }
-            if (
-                updateTypeHeader === 'shortCircuitAnalysis_failed' ||
-                updateTypeHeader === 'oneBusShortCircuitAnalysis_failed'
-            ) {
-                snackError({
-                    headerId: 'ShortCircuitAnalysisError',
-                    messageTxt: errorMessage,
-                });
-            }
-            if (updateTypeHeader === 'dynamicSimulation_failed') {
-                snackError({
-                    headerId: 'DynamicSimulationRunError',
-                    messageTxt: errorMessage,
-                });
-            }
-            if (updateTypeHeader === 'voltageInit_failed') {
-                snackError({
-                    headerId: 'voltageInitError',
-                    messageTxt: errorMessage,
-                });
-            }
-        },
-        [snackError, userName]
-    );
-
-    const sendAlert = useCallback(
-        (eventData) => {
-            const userId = eventData.headers[USER_HEADER];
-            if (userId !== userName) {
-                return;
-            }
-            const payload = JSON.parse(eventData.payload);
-            let snackMethod;
-            if (payload.alertLevel === 'WARNING') {
-                snackMethod = snackWarning;
-            } else if (payload.alertLevel === 'ERROR') {
-                snackMethod = snackError;
-            } else {
-                snackMethod = snackInfo;
-            }
-            snackMethod({
-                messageId: payload.messageId,
-                messageValues: payload.attributes,
-            });
-        },
-        [snackInfo, snackWarning, snackError, userName]
-    );
-
-    const connectNotifications = useCallback(
-        (studyUuid) => {
-            console.info(`Connecting to notifications '${studyUuid}'...`);
-
-            const ws = connectNotificationsWebsocket(studyUuid, {
-                // this option set the minimum duration being connected before reset the retry count to 0
-                minUptime: DELAY_BEFORE_WEBSOCKET_CONNECTED,
-            });
-            ws.onmessage = function (event) {
-                const eventData = JSON.parse(event.data);
-                const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
-                if (updateTypeHeader === 'STUDY_ALERT') {
-                    sendAlert(eventData);
-                    return; // here, we do not want to update the redux state
-                }
-                displayErrorNotifications(eventData);
-                dispatch(studyUpdated(eventData));
-            };
-            ws.onclose = function (event) {
-                if (!websocketExpectedCloseRef.current) {
-                    console.error('Unexpected Notification WebSocket closed');
-                    setWsConnected(false);
-                }
-            };
-            ws.onerror = function (event) {
-                console.error('Unexpected Notification WebSocket error', event);
-            };
-            ws.onopen = function (event) {
-                console.log('Notification WebSocket opened');
-                // we want to reload the network when the websocket is (re)connected after loosing connection
-                // but to prevent reload network loop, we added a delay before considering the WS truly connected
-                if (ws.retryCount === 0) {
-                    // first connection at startup
-                    setWsConnected(true);
-                } else {
-                    setTimeout(() => {
-                        if (ws.retryCount === 0) {
-                            // we enter here only if the WS is up for more than DELAY_BEFORE_WEBSOCKET_CONNECTED
-                            setWsConnected(true);
-                        }
-                    }, DELAY_BEFORE_WEBSOCKET_CONNECTED);
-                }
-            };
-            return ws;
-        },
-        // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications, sendAlert]
+        (state: ReduxState) => state.limitReductionModified
     );
 
     const fetchStudyPath = useCallback(() => {
-        fetchPath(studyUuid)
+        (fetchPath(studyUuid) as Promise<PathType[]>)
             .then((response) => {
                 const parentDirectoriesNames = response
                     .slice(1)
@@ -414,30 +144,12 @@ export function StudyContainer({ view, onChangeTab }) {
             });
     }, [initialTitle, snackError, studyUuid]);
 
-    const connectDeletedStudyNotifications = useCallback((studyUuid) => {
-        console.info(`Connecting to directory notifications ...`);
-
-        const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
-        ws.onmessage = function () {
-            window.close();
-        };
-        ws.onclose = function (event) {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }, []);
-
     useEffect(() => {
         // create ws at mount event
         wsRef.current = connectNotificationsWsUpdateDirectories();
 
         wsRef.current.onmessage = function (event) {
-            const eventData = JSON.parse(event.data);
+            const eventData: StudyUpdatedEventData = JSON.parse(event.data);
             dispatch(studyUpdated(eventData));
             if (eventData.headers) {
                 if (
@@ -450,8 +162,9 @@ export function StudyContainer({ view, onChangeTab }) {
                     // interested in changes in parent directories of the study (study is moved, or any parent is moved
                     // or renamed)
                     if (
+                        eventData.headers.directoryUuid &&
                         studyParentDirectoriesUuidsRef.current.includes(
-                            eventData.headers['directoryUuid']
+                            eventData.headers.directoryUuid
                         )
                     ) {
                         fetchStudyPath();
@@ -476,7 +189,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [dispatch, fetchStudyPath]);
 
     const loadTree = useCallback(
-        (initIndexationStatus) => {
+        (initIndexationStatus: ValueOf<typeof STUDY_INDEXATION_STATUS>) => {
             console.info(
                 `Loading network modification tree of study '${studyUuid}'...`
             );
@@ -596,7 +309,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, dispatch, snackError]);
 
     const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
-        (successCallback) => {
+        (successCallback?: () => void) => {
             fetchNetworkExistence(studyUuid)
                 .then((response) => {
                     if (response.status === HttpStatusCode.OK) {
@@ -714,10 +427,9 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!wsConnected) {
             return;
         }
-        let previousCurrentNode = currentNodeRef.current;
-        currentNodeRef.current = currentNode;
+
         // if only node renaming, do not reload network
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        if (isNodeRenamed(previousNode, currentNode)) {
             return;
         }
         if (!isNodeBuilt(currentNode)) {
@@ -726,13 +438,13 @@ export function StudyContainer({ view, onChangeTab }) {
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
         if (
-            isSameNode(previousCurrentNode, currentNode) &&
-            isNodeBuilt(previousCurrentNode)
+            isSameNode(previousNode, currentNode) &&
+            isNodeBuilt(previousNode)
         ) {
             return;
         }
         dispatch(resetEquipments());
-    }, [currentNode, wsConnected, dispatch]);
+    }, [currentNode, wsConnected, dispatch, previousNode]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -751,21 +463,23 @@ export function StudyContainer({ view, onChangeTab }) {
                 headerId: 'moveStudyNotification',
                 headerValues: {
                     oldStudyPath: prevStudyPath,
-                    studyPath: studyPath,
+                    studyPath: studyPath ?? '',
                 },
             });
         }
+    }, [snackInfo, studyPath, prevStudyPath]);
 
+    useEffect(() => {
         if (prevStudyName && prevStudyName !== studyName) {
             snackInfo({
                 headerId: 'renameStudyNotification',
                 headerValues: {
                     oldStudyName: prevStudyName,
-                    studyName: studyName,
+                    studyName: studyName ?? '',
                 },
             });
         }
-    }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
+    }, [snackInfo, studyName, prevStudyName]);
 
     useEffect(() => {
         if (!studyUuid) {
@@ -786,31 +500,6 @@ export function StudyContainer({ view, onChangeTab }) {
             }
         }
     }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
-
-    useEffect(() => {
-        if (studyUuid) {
-            websocketExpectedCloseRef.current = false;
-            dispatch(openStudy(studyUuid));
-
-            const ws = connectNotifications(studyUuid);
-            const wsDirectory = connectDeletedStudyNotifications(studyUuid);
-
-            // study cleanup at unmount event
-            return function () {
-                websocketExpectedCloseRef.current = true;
-                ws.close();
-                wsDirectory.close();
-                dispatch(closeStudy());
-            };
-        }
-        // Note: dispach, loadGeoData
-        // connectNotifications don't change
-    }, [
-        dispatch,
-        studyUuid,
-        connectNotifications,
-        connectDeletedStudyNotifications,
-    ]);
 
     useEffect(() => {
         if (studyUuid) {

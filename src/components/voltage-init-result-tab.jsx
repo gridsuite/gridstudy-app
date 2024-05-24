@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNodeData } from './study-container';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { fetchVoltageInitResult } from '../services/study/voltage-init';
+import { ComputingType } from './computing-status/computing-type';
+import { useNodeData } from './study-container/study-container';
+import RunningStatus from './utils/running-status';
 import WaitingLoader from './utils/waiting-loader';
 import VoltageInitResult from './voltage-init-result';
-import { useSelector } from 'react-redux';
-import { ComputingType } from './computing-status/computing-type';
-import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import { useState } from 'react';
-import RunningStatus from './utils/running-status';
 
 const voltageInitResultInvalidations = ['voltageInitResult'];
 

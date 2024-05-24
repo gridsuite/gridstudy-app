@@ -4,11 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'crypto';
 import { Box, LinearProgress } from '@mui/material';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import React, { memo, useMemo, useRef } from 'react';
+import { UUID } from 'crypto';
+import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
+import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
+import { useAgGridLocalSort } from '../../../hooks/use-aggrid-local-sort';
+import { SortWay } from '../../../hooks/use-aggrid-sort';
+import { ReduxState } from '../../../redux/reducer.type';
+import ComputingType from '../../computing-status/computing-type';
+import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import {
     FILTER_DATA_TYPES,
@@ -20,13 +26,15 @@ import {
     getNoRowsMessage,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
-import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
-import ComputingType from '../../computing-status/computing-type';
-import { useAgGridLocalSort } from '../../../hooks/use-aggrid-local-sort';
-import { SortWay } from '../../../hooks/use-aggrid-sort';
-import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
 
+import { setDynamicSimulationResultFilter } from 'redux/actions';
+import {
+    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    TIMELINE,
+} from 'utils/store-filter-fields';
+import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
+import { useNodeData } from '../../study-container/study-container';
+import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import {
     dynamicSimulationResultInvalidations,
@@ -34,14 +42,6 @@ import {
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
 } from './utils/dynamic-simulation-result-utils';
-import { useNodeData } from '../../study-container';
-import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
-import { NumberCellRenderer } from '../common/result-cell-renderers';
-import { setDynamicSimulationResultFilter } from 'redux/actions';
-import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    TIMELINE,
-} from 'utils/store-filter-fields';
 
 const styles = {
     loader: {

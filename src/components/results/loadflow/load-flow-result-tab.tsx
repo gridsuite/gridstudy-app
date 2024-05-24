@@ -5,7 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import ComputingType from 'components/computing-status/computing-type';
+import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+} from 'components/custom-aggrid/custom-aggrid-header.type';
+import { REPORT_TYPES } from 'components/utils/report-type';
+import RunningStatus from 'components/utils/running-status';
+import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
+import { SortWay, useAgGridSort } from 'hooks/use-aggrid-sort';
+import {
     FunctionComponent,
     SyntheticEvent,
     useCallback,
@@ -13,44 +27,23 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
-import { LoadFlowResult } from './load-flow-result';
-import { useNodeData } from '../../study-container';
+import { useSelector } from 'react-redux';
+import { setLoadflowResultFilter } from 'redux/actions';
+import { ReduxState } from 'redux/reducer.type';
+import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 import {
     fetchLimitViolations,
     fetchLoadFlowResult,
 } from '../../../services/study/loadflow';
-import { REPORT_TYPES } from 'components/utils/report-type';
-import RunningStatus from 'components/utils/running-status';
-import { ReduxState } from 'redux/reducer.type';
-import ComputingType from 'components/computing-status/computing-type';
-import { useSelector } from 'react-redux';
+import {
+    fetchAllCountries,
+    fetchAllNominalVoltages,
+} from '../../../services/study/network-map';
+import { useNodeData } from '../../study-container/study-container';
+import { mergeSx } from '../../utils/functions';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { SortWay, useAgGridSort } from 'hooks/use-aggrid-sort';
-import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
-import {
-    FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
-    getIdType,
-    loadFlowCurrentViolationsColumnsDefinition,
-    loadFlowResultColumnsDefinition,
-    loadFlowVoltageViolationsColumnsDefinition,
-    makeData,
-    mappingFields,
-    mappingTabs,
-    convertFilterValues,
-    useFetchFiltersEnums,
-} from './load-flow-result-utils';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from 'components/custom-aggrid/custom-aggrid-header.type';
-import { LimitViolationResult } from './limit-violation-result';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setLoadflowResultFilter } from 'redux/actions';
+import GlassPane from '../common/glass-pane';
 import {
     NumberCellRenderer,
     StatusCellRender,
@@ -59,14 +52,21 @@ import ResultsGlobalFilter, {
     Filter,
     FilterType,
 } from '../common/results-global-filter';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { LimitViolationResult } from './limit-violation-result';
+import { LoadFlowResult } from './load-flow-result';
 import {
-    fetchAllCountries,
-    fetchAllNominalVoltages,
-} from '../../../services/study/network-map';
-import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
-import GlassPane from '../common/glass-pane';
-import { mergeSx } from '../../utils/functions';
+    FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
+    convertFilterValues,
+    getIdType,
+    loadFlowCurrentViolationsColumnsDefinition,
+    loadFlowResultColumnsDefinition,
+    loadFlowVoltageViolationsColumnsDefinition,
+    makeData,
+    mappingFields,
+    mappingTabs,
+    useFetchFiltersEnums,
+} from './load-flow-result-utils';
+import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 
 const styles = {
     flexWrapper: {

@@ -5,28 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
-import React, { memo, useMemo } from 'react';
-import { useNodeData } from '../../study-container';
-import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
-import {
-    dynamicSimulationResultInvalidations,
-    MEDIUM_COLUMN_WIDTH,
-} from './utils/dynamic-simulation-result-utils';
+import { UUID } from 'crypto';
+import { memo, useMemo } from 'react';
+import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
+import { ReduxState } from '../../../redux/reducer.type';
+import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
 import ComputingType from '../../computing-status/computing-type';
+import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { useNodeData } from '../../study-container/study-container';
 import {
     getNoRowsMessage,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import { StatusCellRender } from '../common/result-cell-renderers';
-import { UUID } from 'crypto';
 import RunningStatus from '../../utils/running-status';
-import { ReduxState } from '../../../redux/reducer.type';
+import { StatusCellRender } from '../common/result-cell-renderers';
+import {
+    MEDIUM_COLUMN_WIDTH,
+    dynamicSimulationResultInvalidations,
+} from './utils/dynamic-simulation-result-utils';
 
 const styles = {
     loader: {

@@ -6,10 +6,13 @@
  */
 
 import { ComputingType } from 'components/computing-status/computing-type';
+import { ValueOf } from 'components/study-container/type/utils.type';
 import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
-import { IOptionalService } from '../components/utils/optional-services';
+import { directoriesNotificationType } from 'utils/directories-notification-type';
 import { Filter } from '../components/results/common/results-global-filter';
+import { IOptionalService } from '../components/utils/optional-services';
+import { STUDY_INDEXATION_STATUS } from './actions';
 
 export enum UpdateTypes {
     STUDY = 'study',
@@ -31,6 +34,9 @@ export interface ReduxState {
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: Filter[];
     mapEquipments: any;
+    limitReductionModified: boolean;
+    paramsLoaded: boolean;
+    studyIndexationStatus: ValueOf<typeof STUDY_INDEXATION_STATUS>;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
@@ -48,6 +54,9 @@ export interface StudyUpdatedEventDataHeader {
     nodes?: UUID[];
     error?: string;
     userId?: string;
+    notificationType?: ValueOf<typeof directoriesNotificationType>;
+    directoryUuid?: UUID;
+    indexation_status?: ValueOf<typeof STUDY_INDEXATION_STATUS>;
 }
 
 // Payloads
@@ -63,18 +72,18 @@ export interface NetworkImpactsInfos {
 }
 
 // EventData
-interface StudyUpdatedEventData {
+export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
     payload: NetworkImpactsInfos;
 }
 
-interface StudyUpdatedEventDataUnknown {
+export interface StudyUpdatedEventDataUnknown {
     headers: StudyUpdatedEventDataHeader;
     payload: string;
 }
 
 // Notification types
-type StudyUpdatedStudy = {
+export type StudyUpdatedStudy = {
     type: UpdateTypes.STUDY;
     eventData: StudyUpdatedEventData;
 };

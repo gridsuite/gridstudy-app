@@ -5,22 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, SyntheticEvent, useState } from 'react';
-import { NonEvacuatedEnergyTabProps } from './non-evacuated-energy-result.type';
-import { NonEvacuatedEnergyResult } from './non-evacuated-energy-result';
-import { useNodeData } from '../../../study-container';
-import { fetchNonEvacuatedEnergyResult } from '../../../../services/study/non-evacuated-energy';
-import { Box } from '@mui/system';
-import { useOpenLoaderShortWait } from '../../../dialogs/commons/handle-loader';
 import { LinearProgress, Tab, Tabs } from '@mui/material';
+import { Box } from '@mui/system';
+import { FunctionComponent, SyntheticEvent, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { RunningStatus } from '../../../utils/running-status';
-import { ComputationReportViewer } from '../../common/computation-report-viewer';
-import { REPORT_TYPES } from '../../../utils/report-type';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../../redux/reducer.type';
+import { fetchNonEvacuatedEnergyResult } from '../../../../services/study/non-evacuated-energy';
 import { ComputingType } from '../../../computing-status/computing-type';
+import { useOpenLoaderShortWait } from '../../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../../network/constants';
+import { useNodeData } from '../../../study-container/study-container';
+import { REPORT_TYPES } from '../../../utils/report-type';
+import { RunningStatus } from '../../../utils/running-status';
+import { ComputationReportViewer } from '../../common/computation-report-viewer';
+import { NonEvacuatedEnergyResult } from './non-evacuated-energy-result';
+import { NonEvacuatedEnergyTabProps } from './non-evacuated-energy-result.type';
 
 const styles = {
     container: {

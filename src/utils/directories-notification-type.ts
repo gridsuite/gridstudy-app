@@ -9,4 +9,4 @@ export const directoriesNotificationType = {
     DELETE_DIRECTORY: 'DELETE_DIRECTORY',
     ADD_DIRECTORY: 'ADD_DIRECTORY',
     UPDATE_DIRECTORY: 'UPDATE_DIRECTORY',
-};
+} as const;
