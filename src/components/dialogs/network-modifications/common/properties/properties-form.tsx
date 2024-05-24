@@ -23,7 +23,7 @@ import {
 import { useFormContext, useWatch } from 'react-hook-form';
 
 type PropertiesFormProps = {
-    networkElementType: string;
+    networkElementType?: string;
     isModification?: boolean;
 };
 
@@ -40,11 +40,12 @@ const PropertiesForm = ({
     );
 
     useEffect(() => {
-        fetchPredefinedProperties(networkElementType).then((res) => {
-            if (res) {
-                setPredefinedProperties(res);
-            }
-        });
+        networkElementType &&
+            fetchPredefinedProperties(networkElementType).then((res) => {
+                if (res) {
+                    setPredefinedProperties(res);
+                }
+            });
     }, [networkElementType]);
 
     const getDeletionMark = useCallback(

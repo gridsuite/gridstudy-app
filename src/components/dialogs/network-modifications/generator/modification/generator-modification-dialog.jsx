@@ -74,8 +74,8 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -218,20 +218,6 @@ const GeneratorModificationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
-
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
@@ -318,7 +304,7 @@ const GeneratorModificationDialog = ({
                             reset((formValues) => ({
                                 ...formValues,
                                 [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(value),
+                                    getConcatenatedProperties(value, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -339,7 +325,6 @@ const GeneratorModificationDialog = ({
             reset,
             getValues,
             setValue,
-            getConcatenatedProperties,
             setValuesAndEmptyOthers,
         ]
     );
