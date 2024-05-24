@@ -183,25 +183,25 @@ const MapViewer = ({
                         }),
                         headerId: 'FilterCreationIgnored',
                     });
-                    return;
+                } else {
+                    await createMapFilter(
+                        filter,
+                        distDir,
+                        studyUuid,
+                        currentNode.id,
+                        selectedEquipmentsIds
+                    );
+                    snackInfo({
+                        messageTxt: intl.formatMessage(
+                            {
+                                id: 'FilterCreationSuccess',
+                            },
+                            {
+                                filterName: filter.name,
+                            }
+                        ),
+                    });
                 }
-                await createMapFilter(
-                    filter,
-                    distDir,
-                    studyUuid,
-                    currentNode.id,
-                    selectedEquipmentsIds
-                );
-                snackInfo({
-                    messageTxt: intl.formatMessage(
-                        {
-                            id: 'FilterCreationSuccess',
-                        },
-                        {
-                            filterName: filter.name,
-                        }
-                    ),
-                });
             } catch (error) {
                 snackError({
                     messageTxt: intl.formatMessage({
