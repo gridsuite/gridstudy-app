@@ -212,7 +212,7 @@ const MapViewer = ({
             }
             setIsLoading(false);
         },
-        [currentNode.id, intl, snackError, snackInfo, snackWarning, studyUuid]
+        [currentNode?.id, intl, snackError, snackInfo, snackWarning, studyUuid]
     );
 
     const onCancelFunction = useCallback(() => {
