@@ -133,7 +133,7 @@ export function deleteDynamicSimulationEvents(
     );
 
     const eventIdsParams = getRequestParamFromList(
-        events.map((event) => event.uuid),
+        events.map((event) => event.uuid) as string[],
         'eventUuids'
     );
 
