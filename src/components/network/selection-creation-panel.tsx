@@ -39,33 +39,28 @@ import {
     selectionTypeToLabel,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
-
-interface IFilterSelection {
-    [SELECTION_NAME]: string | null;
-    [NAME]: string;
-    equipmentType: string | null;
-    [SELECTION_TYPE]: string | null;
-}
+import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 
 const formSchema = yup
     .object()
     .shape({
         [SELECTION_NAME]: yup.string().nullable(),
         [NAME]: yup.string().required(),
-        equipmentType: yup.string().required(),
+        [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
         [SELECTION_TYPE]: yup.string().required(),
     })
     .required();
 const emptyFormData = {
     [SELECTION_NAME]: '',
     [NAME]: '',
-    equipmentType: '',
+    [EQUIPMENT_TYPE_FIELD]: '',
     [SELECTION_TYPE]: '',
 };
+type ISelectionCreation = yup.InferType<typeof formSchema>;
 
 type SelectionCreationPanelProps = {
     onSaveSelection: (
-        data: IFilterSelection,
+        data: ISelectionCreation,
         distDir: TreeViewFinderNodeProps
     ) => void;
     onCancel: () => void;
@@ -104,7 +99,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
             const selectionName =
                 selectionType === SELECTION_TYPES.FILTER
                     ? 'Generated-filter-'
-                    : 'Generated-contingency-list';
+                    : 'Generated-contingency-list-';
             formMethods.setValue(
                 NAME,
                 selectionName + new Date().toISOString()
@@ -181,18 +176,16 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 flexDirection="column"
                 height="100%"
             >
-                <Grid container>
+                <Grid container rowGap={2}>
                     <GridSection title="createNewFilter" />
-                    <Grid container paddingTop={2}>
+                    <Grid container>
                         <SelectInput
                             name={SELECTION_TYPE}
                             options={Object.values(SELECTION_TYPES).map(
-                                (value) => {
-                                    return {
-                                        id: value,
-                                        label: selectionTypeToLabel(value),
-                                    };
-                                }
+                                (value) => ({
+                                    id: value,
+                                    label: selectionTypeToLabel(value),
+                                })
                             )}
                             label={SELECTION_TYPE}
                             fullWidth
@@ -203,9 +196,9 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     </Grid>
                     {watchSelectionType !== '' && (
                         <>
-                            <Grid container paddingTop={2}>
+                            <Grid container>
                                 <SelectInput
-                                    name={'equipmentType'}
+                                    name={EQUIPMENT_TYPE_FIELD}
                                     options={equipmentTypesOptions}
                                     label={'EquipmentType'}
                                     fullWidth
@@ -217,7 +210,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                 />
                             </Grid>
 
-                            <Grid container paddingTop={2}>
+                            <Grid container>
                                 <UniqueNameInput
                                     name={NAME}
                                     label={'Name'}
@@ -226,7 +219,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                     autoFocus
                                 />
                             </Grid>
-                            <Grid container paddingTop={2}>
+                            <Grid container>
                                 <Button
                                     onClick={handleChangeFolder}
                                     variant="contained"
@@ -245,7 +238,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         </>
                     )}
 
-                    <Grid container paddingTop={2}>
+                    <Grid container>
                         <DirectoryItemSelector
                             open={openDirectorySelector}
                             onClose={setSelectedFolder}
@@ -264,11 +257,9 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         />
                     </Grid>
                 </Grid>
-                <Grid container paddingTop={2} justifyContent="flex-end">
+                <Grid container justifyContent="flex-end">
                     <Button onClick={onCancel} size={'large'}>
-                        {intl.formatMessage({
-                            id: 'cancel',
-                        })}
+                        {intl.formatMessage({ id: 'cancel' })}
                     </Button>
                     <Box m={1} />
                     <Button
@@ -278,7 +269,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
                                     const data =
-                                        formMethods.getValues() as IFilterSelection;
+                                        formMethods.getValues() as ISelectionCreation;
                                     onSaveSelection(data, defaultFolder);
                                     generateSelectionName(data[SELECTION_TYPE]);
                                 }
@@ -286,9 +277,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         }}
                         size={'large'}
                     >
-                        {intl.formatMessage({
-                            id: 'validate',
-                        })}
+                        {intl.formatMessage({ id: 'validate' })}
                     </Button>
                 </Grid>
             </Box>
