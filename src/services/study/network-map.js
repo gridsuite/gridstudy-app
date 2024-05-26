@@ -99,7 +99,7 @@ export function fetchEquipmentsIds(
         'equipments-ids';
     const elementInfos = {
         elementType: equipmentType,
-        substationsIds: substationsIds !== undefined && substationsIds,
+        substationsIds: substationsIds ?? null,
     };
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
