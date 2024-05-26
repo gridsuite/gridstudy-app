@@ -361,7 +361,6 @@
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
-    "contingencyList" : "Liste d'aléas",
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",

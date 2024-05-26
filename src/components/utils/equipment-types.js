@@ -42,7 +42,7 @@ export const EQUIPMENT_TYPES = {
 export function selectionTypeToLabel(selectionType) {
     switch (selectionType) {
         case SELECTION_TYPES.CONTIGENCY_LIST:
-            return 'contingencyList';
+            return 'ContingencyLists';
         case SELECTION_TYPES.FILTER:
             return 'filter';
         default:

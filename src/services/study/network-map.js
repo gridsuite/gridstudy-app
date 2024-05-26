@@ -243,7 +243,7 @@ export async function createMapFilter(
         throw new Error('EmptySelection');
     }
 
-    await createFilter(
+    return createFilter(
         equipmentFilters,
         filter[NAME],
         '',
@@ -301,7 +301,7 @@ export async function createMapContingencyList(
         throw new Error('EmptySelection');
     }
 
-    await createContingencyList(
+    return createContingencyList(
         equipmentContingencyList,
         contingencyList[NAME],
         '',

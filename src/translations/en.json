@@ -361,7 +361,6 @@
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
-    "contingencyList" : "Contingency list",
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",
