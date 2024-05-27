@@ -11,6 +11,7 @@ import {
     getRequestParamFromList,
 } from './utils';
 import { UUID } from 'crypto';
+import { MODIFICATION_TYPES } from '../components/utils/modification-type';
 
 const PREFIX_EXPLORE_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/explore';
@@ -94,13 +95,14 @@ export interface ModificationElementCreationProps {
     elementUuid: UUID;
     description: string;
     elementName: string;
+    modificationType: string;
 }
 
 export function createModifications(
     name: string,
     description: string,
     parentDirectoryUuid: UUID,
-    modificationList: ModificationElementCreationProps[]
+    selectedModificationsUuid: UUID[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -113,7 +115,10 @@ export function createModifications(
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(modificationList),
+            body: JSON.stringify({
+                type: MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type,
+                modificationsList: selectedModificationsUuid,
+            }),
         }
     );
 }

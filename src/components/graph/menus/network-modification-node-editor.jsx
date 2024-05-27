@@ -738,6 +738,7 @@ const NetworkModificationNodeEditor = () => {
             elementUuid: modification.uuid,
             descriptionText: descriptionText,
             elementName: modificationComputedLabel,
+            modificationType: modification.type,
         };
     };
 
@@ -770,8 +771,8 @@ const NetworkModificationNodeEditor = () => {
             }
         );
 
-        const modificationPropsList = [...selectedItems].map((modification) =>
-            buildModificationCreationProps(modification, descriptionText)
+        const selectedModificationsUuid = selectedItems.map(
+            (item) => item.uuid
         );
 
         setSaveInProgress(true);
@@ -786,7 +787,7 @@ const NetworkModificationNodeEditor = () => {
             name,
             description,
             studyDirectoryUuid,
-            modificationPropsList
+            selectedModificationsUuid
         )
             .catch((errmsg) => {
                 snackError({
