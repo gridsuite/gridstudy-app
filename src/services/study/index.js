@@ -9,7 +9,6 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    getQueryParamsList,
     getRequestParamFromList,
 } from '@gridsuite/commons-ui';
 
@@ -67,7 +66,7 @@ export function getNetworkAreaDiagramUrl(
             depth: depth,
         }) +
         '&' +
-        getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
+        getRequestParamFromList(voltageLevelsIds, 'voltageLevelsIds').toString()
     );
 }
 

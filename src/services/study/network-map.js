@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrlWithNodeUuid } from './index';
-import { backendFetchJson, getQueryParamsList } from '@gridsuite/commons-ui';
+import { backendFetchJson, getRequestParamFromList } from '@gridsuite/commons-ui';
 import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
@@ -41,7 +41,7 @@ export function fetchAllEquipments(studyUuid, currentNodeUuid, substationsIds) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/all' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId');
+        getRequestParamFromList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }
@@ -71,7 +71,7 @@ export function fetchVoltageLevelEquipments(
         encodeURIComponent(voltageLevelId) +
         '/equipments' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
+        getRequestParamFromList(substationsIds, 'substationId') +
         urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);

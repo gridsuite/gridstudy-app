@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { store } from '../redux/store';
-import { fetchAppsAndUrls, fetchEnv } from '@gridsuite/commons-ui';
+import { fetchEnv, fetchStudyMetadata } from '@gridsuite/commons-ui';
 
 export const getToken = () => {
     const state = store.getState();
@@ -54,17 +54,10 @@ export function fetchVersion() {
 }
 
 export const fetchDefaultParametersValues = () => {
-    return fetchAppsAndUrls().then((res) => {
+    return fetchStudyMetadata().then((studyMetadata) => {
         console.info(
             'fecthing default parameters values from apps-metadata file'
         );
-        const studyMetadata = res.find((metadata) => metadata.name === 'Study');
-        if (!studyMetadata) {
-            return Promise.reject(
-                'Study entry could not be found in metadatas'
-            );
-        }
-
         return studyMetadata.defaultParametersValues;
     });
 };
