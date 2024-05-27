@@ -617,7 +617,7 @@
     "ConnectedComponent": "Composante connexe",
     "SynchronousComponent": "Composante synchrone",
     "Setpoints": "Consignes",
-    "EmptySelection": "Aucun équipement n'est selectionné",
+    "EmptySelection": "Aucun équipement n'est sélectionné",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
