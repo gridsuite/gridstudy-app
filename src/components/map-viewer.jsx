@@ -22,18 +22,13 @@ import HorizontalToolbar from './horizontal-toolbar.jsx';
 import NetworkModificationTreePane from './network-modification-tree-pane.jsx';
 import NetworkMapTab from './network/network-map-tab.jsx';
 import { DiagramPane } from './diagrams/diagram-pane.jsx';
-import {
-    createMapContingencyList,
-    createMapFilter,
-} from '../services/study/network-map.js';
 import { StudyView } from './study-pane.jsx';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Typography } from '@mui/material';
-import { EQUIPMENT_TYPES, SELECTION_TYPES } from './utils/equipment-types.js';
-import SelectionCreationPanel from './network/selection-creation-panel.tsx';
+import MapSelectionCreation from './network/mapSelectionCreation.tsx';
 
 const styles = {
     map: {
@@ -92,7 +87,7 @@ const MapViewer = ({
     const intl = useIntl();
     const dispatch = useDispatch();
     const [isDrawingMode, setIsDrawingMode] = useState(false);
-    const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const { snackInfo } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
@@ -141,109 +136,6 @@ const MapViewer = ({
             });
         }
     }, [isDrawingMode, intl, snackInfo]);
-
-    const onCancelFunction = useCallback(() => {
-        networkMapref.current.cleanDraw();
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
-    }, [dispatch]);
-
-    const createFilter = async (selection, distDir, selectedEquipmentsIds) => {
-        try {
-            await createMapFilter(
-                selection,
-                distDir,
-                studyUuid,
-                currentNode.id,
-                selectedEquipmentsIds
-            );
-            snackInfo({
-                messageTxt: intl.formatMessage({
-                    id: 'FilterCreationSuccess',
-                }),
-            });
-        } catch (error) {
-            snackWarning({
-                messageTxt: intl.formatMessage({
-                    id: error.message,
-                }),
-                headerId: 'FilterCreationError',
-            });
-        }
-    };
-
-    const createContingencyList = async (
-        selection,
-        distDir,
-        selectedEquipments
-    ) => {
-        try {
-            await createMapContingencyList(
-                selection,
-                distDir,
-                studyUuid,
-                currentNode.id,
-                selectedEquipments
-            );
-            snackInfo({
-                messageTxt: intl.formatMessage({
-                    id: 'ContingencyListCreationSuccess',
-                }),
-            });
-        } catch (error) {
-            snackWarning({
-                messageTxt: intl.formatMessage({
-                    id: error.message,
-                }),
-                headerId: 'ContingencyListCreationError',
-            });
-        }
-    };
-
-    const onSaveSelection = async (selection, distDir) => {
-        const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
-
-        try {
-            //we want to calculate selectedLine or selectedSubstation only when needed
-            //call getSelectedLines if the user want to create a filter with lines
-            //for all others case we call getSelectedSubstations
-            const selectedEquipments =
-                selection.equipmentType === EQUIPMENT_TYPES.LINE
-                    ? networkMapref.current.getSelectedLines()
-                    : networkMapref.current.getSelectedSubstations();
-            const selectedEquipmentsIds = selectedEquipments.map((eq) => eq.id);
-
-            if (selectedEquipments.length === 0) {
-                snackWarning({
-                    messageTxt: intl.formatMessage({
-                        id: 'EmptySelection',
-                    }),
-                    headerId: isFilter
-                        ? 'FilterCreationIgnored'
-                        : 'ContingencyListCreationIgnored',
-                });
-                return;
-            }
-
-            if (isFilter) {
-                await createFilter(selection, distDir, selectedEquipmentsIds);
-            } else {
-                await createContingencyList(
-                    selection,
-                    distDir,
-                    selectedEquipments
-                );
-            }
-        } catch (error) {
-            snackError({
-                messageTxt: intl.formatMessage({
-                    id: error.message,
-                }),
-                headerId: isFilter
-                    ? 'FilterCreationError'
-                    : 'ContingencyListCreationError',
-            });
-        }
-    };
 
     return (
         <ReactFlowProvider>
@@ -351,25 +243,21 @@ const MapViewer = ({
                                         }}
                                     ></NetworkMapTab>
                                 </Box>
-
-                                <Box
-                                    style={{
-                                        width:
-                                            studyDisplayMode ===
-                                            STUDY_DISPLAY_MODE.DRAW
-                                                ? '20%'
-                                                : '0%',
-                                        height: '100%',
-                                    }}
-                                >
-                                    {studyDisplayMode ===
-                                        STUDY_DISPLAY_MODE.DRAW && (
-                                        <SelectionCreationPanel
-                                            onSaveSelection={onSaveSelection}
-                                            onCancel={onCancelFunction}
-                                        ></SelectionCreationPanel>
-                                    )}
-                                </Box>
+                                {studyDisplayMode ===
+                                    STUDY_DISPLAY_MODE.DRAW && (
+                                    <Box
+                                        style={{
+                                            width: '20%',
+                                            height: '100%',
+                                        }}
+                                    >
+                                        <MapSelectionCreation
+                                            studyUuid={studyUuid}
+                                            currentNode={currentNode?.id}
+                                            networkMapref={networkMapref}
+                                        />
+                                    </Box>
+                                )}
                             </Box>
 
                             <DiagramPane

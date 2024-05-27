@@ -5,53 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
     SelectInput,
-    TreeViewFinderNodeProps,
+    SubmitButton,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    SELECTION_NAME,
+    EQUIPMENT_TYPE_FIELD,
     NAME,
     SELECTION_TYPE,
 } from 'components/utils/field-constants';
+import { useSelector } from 'react-redux';
+import { TreeViewFinderNodeProps } from '@gridsuite/commons-ui/dist/components/TreeViewFinder/TreeViewFinder';
 import { GridSection } from 'components/dialogs/dialogUtils';
-import { FormattedMessage, useIntl } from 'react-intl';
+import {
+    EQUIPMENT_TYPES,
+    SELECTION_TYPES,
+    equipementTypeToLabel,
+    selectionTypeToLabel,
+} from 'components/utils/equipment-types';
 import {
     fetchDirectoryContent,
     fetchPath,
     fetchRootFolders,
 } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
-import { useSelector } from 'react-redux';
-import {
-    equipementTypeToLabel,
-    EQUIPMENT_TYPES,
-    SELECTION_TYPES,
-    selectionTypeToLabel,
-} from '../utils/equipment-types';
 import { UUID } from 'crypto';
-import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
+import { fetchElementsMetadata } from 'services/explore';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [SELECTION_NAME]: yup.string().nullable(),
-        [NAME]: yup.string().required(),
-        [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        [SELECTION_TYPE]: yup.string().required(),
-    })
-    .required();
+const formSchema = yup.object().shape({
+    [NAME]: yup.string().required(),
+    [SELECTION_TYPE]: yup.string().nullable().required(),
+    [EQUIPMENT_TYPE_FIELD]: yup.string().nullable().required(),
+});
 const emptyFormData = {
-    [SELECTION_NAME]: '',
     [NAME]: '',
     [EQUIPMENT_TYPE_FIELD]: '',
     [SELECTION_TYPE]: '',
@@ -77,6 +71,11 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
+    const { handleSubmit, formState } = formMethods;
+    const watchSelectionType = useWatch({
+        name: SELECTION_TYPE,
+        control: formMethods.control,
+    });
 
     const [defaultFolder, setDefaultFolder] =
         useState<TreeViewFinderNodeProps>();
@@ -92,10 +91,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         });
     }, [studyUuid]);
 
-    const watchSelectionType = formMethods.watch(SELECTION_TYPE);
-
     const generateSelectionName = useCallback(
-        (selectionType: any) => {
+        (selectionType: string) => {
             const selectionName =
                 selectionType === SELECTION_TYPES.FILTER
                     ? 'Generated-filter-'
@@ -108,9 +105,20 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         [formMethods]
     );
 
+    const onSubmit = useCallback(
+        (data: ISelectionCreation) => {
+            if (defaultFolder) {
+                onSaveSelection(data, defaultFolder);
+            }
+        },
+        [defaultFolder, onSaveSelection]
+    );
+
     useEffect(() => {
-        //Generate a new name every time the component is mounted, selection type changed
-        generateSelectionName(watchSelectionType);
+        //TODO rerendering : to fix
+        if (watchSelectionType !== '') {
+            generateSelectionName(watchSelectionType);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [watchSelectionType]);
 
@@ -177,7 +185,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 height="100%"
             >
                 <Grid container rowGap={2}>
-                    <GridSection title="createNewFilter" />
+                    <GridSection title="createNewSelection" />
                     <Grid container>
                         <SelectInput
                             name={SELECTION_TYPE}
@@ -258,27 +266,17 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     </Grid>
                 </Grid>
                 <Grid container justifyContent="flex-end">
+                    <SubmitButton
+                        variant="outlined"
+                        onClick={handleSubmit(onSubmit)}
+                        disabled={!formState.isValid}
+                    >
+                        <FormattedMessage id="validate" />
+                    </SubmitButton>
                     <Button onClick={onCancel} size={'large'}>
                         {intl.formatMessage({ id: 'cancel' })}
                     </Button>
                     <Box m={1} />
-                    <Button
-                        variant="contained"
-                        type={'submit'}
-                        onClick={() => {
-                            formMethods.trigger().then((isValid) => {
-                                if (isValid && defaultFolder) {
-                                    const data =
-                                        formMethods.getValues() as ISelectionCreation;
-                                    onSaveSelection(data, defaultFolder);
-                                    generateSelectionName(data[SELECTION_TYPE]);
-                                }
-                            });
-                        }}
-                        size={'large'}
-                    >
-                        {intl.formatMessage({ id: 'validate' })}
-                    </Button>
                 </Grid>
             </Box>
         </CustomFormProvider>

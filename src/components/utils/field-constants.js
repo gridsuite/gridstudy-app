@@ -256,7 +256,6 @@ export const LEG_SIDE = 'legSide';
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
-export const SELECTION_NAME = 'selectionName';
 export const SELECTION_TYPE = 'selectionType';
 
 export const CONNECT = 'connect';
