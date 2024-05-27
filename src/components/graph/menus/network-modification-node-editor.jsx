@@ -1135,7 +1135,9 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
-                    disabled={isAnyNodeBuilding || mapDataLoading || deleteInProgress }
+                    disabled={
+                        isAnyNodeBuilding || mapDataLoading || deleteInProgress
+                    }
                 >
                     <AddIcon />
                 </IconButton>
