@@ -5,7 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getRequestParamFromList } from '@gridsuite/commons-ui';
+import {
+    backendFetchJson,
+    getRequestParamFromList,
+} from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid } from './index';
 
 export function fetchSubstationPositions(
