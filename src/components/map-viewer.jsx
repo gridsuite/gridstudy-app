@@ -100,7 +100,7 @@ const MapViewer = ({
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
     const intl = useIntl();
     const dispatch = useDispatch();
-    const [isDrawingMode, setIsDrawingMode] = useState(false);
+    const [isDrawingMode, setIsDrawingMode] = useState('simple_select');
     const { snackInfo, snackError, snackWarning, closeSnackbar } =
         useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
@@ -146,7 +146,7 @@ const MapViewer = ({
     const [instructionSnakbar, setInstructionSnackbar] = useState(undefined);
     useEffect(() => {
         //display a snackbar
-        if (isDrawingMode && !instructionSnakbar) {
+        if (isDrawingMode === 'draw_polygon' && !instructionSnakbar) {
             setInstructionSnackbar(
                 snackInfo({
                     messageTxt: intl.formatMessage({
@@ -156,7 +156,7 @@ const MapViewer = ({
                 })
             );
         }
-        if (!isDrawingMode && instructionSnakbar) {
+        if (isDrawingMode === 'simple_select' && instructionSnakbar) {
             closeSnackbar(instructionSnakbar);
             setInstructionSnackbar(undefined);
         }
@@ -216,7 +216,7 @@ const MapViewer = ({
     );
 
     const onCancelFunction = useCallback(() => {
-        networkMapref.current.cleanDraw();
+        setShouldOpenFilterCreationPanel(false);
         if (previousStudyDisplayMode.current !== undefined) {
             dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
             previousStudyDisplayMode.current = undefined;
@@ -230,19 +230,57 @@ const MapViewer = ({
     // When the user enter the drawing mode, we need to switch the study display mode to map
     // and save the previous mode so we can restore it when the user cancel the drawing
     useEffect(() => {
-        if (isDrawingMode === true) {
+        const all = networkMapref.current.getMapDrawer()?.getAll();
+        if (all === undefined) {
+            return;
+        } // map is not initialized yet
+
+        const features = all?.features?.[0];
+        const coordinates = features?.geometry?.coordinates;
+        const isPolygonDrawn = coordinates?.[0]?.length > 3;
+
+        console.log(
+            'debug',
+            'DrawingMode: ',
+            isDrawingMode,
+            ' isPolygonDrawn',
+            isPolygonDrawn
+        );
+        if (isDrawingMode === 'draw_polygon' && isPolygonDrawn === false) {
             // save the previous mode so we can restore it when the user cancel the drawing
             if (previousStudyDisplayMode.current === undefined) {
                 previousStudyDisplayMode.current = studyDisplayMode;
             }
             dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+        } else if (
+            isDrawingMode === 'draw_polygon' &&
+            isPolygonDrawn === true
+        ) {
+            if (
+                networkMapref.current.getMapDrawer()?.getAll().features
+                    ?.length > 1
+            ) {
+                const idFirstPolygon = networkMapref.current
+                    .getMapDrawer()
+                    .getAll().features[0].id;
+                networkMapref.current
+                    .getMapDrawer()
+                    .delete(String(idFirstPolygon));
+            }
+        } else if (
+            isDrawingMode === 'simple_select' &&
+            isPolygonDrawn === false
+        ) {
+            onCancelFunction();
         }
-    }, [dispatch, isDrawingMode, studyDisplayMode]);
+    }, [dispatch, isDrawingMode, onCancelFunction, studyDisplayMode]);
 
     const onDrawEvent = useCallback((event) => {
         switch (event) {
             case DRAW_EVENT.DELETE:
                 setShouldOpenFilterCreationPanel(false);
+                networkMapref.current.cleanDraw();
+                onCancelFunction();
                 break;
             case DRAW_EVENT.CREATE:
                 setShouldOpenFilterCreationPanel(true);
@@ -349,7 +387,11 @@ const MapViewer = ({
                                 {shouldOpenFilterCreationPanel && (
                                     <FilterCreationPanel
                                         onSaveFilter={onSaveFilter}
-                                        onCancel={onCancelFunction}
+                                        onCancel={() =>
+                                            setShouldOpenFilterCreationPanel(
+                                                false
+                                            )
+                                        }
                                     ></FilterCreationPanel>
                                 )}
                             </Box>
