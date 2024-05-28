@@ -4,19 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { store } from '../redux/store';
-import { fetchEnv, fetchStudyMetadata } from '@gridsuite/commons-ui';
+import {
+    fetchEnv,
+    fetchStudyMetadata,
+    getUserToken,
+} from '@gridsuite/commons-ui';
 
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
     FAILED: 'FAILED',
     IDLE: 'IDLE',
     RUNNING: 'RUNNING',
-};
-
-export const getToken = () => {
-    const state = store.getState();
-    return state.user.id_token;
 };
 
 export function fetchIdpSettings() {
@@ -71,9 +69,9 @@ export const fetchDefaultParametersValues = () => {
 
 export function getUrlWithToken(baseUrl) {
     if (baseUrl.includes('?')) {
-        return baseUrl + '&access_token=' + getToken();
+        return baseUrl + '&access_token=' + getUserToken();
     } else {
-        return baseUrl + '?access_token=' + getToken();
+        return baseUrl + '?access_token=' + getUserToken();
     }
 }
 

@@ -6,8 +6,8 @@
  */
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { getToken, getUrlWithToken } from './utils';
-import { getWsBase } from '@gridsuite/commons-ui';
+import { getUrlWithToken } from './utils';
+import { getWsBase, getUserToken } from '@gridsuite/commons-ui';
 
 const PREFIX_DIRECTORY_NOTIFICATION_WS =
     import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
@@ -39,7 +39,7 @@ export function connectNotificationsWsUpdateDirectories() {
     const webSocketUrl = `${webSocketBaseUrl}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`;
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => `${webSocketUrl}&access_token=${getToken()}`
+        () => `${webSocketUrl}&access_token=${getUserToken()}`
     );
     reconnectingWebSocket.onopen = function () {
         console.info(

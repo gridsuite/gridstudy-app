@@ -23,7 +23,6 @@ export {
     fetchVersion,
     fetchAuthorizationCodeFlowFeatureFlag,
     fetchIdpSettings,
-    getToken,
 } from '../utils';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
