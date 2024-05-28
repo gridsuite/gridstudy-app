@@ -1183,7 +1183,6 @@
     "InsertModificationFrom": "Insérer à partir de GridExplore",
     "SaveModificationTo": "Enregistrer dans GridExplore",
     "ModificationsSelection": "Sélection des modifications",
-    "SaveModificationDescription": "Enregistré depuis {nodePath}",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
     "infoCreateModificationsMsg": "Création d'une modification composée de {nbModifications} modifications unitaire dans {studyDirectory}",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",

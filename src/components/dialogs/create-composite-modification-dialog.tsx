@@ -42,7 +42,6 @@ interface CreateCompositeModificationDialogProps {
         data: ICompositeCreateModificationDialog,
         distDir: TreeViewFinderNodeProps
     ) => void;
-    onCancel: () => void;
     onClose: () => void;
 }
 
@@ -60,7 +59,7 @@ const emptyFormData = {
 
 const CreateCompositeModificationDialog: React.FC<
     CreateCompositeModificationDialogProps
-> = ({ open, onSave, onCancel, onClose }) => {
+> = ({ open, onSave, onClose }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const formMethods = useForm({
@@ -81,7 +80,7 @@ const CreateCompositeModificationDialog: React.FC<
             }
         });
     }, [studyUuid]);
-    const generateCompositeModifName = () => {
+    const generateCompositeModificationName = () => {
         formMethods.setValue(
             NAME,
             'Generated-modification-' + new Date().toISOString()
@@ -89,7 +88,8 @@ const CreateCompositeModificationDialog: React.FC<
     };
 
     useEffect(() => {
-        generateCompositeModifName();
+        generateCompositeModificationName();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -117,7 +117,6 @@ const CreateCompositeModificationDialog: React.FC<
             fullWidth
             maxWidth="md"
             open={open}
-            onClose={onClose}
             aria-labelledby="dialog-save-modifications"
         >
             <DialogTitle>
@@ -183,7 +182,7 @@ const CreateCompositeModificationDialog: React.FC<
                         </Grid>
                     </Grid>
                     <Grid container paddingTop={2} justifyContent="flex-end">
-                        <Button onClick={onCancel} size={'large'}>
+                        <Button onClick={onClose} size={'large'}>
                             {intl.formatMessage({
                                 id: 'cancel',
                             })}
@@ -199,10 +198,10 @@ const CreateCompositeModificationDialog: React.FC<
                                             formMethods.getValues() as ICompositeCreateModificationDialog,
                                             defaultFolder
                                         );
-                                        generateCompositeModifName();
+                                        generateCompositeModificationName();
                                     }
                                 });
-                                onCancel();
+                                onClose();
                             }}
                             size={'large'}
                         >
