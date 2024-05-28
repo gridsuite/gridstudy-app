@@ -33,13 +33,13 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 
-interface ICreateModificationDialog {
+interface ICompositeCreateModificationDialog {
     [NAME]: string;
 }
-interface CreateModificationDialogProps {
+interface CreateCompositeModificationDialogProps {
     open: boolean;
     onSave: (
-        data: ICreateModificationDialog,
+        data: ICompositeCreateModificationDialog,
         distDir: TreeViewFinderNodeProps
     ) => void;
     onCancel: () => void;
@@ -58,12 +58,9 @@ const emptyFormData = {
     [DESCRIPTION]: '',
 };
 
-const CreateModificationDialog: React.FC<CreateModificationDialogProps> = ({
-    open,
-    onSave,
-    onCancel,
-    onClose,
-}) => {
+const CreateCompositeModificationDialog: React.FC<
+    CreateCompositeModificationDialogProps
+> = ({ open, onSave, onCancel, onClose }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const formMethods = useForm({
@@ -84,7 +81,7 @@ const CreateModificationDialog: React.FC<CreateModificationDialogProps> = ({
             }
         });
     }, [studyUuid]);
-    const generateFilterName = () => {
+    const generateCompositeModifName = () => {
         formMethods.setValue(
             NAME,
             'Generated-modification-' + new Date().toISOString()
@@ -92,9 +89,7 @@ const CreateModificationDialog: React.FC<CreateModificationDialogProps> = ({
     };
 
     useEffect(() => {
-        //Generate a new name every time the component is mounted
-        generateFilterName();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        generateCompositeModifName();
     }, []);
 
     useEffect(() => {
@@ -201,12 +196,13 @@ const CreateModificationDialog: React.FC<CreateModificationDialogProps> = ({
                                 formMethods.trigger().then((isValid) => {
                                     if (isValid && defaultFolder) {
                                         onSave(
-                                            formMethods.getValues() as ICreateModificationDialog,
+                                            formMethods.getValues() as ICompositeCreateModificationDialog,
                                             defaultFolder
                                         );
-                                        generateFilterName();
+                                        generateCompositeModifName();
                                     }
                                 });
+                                onCancel();
                             }}
                             size={'large'}
                         >
@@ -221,4 +217,4 @@ const CreateModificationDialog: React.FC<CreateModificationDialogProps> = ({
     );
 };
 
-export default CreateModificationDialog;
+export default CreateCompositeModificationDialog;

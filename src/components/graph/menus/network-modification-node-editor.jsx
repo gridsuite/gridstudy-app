@@ -86,7 +86,7 @@ import { fetchPath } from '../../../services/directory';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
-import CreateModificationDialog from '../../dialogs/create-modification-dialog.tsx';
+import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -1091,7 +1091,7 @@ const NetworkModificationNodeEditor = () => {
     };
     const renderCreateNetworkModificationsDialog = () => {
         return (
-            <CreateModificationDialog
+            <CreateCompositeModificationDialog
                 open={createModifDialogOpen}
                 onSave={doCreateModificationsElements}
                 onCancel={() => setcreateModifDialogOpen(false)}
