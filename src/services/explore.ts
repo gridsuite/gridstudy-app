@@ -56,29 +56,3 @@ export function createModifications(
         }
     );
 }
-
-/**
- * Create Filter
- * @returns {Promise<Response>}
- */
-export function createFilter(
-    newFilter: any,
-    name: string,
-    description: string,
-    parentDirectoryUuid: string
-) {
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
-    urlSearchParams.append('description', description);
-    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    return backendFetch(
-        PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/filters?' +
-            urlSearchParams.toString(),
-        {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newFilter),
-        }
-    );
-}
