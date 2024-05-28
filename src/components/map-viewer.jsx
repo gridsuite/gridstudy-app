@@ -263,7 +263,7 @@ const MapViewer = ({
                     .delete(String(idFirstPolygon));
             }
         }
-        // exit the drawing mode
+        // transition between Drawing polygon mode -> cancel the drawing and return to previous display mode
         else if (
             isDrawingMode === 'simple_select' &&
             isPolygonDrawn === false
