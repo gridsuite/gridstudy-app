@@ -24,25 +24,23 @@ export const ParameterFloat = ({
     adornment,
     tooltip,
 }: ParameterFloatProps) => {
-    return (
-        <>
-            <Tooltip title={tooltip ? <FormattedMessage id={tooltip} /> : ''}>
-                <Grid
-                    item
-                    container
-                    direction={'row'}
-                    spacing={1}
-                    paddingTop={3}
-                >
-                    <Grid item xs={9} sx={style}>
-                        <FormattedMessage id={label} />
-                    </Grid>
-
-                    <Grid item xs={3}>
-                        <FloatInput name={name} adornment={adornment} />
-                    </Grid>
-                </Grid>
-            </Tooltip>
-        </>
+    const content = (
+        <Grid item container direction={'row'} spacing={1} paddingTop={3}>
+            <Grid item xs={9} sx={style}>
+                <FormattedMessage id={label} />
+            </Grid>
+            <Grid item xs={3}>
+                <FloatInput name={name} adornment={adornment} />
+            </Grid>
+        </Grid>
     );
+
+    if (tooltip) {
+        return (
+            <Tooltip title={<FormattedMessage id={tooltip} />}>
+                {content}
+            </Tooltip>
+        );
+    }
+    return content;
 };
