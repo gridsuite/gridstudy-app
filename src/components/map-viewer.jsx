@@ -387,11 +387,12 @@ const MapViewer = ({
                                 {shouldOpenFilterCreationPanel && (
                                     <FilterCreationPanel
                                         onSaveFilter={onSaveFilter}
-                                        onCancel={() =>
+                                        onCancel={() => {
                                             setShouldOpenFilterCreationPanel(
                                                 false
-                                            )
-                                        }
+                                            );
+                                            networkMapref.current.cleanDraw();
+                                        }}
                                     ></FilterCreationPanel>
                                 )}
                             </Box>
