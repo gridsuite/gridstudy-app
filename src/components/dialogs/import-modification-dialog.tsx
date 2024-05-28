@@ -44,7 +44,7 @@ const ImportModificationDialog: FunctionComponent<
         selectedElements: TreeViewFinderNodeProps[]
     ) => {
         const copyInfos = {
-            copyType: CopyType.COPY,
+            copyType: CopyType.INSERT,
         };
         const modificationUuidList = selectedElements.map((e) => e.id);
         // import selected modifications

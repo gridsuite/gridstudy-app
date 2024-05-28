@@ -159,6 +159,7 @@ export function isPartial(s1, s2) {
 export const CopyType = {
     COPY: 'COPY',
     MOVE: 'MOVE',
+    INSERT: 'INSERT',
 };
 
 const NetworkModificationNodeEditor = () => {
