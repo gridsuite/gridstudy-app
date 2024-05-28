@@ -10,8 +10,6 @@ import { UUID } from 'crypto';
 
 const PREFIX_EXPLORE_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/explore';
-const PREFIX_DIRECTORY_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/directory';
 
 export function createParameter(
     newParameter: any,
@@ -31,21 +29,6 @@ export function createParameter(
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newParameter),
-        }
-    );
-}
-
-export function elementExists(
-    directoryUuid: UUID,
-    elementName: string,
-    type: string
-) {
-    const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
-
-    console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then(
-        (response) => {
-            return response.status !== 204; // HTTP 204 : No-content
         }
     );
 }

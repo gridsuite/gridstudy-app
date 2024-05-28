@@ -11,8 +11,7 @@ import React, {
     useCallback,
     useEffect,
 } from 'react';
-import { useDebounce } from '@gridsuite/commons-ui';
-import { elementExists } from 'services/explore';
+import { elementExists, useDebounce } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import { InputAdornment, TextFieldProps } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
