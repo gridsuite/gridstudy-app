@@ -6,11 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ADDITIONAL_PROPERTIES,
@@ -71,6 +67,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { FetchStatus } from '../../../../../services/utils';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,

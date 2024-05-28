@@ -7,6 +7,13 @@
 import { store } from '../redux/store';
 import { fetchEnv, fetchStudyMetadata } from '@gridsuite/commons-ui';
 
+export const FetchStatus = {
+    SUCCEED: 'SUCCEED',
+    FAILED: 'FAILED',
+    IDLE: 'IDLE',
+    RUNNING: 'RUNNING',
+};
+
 export const getToken = () => {
     const state = store.getState();
     return state.user.id_token;

@@ -63,11 +63,7 @@ import {
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -75,6 +71,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { FetchStatus } from '../../../../../services/utils';
 
 const formSchema = yup
     .object()

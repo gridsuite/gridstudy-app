@@ -14,7 +14,7 @@ import { LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage, FetchStatus } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
@@ -30,6 +30,7 @@ import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { FetchStatus } from '../services/utils';
 
 const styles = {
     container: {

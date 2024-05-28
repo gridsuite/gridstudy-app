@@ -11,11 +11,7 @@ import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import {
@@ -24,6 +20,7 @@ import {
 } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,

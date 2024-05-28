@@ -26,11 +26,8 @@ import {
     fetchDynamicSimulationEvent,
     saveDynamicSimulationEvent,
 } from '../../../../services/dynamic-simulation';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { FetchStatus } from '../../../../services/utils';
 
 export type DynamicSimulationEventDialogProps = {
     studyUuid: string;

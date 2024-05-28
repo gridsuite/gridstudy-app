@@ -10,11 +10,7 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -71,6 +67,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

@@ -8,7 +8,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     useSnackMessage,
-    FetchStatus,
     fetchDirectoryElementPath,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -88,6 +87,7 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
+import { FetchStatus } from '../../../services/utils';
 
 export const styles = {
     listContainer: (theme) => ({

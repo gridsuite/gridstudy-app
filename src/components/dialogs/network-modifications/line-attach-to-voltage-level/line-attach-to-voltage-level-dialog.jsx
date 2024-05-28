@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -52,6 +48,7 @@ import { attachLine } from '../../../../services/study/network-modifications';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';
 import { getNewVoltageLevelOptions } from '../../../utils/utils';
+import { FetchStatus } from '../../../../services/utils';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',

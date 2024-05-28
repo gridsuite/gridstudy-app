@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -56,6 +52,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a load in the network

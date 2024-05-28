@@ -14,11 +14,7 @@ import {
     SPECIFIC_METADATA,
     TYPE,
 } from '../../../utils/field-constants';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
 import ModificationDialog from '../../commons/modificationDialog';
@@ -26,6 +22,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipmentByFilter } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 import ByFilterDeletionForm from './by-filter-deletion-form';
 import {
     ByFilterDeletionDialogProps,

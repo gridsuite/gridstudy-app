@@ -9,7 +9,6 @@ import {
     CustomFormProvider,
     TextInput,
     useSnackMessage,
-    FetchStatus,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
@@ -90,6 +89,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),

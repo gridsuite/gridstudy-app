@@ -21,11 +21,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
@@ -43,6 +39,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

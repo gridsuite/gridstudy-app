@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import PropTypes from 'prop-types';
@@ -43,6 +39,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
 import LineAttachToSplitLinesIllustration from './lines-attach-to-split-lines-illustration';
+import { FetchStatus } from '../../../../services/utils';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,

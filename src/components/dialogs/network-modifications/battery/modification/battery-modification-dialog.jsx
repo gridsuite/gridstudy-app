@@ -8,11 +8,7 @@
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -66,6 +62,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
