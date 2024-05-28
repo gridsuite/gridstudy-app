@@ -36,6 +36,7 @@ import LoadCreationForm from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
@@ -43,7 +44,6 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a load in the network

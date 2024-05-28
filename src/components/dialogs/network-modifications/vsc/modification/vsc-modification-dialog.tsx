@@ -40,6 +40,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
 } from '../../../../utils/field-constants';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     getVscHvdcLineModificationPaneSchema,
     getVscHvdcLineModificationTabFormData,
@@ -71,7 +72,6 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { FetchStatus } from '../../../../../services/utils';
 
 const formSchema = yup
     .object()

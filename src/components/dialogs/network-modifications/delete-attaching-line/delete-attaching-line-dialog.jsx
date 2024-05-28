@@ -24,8 +24,8 @@ import ModificationDialog from '../../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';
-import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';
 import { FetchStatus } from '../../../../services/utils';
+import DeleteAttachingLineIllustration from './delete-attaching-line-illustration';
 
 const emptyFormData = {
     [ATTACHED_LINE_ID]: null,

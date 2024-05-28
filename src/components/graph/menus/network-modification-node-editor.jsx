@@ -77,6 +77,7 @@ import {
     stashModifications,
     fetchNetworkModifications,
 } from '../../../services/study/network-modifications';
+import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
@@ -87,7 +88,6 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
-import { FetchStatus } from '../../../services/utils';
 
 export const styles = {
     listContainer: (theme) => ({

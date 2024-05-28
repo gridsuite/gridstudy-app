@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
@@ -111,6 +107,7 @@ import {
     fetchNetworkElementInfos,
     fetchVoltageLevelsListInfos,
 } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
     getConcatenatedProperties,

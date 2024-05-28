@@ -20,6 +20,7 @@ import {
 } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabularCreation } from 'services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 import TabularCreationForm from './tabular-creation-form';
 import {
     convertCreationFieldFromBackToFront,
@@ -29,7 +30,6 @@ import {
 } from './tabular-creation-utils';
 import { useIntl } from 'react-intl';
 import { formatModification } from '../tabular-modification/tabular-modification-utils';
-import { FetchStatus } from '../../../../services/utils';
 
 const formSchema = yup
     .object()

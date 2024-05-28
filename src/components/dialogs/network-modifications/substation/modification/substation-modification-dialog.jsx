@@ -27,6 +27,7 @@ import {
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifySubstation } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -34,7 +35,6 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

@@ -22,6 +22,7 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
@@ -30,7 +31,6 @@ import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { FetchStatus } from '../services/utils';
 
 const styles = {
     container: {

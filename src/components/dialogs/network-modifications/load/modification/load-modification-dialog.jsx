@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    useSnackMessage,
-    FetchStatus,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -33,6 +29,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
     getConcatenatedProperties,

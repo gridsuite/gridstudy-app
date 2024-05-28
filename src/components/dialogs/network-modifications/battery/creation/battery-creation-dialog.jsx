@@ -60,6 +60,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
 import { createBattery } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
@@ -67,7 +68,6 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

@@ -54,6 +54,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -106,7 +107,6 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a two windings transformer in the network

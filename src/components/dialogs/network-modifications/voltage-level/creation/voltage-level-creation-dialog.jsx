@@ -45,6 +45,7 @@ import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
@@ -52,7 +53,6 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a load in the network
