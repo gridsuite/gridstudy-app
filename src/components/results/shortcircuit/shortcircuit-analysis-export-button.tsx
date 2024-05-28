@@ -13,7 +13,7 @@ import {
     useState,
 } from 'react';
 import { ExportButton } from '../../utils/export-button';
-import { useSnackMessage, downloadZipFile } from '@gridsuite/commons-ui';
+import { useSnackMessage, downloadFile, FileType } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
@@ -81,11 +81,12 @@ export const ShortCircuitExportButton: FunctionComponent<
         )
             .then((response) => {
                 response.blob().then((fileBlob: Blob) => {
-                    downloadZipFile(
+                    downloadFile(
                         fileBlob,
                         analysisType === ShortCircuitAnalysisType.ONE_BUS
                             ? 'oneBus-results.zip'
-                            : 'allBuses_results.zip'
+                            : 'allBuses_results.zip',
+                        FileType.ZIP
                     );
                     setIsCsvExportSuccessful(true);
                 });

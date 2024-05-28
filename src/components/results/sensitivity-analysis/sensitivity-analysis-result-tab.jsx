@@ -29,7 +29,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import React, { useCallback } from 'react';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
-import { useSnackMessage, downloadZipFile } from '@gridsuite/commons-ui';
+import { useSnackMessage, downloadFile, FileType } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { setSensitivityAnalysisResultFilter } from 'redux/actions';
@@ -128,7 +128,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         })
             .then((response) => {
                 response.blob().then((blob) => {
-                    downloadZipFile(blob, 'sensitivity_analyse_results.zip');
+                    downloadFile(blob, 'sensitivity_analyse_results.zip', FileType.ZIP);
                     setIsCsvExportSuccessful(true);
                 });
             })
