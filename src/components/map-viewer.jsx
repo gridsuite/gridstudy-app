@@ -215,7 +215,7 @@ const MapViewer = ({
         [currentNode?.id, intl, snackError, snackInfo, snackWarning, studyUuid]
     );
 
-    const onCancelFunction = useCallback(() => {
+    const navigateToPreviousDisplayMode = useCallback(() => {
         setShouldOpenFilterCreationPanel(false);
         if (previousStudyDisplayMode.current !== undefined) {
             dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
@@ -239,27 +239,22 @@ const MapViewer = ({
         const coordinates = features?.geometry?.coordinates;
         const isPolygonDrawn = coordinates?.[0]?.length > 3;
 
-        console.log(
-            'debug',
-            'DrawingMode: ',
-            isDrawingMode,
-            ' isPolygonDrawn',
-            isPolygonDrawn
-        );
+        // fitst click on draw button, the polygon is not drawn yet, and the user want to draw
         if (isDrawingMode === 'draw_polygon' && isPolygonDrawn === false) {
             // save the previous mode so we can restore it when the user cancel the drawing
             if (previousStudyDisplayMode.current === undefined) {
                 previousStudyDisplayMode.current = studyDisplayMode;
             }
+            //go to map full screen mode
             dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
-        } else if (
-            isDrawingMode === 'draw_polygon' &&
-            isPolygonDrawn === true
-        ) {
+        }
+        // the user has a polygon, and want to draw another
+        else if (isDrawingMode === 'draw_polygon' && isPolygonDrawn === true) {
             if (
                 networkMapref.current.getMapDrawer()?.getAll().features
                     ?.length > 1
             ) {
+                setShouldOpenFilterCreationPanel(false);
                 const idFirstPolygon = networkMapref.current
                     .getMapDrawer()
                     .getAll().features[0].id;
@@ -267,30 +262,40 @@ const MapViewer = ({
                     .getMapDrawer()
                     .delete(String(idFirstPolygon));
             }
-        } else if (
+        }
+        // exit the drawing mode
+        else if (
             isDrawingMode === 'simple_select' &&
             isPolygonDrawn === false
         ) {
-            onCancelFunction();
+            navigateToPreviousDisplayMode();
         }
-    }, [dispatch, isDrawingMode, onCancelFunction, studyDisplayMode]);
+    }, [
+        dispatch,
+        isDrawingMode,
+        navigateToPreviousDisplayMode,
+        studyDisplayMode,
+    ]);
 
-    const onDrawEvent = useCallback((event) => {
-        switch (event) {
-            case DRAW_EVENT.DELETE:
-                setShouldOpenFilterCreationPanel(false);
-                networkMapref.current.cleanDraw();
-                onCancelFunction();
-                break;
-            case DRAW_EVENT.CREATE:
-                setShouldOpenFilterCreationPanel(true);
-                break;
-            case DRAW_EVENT.UPDATE:
-                break;
-            default:
-                break;
-        }
-    }, []);
+    const onDrawEvent = useCallback(
+        (event) => {
+            switch (event) {
+                case DRAW_EVENT.DELETE:
+                    setShouldOpenFilterCreationPanel(false);
+                    networkMapref.current.cleanDraw();
+                    navigateToPreviousDisplayMode();
+                    break;
+                case DRAW_EVENT.CREATE:
+                    setShouldOpenFilterCreationPanel(true);
+                    break;
+                case DRAW_EVENT.UPDATE:
+                    break;
+                default:
+                    break;
+            }
+        },
+        [navigateToPreviousDisplayMode]
+    );
 
     return (
         <Box sx={styles.table}>
