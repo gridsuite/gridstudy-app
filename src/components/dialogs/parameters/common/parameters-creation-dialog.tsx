@@ -14,21 +14,17 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    fetchDirectoryContent,
-    fetchPath,
-    fetchRootFolders,
-} from 'services/directory';
-import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
-import { createParameter, fetchElementsMetadata } from 'services/explore';
+import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 import { UUID } from 'crypto';
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 interface FormData {
     [NAME]: string;
@@ -78,7 +74,7 @@ const CreateParameterDialog = <T extends FieldValues>({
     const nameError = errors[NAME];
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((res) => {
+        fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
                 setDefaultFolder({
                     id: res[1].elementUuid,
@@ -184,9 +180,6 @@ const CreateParameterDialog = <T extends FieldValues>({
                     title={intl.formatMessage({
                         id: 'showSelectDirectoryDialog',
                     })}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
                 />
             </ModificationDialog>
         </CustomFormProvider>

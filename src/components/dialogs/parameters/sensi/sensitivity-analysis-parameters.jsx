@@ -72,8 +72,6 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 
 const formSchema = yup
     .object()
@@ -661,9 +659,6 @@ export const SensitivityAnalysisParameters = ({
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

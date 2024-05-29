@@ -285,24 +285,20 @@ const MapViewer = ({
         studyDisplayMode,
     ]);
 
-    const onDrawEvent = useCallback(
-        (event) => {
-            switch (event) {
-                case DRAW_EVENT.DELETE:
-                    setShouldOpenFilterCreationPanel(false);
-                    navigateToPreviousDisplayMode();
-                    break;
-                case DRAW_EVENT.CREATE:
-                    setShouldOpenFilterCreationPanel(true);
-                    break;
-                case DRAW_EVENT.UPDATE:
-                    break;
-                default:
-                    break;
-            }
-        },
-        [navigateToPreviousDisplayMode]
-    );
+    const onDrawEvent = useCallback((event) => {
+        switch (event) {
+            case DRAW_EVENT.DELETE:
+                setShouldOpenFilterCreationPanel(false);
+                break;
+            case DRAW_EVENT.CREATE:
+                setShouldOpenFilterCreationPanel(true);
+                break;
+            case DRAW_EVENT.UPDATE:
+                break;
+            default:
+                break;
+        }
+    }, []);
 
     return (
         <Box sx={styles.table}>

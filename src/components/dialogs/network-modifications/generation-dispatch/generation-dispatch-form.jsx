@@ -25,9 +25,6 @@ import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
-import { fetchPath } from '../../../../services/directory.js';
 
 const GenerationDispatchForm = () => {
     const handleCoefficientValueChange = (id, value) => {
@@ -57,10 +54,6 @@ const GenerationDispatchForm = () => {
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
-                    fetchDirectoryElementPath={fetchPath}
                 />
             </Grid>
         </Grid>
@@ -98,10 +91,6 @@ const GenerationDispatchForm = () => {
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                     elementType={ElementType.FILTER}
                     titleId={'FiltersListsSelection'}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
-                    fetchDirectoryElementPath={fetchPath}
                 />
             </Grid>
         </Grid>

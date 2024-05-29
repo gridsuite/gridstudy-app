@@ -7,9 +7,9 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import { createFilter } from '@gridsuite/commons-ui';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,

@@ -20,12 +20,6 @@ import { useForm } from 'react-hook-form';
 import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    fetchDirectoryContent,
-    fetchPath,
-    fetchRootFolders,
-} from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import {
@@ -33,6 +27,7 @@ import {
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
 
@@ -82,7 +77,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((res) => {
+        fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
                 setDefaultFolder({
                     id: res[1].elementUuid,
@@ -217,9 +212,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             title={intl.formatMessage({
                                 id: 'showSelectDirectoryDialog',
                             })}
-                            fetchDirectoryContent={fetchDirectoryContent}
-                            fetchRootFolders={fetchRootFolders}
-                            fetchElementsInfos={fetchElementsMetadata}
                         />
                     </Grid>
                 </Grid>
