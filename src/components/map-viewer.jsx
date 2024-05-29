@@ -188,7 +188,6 @@ const MapViewer = ({
                                 studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
                                     ? '50%'
                                     : '100%',
-                            height: '100%',
                         }}
                     >
                         <Box
@@ -202,7 +201,6 @@ const MapViewer = ({
                                     width: '100%',
                                     height: '100%',
                                     display: 'flex',
-                                    flexDirection: 'row',
                                 }}
                             >
                                 <Box
@@ -218,6 +216,7 @@ const MapViewer = ({
                                 >
                                     <NetworkMapTab
                                         networkMapRef={networkMapref}
+                                        /* TODO do we move redux param to container */
                                         studyUuid={studyUuid}
                                         visible={
                                             view === StudyView.MAP &&
@@ -232,6 +231,7 @@ const MapViewer = ({
                                             lineFlowAlertThreshold
                                         }
                                         openVoltageLevel={openVoltageLevel}
+                                        /* TODO verif tableEquipment*/
                                         currentNode={currentNode}
                                         onChangeTab={onChangeTab}
                                         showInSpreadsheet={showInSpreadsheet}
