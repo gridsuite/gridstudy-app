@@ -26,4 +26,3 @@ export function fetchContingencyAndFiltersLists(listIds) {
     console.debug(url);
     return backendFetchJson(url);
 }
-
