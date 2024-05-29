@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { STUDY_DISPLAY_MODE, setStudyDisplayMode } from 'redux/actions';
 import SelectionCreationPanel from './selection-creation-panel';
 import { useIntl } from 'react-intl'; // For internationalization
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -16,42 +15,44 @@ import {
     createMapContingencyList,
     createMapFilter,
 } from 'services/study/network-map';
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { UUID } from 'crypto';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
 
 interface MapSelectionCreationProps {
-    studyUuid: UUID;
-    currentNode: UUID;
-    networkMapref: React.RefObject<any>; // Replace 'any' with the actual type if known
+    networkMapref: React.RefObject<any>;
+    onCancel: () => void;
 }
 
+interface ISelection {
+    selectionType: string;
+    equipmentType: string;
+}
+
+interface IEquipment {
+    id: string;
+}
 const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
-    studyUuid,
-    currentNode,
     networkMapref,
+    onCancel,
 }) => {
     const intl = useIntl();
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
 
-    const dispatch = useDispatch();
-
-    const onCancelFunction = useCallback(() => {
-        networkMapref.current.cleanDraw();
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
-    }, [dispatch, networkMapref]);
-
     const createFilter = async (
-        selection: any,
+        selection: ISelection,
         distDir: any,
-        selectedEquipmentsIds: string[]
+        selectedEquipmentsIds: IEquipment[]
     ) => {
         try {
             await createMapFilter(
                 selection,
                 distDir,
                 studyUuid,
-                currentNode,
+                currentNode?.id,
                 selectedEquipmentsIds
             );
             snackInfo({
@@ -70,16 +71,16 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
     };
 
     const createContingencyList = async (
-        selection: any,
+        selection: ISelection,
         distDir: any,
-        selectedEquipments: any[]
+        selectedEquipments: String[]
     ) => {
         try {
             await createMapContingencyList(
                 selection,
                 distDir,
                 studyUuid,
-                currentNode,
+                currentNode?.id,
                 selectedEquipments
             );
             snackInfo({
@@ -97,7 +98,7 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
         }
     };
 
-    const onSaveSelection = async (selection: any, distDir: any) => {
+    const onSaveSelection = async (selection: ISelection, distDir: any) => {
         const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
 
         try {
@@ -106,7 +107,7 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
                     ? networkMapref.current.getSelectedLines()
                     : networkMapref.current.getSelectedSubstations();
             const selectedEquipmentsIds = selectedEquipments.map(
-                (eq: any) => eq.id
+                (eq: IEquipment) => eq.id
             );
 
             if (selectedEquipments.length === 0) {
@@ -145,7 +146,7 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
     return (
         <SelectionCreationPanel
             onSaveSelection={onSaveSelection}
-            onCancel={onCancelFunction}
+            onCancel={onCancel}
         />
     );
 };

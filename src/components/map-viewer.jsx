@@ -28,7 +28,7 @@ import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Typography } from '@mui/material';
-import MapSelectionCreation from './network/mapSelectionCreation.tsx';
+import MapSelectionCreation from './network/map-selection-creation.tsx';
 
 const styles = {
     map: {
@@ -136,6 +136,11 @@ const MapViewer = ({
             });
         }
     }, [isDrawingMode, intl, snackInfo]);
+
+    const onCancelCallback = useCallback(() => {
+        networkMapref.current.cleanDraw();
+        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+    }, [dispatch]);
 
     return (
         <ReactFlowProvider>
@@ -252,9 +257,8 @@ const MapViewer = ({
                                         }}
                                     >
                                         <MapSelectionCreation
-                                            studyUuid={studyUuid}
-                                            currentNode={currentNode?.id}
                                             networkMapref={networkMapref}
+                                            onCancel={onCancelCallback}
                                         />
                                     </Box>
                                 )}

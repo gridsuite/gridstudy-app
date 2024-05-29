@@ -71,7 +71,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { handleSubmit, formState } = formMethods;
+    const { handleSubmit } = formMethods;
     const watchSelectionType = useWatch({
         name: SELECTION_TYPE,
         control: formMethods.control,
@@ -269,7 +269,6 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     <SubmitButton
                         variant="outlined"
                         onClick={handleSubmit(onSubmit)}
-                        disabled={!formState.isValid}
                     >
                         <FormattedMessage id="validate" />
                     </SubmitButton>
