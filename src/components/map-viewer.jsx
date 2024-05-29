@@ -34,6 +34,11 @@ import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 
 import { Global, css } from '@emotion/react';
 
+const DrawingMode = {
+    DRAW_POLYGON: 'draw_polygon',
+    SIMPLE_SELECT: 'simple_select',
+};
+
 const styles = {
     map: {
         display: 'flex',
@@ -102,7 +107,7 @@ const MapViewer = ({
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
     const intl = useIntl();
     const dispatch = useDispatch();
-    const [isDrawingMode, setIsDrawingMode] = useState('simple_select');
+    const [drawingMode, setDrawingMode] = useState(DrawingMode.SIMPLE_SELECT);
     const { snackInfo, snackError, snackWarning, closeSnackbar } =
         useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
@@ -148,7 +153,7 @@ const MapViewer = ({
     const [instructionSnakbar, setInstructionSnackbar] = useState(undefined);
     useEffect(() => {
         //display a snackbar
-        if (isDrawingMode === 'draw_polygon' && !instructionSnakbar) {
+        if (drawingMode === DrawingMode.DRAW_POLYGON && !instructionSnakbar) {
             setInstructionSnackbar(
                 snackInfo({
                     messageTxt: intl.formatMessage({
@@ -158,11 +163,11 @@ const MapViewer = ({
                 })
             );
         }
-        if (isDrawingMode === 'simple_select' && instructionSnakbar) {
+        if (drawingMode === DrawingMode.SIMPLE_SELECT && instructionSnakbar) {
             closeSnackbar(instructionSnakbar);
             setInstructionSnackbar(undefined);
         }
-    }, [isDrawingMode, intl, snackInfo, instructionSnakbar, closeSnackbar]);
+    }, [drawingMode, intl, snackInfo, instructionSnakbar, closeSnackbar]);
 
     const onSaveFilter = useCallback(
         async (filter, distDir, setIsLoading) => {
@@ -226,7 +231,7 @@ const MapViewer = ({
     }, [dispatch, previousStudyDisplayMode]);
 
     const onDrawingModeEnter = useCallback((active) => {
-        setIsDrawingMode(active);
+        setDrawingMode(active);
     }, []);
 
     // When the user enter the drawing mode, we need to switch the study display mode to map
@@ -242,7 +247,10 @@ const MapViewer = ({
         const isPolygonDrawn = coordinates?.[0]?.length > 3;
 
         // fitst click on draw button, the polygon is not drawn yet, and the user want to draw
-        if (isDrawingMode === 'draw_polygon' && isPolygonDrawn === false) {
+        if (
+            drawingMode === DrawingMode.DRAW_POLYGON &&
+            isPolygonDrawn === false
+        ) {
             // save the previous mode so we can restore it when the user cancel the drawing
             if (previousStudyDisplayMode.current === undefined) {
                 previousStudyDisplayMode.current = studyDisplayMode;
@@ -251,7 +259,10 @@ const MapViewer = ({
             dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
         }
         // the user has a polygon, and want to draw another
-        else if (isDrawingMode === 'draw_polygon' && isPolygonDrawn === true) {
+        else if (
+            drawingMode === DrawingMode.DRAW_POLYGON &&
+            isPolygonDrawn === true
+        ) {
             if (
                 networkMapref.current.getMapDrawer()?.getAll().features
                     ?.length > 1
@@ -267,14 +278,14 @@ const MapViewer = ({
         }
         // transition between Drawing polygon mode -> cancel the drawing and return to previous display mode
         else if (
-            isDrawingMode === 'simple_select' &&
+            drawingMode === DrawingMode.SIMPLE_SELECT &&
             isPolygonDrawn === false
         ) {
             navigateToPreviousDisplayMode();
         }
     }, [
         dispatch,
-        isDrawingMode,
+        drawingMode,
         navigateToPreviousDisplayMode,
         studyDisplayMode,
     ]);
