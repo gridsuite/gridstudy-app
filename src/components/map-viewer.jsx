@@ -32,6 +32,8 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 
+import { Global, css } from '@emotion/react';
+
 const styles = {
     map: {
         display: 'flex',
@@ -355,6 +357,17 @@ const MapViewer = ({
                                     height: '100%',
                                 }}
                             >
+                                {previousStudyDisplayMode.current !==
+                                undefined ? (
+                                    // hack to override the bg-color of the draw button when we enter in draw mode
+                                    <Global
+                                        styles={css`
+                                            .mapbox-gl-draw_polygon {
+                                                background-color: lightblue !important;
+                                            }
+                                        `}
+                                    />
+                                ) : null}
                                 <NetworkMapTab
                                     networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
