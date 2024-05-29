@@ -48,7 +48,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
         [intl]
     );
 
-    const inputTransform = (value: { id: string; label: string } | string) =>
+    const inputTransform = (value: { id: string; label: string } | string | null) =>
         options.find((option) => option?.id === value) || value;
 
     const outputTransform = (value: any) => {

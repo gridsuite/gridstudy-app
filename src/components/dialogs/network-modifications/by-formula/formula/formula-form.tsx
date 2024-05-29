@@ -24,12 +24,6 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
-import {
-    fetchDirectoryContent,
-    fetchPath,
-    fetchRootFolders,
-} from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 
 interface FormulaProps {
     name: String;
@@ -60,10 +54,6 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             label={'filter'}
             titleId={'FiltersListsSelection'}
             disable={!equipmentTypeWatch}
-            fetchDirectoryContent={fetchDirectoryContent}
-            fetchRootFolders={fetchRootFolders}
-            fetchElementsInfos={fetchElementsMetadata}
-            fetchDirectoryElementPath={fetchPath}
         />
     );
 
@@ -90,7 +80,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         />
     );
 
-    const inputTransform = (value: { id: string; label: string } | string) => {
+    const inputTransform = (value: { id: string; label: string } | string | null) => {
         const newVal = value ?? null;
         return (
             OPERATOR_OPTIONS.find(
