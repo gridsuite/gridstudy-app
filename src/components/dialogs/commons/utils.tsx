@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export function getIdOrValue(value: { id: string; label: string } | string) {
+export function getIdOrValue(value: any) {
     return typeof value !== 'string' ? value?.id ?? null : value;
 }
 
-export function getLabelOrValue(value: { id: string; label: string } | string) {
+export function getLabelOrValue(value: any) {
     return typeof value !== 'string' ? value?.label ?? null : value;
 }
