@@ -15,7 +15,7 @@ import {
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params.js';
 import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions.js';
-import { DRAW_EVENT } from '@powsybl/diagram-viewer';
+import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
 import { DiagramType } from './diagrams/diagram-common.js';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { Box } from '@mui/system';
@@ -33,11 +33,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 
 import { Global, css } from '@emotion/react';
-
-const DrawingMode = {
-    DRAW_POLYGON: 'draw_polygon',
-    SIMPLE_SELECT: 'simple_select',
-};
 
 const styles = {
     map: {
@@ -107,7 +102,7 @@ const MapViewer = ({
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
     const intl = useIntl();
     const dispatch = useDispatch();
-    const [drawingMode, setDrawingMode] = useState(DrawingMode.SIMPLE_SELECT);
+    const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
     const { snackInfo, snackError, snackWarning, closeSnackbar } =
         useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
@@ -153,7 +148,7 @@ const MapViewer = ({
     const [instructionSnakbar, setInstructionSnackbar] = useState(undefined);
     useEffect(() => {
         //display a snackbar
-        if (drawingMode === DrawingMode.DRAW_POLYGON && !instructionSnakbar) {
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && !instructionSnakbar) {
             setInstructionSnackbar(
                 snackInfo({
                     messageTxt: intl.formatMessage({
@@ -163,7 +158,7 @@ const MapViewer = ({
                 })
             );
         }
-        if (drawingMode === DrawingMode.SIMPLE_SELECT && instructionSnakbar) {
+        if (drawingMode === DRAW_MODES.SIMPLE_SELECT && instructionSnakbar) {
             closeSnackbar(instructionSnakbar);
             setInstructionSnackbar(undefined);
         }
@@ -248,7 +243,7 @@ const MapViewer = ({
 
         // fitst click on draw button, the polygon is not drawn yet, and the user want to draw
         if (
-            drawingMode === DrawingMode.DRAW_POLYGON &&
+            drawingMode === DRAW_MODES.DRAW_POLYGON &&
             isPolygonDrawn === false
         ) {
             // save the previous mode so we can restore it when the user cancel the drawing
@@ -260,7 +255,7 @@ const MapViewer = ({
         }
         // the user has a polygon, and want to draw another
         else if (
-            drawingMode === DrawingMode.DRAW_POLYGON &&
+            drawingMode === DRAW_MODES.DRAW_POLYGON &&
             isPolygonDrawn === true
         ) {
             if (
@@ -278,7 +273,7 @@ const MapViewer = ({
         }
         // transition between Drawing polygon mode -> cancel the drawing and return to previous display mode
         else if (
-            drawingMode === DrawingMode.SIMPLE_SELECT &&
+            drawingMode === DRAW_MODES.SIMPLE_SELECT &&
             isPolygonDrawn === false
         ) {
             navigateToPreviousDisplayMode();
