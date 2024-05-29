@@ -13,6 +13,7 @@ import {
     ElementType,
     FILTER_EQUIPMENTS,
     SelectInput,
+    FormEquipment,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -30,7 +31,6 @@ import { fetchElementsMetadata } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
-import { FormEquipment } from '@gridsuite/commons-ui/dist/components/filter/utils/filter-form-utils';
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
