@@ -80,7 +80,9 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         />
     );
 
-    const inputTransform = (value: { id: string; label: string } | string | null) => {
+    const inputTransform = (
+        value: { id: string; label: string } | string | null
+    ) => {
         const newVal = value ?? null;
         return (
             OPERATOR_OPTIONS.find(
