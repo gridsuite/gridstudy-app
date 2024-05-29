@@ -284,7 +284,6 @@ const MapViewer = ({
             switch (event) {
                 case DRAW_EVENT.DELETE:
                     setShouldOpenFilterCreationPanel(false);
-                    networkMapref.current?.getMapDrawer().deleteAll();
                     navigateToPreviousDisplayMode();
                     break;
                 case DRAW_EVENT.CREATE:
@@ -409,7 +408,9 @@ const MapViewer = ({
                                             setShouldOpenFilterCreationPanel(
                                                 false
                                             );
-                                            networkMapref.current?.getMapDrawer().deleteAll();
+                                            networkMapref.current
+                                                ?.getMapDrawer()
+                                                .deleteAll();
                                         }}
                                     ></FilterCreationPanel>
                                 )}
