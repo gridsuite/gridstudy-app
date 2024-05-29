@@ -14,7 +14,6 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    getRequestParamFromList,
     getUrlWithToken,
 } from '../utils';
 
