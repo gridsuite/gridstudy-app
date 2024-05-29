@@ -9,7 +9,7 @@ import React, { FunctionComponent, useCallback, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { FilterOptionsState } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import { areIdsEqual } from '../../../../utils/utils';
 
 const ReferenceAutocompleteInput: FunctionComponent<{
@@ -26,10 +26,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
     });
 
     const handleFilterOptions = useCallback(
-        (
-            options: ({ id: string; label: string } | string)[],
-            state: FilterOptionsState<string | { id: string; label: string }>
-        ) => {
+        (options: Option[], state: FilterOptionsState<Option>) => {
             if (state.inputValue?.startsWith('#')) {
                 const keyword = state.inputValue?.substring(1);
                 if (!keyword) {
@@ -42,7 +39,6 @@ const ReferenceAutocompleteInput: FunctionComponent<{
                         .startsWith(keyword.toLowerCase())
                 );
             }
-
             return options;
         },
         [intl]
@@ -81,7 +77,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
                 }
             }}
             filterOptions={(
-                options: ({ id: string; label: string } | string)[],
+                options: Option[],
                 state: FilterOptionsState<
                     string | { id: string; label: string }
                 >
