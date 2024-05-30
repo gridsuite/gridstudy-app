@@ -43,8 +43,6 @@ import {
 } from './voltage-init-utils';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { mergeSx } from 'components/utils/functions';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 import { GeneralParameters } from './general-parameters';
 import {
     GENERAL,
@@ -359,9 +357,6 @@ export const VoltageInitParameters = ({
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

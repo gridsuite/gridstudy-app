@@ -14,12 +14,6 @@ import {
     FloatInput,
     TextInput,
 } from '@gridsuite/commons-ui';
-import {
-    fetchDirectoryContent,
-    fetchPath,
-    fetchRootFolders,
-} from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 
 function EditableTableCell(
     arrayFormName: string,
@@ -50,10 +44,6 @@ function EditableTableCell(
                     label={undefined}
                     itemFilter={undefined}
                     onRowChanged={handleDirectoryItemsChange}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
-                    fetchDirectoryElementPath={fetchPath}
                 />
             )}
             {column.menuItems && (

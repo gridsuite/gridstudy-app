@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { store } from '../redux/store';
+import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
@@ -168,13 +169,6 @@ export function fetchAuthorizationCodeFlowFeatureFlag() {
         });
 }
 
-export function fetchAppsAndUrls() {
-    console.info(`Fetching apps and urls...`);
-    return fetchEnv()
-        .then((env) => fetch(env.appsMetadataServerUrl + '/apps-metadata.json'))
-        .then((response) => response.json());
-}
-
 export function fetchVersion() {
     console.info(`Fetching global metadata...`);
     return fetchEnv()
@@ -187,7 +181,7 @@ export function fetchVersion() {
 }
 
 export const fetchDefaultParametersValues = () => {
-    return fetchAppsAndUrls().then((res) => {
+    return fetchAppsMetadata().then((res) => {
         console.info(
             'fecthing default parameters values from apps-metadata file'
         );

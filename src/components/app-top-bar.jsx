@@ -62,11 +62,12 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
+import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 
 import { Settings } from '@mui/icons-material';
+import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 
 const styles = {
     currentNodeBox: {
@@ -242,7 +243,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchAppsAndUrls().then((res) => {
+            fetchAppsMetadata().then((res) => {
                 setAppsAndUrls(res);
             });
         }
