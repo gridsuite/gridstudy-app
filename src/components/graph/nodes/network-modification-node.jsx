@@ -230,6 +230,7 @@ const NetworkModificationNode = (props) => {
                             text={props.data.label}
                             sx={{ width: '100%' }}
                             tooltipSx={styles.tooltip}
+                            maxLineCount={3}
                         />
                     </span>
                 </Box>
