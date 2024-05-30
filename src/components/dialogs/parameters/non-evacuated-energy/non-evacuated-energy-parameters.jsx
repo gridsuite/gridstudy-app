@@ -483,6 +483,7 @@ export const NonEvacuatedEnergyParameters = ({
                     </Grid>
                     <Grid item xs={4} sx={styles.controlItem}>
                         <MuiSelectInput
+                            fullWidth
                             name={PROVIDER}
                             size="small"
                             options={Object.values(providers).map(
