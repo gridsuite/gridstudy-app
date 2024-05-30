@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
@@ -20,7 +20,7 @@ import {
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
 } from '../../../../utils/field-constants';
-import { useController, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
@@ -84,11 +84,6 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             }
         />
     );
-
-    const {
-        field: { onChange, value, ref },
-        fieldState: { error },
-    } = useController({ name });
 
     const referenceField1 = (
         <ReferenceAutocompleteInput
