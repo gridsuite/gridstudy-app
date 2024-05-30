@@ -410,9 +410,6 @@ const MapViewer = ({
                                             setShouldOpenFilterCreationPanel(
                                                 false
                                             );
-                                            networkMapref.current
-                                                ?.getMapDrawer()
-                                                .deleteAll();
                                         }}
                                     ></FilterCreationPanel>
                                 )}
