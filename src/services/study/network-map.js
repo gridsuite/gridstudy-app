@@ -7,9 +7,9 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import { createFilter } from '@gridsuite/commons-ui';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -95,7 +95,7 @@ export function fetchEquipmentsIds(
         'equipments-ids';
     const elementInfos = {
         elementType: equipmentType,
-        substationsIds: substationsIds !== undefined && substationsIds,
+        substationsIds: substationsIds ?? null,
     };
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(

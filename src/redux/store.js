@@ -7,8 +7,10 @@
 
 import { legacy_createStore as createStore } from 'redux';
 import { reducer } from './reducer';
+import { setCommonStore } from '@gridsuite/commons-ui';
 
 export const store = createStore(reducer);
+setCommonStore(store);
 
 // to avoid to reset the state with HMR
 // https://redux.js.org/usage/configuring-your-store#hot-reloading
