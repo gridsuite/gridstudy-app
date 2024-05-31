@@ -13,7 +13,6 @@ import {
     ElementType,
     FILTER_EQUIPMENTS,
     SelectInput,
-    FormEquipment,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -120,7 +119,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     };
     const equipmentTypesOptions = useMemo(() => {
         return Object.values(FILTER_EQUIPMENTS).map(
-            (equipment: FormEquipment) => {
+            (equipment) => {
                 return {
                     id: equipment.id,
                     label: equipment.label,
