@@ -26,6 +26,7 @@ import { StudyView } from './study-pane';
 import {
     AuthenticationRouter,
     CardErrorBoundary,
+    getComputedLanguage,
     getPreLoginPath,
     initializeAuthenticationProd,
     useSnackMessage,
@@ -63,7 +64,6 @@ import {
     TABLES_DEFINITION_INDEXES,
     TABLES_NAMES_INDEXES,
 } from './spreadsheet/utils/config-tables';
-import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';

@@ -5,54 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useLocalizedCountries as useLocalizedCountriesWithoutLanguage } from '@gridsuite/commons-ui';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { getComputedLanguage } from '../../utils/language';
-import localizedCountries from 'localized-countries';
-import countriesFr from 'localized-countries/data/fr';
-import countriesEn from 'localized-countries/data/en';
 
 export const useLocalizedCountries = () => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const [localizedCountriesModule, setLocalizedCountriesModule] = useState();
-
-    //TODO FM this is disgusting, can we make it better ?
-    useEffect(() => {
-        const lang = getComputedLanguage(languageLocal).substr(0, 2);
-        let localizedCountriesResult;
-        // vite does not support ESM dynamic imports on node_modules, so we have to imports the languages before and do this
-        // https://github.com/vitejs/vite/issues/14102
-        if (lang === 'fr') {
-            localizedCountriesResult = localizedCountries(countriesFr);
-        } else if (lang === 'en') {
-            localizedCountriesResult = localizedCountries(countriesEn);
-        } else {
-            console.warn(
-                'Unsupported language "' +
-                    lang +
-                    '" for countries translation, we use english as default'
-            );
-            localizedCountriesResult = localizedCountries(countriesEn);
-        }
-        setLocalizedCountriesModule(localizedCountriesResult);
-    }, [languageLocal]);
-
-    const countryCodes = useMemo(
-        () =>
-            localizedCountriesModule
-                ? Object.keys(localizedCountriesModule.object())
-                : [],
-        [localizedCountriesModule]
-    );
-
-    const translate = useCallback(
-        (countryCode) =>
-            localizedCountriesModule
-                ? localizedCountriesModule.get(countryCode)
-                : '',
-        [localizedCountriesModule]
-    );
-
-    return { translate, countryCodes };
+    return useLocalizedCountriesWithoutLanguage(languageLocal);
 };

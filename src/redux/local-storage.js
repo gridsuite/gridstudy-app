@@ -5,8 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DARK_THEME, LANG_SYSTEM } from '@gridsuite/commons-ui';
-import { getComputedLanguage } from '../utils/language';
+import {
+    DARK_THEME,
+    getComputedLanguage,
+    LANG_SYSTEM,
+} from '@gridsuite/commons-ui';
 import { APP_NAME } from '../utils/config-params';
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
