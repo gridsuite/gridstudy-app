@@ -9,6 +9,7 @@
     "deleteStudyError": "Cannot remove the study if you are not the owner",
     "equipmentsSearchingError": "An error occurred while searching the equipments",
     "equipmentsLoadingError": "An error occurred while loading the available equipments",
+    "equipmentsLoading": "Loading...",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -1102,7 +1103,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "Target P",
     "CreateVariation": "Add Variation",
-    "editZone": "Edit zone",
+    "createNewFilter": "Create a filter",
     "ActiveVariationMode": "Active variation mode",
     "ReactiveVariationMode": "Reactive variation mode",
     "RegularDistribution": "Regular distribution",
