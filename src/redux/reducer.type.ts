@@ -114,6 +114,7 @@ export interface ComputingStatus {
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
+    [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
 export interface User {

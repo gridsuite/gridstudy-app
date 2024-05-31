@@ -11,6 +11,7 @@ export enum OptionalServicesNames {
     DynamicSimulation = 'DynamicSimulation',
     ShortCircuit = 'ShortCircuit',
     VoltageInit = 'VoltageInit',
+    StateEstimation = 'StateEstimation',
 }
 export enum OptionalServicesStatus {
     Up = 'UP',
