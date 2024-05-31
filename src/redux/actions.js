@@ -637,12 +637,6 @@ export function setComputationStarting(computationStarting) {
     };
 }
 
-export const STUDY_INDEXATION_STATUS = {
-    NOT_INDEXED: 'NOT_INDEXED',
-    INDEXING_ONGOING: 'INDEXING_ONGOING',
-    INDEXED: 'INDEXED',
-};
-
 export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';
 
 export function setStudyIndexationStatus(studyIndexationStatus) {
