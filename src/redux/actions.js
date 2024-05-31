@@ -509,12 +509,6 @@ export function setModificationsInProgress(isModificationsInProgress) {
     };
 }
 
-export const STUDY_DISPLAY_MODE = {
-    MAP: 'Map',
-    TREE: 'Tree',
-    HYBRID: 'Hybrid',
-};
-
 export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
 
 export function setStudyDisplayMode(studyDisplayMode) {
