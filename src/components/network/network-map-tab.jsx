@@ -797,10 +797,13 @@ export const NetworkMapTab = ({
             const isMapCollectionImpact = impactedMapEquipmentTypes?.length > 0;
             const hasSubstationsImpacted = impactedSubstationsIds?.length > 0;
 
-            if (!isMapCollectionImpact && !hasSubstationsImpacted) {
-                dispatch(resetMapReloaded());
-                return Promise.reject();
-            }
+            // @TODO restore this optimization after refactoring
+            // to avoid map reload when the impacts on network don't concern
+            // map elements (lines, substations...)
+            // if (!isMapCollectionImpact && !hasSubstationsImpacted) {
+            //     dispatch(resetMapReloaded());
+            //     return Promise.reject();
+            // }
             console.info('Update map equipments');
             dispatch(setMapDataLoading(true));
 
