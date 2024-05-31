@@ -31,11 +31,12 @@ import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { getServersInfos } from '../services/study';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
-import { fetchAppsAndUrls, fetchVersion } from '../services/utils';
+import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
+import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 
 const styles = {
     currentNodeBox: {
@@ -113,7 +114,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchAppsAndUrls().then((res) => {
+            fetchAppsMetadata().then((res) => {
                 setAppsAndUrls(res);
             });
         }

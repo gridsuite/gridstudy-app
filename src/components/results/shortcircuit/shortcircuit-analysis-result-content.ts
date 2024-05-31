@@ -49,6 +49,9 @@ export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {
 export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
     return filterSelector.map((filter) => {
         switch (filter.column) {
+            case 'current':
+            case 'deltaCurrentIpMax':
+            case 'deltaCurrentIpMin':
             case 'limitMin':
             case 'limitMax':
                 return {

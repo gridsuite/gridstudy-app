@@ -40,7 +40,6 @@ import {
     connectDeletedStudyNotificationsWebsocket,
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
-import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
@@ -54,6 +53,7 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
 import { StudyIndexationStatus } from 'redux/reducer.type';
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -384,7 +384,7 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     const fetchStudyPath = useCallback(() => {
-        fetchPath(studyUuid)
+        fetchDirectoryElementPath(studyUuid)
             .then((response) => {
                 const parentDirectoriesNames = response
                     .slice(1)
