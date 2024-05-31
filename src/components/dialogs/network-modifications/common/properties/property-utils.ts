@@ -14,7 +14,7 @@ import {
     VALUE,
 } from 'components/utils/field-constants';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
-import { fetchStudyMetadata } from 'services/metadata';
+import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 
 export type Property = {
     [NAME]: string;

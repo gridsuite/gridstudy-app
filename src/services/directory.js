@@ -10,28 +10,6 @@ import { backendFetchJson, getRequestParamFromList } from './utils';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/directory';
 
-export function fetchRootFolders(types) {
-    console.info('Fetching Root Directories');
-
-    // Add params to Url
-    const typesParams = getRequestParamFromList(types, 'elementTypes');
-    const urlSearchParams = new URLSearchParams(typesParams);
-
-    const fetchRootFoldersUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/root-directories?${urlSearchParams}`;
-    return backendFetchJson(fetchRootFoldersUrl);
-}
-
-export function fetchDirectoryContent(directoryUuid, types) {
-    console.info("Fetching Folder content '%s'", directoryUuid);
-
-    // Add params to Url
-    const typesParams = getRequestParamFromList(types, 'elementTypes');
-    const urlSearchParams = new URLSearchParams(typesParams);
-
-    const fetchDirectoryContentUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements?${urlSearchParams}`;
-    return backendFetchJson(fetchDirectoryContentUrl);
-}
-
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
 
@@ -47,17 +25,4 @@ export function fetchContingencyAndFiltersLists(listIds) {
     const url = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
-}
-
-function getPathUrl(elementUuid) {
-    return `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements/${encodeURIComponent(
-        elementUuid
-    )}/path`;
-}
-
-export function fetchPath(elementUuid) {
-    console.info(`Fetching element '${elementUuid}' and its parents info ...`);
-    const fetchPathUrl = getPathUrl(elementUuid);
-    console.debug(fetchPathUrl);
-    return backendFetchJson(fetchPathUrl);
 }

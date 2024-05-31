@@ -82,10 +82,10 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
-import { fetchPath } from '../../../services/directory';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -529,7 +529,7 @@ const NetworkModificationNodeEditor = () => {
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((pathArray) => {
+        fetchDirectoryElementPath(studyUuid).then((pathArray) => {
             if (pathArray?.length > 0) {
                 setStudyPath(pathArray);
             }
