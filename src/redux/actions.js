@@ -509,13 +509,6 @@ export function setModificationsInProgress(isModificationsInProgress) {
     };
 }
 
-export const STUDY_DISPLAY_MODE = {
-    MAP: 'Map',
-    TREE: 'Tree',
-    HYBRID: 'Hybrid',
-    DRAW: 'Draw',
-};
-
 export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
 
 export function setStudyDisplayMode(studyDisplayMode) {
@@ -637,12 +630,6 @@ export function setComputationStarting(computationStarting) {
         computationStarting: computationStarting,
     };
 }
-
-export const STUDY_INDEXATION_STATUS = {
-    NOT_INDEXED: 'NOT_INDEXED',
-    INDEXING_ONGOING: 'INDEXING_ONGOING',
-    INDEXED: 'INDEXED',
-};
 
 export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';
 
