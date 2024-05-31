@@ -135,6 +135,7 @@ const MapViewer = ({
         [openDiagramView]
     );
 
+    const isInDrawingMode = previousStudyDisplayMode.current !== undefined;
     function showInSpreadsheet(equipment) {
         let newTableEquipment = {
             id: equipment.equipmentId,
@@ -392,6 +393,7 @@ const MapViewer = ({
                                     onDrawPolygonModeActive={onDrawingModeEnter}
                                     onPolygonChanged={() => {}}
                                     onDrawEvent={onDrawEvent}
+                                    shouldDisableToolTip={isInDrawingMode}
                                 ></NetworkMapTab>
                             </Box>
 

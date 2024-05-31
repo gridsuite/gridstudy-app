@@ -94,6 +94,7 @@ export const NetworkMapTab = ({
     onDrawPolygonModeActive,
     onPolygonChanged,
     onDrawEvent,
+    shouldDisableToolTip,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -173,7 +174,6 @@ export const NetworkMapTab = ({
         choiceVoltageLevelsSubstationId,
         setChoiceVoltageLevelsSubstationId,
     ] = useState(null);
-    const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef(null);
@@ -1066,7 +1066,6 @@ export const NetworkMapTab = ({
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
             onDrawPolygonModeActive={(active) => {
-                setIsDrawingPolygon(active);
                 onDrawPolygonModeActive(active);
             }}
             onPolygonChanged={(features) => {
@@ -1075,6 +1074,7 @@ export const NetworkMapTab = ({
             onDrawEvent={(event) => {
                 onDrawEvent(event);
             }}
+            shouldDisableToolTip={shouldDisableToolTip}
         />
     );
 
@@ -1090,23 +1090,17 @@ export const NetworkMapTab = ({
         );
     }
 
-    const shouldDisableMapInteraction =
-        !isDrawingPolygon && studyDisplayMode !== STUDY_DISPLAY_MODE.DRAW;
     return (
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {shouldDisableMapInteraction && (
-                <>
-                    {renderEquipmentMenu()}
-                    {modificationDialogOpen && renderModificationDialog()}
-                    {deletionDialogOpen && renderDeletionDialog()}
-                    {choiceVoltageLevelsSubstationId &&
-                        renderVoltageLevelChoice()}
-                </>
-            )}
+
+            {renderEquipmentMenu()}
+            {modificationDialogOpen && renderModificationDialog()}
+            {deletionDialogOpen && renderDeletionDialog()}
+            {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
         </>
