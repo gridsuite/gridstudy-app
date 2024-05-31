@@ -1102,10 +1102,10 @@ export const NetworkMapTab = ({
                     {deletionDialogOpen && renderDeletionDialog()}
                     {choiceVoltageLevelsSubstationId &&
                         renderVoltageLevelChoice()}
-                    {mapEquipments?.substations?.length > 0 &&
-                        renderNominalVoltageFilter()}
                 </>
             )}
+            {mapEquipments?.substations?.length > 0 &&
+                renderNominalVoltageFilter()}
         </>
     );
 };
