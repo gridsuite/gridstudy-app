@@ -320,6 +320,7 @@ const styles = {
     minimizedDiagram: {
         bottom: '60px',
         position: 'absolute',
+        marginLeft: '3em',
     },
     separator: {
         flexGrow: 1,
@@ -1056,6 +1057,7 @@ export function DiagramPane({
                     style={{
                         width: width + 'px',
                         height: height + 'px',
+                        display: visible ? 'inline-flex' : 'none',
                     }}
                 >
                     {displayedDiagrams.map((diagramView, index, array) => (
