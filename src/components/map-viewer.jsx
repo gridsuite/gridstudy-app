@@ -45,13 +45,6 @@ const styles = {
         display: 'flex',
         flexDirection: 'row',
     }),
-    mapBelowDiagrams: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-    },
     table: {
         display: 'flex',
         flexDirection: 'column',
@@ -81,12 +74,7 @@ const styles = {
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
-    },
-    fullSizeFlexRow: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
+        overflow: 'hidden',
     },
 };
 const MapViewer = ({
@@ -348,10 +336,10 @@ const MapViewer = ({
                         }}
                     >
                         {/* TODO make filter panel take only 20% */}
-                        <Box style={styles.fullSizeFlexRow}>
+                        <Box style={styles.map}>
                             <Box
                                 style={{
-                                    position: 'relative',
+                                    position: 'absolute',
                                     width: shouldOpenFilterCreationPanel
                                         ? '80%'
                                         : '100%',
@@ -395,12 +383,27 @@ const MapViewer = ({
                                 ></NetworkMapTab>
                             </Box>
 
+                            <DiagramPane
+                                studyUuid={studyUuid}
+                                showInSpreadsheet={showInSpreadsheet}
+                                currentNode={currentNode}
+                                visible={
+                                    view === StudyView.MAP &&
+                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                }
+                                oneBusShortCircuitStatus={
+                                    oneBusShortCircuitStatus
+                                }
+                            />
+
                             <Box
                                 style={{
                                     width: shouldOpenFilterCreationPanel
                                         ? '20%'
                                         : '0%',
                                     height: '100%',
+                                    position: 'absolute',
+                                    right: 0,
                                 }}
                             >
                                 {shouldOpenFilterCreationPanel && (
@@ -415,17 +418,6 @@ const MapViewer = ({
                                 )}
                             </Box>
                         </Box>
-
-                        <DiagramPane
-                            studyUuid={studyUuid}
-                            showInSpreadsheet={showInSpreadsheet}
-                            currentNode={currentNode}
-                            visible={
-                                view === StudyView.MAP &&
-                                studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                            }
-                            oneBusShortCircuitStatus={oneBusShortCircuitStatus}
-                        />
                     </Box>
                 </Box>
             </Box>
