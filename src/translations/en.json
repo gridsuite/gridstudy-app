@@ -1103,7 +1103,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "Target P",
     "CreateVariation": "Add Variation",
-    "editZone": "Edit zone",
+    "createNewFilter": "Create a filter",
     "ActiveVariationMode": "Active variation mode",
     "ReactiveVariationMode": "Reactive variation mode",
     "RegularDistribution": "Regular distribution",
