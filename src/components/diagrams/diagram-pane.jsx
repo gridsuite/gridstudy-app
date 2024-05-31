@@ -342,6 +342,7 @@ export function DiagramPane({
     currentNode,
     visible,
     oneBusShortCircuitStatus,
+    hidden,
 }) {
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1056,6 +1057,7 @@ export function DiagramPane({
                     style={{
                         width: width + 'px',
                         height: height + 'px',
+                        display: hidden ? 'none' : 'block',
                     }}
                 >
                     {displayedDiagrams.map((diagramView, index, array) => (

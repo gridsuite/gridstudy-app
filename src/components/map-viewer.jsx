@@ -391,13 +391,12 @@ const MapViewer = ({
                                 currentNode={currentNode}
                                 visible={
                                     view === StudyView.MAP &&
-                                    studyDisplayMode !==
-                                        STUDY_DISPLAY_MODE.TREE &&
-                                    !isInDrawingMode
+                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
                                 oneBusShortCircuitStatus={
                                     oneBusShortCircuitStatus
                                 }
+                                hidden={isInDrawingMode}
                             />
 
                             <Box
