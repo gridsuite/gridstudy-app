@@ -1057,7 +1057,7 @@ export function DiagramPane({
                     style={{
                         width: width + 'px',
                         height: height + 'px',
-                        display: hidden ? 'none' : 'block',
+                        display: hidden ? 'none' : 'inline-flex',
                     }}
                 >
                     {displayedDiagrams.map((diagramView, index, array) => (
