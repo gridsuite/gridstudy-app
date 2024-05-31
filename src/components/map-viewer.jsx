@@ -135,10 +135,10 @@ const MapViewer = ({
         onChangeTab(1); // switch to spreadsheet view
     }
 
-    const [instructionSnakbar, setInstructionSnackbar] = useState(undefined);
+    const [instructionSnackbar, setInstructionSnackbar] = useState(undefined);
     useEffect(() => {
         //display a snackbar
-        if (drawingMode === DRAW_MODES.DRAW_POLYGON && !instructionSnakbar) {
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && !instructionSnackbar) {
             setInstructionSnackbar(
                 snackInfo({
                     messageTxt: intl.formatMessage({
@@ -148,11 +148,11 @@ const MapViewer = ({
                 })
             );
         }
-        if (drawingMode === DRAW_MODES.SIMPLE_SELECT && instructionSnakbar) {
-            closeSnackbar(instructionSnakbar);
+        if (drawingMode === DRAW_MODES.SIMPLE_SELECT && instructionSnackbar) {
+            closeSnackbar(instructionSnackbar);
             setInstructionSnackbar(undefined);
         }
-    }, [drawingMode, intl, snackInfo, instructionSnakbar, closeSnackbar]);
+    }, [drawingMode, intl, snackInfo, instructionSnackbar, closeSnackbar]);
 
     const onSaveFilter = useCallback(
         async (filter, distDir, setIsLoading) => {
@@ -321,7 +321,7 @@ const MapViewer = ({
                 </Box>
                 {/* Map */}
                 <Box
-                    style={{
+                    sx={{
                         display:
                             studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 ? 'flex'
@@ -334,14 +334,14 @@ const MapViewer = ({
                     }}
                 >
                     <Box
-                        style={{
+                        sx={{
                             width: '100%',
                         }}
                     >
                         {/* TODO make filter panel take only 20% */}
-                        <Box style={styles.map}>
+                        <Box sx={styles.map}>
                             <Box
-                                style={{
+                                sx={{
                                     position: 'absolute',
                                     width: shouldOpenFilterCreationPanel
                                         ? '80%'
@@ -390,17 +390,17 @@ const MapViewer = ({
                                 showInSpreadsheet={showInSpreadsheet}
                                 currentNode={currentNode}
                                 visible={
+                                    !isInDrawingMode &&
                                     view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
                                 oneBusShortCircuitStatus={
                                     oneBusShortCircuitStatus
                                 }
-                                hidden={isInDrawingMode}
                             />
 
                             <Box
-                                style={{
+                                sx={{
                                     width: shouldOpenFilterCreationPanel
                                         ? '20%'
                                         : '0%',

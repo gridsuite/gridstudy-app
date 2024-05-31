@@ -320,6 +320,7 @@ const styles = {
     minimizedDiagram: {
         bottom: '60px',
         position: 'absolute',
+        marginLeft: '3em',
     },
     separator: {
         flexGrow: 1,
@@ -342,7 +343,6 @@ export function DiagramPane({
     currentNode,
     visible,
     oneBusShortCircuitStatus,
-    hidden,
 }) {
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1057,7 +1057,7 @@ export function DiagramPane({
                     style={{
                         width: width + 'px',
                         height: height + 'px',
-                        display: hidden ? 'none' : 'inline-flex',
+                        display: visible ? 'inline-flex' : 'none',
                     }}
                 >
                     {displayedDiagrams.map((diagramView, index, array) => (
