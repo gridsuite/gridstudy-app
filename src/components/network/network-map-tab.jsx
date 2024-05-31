@@ -1095,7 +1095,7 @@ export const NetworkMapTab = ({
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {isInDrawingMode && (
+            {!isInDrawingMode && (
                 <>
                     {renderEquipmentMenu()}
                     {modificationDialogOpen && renderModificationDialog()}
