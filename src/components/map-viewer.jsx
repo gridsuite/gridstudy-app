@@ -14,7 +14,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params.js';
-import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions.js';
+import { setStudyDisplayMode } from '../redux/actions.js';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
 import { DiagramType } from './diagrams/diagram-common.js';
 import { ReactFlowProvider } from 'react-flow-renderer';
@@ -31,6 +31,7 @@ import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 import { Global, css } from '@emotion/react';
 
@@ -251,7 +252,7 @@ const MapViewer = ({
                 previousStudyDisplayMode.current = studyDisplayMode;
             }
             //go to map full screen mode
-            dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+            dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
         }
         // the user has a polygon, and want to draw another
         else if (
@@ -310,13 +311,13 @@ const MapViewer = ({
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.TREE ||
-                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                            studyDisplayMode === StudyDisplayMode.TREE ||
+                            studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
                         flexBasis:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                            studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? '50%'
                                 : '100%',
                     }}
@@ -332,11 +333,11 @@ const MapViewer = ({
                 <Box
                     style={{
                         display:
-                            studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                            studyDisplayMode !== StudyDisplayMode.TREE
                                 ? 'flex'
                                 : 'none',
                         flexBasis:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                            studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? '50%'
                                 : '100%',
                         height: '100%',
@@ -375,7 +376,7 @@ const MapViewer = ({
                                     visible={
                                         view === StudyView.MAP &&
                                         studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
+                                            StudyDisplayMode.TREE
                                     }
                                     lineFullPath={lineFullPath}
                                     lineParallelPath={lineParallelPath}
@@ -422,7 +423,7 @@ const MapViewer = ({
                             currentNode={currentNode}
                             visible={
                                 view === StudyView.MAP &&
-                                studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                studyDisplayMode !== StudyDisplayMode.TREE
                             }
                             oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                         />

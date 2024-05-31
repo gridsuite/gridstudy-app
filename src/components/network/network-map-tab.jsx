@@ -25,11 +25,7 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import {
-    resetMapReloaded,
-    setMapDataLoading,
-    STUDY_DISPLAY_MODE,
-} from '../../redux/actions';
+import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -50,6 +46,7 @@ import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
+import { StudyDisplayMode } from 'redux/reducer.type';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -1091,7 +1088,7 @@ export const NetworkMapTab = ({
     }
 
     const shouldDisableMapInteraction =
-        !isDrawingPolygon && studyDisplayMode !== STUDY_DISPLAY_MODE.DRAW;
+        !isDrawingPolygon && studyDisplayMode !== StudyDisplayMode.DRAW;
     return (
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>
