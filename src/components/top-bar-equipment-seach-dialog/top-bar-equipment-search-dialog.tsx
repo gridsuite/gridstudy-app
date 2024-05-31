@@ -11,8 +11,10 @@ import {
     EquipmentInfos,
     EquipmentItem,
     equipmentStyles,
-    Equipment,
+    // Equipment,
 } from '@gridsuite/commons-ui';
+// TODO remove this hack when commons-ui fix this export bug
+import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 import { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
