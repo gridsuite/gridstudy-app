@@ -116,6 +116,8 @@ const MapViewer = ({
         (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
     const previousStudyDisplayMode = useRef(undefined);
+    const isInDrawingMode = previousStudyDisplayMode.current !== undefined;
+
     const openVoltageLevel = useCallback(
         (vlId) => {
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
@@ -207,11 +209,11 @@ const MapViewer = ({
 
     const navigateToPreviousDisplayMode = useCallback(() => {
         setShouldOpenFilterCreationPanel(false);
-        if (previousStudyDisplayMode.current !== undefined) {
+        if (isInDrawingMode) {
             dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
             previousStudyDisplayMode.current = undefined;
         }
-    }, [dispatch, previousStudyDisplayMode]);
+    }, [dispatch, isInDrawingMode]);
 
     const onDrawingModeEnter = useCallback((active) => {
         setDrawingMode(active);
@@ -235,7 +237,7 @@ const MapViewer = ({
             isPolygonDrawn === false
         ) {
             // save the previous mode so we can restore it when the user cancel the drawing
-            if (previousStudyDisplayMode.current === undefined) {
+            if (!isInDrawingMode) {
                 previousStudyDisplayMode.current = studyDisplayMode;
             }
             //go to map full screen mode
@@ -271,6 +273,7 @@ const MapViewer = ({
         drawingMode,
         navigateToPreviousDisplayMode,
         studyDisplayMode,
+        isInDrawingMode,
     ]);
 
     const onDrawEvent = useCallback((event) => {
@@ -346,8 +349,7 @@ const MapViewer = ({
                                     height: '100%',
                                 }}
                             >
-                                {previousStudyDisplayMode.current !==
-                                undefined ? (
+                                {isInDrawingMode ? (
                                     // hack to override the bg-color of the draw button when we enter in draw mode
                                     <Global
                                         styles={css`
@@ -389,7 +391,9 @@ const MapViewer = ({
                                 currentNode={currentNode}
                                 visible={
                                     view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                    studyDisplayMode !==
+                                        STUDY_DISPLAY_MODE.TREE &&
+                                    !isInDrawingMode
                                 }
                                 oneBusShortCircuitStatus={
                                     oneBusShortCircuitStatus
