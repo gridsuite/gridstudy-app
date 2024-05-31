@@ -25,11 +25,7 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from '../graph/util/model-functions';
-import {
-    resetMapReloaded,
-    setMapDataLoading,
-    STUDY_DISPLAY_MODE,
-} from '../../redux/actions';
+import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from '../study-container';
