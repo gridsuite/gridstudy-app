@@ -234,7 +234,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                                         defaultFolder,
                                         setSavingState
                                     );
-                                    generateFilterName();
                                 }
                             });
                         }}
