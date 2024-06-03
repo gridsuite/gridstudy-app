@@ -383,6 +383,7 @@ const MapViewer = ({
                                     onDrawPolygonModeActive={onDrawingModeEnter}
                                     onPolygonChanged={() => {}}
                                     onDrawEvent={onDrawEvent}
+                                    isInDrawingMode={isInDrawingMode}
                                 ></NetworkMapTab>
                             </Box>
 
