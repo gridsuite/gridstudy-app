@@ -46,7 +46,6 @@ import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
-import { StudyDisplayMode } from 'redux/reducer.type';
 
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
@@ -91,6 +90,7 @@ export const NetworkMapTab = ({
     onDrawPolygonModeActive,
     onPolygonChanged,
     onDrawEvent,
+    isInDrawingMode,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -170,7 +170,6 @@ export const NetworkMapTab = ({
         choiceVoltageLevelsSubstationId,
         setChoiceVoltageLevelsSubstationId,
     ] = useState(null);
-    const [isDrawingPolygon, setIsDrawingPolygon] = useState(false);
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef(null);
@@ -1066,7 +1065,6 @@ export const NetworkMapTab = ({
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
             onDrawPolygonModeActive={(active) => {
-                setIsDrawingPolygon(active);
                 onDrawPolygonModeActive(active);
             }}
             onPolygonChanged={(features) => {
@@ -1075,6 +1073,7 @@ export const NetworkMapTab = ({
             onDrawEvent={(event) => {
                 onDrawEvent(event);
             }}
+            shouldDisableToolTip={isInDrawingMode}
         />
     );
 
@@ -1090,15 +1089,13 @@ export const NetworkMapTab = ({
         );
     }
 
-    const shouldDisableMapInteraction =
-        !isDrawingPolygon && studyDisplayMode !== StudyDisplayMode.DRAW;
     return (
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
-            {shouldDisableMapInteraction && (
+            {!isInDrawingMode && (
                 <>
                     {renderEquipmentMenu()}
                     {modificationDialogOpen && renderModificationDialog()}
@@ -1127,6 +1124,7 @@ NetworkMapTab.propTypes = {
     onDrawPolygonModeActive: PropTypes.func,
     onPolygonChanged: PropTypes.func,
     onDrawEvent: PropTypes.func,
+    isInDrawingMode: PropTypes.bool,
 };
 
 export default NetworkMapTab;
