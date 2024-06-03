@@ -28,6 +28,7 @@ interface UniqueNameInputProps {
     autoFocus?: boolean;
     onManualChangeCallback?: () => void;
     activeDirectory: UUID | null;
+    triggerValidation?: boolean;
     formProps?: Omit<
         TextFieldProps,
         | 'value'
@@ -100,7 +101,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
     // We have to use an useEffect because the name can change from outside of this component (when we upload a case file for instance)
     useEffect(() => {
         // if the name is unchanged, we don't do custom validation
-        if (!isDirty) {
+        if (!isDirty && !props.triggerValidation) {
             clearErrors(props.name);
             return;
         }
@@ -126,6 +127,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
         props.name,
         value,
         isDirty,
+        props.triggerValidation,
     ]);
 
     // Handle on user's change

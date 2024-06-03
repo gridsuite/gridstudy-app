@@ -171,8 +171,9 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         <UniqueNameInput
                             name={NAME}
                             label={'Name'}
-                            elementType={ElementType.DIRECTORY}
+                            elementType={ElementType.FILTER}
                             activeDirectory={defaultFolder?.id as UUID}
+                            triggerValidation={!savingState}
                             autoFocus
                             formProps={{ variant: 'standard' }}
                         />
