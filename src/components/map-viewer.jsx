@@ -204,8 +204,9 @@ const MapViewer = ({
                 });
                 setIsLoading(false);
                 return false;
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
             return true; // success
         },
         [currentNode?.id, intl, snackError, snackInfo, snackWarning, studyUuid]
