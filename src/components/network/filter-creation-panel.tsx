@@ -56,7 +56,7 @@ type FilterCreationPanelProps = {
         data: IFilterCreation,
         distDir: TreeViewFinderNodeProps,
         setSavingState: (state: boolean) => void
-    ) => void;
+    ) => boolean;
     onCancel: () => void;
 };
 
@@ -86,19 +86,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
             }
         });
     }, [studyUuid]);
-
-    const generateFilterName = () => {
-        formMethods.setValue(
-            NAME,
-            'Generated-filter-' + new Date().toISOString()
-        );
-    };
-
-    useEffect(() => {
-        //Generate a new name every time the component is mounted
-        generateFilterName();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     useEffect(() => {
         if (studyUuid) {
@@ -164,6 +151,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             fullWidth
                             size={'medium'}
                             disableClearable={true}
+                            disabled={savingState}
                         />
                     </Grid>
 
@@ -173,9 +161,11 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             label={'Name'}
                             elementType={ElementType.FILTER}
                             activeDirectory={defaultFolder?.id as UUID}
-                            triggerValidation={!savingState}
                             autoFocus
-                            formProps={{ variant: 'standard' }}
+                            formProps={{
+                                variant: 'standard',
+                                disabled: savingState,
+                            }}
                         />
                     </Grid>
                     <Grid container paddingTop={2}>
@@ -228,15 +218,19 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         type={'submit'}
                         disabled={!formMethods.formState.isValid || savingState}
                         onClick={() => {
+                            let success = false;
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
-                                    onSaveFilter(
+                                    success = onSaveFilter(
                                         formMethods.getValues() as IFilterCreation,
                                         defaultFolder,
                                         setSavingState
                                     );
                                 }
                             });
+                            if (success) {
+                                formMethods.setValue(NAME, '');
+                            }
                         }}
                         size={'large'}
                     >

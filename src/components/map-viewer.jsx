@@ -202,8 +202,11 @@ const MapViewer = ({
                     }),
                     headerId: 'FilterCreationError',
                 });
+                setIsLoading(false);
+                return false;
             }
             setIsLoading(false);
+            return true; // success
         },
         [currentNode?.id, intl, snackError, snackInfo, snackWarning, studyUuid]
     );
