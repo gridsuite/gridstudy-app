@@ -71,22 +71,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         }
     }
 
-    function renderTableView() {
-        return (
-            <Paper sx={styles.table}>
-                <TableWrapper
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    equipmentId={tableEquipment.id}
-                    equipmentType={tableEquipment.type}
-                    equipmentChanged={tableEquipment.changed}
-                    disabled={disabled}
-                    visible={props.view === StudyView.SPREADSHEET}
-                />
-            </Paper>
-        );
-    }
-
     return (
         <>
             {/*Rendering the map is slow, do it once and keep it display:none*/}
@@ -114,7 +98,17 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                 key={`spreadsheet-${currentNode?.id}`}
                 selected={props.view === StudyView.SPREADSHEET}
             >
-                {renderTableView()}
+                <Paper sx={styles.table}>
+                    <TableWrapper
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        equipmentId={tableEquipment.id}
+                        equipmentType={tableEquipment.type}
+                        equipmentChanged={tableEquipment.changed}
+                        disabled={disabled}
+                        visible={props.view === StudyView.SPREADSHEET}
+                    />
+                </Paper>
             </TabPanelLazy>
 
             <Box

@@ -13,7 +13,7 @@
         "@mui/lab": "5.0.0-alpha.169",
         "@mui/material": "^5.15.14",
         "@mui/x-tree-view": "^6.17.0",
-        "@powsybl/diagram-viewer": "0.4.0",
+        "@powsybl/diagram-viewer": "0.5.1",
         "@reduxjs/toolkit": "^2.2.3",
         "@svgdotjs/svg.js": "^3.2.0",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",

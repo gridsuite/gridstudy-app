@@ -83,7 +83,6 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
 export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('uuids', modificationUuids);
-    urlSearchParams.append('onlyStashed', true);
 
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +

@@ -25,6 +25,7 @@ import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 import { UUID } from 'crypto';
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 interface FormData {
     [NAME]: string;
@@ -127,7 +128,11 @@ const CreateParameterDialog = <T extends FieldValues>({
     const folderChooser = (
         <Grid container item>
             <Grid item>
-                <Button onClick={handleChangeFolder} variant="contained">
+                <Button
+                    onClick={handleChangeFolder}
+                    variant="contained"
+                    size={'small'}
+                >
                     <FormattedMessage id={'showSelectDirectoryDialog'} />
                 </Button>
             </Grid>
