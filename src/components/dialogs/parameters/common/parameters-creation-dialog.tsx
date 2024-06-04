@@ -25,7 +25,6 @@ import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 import { UUID } from 'crypto';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 interface FormData {
     [NAME]: string;

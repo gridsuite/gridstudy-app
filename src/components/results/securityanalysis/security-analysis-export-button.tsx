@@ -84,7 +84,11 @@ export const SecurityAnalysisExportButton: FunctionComponent<
             enumValueTranslations
         )
             .then((fileBlob) => {
-                downloadFile(fileBlob, `${resultType}-results.zip`, FileType.ZIP);
+                downloadFile(
+                    fileBlob,
+                    `${resultType}-results.zip`,
+                    FileType.ZIP
+                );
                 setIsCsvExportSuccessful(true);
             })
             .catch((error) => {

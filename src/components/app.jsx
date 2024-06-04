@@ -29,6 +29,9 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     useSnackMessage,
+    fetchAuthorizationCodeFlowFeatureFlag,
+    fetchDefaultParametersValues,
+    fetchIdpSettings,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -72,11 +75,6 @@ import {
     fetchConfigParameter,
     fetchConfigParameters,
 } from '../services/config';
-import {
-    fetchAuthorizationCodeFlowFeatureFlag,
-    fetchDefaultParametersValues,
-    fetchIdpSettings,
-} from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import {
     changeDisplayedColumns,

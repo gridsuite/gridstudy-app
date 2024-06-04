@@ -6,8 +6,7 @@
  */
 import { APP_NAME } from '../utils/config-params';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { getUrlWithToken } from './utils';
-import { getWsBase } from '@gridsuite/commons-ui';
+import { getWsBase, getUrlWithToken } from '@gridsuite/commons-ui';
 
 const PREFIX_CONFIG_NOTIFICATION_WS =
     import.meta.env.VITE_WS_GATEWAY + '/config-notification';

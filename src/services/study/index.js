@@ -16,14 +16,7 @@ import {
 // created multiple circular dependencies issues, so in the meantime its other
 // functions are being exported as a crutch... To be removed once circular
 // dependencies are fixed
-export {
-    fetchMapBoxToken,
-    getUrlWithToken,
-    fetchDefaultParametersValues,
-    fetchVersion,
-    fetchAuthorizationCodeFlowFeatureFlag,
-    fetchIdpSettings,
-} from '../utils';
+export { fetchMapBoxToken } from '../utils';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 

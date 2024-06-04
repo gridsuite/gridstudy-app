@@ -88,7 +88,6 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 export const styles = {
     listContainer: (theme) => ({
