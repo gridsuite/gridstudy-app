@@ -126,7 +126,6 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
         props.name,
         value,
         isDirty,
-        props.triggerValidation,
     ]);
 
     // Handle on user's change

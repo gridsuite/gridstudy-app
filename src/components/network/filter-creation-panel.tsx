@@ -201,6 +201,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             onClick={handleChangeFolder}
                             variant="contained"
                             size="small"
+                            disabled={savingState}
                         >
                             <FormattedMessage id={'button.changeType'} />
                         </Button>
