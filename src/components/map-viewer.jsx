@@ -24,16 +24,15 @@ import NetworkModificationTreePane from './network-modification-tree-pane.jsx';
 import NetworkMapTab from './network/network-map-tab.jsx';
 import { DiagramPane } from './diagrams/diagram-pane.jsx';
 import FilterCreationPanel from './network/filter-creation-panel';
-import { createMapFilter } from '../services/study/network-map.js';
 import { StudyView } from './study-pane.jsx';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 import { Global, css } from '@emotion/react';
+import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 
 const styles = {
     map: {
@@ -92,8 +91,7 @@ const MapViewer = ({
     const intl = useIntl();
     const dispatch = useDispatch();
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
-    const { snackInfo, snackError, snackWarning, closeSnackbar } =
-        useSnackMessage();
+    const { snackInfo, closeSnackbar } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
@@ -154,63 +152,6 @@ const MapViewer = ({
             setInstructionSnackbar(undefined);
         }
     }, [drawingMode, intl, snackInfo, instructionSnackbar, closeSnackbar]);
-
-    const onSaveFilter = useCallback(
-        async (filter, distDir, setIsLoading) => {
-            setIsLoading(true);
-            try {
-                //we want to calculate selectedLine or selectedSubstation only when needed
-                //call getSelectedLines if the user want to create a filter with lines
-                //for all others case we call getSelectedSubstations
-                const selectedEquipments =
-                    filter.equipmentType === EQUIPMENT_TYPES.LINE
-                        ? networkMapref.current.getSelectedLines()
-                        : networkMapref.current.getSelectedSubstations();
-                const selectedEquipmentsIds = selectedEquipments.map(
-                    (eq) => eq.id
-                );
-                if (selectedEquipments.length === 0) {
-                    snackWarning({
-                        messageTxt: intl.formatMessage({
-                            id: 'EmptySelection',
-                        }),
-                        headerId: 'FilterCreationIgnored',
-                    });
-                } else {
-                    await createMapFilter(
-                        filter,
-                        distDir,
-                        studyUuid,
-                        currentNode.id,
-                        selectedEquipmentsIds
-                    );
-                    snackInfo({
-                        messageTxt: intl.formatMessage(
-                            {
-                                id: 'FilterCreationSuccess',
-                            },
-                            {
-                                filterName: filter.name,
-                            }
-                        ),
-                    });
-                }
-            } catch (error) {
-                snackError({
-                    messageTxt: intl.formatMessage({
-                        id: error.message,
-                    }),
-                    headerId: 'FilterCreationError',
-                });
-                setIsLoading(false);
-                return false;
-            } finally {
-                setIsLoading(false);
-            }
-            return true; // success
-        },
-        [currentNode?.id, intl, snackError, snackInfo, snackWarning, studyUuid]
-    );
 
     const navigateToPreviousDisplayMode = useCallback(() => {
         setShouldOpenFilterCreationPanel(false);
@@ -295,6 +236,12 @@ const MapViewer = ({
                 break;
         }
     }, []);
+
+    const getEquipments = (equipmentType) => {
+        return equipmentType === EQUIPMENT_TYPES.LINE
+            ? networkMapref.current.getSelectedLines()
+            : networkMapref.current.getSelectedSubstations();
+    };
 
     return (
         <Box sx={styles.table}>
@@ -417,7 +364,7 @@ const MapViewer = ({
                             >
                                 {shouldOpenFilterCreationPanel && (
                                     <FilterCreationPanel
-                                        onSaveFilter={onSaveFilter}
+                                        onSubmit={getEquipments}
                                         onCancel={() => {
                                             setShouldOpenFilterCreationPanel(
                                                 false
