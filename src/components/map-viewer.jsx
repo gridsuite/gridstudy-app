@@ -29,8 +29,7 @@ import { StudyView } from './study-pane.jsx';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 
 import { Global, css } from '@emotion/react';
 
@@ -172,7 +171,7 @@ const MapViewer = ({
                 //call getSelectedLines if the user want to create a filter with lines
                 //for all others case we call getSelectedSubstations
                 const selectedEquipments =
-                    filter.equipmentType === EQUIPMENT_TYPES.LINE
+                    filter.equipmentType === EquipmentType.LINE
                         ? networkMapref.current.getSelectedLines()
                         : networkMapref.current.getSelectedSubstations();
                 const selectedEquipmentsIds = selectedEquipments.map(
