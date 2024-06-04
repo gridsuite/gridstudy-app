@@ -14,7 +14,7 @@ import {
 } from '@gridsuite/commons-ui';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useSearchMatchingEquipments } from '../utils/search-matching-equipments';
+import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
 
 /**
  * Dialog to search equipment with a given type
@@ -33,13 +33,13 @@ const EquipmentSearchDialog = ({
 }) => {
     const intl = useIntl();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const [searchMatchingEquipments, equipmentsFound] =
-        useSearchMatchingEquipments(
-            studyUuid,
-            currentNodeUuid,
-            true,
-            equipmentType
-        );
+    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
+        useSearchMatchingEquipments({
+            studyUuid: studyUuid,
+            nodeUuid: currentNodeUuid,
+            inUpstreamBuiltParentNode: true,
+            equipmentType: equipmentType,
+        });
 
     return (
         <ElementSearchDialog
@@ -48,8 +48,10 @@ const EquipmentSearchDialog = ({
             searchingLabel={intl.formatMessage({
                 id: 'equipment_search/label',
             })}
-            onSearchTermChange={searchMatchingEquipments}
+            searchTerm={searchTerm}
+            onSearchTermChange={updateSearchTerm}
             onSelectionChange={(element) => {
+                updateSearchTerm('');
                 onSelectionChange(element);
             }}
             elementsFound={equipmentsFound}
@@ -60,6 +62,7 @@ const EquipmentSearchDialog = ({
                     key={props.element.key}
                 />
             )}
+            isLoading={isLoading}
         />
     );
 };

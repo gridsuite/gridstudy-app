@@ -160,6 +160,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps,
                 filterProps: filterProps,
                 filterParams: numericFilterParams,
+                valueGetter: (params: ValueGetterParams) =>
+                    unitToKiloUnit(params.data?.current),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -207,6 +209,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
+                valueGetter: (params: ValueGetterParams) =>
+                    unitToKiloUnit(params.data?.deltaCurrentIpMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
@@ -216,6 +220,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
+                valueGetter: (params: ValueGetterParams) =>
+                    unitToKiloUnit(params.data?.deltaCurrentIpMax),
             }),
             {
                 field: 'linkedElementId',

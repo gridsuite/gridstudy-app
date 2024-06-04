@@ -7,9 +7,9 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import { createFilter } from '@gridsuite/commons-ui';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -92,25 +92,25 @@ export function fetchEquipmentsIds(
     let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/' +
-        'equipments-ids' +
-        '?' +
-        'equipmentType=' +
-        equipmentType;
-    if (substationsIds !== undefined && substationsIds.length > 0) {
-        fetchEquipmentsUrl +=
-            '&' + getQueryParamsList(substationsIds, 'substationsIds');
-    }
-
+        'equipments-ids';
+    const elementInfos = {
+        elementType: equipmentType,
+        substationsIds: substationsIds ?? null,
+    };
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
         fetchEquipmentsUrl =
-            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
+            fetchEquipmentsUrl + '?' + urlSearchParams.toString();
     }
     console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(elementInfos),
+    });
 }
 
 export function fetchLineOrTransformer(

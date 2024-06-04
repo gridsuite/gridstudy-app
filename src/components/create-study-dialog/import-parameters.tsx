@@ -10,6 +10,7 @@ import { FunctionComponent, useCallback, useState } from 'react';
 import { AdvancedParameterButton } from './advanced-parameter-button';
 import { CaseImportParameters } from 'services/network-conversion';
 import { Box, Divider, Theme } from '@mui/material';
+import { Parameter } from '@gridsuite/commons-ui';
 
 export interface ImportParametersProps {
     formatWithParameters: CaseImportParameters[];
@@ -50,7 +51,7 @@ export const ImportParameters: FunctionComponent<ImportParametersProps> = (
                 />
                 {areParamsDisplayed && (
                     <FlatParameters
-                        paramsAsArray={formatWithParameters}
+                        paramsAsArray={formatWithParameters as Parameter[]}
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"

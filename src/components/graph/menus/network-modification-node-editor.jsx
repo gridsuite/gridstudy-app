@@ -71,8 +71,8 @@ import TabularCreationDialog from 'components/dialogs/network-modifications/tabu
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
-    fetchNetworkModifications,
     stashModifications,
+    fetchNetworkModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
@@ -82,10 +82,11 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
-import { fetchPath } from '../../../services/directory';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -131,6 +132,14 @@ export const styles = {
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
     }),
+    toolbarCircularProgress: (theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: theme.spacing(1.25),
+        marginRight: theme.spacing(2),
+        color: theme.palette.secondary,
+    }),
     notification: (theme) => ({
         flex: 1,
         alignContent: 'center',
@@ -168,6 +177,7 @@ const NetworkModificationNodeEditor = () => {
     const [modifications, setModifications] = useState(undefined);
     const [studyPath, setStudyPath] = useState(undefined);
     const [saveInProgress, setSaveInProgress] = useState(false);
+    const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState([]);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -475,19 +485,22 @@ const NetworkModificationNodeEditor = () => {
 
     const manageNotification = useCallback(
         (study) => {
-            let messageId = '';
-            if (
-                study.eventData.headers['updateType'] === 'creatingInProgress'
-            ) {
-                messageId = 'network_modifications.creatingModification';
-            } else if (
-                study.eventData.headers['updateType'] === 'updatingInProgress'
-            ) {
-                messageId = 'network_modifications.updatingModification';
-            } else if (
-                study.eventData.headers['updateType'] === 'deletingInProgress'
-            ) {
-                messageId = 'network_modifications.deletingModification';
+            let messageId;
+            switch (study.eventData.headers['updateType']) {
+                case 'creatingInProgress':
+                    messageId = 'network_modifications.creatingModification';
+                    break;
+                case 'updatingInProgress':
+                    messageId = 'network_modifications.updatingModification';
+                    break;
+                case 'stashingInProgress':
+                    messageId = 'network_modifications.stashingModification';
+                    break;
+                case 'restoringInProgress':
+                    messageId = 'network_modifications.restoringModification';
+                    break;
+                default:
+                    messageId = '';
             }
             fillNotification(study, messageId);
         },
@@ -518,7 +531,7 @@ const NetworkModificationNodeEditor = () => {
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((pathArray) => {
+        fetchDirectoryElementPath(studyUuid).then((pathArray) => {
             if (pathArray?.length > 0) {
                 setStudyPath(pathArray);
             }
@@ -626,9 +639,17 @@ const NetworkModificationNodeEditor = () => {
                     studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
-                dispatch(setModificationsInProgress(true));
-                setPendingState(true);
-                manageNotification(studyUpdatedForce);
+                if (
+                    studyUpdatedForce.eventData.headers['updateType'] ===
+                    'deletingInProgress'
+                ) {
+                    // deleting means removing from trashcan (stashed elements) so there is no network modification
+                    setDeleteInProgress(true);
+                } else {
+                    dispatch(setModificationsInProgress(true));
+                    setPendingState(true);
+                    manageNotification(studyUpdatedForce);
+                }
             }
             // notify  finished action (success or error => we remove the loader)
             // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
@@ -646,6 +667,13 @@ const NetworkModificationNodeEditor = () => {
                         ...studyUpdatedForce.eventData.headers['nodes'],
                     ])
                 );
+            }
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'DELETE_FINISHED'
+            ) {
+                setDeleteInProgress(false);
+                dofetchNetworkModifications();
             }
         }
     }, [
@@ -1099,7 +1127,9 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
-                    disabled={isAnyNodeBuilding || mapDataLoading}
+                    disabled={
+                        isAnyNodeBuilding || mapDataLoading || deleteInProgress
+                    }
                 >
                     <AddIcon />
                 </IconButton>
@@ -1198,34 +1228,53 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <DeleteIcon />
                 </IconButton>
-                <Tooltip
-                    title={
-                        <FormattedMessage
-                            id={'NbModificationToRestore'}
-                            values={{
-                                nb: modificationsToRestore.length,
-                                several:
-                                    modificationsToRestore.length > 1
-                                        ? 's'
-                                        : '',
-                            }}
-                        />
-                    }
-                >
-                    <span>
-                        <IconButton
-                            onClick={openRestoreModificationDialog}
-                            size={'small'}
-                            sx={styles.toolbarIcon}
-                            disabled={
-                                modificationsToRestore.length === 0 ||
-                                isAnyNodeBuilding
-                            }
-                        >
-                            <RestoreFromTrash />
-                        </IconButton>
-                    </span>
-                </Tooltip>
+                {deleteInProgress ? (
+                    <Tooltip
+                        title={
+                            <FormattedMessage
+                                id={
+                                    'network_modifications.deletingModification'
+                                }
+                            />
+                        }
+                    >
+                        <span>
+                            <CircularProgress
+                                size={'1em'}
+                                sx={styles.toolbarCircularProgress}
+                            />
+                        </span>
+                    </Tooltip>
+                ) : (
+                    <Tooltip
+                        title={
+                            <FormattedMessage
+                                id={'NbModificationToRestore'}
+                                values={{
+                                    nb: modificationsToRestore.length,
+                                    several:
+                                        modificationsToRestore.length > 1
+                                            ? 's'
+                                            : '',
+                                }}
+                            />
+                        }
+                    >
+                        <span>
+                            <IconButton
+                                onClick={openRestoreModificationDialog}
+                                size={'small'}
+                                sx={styles.toolbarIcon}
+                                disabled={
+                                    modificationsToRestore.length === 0 ||
+                                    isAnyNodeBuilding
+                                }
+                            >
+                                <RestoreFromTrash />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                )}
             </Toolbar>
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
             {importDialogOpen && renderImportNetworkModificationsDialog()}
