@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    EquipmentInfos,
     SelectInput,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
@@ -30,6 +31,7 @@ import { UUID } from 'crypto';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
+import { useSaveMapFilter } from './use-save-map-filter';
 
 interface IFilterCreation {
     [FILTER_NAME]: string | null;
@@ -52,19 +54,14 @@ const emptyFormData = {
 };
 
 type FilterCreationPanelProps = {
-    onSaveFilter: (
-        data: IFilterCreation,
-        distDir: TreeViewFinderNodeProps,
-        setSavingState: (state: boolean) => void
-    ) => boolean;
+    onSubmit: (equipmentType: string | null) => EquipmentInfos[];
     onCancel: () => void;
 };
 
 const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
-    onSaveFilter,
+    onSubmit,
     onCancel,
 }) => {
-    const [savingState, setSavingState] = useState(false);
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
@@ -73,13 +70,16 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
         resolver: yupResolver(formSchema),
     });
 
-    const [defaultFolder, setDefaultFolder] =
+    const { pendingState: mapFilterCreationPending, saveMapFilter } =
+        useSaveMapFilter();
+
+    const [destinationFolder, setDestinationFolder] =
         useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
-                setDefaultFolder({
+                setDestinationFolder({
                     id: res[1].elementUuid,
                     name: res[1].elementName,
                 });
@@ -98,8 +98,8 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
     };
     const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder && folder.length > 0) {
-            if (folder[0].id !== defaultFolder?.id) {
-                setDefaultFolder({
+            if (folder[0].id !== destinationFolder?.id) {
+                setDestinationFolder({
                     id: folder[0].id,
                     name: folder[0].name,
                 });
@@ -128,17 +128,19 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
             });
     }, []);
 
-    const onSubmit = () => {
+    const handleSubmit = () => {
         formMethods.trigger().then((isValid) => {
-            if (isValid && defaultFolder) {
-                const success = onSaveFilter(
+            if (isValid && destinationFolder) {
+                const filter = formMethods.getValues() as IFilterCreation;
+                const equipments = onSubmit(filter.equipmentType);
+
+                saveMapFilter(
+                    equipments,
                     formMethods.getValues() as IFilterCreation,
-                    defaultFolder,
-                    setSavingState
-                );
-                if (success) {
+                    destinationFolder
+                ).then(() => {
                     formMethods.setValue(NAME, '');
-                }
+                });
             }
         });
     };
@@ -166,7 +168,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             fullWidth
                             size={'medium'}
                             disableClearable={true}
-                            disabled={savingState}
+                            disabled={mapFilterCreationPending}
                         />
                     </Grid>
 
@@ -175,11 +177,11 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                             name={NAME}
                             label={'Name'}
                             elementType={ElementType.FILTER}
-                            activeDirectory={defaultFolder?.id as UUID}
+                            activeDirectory={destinationFolder?.id as UUID}
                             autoFocus
                             formProps={{
                                 variant: 'standard',
-                                disabled: savingState,
+                                disabled: mapFilterCreationPending,
                             }}
                         />
                     </Grid>
@@ -194,14 +196,16 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                                 alignItems="center"
                             >
                                 <FolderOutlined />
-                                <span>&nbsp;{defaultFolder?.name}&nbsp;</span>
+                                <span>
+                                    &nbsp;{destinationFolder?.name}&nbsp;
+                                </span>
                             </Box>
                         </Typography>
                         <Button
                             onClick={handleChangeFolder}
                             variant="contained"
                             size="small"
-                            disabled={savingState}
+                            disabled={mapFilterCreationPending}
                         >
                             <FormattedMessage id={'button.changeType'} />
                         </Button>
@@ -232,13 +236,16 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                     <Button
                         variant="outlined"
                         type={'submit'}
-                        disabled={!formMethods.formState.isValid || savingState}
-                        onClick={onSubmit}
+                        disabled={
+                            !formMethods.formState.isValid ||
+                            mapFilterCreationPending
+                        }
+                        onClick={handleSubmit}
                         size={'large'}
                     >
-                        {(savingState && <CircularProgress size={24} />) || (
-                            <FormattedMessage id="save" />
-                        )}
+                        {(mapFilterCreationPending && (
+                            <CircularProgress size={24} />
+                        )) || <FormattedMessage id="save" />}
                     </Button>
                 </Grid>
             </Box>
