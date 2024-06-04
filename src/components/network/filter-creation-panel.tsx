@@ -128,6 +128,21 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
             });
     }, []);
 
+    const onSubmit = () => {
+        formMethods.trigger().then((isValid) => {
+            if (isValid && defaultFolder) {
+                const success = onSaveFilter(
+                    formMethods.getValues() as IFilterCreation,
+                    defaultFolder,
+                    setSavingState
+                );
+                if (success) {
+                    formMethods.setValue(NAME, '');
+                }
+            }
+        });
+    };
+
     return (
         <CustomFormProvider
             removeOptional={true}
@@ -217,21 +232,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                         variant="outlined"
                         type={'submit'}
                         disabled={!formMethods.formState.isValid || savingState}
-                        onClick={() => {
-                            let success = false;
-                            formMethods.trigger().then((isValid) => {
-                                if (isValid && defaultFolder) {
-                                    success = onSaveFilter(
-                                        formMethods.getValues() as IFilterCreation,
-                                        defaultFolder,
-                                        setSavingState
-                                    );
-                                }
-                            });
-                            if (success) {
-                                formMethods.setValue(NAME, '');
-                            }
-                        }}
+                        onClick={onSubmit}
                         size={'large'}
                     >
                         {(savingState && <CircularProgress size={24} />) || (
