@@ -119,6 +119,8 @@ const MapViewer = ({
     const previousStudyDisplayMode = useRef(undefined);
     const isInDrawingMode = previousStudyDisplayMode.current !== undefined;
 
+    const [nominalVoltages, setNominalVoltages] = useState();
+
     const openVoltageLevel = useCallback(
         (vlId) => {
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
@@ -182,7 +184,8 @@ const MapViewer = ({
                         distDir,
                         studyUuid,
                         currentNode.id,
-                        selectedEquipmentsIds
+                        selectedEquipmentsIds,
+                        nominalVoltages
                     );
                     snackInfo({
                         messageTxt: intl.formatMessage(
@@ -205,7 +208,15 @@ const MapViewer = ({
             }
             setIsLoading(false);
         },
-        [currentNode?.id, intl, snackError, snackInfo, snackWarning, studyUuid]
+        [
+            currentNode?.id,
+            intl,
+            snackError,
+            snackInfo,
+            snackWarning,
+            studyUuid,
+            nominalVoltages,
+        ]
     );
 
     const navigateToPreviousDisplayMode = useCallback(() => {
@@ -384,6 +395,7 @@ const MapViewer = ({
                                     onPolygonChanged={() => {}}
                                     onDrawEvent={onDrawEvent}
                                     isInDrawingMode={isInDrawingMode}
+                                    onNominalVoltagesChange={setNominalVoltages}
                                 ></NetworkMapTab>
                             </Box>
 

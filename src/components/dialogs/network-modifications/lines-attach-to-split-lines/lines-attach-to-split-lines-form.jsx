@@ -47,7 +47,8 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
             currentNodeUuid,
             undefined,
             'LINE',
-            true
+            true,
+            undefined
         ).then((values) => {
             setLinesIds(values?.sort((a, b) => a.localeCompare(b)));
         });

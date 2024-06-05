@@ -82,7 +82,8 @@ export function fetchEquipmentsIds(
     currentNodeUuid,
     substationsIds,
     equipmentType,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    nominalVoltages
 ) {
     console.info(
         `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
@@ -96,6 +97,7 @@ export function fetchEquipmentsIds(
     const elementInfos = {
         elementType: equipmentType,
         substationsIds: substationsIds ?? null,
+        nominalVoltages: nominalVoltages ?? null,
     };
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
@@ -171,7 +173,8 @@ export async function createMapFilter(
     distDir,
     studyUuid,
     currentNodeUuid,
-    selectedEquipmentsIds
+    selectedEquipmentsIds,
+    nominalVoltages
 ) {
     let equipmentFilters = [];
     switch (filter.equipmentType) {
@@ -193,7 +196,8 @@ export async function createMapFilter(
                 currentNodeUuid,
                 selectedEquipmentsIds,
                 filter.equipmentType,
-                false
+                false,
+                nominalVoltages
             );
 
             equipmentFilters = createEquipmentIdentifierList(

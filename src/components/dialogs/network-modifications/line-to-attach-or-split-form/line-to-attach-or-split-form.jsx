@@ -34,7 +34,8 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
                 currentNode?.id,
                 undefined,
                 EQUIPMENT_TYPES.LINE,
-                true
+                true,
+                undefined
             )
                 .then((values) => {
                     setLinesOptions(values.sort());

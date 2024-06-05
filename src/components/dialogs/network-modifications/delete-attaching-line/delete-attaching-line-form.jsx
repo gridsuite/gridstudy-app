@@ -29,7 +29,8 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
             currentNode.id,
             undefined,
             'LINE',
-            true
+            true,
+            undefined
         ).then((values) => {
             setLinesOptions(
                 values
