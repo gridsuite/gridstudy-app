@@ -143,7 +143,7 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                 height="100%"
             >
                 <Grid container>
-                    <GridSection title="editZone" />
+                    <GridSection title="createNewFilter" />
                     <Grid container paddingTop={2}>
                         <SelectInput
                             name={'equipmentType'}
@@ -222,7 +222,6 @@ const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
                                         defaultFolder,
                                         setSavingState
                                     );
-                                    generateFilterName();
                                 }
                             });
                         }}

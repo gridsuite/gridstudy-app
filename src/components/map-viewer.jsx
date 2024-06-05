@@ -14,7 +14,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params.js';
-import { setStudyDisplayMode, STUDY_DISPLAY_MODE } from '../redux/actions.js';
+import { setStudyDisplayMode } from '../redux/actions.js';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
 import { DiagramType } from './diagrams/diagram-common.js';
 import { ReactFlowProvider } from 'react-flow-renderer';
@@ -30,6 +30,7 @@ import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 import { Global, css } from '@emotion/react';
 
@@ -44,13 +45,6 @@ const styles = {
         display: 'flex',
         flexDirection: 'row',
     }),
-    mapBelowDiagrams: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-    },
     table: {
         display: 'flex',
         flexDirection: 'column',
@@ -80,12 +74,7 @@ const styles = {
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
-    },
-    fullSizeFlexRow: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
+        overflow: 'hidden',
     },
 };
 const MapViewer = ({
@@ -127,6 +116,8 @@ const MapViewer = ({
         (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
     const previousStudyDisplayMode = useRef(undefined);
+    const isInDrawingMode = previousStudyDisplayMode.current !== undefined;
+
     const openVoltageLevel = useCallback(
         (vlId) => {
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
@@ -144,10 +135,10 @@ const MapViewer = ({
         onChangeTab(1); // switch to spreadsheet view
     }
 
-    const [instructionSnakbar, setInstructionSnackbar] = useState(undefined);
+    const [instructionSnackbar, setInstructionSnackbar] = useState(undefined);
     useEffect(() => {
         //display a snackbar
-        if (drawingMode === DRAW_MODES.DRAW_POLYGON && !instructionSnakbar) {
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && !instructionSnackbar) {
             setInstructionSnackbar(
                 snackInfo({
                     messageTxt: intl.formatMessage({
@@ -157,11 +148,11 @@ const MapViewer = ({
                 })
             );
         }
-        if (drawingMode === DRAW_MODES.SIMPLE_SELECT && instructionSnakbar) {
-            closeSnackbar(instructionSnakbar);
+        if (drawingMode === DRAW_MODES.SIMPLE_SELECT && instructionSnackbar) {
+            closeSnackbar(instructionSnackbar);
             setInstructionSnackbar(undefined);
         }
-    }, [drawingMode, intl, snackInfo, instructionSnakbar, closeSnackbar]);
+    }, [drawingMode, intl, snackInfo, instructionSnackbar, closeSnackbar]);
 
     const onSaveFilter = useCallback(
         async (filter, distDir, setIsLoading) => {
@@ -218,11 +209,11 @@ const MapViewer = ({
 
     const navigateToPreviousDisplayMode = useCallback(() => {
         setShouldOpenFilterCreationPanel(false);
-        if (previousStudyDisplayMode.current !== undefined) {
+        if (isInDrawingMode) {
             dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
             previousStudyDisplayMode.current = undefined;
         }
-    }, [dispatch, previousStudyDisplayMode]);
+    }, [dispatch, isInDrawingMode]);
 
     const onDrawingModeEnter = useCallback((active) => {
         setDrawingMode(active);
@@ -246,11 +237,11 @@ const MapViewer = ({
             isPolygonDrawn === false
         ) {
             // save the previous mode so we can restore it when the user cancel the drawing
-            if (previousStudyDisplayMode.current === undefined) {
+            if (!isInDrawingMode) {
                 previousStudyDisplayMode.current = studyDisplayMode;
             }
             //go to map full screen mode
-            dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+            dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
         }
         // the user has a polygon, and want to draw another
         else if (
@@ -282,6 +273,7 @@ const MapViewer = ({
         drawingMode,
         navigateToPreviousDisplayMode,
         studyDisplayMode,
+        isInDrawingMode,
     ]);
 
     const onDrawEvent = useCallback((event) => {
@@ -309,13 +301,13 @@ const MapViewer = ({
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.TREE ||
-                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                            studyDisplayMode === StudyDisplayMode.TREE ||
+                            studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
                         flexBasis:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                            studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? '50%'
                                 : '100%',
                     }}
@@ -329,36 +321,35 @@ const MapViewer = ({
                 </Box>
                 {/* Map */}
                 <Box
-                    style={{
+                    sx={{
                         display:
-                            studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                            studyDisplayMode !== StudyDisplayMode.TREE
                                 ? 'flex'
                                 : 'none',
                         flexBasis:
-                            studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                            studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? '50%'
                                 : '100%',
                         height: '100%',
                     }}
                 >
                     <Box
-                        style={{
+                        sx={{
                             width: '100%',
                         }}
                     >
                         {/* TODO make filter panel take only 20% */}
-                        <Box style={styles.fullSizeFlexRow}>
+                        <Box sx={styles.map}>
                             <Box
-                                style={{
-                                    position: 'relative',
+                                sx={{
+                                    position: 'absolute',
                                     width: shouldOpenFilterCreationPanel
                                         ? '80%'
                                         : '100%',
                                     height: '100%',
                                 }}
                             >
-                                {previousStudyDisplayMode.current !==
-                                undefined ? (
+                                {isInDrawingMode ? (
                                     // hack to override the bg-color of the draw button when we enter in draw mode
                                     <Global
                                         styles={css`
@@ -374,7 +365,7 @@ const MapViewer = ({
                                     visible={
                                         view === StudyView.MAP &&
                                         studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
+                                            StudyDisplayMode.TREE
                                     }
                                     lineFullPath={lineFullPath}
                                     lineParallelPath={lineParallelPath}
@@ -391,15 +382,32 @@ const MapViewer = ({
                                     onDrawPolygonModeActive={onDrawingModeEnter}
                                     onPolygonChanged={() => {}}
                                     onDrawEvent={onDrawEvent}
+                                    isInDrawingMode={isInDrawingMode}
                                 ></NetworkMapTab>
                             </Box>
 
+                            <DiagramPane
+                                studyUuid={studyUuid}
+                                showInSpreadsheet={showInSpreadsheet}
+                                currentNode={currentNode}
+                                visible={
+                                    !isInDrawingMode &&
+                                    view === StudyView.MAP &&
+                                    studyDisplayMode !== StudyDisplayMode.TREE
+                                }
+                                oneBusShortCircuitStatus={
+                                    oneBusShortCircuitStatus
+                                }
+                            />
+
                             <Box
-                                style={{
+                                sx={{
                                     width: shouldOpenFilterCreationPanel
                                         ? '20%'
                                         : '0%',
                                     height: '100%',
+                                    position: 'absolute',
+                                    right: 0,
                                 }}
                             >
                                 {shouldOpenFilterCreationPanel && (
@@ -414,17 +422,6 @@ const MapViewer = ({
                                 )}
                             </Box>
                         </Box>
-
-                        <DiagramPane
-                            studyUuid={studyUuid}
-                            showInSpreadsheet={showInSpreadsheet}
-                            currentNode={currentNode}
-                            visible={
-                                view === StudyView.MAP &&
-                                studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                            }
-                            oneBusShortCircuitStatus={oneBusShortCircuitStatus}
-                        />
                     </Box>
                 </Box>
             </Box>

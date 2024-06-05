@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Divider from '@mui/material/Divider';
 import {
     setModificationsDrawerOpen,
-    STUDY_DISPLAY_MODE,
     setStudyDisplayMode,
     setEventScenarioDrawerOpen,
 } from '../redux/actions';
@@ -24,6 +23,7 @@ import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { StudyDisplayMode } from 'redux/reducer.type';
 
 const styles = {
     selected: (theme) => ({
@@ -65,15 +65,15 @@ export function HorizontalToolbar() {
     };
 
     function setMapDisplay() {
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
+        dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
     }
 
     function setTreeDisplay() {
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.TREE));
+        dispatch(setStudyDisplayMode(StudyDisplayMode.TREE));
     }
 
     function setHybridDisplay() {
-        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.HYBRID));
+        dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
     }
 
     return (
@@ -114,7 +114,7 @@ export function HorizontalToolbar() {
                                     : styles.notSelected
                             }
                             disabled={
-                                studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
+                                studyDisplayMode === StudyDisplayMode.MAP ||
                                 currentNode === null ||
                                 currentNode?.type !== 'NETWORK_MODIFICATION'
                             }
@@ -151,7 +151,7 @@ export function HorizontalToolbar() {
                                 : styles.notSelected
                         }
                         disabled={
-                            studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
+                            studyDisplayMode === StudyDisplayMode.MAP ||
                             currentNode === null ||
                             currentNode?.type !== 'NETWORK_MODIFICATION'
                         }
@@ -183,7 +183,7 @@ export function HorizontalToolbar() {
                 <IconButton
                     size={'small'}
                     sx={
-                        studyDisplayMode === STUDY_DISPLAY_MODE.TREE
+                        studyDisplayMode === StudyDisplayMode.TREE
                             ? styles.selected
                             : styles.notSelected
                     }
@@ -213,7 +213,7 @@ export function HorizontalToolbar() {
                 <IconButton
                     size={'small'}
                     sx={
-                        studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
+                        studyDisplayMode === StudyDisplayMode.HYBRID
                             ? styles.selected
                             : styles.notSelected
                     }
@@ -244,7 +244,7 @@ export function HorizontalToolbar() {
                 <IconButton
                     size={'small'}
                     sx={
-                        studyDisplayMode === STUDY_DISPLAY_MODE.MAP
+                        studyDisplayMode === StudyDisplayMode.MAP
                             ? styles.selected
                             : styles.notSelected
                     }
