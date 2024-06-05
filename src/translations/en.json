@@ -9,6 +9,7 @@
     "deleteStudyError": "Cannot remove the study if you are not the owner",
     "equipmentsSearchingError": "An error occurred while searching the equipments",
     "equipmentsLoadingError": "An error occurred while loading the available equipments",
+    "equipmentsLoading": "Loading...",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -1294,6 +1295,7 @@
     "invalidateShortCircuitStatusError": "An error occurred while invalidating the short circuit status",
     "iccMawWithNominalVoltageMapPredefinedParams": "ISC max with nominal voltage profile",
     "iccMaxWithCEIPredefinedParams": "ISC max with standard IEC 909",
+    "iscMinWithNominalVoltageMapPredefinedParams": "ISC min with nominal voltage profile",
     "nominalInitialVoltageProfileMode": "Nominal",
     "cei909InitialVoltageProfileMode": "IEC 909",
     "undefined": "undefined",

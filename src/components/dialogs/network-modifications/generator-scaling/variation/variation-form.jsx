@@ -24,9 +24,7 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
-import { fetchElementsMetadata } from 'services/explore';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchPath } from '../../../../../services/directory.js';
+import { fetchElementsInfos } from '@gridsuite/commons-ui';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
@@ -54,7 +52,7 @@ const VariationForm = ({ name, index }) => {
     const updateMetadata = useCallback(
         (filtersWithoutMetadata) => {
             const ids = filtersWithoutMetadata.map((f) => f.id);
-            fetchElementsMetadata(ids, [], [])
+            fetchElementsInfos(ids, [], [])
                 .then((results) => {
                     const newFilters = filters.map((filter) => {
                         const filterWithMetadata = results.find(
@@ -131,10 +129,6 @@ const VariationForm = ({ name, index }) => {
             label={'filter'}
             titleId={'FiltersListsSelection'}
             itemFilter={itemFilter}
-            fetchDirectoryContent={fetchDirectoryContent}
-            fetchRootFolders={fetchRootFolders}
-            fetchElementsInfos={fetchElementsMetadata}
-            fetchDirectoryElementPath={fetchPath}
         />
     );
 

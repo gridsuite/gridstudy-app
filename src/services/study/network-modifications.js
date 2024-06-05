@@ -79,7 +79,6 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
 export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('uuids', modificationUuids);
-    urlSearchParams.append('onlyStashed', true);
 
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
@@ -1727,6 +1726,7 @@ export function createVsc(
     droop,
     converterStation1,
     converterStation2,
+    properties,
     isUpdate,
     modificationUuid
 ) {
@@ -1757,6 +1757,7 @@ export function createVsc(
         droop: droop,
         converterStation1: converterStation1,
         converterStation2: converterStation2,
+        properties: properties,
     });
 
     return backendFetchText(createVscUrl, {
@@ -1786,6 +1787,7 @@ export function modifyVsc(
     droop,
     converterStation1,
     converterStation2,
+    properties,
     isUpdate,
     modificationUuid
 ) {
@@ -1822,6 +1824,7 @@ export function modifyVsc(
         droop: toModificationOperation(droop),
         converterStation1: converterStation1,
         converterStation2: converterStation2,
+        properties: properties,
     }; //FIXME add missing informations
 
     return backendFetchText(modificationUrl, {

@@ -13,7 +13,7 @@ import { FormattedMessage } from 'react-intl';
 import {
     FloatInput,
     IntegerInput,
-    SelectInput,
+    MuiSelectInput,
     SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
@@ -31,13 +31,12 @@ const defaultParamRender = (defParam, path, key) => {
     switch (defParam.type) {
         case TYPES.ENUM:
             return (
-                <SelectInput
+                <MuiSelectInput
                     name={`${path}.${key}`}
                     label={''}
                     options={defParam?.options ?? []}
                     fullWidth
                     size={'small'}
-                    disableClearable
                 />
             );
         case TYPES.BOOL:

@@ -10,7 +10,8 @@ import type { Config } from 'jest';
 const config: Config = {
     testEnvironment: 'jsdom',
     moduleNameMapper: {
-        '^.+\\.svg\\?react$|@powsybl/diagram-viewer': 'jest-svg-transformer',
+        '^.+\\.svg\\?react$|@powsybl/diagram-viewer':
+            '<rootDir>/src/_mocks_/svg.tsx',
         '^.+\\.(css|less|scss)$': 'identity-obj-proxy',
     },
     transformIgnorePatterns: [

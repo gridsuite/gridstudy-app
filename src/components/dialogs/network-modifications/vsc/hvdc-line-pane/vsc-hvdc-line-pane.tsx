@@ -10,13 +10,13 @@ import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTERS_MODE,
-    NOMINAL_V,
-    R,
     DROOP,
     MAX_P,
+    NOMINAL_V,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
+    R,
 } from '../../../../utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -32,6 +32,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
+import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 
 interface VscHvdcLinePaneProps {
     id: string;
@@ -220,6 +221,8 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
                 {gridItem(droopField, 6)}
                 {gridItem(p0Field, 6)}
             </Grid>
+
+            <PropertiesForm isModification={isEquipementModification} />
         </Grid>
     );
 };

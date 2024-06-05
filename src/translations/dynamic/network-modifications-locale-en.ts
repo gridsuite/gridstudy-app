@@ -62,6 +62,8 @@ const network_modifications_locale_en = {
     'network_modifications.creatingModification': 'Creating modification ...',
     'network_modifications.deletingModification': 'Deleting modification ...',
     'network_modifications.updatingModification': 'Updating modification ...',
+    'network_modifications.stashingModification': 'Stashing modification ...',
+    'network_modifications.restoringModification': 'Restoring modification ...',
     'network_modifications.modifications': 'Updating modification list ...',
     'network_modifications.GENERATION_DISPATCH':
         'Generation dispatch {computedLabel}',

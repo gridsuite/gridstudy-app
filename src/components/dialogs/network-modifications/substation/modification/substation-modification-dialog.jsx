@@ -30,8 +30,8 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -98,20 +98,6 @@ const SubstationModificationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (!equipmentId) {
@@ -133,7 +119,10 @@ const SubstationModificationDialog = ({
                             reset((formValues) => ({
                                 ...formValues,
                                 [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(substation),
+                                    getConcatenatedProperties(
+                                        substation,
+                                        getValues
+                                    ),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -147,7 +136,7 @@ const SubstationModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getConcatenatedProperties, editData]
+        [studyUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {

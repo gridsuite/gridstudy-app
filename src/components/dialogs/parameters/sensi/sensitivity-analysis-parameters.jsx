@@ -9,7 +9,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    SelectInput,
+    MuiSelectInput,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -72,8 +72,6 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 
 const formSchema = yup
     .object()
@@ -566,9 +564,8 @@ export const SensitivityAnalysisParameters = ({
                             <FormattedMessage id="Provider" />
                         </Grid>
                         <Grid item xs={4} xl={2} sx={styles.controlItem}>
-                            <SelectInput
+                            <MuiSelectInput
                                 name={PROVIDER}
-                                disableClearable
                                 size="small"
                                 options={Object.values(formattedProviders)}
                             />
@@ -661,9 +658,6 @@ export const SensitivityAnalysisParameters = ({
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

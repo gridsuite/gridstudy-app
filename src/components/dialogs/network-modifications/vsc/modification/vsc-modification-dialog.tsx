@@ -18,6 +18,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SETPOINT,
+    ADDITIONAL_PROPERTIES,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
@@ -64,6 +65,13 @@ import {
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    emptyProperties,
+    getConcatenatedProperties,
+    getPropertiesFromModification,
+    modificationPropertiesSchema,
+    toModificationProperties,
+} from '../../common/properties/property-utils';
 
 const formSchema = yup
     .object()
@@ -74,6 +82,7 @@ const formSchema = yup
         ...getVscConverterStationModificationSchema(CONVERTER_STATION_1),
         ...getVscConverterStationModificationSchema(CONVERTER_STATION_2),
     })
+    .concat(modificationPropertiesSchema)
     .required();
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -81,6 +90,7 @@ const emptyFormData = {
     ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
+    ...emptyProperties,
 };
 
 export const VSC_MODIFICATION_TABS = {
@@ -140,6 +150,7 @@ const VscModificationDialog: React.FC<any> = ({
                     CONVERTER_STATION_2,
                     editData.converterStation2
                 ),
+                ...getPropertiesFromModification(editData.properties),
             });
         },
         [reset]
@@ -205,18 +216,17 @@ const VscModificationDialog: React.FC<any> = ({
                                     setValue
                                 );
                             }
-
                             setSelectedReactiveLimits(
                                 `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                                 value.converterStation1?.minMaxReactiveLimits,
                                 setValue
                             );
+
                             setSelectedReactiveLimits(
                                 `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                                 value.converterStation2?.minMaxReactiveLimits,
                                 setValue
                             );
-
                             setVcsToModify({
                                 ...value,
                                 converterStation1: {
@@ -230,6 +240,11 @@ const VscModificationDialog: React.FC<any> = ({
                                         previousReactiveCapabilityCurveTable2,
                                 },
                             });
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getConcatenatedProperties(value, getValues),
+                            }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -248,11 +263,12 @@ const VscModificationDialog: React.FC<any> = ({
             studyUuid,
             currentNodeUuid,
             setValue,
+            reset,
             getValues,
             editData?.equipmentId,
-            reset,
         ]
     );
+
     useEffect(() => {
         if (equipmentId) {
             onEquipmentIdChange(equipmentId);
@@ -287,6 +303,7 @@ const VscModificationDialog: React.FC<any> = ({
             hvdcLineTab[DROOP],
             converterStation1,
             converterStation2,
+            toModificationProperties(hvdcLine),
             !!editData,
             editData?.uuid ?? null
         ).catch((error) => {

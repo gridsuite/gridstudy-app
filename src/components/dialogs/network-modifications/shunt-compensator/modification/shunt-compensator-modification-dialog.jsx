@@ -32,7 +32,6 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
 import {
-    EQUIPMENT_INFOS_OPERATION,
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
@@ -42,8 +41,8 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
+    getConcatenatedProperties,
     getPropertiesFromModification,
-    mergeModificationAndEquipmentProperties,
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
@@ -113,18 +112,6 @@ const ShuntCompensatorModificationDialog = ({
         },
         [reset]
     );
-    const getConcatenatedProperties = useCallback(
-        (equipment) => {
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-            return mergeModificationAndEquipmentProperties(
-                modificationProperties,
-                equipment
-            );
-        },
-        [getValues]
-    );
 
     // If we only change the characteristics choice without changing the corresponding fields,
     // we keep the validate button disable: if we choose "susceptance", we have to add a value for
@@ -165,30 +152,33 @@ const ShuntCompensatorModificationDialog = ({
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true,
-                    EQUIPMENT_INFOS_OPERATION.MODIFICATION
+                    true
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            setShuntCompensatorInfos(shuntCompensator);
-                            setDataFetchStatus(FetchStatus.SUCCEED);
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(shuntCompensator),
-                            }));
+                            if (!shuntCompensator.isLinear) {
+                                snackError({
+                                    headerId: 'ShuntCompensatorNonlinearError',
+                                });
+                                setSelectedId(null);
+                            } else {
+                                setShuntCompensatorInfos(shuntCompensator);
+                                setDataFetchStatus(FetchStatus.SUCCEED);
+                                reset((formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]:
+                                        getConcatenatedProperties(
+                                            shuntCompensator,
+                                            getValues
+                                        ),
+                                }));
+                            }
                         }
                         setLoading(false);
                     })
                     .catch((error) => {
                         setShuntCompensatorInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        if (error.status === 501) {
-                            snackError({
-                                headerId: 'ShuntCompensatorNonlinearError',
-                            });
-                            setSelectedId(null);
-                        }
                         if (error.status === 404) {
                             setIdExists(true);
                         }
@@ -199,13 +189,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [
-            currentNode?.id,
-            snackError,
-            studyUuid,
-            reset,
-            getConcatenatedProperties,
-        ]
+        [currentNode.id, snackError, studyUuid, reset, getValues]
     );
 
     useEffect(() => {
