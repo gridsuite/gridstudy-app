@@ -40,6 +40,7 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
         acceptOnly: (equipmentType: string) => {
             return BRANCH_EQUIPMENT_TYPES.includes(equipmentType);
         },
+        default: null,
     },
 };
 
