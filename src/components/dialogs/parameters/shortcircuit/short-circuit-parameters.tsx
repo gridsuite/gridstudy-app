@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -25,8 +19,8 @@ import {
 import {
     CheckboxInput,
     FieldLabel,
+    MuiSelectInput,
     RadioInput,
-    SelectInput,
     SwitchInput,
 } from '@gridsuite/commons-ui';
 
@@ -50,7 +44,6 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     resetAll,
 }) => {
     const [status, setStatus] = useState(STATUS.SUCCESS);
-    const [isChanged, setIsChanged] = useState(false);
 
     const watchInitialVoltageProfileMode = useWatch({
         name: SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -109,10 +102,6 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         return getStatus(status, styles);
     }, [status]);
 
-    const onChangeCallback = useCallback(() => {
-        setIsChanged(true);
-    }, [setIsChanged]);
-
     // fields definition
     const feederResult = (
         <Grid container alignItems="center" spacing={2} direction={'row'}>
@@ -125,11 +114,10 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         </Grid>
     );
     const predefinedParameters = (
-        <SelectInput
+        <MuiSelectInput
             name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
             options={predefinedParamsOptions}
-            onChangeCallback={onChangeCallback}
-            disableClearable
+            fullWidth
         />
     );
 
@@ -211,11 +199,8 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
     // reset all fields when predefined parameters changes
     useEffect(() => {
-        if (isChanged) {
-            resetAll(watchPredefinedParams);
-            setIsChanged(false);
-        }
-    }, [watchPredefinedParams, resetAll, isChanged]);
+        resetAll(watchPredefinedParams);
+    }, [watchPredefinedParams, resetAll]);
 
     return (
         <Grid container spacing={2} paddingLeft={2}>

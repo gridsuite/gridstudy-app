@@ -9,7 +9,7 @@ import { TableCell } from '@mui/material';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import React from 'react';
 import {
-    SelectInput,
+    MuiSelectInput,
     SwitchInput,
     FloatInput,
     TextInput,
@@ -47,10 +47,9 @@ function EditableTableCell(
                 />
             )}
             {column.menuItems && (
-                <SelectInput
+                <MuiSelectInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     options={Object.values(column.equipmentTypes)}
-                    disableClearable={true}
                     size="small"
                     fullWidth
                 />

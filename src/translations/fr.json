@@ -9,6 +9,7 @@
     "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
     "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des ouvrages",
     "equipmentsLoadingError": "Une erreur est survenue lors du chargement des ouvrages disponibles",
+    "equipmentsLoading": "Chargement...",
 
     "renameStudyMsg": "Nouveau nom de l'étude\u00a0:",
     "renameStudy": "Renommer l'étude",
@@ -617,7 +618,7 @@
     "ConnectedComponent": "Composante connexe",
     "SynchronousComponent": "Composante synchrone",
     "Setpoints": "Consignes",
-    "EmptySelection": "Aucun équipement n'est selectionné",
+    "EmptySelection": "Aucun équipement n'est sélectionné",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
