@@ -9,7 +9,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    SelectInput,
+    MuiSelectInput,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -564,9 +564,8 @@ export const SensitivityAnalysisParameters = ({
                             <FormattedMessage id="Provider" />
                         </Grid>
                         <Grid item xs={4} xl={2} sx={styles.controlItem}>
-                            <SelectInput
+                            <MuiSelectInput
                                 name={PROVIDER}
-                                disableClearable
                                 size="small"
                                 options={Object.values(formattedProviders)}
                             />
