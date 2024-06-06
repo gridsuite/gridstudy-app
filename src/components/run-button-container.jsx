@@ -461,7 +461,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ...(voltageInitAvailability === OptionalServicesStatus.Up
                 ? [ComputingType.VOLTAGE_INITIALIZATION]
                 : []),
-            ...(stateEstimationAvailability === OptionalServicesStatus.Up
+            ...(stateEstimationAvailability === OptionalServicesStatus.Up &&
+            enableDeveloperMode
                 ? [ComputingType.STATE_ESTIMATION]
                 : []),
         ];
