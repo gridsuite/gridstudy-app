@@ -5,7 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getQueryParamsList } from '../utils';
+import {
+    backendFetchJson,
+    getRequestParamFromList,
+} from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuid } from './index';
 
 export function fetchSubstationPositions(
@@ -19,7 +22,7 @@ export function fetchSubstationPositions(
 
     const paramsList =
         substationsIds && substationsIds.length > 0
-            ? '?' + getQueryParamsList(substationsIds, 'substationId')
+            ? '?' + getRequestParamFromList(substationsIds, 'substationId')
             : '';
 
     const fetchSubstationPositionsUrl =
@@ -37,7 +40,7 @@ export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
 
     const paramsList =
         linesIds && linesIds.length > 0
-            ? '?' + getQueryParamsList(linesIds, 'lineId')
+            ? '?' + getRequestParamFromList(linesIds, 'lineId')
             : '';
 
     const fetchLinePositionsUrl =

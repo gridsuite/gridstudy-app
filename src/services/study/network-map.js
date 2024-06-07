@@ -6,10 +6,13 @@
  */
 
 import { getStudyUrlWithNodeUuid } from './index';
-import { backendFetchJson, getQueryParamsList } from '../utils';
+import {
+    backendFetchJson,
+    getRequestParamFromList,
+    createFilter,
+} from '@gridsuite/commons-ui';
 import { NAME } from '../../components/utils/field-constants.js';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
-import { createFilter } from '@gridsuite/commons-ui';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -41,7 +44,7 @@ export function fetchAllEquipments(studyUuid, currentNodeUuid, substationsIds) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/all' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId');
+        getRequestParamFromList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }
@@ -71,7 +74,7 @@ export function fetchVoltageLevelEquipments(
         encodeURIComponent(voltageLevelId) +
         '/equipments' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
+        getRequestParamFromList(substationsIds, 'substationId') +
         urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);

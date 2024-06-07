@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, downloadFile, FileType } from '@gridsuite/commons-ui';
 import { ExportButton } from 'components/utils/export-button';
 import { UUID } from 'crypto';
 import {
@@ -17,7 +17,6 @@ import {
 } from 'react';
 import { useIntl } from 'react-intl';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
-import { downloadZipFile } from 'services/utils';
 import { RESULT_TYPE } from './security-analysis-result-utils';
 import { PERMANENT_LIMIT_NAME } from '../common/utils';
 
@@ -85,7 +84,11 @@ export const SecurityAnalysisExportButton: FunctionComponent<
             enumValueTranslations
         )
             .then((fileBlob) => {
-                downloadZipFile(fileBlob, `${resultType}-results.zip`);
+                downloadFile(
+                    fileBlob,
+                    `${resultType}-results.zip`,
+                    FileType.ZIP
+                );
                 setIsCsvExportSuccessful(true);
             })
             .catch((error) => {

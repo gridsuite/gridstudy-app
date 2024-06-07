@@ -16,7 +16,7 @@ import {
     backendFetchText,
     getRequestParamFromList,
     getUrlWithToken,
-} from '../utils';
+} from '@gridsuite/commons-ui';
 
 /* voltage-levels */
 export function getVoltageLevelSingleLineDiagram(

@@ -16,7 +16,7 @@ import {
     backendFetchJson,
     backendFetchText,
     getRequestParamFromList,
-} from '../utils';
+} from '@gridsuite/commons-ui';
 
 export function startSecurityAnalysis(
     studyUuid,

@@ -20,7 +20,7 @@ import {
 } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabularCreation } from 'services/study/network-modifications';
-import { FetchStatus } from 'services/utils';
+import { FetchStatus } from '../../../../services/utils';
 import TabularCreationForm from './tabular-creation-form';
 import {
     convertCreationFieldFromBackToFront,

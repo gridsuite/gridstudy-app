@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson } from './utils';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 
 const PREFIX_LOADFLOW_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/loadflow';

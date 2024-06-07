@@ -6,7 +6,11 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+} from '@gridsuite/commons-ui';
 
 export function startVoltageInit(studyUuid, currentNodeUuid) {
     console.info(

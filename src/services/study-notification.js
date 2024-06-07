@@ -7,7 +7,7 @@
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
-import { getUrlWithToken, getWsBase } from './utils';
+import { getWsBase, getUrlWithToken } from '@gridsuite/commons-ui';
 
 const PREFIX_STUDY_NOTIFICATION_WS =
     import.meta.env.VITE_WS_GATEWAY + '/study-notification';

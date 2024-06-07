@@ -11,6 +11,8 @@ import {
     logout,
     OverflowableText,
     TopBar,
+    fetchAppsMetadata,
+    fetchVersion,
 } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
@@ -31,12 +33,10 @@ import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { getServersInfos } from '../services/study';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
-import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 
 const styles = {
     currentNodeBox: {

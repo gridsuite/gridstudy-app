@@ -7,7 +7,7 @@
 
 import { UUID } from 'crypto';
 import { PREFIX_STUDY_QUERIES } from '.';
-import { backendFetch } from '../utils';
+import { backendFetch } from '@gridsuite/commons-ui';
 
 interface BasicStudyInfos {
     uniqueId: string;

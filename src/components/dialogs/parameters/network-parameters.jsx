@@ -14,7 +14,7 @@ import {
 import { LabelledButton, useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
-import { fetchDefaultParametersValues } from '../../../services/utils';
+import { fetchDefaultParametersValues } from '@gridsuite/commons-ui';
 import { ParamLine, ParameterType } from './widget';
 import { mergeSx } from '../../utils/functions';
 

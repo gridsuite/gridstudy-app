@@ -10,7 +10,11 @@ import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+} from '@gridsuite/commons-ui';
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(

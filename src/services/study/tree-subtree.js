@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrl } from './index';
-import { backendFetch, backendFetchJson } from '../utils';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 
 export function copySubtree(
     sourceStudyUuid,

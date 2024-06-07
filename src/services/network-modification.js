@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from './utils';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/network-modification';

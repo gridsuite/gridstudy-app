@@ -6,7 +6,10 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    fetchDirectoryElementPath,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -85,7 +88,6 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 export const styles = {
     listContainer: (theme) => ({

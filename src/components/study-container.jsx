@@ -23,7 +23,11 @@ import {
     limitReductionModified,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    useIntlRef,
+    useSnackMessage,
+    fetchDirectoryElementPath,
+} from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
     getFirstNodeOfType,
@@ -53,7 +57,6 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
 import { StudyIndexationStatus } from 'redux/reducer.type';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 function isWorthUpdate(
     studyUpdatedForce,

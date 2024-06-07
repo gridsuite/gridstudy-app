@@ -6,7 +6,7 @@
  */
 
 import { UUID } from 'crypto';
-import { backendFetchJson } from './utils';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 
 const PREFIX_CASE_QUERIES = import.meta.env.VITE_API_GATEWAY + '/case';
 

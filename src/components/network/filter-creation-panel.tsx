@@ -11,6 +11,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    fetchDirectoryElementPath,
     SelectInput,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
@@ -27,7 +28,6 @@ import {
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
 

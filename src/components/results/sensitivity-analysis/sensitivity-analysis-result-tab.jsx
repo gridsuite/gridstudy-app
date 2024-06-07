@@ -29,8 +29,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import React, { useCallback } from 'react';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
-import { downloadZipFile } from '../../../services/utils';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, downloadFile, FileType } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { setSensitivityAnalysisResultFilter } from 'redux/actions';
@@ -76,8 +75,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         initSort(nOrNkIndex ? 'valueAfter' : 'value');
 
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
-           for the page prop of MUI TablePagination if was not on the first page
-           for the prev sensiKind */
+       for the page prop of MUI TablePagination if was not on the first page
+       for the prev sensiKind */
         setPage(0);
 
         setIsCsvExportSuccessful(false);
@@ -129,7 +128,11 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         })
             .then((response) => {
                 response.blob().then((blob) => {
-                    downloadZipFile(blob, 'sensitivity_analyse_results.zip');
+                    downloadFile(
+                        blob,
+                        'sensitivity_analyse_results.zip',
+                        FileType.ZIP
+                    );
                     setIsCsvExportSuccessful(true);
                 });
             })
