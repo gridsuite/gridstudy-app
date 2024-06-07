@@ -11,16 +11,11 @@ import {
     DirectoryItemSelector,
     ElementType,
     ExpandingTextField,
+    fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-    fetchDirectoryContent,
-    fetchPath,
-    fetchRootFolders,
-} from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 import { Box, Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { UniqueNameInput } from './commons/unique-name-input';
@@ -71,7 +66,7 @@ const CreateCompositeModificationDialog: React.FC<
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((res) => {
+        fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
                 setDefaultFolder({
                     id: res[1].elementUuid,
@@ -175,9 +170,6 @@ const CreateCompositeModificationDialog: React.FC<
                                 title={intl.formatMessage({
                                     id: 'showSelectDirectoryDialog',
                                 })}
-                                fetchDirectoryContent={fetchDirectoryContent}
-                                fetchRootFolders={fetchRootFolders}
-                                fetchElementsInfos={fetchElementsMetadata}
                             />
                         </Grid>
                     </Grid>
