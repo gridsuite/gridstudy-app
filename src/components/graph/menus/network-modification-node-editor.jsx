@@ -6,7 +6,10 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    fetchDirectoryElementPath,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -71,8 +74,8 @@ import TabularCreationDialog from 'components/dialogs/network-modifications/tabu
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
-    stashModifications,
     fetchNetworkModifications,
+    stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
@@ -82,11 +85,9 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 export const styles = {
     listContainer: (theme) => ({
