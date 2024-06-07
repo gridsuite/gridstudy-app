@@ -13,17 +13,20 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Checkbox, DialogContentText } from '@mui/material';
-import CheckboxList from 'components/utils/checkbox-list';
-import { ModificationListItem } from 'components/graph/menus/modification-list-item';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import {
     deleteModifications,
     restoreModifications,
 } from 'services/study/network-modifications';
-import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    OverflowableText,
+    CheckboxList,
+} from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { isPartial } from 'components/graph/menus/network-modification-node-editor';
 import { areUuidsEqual } from 'components/utils/utils';
+import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
 
 const styles = {
     text: (theme) => ({
@@ -71,6 +74,8 @@ const RestoreModificationDialog = ({
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
         useState(false);
 
+    const { computeLabel } = useModificationLabelComputer();
+
     const handleClose = () => {
         setSelectedItems([]);
         onClose();
@@ -112,6 +117,20 @@ const RestoreModificationDialog = ({
         setStashedModifications(modifToRestore);
     }, [modifToRestore]);
 
+    const [isAllSelected, setIsAllSelected] = useState(false);
+    const [isAnySelected, setIsAnySelected] = useState(false);
+    const getLabel = (modif) => {
+        if (!modif) {
+            return null;
+        }
+        return intl.formatMessage(
+            { id: 'network_modifications.' + modif.messageType },
+            {
+                ...modif,
+                ...computeLabel(modif),
+            }
+        );
+    };
     return (
         <Dialog
             fullWidth
@@ -146,14 +165,8 @@ const RestoreModificationDialog = ({
                                     <Checkbox
                                         color={'primary'}
                                         edge="start"
-                                        checked={
-                                            selectedItems.length ===
-                                            stashedModifications.length
-                                        }
-                                        indeterminate={isPartial(
-                                            selectedItems.length,
-                                            stashedModifications?.length
-                                        )}
+                                        checked={isAllSelected}
+                                        indeterminate={isPartial(isAnySelected)}
                                         onClick={handleSelectAll}
                                         disableRipple
                                     />
@@ -165,23 +178,14 @@ const RestoreModificationDialog = ({
                                 </Box>
                                 <CheckboxList
                                     sx={styles.list}
-                                    onChecked={setSelectedItems}
-                                    checkedValues={selectedItems}
                                     values={stashedModifications}
                                     itemComparator={areUuidsEqual}
-                                    itemRenderer={(props) => (
-                                        <ModificationListItem
-                                            key={props.item.uuid}
-                                            isRestorationDialog
-                                            isDragging={false}
-                                            isOneNodeBuilding={false}
-                                            disabled={false}
-                                            listSize={
-                                                stashedModifications.length
-                                            }
-                                            {...props}
-                                        />
-                                    )}
+                                    isAllSelected={isAllSelected}
+                                    setIsAllSelected={setIsAllSelected}
+                                    setIsPartiallySelected={setIsAnySelected}
+                                    getValueId={(v) => v.uuid}
+                                    getValueLabel={getLabel}
+                                    labelSx={{ flexGrow: '1' }}
                                 />
                                 {provided.placeholder}
                             </Box>

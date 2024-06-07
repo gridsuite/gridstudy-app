@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Box,
@@ -18,7 +18,6 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CheckboxList from '../../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import {
@@ -40,16 +39,15 @@ import {
     deleteDynamicSimulationEvents,
     fetchDynamicSimulationEvents,
 } from '../../../../services/dynamic-simulation';
-import { EventListItem } from './event-list-item';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { getStartTime } from '../../../dialogs/dynamicsimulation/event/model/event.model';
 import {
-    isChecked,
-    isPartial,
-    styles,
-} from '../network-modification-node-editor';
+    getStartTime,
+    getStartTimeUnit,
+} from '../../../dialogs/dynamicsimulation/event/model/event.model';
+import { styles } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import { areUuidsEqual } from 'components/utils/utils';
+import EditIcon from '@mui/icons-material/Edit';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -267,23 +265,59 @@ const EventModificationScenarioEditor = () => {
         );
     };
 
+    const getItemLabel = (item) => {
+        if (!studyUuid || !currentNode || !item) {
+            return;
+        }
+
+        const computedValues = {
+            computedLabel: (
+                <>
+                    <strong>{item.equipmentId}</strong>
+                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(
+                        item
+                    )}`}</i>
+                </>
+            ),
+        } as {};
+
+        return intl.formatMessage(
+            {
+                id: `Event${item.eventType}${
+                    EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]
+                }`,
+            },
+            {
+                ...computedValues,
+            }
+        );
+    };
+
+    const [isAllSelected, setIsAllSelected] = useState(false);
+    const [isAnySelected, setIsAnySelected] = useState(false);
     const renderEventList = () => {
         return (
             <CheckboxList
-                className={styles.list}
-                onChecked={setSelectedItems}
-                checkedValues={selectedItems}
+                sx={styles.list}
                 values={events}
                 itemComparator={areUuidsEqual}
-                itemRenderer={(props: any) => (
-                    <EventListItem
-                        key={props.item.equipmentId}
-                        onEdit={doEditEvent}
-                        isOneNodeBuilding={isAnyNodeBuilding}
-                        disabled={isLoading()}
-                        {...props}
-                    />
-                )}
+                isAllSelected={isAllSelected}
+                setIsAllSelected={setIsAllSelected}
+                setIsPartiallySelected={setIsAnySelected}
+                getValueId={(v) => v.equipmentId}
+                getValueLabel={getItemLabel}
+                labelSx={{ flexGrow: '1' }}
+                secondaryAction={(item) =>
+                    isAnyNodeBuilding && (
+                        <IconButton
+                            onClick={() => doEditEvent(item)}
+                            size={'small'}
+                            sx={styles.iconEdit}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    )
+                }
             />
         );
     };
@@ -363,11 +397,8 @@ const EventModificationScenarioEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(
-                        selectedItems.length,
-                        events?.length
-                    )}
+                    checked={isAllSelected}
+                    indeterminate={isAnySelected}
                     disableRipple
                     onClick={toggleSelectAllEvents}
                 />

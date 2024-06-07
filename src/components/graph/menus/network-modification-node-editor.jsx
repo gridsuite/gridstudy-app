@@ -6,11 +6,10 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
-import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
     CircularProgress,
@@ -33,7 +32,6 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import CheckboxList from '../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
@@ -86,6 +84,7 @@ import { useModificationLabelComputer } from '../util/use-modification-label-com
 import { createModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
+import EditIcon from '@mui/icons-material/Edit.js';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -150,6 +149,25 @@ export const styles = {
     icon: (theme) => ({
         width: theme.spacing(3),
     }),
+    listItem: (theme) => ({
+        padding: theme.spacing(0),
+    }),
+    iconEdit: (theme) => ({
+        marginRight: theme.spacing(1),
+    }),
+};
+
+const nonEditableModificationTypes = new Set([
+    'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+    'GROOVY_SCRIPT',
+    'OPERATING_STATUS_MODIFICATION',
+]);
+
+const isEditableModification = (modif) => {
+    if (!modif) {
+        return false;
+    }
+    return !nonEditableModificationTypes.has(modif.type);
 };
 
 export function isChecked(s1) {
@@ -982,6 +1000,24 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
+    const [isAllModificationSelected, setIsAllModificationSelected] =
+        useState(false);
+    const [isAnyModificationSelected, setIsAnyModificationSelected] =
+        useState(false);
+
+    const getModificationLabel = (modif) => {
+        if (!modif) {
+            return null;
+        }
+        return intl.formatMessage(
+            { id: 'network_modifications.' + modif.messageType },
+            {
+                ...modif,
+                ...computeLabel(modif),
+            }
+        );
+    };
+
     const renderNetworkModificationsList = () => {
         return (
             <DragDropContext
@@ -1002,21 +1038,40 @@ const NetworkModificationNodeEditor = () => {
                         >
                             <CheckboxList
                                 sx={styles.list}
-                                onChecked={setSelectedItems}
-                                checkedValues={selectedItems}
                                 values={modifications}
                                 itemComparator={areUuidsEqual}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        disabled={isLoading()}
-                                        listSize={modifications.length}
-                                        {...props}
-                                    />
-                                )}
+                                isAllSelected={isAllModificationSelected}
+                                setIsAllSelected={setIsAllModificationSelected}
+                                setIsPartiallySelected={
+                                    setIsAnyModificationSelected
+                                }
+                                getValueId={(val) => val.uuid}
+                                getValueLabel={getModificationLabel}
+                                checkboxListSx={styles.listItem}
+                                labelSx={{ flexGrow: '1' }}
+                                isCheckBoxDraggable
+                                isDragDisable={
+                                    isAnyNodeBuilding | mapDataLoading
+                                }
+                                secondaryAction={(modification) =>
+                                    !isAnyNodeBuilding &&
+                                    !mapDataLoading &&
+                                    !isDragging &&
+                                    isEditableModification(modification) && (
+                                        <IconButton
+                                            onClick={() =>
+                                                doEditModification(
+                                                    modification.uuid,
+                                                    modification.type
+                                                )
+                                            }
+                                            size={'small'}
+                                            sx={styles.iconEdit}
+                                        >
+                                            <EditIcon />
+                                        </IconButton>
+                                    )
+                                }
                             />
                             {provided.placeholder}
                         </Box>
@@ -1121,11 +1176,8 @@ const NetworkModificationNodeEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(
-                        selectedItems.length,
-                        modifications?.length
-                    )}
+                    checked={isAllModificationSelected}
+                    indeterminate={isAnyModificationSelected}
                     disableRipple
                     onClick={toggleSelectAllModifications}
                 />
