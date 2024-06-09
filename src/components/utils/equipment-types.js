@@ -39,6 +39,7 @@ export const EQUIPMENT_TYPES = {
     LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
     SWITCH: 'SWITCH',
 };
+
 export function selectionTypeToLabel(selectionType) {
     switch (selectionType) {
         case SELECTION_TYPES.CONTIGENCY_LIST:

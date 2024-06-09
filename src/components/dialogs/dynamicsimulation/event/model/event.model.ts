@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    Event,
     EventDefinition,
     EventType,
-    Event,
     PrimitiveTypes,
 } from '../types/event.type';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
@@ -40,6 +40,7 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
         acceptOnly: (equipmentType: string) => {
             return BRANCH_EQUIPMENT_TYPES.includes(equipmentType);
         },
+        default: null, // TODO remove when corrected in rhf SelectInput
     },
 };
 

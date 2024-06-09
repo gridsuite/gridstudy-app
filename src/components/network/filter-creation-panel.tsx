@@ -16,12 +16,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { useForm, useWatch } from 'react-hook-form';
-import {
-    NAME,
-    EQUIPMENT_TYPE_FIELD,
-    SELECTION_TYPE,
-} from 'components/utils/field-constants';
+import { useForm } from 'react-hook-form';
+import { FILTER_NAME, NAME } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
@@ -29,41 +25,43 @@ import { useSelector } from 'react-redux';
 import {
     equipementTypeToLabel,
     EQUIPMENT_TYPES,
-    SELECTION_TYPES,
-    selectionTypeToLabel,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
 
+interface IFilterCreation {
+    [FILTER_NAME]: string | null;
+    [NAME]: string;
+    equipmentType: string | null;
+}
+
 const formSchema = yup
     .object()
     .shape({
+        [FILTER_NAME]: yup.string().nullable(),
         [NAME]: yup.string().required(),
-        [SELECTION_TYPE]: yup.string().nullable().required(),
-        [EQUIPMENT_TYPE_FIELD]: yup.string().nullable().required(),
+        equipmentType: yup.string().required(),
     })
     .required();
 const emptyFormData = {
+    [FILTER_NAME]: '',
     [NAME]: '',
-    [EQUIPMENT_TYPE_FIELD]: '',
-    [SELECTION_TYPE]: '',
+    equipmentType: '',
 };
 
-type ISelectionCreation = yup.InferType<typeof formSchema>;
-
-type SelectionCreationPanelProps = {
-    onSaveSelection: (
-        data: ISelectionCreation,
+type FilterCreationPanelProps = {
+    onSaveFilter: (
+        data: IFilterCreation,
         distDir: TreeViewFinderNodeProps,
         setSavingState: (state: boolean) => void
     ) => void;
     onCancel: () => void;
 };
 
-const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
-    onSaveSelection,
+const FilterCreationPanel: React.FC<FilterCreationPanelProps> = ({
+    onSaveFilter,
     onCancel,
 }) => {
     const [savingState, setSavingState] = useState(false);
@@ -73,11 +71,6 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
-    });
-
-    const watchSelectionType = useWatch({
-        name: SELECTION_TYPE,
-        control: formMethods.control,
     });
 
     const [defaultFolder, setDefaultFolder] =
@@ -94,26 +87,18 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         });
     }, [studyUuid]);
 
-    const generateSelectionName = useCallback(
-        (selectionType: string) => {
-            const selectionName =
-                selectionType === SELECTION_TYPES.FILTER
-                    ? 'Generated-filter-'
-                    : 'Generated-contingency-list-';
-            formMethods.setValue(
-                NAME,
-                selectionName + new Date().toISOString()
-            );
-        },
-        [formMethods]
-    );
+    const generateFilterName = () => {
+        formMethods.setValue(
+            NAME,
+            'Generated-filter-' + new Date().toISOString()
+        );
+    };
+
     useEffect(() => {
-        //TODO rerendering : to fix
-        if (watchSelectionType !== '') {
-            generateSelectionName(watchSelectionType);
-        }
+        //Generate a new name every time the component is mounted
+        generateFilterName();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [watchSelectionType]);
+    }, []);
 
     useEffect(() => {
         if (studyUuid) {
@@ -136,20 +121,13 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         setOpenDirectorySelector(false);
     };
     const equipmentTypesOptions = useMemo(() => {
-        const equipmentTypesToExclude =
-            watchSelectionType === SELECTION_TYPES.FILTER
-                ? new Set([
-                      EQUIPMENT_TYPES.SWITCH,
-                      EQUIPMENT_TYPES.BUS,
-                      EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
-                      EQUIPMENT_TYPES.BUSBAR_SECTION,
-                      EQUIPMENT_TYPES.TIE_LINE,
-                  ])
-                : new Set([
-                      EQUIPMENT_TYPES.SWITCH,
-                      EQUIPMENT_TYPES.BUS,
-                      EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
-                  ]);
+        const equipmentTypesToExclude = new Set([
+            EQUIPMENT_TYPES.SWITCH,
+            EQUIPMENT_TYPES.BUS,
+            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.BUSBAR_SECTION,
+            EQUIPMENT_TYPES.TIE_LINE,
+        ]);
 
         return Object.values(EQUIPMENT_TYPES)
             .filter(
@@ -161,7 +139,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     label: equipementTypeToLabel(value),
                 };
             });
-    }, [watchSelectionType]);
+    }, []);
 
     return (
         <CustomFormProvider
@@ -176,76 +154,52 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 flexDirection="column"
                 height="100%"
             >
-                <Grid container rowGap={2}>
-                    <GridSection title="createNewSelection" />
-                    <Grid container>
+                <Grid container>
+                    <GridSection title="createNewFilter" />
+                    <Grid container paddingTop={2}>
                         <SelectInput
-                            name={SELECTION_TYPE}
-                            options={Object.values(SELECTION_TYPES).map(
-                                (value) => ({
-                                    id: value,
-                                    label: selectionTypeToLabel(value),
-                                })
-                            )}
-                            label={SELECTION_TYPE}
+                            name={'equipmentType'}
+                            options={equipmentTypesOptions}
+                            label={'EquipmentType'}
                             fullWidth
                             size={'medium'}
                             disableClearable={true}
-                            formProps={{ style: { fontStyle: 'italic' } }}
                         />
                     </Grid>
-                    {watchSelectionType !== '' && (
-                        <>
-                            <Grid container>
-                                <SelectInput
-                                    name={EQUIPMENT_TYPE_FIELD}
-                                    options={equipmentTypesOptions}
-                                    label={'EquipmentType'}
-                                    fullWidth
-                                    size={'medium'}
-                                    disableClearable={true}
-                                />
-                            </Grid>
 
-                            <Grid container>
-                                <UniqueNameInput
-                                    name={NAME}
-                                    label={'Name'}
-                                    elementType={ElementType.DIRECTORY}
-                                    activeDirectory={defaultFolder?.id as UUID}
-                                    autoFocus
-                                    formProps={{ variant: 'standard' }}
-                                />
-                            </Grid>
-                            <Grid container>
-                                {/* icon directory */}
+                    <Grid container paddingTop={2}>
+                        <UniqueNameInput
+                            name={NAME}
+                            label={'Name'}
+                            elementType={ElementType.DIRECTORY}
+                            activeDirectory={defaultFolder?.id as UUID}
+                            autoFocus
+                            formProps={{ variant: 'standard' }}
+                        />
+                    </Grid>
+                    <Grid container paddingTop={2}>
+                        {/* icon directory */}
 
-                                <Typography m={1} component="span">
-                                    <Box
-                                        fontWeight={'fontWeightBold'}
-                                        display="flex"
-                                        justifyContent="center"
-                                        alignItems="center"
-                                    >
-                                        <FolderOutlined />
-                                        <span>
-                                            &nbsp;{defaultFolder?.name}&nbsp;
-                                        </span>
-                                    </Box>
-                                </Typography>
-                                <Button
-                                    onClick={handleChangeFolder}
-                                    variant="contained"
-                                    size="small"
-                                >
-                                    <FormattedMessage
-                                        id={'button.changeType'}
-                                    />
-                                </Button>
-                            </Grid>
-                        </>
-                    )}
-                    <Grid container>
+                        <Typography m={1} component="span">
+                            <Box
+                                fontWeight={'fontWeightBold'}
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <FolderOutlined />
+                                <span>&nbsp;{defaultFolder?.name}&nbsp;</span>
+                            </Box>
+                        </Typography>
+                        <Button
+                            onClick={handleChangeFolder}
+                            variant="contained"
+                            size="small"
+                        >
+                            <FormattedMessage id={'button.changeType'} />
+                        </Button>
+                    </Grid>
+                    <Grid container paddingTop={2}>
                         <DirectoryItemSelector
                             open={openDirectorySelector}
                             onClose={setSelectedFolder}
@@ -261,7 +215,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         />
                     </Grid>
                 </Grid>
-                <Grid container justifyContent="flex-end">
+                <Grid container paddingTop={2} justifyContent="flex-end">
                     <Button onClick={onCancel} size={'large'}>
                         {intl.formatMessage({
                             id: 'cancel',
@@ -275,8 +229,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
-                                    onSaveSelection(
-                                        formMethods.getValues() as ISelectionCreation,
+                                    onSaveFilter(
+                                        formMethods.getValues() as IFilterCreation,
                                         defaultFolder,
                                         setSavingState
                                     );
@@ -295,4 +249,4 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     );
 };
 
-export default SelectionCreationPanel;
+export default FilterCreationPanel;

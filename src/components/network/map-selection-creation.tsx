@@ -17,6 +17,7 @@ import {
 } from 'services/study/network-map';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
+import { useCallback } from 'react';
 
 interface MapSelectionCreationProps {
     networkMapref: React.RefObject<any>;
@@ -42,106 +43,86 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
     );
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
 
-    const createFilter = async (
-        selection: ISelection,
-        distDir: any,
-        selectedEquipmentsIds: IEquipment[]
-    ) => {
-        try {
-            await createMapFilter(
-                selection,
-                distDir,
-                studyUuid,
-                currentNode?.id,
-                selectedEquipmentsIds
-            );
-            snackInfo({
-                messageTxt: intl.formatMessage({
-                    id: 'FilterCreationSuccess',
-                }),
-            });
-        } catch (error: any) {
-            snackWarning({
-                messageTxt: intl.formatMessage({
-                    id: error.message,
-                }),
-                headerId: 'FilterCreationError',
-            });
-        }
-    };
+    const onSaveSelection = useCallback(
+        async (
+            selection: ISelection,
+            distDir: any,
+            setIsLoading: (isLoading: boolean) => void
+        ) => {
+            const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
 
-    const createContingencyList = async (
-        selection: ISelection,
-        distDir: any,
-        selectedEquipments: String[]
-    ) => {
-        try {
-            await createMapContingencyList(
-                selection,
-                distDir,
-                studyUuid,
-                currentNode?.id,
-                selectedEquipments
-            );
-            snackInfo({
-                messageTxt: intl.formatMessage({
-                    id: 'ContingencyListCreationSuccess',
-                }),
-            });
-        } catch (error: any) {
-            snackWarning({
-                messageTxt: intl.formatMessage({
-                    id: error.message,
-                }),
-                headerId: 'ContingencyListCreationError',
-            });
-        }
-    };
-
-    const onSaveSelection = async (selection: ISelection, distDir: any) => {
-        const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
-
-        try {
-            const selectedEquipments =
-                selection.equipmentType === EQUIPMENT_TYPES.LINE
-                    ? networkMapref.current.getSelectedLines()
-                    : networkMapref.current.getSelectedSubstations();
-            const selectedEquipmentsIds = selectedEquipments.map(
-                (eq: IEquipment) => eq.id
-            );
-
-            if (selectedEquipments.length === 0) {
-                snackWarning({
+            setIsLoading(true);
+            try {
+                //we want to calculate selectedLine or selectedSubstation only when needed
+                //call getSelectedLines if the user want to create a filter with lines
+                //for all others case we call getSelectedSubstations
+                const selectedEquipments =
+                    selection.equipmentType === EQUIPMENT_TYPES.LINE
+                        ? networkMapref.current.getSelectedLines()
+                        : networkMapref.current.getSelectedSubstations();
+                const selectedEquipmentsIds = selectedEquipments.map(
+                    (eq: IEquipment) => eq.id
+                );
+                if (selectedEquipments.length === 0) {
+                    snackWarning({
+                        messageTxt: intl.formatMessage({
+                            id: 'EmptySelection',
+                        }),
+                        headerId: isFilter
+                            ? 'FilterCreationIgnored'
+                            : 'ContingencyListCreationIgnored',
+                    });
+                } else {
+                    if (isFilter) {
+                        await createMapFilter(
+                            selection,
+                            distDir,
+                            studyUuid,
+                            currentNode.id,
+                            selectedEquipmentsIds
+                        );
+                        snackInfo({
+                            messageTxt: intl.formatMessage({
+                                id: 'FilterCreationSuccess',
+                            }),
+                        });
+                    } else {
+                        await createMapContingencyList(
+                            selection,
+                            distDir,
+                            studyUuid,
+                            currentNode?.id,
+                            selectedEquipments
+                        );
+                        snackInfo({
+                            messageTxt: intl.formatMessage({
+                                id: 'ContingencyListCreationSuccess',
+                            }),
+                        });
+                    }
+                }
+            } catch (error: any) {
+                snackError({
                     messageTxt: intl.formatMessage({
-                        id: 'EmptySelection',
+                        id: error.message,
                     }),
                     headerId: isFilter
-                        ? 'FilterCreationIgnored'
-                        : 'ContingencyListCreationIgnored',
+                        ? 'FilterCreationError'
+                        : 'ContingencyListCreationError',
                 });
-                return;
             }
-
-            if (isFilter) {
-                await createFilter(selection, distDir, selectedEquipmentsIds);
-            } else {
-                await createContingencyList(
-                    selection,
-                    distDir,
-                    selectedEquipments
-                );
-            }
-        } catch (error: any) {
-            snackError({
-                messageTxt: intl.formatMessage({
-                    id: error.message,
-                }),
-                headerId: isFilter
-                    ? 'FilterCreationError'
-                    : 'ContingencyListCreationError',
-            });
-        }
-    };
+            setIsLoading(false);
+        },
+        [
+            currentNode?.id,
+            intl,
+            snackError,
+            snackInfo,
+            snackWarning,
+            studyUuid,
+            networkMapref,
+        ]
+    );
 
     return (
         <SelectionCreationPanel

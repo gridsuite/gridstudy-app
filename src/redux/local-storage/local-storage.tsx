@@ -6,8 +6,8 @@
  */
 
 import { DARK_THEME, LANG_SYSTEM } from '@gridsuite/commons-ui';
-import { getComputedLanguage } from '../utils/language';
-import { APP_NAME } from '../utils/config-params';
+import { getComputedLanguage } from '../../utils/language';
+import { APP_NAME } from '../../utils/config-params';
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
 const LOCAL_STORAGE_LANGUAGE_KEY = (APP_NAME + '_LANGUAGE').toUpperCase();
@@ -16,7 +16,7 @@ export const getLocalStorageTheme = () => {
     return localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || DARK_THEME;
 };
 
-export const saveLocalStorageTheme = (theme) => {
+export const saveLocalStorageTheme = (theme: string) => {
     localStorage.setItem(LOCAL_STORAGE_THEME_KEY, theme);
 };
 
@@ -24,7 +24,7 @@ export const getLocalStorageLanguage = () => {
     return localStorage.getItem(LOCAL_STORAGE_LANGUAGE_KEY) || LANG_SYSTEM;
 };
 
-export const saveLocalStorageLanguage = (language) => {
+export const saveLocalStorageLanguage = (language: string) => {
     localStorage.setItem(LOCAL_STORAGE_LANGUAGE_KEY, language);
 };
 

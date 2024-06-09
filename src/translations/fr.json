@@ -9,6 +9,7 @@
     "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
     "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des ouvrages",
     "equipmentsLoadingError": "Une erreur est survenue lors du chargement des ouvrages disponibles",
+    "equipmentsLoading": "Chargement...",
 
     "renameStudyMsg": "Nouveau nom de l'étude\u00a0:",
     "renameStudy": "Renommer l'étude",
@@ -361,6 +362,7 @@
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
+
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
@@ -617,7 +619,7 @@
     "ConnectedComponent": "Composante connexe",
     "SynchronousComponent": "Composante synchrone",
     "Setpoints": "Consignes",
-    "EmptySelection": "Aucun équipement n'est selectionné",
+    "EmptySelection": "Aucun équipement n'est sélectionné",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
@@ -943,7 +945,7 @@
     "ContingencyListCreationSuccess": "Liste d'aléas créée avec succès",
     "FilterCreationIgnored": "La création du filtre n'a pas abouti",
     "ContingencyListCreationIgnored": "La création de la liste d'aléas n'a pas abouti",
-
+    
     "Tap": "Prise",
     "DeltaResistance": "Δ Résistance (%)",
     "DeltaReactance": "Δ Réactance (%)",
@@ -1105,7 +1107,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "P cible",
     "CreateVariation": "Ajouter Variation",
-    "createNewSelection": "Créer une selection",
+    "createNewSelection": "Créer une sélection",
     "ActiveVariationMode": "Mode variation de l'actif",
     "ReactiveVariationMode": "Mode variation du réactif",
     "RegularDistribution": "Équirépartition",

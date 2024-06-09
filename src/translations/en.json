@@ -9,6 +9,7 @@
     "deleteStudyError": "Cannot remove the study if you are not the owner",
     "equipmentsSearchingError": "An error occurred while searching the equipments",
     "equipmentsLoadingError": "An error occurred while loading the available equipments",
+    "equipmentsLoading": "Loading...",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -361,6 +362,7 @@
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
+
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",
@@ -943,7 +945,7 @@
     "ContingencyListCreationSuccess": "Contingency list successfully created",
     "FilterCreationIgnored": "The creation of the filter didn't complete",
     "ContingencyListCreationIgnored": "The creation of the contingency list didn't complete",
-
+    
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
     "DeltaReactance": "Δ Reactance (%)",
@@ -1105,7 +1107,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "Target P",
     "CreateVariation": "Add Variation",
-    "createNewSelection": "Create selection",
+    "createNewSelection": "Create a selection",
     "ActiveVariationMode": "Active variation mode",
     "ReactiveVariationMode": "Reactive variation mode",
     "RegularDistribution": "Regular distribution",

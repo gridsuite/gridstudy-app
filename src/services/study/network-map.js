@@ -7,13 +7,14 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { createContingencyList, createFilter } from '../explore';
 import { NAME } from '../../components/utils/field-constants.js';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../components/utils/equipment-types.js';
+import { createFilter } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
+import { createContingencyList } from 'services/explore';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -170,35 +171,6 @@ function createEquipmentIdentifierList(equipmentType, equipmentList) {
     };
 }
 
-function createIdentifiersList(selectedEquipments) {
-    const identifierLists = selectedEquipments.map((eq) => {
-        return {
-            type: 'LIST',
-            contingencyId: eq.name ? eq.name : eq.id,
-            identifierList: [
-                {
-                    type: 'ID_BASED',
-                    identifier: eq.id,
-                },
-            ],
-        };
-    });
-    return identifierLists;
-}
-
-function createIdentifierContingencyList(contingencyListName, equipmentList) {
-    const identifiersList = createIdentifiersList(equipmentList);
-    return {
-        identifierContingencyList: {
-            type: 'identifier',
-            version: '1.2',
-            name: contingencyListName,
-            identifiers: identifiersList,
-        },
-        type: 'IDENTIFIERS',
-    };
-}
-
 export async function createMapFilter(
     filter,
     distDir,
@@ -214,7 +186,6 @@ export async function createMapFilter(
                 filter.equipmentType,
                 selectedEquipmentsIds
             );
-
             break;
 
         default:
@@ -250,6 +221,36 @@ export async function createMapFilter(
         distDir.id?.toString() ?? ''
     );
 }
+
+function createIdentifiersList(selectedEquipments) {
+    const identifierLists = selectedEquipments.map((eq) => {
+        return {
+            type: 'LIST',
+            contingencyId: eq.name ? eq.name : eq.id,
+            identifierList: [
+                {
+                    type: 'ID_BASED',
+                    identifier: eq.id,
+                },
+            ],
+        };
+    });
+    return identifierLists;
+}
+
+function createIdentifierContingencyList(contingencyListName, equipmentList) {
+    const identifiersList = createIdentifiersList(equipmentList);
+    return {
+        identifierContingencyList: {
+            type: 'identifier',
+            version: '1.2',
+            name: contingencyListName,
+            identifiers: identifiersList,
+        },
+        type: 'IDENTIFIERS',
+    };
+}
+
 export async function createMapContingencyList(
     contingencyList,
     distDir,
