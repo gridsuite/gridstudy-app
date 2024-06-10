@@ -15,6 +15,7 @@ import {
 import { createFilter } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
+import { createIdentifierContingencyList } from './contingency-list';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -220,35 +221,6 @@ export async function createMapFilter(
         '',
         distDir.id?.toString() ?? ''
     );
-}
-
-function createIdentifiersList(selectedEquipments) {
-    const identifierLists = selectedEquipments.map((eq) => {
-        return {
-            type: 'LIST',
-            contingencyId: eq.name ? eq.name : eq.id,
-            identifierList: [
-                {
-                    type: 'ID_BASED',
-                    identifier: eq.id,
-                },
-            ],
-        };
-    });
-    return identifierLists;
-}
-
-function createIdentifierContingencyList(contingencyListName, equipmentList) {
-    const identifiersList = createIdentifiersList(equipmentList);
-    return {
-        identifierContingencyList: {
-            type: 'identifier',
-            version: '1.2',
-            name: contingencyListName,
-            identifiers: identifiersList,
-        },
-        type: 'IDENTIFIERS',
-    };
 }
 
 export async function createMapContingencyList(

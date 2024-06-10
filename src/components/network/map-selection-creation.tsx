@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { useCallback } from 'react';
 import { SELECTION_TYPES } from 'components/utils/selection-types';
+import { IEquipment } from 'services/study/contingency-list';
 
 interface INetworkMap {
     getSelectedLines: () => [];
@@ -34,9 +35,6 @@ interface ISelection {
     equipmentType: string;
 }
 
-interface IEquipment {
-    id: string;
-}
 const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
     networkMapref,
     onCancel,

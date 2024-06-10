@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
 
@@ -79,7 +80,7 @@ export function createModifications(
  * @returns {Promise<Response>}
  */
 export function createContingencyList(
-    newContingencyList: [],
+    newContingencyList: ContingencyList[],
     contingencyListName: string,
     description: string,
     parentDirectoryUuid: string
