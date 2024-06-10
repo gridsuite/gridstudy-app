@@ -22,6 +22,8 @@ import { useDisabledSearchReason } from './use-disabled-search-reason';
 import { useSearchEvent } from './use-search-event';
 import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-equipments';
 import { addToLocalStorageSearchEquipmentHistory } from 'redux/local-storage/search-equipment-history';
+import { TextField } from '@mui/material';
+import { Search, SearchOff } from '@mui/icons-material';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -75,10 +77,8 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     return (
         <ElementSearchDialog
             open={isDialogSearchOpen}
+            showResults={equipmentsFound.length > 0 || isLoading}
             onClose={() => setIsDialogSearchOpen(false)}
-            searchingLabel={intl.formatMessage({
-                id: 'equipment_search/label',
-            })}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={onSelectionChange}
@@ -93,8 +93,35 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             )}
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
-            isLoading={isLoading}
+            loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
+            getOptionLabel={(equipment) => equipment.label}
+            isOptionEqualToValue={(equipment1, equipment2) =>
+                equipment1.id === equipment2.id
+            }
+            renderInput={(displayedValue, params) => (
+                <TextField
+                    autoFocus={true}
+                    {...params}
+                    label={intl.formatMessage({
+                        id: 'equipment_search/label',
+                    })}
+                    InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                            <>
+                                {disabledSearchReason !== '' ? (
+                                    <SearchOff color="disabled" />
+                                ) : (
+                                    <Search color="disabled" />
+                                )}
+                                {params.InputProps.startAdornment}
+                            </>
+                        ),
+                    }}
+                    value={displayedValue}
+                />
+            )}
         />
     );
 };
