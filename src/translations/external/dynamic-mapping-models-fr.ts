@@ -20,7 +20,7 @@ const dynamic_mapping_models_fr = {
     'models.GeneratorPV': 'Groupe PV',
     'models.LoadAlphaBeta': 'Consommation dépendante à la tension',
     'models.LoadPQ': 'Consommation fixe PQ',
-    'models.CurrentLimitAutomaton': 'ADA',
+    'models.OverloadManagementSystem': 'ADA',
     'models.TapChangerBlockingAutomaton': 'Automate de blocage régleur',
     'models.StaticVarCompensator': 'CSPR',
     'models.DefaultBus': 'Bus',
