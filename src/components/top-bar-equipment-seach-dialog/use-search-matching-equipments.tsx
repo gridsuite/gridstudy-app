@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
     EquipmentType,
     getEquipmentsInfosForSearchBar,
@@ -61,10 +61,9 @@ export const useSearchMatchingEquipments = (
         [elementsFound, getNameOrId]
     );
 
-    //TODO: add this back
-    // useEffect(() => {
-    //     updateSearchTerm('');
-    // }, [equipmentType, updateSearchTerm]);
+    useEffect(() => {
+        updateSearchTerm('');
+    }, [equipmentType, updateSearchTerm]);
 
     return {
         searchTerm,
