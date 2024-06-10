@@ -58,9 +58,6 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
         <ElementSearchDialog
             open={open}
             onClose={onClose}
-            searchingLabel={intl.formatMessage({
-                id: 'equipment_search/label',
-            })}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={(element) => {
