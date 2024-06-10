@@ -943,7 +943,8 @@ const NetworkModificationNodeEditor = () => {
         setIsUpdate(false);
     };
 
-    const toggleSelectAllModifications = useCallback(() => {
+    const toggleSelectAllModifications = useCallback((event) => {
+        setIsAllModificationSelected(event.target.checked);
         setSelectedItems((oldVal) =>
             oldVal.length === 0 ? modifications : []
         );
