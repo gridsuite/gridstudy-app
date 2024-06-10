@@ -85,8 +85,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 currentNode?.id,
                 undefined,
                 watchType,
-                true,
-                undefined
+                true
             )
                 .then((vals) => {
                     // check race condition here

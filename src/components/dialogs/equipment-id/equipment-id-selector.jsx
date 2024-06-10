@@ -50,8 +50,7 @@ export const EquipmentIdSelector = ({
             currentNodeUuid,
             undefined,
             equipmentType,
-            true,
-            undefined
+            true
         ).then((values) => {
             setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
         });

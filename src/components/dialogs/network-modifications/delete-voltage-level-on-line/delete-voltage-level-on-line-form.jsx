@@ -28,8 +28,7 @@ const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode }) => {
             currentNode.id,
             undefined,
             'LINE',
-            true,
-            undefined
+            true
         ).then((values) => {
             setLinesOptions(
                 values

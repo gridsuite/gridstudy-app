@@ -83,7 +83,7 @@ export function fetchEquipmentsIds(
     substationsIds,
     equipmentType,
     inUpstreamBuiltParentNode,
-    nominalVoltages
+    nominalVoltages = null
 ) {
     console.info(
         `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
@@ -93,25 +93,28 @@ export function fetchEquipmentsIds(
     let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/' +
-        'equipments-ids';
-    const elementInfos = {
-        elementType: equipmentType,
-        substationsIds: substationsIds ?? null,
-        nominalVoltages: nominalVoltages ?? null,
-    };
+        'equipments-ids' +
+        '?' +
+        'equipmentType=' +
+        equipmentType;
+    if (nominalVoltages) {
+        fetchEquipmentsUrl =
+            fetchEquipmentsUrl + '&nominalVoltages=' + nominalVoltages;
+    }
+
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
         fetchEquipmentsUrl =
-            fetchEquipmentsUrl + '?' + urlSearchParams.toString();
+            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
     }
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(elementInfos),
+        body: JSON.stringify(substationsIds ?? null),
     });
 }
 
