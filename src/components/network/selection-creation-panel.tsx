@@ -36,6 +36,7 @@ import { UUID } from 'crypto';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
+import { ReduxState } from 'redux/reducer.type';
 
 const formSchema = yup
     .object()
@@ -67,7 +68,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     onCancel,
 }) => {
     const [savingState, setSavingState] = useState(false);
-    const studyUuid = useSelector((state: any) => state.studyUuid);
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
     const formMethods = useForm({

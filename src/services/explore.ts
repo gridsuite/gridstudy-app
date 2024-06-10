@@ -79,7 +79,7 @@ export function createModifications(
  * @returns {Promise<Response>}
  */
 export function createContingencyList(
-    newContingencyList: any[],
+    newContingencyList: [],
     contingencyListName: string,
     description: string,
     parentDirectoryUuid: string

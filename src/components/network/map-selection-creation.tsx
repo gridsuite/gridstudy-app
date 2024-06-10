@@ -6,7 +6,10 @@
  */
 import SelectionCreationPanel from './selection-creation-panel';
 import { useIntl } from 'react-intl'; // For internationalization
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    TreeViewFinderNodeProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_TYPES,
     SELECTION_TYPES,
@@ -19,8 +22,12 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { useCallback } from 'react';
 
+interface INetworkMap {
+    getSelectedLines: () => [];
+    getSelectedSubstations: () => [];
+}
 interface MapSelectionCreationProps {
-    networkMapref: React.RefObject<any>;
+    networkMapref: React.MutableRefObject<INetworkMap>;
     onCancel: () => void;
 }
 
@@ -46,7 +53,7 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
     const onSaveSelection = useCallback(
         async (
             selection: ISelection,
-            distDir: any,
+            distDir: TreeViewFinderNodeProps,
             setIsLoading: (isLoading: boolean) => void
         ) => {
             const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
