@@ -29,14 +29,16 @@ import { useSelector } from 'react-redux';
 import {
     equipementTypeToLabel,
     EQUIPMENT_TYPES,
-    SELECTION_TYPES,
-    selectionTypeToLabel,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
 import { ReduxState } from 'redux/reducer.type';
+import {
+    SELECTION_TYPES,
+    selectionTypeToLabel,
+} from 'components/utils/selection-types';
 
 const formSchema = yup
     .object()

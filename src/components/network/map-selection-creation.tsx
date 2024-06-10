@@ -10,10 +10,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    EQUIPMENT_TYPES,
-    SELECTION_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     createMapContingencyList,
     createMapFilter,
@@ -21,6 +18,7 @@ import {
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { useCallback } from 'react';
+import { SELECTION_TYPES } from 'components/utils/selection-types';
 
 interface INetworkMap {
     getSelectedLines: () => [];

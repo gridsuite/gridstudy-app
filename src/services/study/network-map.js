@@ -11,7 +11,7 @@ import { NAME } from '../../components/utils/field-constants.js';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
-} from '../../components/utils/equipment-types.ts';
+} from '../../components/utils/equipment-types';
 import { createFilter } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
