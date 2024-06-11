@@ -12,13 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    Box,
-    Checkbox,
-    DialogContentText,
-    FormControlLabel,
-    FormGroup,
-} from '@mui/material';
+import { Box, Checkbox, DialogContentText, FormGroup } from '@mui/material';
 import {
     deleteStashedNodes,
     fetchStashedNodes,
@@ -26,7 +20,11 @@ import {
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
-import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    CheckboxList,
+    OverflowableText,
+} from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
@@ -52,22 +50,6 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     const [selectedNodes, setSelectedNodes] = useState([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
         useState(false);
-
-    const handleSelectAll = () => {
-        if (selectedNodes.length === nodes.length) {
-            setSelectedNodes([]);
-        } else {
-            setSelectedNodes(nodes.map((node) => node.first));
-        }
-    };
-
-    const handleClick = (element) => {
-        if (selectedNodes.includes(element)) {
-            setSelectedNodes((prev) => prev.filter((e) => e !== element));
-        } else {
-            setSelectedNodes((prev) => [...new Set([...prev, element])]);
-        }
-    };
 
     const handleClose = () => {
         onClose();
@@ -101,6 +83,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
         }
     }, [studyUuid, open]);
 
+    const [isAllSelected, setIsAllSelected] = useState(false);
     return (
         <Dialog
             fullWidth
@@ -140,10 +123,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                                 <Checkbox
                                     color={'primary'}
                                     edge="start"
-                                    checked={
-                                        selectedNodes.length === nodes.length
-                                    }
-                                    onClick={handleSelectAll}
+                                    checked={isAllSelected}
                                     disableRipple
                                 />
                                 <OverflowableText
@@ -152,29 +132,18 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                                     })}
                                 />
                             </Box>
-                            {nodes.map((node) => {
-                                return (
-                                    <FormControlLabel
-                                        key={node.first.id}
-                                        control={
-                                            <Checkbox
-                                                checked={selectedNodes.includes(
-                                                    node.first
-                                                )}
-                                                onChange={(event) =>
-                                                    handleClick(node.first)
-                                                }
-                                            />
-                                        }
-                                        label={
-                                            node.first.name +
-                                            (node.second !== 0
-                                                ? ' ( + ' + node.second + ' )'
-                                                : '')
-                                        }
-                                    />
-                                );
-                            })}
+                            <CheckboxList
+                                values={nodes}
+                                isAllSelected={isAllSelected}
+                                setIsAllSelected={setIsAllSelected}
+                                getValueId={(v) => v.first.id}
+                                getValueLabel={(v) =>
+                                    v.first.name +
+                                    (v.second !== 0
+                                        ? ' ( + ' + v.second + ' )'
+                                        : '')
+                                }
+                            />
                         </FormGroup>
                     </FormControl>
                 )}

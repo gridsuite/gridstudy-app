@@ -13,20 +13,20 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
-import CheckboxList from 'components/utils/checkbox-list';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { ElementType } from '@gridsuite/commons-ui';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import DeleteIcon from '@mui/icons-material/Delete.js';
+import IconButton from '@mui/material/IconButton';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -205,24 +205,22 @@ const ContingencyListSelector = (props) => {
                         <Grid item>
                             <CheckboxList
                                 values={contingencyList || []}
-                                onChecked={setCheckedContingencyList}
-                                checkedValues={checkedContingencyList}
-                                itemRenderer={({
-                                    item,
-                                    checked,
-                                    handleToggle,
-                                }) => (
-                                    <ListItemWithDeleteButton
-                                        key={item.id}
-                                        value={item.id}
-                                        checked={checked}
-                                        primary={item.name}
-                                        onClick={() => handleToggle(item)}
-                                        removeFromList={(e) => {
+                                getValueId={(v) => v.id}
+                                getValueLabel={(v) => v.name}
+                                secondaryAction={(item) => (
+                                    <IconButton
+                                        style={{
+                                            alignItems: 'end',
+                                        }}
+                                        edge="end"
+                                        onClick={(e) => {
                                             e.stopPropagation();
                                             removeFromFavorites([item]);
                                         }}
-                                    />
+                                        size={'small'}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
                                 )}
                             />
                         </Grid>
