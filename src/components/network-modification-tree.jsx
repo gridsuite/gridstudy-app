@@ -19,7 +19,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     setModificationsDrawerOpen,
     setCurrentTreeNode,
-    STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
@@ -29,6 +28,7 @@ import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
+import { StudyDisplayMode } from '../redux/reducer.type';
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
@@ -133,8 +133,8 @@ const NetworkModificationTree = ({
             focusParams.current;
         if (prevTreeDisplay) {
             if (
-                prevTreeDisplay.display === STUDY_DISPLAY_MODE.TREE &&
-                studyMapTreeDisplay === STUDY_DISPLAY_MODE.HYBRID
+                prevTreeDisplay.display === StudyDisplayMode.TREE &&
+                studyMapTreeDisplay === StudyDisplayMode.HYBRID
             ) {
                 setViewport({
                     x: x - (prevTreeDisplay.width + nodeEditorShift) / 4,
@@ -142,8 +142,8 @@ const NetworkModificationTree = ({
                     zoom: zoom,
                 });
             } else if (
-                prevTreeDisplay.display === STUDY_DISPLAY_MODE.HYBRID &&
-                studyMapTreeDisplay === STUDY_DISPLAY_MODE.TREE
+                prevTreeDisplay.display === StudyDisplayMode.HYBRID &&
+                studyMapTreeDisplay === StudyDisplayMode.TREE
             ) {
                 setViewport({
                     x: x + (prevTreeDisplay.width + nodeEditorShift) / 2,
