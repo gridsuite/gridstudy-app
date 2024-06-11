@@ -943,12 +943,15 @@ const NetworkModificationNodeEditor = () => {
         setIsUpdate(false);
     };
 
-    const toggleSelectAllModifications = useCallback((event) => {
-        setIsAllModificationSelected(event.target.checked);
-        setSelectedItems((oldVal) =>
-            oldVal.length === 0 ? modifications : []
-        );
-    }, [modifications]);
+    const toggleSelectAllModifications = useCallback(
+        (event) => {
+            setIsAllModificationSelected(event.target.checked);
+            setSelectedItems((oldVal) =>
+                oldVal.length === 0 ? modifications : []
+            );
+        },
+        [modifications]
+    );
 
     const renderDialog = () => {
         return subMenuItemsList
