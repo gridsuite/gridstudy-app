@@ -274,7 +274,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     <Button
                         variant="outlined"
                         type={'submit'}
-                        disabled={!formMethods.formState.isValid || savingState}
+                        disabled={!formMethods.formState.isDirty || savingState}
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
                                 if (isValid && defaultFolder) {
