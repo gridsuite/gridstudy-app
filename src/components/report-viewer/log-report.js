@@ -35,10 +35,10 @@ export default class LogReport {
             this.id = undefined;
             this.uniqueId = uuid4();
         } else if (reportType === LogReportType.NodeReport) {
-            this.id = jsonReporter?.values?.id?.value; // not unique for all nodes
+            this.id = jsonReporter?.values?.subReportId?.value; // not unique for all nodes
             this.uniqueId = jsonReporter.messageKey; // then use taskkey as unique Id
         } else {
-            this.id = jsonReporter?.values?.id?.value; // unique for all subreports
+            this.id = jsonReporter?.values?.subReportId?.value; // unique for all subreports
             this.uniqueId = this.id;
         }
         this.key = jsonReporter.messageKey;
@@ -104,7 +104,10 @@ export default class LogReport {
                 ? LogReportType.NodeReport
                 : LogReportType.SubReport;
         jsonReporter.children.forEach((value) => {
-            if (value.children.length > 0 || value.values?.id !== undefined) {
+            if (
+                value.children.length > 0 ||
+                value.values?.subReportId !== undefined
+            ) {
                 this.children.push(
                     new LogReport(childType, value, this.uniqueId)
                 );
