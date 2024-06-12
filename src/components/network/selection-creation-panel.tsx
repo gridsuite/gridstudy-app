@@ -39,6 +39,7 @@ import {
     SELECTION_TYPES,
     selectionTypeToLabel,
 } from 'components/utils/selection-types';
+import { useSaveMap } from './use-save-map';
 
 const formSchema = yup
     .object()
@@ -57,22 +58,18 @@ const emptyFormData = {
 type ISelectionCreation = yup.InferType<typeof formSchema>;
 
 type SelectionCreationPanelProps = {
-    onSaveSelection: (
-        data: ISelectionCreation,
-        distDir: TreeViewFinderNodeProps,
-        setSavingState: (state: boolean) => void
-    ) => void;
+    getEquipments: (equipmentType: string) => []; //FIXME something to do here ?
     onCancel: () => void;
 };
 
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
-    onSaveSelection,
+    getEquipments,
     onCancel,
 }) => {
-    const [savingState, setSavingState] = useState(false);
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
+    const { pendingState, onSaveSelection } = useSaveMap();
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -83,40 +80,19 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         control: formMethods.control,
     });
 
-    const [defaultFolder, setDefaultFolder] =
+    const [destinationFolder, setDestinationFolder] =
         useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
-                setDefaultFolder({
-                    id: res[1].elementUuid,
-                    name: res[1].elementName,
+                setDestinationFolder({
+                    id: res[res.length - 2].elementUuid,
+                    name: res[res.length - 2].elementName,
                 });
             }
         });
     }, [studyUuid]);
-
-    const generateSelectionName = useCallback(
-        (selectionType: string) => {
-            const selectionName =
-                selectionType === SELECTION_TYPES.FILTER
-                    ? 'Generated-filter-'
-                    : 'Generated-contingency-list-';
-            formMethods.setValue(
-                NAME,
-                selectionName + new Date().toISOString()
-            );
-        },
-        [formMethods]
-    );
-    useEffect(() => {
-        //TODO rerendering : to fix
-        if (watchSelectionType !== '') {
-            generateSelectionName(watchSelectionType);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [watchSelectionType]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -129,8 +105,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     };
     const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder && folder.length > 0) {
-            if (folder[0].id !== defaultFolder?.id) {
-                setDefaultFolder({
+            if (folder[0].id !== destinationFolder?.id) {
+                setDestinationFolder({
                     id: folder[0].id,
                     name: folder[0].name,
                 });
@@ -166,6 +142,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
             });
     }, [watchSelectionType]);
 
+    const filterSelected = watchSelectionType === SELECTION_TYPES.FILTER;
     return (
         <CustomFormProvider
             removeOptional={true}
@@ -214,8 +191,14 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                 <UniqueNameInput
                                     name={NAME}
                                     label={'Name'}
-                                    elementType={ElementType.DIRECTORY}
-                                    activeDirectory={defaultFolder?.id as UUID}
+                                    elementType={
+                                        filterSelected
+                                            ? ElementType.FILTER
+                                            : ElementType.CONTINGENCY_LIST
+                                    }
+                                    activeDirectory={
+                                        destinationFolder?.id as UUID
+                                    }
                                     autoFocus
                                     formProps={{ variant: 'standard' }}
                                 />
@@ -232,7 +215,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                     >
                                         <FolderOutlined />
                                         <span>
-                                            &nbsp;{defaultFolder?.name}&nbsp;
+                                            &nbsp;{destinationFolder?.name}
+                                            &nbsp;
                                         </span>
                                     </Box>
                                 </Typography>
@@ -274,21 +258,31 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     <Button
                         variant="outlined"
                         type={'submit'}
-                        disabled={!formMethods.formState.isDirty || savingState}
+                        disabled={
+                            !formMethods.formState.isDirty || pendingState
+                        }
                         onClick={() => {
                             formMethods.trigger().then((isValid) => {
-                                if (isValid && defaultFolder) {
+                                if (isValid && destinationFolder) {
+                                    const formData =
+                                        formMethods.getValues() as ISelectionCreation;
                                     onSaveSelection(
+                                        getEquipments(formData.equipmentType),
                                         formMethods.getValues() as ISelectionCreation,
-                                        defaultFolder,
-                                        setSavingState
-                                    );
+                                        destinationFolder
+                                    ).then((result) => {
+                                        if (result) {
+                                            formMethods.setValue(NAME, '', {
+                                                shouldDirty: true,
+                                            });
+                                        }
+                                    });
                                 }
                             });
                         }}
                         size={'large'}
                     >
-                        {(savingState && <CircularProgress size={24} />) || (
+                        {(pendingState && <CircularProgress size={24} />) || (
                             <FormattedMessage id="save" />
                         )}
                     </Button>

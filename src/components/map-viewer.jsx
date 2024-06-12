@@ -31,7 +31,8 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 import { Global, css } from '@emotion/react';
-import MapSelectionCreation from './network/map-selection-creation.tsx';
+import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import SelectionCreationPanel from './network/selection-creation-panel';
 const styles = {
     map: {
         display: 'flex',
@@ -237,6 +238,12 @@ const MapViewer = ({
         }
     }, []);
 
+    const getEquipments = (equipmentType) => {
+        return equipmentType === EQUIPMENT_TYPES.LINE
+            ? networkMapref.current.getSelectedLines()
+            : networkMapref.current.getSelectedSubstations();
+    };
+
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>
@@ -357,14 +364,14 @@ const MapViewer = ({
                                 }}
                             >
                                 {shouldOpenSelectionCreationPanel && (
-                                    <MapSelectionCreation
-                                        networkMapref={networkMapref}
+                                    <SelectionCreationPanel
+                                        getEquipments={getEquipments}
                                         onCancel={() => {
                                             setShouldOpenSelectionCreationPanel(
                                                 false
                                             );
                                         }}
-                                    ></MapSelectionCreation>
+                                    />
                                 )}
                             </Box>
                         </Box>
