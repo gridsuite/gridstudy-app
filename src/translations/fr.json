@@ -1361,5 +1361,7 @@
     "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
     "ReactiveSlacksThreshold": "Seuil d'alerte sur les investissements réactifs",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
-    "TieLines": "Interconnexions"
+    "TieLines": "Interconnexions",
+    "NoFilter": "Aucun filtre",
+    "EquipmentSearchPlaceholder": "Rechercher un poste, une ligne, un ouvrage..."
 }

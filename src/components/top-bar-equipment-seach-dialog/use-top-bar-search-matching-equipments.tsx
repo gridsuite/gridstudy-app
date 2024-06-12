@@ -8,30 +8,33 @@ import { UUID } from 'crypto';
 import { useSearchMatchingEquipments } from './use-search-matching-equipments';
 import { useMemo } from 'react';
 import { getLocalStorageSearchEquipmentHistory } from 'redux/local-storage/search-equipment-history';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 interface UseTopBarSearchMatchingEquipmentProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    equipmentType?: EquipmentType;
 }
 
 export const useTopBarSearchMatchingEquipment = (
     props: UseTopBarSearchMatchingEquipmentProps
 ) => {
-    const { nodeUuid, studyUuid } = props;
+    const { nodeUuid, studyUuid, equipmentType } = props;
     const { equipmentsFound, searchTerm, ...otherStates } =
         useSearchMatchingEquipments({
             studyUuid: studyUuid,
             nodeUuid: nodeUuid,
+            equipmentType: equipmentType,
         });
 
     // when searching from topbar, if user input is empty, display last clicked element from localstorage
     const equipmentsToReturn = useMemo(() => {
-        if (searchTerm.length > 0) {
+        if (searchTerm.length > 0 || equipmentType != null) {
             return equipmentsFound;
         } else {
             return getLocalStorageSearchEquipmentHistory(studyUuid); //elements from localstorage
         }
-    }, [searchTerm, equipmentsFound, studyUuid]);
+    }, [searchTerm, equipmentType, equipmentsFound, studyUuid]);
 
     return { ...otherStates, equipmentsFound: equipmentsToReturn, searchTerm };
 };
