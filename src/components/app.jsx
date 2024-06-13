@@ -384,13 +384,13 @@ const App = () => {
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useMatch({
             path: '/silent-renew-callback',
-        }) != null
+        })
     );
 
     const [initialMatchSigninCallbackUrl] = useState(
         useMatch({
             path: '/sign-in-callback',
-        }) != null
+        })
     );
 
     const isStudyPane =
@@ -411,10 +411,10 @@ const App = () => {
                 setUserManager({
                     instance: await initializeAuthenticationProd(
                         dispatch,
-                        initialMatchSilentRenewCallbackUrl,
+                        initialMatchSilentRenewCallbackUrl != null,
                         fetchIdpSettings,
                         fetchValidateUser,
-                        initialMatchSigninCallbackUrl
+                        initialMatchSigninCallbackUrl != null
                     ),
                     error: null,
                 });
