@@ -142,6 +142,24 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
             });
     }, [watchSelectionType]);
 
+    const handleSubmit = () => {
+        formMethods.trigger().then((isValid) => {
+            if (isValid && destinationFolder) {
+                const formData = formMethods.getValues() as ISelectionCreation;
+                onSaveSelection(
+                    getEquipments(formData.equipmentType),
+                    formMethods.getValues() as ISelectionCreation,
+                    destinationFolder
+                ).then((result) => {
+                    if (result) {
+                        formMethods.setValue(NAME, '', {
+                            shouldDirty: true,
+                        });
+                    }
+                });
+            }
+        });
+    };
     const filterSelected = watchSelectionType === SELECTION_TYPES.FILTER;
     return (
         <CustomFormProvider
@@ -171,7 +189,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                             fullWidth
                             size={'medium'}
                             disableClearable={true}
-                            formProps={{ style: { fontStyle: 'italic' } }}
+                            disabled={pendingState}
                         />
                     </Grid>
                     {watchSelectionType !== '' && (
@@ -184,6 +202,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                     fullWidth
                                     size={'medium'}
                                     disableClearable={true}
+                                    formProps={{
+                                        variant: 'standard',
+                                        disabled: pendingState,
+                                    }}
                                 />
                             </Grid>
 
@@ -224,6 +246,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                     onClick={handleChangeFolder}
                                     variant="contained"
                                     size="small"
+                                    disabled={pendingState}
                                 >
                                     <FormattedMessage
                                         id={'button.changeType'}
@@ -259,27 +282,9 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         variant="outlined"
                         type={'submit'}
                         disabled={
-                            !formMethods.formState.isDirty || pendingState
+                            !formMethods.formState.isValid || pendingState
                         }
-                        onClick={() => {
-                            formMethods.trigger().then((isValid) => {
-                                if (isValid && destinationFolder) {
-                                    const formData =
-                                        formMethods.getValues() as ISelectionCreation;
-                                    onSaveSelection(
-                                        getEquipments(formData.equipmentType),
-                                        formMethods.getValues() as ISelectionCreation,
-                                        destinationFolder
-                                    ).then((result) => {
-                                        if (result) {
-                                            formMethods.setValue(NAME, '', {
-                                                shouldDirty: true,
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }}
+                        onClick={handleSubmit}
                         size={'large'}
                     >
                         {(pendingState && <CircularProgress size={24} />) || (
