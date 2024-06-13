@@ -58,7 +58,7 @@ const emptyFormData = {
 type ISelectionCreation = yup.InferType<typeof formSchema>;
 
 type SelectionCreationPanelProps = {
-    getEquipments: (equipmentType: string) => []; //FIXME something to do here ?
+    getEquipments: (equipmentType: string) => [];
     onCancel: () => void;
 };
 
