@@ -73,7 +73,6 @@ import {
     fetchConfigParameters,
 } from '../services/config';
 import {
-    fetchAuthorizationCodeFlowFeatureFlag,
     fetchDefaultParametersValues,
     fetchIdpSettings,
 } from '../services/utils';
@@ -385,13 +384,13 @@ const App = () => {
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useMatch({
             path: '/silent-renew-callback',
-        })
+        }) != null
     );
 
     const [initialMatchSigninCallbackUrl] = useState(
         useMatch({
             path: '/sign-in-callback',
-        })
+        }) != null
     );
 
     const isStudyPane =
@@ -406,23 +405,23 @@ const App = () => {
     });
 
     useEffect(() => {
-        fetchAuthorizationCodeFlowFeatureFlag()
-            .then((authorizationCodeFlowEnabled) => {
-                return initializeAuthenticationProd(
-                    dispatch,
-                    initialMatchSilentRenewCallbackUrl != null,
-                    fetchIdpSettings(),
-                    fetchValidateUser,
-                    authorizationCodeFlowEnabled,
-                    initialMatchSigninCallbackUrl != null
-                );
-            })
-            .then((userManager) => {
-                setUserManager({ instance: userManager, error: null });
-            })
-            .catch(function (error) {
+        // need subfunction when async as suggested by rule react-hooks/exhaustive-deps
+        (async function initializeAuthentication() {
+            try {
+                setUserManager({
+                    instance: await initializeAuthenticationProd(
+                        dispatch,
+                        initialMatchSilentRenewCallbackUrl,
+                        fetchIdpSettings,
+                        fetchValidateUser,
+                        initialMatchSigninCallbackUrl
+                    ),
+                    error: null,
+                });
+            } catch (error) {
                 setUserManager({ instance: null, error: error.message });
-            });
+            }
+        })();
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [
         initialMatchSilentRenewCallbackUrl,
