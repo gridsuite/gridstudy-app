@@ -353,11 +353,7 @@ export const useParametersBackend = (
                 );
             }
         },
-        [
-            debouncedBackendUpdateParameters,
-            currentParams,
-            studyUuid,
-        ]
+        [debouncedBackendUpdateParameters, currentParams, studyUuid]
     );
 
     const resetParameters = useCallback(
