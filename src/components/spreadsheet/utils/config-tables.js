@@ -631,14 +631,14 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: CountryCellRenderer,
             },
             {
-                id: 'NominalVoltageSide1',
+                id: 'nominalVoltage1KV',
                 field: 'nominalVoltage1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageSide2',
+                id: 'nominalVoltage2KV',
                 field: 'nominalVoltage2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -733,7 +733,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide1',
+                id: 'connected1',
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -741,7 +741,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide2',
+                id: 'connected2',
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -798,21 +798,21 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: CountryCellRenderer,
             },
             {
-                id: 'NominalVoltageSide1',
+                id: 'nominalVoltage1KV',
                 field: 'nominalVoltage1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageSide2',
+                id: 'nominalVoltage2KV',
                 field: 'nominalVoltage2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'RatedVoltageSide1',
+                id: 'ratedVoltage1KV',
                 field: 'ratedU1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -832,7 +832,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'RatedVoltageSide2',
+                id: 'ratedVoltage2KV',
                 field: 'ratedU2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -1469,7 +1469,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide1',
+                id: 'connected1',
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -1477,7 +1477,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide2',
+                id: 'connected2',
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -3859,14 +3859,14 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: CountryCellRenderer,
             },
             {
-                id: 'NominalVoltageSide1',
+                id: 'nominalVoltage1KV',
                 field: 'nominalVoltage1',
                 numeric: true,
                 ...defaultNumericFilterConfig,
                 fractionDigits: 0,
             },
             {
-                id: 'NominalVoltageSide2',
+                id: 'nominalVoltage2KV',
                 field: 'nominalVoltage2',
                 numeric: true,
                 ...defaultNumericFilterConfig,
@@ -3961,7 +3961,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide1',
+                id: 'connected1',
                 field: 'terminal1Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
@@ -3969,7 +3969,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ConnectedSide2',
+                id: 'connected2',
                 field: 'terminal2Connected',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,

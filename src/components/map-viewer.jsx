@@ -23,18 +23,15 @@ import HorizontalToolbar from './horizontal-toolbar.jsx';
 import NetworkModificationTreePane from './network-modification-tree-pane.jsx';
 import NetworkMapTab from './network/network-map-tab.jsx';
 import { DiagramPane } from './diagrams/diagram-pane.jsx';
-import FilterCreationPanel from './network/filter-creation-panel';
-import { createMapFilter } from '../services/study/network-map.js';
 import { StudyView } from './study-pane.jsx';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
 import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 import { Global, css } from '@emotion/react';
-
+import MapSelectionCreation from './network/map-selection-creation.tsx';
 const styles = {
     map: {
         display: 'flex',
@@ -92,14 +89,15 @@ const MapViewer = ({
     const intl = useIntl();
     const dispatch = useDispatch();
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
-    const { snackInfo, snackError, snackWarning, closeSnackbar } =
-        useSnackMessage();
+    const { snackInfo, closeSnackbar } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
-    const [shouldOpenFilterCreationPanel, setShouldOpenFilterCreationPanel] =
-        useState(false);
+    const [
+        shouldOpenSelectionCreationPanel,
+        setShouldOpenSelectionCreationPanel,
+    ] = useState(false);
 
     const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
 
@@ -155,61 +153,8 @@ const MapViewer = ({
         }
     }, [drawingMode, intl, snackInfo, instructionSnackbar, closeSnackbar]);
 
-    const onSaveFilter = useCallback(
-        async (filter, distDir, setIsLoading) => {
-            setIsLoading(true);
-            try {
-                //we want to calculate selectedLine or selectedSubstation only when needed
-                //call getSelectedLines if the user want to create a filter with lines
-                //for all others case we call getSelectedSubstations
-                const selectedEquipments =
-                    filter.equipmentType === EQUIPMENT_TYPES.LINE
-                        ? networkMapref.current.getSelectedLines()
-                        : networkMapref.current.getSelectedSubstations();
-                const selectedEquipmentsIds = selectedEquipments.map(
-                    (eq) => eq.id
-                );
-                if (selectedEquipments.length === 0) {
-                    snackWarning({
-                        messageTxt: intl.formatMessage({
-                            id: 'EmptySelection',
-                        }),
-                        headerId: 'FilterCreationIgnored',
-                    });
-                } else {
-                    await createMapFilter(
-                        filter,
-                        distDir,
-                        studyUuid,
-                        currentNode.id,
-                        selectedEquipmentsIds
-                    );
-                    snackInfo({
-                        messageTxt: intl.formatMessage(
-                            {
-                                id: 'FilterCreationSuccess',
-                            },
-                            {
-                                filterName: filter.name,
-                            }
-                        ),
-                    });
-                }
-            } catch (error) {
-                snackError({
-                    messageTxt: intl.formatMessage({
-                        id: error.message,
-                    }),
-                    headerId: 'FilterCreationError',
-                });
-            }
-            setIsLoading(false);
-        },
-        [currentNode?.id, intl, snackError, snackInfo, snackWarning, studyUuid]
-    );
-
     const navigateToPreviousDisplayMode = useCallback(() => {
-        setShouldOpenFilterCreationPanel(false);
+        setShouldOpenSelectionCreationPanel(false);
         if (isInDrawingMode) {
             dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
             previousStudyDisplayMode.current = undefined;
@@ -253,7 +198,7 @@ const MapViewer = ({
                 networkMapref.current.getMapDrawer()?.getAll().features
                     ?.length > 1
             ) {
-                setShouldOpenFilterCreationPanel(false);
+                setShouldOpenSelectionCreationPanel(false);
                 const idFirstPolygon = networkMapref.current
                     .getMapDrawer()
                     .getAll().features[0].id;
@@ -280,10 +225,10 @@ const MapViewer = ({
     const onDrawEvent = useCallback((event) => {
         switch (event) {
             case DRAW_EVENT.DELETE:
-                setShouldOpenFilterCreationPanel(false);
+                setShouldOpenSelectionCreationPanel(false);
                 break;
             case DRAW_EVENT.CREATE:
-                setShouldOpenFilterCreationPanel(true);
+                setShouldOpenSelectionCreationPanel(true);
                 break;
             case DRAW_EVENT.UPDATE:
                 break;
@@ -344,7 +289,7 @@ const MapViewer = ({
                             <Box
                                 sx={{
                                     position: 'absolute',
-                                    width: shouldOpenFilterCreationPanel
+                                    width: shouldOpenSelectionCreationPanel
                                         ? '80%'
                                         : '100%',
                                     height: '100%',
@@ -403,7 +348,7 @@ const MapViewer = ({
 
                             <Box
                                 sx={{
-                                    width: shouldOpenFilterCreationPanel
+                                    width: shouldOpenSelectionCreationPanel
                                         ? '20%'
                                         : '0%',
                                     height: '100%',
@@ -411,15 +356,15 @@ const MapViewer = ({
                                     right: 0,
                                 }}
                             >
-                                {shouldOpenFilterCreationPanel && (
-                                    <FilterCreationPanel
-                                        onSaveFilter={onSaveFilter}
+                                {shouldOpenSelectionCreationPanel && (
+                                    <MapSelectionCreation
+                                        networkMapref={networkMapref}
                                         onCancel={() => {
-                                            setShouldOpenFilterCreationPanel(
+                                            setShouldOpenSelectionCreationPanel(
                                                 false
                                             );
                                         }}
-                                    ></FilterCreationPanel>
+                                    ></MapSelectionCreation>
                                 )}
                             </Box>
                         </Box>
