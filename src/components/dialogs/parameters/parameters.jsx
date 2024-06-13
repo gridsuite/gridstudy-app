@@ -342,7 +342,7 @@ export const useParametersBackend = (
 
     const updateParameter = useCallback(
         (newParams) => {
-            if (backendUpdateParameters) {
+            if (debouncedBackendUpdateParameters) {
                 let oldParams = { ...currentParams };
                 setParams(newParams);
                 setProvider(newParams['provider']);
@@ -355,7 +355,6 @@ export const useParametersBackend = (
         },
         [
             debouncedBackendUpdateParameters,
-            backendUpdateParameters,
             currentParams,
             studyUuid,
         ]
