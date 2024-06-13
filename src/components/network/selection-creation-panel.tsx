@@ -15,7 +15,6 @@ import {
     SelectInput,
     FormEquipment,
     TreeViewFinderNodeProps,
-    CONTINGENCY_LIST_EQUIPMENTS,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -29,6 +28,10 @@ import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
+import {
+    equipementTypeToLabel,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
 import { UUID } from 'crypto';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -138,16 +141,34 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         setOpenDirectorySelector(false);
     };
     const equipmentTypesOptions = useMemo(() => {
-        const equipmentTypes =
-            watchSelectionType === SELECTION_TYPES.FILTER
-                ? FILTER_EQUIPMENTS
-                : CONTINGENCY_LIST_EQUIPMENTS;
-        return Object.values(equipmentTypes).map((equipment: FormEquipment) => {
-            return {
-                id: equipment.id,
-                label: equipment.label,
-            };
-        });
+        if (watchSelectionType === SELECTION_TYPES.FILTER) {
+            return Object.values(FILTER_EQUIPMENTS).map(
+                (equipment: FormEquipment) => {
+                    return {
+                        id: equipment.id,
+                        label: equipment.label,
+                    };
+                }
+            );
+        } else {
+            // might be better to use CONTINGENCY_LIST_EQUIPMENTS from commons ui once the list is finalised
+            const equipmentTypesToExclude = new Set([
+                EQUIPMENT_TYPES.SWITCH,
+                EQUIPMENT_TYPES.BUS,
+                EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
+            ]);
+            return Object.values(EQUIPMENT_TYPES)
+                .filter(
+                    (equipmentType) =>
+                        !equipmentTypesToExclude.has(equipmentType)
+                )
+                .map((value) => {
+                    return {
+                        id: value,
+                        label: equipementTypeToLabel(value),
+                    };
+                });
+        }
     }, [watchSelectionType]);
 
     return (
