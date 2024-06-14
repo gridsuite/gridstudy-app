@@ -11,7 +11,9 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    FILTER_EQUIPMENTS,
     SelectInput,
+    FormEquipment,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -115,31 +117,34 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         setOpenDirectorySelector(false);
     };
     const equipmentTypesOptions = useMemo(() => {
-        const equipmentTypesToExclude =
-            watchSelectionType === SELECTION_TYPES.FILTER
-                ? new Set([
-                      EQUIPMENT_TYPES.SWITCH,
-                      EQUIPMENT_TYPES.BUS,
-                      EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
-                      EQUIPMENT_TYPES.BUSBAR_SECTION,
-                      EQUIPMENT_TYPES.TIE_LINE,
-                  ])
-                : new Set([
-                      EQUIPMENT_TYPES.SWITCH,
-                      EQUIPMENT_TYPES.BUS,
-                      EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
-                  ]);
-
-        return Object.values(EQUIPMENT_TYPES)
-            .filter(
-                (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
-            )
-            .map((value) => {
-                return {
-                    id: value,
-                    label: equipementTypeToLabel(value),
-                };
-            });
+        if (watchSelectionType === SELECTION_TYPES.FILTER) {
+            return Object.values(FILTER_EQUIPMENTS).map(
+                (equipment: FormEquipment) => {
+                    return {
+                        id: equipment.id,
+                        label: equipment.label,
+                    };
+                }
+            );
+        } else {
+            // might be better to use CONTINGENCY_LIST_EQUIPMENTS from commons ui once the list is finalised
+            const equipmentTypesToExclude = new Set([
+                EQUIPMENT_TYPES.SWITCH,
+                EQUIPMENT_TYPES.BUS,
+                EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
+            ]);
+            return Object.values(EQUIPMENT_TYPES)
+                .filter(
+                    (equipmentType) =>
+                        !equipmentTypesToExclude.has(equipmentType)
+                )
+                .map((value) => {
+                    return {
+                        id: value,
+                        label: equipementTypeToLabel(value),
+                    };
+                });
+        }
     }, [watchSelectionType]);
 
     const handleSubmit = () => {
