@@ -8,8 +8,14 @@
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
 import { NAME } from '../../components/utils/field-constants.js';
-import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types.js';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../components/utils/equipment-types';
 import { createFilter } from '@gridsuite/commons-ui';
+import { fetchNetworkElementsInfos } from './network';
+import { createContingencyList } from 'services/explore';
+import { createIdentifierContingencyList } from './contingency-list';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -209,9 +215,68 @@ export async function createMapFilter(
         throw new Error('EmptySelection');
     }
 
-    await createFilter(
+    return createFilter(
         equipmentFilters,
         filter[NAME],
+        '',
+        distDir.id?.toString() ?? ''
+    );
+}
+
+export async function createMapContingencyList(
+    contingencyList,
+    distDir,
+    studyUuid,
+    currentNodeUuid,
+    selectedEquipments
+) {
+    let equipmentContingencyList = [];
+    switch (contingencyList.equipmentType) {
+        case EQUIPMENT_TYPES.SUBSTATION:
+        case EQUIPMENT_TYPES.LINE:
+            equipmentContingencyList = createIdentifierContingencyList(
+                contingencyList.name,
+                selectedEquipments
+            );
+
+            break;
+
+        default:
+            if (selectedEquipments.length === 0) {
+                throw new Error('EmptySelection');
+            }
+
+            const selectedEquipmentsIds = selectedEquipments.map(
+                (element) => element.id
+            );
+            const elementsIds = await fetchNetworkElementsInfos(
+                studyUuid,
+                currentNodeUuid,
+                selectedEquipmentsIds,
+                contingencyList.equipmentType,
+                EQUIPMENT_INFOS_TYPES.LIST.type,
+                false
+            );
+
+            if (elementsIds?.length === 0) {
+                throw new Error('EmptySelection');
+            }
+            equipmentContingencyList = createIdentifierContingencyList(
+                contingencyList.name,
+                elementsIds
+            );
+            break;
+    }
+    if (
+        equipmentContingencyList === undefined ||
+        equipmentContingencyList?.length === 0
+    ) {
+        throw new Error('EmptySelection');
+    }
+
+    return createContingencyList(
+        equipmentContingencyList,
+        contingencyList[NAME],
         '',
         distDir.id?.toString() ?? ''
     );
