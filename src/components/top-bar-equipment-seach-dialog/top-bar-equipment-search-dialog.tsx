@@ -71,7 +71,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                 studyUuid,
                 currentNode?.id,
                 element.type,
-                EQUIPMENT_INFOS_TYPES.MAP.type,
+                EQUIPMENT_INFOS_TYPES.LIST.type,
                 element.id,
                 false
             )
