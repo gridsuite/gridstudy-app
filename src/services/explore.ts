@@ -5,53 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    backendFetch,
-    backendFetchJson,
-    getRequestParamFromList,
-} from './utils';
+import { ContingencyList } from './study/contingency-list';
+import { backendFetch } from './utils';
 import { UUID } from 'crypto';
 
 const PREFIX_EXPLORE_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/directory';
-
-export function fetchElementsMetadata(
-    ids: UUID[],
-    elementTypes: string[],
-    equipmentTypes?: string[]
-) {
-    console.info('Fetching elements metadata');
-
-    // Add params to Url
-    const idsParams = getRequestParamFromList(
-        ids.filter((id) => id), // filter falsy elements
-        'ids'
-    );
-
-    const equipmentTypesParams = getRequestParamFromList(
-        equipmentTypes,
-        'equipmentTypes'
-    );
-
-    const elementTypesParams = getRequestParamFromList(
-        elementTypes,
-        'elementTypes'
-    );
-
-    const params = [
-        ...idsParams,
-        ...equipmentTypesParams,
-        ...elementTypesParams,
-    ];
-
-    const urlSearchParams = new URLSearchParams(params);
-
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/metadata?${urlSearchParams}`;
-    console.debug(url);
-    return backendFetchJson(url);
-}
 
 export function createParameter(
     newParameter: any,
@@ -115,27 +76,28 @@ export function createModifications(
 }
 
 /**
- * Create Filter
+ * Create Contingency List
  * @returns {Promise<Response>}
  */
-export function createFilter(
-    newFilter: any,
-    name: string,
+export function createContingencyList(
+    newContingencyList: ContingencyList[],
+    contingencyListName: string,
     description: string,
     parentDirectoryUuid: string
 ) {
+    console.info('Creating a new contingency list...');
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    return backendFetch(
+
+    const createContingencyListUrl =
         PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/filters?' +
-            urlSearchParams.toString(),
-        {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newFilter),
-        }
-    );
+        '/v1/explore/identifier-contingency-lists/' +
+        encodeURIComponent(contingencyListName) +
+        '?' +
+        urlSearchParams.toString();
+    return backendFetch(createContingencyListUrl, {
+        method: 'post',
+        body: JSON.stringify(newContingencyList),
+    });
 }
