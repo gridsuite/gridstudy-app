@@ -641,6 +641,7 @@
     "LOAD": "Load",
     "BATTERY": "Battery",
     "DANGLING_LINE": "Dangling Line",
+    "Hvdc": "HVDC",
     "HVDC_LINE": "HVDC Line",
     "HVDC_CONVERTER_STATION": "HVDC Converter Station",
     "LCC_CONVERTER_STATION": "Lcc Converter Station",
