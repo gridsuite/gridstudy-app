@@ -88,9 +88,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
+                const parentFolderIndex = res.length - 2;
                 setDestinationFolder({
-                    id: res[res.length - 2].elementUuid,
-                    name: res[res.length - 2].elementName,
+                    id: res[parentFolderIndex].elementUuid,
+                    name: res[parentFolderIndex].elementName,
                 });
             }
         });
