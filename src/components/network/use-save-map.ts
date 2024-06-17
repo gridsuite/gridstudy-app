@@ -66,7 +66,6 @@ export const useSaveMap = (): UseSaveMapOutput => {
                             ? 'FilterCreationIgnored'
                             : 'ContingencyListCreationIgnored',
                     });
-                    setPendingState(false);
                     return false;
                 } else {
                     if (isFilter) {
