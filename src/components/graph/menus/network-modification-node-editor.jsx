@@ -717,7 +717,7 @@ const NetworkModificationNodeEditor = () => {
         setImportDialogOpen(true);
     }, []);
 
-    const openCreateModificationsDialog = useCallback(() => {
+    const openCreateCompositeModificationDialog = useCallback(() => {
         setCreateCompositeModificationDialogOpen(true);
     }, []);
 
@@ -1151,7 +1151,7 @@ const NetworkModificationNodeEditor = () => {
                 <Tooltip title={<FormattedMessage id={'SaveModificationTo'} />}>
                     <span>
                         <IconButton
-                            onClick={openCreateModificationsDialog}
+                            onClick={openCreateCompositeModificationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
                             disabled={

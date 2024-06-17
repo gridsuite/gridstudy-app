@@ -78,7 +78,9 @@ const CreateCompositeModificationDialog: React.FC<
     const generateCompositeModificationName = () => {
         formMethods.setValue(
             NAME,
-            'Generated-modification-' + new Date().toISOString()
+            intl.formatMessage({
+                id: 'Generated-modification-' + new Date().toISOString(),
+            })
         );
     };
 
@@ -115,7 +117,7 @@ const CreateCompositeModificationDialog: React.FC<
             aria-labelledby="dialog-save-modifications"
         >
             <DialogTitle>
-                {intl.formatMessage({ id: 'SaveModifications' })}
+                {intl.formatMessage({ id: 'CreateCompositeModification' })}
             </DialogTitle>
             <DialogContent>
                 <CustomFormProvider
