@@ -224,7 +224,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                         destinationFolder?.id as UUID
                                     }
                                     autoFocus
-                                    formProps={{ variant: 'standard' }}
+                                    formProps={{
+                                        variant: 'standard',
+                                        disabled: pendingState,
+                                    }}
                                 />
                             </Grid>
                             <Grid container>
