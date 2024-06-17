@@ -207,10 +207,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                     fullWidth
                                     size={'medium'}
                                     disableClearable={true}
-                                    formProps={{
-                                        variant: 'standard',
-                                        disabled: pendingState,
-                                    }}
+                                    disabled={pendingState}
                                 />
                             </Grid>
 
