@@ -14,7 +14,6 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    getRequestParamFromList,
     getUrlWithToken,
 } from '../utils';
 
@@ -145,20 +144,18 @@ export function fetchNetworkElementsInfos(
         `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
 
-    const substationsIdsParams = getRequestParamFromList(
-        substationsIds,
-        'substationsIds'
-    );
+    const elementInfos = {
+        elementType: elementType,
+        substationsIds: substationsIds ?? null,
+    };
 
-    const urlSearchParams = new URLSearchParams(substationsIdsParams);
+    const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
     }
-
-    urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
 
     const fetchElementsUrl =
@@ -168,7 +165,11 @@ export function fetchNetworkElementsInfos(
         urlSearchParams;
     console.debug(fetchElementsUrl);
 
-    return backendFetchJson(fetchElementsUrl);
+    return backendFetchJson(fetchElementsUrl, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(elementInfos),
+    });
 }
 
 export function fetchNetworkElementInfos(
