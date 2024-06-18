@@ -667,11 +667,12 @@ export const useFetchFiltersEnums = (): {
                         limitType: limitTypesResult,
                         side: branchSidesResult,
                     });
-                    setLoading(false);
                 }
             )
             .catch((err) => {
                 setError(err);
+            })
+            .finally(() => {
                 setLoading(false);
             });
     }, [securityAnalysisStatus, studyUuid, currentNode.id]);

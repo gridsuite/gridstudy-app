@@ -209,40 +209,31 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             return;
         }
 
-        fetchAvailableFilterEnumValues(
-            studyUuid,
-            currentNode?.id,
-            computingType.SHORT_CIRCUIT,
-            'fault-types'
-        )
-            .then((values) => {
-                setFilterEnums((prevFilterEnums) => ({
-                    ...prevFilterEnums,
-                    faultType: values,
-                }));
-            })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ShortCircuitAnalysisResultsError',
-                })
-            );
+        const promises = [
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode?.id,
+                computingType.SHORT_CIRCUIT,
+                'fault-types'
+            ),
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode?.id,
+                computingType.SHORT_CIRCUIT,
+                'limit-violation-types'
+            ),
+        ];
 
-        fetchAvailableFilterEnumValues(
-            studyUuid,
-            currentNode?.id,
-            computingType.SHORT_CIRCUIT,
-            'limit-violation-types'
-        )
-            .then((values) => {
-                setFilterEnums((prevFilterEnums) => ({
-                    ...prevFilterEnums,
-                    limitType: values,
-                }));
+        Promise.all(promises)
+            .then(([faultTypesResult, limitViolationTypesResult]) => {
+                setFilterEnums({
+                    limitType: limitViolationTypesResult,
+                    faultType: faultTypesResult,
+                });
             })
-            .catch((error) =>
+            .catch((err) =>
                 snackError({
-                    messageTxt: error.message,
+                    messageTxt: err.message,
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );

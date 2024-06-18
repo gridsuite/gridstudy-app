@@ -249,11 +249,12 @@ export const useFetchFiltersEnums = (): {
                         limitType: limitTypesResult,
                         side: branchSidesResult,
                     });
-                    setLoading(false);
                 }
             )
             .catch((err) => {
                 setError(err);
+            })
+            .finally(() => {
                 setLoading(false);
             });
     }, [loadFlowStatus, studyUuid, currentNode.id]);
