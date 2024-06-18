@@ -205,6 +205,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     ]);
 
     useEffect(() => {
+        if (analysisStatus !== RunningStatus.SUCCEED) {
+            return;
+        }
+
         fetchAvailableFilterEnumValues(
             studyUuid,
             currentNode?.id,
@@ -223,9 +227,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [intl, snackError, studyUuid, currentNode.id]);
 
-    useEffect(() => {
         fetchAvailableFilterEnumValues(
             studyUuid,
             currentNode?.id,
@@ -244,7 +246,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [intl, snackError, studyUuid, currentNode.id]);
+    }, [analysisStatus, intl, snackError, studyUuid, currentNode.id]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,

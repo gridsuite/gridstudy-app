@@ -211,50 +211,51 @@ export const useFetchFiltersEnums = (): {
     );
 
     useEffect(() => {
-        if (loadFlowStatus === RunningStatus.SUCCEED) {
-            const promises = [
-                // We can add another fetch for other enums
-                fetchAvailableFilterEnumValues(
-                    studyUuid,
-                    currentNode.id,
-                    computingType.LOAD_FLOW,
-                    'computation-status'
-                ),
-                fetchAvailableFilterEnumValues(
-                    studyUuid,
-                    currentNode.id,
-                    computingType.LOAD_FLOW,
-                    'limit-types'
-                ),
-                fetchAvailableFilterEnumValues(
-                    studyUuid,
-                    currentNode.id,
-                    computingType.LOAD_FLOW,
-                    'branch-sides'
-                ),
-            ];
-
-            setLoading(true);
-            Promise.all(promises)
-                .then(
-                    ([
-                        computationsStatusResult,
-                        limitTypesResult,
-                        branchSidesResult,
-                    ]) => {
-                        setResult({
-                            status: computationsStatusResult,
-                            limitType: limitTypesResult,
-                            side: branchSidesResult,
-                        });
-                        setLoading(false);
-                    }
-                )
-                .catch((err) => {
-                    setError(err);
-                    setLoading(false);
-                });
+        if (loadFlowStatus !== RunningStatus.SUCCEED) {
+            return;
         }
+        const promises = [
+            // We can add another fetch for other enums
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                computingType.LOAD_FLOW,
+                'computation-status'
+            ),
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                computingType.LOAD_FLOW,
+                'limit-types'
+            ),
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                computingType.LOAD_FLOW,
+                'branch-sides'
+            ),
+        ];
+
+        setLoading(true);
+        Promise.all(promises)
+            .then(
+                ([
+                    computationsStatusResult,
+                    limitTypesResult,
+                    branchSidesResult,
+                ]) => {
+                    setResult({
+                        status: computationsStatusResult,
+                        limitType: limitTypesResult,
+                        side: branchSidesResult,
+                    });
+                    setLoading(false);
+                }
+            )
+            .catch((err) => {
+                setError(err);
+                setLoading(false);
+            });
     }, [loadFlowStatus, studyUuid, currentNode.id]);
 
     return { loading, result, error };
