@@ -79,11 +79,7 @@ const LogTable = ({
             setSelectedSeverity((_selectedSeverity) => {
                 const filterConfig = {};
                 Object.keys(_selectedSeverity).forEach((severity) => {
-                    if (data.value.includes(severity)) {
-                        filterConfig[severity] = true;
-                    } else {
-                        filterConfig[severity] = false;
-                    }
+                    filterConfig[severity] = !!data.value.includes(severity);
                 });
                 return filterConfig;
             });
@@ -92,7 +88,6 @@ const LogTable = ({
     );
 
     const COLUMNS_DEFINITIONS = [
-
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
             width: SEVERITY_COLUMN_FIXED_WIDTH,
