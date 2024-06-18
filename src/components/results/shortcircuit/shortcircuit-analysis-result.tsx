@@ -209,20 +209,16 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             return;
         }
 
-        const promises = [
+        const filterTypes = ['fault-types', 'limit-violation-types'];
+
+        const promises = filterTypes.map((filter) =>
             fetchAvailableFilterEnumValues(
                 studyUuid,
                 currentNode?.id,
                 computingType.SHORT_CIRCUIT,
-                'fault-types'
-            ),
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode?.id,
-                computingType.SHORT_CIRCUIT,
-                'limit-violation-types'
-            ),
-        ];
+                filter
+            )
+        );
 
         Promise.all(promises)
             .then(([faultTypesResult, limitViolationTypesResult]) => {

@@ -632,27 +632,21 @@ export const useFetchFiltersEnums = (): {
         if (securityAnalysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
-        const promises = [
-            // We can add another fetch for other enums
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.SECURITY_ANALYSIS,
-                'computation-status'
-            ),
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.SECURITY_ANALYSIS,
-                'limit-types'
-            ),
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.SECURITY_ANALYSIS,
-                'branch-sides'
-            ),
+
+        const filterTypes = [
+            'computation-status',
+            'limit-types',
+            'branch-sides',
         ];
+
+        const promises = filterTypes.map((filterType) =>
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                computingType.SECURITY_ANALYSIS,
+                filterType
+            )
+        );
 
         setLoading(true);
         Promise.all(promises)

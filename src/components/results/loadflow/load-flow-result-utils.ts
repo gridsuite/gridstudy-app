@@ -214,27 +214,21 @@ export const useFetchFiltersEnums = (): {
         if (loadFlowStatus !== RunningStatus.SUCCEED) {
             return;
         }
-        const promises = [
-            // We can add another fetch for other enums
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.LOAD_FLOW,
-                'computation-status'
-            ),
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.LOAD_FLOW,
-                'limit-types'
-            ),
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.LOAD_FLOW,
-                'branch-sides'
-            ),
+
+        const filterTypes = [
+            'computation-status',
+            'limit-types',
+            'branch-sides',
         ];
+
+        const promises = filterTypes.map((filterType) =>
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                computingType.LOAD_FLOW,
+                filterType
+            )
+        );
 
         setLoading(true);
         Promise.all(promises)
