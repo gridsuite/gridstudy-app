@@ -76,12 +76,15 @@ const CreateCompositeModificationDialog: React.FC<
         });
     }, [studyUuid]);
     const generateCompositeModificationName = () => {
-        formMethods.setValue(
-            NAME,
-            intl.formatMessage({
-                id: 'Generated-modification-' + new Date().toISOString(),
-            })
-        );
+        const getCurrentDateTime = () => new Date().toISOString();
+
+        const formattedMessage = intl.formatMessage({
+            id: 'GeneratedModification',
+        });
+        const dateTime = getCurrentDateTime();
+        const compositeName = `${formattedMessage}-${dateTime}`;
+
+        formMethods.setValue(NAME, compositeName);
     };
 
     useEffect(() => {
