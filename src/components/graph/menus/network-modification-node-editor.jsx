@@ -771,10 +771,6 @@ const NetworkModificationNodeEditor = () => {
                 .map((r) => r.elementName)
                 .join('/');
 
-        const selectedModificationsUuid = selectedItems.map(
-            (item) => item.uuid
-        );
-
         setSaveInProgress(true);
         snackInfo({
             headerId: 'infoCreateModificationsMsg',
@@ -787,7 +783,7 @@ const NetworkModificationNodeEditor = () => {
             name,
             description,
             studyDirectoryUuid,
-            selectedModificationsUuid
+            selectedItems
         )
             .catch((errmsg) => {
                 snackError({
