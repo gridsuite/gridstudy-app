@@ -45,7 +45,12 @@ import {
 } from 'utils/store-filter-fields';
 import { UUID } from 'crypto';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType from '../../computing-status/computing-type';
+import computingType, {
+    ComputingType,
+} from '../../computing-status/computing-type';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
+import RunningStatus from 'components/utils/running-status';
 
 export const convertMillisecondsToMinutesSeconds = (
     durationInMilliseconds: number
@@ -186,12 +191,11 @@ export const makeData = (
 };
 
 // We can use this custom hook for fetching enums for AutoComplete filter
-export const useFetchFiltersEnums = (
-    studyUuid: UUID,
-    nodeUuid: UUID,
-    hasResult: boolean = false,
-    setFilter: (value: boolean) => void
-): { error: boolean; loading: boolean; result: FilterEnumsType } => {
+export const useFetchFiltersEnums = (): {
+    error: boolean;
+    loading: boolean;
+    result: FilterEnumsType;
+} => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [result, setResult] = useState<FilterEnumsType>({
@@ -199,26 +203,33 @@ export const useFetchFiltersEnums = (
         limitType: null,
         side: null,
     });
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
+    const loadFlowStatus = useSelector(
+        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
+    );
 
     useEffect(() => {
-        if (!hasResult) {
+        if (loadFlowStatus === RunningStatus.SUCCEED) {
             const promises = [
                 // We can add another fetch for other enums
                 fetchAvailableFilterEnumValues(
                     studyUuid,
-                    nodeUuid,
+                    currentNode.id,
                     computingType.LOAD_FLOW,
                     'computation-status'
                 ),
                 fetchAvailableFilterEnumValues(
                     studyUuid,
-                    nodeUuid,
+                    currentNode.id,
                     computingType.LOAD_FLOW,
                     'limit-types'
                 ),
                 fetchAvailableFilterEnumValues(
                     studyUuid,
-                    nodeUuid,
+                    currentNode.id,
                     computingType.LOAD_FLOW,
                     'branch-sides'
                 ),
@@ -237,17 +248,15 @@ export const useFetchFiltersEnums = (
                             limitType: limitTypesResult,
                             side: branchSidesResult,
                         });
-                        setFilter(true);
                         setLoading(false);
                     }
                 )
                 .catch((err) => {
-                    setFilter(false);
                     setError(err);
                     setLoading(false);
                 });
         }
-    }, [hasResult, setFilter, studyUuid, nodeUuid]);
+    }, [loadFlowStatus, studyUuid, currentNode.id]);
 
     return { loading, result, error };
 };
