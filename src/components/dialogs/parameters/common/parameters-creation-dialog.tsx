@@ -17,6 +17,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
@@ -24,7 +25,6 @@ import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 import { UUID } from 'crypto';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 interface FormData {
     [NAME]: string;
@@ -76,10 +76,16 @@ const CreateParameterDialog = <T extends FieldValues>({
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
-                setDefaultFolder({
-                    id: res[1].elementUuid,
-                    name: res[1].elementName,
-                });
+                // Get the last directory of the path
+                for (let i = res.length - 1; i >= 0; i--) {
+                    if (res[i].type === ElementType.DIRECTORY) {
+                        setDefaultFolder({
+                            id: res[i].elementUuid,
+                            name: res[i].elementName,
+                        });
+                        return;
+                    }
+                }
             }
         });
     }, [studyUuid]);

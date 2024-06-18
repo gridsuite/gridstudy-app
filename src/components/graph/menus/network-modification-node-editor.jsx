@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -764,9 +764,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const doCreateModificationsElements = () => {
-        // studyPath contains [studyElement, parentDirElement, parentDirElement, ..., RootDirElement]
-        const STUDY_ELEMENT_INDEX = 0;
-        const PARENT_DIRECTORY_INDEX = 1;
+        // studyPath contains [RootDirectoryElement, directoryElement, ...,  directoryElement, studyElement]
         if (!studyPath || studyPath.length < 2) {
             snackError({
                 messageTxt: 'unknown study directory',
@@ -774,21 +772,31 @@ const NetworkModificationNodeEditor = () => {
             });
             return;
         }
-        const studyDirectoryUuid =
-            studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
-        const studyDirName =
+
+        const studyIndex = studyPath.length - 1; // Should always be the last element
+        const parentDirectoryIndex = studyPath.length - 2; // Should always be the second to last element
+
+        const studyName = studyPath[studyIndex].elementName;
+
+        const studyDirectoryPath =
             '/' +
             studyPath
-                .slice(PARENT_DIRECTORY_INDEX)
-                .reverse()
+                .filter((r) => r.type === ElementType.DIRECTORY)
                 .map((r) => r.elementName)
                 .join('/');
-        const studyFullName =
-            studyDirName + '/' + studyPath[STUDY_ELEMENT_INDEX].elementName;
+
+        const studyParentDirectoryUuid =
+            studyPath[parentDirectoryIndex].elementUuid;
+
         const description = intl.formatMessage(
             { id: 'SaveModificationDescription' },
             {
-                nodePath: studyFullName + ':' + currentNode.data.label,
+                nodePath:
+                    studyDirectoryPath +
+                    '/' +
+                    studyName +
+                    ':' +
+                    currentNode.data.label,
             }
         );
 
@@ -797,14 +805,16 @@ const NetworkModificationNodeEditor = () => {
         );
 
         setSaveInProgress(true);
-        snackInfo({
-            headerId: 'infoCreateModificationsMsg',
-            headerValues: {
-                nbModifications: selectedItems.length,
-                studyDirectory: studyDirName,
-            },
-        });
-        createModifications(studyDirectoryUuid, modificationPropsList)
+        createModifications(studyParentDirectoryUuid, modificationPropsList)
+            .then(() => {
+                snackInfo({
+                    headerId: 'infoCreateModificationsMsg',
+                    headerValues: {
+                        nbModifications: selectedItems.length,
+                        studyDirectory: studyDirectoryPath,
+                    },
+                });
+            })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
