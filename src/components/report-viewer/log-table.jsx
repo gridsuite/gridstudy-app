@@ -47,7 +47,6 @@ const LogTable = ({
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
     const [rowData, setRowData] = useState(null);
 
-    console.log('HMA', selectedSeverity);
     const [filterWrapperData, setFilterWrapperData] = useState([
         ...Object.keys(selectedSeverity),
     ]);
@@ -76,6 +75,13 @@ const LogTable = ({
 
     const formatUpdateFilter = useCallback(
         (field, data) => {
+            console.log(
+                'HMA',
+                data.value.reduce((a, v) => ({ ...a, [v]: true }), {})
+            );
+/*            setSelectedSeverity(
+                data.value.reduce((a, v) => ({ ...a, [v]: true }), {})
+            );*/
             setSelectedSeverity((_selectedSeverity) => {
                 const filterConfig = {};
                 Object.keys(_selectedSeverity).forEach((severity) => {
