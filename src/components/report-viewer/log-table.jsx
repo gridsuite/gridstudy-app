@@ -47,6 +47,7 @@ const LogTable = ({
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
     const [rowData, setRowData] = useState(null);
 
+    console.log('HMA', selectedSeverity);
     const [filterWrapperData, setFilterWrapperData] = useState([
         ...Object.keys(selectedSeverity),
     ]);
@@ -75,20 +76,23 @@ const LogTable = ({
 
     const formatUpdateFilter = useCallback(
         (field, data) => {
-            setSelectedSeverity(
-                data.value.reduce((a, v) => ({ ...a, [v]: true }), {})
-            );
+            setSelectedSeverity((_selectedSeverity) => {
+                const filterConfig = {};
+                Object.keys(_selectedSeverity).forEach((severity) => {
+                    if (data.value.includes(severity)) {
+                        filterConfig[severity] = true;
+                    } else {
+                        filterConfig[severity] = false;
+                    }
+                });
+                return filterConfig;
+            });
         },
         [setSelectedSeverity]
     );
 
     const COLUMNS_DEFINITIONS = [
-        /*
-<FilterButton
-selectedItems={selectedSeverity}
-setSelectedItems={setSelectedSeverity}
-/>
-*/
+
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
             width: SEVERITY_COLUMN_FIXED_WIDTH,
