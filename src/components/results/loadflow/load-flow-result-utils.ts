@@ -43,7 +43,6 @@ import {
     LOADFLOW_RESULT,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-filter-fields';
-import { UUID } from 'crypto';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType, {
     ComputingType,
