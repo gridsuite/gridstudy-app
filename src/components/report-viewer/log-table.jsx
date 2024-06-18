@@ -16,24 +16,6 @@ import { FILTER_DATA_TYPES } from '../custom-aggrid/custom-aggrid-header.type';
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
-const styles = {
-    flexContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        boxSizing: 'border-box',
-    },
-    table: (theme) => ({
-        // temporary right-to-left patch, waiting for
-        // https://github.com/bvaughn/react-virtualized/issues/454
-        '& .ReactVirtualized__Table__headerRow': {
-            flip: false,
-            paddingRight:
-                theme.direction === 'rtl' ? '0 !important' : undefined,
-        },
-    }),
-    header: { variant: 'header' },
-};
-
 const LogTable = ({
     logs,
     onRowClick,
@@ -73,24 +55,16 @@ const LogTable = ({
         );
     };
 
+    //TODO KEEP THE FILTER CONFIGURATION INBETWEEN DATA RELOADS
     const formatUpdateFilter = useCallback(
         (field, data) => {
-            console.log(
-                'HMA',
-                data.value.reduce((a, v) => ({ ...a, [v]: true }), {})
-            );
-/*            setSelectedSeverity(
-                data.value.reduce((a, v) => ({ ...a, [v]: true }), {})
-            );*/
-            setSelectedSeverity((_selectedSeverity) => {
-                const filterConfig = {};
-                Object.keys(_selectedSeverity).forEach((severity) => {
-                    filterConfig[severity] = !!data.value.includes(severity);
-                });
-                return filterConfig;
+            const filterConfig = {};
+            Object.keys(selectedSeverity).forEach((severity) => {
+                filterConfig[severity] = !!data.value.includes(severity);
             });
+            setSelectedSeverity(filterConfig);
         },
-        [setSelectedSeverity]
+        [selectedSeverity, setSelectedSeverity]
     );
 
     const COLUMNS_DEFINITIONS = [
