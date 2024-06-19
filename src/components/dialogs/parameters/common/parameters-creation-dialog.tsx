@@ -76,16 +76,10 @@ const CreateParameterDialog = <T extends FieldValues>({
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
-                // Get the last directory of the path
-                for (let i = res.length - 1; i >= 0; i--) {
-                    if (res[i].type === ElementType.DIRECTORY) {
-                        setDefaultFolder({
-                            id: res[i].elementUuid,
-                            name: res[i].elementName,
-                        });
-                        return;
-                    }
-                }
+                const parentFolderIndex = res.length - 2;
+                setDefaultFolder({
+                    id: res[parentFolderIndex].elementUuid,
+                    name: res[parentFolderIndex].elementName,
             }
         });
     }, [studyUuid]);
