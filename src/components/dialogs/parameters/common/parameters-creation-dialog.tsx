@@ -74,12 +74,14 @@ const CreateParameterDialog = <T extends FieldValues>({
     const nameError = errors[NAME];
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid).then((res) => {
-            if (res) {
-                const parentFolderIndex = res.length - 2;
+        fetchDirectoryElementPath(studyUuid).then((studyPath) => {
+            if (studyPath && studyPath.length >= 2) {
+                // studyPath contains [RootDirectoryElement, directoryElement, ...,  directoryElement, studyElement]
+                const parentDirectoryIndex = studyPath.length - 2; // Should always be the second to last element
                 setDefaultFolder({
-                    id: res[parentFolderIndex].elementUuid,
-                    name: res[parentFolderIndex].elementName,
+                    id: studyPath[parentDirectoryIndex].elementUuid,
+                    name: studyPath[parentDirectoryIndex].elementName,
+                });
             }
         });
     }, [studyUuid]);
