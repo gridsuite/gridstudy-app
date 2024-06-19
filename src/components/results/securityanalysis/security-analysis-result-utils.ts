@@ -53,6 +53,7 @@ import computingType, {
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import RunningStatus from 'components/utils/running-status';
+import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -607,17 +608,19 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 };
 
 // We can use this custom hook for fetching enums for AutoComplete filter
-export const useFetchFiltersEnums = (): {
-    error: boolean;
-    loading: boolean;
-    result: FilterEnumsType;
-} => {
+export const useFetchFiltersEnums = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState<FilterEnumsType>({
-        status: null,
-        limitType: null,
-        side: null,
+    const [result, setResult] = useState<SecurityAnalysisFilterEnumsType>({
+        n: {
+            limitType: null,
+            side: null,
+        },
+        nmk: {
+            status: null,
+            limitType: null,
+            side: null,
+        },
     });
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
@@ -634,9 +637,11 @@ export const useFetchFiltersEnums = (): {
         }
 
         const filterTypes = [
-            'computation-status',
-            'limit-types',
-            'branch-sides',
+            'n-limit-types',
+            'n-branch-sides',
+            'nmk-computation-status',
+            'nmk-limit-types',
+            'nmk-branch-sides',
         ];
 
         const promises = filterTypes.map((filterType) =>
@@ -652,14 +657,22 @@ export const useFetchFiltersEnums = (): {
         Promise.all(promises)
             .then(
                 ([
-                    computationsStatusResult,
-                    limitTypesResult,
-                    branchSidesResult,
+                    nLimitTypesResult,
+                    nBranchSidesResult,
+                    nmkComputationsStatusResult,
+                    nmkLimitTypesResult,
+                    nmkBranchSidesResult,
                 ]) => {
                     setResult({
-                        status: computationsStatusResult,
-                        limitType: limitTypesResult,
-                        side: branchSidesResult,
+                        n: {
+                            limitType: nLimitTypesResult,
+                            side: nBranchSidesResult,
+                        },
+                        nmk: {
+                            status: nmkComputationsStatusResult,
+                            limitType: nmkLimitTypesResult,
+                            side: nmkBranchSidesResult,
+                        },
                     });
                 }
             )
