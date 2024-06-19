@@ -63,6 +63,16 @@ export const addToLocalStorageSearchEquipmentHistory = (
     );
 };
 
+export const excludeElementFromCurrentSearchHistory = (
+    studyUuid: UUID,
+    excludedElement: EquipmentInfos
+) => {
+    const filteredHistory = getLocalStorageSearchEquipmentHistory(
+        studyUuid
+    ).filter((item) => item.id !== excludedElement.id);
+    saveLocalStorageSearchEquipmentHistory(studyUuid, filteredHistory);
+};
+
 export const getLocalStorageSearchEquipmentHistory = (studyUuid: UUID) => {
     const currentHistoryJson = localStorage.getItem(
         getLocalStorageSearchEquipmentHistoryKey(studyUuid)
