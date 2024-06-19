@@ -130,3 +130,18 @@ export function getVoltageInitRunningStatus(
             return RunningStatus.IDLE;
     }
 }
+
+export function getStateEstimationRunningStatus(
+    stateEstimationStatus: string
+): RunningStatus {
+    switch (stateEstimationStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}

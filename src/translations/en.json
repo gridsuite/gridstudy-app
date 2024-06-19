@@ -1366,5 +1366,8 @@
     "FieldRequired": "At least one value is missing for required field : ",
     "ReactiveSlacksThreshold": "Alert threshold on reactive slacks",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
-    "TieLines": "Tie lines"
+    "TieLines": "Tie lines",
+    "StateEstimation": "State estimation",
+    "startStateEstmationError": "An error occurred while launching the state estimation",
+    "stateEstimationError": "An error occured when executing the state estimation"
 }
