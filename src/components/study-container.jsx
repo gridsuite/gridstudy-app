@@ -307,6 +307,12 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
+            if (updateTypeHeader === 'stateEstimation_failed') {
+                snackError({
+                    headerId: 'stateEstimationError',
+                    messageTxt: errorMessage,
+                });
+            }
         },
         [snackError, userName]
     );

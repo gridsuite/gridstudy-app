@@ -52,7 +52,10 @@ import {
     startVoltageInit,
     stopVoltageInit,
 } from '../services/study/voltage-init';
-
+import {
+    startStateEstimation,
+    stopStateEstimation,
+} from '../services/study/state-estimation';
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
@@ -85,6 +88,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     );
     const voltageInitStatus = useSelector(
         (state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
+    );
+    const stateEstimationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
 
     const [showContingencyListSelector, setShowContingencyListSelector] =
@@ -129,6 +135,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     );
     const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
+    );
+    const stateEstimationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.StateEstimation
     );
 
     const startComputationAsync = useCallback(
@@ -359,6 +368,29 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
             },
+            [ComputingType.STATE_ESTIMATION]: {
+                messageId: 'StateEstimation',
+                startComputation() {
+                    startComputationAsync(
+                        ComputingType.STATE_ESTIMATION,
+                        null,
+                        () => {
+                            return startStateEstimation(
+                                studyUuid,
+                                currentNode?.id
+                            );
+                        },
+                        () => {},
+                        null,
+                        'startStateEstimationError'
+                    );
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.STATE_ESTIMATION, () =>
+                        stopStateEstimation(studyUuid, currentNode?.id)
+                    );
+                },
+            },
         };
     }, [
         dispatch,
@@ -387,6 +419,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     return dynamicSimulationStatus;
                 case ComputingType.VOLTAGE_INITIALIZATION:
                     return voltageInitStatus;
+                case ComputingType.STATE_ESTIMATION:
+                    return stateEstimationStatus;
                 default:
                     return null;
             }
@@ -399,6 +433,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             allBusesShortCircuitAnalysisStatus,
             dynamicSimulationStatus,
             voltageInitStatus,
+            stateEstimationStatus,
         ]
     );
 
@@ -426,6 +461,10 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ...(voltageInitAvailability === OptionalServicesStatus.Up
                 ? [ComputingType.VOLTAGE_INITIALIZATION]
                 : []),
+            ...(stateEstimationAvailability === OptionalServicesStatus.Up &&
+            enableDeveloperMode
+                ? [ComputingType.STATE_ESTIMATION]
+                : []),
         ];
     }, [
         dynamicSimulationAvailability,
@@ -434,6 +473,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         nonEvacuatedEnergyUnavailability,
         shortCircuitAvailability,
         voltageInitAvailability,
+        stateEstimationAvailability,
         enableDeveloperMode,
     ]);
 

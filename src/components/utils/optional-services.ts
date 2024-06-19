@@ -11,6 +11,7 @@ export enum OptionalServicesNames {
     DynamicSimulation = 'DynamicSimulation',
     ShortCircuit = 'ShortCircuit',
     VoltageInit = 'VoltageInit',
+    StateEstimation = 'StateEstimation',
 }
 export enum OptionalServicesStatus {
     Up = 'UP',
@@ -36,6 +37,8 @@ export const getOptionalServiceByServerName = (
             return OptionalServicesNames.ShortCircuit;
         case 'voltage-init-server':
             return OptionalServicesNames.VoltageInit;
+        case 'state-estimation-server':
+            return OptionalServicesNames.StateEstimation;
         default:
             return;
     }
