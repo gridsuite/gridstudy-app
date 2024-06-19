@@ -193,6 +193,7 @@ const initialComputingStatus = {
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
+    [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
 };
 
 const initialSpreadsheetNetworkState = {

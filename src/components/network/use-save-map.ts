@@ -4,69 +4,60 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import SelectionCreationPanel from './selection-creation-panel';
-import { useIntl } from 'react-intl'; // For internationalization
 import {
+    EquipmentInfos,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { useCallback, useState } from 'react';
+import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
+import { SELECTION_TYPES } from '../utils/selection-types';
 import {
     createMapContingencyList,
     createMapFilter,
-} from 'services/study/network-map';
-import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
-import { useCallback } from 'react';
-import { SELECTION_TYPES } from 'components/utils/selection-types';
-import { IEquipment } from 'services/study/contingency-list';
+} from '../../services/study/network-map';
 
-interface INetworkMap {
-    getSelectedLines: () => [];
-    getSelectedSubstations: () => [];
-}
-interface MapSelectionCreationProps {
-    networkMapref: React.MutableRefObject<INetworkMap>;
-    onCancel: () => void;
-}
-
-interface ISelection {
+export interface ISelection {
     selectionType: string;
     equipmentType: string;
 }
+export type UseSaveMapOutput = {
+    pendingState: boolean;
+    onSaveSelection: (
+        equipments: EquipmentInfos[],
+        selection: ISelection,
+        distDir: TreeViewFinderNodeProps
+    ) => Promise<boolean>;
+};
 
-const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
-    networkMapref,
-    onCancel,
-}) => {
+export const useSaveMap = (): UseSaveMapOutput => {
     const intl = useIntl();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
+    const currentNodeUuid = useSelector(
+        (state: ReduxState) => state.currentTreeNode.id
     );
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const [pendingState, setPendingState] = useState(false);
 
     const onSaveSelection = useCallback(
         async (
+            equipments: EquipmentInfos[],
             selection: ISelection,
-            distDir: TreeViewFinderNodeProps,
-            setIsLoading: (isLoading: boolean) => void
+            distDir: TreeViewFinderNodeProps
         ) => {
             const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
 
-            setIsLoading(true);
+            setPendingState(true);
             try {
                 //we want to calculate selectedLine or selectedSubstation only when needed
                 //call getSelectedLines if the user want to create a filter with lines
                 //for all others case we call getSelectedSubstations
-                const selectedEquipments =
-                    selection.equipmentType === EQUIPMENT_TYPES.LINE
-                        ? networkMapref.current.getSelectedLines()
-                        : networkMapref.current.getSelectedSubstations();
-                const selectedEquipmentsIds = selectedEquipments.map(
-                    (eq: IEquipment) => eq.id
+                const selectedEquipmentsIds = equipments.map(
+                    (eq: EquipmentInfos) => eq.id
                 );
-                if (selectedEquipments.length === 0) {
+                if (selectedEquipmentsIds.length === 0) {
                     snackWarning({
                         messageTxt: intl.formatMessage({
                             id: 'EmptySelection',
@@ -75,13 +66,14 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
                             ? 'FilterCreationIgnored'
                             : 'ContingencyListCreationIgnored',
                     });
+                    return false;
                 } else {
                     if (isFilter) {
                         await createMapFilter(
                             selection,
                             distDir,
                             studyUuid,
-                            currentNode.id,
+                            currentNodeUuid,
                             selectedEquipmentsIds
                         );
                         snackInfo({
@@ -94,8 +86,8 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
                             selection,
                             distDir,
                             studyUuid,
-                            currentNode?.id,
-                            selectedEquipments
+                            currentNodeUuid,
+                            equipments
                         );
                         snackInfo({
                             messageTxt: intl.formatMessage({
@@ -113,26 +105,14 @@ const MapSelectionCreation: React.FC<MapSelectionCreationProps> = ({
                         ? 'FilterCreationError'
                         : 'ContingencyListCreationError',
                 });
+                return false;
+            } finally {
+                setPendingState(false);
             }
-            setIsLoading(false);
+            return true; // success
         },
-        [
-            currentNode?.id,
-            intl,
-            snackError,
-            snackInfo,
-            snackWarning,
-            studyUuid,
-            networkMapref,
-        ]
+        [currentNodeUuid, intl, snackError, snackInfo, snackWarning, studyUuid]
     );
 
-    return (
-        <SelectionCreationPanel
-            onSaveSelection={onSaveSelection}
-            onCancel={onCancel}
-        />
-    );
+    return { pendingState, onSaveSelection };
 };
-
-export default MapSelectionCreation;
