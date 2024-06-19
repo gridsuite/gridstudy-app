@@ -781,7 +781,7 @@ const NetworkModificationNodeEditor = () => {
         const studyDirectoryPath =
             '/' +
             studyPath
-                .filter((r) => r.type === ElementType.DIRECTORY)
+                .slice(0, studyPath.length - 1)
                 .map((r) => r.elementName)
                 .join('/');
 
