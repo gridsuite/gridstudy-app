@@ -506,6 +506,7 @@
     "Equipment": "Equipment",
     "Constraint": "Constraint",
     "EquipmentType": "Equipment type",
+    "selectionType": "Selection type",
 
     "Loads": "Loads",
     "Batteries": "Batteries",
@@ -640,6 +641,7 @@
     "LOAD": "Load",
     "BATTERY": "Battery",
     "DANGLING_LINE": "Dangling Line",
+    "Hvdc": "HVDC",
     "HVDC_LINE": "HVDC Line",
     "HVDC_CONVERTER_STATION": "HVDC Converter Station",
     "LCC_CONVERTER_STATION": "Lcc Converter Station",
@@ -937,9 +939,12 @@
     "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
 
     "FilterCreationError": "Error while creating a filter",
+    "ContingencyListCreationError": "Error while creating a contingency list",
     "FilterCreationSuccess": "Filter successfully created",
+    "ContingencyListCreationSuccess": "Contingency list successfully created",
     "FilterCreationIgnored": "The creation of the filter didn't complete",
-
+    "ContingencyListCreationIgnored": "The creation of the contingency list didn't complete",
+    
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
     "DeltaReactance": "Δ Reactance (%)",
@@ -1101,7 +1106,7 @@
     "DeltaP": "Δ P",
     "TargetPText": "Target P",
     "CreateVariation": "Add Variation",
-    "createNewFilter": "Create a filter",
+    "createNewSelection": "Create a selection",
     "ActiveVariationMode": "Active variation mode",
     "ReactiveVariationMode": "Reactive variation mode",
     "RegularDistribution": "Regular distribution",
