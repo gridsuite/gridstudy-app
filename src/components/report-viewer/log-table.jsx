@@ -55,7 +55,6 @@ const LogTable = ({
         );
     };
 
-    //TODO KEEP THE FILTER CONFIGURATION INBETWEEN DATA RELOADS
     const formatUpdateFilter = useCallback(
         (field, data) => {
             const filterConfig = {};
@@ -74,7 +73,6 @@ const LogTable = ({
             field: 'severity',
             filterProps: {
                 updateFilter: formatUpdateFilter,
-                filterSelector: filterWrapperData,
             },
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
