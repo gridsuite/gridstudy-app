@@ -349,7 +349,7 @@ function SingleLineDiagramContent(props) {
                     .catch(() => {
                         snackError({
                             messageId: 'NetworkEquipmentNotFound',
-                            messageValues: { elementId: equipmentId },
+                            messageValues: { equipmentId: equipmentId },
                         });
                     });
             }

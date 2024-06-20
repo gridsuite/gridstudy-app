@@ -103,7 +103,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                                     snackError({
                                         messageId: 'NetworkEquipmentNotFound',
                                         messageValues: {
-                                            elementId: row.subjectId || '',
+                                            equipmentId: row.subjectId || '',
                                         },
                                     });
                                 } else {

@@ -1140,7 +1140,7 @@
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
-    "NetworkEquipmentNotFound": "L'ouvrage \"{elementId}\" n'existe pas dans ce réseau",
+    "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
 
     "dialog.button.leave": "Quitter",
 

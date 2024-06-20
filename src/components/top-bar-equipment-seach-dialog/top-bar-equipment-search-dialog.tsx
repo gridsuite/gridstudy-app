@@ -84,7 +84,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     updateSearchTerm('');
                     snackWarning({
                         messageId: 'NetworkEquipmentNotFound',
-                        messageValues: { elementId: element.id },
+                        messageValues: { equipmentId: element.id },
                     });
                 });
         },
