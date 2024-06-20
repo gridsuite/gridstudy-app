@@ -1139,7 +1139,7 @@
 
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
-    "NetworkElementNotFound": "The network element \"{elementId}\" does not exist",
+    "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
