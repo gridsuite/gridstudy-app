@@ -101,7 +101,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                                         `Impossible to open the SLD for equipment ID '${row.subjectId}'`
                                     );
                                     snackError({
-                                        messageId: 'NetworkElementNotFound',
+                                        messageId: 'NetworkEquipmentNotFound',
                                         messageValues: {
                                             elementId: row.subjectId || '',
                                         },
