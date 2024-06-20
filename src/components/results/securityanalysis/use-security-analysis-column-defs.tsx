@@ -30,10 +30,15 @@ const styles = {
     },
 };
 
+export interface SecurityAnalysisFilterEnumsType {
+    n: FilterEnumsType;
+    nmk: FilterEnumsType;
+}
+
 type UseSecurityAnalysisColumnsDefsProps = (
     sortProps: SortPropsType,
     filterProps: FilterPropsType,
-    filterEnums: FilterEnumsType,
+    filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
     openVoltageLevelDiagram: (id: string) => void
 ) => ColDef<any>[];
@@ -142,7 +147,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         SubjectIdRenderer,
                         filterProps,
                         sortProps,
-                        filterEnums
+                        filterEnums.nmk
                     );
                 case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                     return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -150,14 +155,14 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                         SubjectIdRenderer,
                         filterProps,
                         sortProps,
-                        filterEnums
+                        filterEnums.nmk
                     );
                 case RESULT_TYPE.N:
                     return securityAnalysisTableNColumnsDefinition(
                         intl,
                         sortProps,
                         filterProps,
-                        filterEnums
+                        filterEnums.n
                     );
             }
         }, [
