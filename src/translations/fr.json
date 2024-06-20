@@ -1189,7 +1189,7 @@
     "ModificationsSelection": "Sélection des modifications",
     "SaveModificationDescription": "Enregistré depuis {nodePath}",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
-    "infoCreateModificationsMsg": "Création de {nbModifications} modifications dans {studyDirectory}",
+    "infoCreateModificationsMsg": "{nbModifications, plural, =1 {1 modification créée} other {# modifications créées}} avec succès dans {studyDirectory}",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
     "partialCopyShuntCompensator": "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
