@@ -205,46 +205,35 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     ]);
 
     useEffect(() => {
-        fetchAvailableFilterEnumValues(
-            studyUuid,
-            currentNode?.id,
-            computingType.SHORT_CIRCUIT,
-            'fault-types'
-        )
-            .then((values) => {
-                setFilterEnums((prevFilterEnums) => ({
-                    ...prevFilterEnums,
-                    faultType: values,
-                }));
-            })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ShortCircuitAnalysisResultsError',
-                })
-            );
-    }, [intl, snackError, studyUuid, currentNode.id]);
+        if (analysisStatus !== RunningStatus.SUCCEED) {
+            return;
+        }
 
-    useEffect(() => {
-        fetchAvailableFilterEnumValues(
-            studyUuid,
-            currentNode?.id,
-            computingType.SHORT_CIRCUIT,
-            'limit-violation-types'
-        )
-            .then((values) => {
-                setFilterEnums((prevFilterEnums) => ({
-                    ...prevFilterEnums,
-                    limitType: values,
-                }));
+        const filterTypes = ['fault-types', 'limit-violation-types'];
+
+        const promises = filterTypes.map((filter) =>
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode?.id,
+                computingType.SHORT_CIRCUIT,
+                filter
+            )
+        );
+
+        Promise.all(promises)
+            .then(([faultTypesResult, limitViolationTypesResult]) => {
+                setFilterEnums({
+                    limitType: limitViolationTypesResult,
+                    faultType: faultTypesResult,
+                });
             })
-            .catch((error) =>
+            .catch((err) =>
                 snackError({
-                    messageTxt: error.message,
+                    messageTxt: err.message,
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [intl, snackError, studyUuid, currentNode.id]);
+    }, [analysisStatus, intl, snackError, studyUuid, currentNode.id]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,

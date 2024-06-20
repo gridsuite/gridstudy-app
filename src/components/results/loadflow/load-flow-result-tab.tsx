@@ -101,7 +101,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const loadflowResultInvalidations = ['loadflowResult'];
 
     const [tabIndex, setTabIndex] = useState(0);
-    const [hasFilter, setHasFilter] = useState<boolean>(false);
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
@@ -125,7 +124,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const [globalFilter, setGlobalFilter] = useState<GlobalFilter>();
 
     const { loading: filterEnumsLoading, result: filterEnums } =
-        useFetchFiltersEnums(studyUuid, nodeUuid, hasFilter, setHasFilter);
+        useFetchFiltersEnums();
 
     // load countries
     useEffect(() => {
