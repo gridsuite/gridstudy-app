@@ -83,7 +83,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     excludeElementFromCurrentSearchHistory(studyUuid, element);
                     updateSearchTerm('');
                     snackWarning({
-                        messageId: 'NetworkElementNotFound',
+                        messageId: 'NetworkEquipmentNotFound',
                         messageValues: { elementId: element.id },
                     });
                 });
