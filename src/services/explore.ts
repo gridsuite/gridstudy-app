@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
 import { MODIFICATION_TYPES } from '../components/utils/modification-type';
@@ -81,4 +82,31 @@ export function createModifications(
             }),
         }
     );
+}
+
+/**
+ * Create Contingency List
+ * @returns {Promise<Response>}
+ */
+export function createContingencyList(
+    newContingencyList: ContingencyList[],
+    contingencyListName: string,
+    description: string,
+    parentDirectoryUuid: string
+) {
+    console.info('Creating a new contingency list...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const createContingencyListUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/identifier-contingency-lists/' +
+        encodeURIComponent(contingencyListName) +
+        '?' +
+        urlSearchParams.toString();
+    return backendFetch(createContingencyListUrl, {
+        method: 'post',
+        body: JSON.stringify(newContingencyList),
+    });
 }

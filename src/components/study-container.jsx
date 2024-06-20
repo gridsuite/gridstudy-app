@@ -307,6 +307,12 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
+            if (updateTypeHeader === 'stateEstimation_failed') {
+                snackError({
+                    headerId: 'stateEstimationError',
+                    messageTxt: errorMessage,
+                });
+            }
         },
         [snackError, userName]
     );
@@ -387,14 +393,14 @@ export function StudyContainer({ view, onChangeTab }) {
         fetchDirectoryElementPath(studyUuid)
             .then((response) => {
                 const parentDirectoriesNames = response
-                    .slice(1)
+                    .slice(0, response.length - 1)
                     .map((parent) => parent.elementName);
                 const parentDirectoriesUuid = response
-                    .slice(1)
+                    .slice(0, response.length - 1)
                     .map((parent) => parent.elementUuid);
                 studyParentDirectoriesUuidsRef.current = parentDirectoriesUuid;
 
-                const studyName = response[0]?.elementName;
+                const studyName = response[response.length - 1]?.elementName;
                 const path = computeFullPath(parentDirectoriesNames);
                 setStudyName(studyName);
                 setStudyPath(path);
