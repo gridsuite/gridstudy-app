@@ -295,8 +295,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         disabled={
                             !formMethods.formState.isDirty ||
                             pendingState ||
-                            nameError ||
-                            isValidating
+                            !!nameError ||
+                            !!isValidating
                         }
                         onClick={handleSubmit}
                         size={'large'}
