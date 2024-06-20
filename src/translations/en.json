@@ -1186,7 +1186,7 @@
     "ModificationsSelection": "Modification selection",
     "SaveModificationDescription": "Saved from {nodePath}",
     "errCreateModificationsMsg": "Network modifications creation error",
-    "infoCreateModificationsMsg": "Creation of {nbModifications} network modifications in {studyDirectory}",
+    "infoCreateModificationsMsg": "{nbModifications, plural, =1 {1 network modification} other {# network modifications}} successfully created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
     "partialCopyShuntCompensator": "Partial copy : copying sections is not supported for this shunt compensator",
