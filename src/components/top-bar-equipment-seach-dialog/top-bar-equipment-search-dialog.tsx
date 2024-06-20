@@ -80,7 +80,10 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     showVoltageLevelDiagram(equipment);
                 })
                 .catch(() => {
-                    excludeElementFromCurrentSearchHistory(studyUuid, equipment);
+                    excludeElementFromCurrentSearchHistory(
+                        studyUuid,
+                        equipment
+                    );
                     updateSearchTerm('');
                     snackWarning({
                         messageId: 'NetworkEquipmentNotFound',
