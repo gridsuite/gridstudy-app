@@ -1369,5 +1369,7 @@
     "TieLines": "Tie lines",
     "StateEstimation": "State estimation",
     "startStateEstmationError": "An error occurred while launching the state estimation",
-    "stateEstimationError": "An error occured when executing the state estimation"
+    "stateEstimationError": "An error occured when executing the state estimation",
+    "NoFilter": "No filter",
+    "EquipmentSearchPlaceholder": "Search for a voltage level, a line, an equipment..."
 }
