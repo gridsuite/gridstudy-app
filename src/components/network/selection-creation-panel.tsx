@@ -77,6 +77,9 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         resolver: yupResolver(formSchema),
     });
 
+    const {
+        formState: { errors },
+    } = formMethods;
     const watchSelectionType = useWatch({
         name: SELECTION_TYPE,
         control: formMethods.control,
@@ -167,6 +170,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         });
     };
     const filterSelected = watchSelectionType === SELECTION_TYPES.FILTER;
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
     return (
         <CustomFormProvider
             removeOptional={true}
@@ -288,7 +293,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         variant="outlined"
                         type={'submit'}
                         disabled={
-                            !formMethods.formState.isValid || pendingState
+                            !formMethods.formState.isDirty ||
+                            pendingState ||
+                            !!nameError ||
+                            !!isValidating
                         }
                         onClick={handleSubmit}
                         size={'large'}
