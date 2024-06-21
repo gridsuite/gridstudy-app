@@ -64,27 +64,30 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const { snackWarning } = useSnackMessage();
 
     const onSelectionChange = useCallback(
-        (element: EquipmentInfos) => {
+        (equipment: EquipmentInfos) => {
             setIsDialogSearchOpen(false);
             updateSearchTerm('');
-            addToLocalStorageSearchEquipmentHistory(studyUuid, element);
+            addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                element.type,
+                equipment.type,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
-                element.id,
+                equipment.id,
                 false
             )
                 .then(() => {
-                    showVoltageLevelDiagram(element);
+                    showVoltageLevelDiagram(equipment);
                 })
                 .catch(() => {
-                    excludeElementFromCurrentSearchHistory(studyUuid, element);
+                    excludeElementFromCurrentSearchHistory(
+                        studyUuid,
+                        equipment
+                    );
                     updateSearchTerm('');
                     snackWarning({
-                        messageId: 'NetworkElementNotFound',
-                        messageValues: { elementId: element.id },
+                        messageId: 'NetworkEquipmentNotFound',
+                        messageValues: { equipmentId: equipment.id },
                     });
                 });
         },

@@ -1141,7 +1141,7 @@
 
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
-    "NetworkElementNotFound": "The network element \"{elementId}\" does not exist",
+    "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
@@ -1187,7 +1187,7 @@
     "SaveModificationTo": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
-    "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {directory}",
+    "infoCreateModificationsMsg": "{nbModifications, plural, =1 {1 network modification} other {# network modifications}} successfully created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
     "partialCopyShuntCompensator": "Partial copy : copying sections is not supported for this shunt compensator",

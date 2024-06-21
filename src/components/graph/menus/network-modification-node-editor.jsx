@@ -761,30 +761,42 @@ const NetworkModificationNodeEditor = () => {
             });
             return;
         }
-        const studyDirectoryUuid =
-            studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
-        const studyDirName =
+
+        const studyIndex = studyPath.length - 1; // Should always be the last element
+        const parentDirectoryIndex = studyPath.length - 2; // Should always be the second to last element
+
+        const studyName = studyPath[studyIndex].elementName;
+
+        const studyDirectoryPath =
             '/' +
             studyPath
-                .slice(PARENT_DIRECTORY_INDEX)
-                .reverse()
+                .slice(0, studyIndex)
                 .map((r) => r.elementName)
                 .join('/');
 
+        const studyParentDirectoryUuid =
+            studyPath[parentDirectoryIndex].elementUuid;
+
+        const selectedModificationsUuid = selectedItems.map(
+            (item) => item.uuid
+        );
+
         setSaveInProgress(true);
-        snackInfo({
-            headerId: 'infoCreateModificationsMsg',
-            headerValues: {
-                nbModifications: selectedItems.length,
-                studyDirectory: studyDirName,
-            },
-        });
         createModifications(
             name,
             description,
-            studyDirectoryUuid,
-            selectedItems
+            studyParentDirectoryUuid,
+            selectedModificationsUuid
         )
+            .then(() => {
+                snackInfo({
+                    headerId: 'infoCreateModificationsMsg',
+                    headerValues: {
+                        nbModifications: selectedItems.length,
+                        studyDirectory: studyDirectoryPath,
+                    },
+                });
+            })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
