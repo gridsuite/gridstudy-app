@@ -76,10 +76,7 @@ export function createModifications(
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: MODIFICATION_TYPES.COMPOSITE_MODIFICATION.type,
-                modificationsList: selectedModificationsUuid,
-            }),
+            body: JSON.stringify(selectedModificationsUuid),
         }
     );
 }

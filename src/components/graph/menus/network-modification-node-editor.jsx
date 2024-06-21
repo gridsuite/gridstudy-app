@@ -753,7 +753,6 @@ const NetworkModificationNodeEditor = () => {
 
     const doCreateCompositeModificationsElements = ({ name, description }) => {
         // studyPath contains [studyElement, parentDirElement, parentDirElement, ..., RootDirElement]
-        const PARENT_DIRECTORY_INDEX = 1;
         if (!studyPath || studyPath.length < 2) {
             snackError({
                 messageTxt: 'unknown study directory',
@@ -764,8 +763,6 @@ const NetworkModificationNodeEditor = () => {
 
         const studyIndex = studyPath.length - 1; // Should always be the last element
         const parentDirectoryIndex = studyPath.length - 2; // Should always be the second to last element
-
-        const studyName = studyPath[studyIndex].elementName;
 
         const studyDirectoryPath =
             '/' +
