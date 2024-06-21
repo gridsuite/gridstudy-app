@@ -88,7 +88,8 @@ export function fetchEquipmentsIds(
     currentNodeUuid,
     substationsIds,
     equipmentType,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    nominalVoltages = null
 ) {
     console.info(
         `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
@@ -98,24 +99,27 @@ export function fetchEquipmentsIds(
     let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/' +
-        'equipments-ids';
-    const elementInfos = {
-        elementType: equipmentType,
-        substationsIds: substationsIds ?? null,
-    };
+        'equipments-ids' +
+        '?' +
+        'equipmentType=' +
+        equipmentType;
+    if (nominalVoltages) {
+        fetchEquipmentsUrl =
+            fetchEquipmentsUrl + '&nominalVoltages=' + nominalVoltages;
+    }
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
         fetchEquipmentsUrl =
-            fetchEquipmentsUrl + '?' + urlSearchParams.toString();
+            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
     }
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(elementInfos),
+        body: JSON.stringify(substationsIds ?? null),
     });
 }
 
@@ -177,7 +181,8 @@ export async function createMapFilter(
     distDir,
     studyUuid,
     currentNodeUuid,
-    selectedEquipmentsIds
+    selectedEquipmentsIds,
+    nominalVoltages
 ) {
     let equipmentFilters = [];
     switch (filter.equipmentType) {
@@ -199,7 +204,8 @@ export async function createMapFilter(
                 currentNodeUuid,
                 selectedEquipmentsIds,
                 filter.equipmentType,
-                false
+                false,
+                nominalVoltages
             );
 
             equipmentFilters = createEquipmentIdentifierList(
