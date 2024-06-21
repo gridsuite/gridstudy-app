@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, {
+    FunctionComponent,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -89,6 +95,8 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     const initialVoltageProfileMode = useMemo(() => {
         return intlInitialVoltageProfileMode();
     }, []);
+
+    const predefinedParamsRef = useRef(watchPredefinedParams);
 
     const statusToShow = useMemo(() => {
         const styles = {
@@ -197,9 +205,12 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         isIccMinFeaturesDefaultConfiguration,
     ]);
 
-    // reset all fields when predefined parameters changes
+    // Reset all fields when predefined parameters change; otherwise, save configured parameters.
     useEffect(() => {
-        resetAll(watchPredefinedParams);
+        if (predefinedParamsRef.current !== watchPredefinedParams) {
+            resetAll(watchPredefinedParams);
+            predefinedParamsRef.current = watchPredefinedParams;
+        }
     }, [watchPredefinedParams, resetAll]);
 
     return (
