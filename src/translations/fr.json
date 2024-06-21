@@ -1140,7 +1140,7 @@
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
-    "NetworkElementNotFound": "L'élément de réseau \"{elementId}\" n'existe pas",
+    "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
 
     "dialog.button.leave": "Quitter",
 
@@ -1189,7 +1189,7 @@
     "ModificationsSelection": "Sélection des modifications",
     "SaveModificationDescription": "Enregistré depuis {nodePath}",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
-    "infoCreateModificationsMsg": "Création de {nbModifications} modifications dans {studyDirectory}",
+    "infoCreateModificationsMsg": "{nbModifications, plural, =1 {1 modification créée} other {# modifications créées}} avec succès dans {studyDirectory}",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
     "partialCopyShuntCompensator": "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
@@ -1366,5 +1366,8 @@
     "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
     "ReactiveSlacksThreshold": "Seuil d'alerte sur les investissements réactifs",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
-    "TieLines": "Interconnexions"
+    "TieLines": "Interconnexions",
+    "StateEstimation": "Estimation d'état",
+    "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
+    "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état"
 }

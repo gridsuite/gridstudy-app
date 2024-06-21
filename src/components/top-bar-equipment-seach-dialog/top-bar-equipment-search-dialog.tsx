@@ -8,14 +8,13 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import {
     ElementSearchDialog,
+    Equipment,
     EquipmentInfos,
     EquipmentItem,
     equipmentStyles,
     useSnackMessage,
     // Equipment,
 } from '@gridsuite/commons-ui';
-// TODO remove this hack when commons-ui fix this export bug
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 import { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
@@ -28,6 +27,8 @@ import {
 } from 'redux/local-storage/search-equipment-history';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+import { TextField } from '@mui/material';
+import { Search, SearchOff } from '@mui/icons-material';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -63,27 +64,30 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const { snackWarning } = useSnackMessage();
 
     const onSelectionChange = useCallback(
-        (element: EquipmentInfos) => {
+        (equipment: EquipmentInfos) => {
             setIsDialogSearchOpen(false);
             updateSearchTerm('');
-            addToLocalStorageSearchEquipmentHistory(studyUuid, element);
+            addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                element.type,
+                equipment.type,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
-                element.id,
+                equipment.id,
                 false
             )
                 .then(() => {
-                    showVoltageLevelDiagram(element);
+                    showVoltageLevelDiagram(equipment);
                 })
                 .catch(() => {
-                    excludeElementFromCurrentSearchHistory(studyUuid, element);
+                    excludeElementFromCurrentSearchHistory(
+                        studyUuid,
+                        equipment
+                    );
                     updateSearchTerm('');
                     snackWarning({
-                        messageId: 'NetworkElementNotFound',
-                        messageValues: { elementId: element.id },
+                        messageId: 'NetworkEquipmentNotFound',
+                        messageValues: { equipmentId: equipment.id },
                     });
                 });
         },
@@ -102,10 +106,8 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     return (
         <ElementSearchDialog
             open={isDialogSearchOpen}
+            showResults={equipmentsFound.length > 0 || isLoading}
             onClose={() => setIsDialogSearchOpen(false)}
-            searchingLabel={intl.formatMessage({
-                id: 'equipment_search/label',
-            })}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={onSelectionChange}
@@ -120,8 +122,35 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             )}
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
-            isLoading={isLoading}
+            loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
+            getOptionLabel={(equipment) => equipment.label}
+            isOptionEqualToValue={(equipment1, equipment2) =>
+                equipment1.id === equipment2.id
+            }
+            renderInput={(displayedValue, params) => (
+                <TextField
+                    autoFocus={true}
+                    {...params}
+                    label={intl.formatMessage({
+                        id: 'equipment_search/label',
+                    })}
+                    InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                            <>
+                                {disabledSearchReason !== '' ? (
+                                    <SearchOff color="disabled" />
+                                ) : (
+                                    <Search color="disabled" />
+                                )}
+                                {params.InputProps.startAdornment}
+                            </>
+                        ),
+                    }}
+                    value={displayedValue}
+                />
+            )}
         />
     );
 };
