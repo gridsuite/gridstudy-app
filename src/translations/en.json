@@ -1139,7 +1139,7 @@
 
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
-    "NetworkElementNotFound": "The network element \"{elementId}\" does not exist",
+    "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
@@ -1186,7 +1186,7 @@
     "ModificationsSelection": "Modification selection",
     "SaveModificationDescription": "Saved from {nodePath}",
     "errCreateModificationsMsg": "Network modifications creation error",
-    "infoCreateModificationsMsg": "Creation of {nbModifications} network modifications in {studyDirectory}",
+    "infoCreateModificationsMsg": "{nbModifications, plural, =1 {1 network modification} other {# network modifications}} successfully created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
     "partialCopyShuntCompensator": "Partial copy : copying sections is not supported for this shunt compensator",
@@ -1369,5 +1369,8 @@
     "TieLines": "Tie lines",
     "ShuntCompensatorActivationThreshold": "Alert threshold on shunt compensator activation",
     "ShuntCompensatorActivationThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
-    "ShuntCompensatorActivationThresholdDescription": "Threshold (in MVar) above which the difference between discretized and optimal value for shunt compensator activation is considered significant (and will thus be recorded in the functional logs)"
+    "ShuntCompensatorActivationThresholdDescription": "Threshold (in MVar) above which the difference between discretized and optimal value for shunt compensator activation is considered significant (and will thus be recorded in the functional logs)",
+    "StateEstimation": "State estimation",
+    "startStateEstmationError": "An error occurred while launching the state estimation",
+    "stateEstimationError": "An error occured when executing the state estimation"
 }
