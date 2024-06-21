@@ -205,8 +205,9 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         isIccMinFeaturesDefaultConfiguration,
     ]);
 
-    // Reset all fields when predefined parameters change; otherwise, save configured parameters.
+    // reset all fields when predefined parameters changes
     useEffect(() => {
+        // compare with ref to prevent executing resetAll on first render
         if (predefinedParamsRef.current !== watchPredefinedParams) {
             resetAll(watchPredefinedParams);
             predefinedParamsRef.current = watchPredefinedParams;
