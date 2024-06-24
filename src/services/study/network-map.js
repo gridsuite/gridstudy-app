@@ -96,17 +96,23 @@ export function fetchEquipmentsIds(
     );
     let urlSearchParams = new URLSearchParams();
 
+    const nominalVoltagesParams = getQueryParamsList(
+        nominalVoltages,
+        'nominalVoltages'
+    );
+    const nominalVoltagesParamsList =
+        nominalVoltages && nominalVoltages.length > 0
+            ? '&' + nominalVoltagesParams
+            : '';
+
     let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/' +
         'equipments-ids' +
         '?' +
         'equipmentType=' +
-        equipmentType;
-    if (nominalVoltages) {
-        fetchEquipmentsUrl =
-            fetchEquipmentsUrl + '&nominalVoltages=' + nominalVoltages;
-    }
+        equipmentType +
+        nominalVoltagesParamsList;
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
