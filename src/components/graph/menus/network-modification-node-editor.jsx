@@ -85,7 +85,7 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
-import { createModifications } from '../../../services/explore';
+import { createCompositeModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
 
@@ -779,7 +779,7 @@ const NetworkModificationNodeEditor = () => {
         );
 
         setSaveInProgress(true);
-        createModifications(
+        createCompositeModifications(
             name,
             description,
             studyParentDirectoryUuid,

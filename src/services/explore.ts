@@ -8,7 +8,6 @@
 import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
-import { MODIFICATION_TYPES } from '../components/utils/modification-type';
 
 const PREFIX_EXPLORE_SERVER_QUERIES =
     import.meta.env.VITE_API_GATEWAY + '/explore';
@@ -59,7 +58,7 @@ export interface ModificationElementCreationProps {
     modificationType: string;
 }
 
-export function createModifications(
+export function createCompositeModifications(
     name: string,
     description: string,
     parentDirectoryUuid: UUID,
@@ -71,7 +70,7 @@ export function createModifications(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/modifications?' +
+            '/v1/explore/composite-modifications?' +
             urlSearchParams.toString(),
         {
             method: 'post',

@@ -61,16 +61,16 @@ const CreateCompositeModificationDialog: React.FC<
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const [defaultFolder, setDefaultFolder] =
-        useState<TreeViewFinderNodeProps>();
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
-
+    const [destinationFolder, setDestinationFolder] =
+        useState<TreeViewFinderNodeProps>();
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
-                setDefaultFolder({
-                    id: res[1].elementUuid,
-                    name: res[1].elementName,
+                const parentFolderIndex = res.length - 2;
+                setDestinationFolder({
+                    id: res[parentFolderIndex].elementUuid,
+                    name: res[parentFolderIndex].elementName,
                 });
             }
         });
@@ -103,8 +103,8 @@ const CreateCompositeModificationDialog: React.FC<
     };
     const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder && folder.length > 0) {
-            if (folder[0].id !== defaultFolder?.id) {
-                setDefaultFolder({
+            if (folder[0].id !== destinationFolder?.id) {
+                setDestinationFolder({
                     id: folder[0].id,
                     name: folder[0].name,
                 });
@@ -134,7 +134,7 @@ const CreateCompositeModificationDialog: React.FC<
                                 name={NAME}
                                 label={'Name'}
                                 elementType={ElementType.DIRECTORY}
-                                activeDirectory={defaultFolder?.id as UUID}
+                                activeDirectory={destinationFolder?.id as UUID}
                                 autoFocus
                             />
                         </Grid>
@@ -158,7 +158,7 @@ const CreateCompositeModificationDialog: React.FC<
 
                             <Typography m={1} component="span">
                                 <Box fontWeight={'fontWeightBold'}>
-                                    {defaultFolder?.name}
+                                    {destinationFolder?.name}
                                 </Box>
                             </Typography>
                         </Grid>
@@ -190,10 +190,10 @@ const CreateCompositeModificationDialog: React.FC<
                             type={'submit'}
                             onClick={() => {
                                 formMethods.trigger().then((isValid) => {
-                                    if (isValid && defaultFolder) {
+                                    if (isValid && destinationFolder) {
                                         onSave(
                                             formMethods.getValues() as ICompositeCreateModificationDialog,
-                                            defaultFolder
+                                            destinationFolder
                                         );
                                         generateCompositeModificationName();
                                     }
