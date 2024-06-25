@@ -17,6 +17,25 @@ import {
 import { Dispatch, SetStateAction } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+const unsearchableTypes = [
+    EquipmentType.SWITCH,
+    EquipmentType.VSC_CONVERTER_STATION,
+    EquipmentType.LCC_CONVERTER_STATION,
+];
+
+const styles = {
+    popoverPaper: {
+        // prevent prevent component from hovering searchbar when too high
+        maxHeight: '45%',
+    },
+    noFilterOption: {
+        display: 'flex',
+        gap: 1,
+        paddingBottom: 1,
+        cursor: 'pointer',
+    },
+};
+
 interface TopBarEquipmentSearchPopoverProps {
     open: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -24,12 +43,6 @@ interface TopBarEquipmentSearchPopoverProps {
     equipmentType: EquipmentType | null;
     setEquipmentType: Dispatch<SetStateAction<EquipmentType | null>>;
 }
-
-const unsearchableTypes = [
-    EquipmentType.SWITCH,
-    EquipmentType.VSC_CONVERTER_STATION,
-    EquipmentType.LCC_CONVERTER_STATION,
-];
 
 export const TopBarEquipmentSearchPopover = (
     props: TopBarEquipmentSearchPopoverProps
@@ -41,10 +54,7 @@ export const TopBarEquipmentSearchPopover = (
         <Popover
             slotProps={{
                 paper: {
-                    style: {
-                        maxHeight: '45%',
-                        marginRight: 10,
-                    },
+                    style: styles.popoverPaper,
                 },
             }}
             anchorOrigin={{
@@ -53,6 +63,7 @@ export const TopBarEquipmentSearchPopover = (
             }}
             transformOrigin={{
                 vertical: 'top',
+                // can't use theme.spacing in a clean way here because it would return a string which is not accepted by "horizontal"
                 horizontal: 32,
             }}
             open={open}
@@ -70,12 +81,7 @@ export const TopBarEquipmentSearchPopover = (
                         }}
                     >
                         <Box
-                            sx={{
-                                display: 'flex',
-                                gap: 1,
-                                paddingBottom: 1,
-                                cursor: 'pointer',
-                            }}
+                            sx={styles.noFilterOption}
                             onClick={() => {
                                 setEquipmentType(null);
                                 setIsOpen(false);
