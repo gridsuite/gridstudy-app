@@ -6,7 +6,7 @@
  */
 
 import { Grid, InputAdornment } from '@mui/material';
-import { styles } from '../parameters';
+import { parameterStyles } from '../parameters-style';
 import { LineSeparator } from '../../dialogUtils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -65,10 +65,10 @@ export const makeComponent = (defParam, path, key) => {
     const render = defParam?.render ?? defaultParamRender;
     return (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={8} sx={parameterStyles.parameterName}>
                 <FormattedMessage id={defParam.label} />
             </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
+            <Grid item container xs={4} sx={parameterStyles.controlItem}>
                 {render(defParam, path, key)}
             </Grid>
         </>

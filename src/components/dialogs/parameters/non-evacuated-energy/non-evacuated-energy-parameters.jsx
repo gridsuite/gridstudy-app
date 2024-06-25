@@ -15,7 +15,7 @@ import { Button, DialogActions, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles } from '../parameters';
+import { parameterStyles } from '../parameters-style';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -478,10 +478,10 @@ export const NonEvacuatedEnergyParameters = ({
         <>
             <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container spacing={1} paddingTop={1}>
-                    <Grid item xs={8} sx={styles.parameterName}>
+                    <Grid item xs={8} sx={parameterStyles.parameterName}>
                         <FormattedMessage id="Provider" />
                     </Grid>
-                    <Grid item xs={4} sx={styles.controlItem}>
+                    <Grid item xs={4} sx={parameterStyles.controlItem}>
                         <MuiSelectInput
                             fullWidth
                             name={PROVIDER}
@@ -496,7 +496,7 @@ export const NonEvacuatedEnergyParameters = ({
                 </Grid>
                 <Grid
                     container
-                    sx={styles.scrollableGrid}
+                    sx={parameterStyles.scrollableGrid}
                     key="nonEvacuatedEnergyParameters"
                 >
                     <Grid container paddingTop={1} paddingBottom={1}>
@@ -510,7 +510,7 @@ export const NonEvacuatedEnergyParameters = ({
 
                 <Grid item container>
                     <DialogActions
-                        sx={mergeSx(styles.controlParametersItem, {
+                        sx={mergeSx(parameterStyles.controlParametersItem, {
                             paddingLeft: 0,
                             paddingBottom: 2,
                         })}

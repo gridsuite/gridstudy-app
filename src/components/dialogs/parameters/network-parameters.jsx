@@ -11,12 +11,14 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FLUX_CONVENTION,
 } from '../../../utils/config-params';
-import { LabelledButton, useParameterState, styles } from './parameters';
+import { parameterStyles } from './parameters-style';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
 import { fetchDefaultParametersValues } from '../../../services/utils';
 import { ParamLine, ParameterType } from './widget';
 import { mergeSx } from '../../utils/functions';
+import { useParameterState } from './common/use-parameter-state';
+import { LabelledButton } from './common/labelled-button';
 
 export const FluxConventions = {
     IIDM: 'iidm',
@@ -50,7 +52,7 @@ export const NetworkParameters = () => {
                     container
                     spacing={1}
                     key={'networkParameters'}
-                    sx={styles.scrollableGrid}
+                    sx={parameterStyles.scrollableGrid}
                     marginTop={-3}
                     justifyContent={'space-between'}
                 >
@@ -83,12 +85,12 @@ export const NetworkParameters = () => {
             <Grid
                 container
                 sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
+                    parameterStyles.controlParametersItem,
+                    parameterStyles.marginTopButton
                 )}
             >
                 <LabelledButton
-                    callback={resetNetworkParameters}
+                    onClick={resetNetworkParameters}
                     label="resetToDefault"
                 />
             </Grid>

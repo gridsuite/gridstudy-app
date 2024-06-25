@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import React, { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { styles } from '../../../parameters';
+import { parameterStyles } from '../../../parameters-style';
 import CurveSelector from './curve-selector';
 import CurvePreview from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
@@ -81,14 +81,18 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
             fullWidth={true}
         >
             <DialogTitle id="curve-selector-dialog-title">
-                <Typography component="span" variant="h5" sx={styles.title}>
+                <Typography
+                    component="span"
+                    variant="h5"
+                    sx={parameterStyles.title}
+                >
                     <FormattedMessage id="DynamicSimulationCurveSelectorDialogTitle" />
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden', height: '60vh' }}>
                 <Grid
                     container
-                    sx={mergeSx(styles.scrollableGrid, {
+                    sx={mergeSx(parameterStyles.scrollableGrid, {
                         maxWidth: 'xl',
                         height: '100%',
                         maxHeight: '100%',

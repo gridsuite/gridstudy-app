@@ -12,9 +12,8 @@ import {
     DropDown,
     LabelledButton,
     SwitchWithLabel,
-    useParameterState,
-    styles,
-} from './parameters';
+    parameterStyles,
+} from './parameters-style';
 import { LineSeparator } from '../dialogUtils';
 import {
     ElementType,
@@ -32,16 +31,17 @@ import { mergeSx } from '../../utils/functions';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
+import { useParameterState } from './common/use-parameter-state';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
 
     return (
         <>
-            <Grid item xs={6} sx={styles.parameterName}>
+            <Grid item xs={6} sx={parameterStyles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={6} sx={styles.controlItem}>
+            <Grid item container xs={6} sx={parameterStyles.controlItem}>
                 <Autocomplete
                     size="small"
                     value={value}
@@ -60,7 +60,7 @@ const CountrySelector = ({ value, label, callback }) => {
                                     }
                                 />
                             }
-                            sx={styles.minWidthMedium}
+                            sx={parameterStyles.minWidthMedium}
                             {...props}
                         />
                     )}
@@ -135,10 +135,10 @@ export const DoubleEditor = ({
 
     return (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={8} sx={parameterStyles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
+            <Grid item container xs={4} sx={parameterStyles.controlItem}>
                 <TextField
                     fullWidth
                     size="small"
@@ -234,7 +234,7 @@ function makeComponentFor(
             <SwitchWithLabel
                 value={value}
                 label={defParam.description}
-                callback={(ev) => {
+                onChange={(ev) => {
                     updateValues(ev.target.checked);
                 }}
             />
@@ -244,8 +244,8 @@ function makeComponentFor(
             <DropDown
                 value={value}
                 label={defParam.description}
-                values={defParam.values}
-                callback={(ev) => {
+                options={defParam.values}
+                onChange={(ev) => {
                     updateValues(ev.target.value);
                 }}
             />
@@ -422,7 +422,7 @@ const SpecificLoadFlowParameters = ({
             infoText={subText}
         >
             <FlatParameters
-                sx={styles.parameterName}
+                sx={parameterStyles.parameterName}
                 paramsAsArray={specificParamsDescription ?? []}
                 initValues={specificCurrentParams}
                 onChange={onChange}
@@ -618,8 +618,8 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         <DropDown
                             value={provider}
                             label="Provider"
-                            values={LoadFlowProviders}
-                            callback={updateLfProviderCallback}
+                            options={LoadFlowProviders}
+                            onChange={updateLfProviderCallback}
                         />
                     </Grid>
                 </Box>
@@ -631,7 +631,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 >
                     <Grid
                         container
-                        sx={mergeSx(styles.scrollableGrid, {
+                        sx={mergeSx(parameterStyles.scrollableGrid, {
                             maxHeight: '100%',
                         })}
                         key="lfParameters"
@@ -673,25 +673,25 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         container
                         item
                         sx={mergeSx(
-                            styles.controlParametersItem,
-                            styles.marginTopButton,
+                            parameterStyles.controlParametersItem,
+                            parameterStyles.marginTopButton,
                             { paddingBottom: 0 }
                         )}
                     >
                         <LabelledButton
-                            callback={() => setOpenSelectParameterDialog(true)}
+                            onClick={() => setOpenSelectParameterDialog(true)}
                             label="settings.button.chooseSettings"
                         />
                         <LabelledButton
-                            callback={() => setOpenCreateParameterDialog(true)}
+                            onClick={() => setOpenCreateParameterDialog(true)}
                             label="save"
                         />
                         <LabelledButton
-                            callback={resetLfParametersAndLfProvider}
+                            onClick={resetLfParametersAndLfProvider}
                             label="resetToDefault"
                         />
                         <LabelledButton
-                            callback={resetLfParameters}
+                            onClick={resetLfParameters}
                             label="resetProviderValuesToDefault"
                         />
                     </Grid>

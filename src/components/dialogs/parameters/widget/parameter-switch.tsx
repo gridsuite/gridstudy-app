@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid, SwitchProps } from '@mui/material';
-import { SwitchWithLabel } from '../parameters';
 import React from 'react';
+import { SwitchWithLabel } from '../common/switch-with-label';
 
 export interface ParameterSwitchProps extends Pick<SwitchProps, 'onChange'> {
     label: string;
@@ -32,7 +32,7 @@ export const ParameterSwitch = ({
                 <SwitchWithLabel
                     value={value}
                     label={label}
-                    callback={onChange}
+                    onChange={onChange}
                 />
             </Grid>
         </>

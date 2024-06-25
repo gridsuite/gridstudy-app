@@ -29,8 +29,8 @@ import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
-import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { useParameterState } from './dialogs/parameters/common/use-parameter-state';
 
 const styles = {
     container: {

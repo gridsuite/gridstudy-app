@@ -12,7 +12,7 @@ import {
     GENERAL_APPLY_MODIFICATIONS,
 } from './voltage-init-parameters-form';
 import Alert from '@mui/material/Alert';
-import { styles } from '../parameters';
+import { parameterStyles } from '../parameters-style';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
 import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
@@ -52,7 +52,7 @@ export const GeneralParameters = () => {
     return (
         <Grid>
             <Alert
-                sx={styles.adjustExistingLimitsInfo}
+                sx={parameterStyles.adjustExistingLimitsInfo}
                 severity="info"
                 variant="outlined"
             >
@@ -70,7 +70,7 @@ export const GeneralParameters = () => {
             />
             <ParameterFloat
                 name={`${GENERAL}.${REACTIVE_SLACKS_THRESHOLD}`}
-                style={styles.parameterName}
+                style={parameterStyles.parameterName}
                 label={'ReactiveSlacksThreshold'}
                 adornment={ReactivePowerAdornment}
             />

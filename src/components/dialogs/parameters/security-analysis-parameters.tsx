@@ -5,166 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Grid, TextField, Tooltip } from '@mui/material';
+import { FunctionComponent, useCallback, useState } from 'react';
+import { Grid, SelectChangeEvent, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { DropDown, LabelledButton, styles } from './parameters';
+import { parameterStyles } from './parameters-style';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
-    isProportionalSAParam,
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../utils/config-params';
-import { roundToDefaultPrecision } from '../../../utils/rounding';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { inputAdornment } from './util/make-component-utils';
 import { mergeSx } from '../../utils/functions';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemSelector,
+    TreeViewFinderNodeProps,
+} from '@gridsuite/commons-ui';
 import { fetchSecurityAnalysisParameters } from '../../../services/security-analysis';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { DropDown } from './common/drop-down';
+import { LabelledButton } from './common/labelled-button';
+import { UseParametersBackendReturnProps } from './common/use-parameters-backend';
+import {
+    SecurityAnalysisFields,
+    formatValues,
+} from './security-analysis/security-analysis-fields';
 
-const formatValues = (values, isDivision) => {
-    let result = {};
-    if (!values) {
-        return result;
-    }
-    Object.entries(values)?.forEach(([key, value]) => {
-        result = {
-            ...result,
-            [key]: isProportionalSAParam(key)
-                ? roundToDefaultPrecision(
-                      isDivision ? value / 100 : value * 100
-                  )
-                : value,
-        };
-    });
-    return result;
-};
+interface SecurityAnalysisParametersProps {
+    parametersBackend: UseParametersBackendReturnProps;
+}
 
-const SecurityAnalysisFields = ({
-    label,
-    firstField,
-    secondField,
-    tooltipInfoId,
-    initValue,
-    callback,
-    isSingleField,
-}) => {
-    const [values, setValues] = useState(initValue);
-    const positiveDoubleValue = useMemo(() => /^\d*[.,]?\d?\d?$/, []);
-
-    useEffect(() => {
-        setValues(initValue);
-    }, [initValue]);
-
-    const checkValue = useCallback((e, allowedRE, isPercentage) => {
-        const outputTransformToString = (value) => {
-            return value?.replace(',', '.') || '';
-        };
-        const newValue = outputTransformToString(e.target.value);
-        const isValid = allowedRE.exec(newValue);
-        const isAllValid = isPercentage ? isValid && newValue <= 100 : isValid;
-        if (isAllValid || newValue === '') {
-            setValues((prevState) => ({
-                ...prevState,
-                [e.target.name]: outputTransformToString(newValue),
-            }));
-        }
-    }, []);
-    const checkPerPercentageValue = useCallback(
-        (e) => {
-            checkValue(e, positiveDoubleValue, true);
-        },
-        [checkValue, positiveDoubleValue]
-    );
-    const checkDoubleValue = useCallback(
-        (e) => {
-            checkValue(e, positiveDoubleValue, false);
-        },
-        [checkValue, positiveDoubleValue]
-    );
-
-    const formatedValues = useCallback(
-        (values) => formatValues(values, true),
-        []
-    );
-
-    const updateValue = useCallback(
-        (e) => {
-            const name = e.target.name;
-            const value = e.target.value;
-            // if the field is left empty then show the initial value.
-            if (value === '') {
-                setValues((prevState) => ({
-                    ...prevState,
-                    [e.target.name]: initValue[name],
-                }));
-            } else if (initValue[name] !== value) {
-                const f = parseFloat(value);
-                if (!isNaN(f)) {
-                    callback(formatedValues(values));
-                }
-            }
-        },
-        [initValue, callback, values, formatedValues]
-    );
-
-    return (
-        <Grid sx={isSingleField ? styles.singleItem : styles.multipleItems}>
-            <Grid item xs={4} sx={styles.parameterName}>
-                <Typography>{label}</Typography>
-            </Grid>
-            <Grid
-                item
-                container
-                xs={isSingleField ? 8 : 4}
-                sx={
-                    isSingleField
-                        ? styles.singleTextField
-                        : styles.firstTextField
-                }
-            >
-                <TextField
-                    fullWidth
-                    sx={{ input: { textAlign: 'right' } }}
-                    value={values[firstField?.name]}
-                    name={firstField?.name}
-                    onBlur={updateValue}
-                    onChange={checkPerPercentageValue}
-                    size="small"
-                    InputProps={inputAdornment(firstField?.label)}
-                />
-            </Grid>
-            {!isSingleField && (
-                <Grid item container xs={4} sx={styles.secondTextField}>
-                    <TextField
-                        fullWidth
-                        sx={{ input: { textAlign: 'right' } }}
-                        value={values[secondField?.name]}
-                        name={secondField?.name}
-                        onBlur={updateValue}
-                        onChange={checkDoubleValue}
-                        size="small"
-                        InputProps={inputAdornment(secondField?.label)}
-                    />
-                </Grid>
-            )}
-            <Tooltip
-                title={<FormattedMessage id={tooltipInfoId} />}
-                placement="left-start"
-            >
-                <InfoIcon />
-            </Tooltip>
-        </Grid>
-    );
-};
-
-export const SecurityAnalysisParameters = ({ parametersBackend }) => {
+export const SecurityAnalysisParameters: FunctionComponent<
+    SecurityAnalysisParametersProps
+> = ({ parametersBackend }) => {
     const [
         providers,
         provider,
@@ -175,7 +52,8 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
         resetParameters,
     ] = parametersBackend;
 
-    const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
+    const handleUpdateProvider = (evt: SelectChangeEvent<string>) =>
+        updateProvider(evt.target.value);
 
     const updateProviderCallback = useCallback(handleUpdateProvider, [
         updateProvider,
@@ -187,7 +65,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
         useState(false);
     const { snackError } = useSnackMessage();
 
-    const callBack = (data) => {
+    const callBack = (data: Record<string, any>) => {
         updateParameters({ ...data });
     };
 
@@ -255,7 +133,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
         },
     ];
     const handleLoadParameter = useCallback(
-        (newParams) => {
+        (newParams: TreeViewFinderNodeProps[]) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
                 fetchSecurityAnalysisParameters(newParams[0].id)
@@ -296,19 +174,19 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                         <DropDown
                             value={provider}
                             label="Provider"
-                            values={securityAnalysisProvider}
-                            callback={updateProviderCallback}
+                            options={securityAnalysisProvider}
+                            onChange={updateProviderCallback}
                         />
                     </Grid>
                     <Grid container spacing={1} paddingBottom={1}>
-                        <Grid item xs={8} sx={styles.text}>
+                        <Grid item xs={8} sx={parameterStyles.text}>
                             <Typography>
                                 {intl.formatMessage({
                                     id: 'securityAnalysis.violationsHiding',
                                 })}
                             </Typography>
                             <Tooltip
-                                sx={styles.tooltip}
+                                sx={parameterStyles.tooltip}
                                 title={
                                     <FormattedMessage
                                         id={
@@ -334,7 +212,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                 <Grid
                     container
                     key="secuAnalysisProvider"
-                    sx={styles.scrollableGrid}
+                    sx={parameterStyles.scrollableGrid}
                     spacing={1}
                 ></Grid>
                 <LineSeparator />
@@ -342,25 +220,25 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
             <Grid
                 container
                 sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
+                    parameterStyles.controlParametersItem,
+                    parameterStyles.marginTopButton
                 )}
             >
                 <LabelledButton
-                    callback={() => setOpenSelectParameterDialog(true)}
+                    onClick={() => setOpenSelectParameterDialog(true)}
                     label="settings.button.chooseSettings"
                 />
                 <LabelledButton
-                    callback={() => setOpenCreateParameterDialog(true)}
+                    onClick={() => setOpenCreateParameterDialog(true)}
                     label="save"
                 />
                 <LabelledButton
-                    callback={resetSAParametersAndProvider}
+                    onClick={resetSAParametersAndProvider}
                     label="resetToDefault"
                 />
                 <LabelledButton
                     label="resetProviderValuesToDefault"
-                    callback={resetSAParameters}
+                    onClick={resetSAParameters}
                 />
             </Grid>
             {openCreateParameterDialog && (

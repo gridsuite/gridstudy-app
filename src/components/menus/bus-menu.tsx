@@ -18,12 +18,12 @@ import { ReduxState } from 'redux/reducer.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
+import { useParameterState } from 'components/dialogs/parameters/common/use-parameter-state';
 
 interface BusMenuProps {
     busId: string;

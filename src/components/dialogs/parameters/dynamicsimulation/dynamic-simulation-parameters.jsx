@@ -31,10 +31,9 @@ import { LineSeparator } from '../../dialogUtils';
 import {
     DropDown,
     LabelledButton,
-    styles,
-    TabPanel,
+    parameterStyles,
     useParametersBackend,
-} from '../parameters';
+} from '../parameters-style';
 import NetworkParameters, {
     emptyFormData as networkEmptyFormData,
     formSchema as networkFormSchema,
@@ -60,6 +59,7 @@ import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
+import { TabPanel } from '../common/tab-panel';
 
 const TAB_VALUES = {
     TIME_DELAY: 'timeDelay',
@@ -239,7 +239,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
             <Grid sx={{ height: '100%' }}>
                 <Grid
                     key="dsParameters"
-                    sx={mergeSx(styles.scrollableGrid, {
+                    sx={mergeSx(parameterStyles.scrollableGrid, {
                         height: '100%',
                         paddingTop: 0,
                     })}
@@ -256,7 +256,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                             <DropDown
                                 value={provider}
                                 label="Provider"
-                                values={Object.entries(providers).reduce(
+                                options={Object.entries(providers).reduce(
                                     (obj, [key, value]) => {
                                         obj[
                                             key
@@ -265,7 +265,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                     },
                                     {}
                                 )}
-                                callback={handleUpdateProvider}
+                                onChange={handleUpdateProvider}
                             />
                         )}
                     </Grid>
@@ -379,13 +379,13 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
             <Grid
                 container
                 sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton,
+                    parameterStyles.controlParametersItem,
+                    parameterStyles.marginTopButton,
                     { paddingTop: 4 }
                 )}
             >
                 <LabelledButton
-                    callback={handleResetParametersAndProvider}
+                    onClick={handleResetParametersAndProvider}
                     label="resetToDefault"
                 />
                 <SubmitButton

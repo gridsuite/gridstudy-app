@@ -19,10 +19,11 @@ import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
 } from '../../../utils/config-params';
-import { useParameterState, styles } from './parameters';
+import { parameterStyles } from './parameters-style';
 import { LineSeparator } from '../dialogUtils';
 import { ParamLine, ParameterType } from './widget';
 import { useState } from 'react';
+import { useParameterState } from './common/use-parameter-state';
 
 export const MapParameters = () => {
     const alertThresholdMarks = [
@@ -50,7 +51,7 @@ export const MapParameters = () => {
                 xl={6}
                 container
                 spacing={1}
-                sx={styles.scrollableGrid}
+                sx={parameterStyles.scrollableGrid}
                 key={'mapParameters'}
                 marginTop={-3}
                 justifyContent={'space-between'}

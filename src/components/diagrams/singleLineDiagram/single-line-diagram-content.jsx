@@ -45,7 +45,6 @@ import {
 } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { ComputingType } from 'components/computing-status/computing-type';
-import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import {
     EQUIPMENT_INFOS_TYPES,
@@ -66,6 +65,7 @@ import {
     setComputationStarting,
     setComputingStatus,
 } from '../../../redux/actions';
+import { useParameterState } from 'components/dialogs/parameters/common/use-parameter-state';
 
 function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;

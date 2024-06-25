@@ -25,10 +25,6 @@ import {
     Typography,
 } from '@mui/material';
 
-import {
-    useParametersBackend,
-    useParameterState,
-} from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import {
@@ -46,7 +42,6 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from 'services/study/loadflow';
-import { fetchSecurityAnalysisProviders } from 'services/security-analysis';
 import {
     fetchDefaultSecurityAnalysisProvider,
     getSecurityAnalysisParameters,
@@ -83,6 +78,12 @@ import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import { useParameterState } from './dialogs/parameters/common/use-parameter-state';
+import {
+    ComputationParameterType,
+    useParametersBackend,
+} from './dialogs/parameters/common/use-parameters-backend';
+import { fetchSecurityAnalysisProviders } from 'services/security-analysis';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -204,8 +205,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     );
 
     const loadFlowParametersBackend = useParametersBackend(
-        user,
-        'LoadFlow',
+        ComputationParameterType.LoadFlow,
         OptionalServicesStatus.Up,
         getLoadFlowProviders,
         null,
@@ -217,8 +217,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        user,
-        'SecurityAnalysis',
+        ComputationParameterType.SecurityAnalysis,
         securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
         null,
@@ -229,8 +228,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
-        user,
-        'SensitivityAnalysis',
+        ComputationParameterType.SensitivityAnalysis,
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
         null,
@@ -240,8 +238,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     );
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
-        user,
-        'NonEvacuatedEnergy',
+        ComputationParameterType.NonEvacuatedEnergy,
         nonEvacuatedEnergyAvailability,
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
         fetchNonEvacuatedEnergyProvider,

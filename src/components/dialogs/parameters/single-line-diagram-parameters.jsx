@@ -14,7 +14,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { styles } from './parameters';
+import { parameterStyles } from './parameters-style';
 import { LineSeparator } from '../dialogUtils';
 import { getAvailableComponentLibraries } from '../../../services/study';
 import { ParamLine, ParameterType } from './widget';
@@ -49,7 +49,7 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
                 xl={6}
                 container
                 spacing={1}
-                sx={styles.scrollableGrid}
+                sx={parameterStyles.scrollableGrid}
                 marginTop={-3}
                 justifyContent={'space-between'}
             >

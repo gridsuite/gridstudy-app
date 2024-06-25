@@ -21,7 +21,9 @@ export function fetchSecurityAnalysisProviders() {
     return backendFetchJson(url);
 }
 
-export function fetchSecurityAnalysisParameters(parameterUuid) {
+export function fetchSecurityAnalysisParameters(
+    parameterUuid: string
+): Promise<Record<string, any>> {
     console.info('fetch security analysis parameters');
     const url =
         getSecurityAnalysisUrl() +

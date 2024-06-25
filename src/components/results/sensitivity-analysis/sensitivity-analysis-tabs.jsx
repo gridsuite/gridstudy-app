@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl/lib';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { useParameterState } from '../../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import {
     COMPUTATION_RESULTS_LOGS,
@@ -17,6 +16,7 @@ import {
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result-utils';
+import { useParameterState } from 'components/dialogs/parameters/common/use-parameter-state';
 
 const SensitivityAnalysisTabs = ({ sensiKind, setSensiKind }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);

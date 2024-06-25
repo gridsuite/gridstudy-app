@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { styles } from '../parameters';
+import { parameterStyles } from '../parameters-style';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
@@ -37,9 +37,9 @@ export const ParameterGroup: FunctionComponent<
 
     return (
         <>
-            <Grid item xs={12} sx={styles.subgroupParameters}>
+            <Grid item xs={12} sx={parameterStyles.subgroupParameters}>
                 <Accordion
-                    sx={styles.subgroupParametersAccordion}
+                    sx={parameterStyles.subgroupParametersAccordion}
                     expanded={props.state}
                     onChange={(event, showed) => props.onClick(showed)}
                     disableGutters
@@ -51,7 +51,7 @@ export const ParameterGroup: FunctionComponent<
                     disabled={props.disabled || undefined}
                 >
                     <AccordionSummary
-                        sx={styles.subgroupParametersAccordionSummary}
+                        sx={parameterStyles.subgroupParametersAccordionSummary}
                         expandIcon={
                             mouseHover ? <ExpandCircleDown /> : <ExpandMore />
                         }
@@ -74,7 +74,7 @@ export const ParameterGroup: FunctionComponent<
                         )}
                     </AccordionSummary>
                     <AccordionDetails
-                        sx={styles.subgroupParametersAccordionDetails}
+                        sx={parameterStyles.subgroupParametersAccordionDetails}
                     >
                         {props.children}
                     </AccordionDetails>

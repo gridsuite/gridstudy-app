@@ -28,7 +28,6 @@ import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
-import { useParameterState } from './dialogs/parameters/parameters';
 import { getServersInfos } from '../services/study';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import { fetchVersion } from '../services/utils';
@@ -37,6 +36,7 @@ import { useComputationResultsCount } from '../hooks/use-computation-results-cou
 
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
+import { useParameterState } from './dialogs/parameters/common/use-parameter-state';
 
 const styles = {
     currentNodeBox: {

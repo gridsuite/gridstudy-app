@@ -37,12 +37,12 @@ import {
     tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
+import { useParameterState } from 'components/dialogs/parameters/common/use-parameter-state';
 
 const styles = {
     menuItem: {

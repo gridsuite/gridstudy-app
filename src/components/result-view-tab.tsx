@@ -19,7 +19,6 @@ import React, {
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
@@ -43,6 +42,7 @@ import { Box } from '@mui/system';
 import ComputingType from './computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { usePrevious } from './utils/utils';
+import { useParameterState } from './dialogs/parameters/common/use-parameter-state';
 
 const styles = {
     table: {

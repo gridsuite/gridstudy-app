@@ -16,7 +16,7 @@ import IdaSolverParameters, {
 import SimplifiedSolverParameters, {
     getFormSchema as getSimplifiedFormSchema,
 } from './solver/simplified-solver-parameters';
-import { TabPanel } from '../parameters';
+import { TabPanel } from '../common/tab-panel';
 
 const SOLVER_TYPES = {
     IDA: 'IDA',

@@ -18,7 +18,6 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LIMIT_REDUCTION,
 } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
@@ -61,6 +60,7 @@ import {
     OptionalServicesStatus,
 } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
+import { useParameterState } from './dialogs/parameters/common/use-parameter-state';
 
 export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const loadFlowStatus = useSelector(

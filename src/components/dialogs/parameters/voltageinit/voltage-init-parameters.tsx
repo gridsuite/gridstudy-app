@@ -24,7 +24,7 @@ import {
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles, TabPanel } from '../parameters';
+import { parameterStyles } from '../parameters-style';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -54,6 +54,7 @@ import {
 import { ReduxState } from '../../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
+import { TabPanel } from '../common/tab-panel';
 
 export const VoltageInitParameters = ({
     setHaveDirtyFields,
@@ -233,7 +234,7 @@ export const VoltageInitParameters = ({
                         item
                         container
                         key="voltageInitParameters"
-                        sx={mergeSx(styles.scrollableGrid, {
+                        sx={mergeSx(parameterStyles.scrollableGrid, {
                             paddingTop: 0,
                             width: '100%',
                             display: 'unset',
@@ -300,7 +301,7 @@ export const VoltageInitParameters = ({
 
                     <Grid item container>
                         <DialogActions
-                            sx={mergeSx(styles.controlParametersItem, {
+                            sx={mergeSx(parameterStyles.controlParametersItem, {
                                 paddingTop: 4,
                                 paddingBottom: 2,
                                 paddingLeft: 0,

@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
-import { styles } from './parameters';
+import { parameterStyles } from './parameters-style';
 import {
     CustomFormProvider,
     SubmitButton,
@@ -243,15 +243,15 @@ export const ShortCircuitParameters = ({
                     <LineSeparator />
                 </Grid>
 
-                <Grid sx={styles.scrollableGrid}>
+                <Grid sx={parameterStyles.scrollableGrid}>
                     <ShortCircuitFields resetAll={resetAll} />
                 </Grid>
             </Grid>
             <Grid
                 container
                 sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
+                    parameterStyles.controlParametersItem,
+                    parameterStyles.marginTopButton
                 )}
             >
                 <SubmitButton

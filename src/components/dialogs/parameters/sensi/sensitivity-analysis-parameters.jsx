@@ -17,7 +17,7 @@ import { Button, DialogActions, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles } from '../parameters';
+import { parameterStyles } from '../parameters-style';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -566,10 +566,20 @@ export const SensitivityAnalysisParameters = ({
                     justifyContent="space-between"
                 >
                     <Grid item container>
-                        <Grid item xs={8} xl={4} sx={styles.parameterName}>
+                        <Grid
+                            item
+                            xs={8}
+                            xl={4}
+                            sx={parameterStyles.parameterName}
+                        >
                             <FormattedMessage id="Provider" />
                         </Grid>
-                        <Grid item xs={4} xl={2} sx={styles.controlItem}>
+                        <Grid
+                            item
+                            xs={4}
+                            xl={2}
+                            sx={parameterStyles.controlItem}
+                        >
                             <MuiSelectInput
                                 name={PROVIDER}
                                 size="small"
@@ -581,7 +591,7 @@ export const SensitivityAnalysisParameters = ({
                         xs
                         item
                         container
-                        sx={mergeSx(styles.scrollableGrid, {
+                        sx={mergeSx(parameterStyles.scrollableGrid, {
                             paddingTop: 0,
                             display: 'unset',
                         })}
@@ -609,7 +619,7 @@ export const SensitivityAnalysisParameters = ({
 
                     <Grid item container>
                         <DialogActions
-                            sx={mergeSx(styles.controlParametersItem, {
+                            sx={mergeSx(parameterStyles.controlParametersItem, {
                                 paddingLeft: 0,
                                 paddingBottom: 2,
                             })}

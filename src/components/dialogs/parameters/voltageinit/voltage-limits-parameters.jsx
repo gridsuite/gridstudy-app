@@ -22,7 +22,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
-import { styles } from '../parameters';
+import { parameterStyles } from '../parameters-style';
 import Alert from '@mui/material/Alert';
 
 const VoltageLimitsParameters = () => {
@@ -161,7 +161,7 @@ const VoltageLimitsParameters = () => {
                 <FormattedMessage id="AdjustExistingLimits" />
             </Typography>
             <Alert
-                sx={styles.adjustExistingLimitsInfo}
+                sx={parameterStyles.adjustExistingLimitsInfo}
                 severity="info"
                 variant="outlined"
             >
