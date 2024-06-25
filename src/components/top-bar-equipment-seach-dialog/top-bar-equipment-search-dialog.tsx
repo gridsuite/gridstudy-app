@@ -28,8 +28,6 @@ import {
 } from 'redux/local-storage/search-equipment-history';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-import { TextField } from '@mui/material';
-import { Search, SearchOff } from '@mui/icons-material';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
@@ -59,7 +57,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         useTopBarSearchMatchingEquipment({
             studyUuid: studyUuid,
             nodeUuid: currentNode?.id,
-            equipmentType: equipmentTypeFilter,
+            equipmentType: equipmentTypeFilter ?? undefined,
         });
     const disabledSearchReason = useDisabledSearchReason();
 
@@ -127,6 +125,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             )}
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
+            disableClearable
             loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
             getOptionLabel={(equipment) => equipment.label}
