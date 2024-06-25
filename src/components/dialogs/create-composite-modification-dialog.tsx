@@ -30,6 +30,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 interface ICompositeCreateModificationDialog {
     [NAME]: string;
+    [DESCRIPTION]: string;
 }
 interface CreateCompositeModificationDialogProps {
     open: boolean;
@@ -61,7 +62,7 @@ const CreateCompositeModificationDialog: React.FC<
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
+    const [directorySelectorOpen, setDirectorySelectorOpen] = useState(false);
     const [destinationFolder, setDestinationFolder] =
         useState<TreeViewFinderNodeProps>();
     const fetchDefaultDirectoryForStudy = useCallback(() => {
@@ -75,9 +76,9 @@ const CreateCompositeModificationDialog: React.FC<
             }
         });
     }, [studyUuid]);
-    const generateCompositeModificationName = () => {
-        const getCurrentDateTime = () => new Date().toISOString();
 
+    useEffect(() => {
+        const getCurrentDateTime = () => new Date().toISOString();
         const formattedMessage = intl.formatMessage({
             id: 'GeneratedModification',
         });
@@ -85,12 +86,7 @@ const CreateCompositeModificationDialog: React.FC<
         const compositeName = `${formattedMessage}-${dateTime}`;
 
         formMethods.setValue(NAME, compositeName);
-    };
-
-    useEffect(() => {
-        generateCompositeModificationName();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [intl, formMethods]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -99,7 +95,7 @@ const CreateCompositeModificationDialog: React.FC<
     }, [fetchDefaultDirectoryForStudy, studyUuid]);
 
     const handleChangeFolder = () => {
-        setOpenDirectorySelector(true);
+        setDirectorySelectorOpen(true);
     };
     const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder && folder.length > 0) {
@@ -110,8 +106,21 @@ const CreateCompositeModificationDialog: React.FC<
                 });
             }
         }
-        setOpenDirectorySelector(false);
+        setDirectorySelectorOpen(false);
     };
+    const handleSave = useCallback(() => {
+        formMethods.trigger().then((isValid) => {
+            if (isValid && destinationFolder) {
+                onSave(
+                    formMethods.getValues() as ICompositeCreateModificationDialog,
+                    destinationFolder
+                );
+            }
+        });
+
+        onClose();
+    }, [formMethods, destinationFolder, onSave, onClose]);
+
     return (
         <Dialog
             fullWidth
@@ -164,7 +173,7 @@ const CreateCompositeModificationDialog: React.FC<
                         </Grid>
                         <Grid container paddingTop={2}>
                             <DirectoryItemSelector
-                                open={openDirectorySelector}
+                                open={directorySelectorOpen}
                                 onClose={setSelectedFolder}
                                 types={[ElementType.DIRECTORY]}
                                 onlyLeaves={false}
@@ -188,18 +197,7 @@ const CreateCompositeModificationDialog: React.FC<
                         <Button
                             variant="contained"
                             type={'submit'}
-                            onClick={() => {
-                                formMethods.trigger().then((isValid) => {
-                                    if (isValid && destinationFolder) {
-                                        onSave(
-                                            formMethods.getValues() as ICompositeCreateModificationDialog,
-                                            destinationFolder
-                                        );
-                                        generateCompositeModificationName();
-                                    }
-                                });
-                                onClose();
-                            }}
+                            onClick={handleSave}
                             size={'large'}
                         >
                             {intl.formatMessage({

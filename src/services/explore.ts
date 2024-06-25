@@ -51,18 +51,11 @@ export function elementExists(
     );
 }
 
-export interface ModificationElementCreationProps {
-    elementUuid: UUID;
-    description: string;
-    elementName: string;
-    modificationType: string;
-}
-
 export function createCompositeModifications(
     name: string,
     description: string,
     parentDirectoryUuid: UUID,
-    selectedModificationsUuid: UUID[]
+    selectedModificationsUuid: (string | UUID)[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
