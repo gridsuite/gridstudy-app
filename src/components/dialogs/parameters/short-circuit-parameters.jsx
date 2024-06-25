@@ -6,17 +6,20 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Grid } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Button, Grid } from '@mui/material';
 import { styles } from './parameters';
 import {
     CustomFormProvider,
+    DirectoryItemSelector,
+    ElementType,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LineSeparator } from '../dialogUtils';
 import {
+    fetchShortCircuitParameters,
     getShortCircuitParameters,
     invalidateShortCircuitStatus,
     setShortCircuitParameters,
@@ -41,6 +44,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
+import CreateParameterDialog from './common/parameters-creation-dialog';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -57,7 +61,10 @@ export const useGetShortCircuitParameters = () => {
             shortCircuitAvailability === OptionalServicesStatus.Up
         ) {
             getShortCircuitParameters(studyUuid)
-                .then((params) => setShortCircuitParams(params))
+                .then((params) => {
+                    setShortCircuitParams(params);
+                    console.log('DBR getShortCircuitParameters: ', params);
+                })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -106,11 +113,17 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
         parameters: parameters,
     };
 };
+
 export const ShortCircuitParameters = ({
     useShortCircuitParameters,
     setHaveDirtyFields,
 }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
+    const intl = useIntl();
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
+        useState(false);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
+        useState(false);
 
     const [shortCircuitParams, setShortCircuitParams] =
         useShortCircuitParameters;
@@ -143,7 +156,7 @@ export const ShortCircuitParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, handleSubmit, formState } = formMethods;
+    const { reset, setValue, handleSubmit, formState, getValues } = formMethods;
 
     // submit the new parameters
     const onSubmit = useCallback(
@@ -153,7 +166,7 @@ export const ShortCircuitParameters = ({
                 ...prepareDataToSend(shortCircuitParams, newParams),
             })
                 .then(() => {
-                    // fetch parameters and invalide the short circuit status
+                    // fetch parameters and invalidate the short circuit status
                     getShortCircuitParameters(studyUuid)
                         .then((params) => {
                             setShortCircuitParams(params);
@@ -212,7 +225,7 @@ export const ShortCircuitParameters = ({
             setValue(SHORT_CIRCUIT_WITH_NEUTRAL_POSITION, false, {
                 shouldDirty: true,
             });
-            const initalVoltageProfileMode =
+            const initialVoltageProfileMode =
                 predefinedParameter ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909
                     ? INITIAL_VOLTAGE.CEI909
@@ -220,7 +233,7 @@ export const ShortCircuitParameters = ({
 
             setValue(
                 SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
-                initalVoltageProfileMode,
+                initialVoltageProfileMode,
                 {
                     shouldDirty: true,
                 }
@@ -235,6 +248,63 @@ export const ShortCircuitParameters = ({
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
+
+    const fromShortCircuitParamsDataToFormValues = useCallback((param) => {
+        console.log('DBR fromShortCircuitParamsDataToFormValues', param);
+        return {
+            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]:
+                param.parameters.withFeederResult,
+            [SHORT_CIRCUIT_PREDEFINED_PARAMS]: param.predefinedParameters,
+            [SHORT_CIRCUIT_WITH_LOADS]: param.parameters.withLoads,
+            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]:
+                param.parameters.withVSCConverterStations,
+            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]:
+                param.parameters.withShuntCompensators,
+            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]:
+                !param.parameters.withNeutralPosition,
+            [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
+                param.parameters.initialVoltageProfileMode,
+        };
+    }, []);
+
+    const updateParameters = useCallback(
+        (newParams) => {
+            if (newParams && newParams.length > 0) {
+                setOpenSelectParameterDialog(false);
+                fetchShortCircuitParameters(newParams[0].id)
+                    .then((parameters) => {
+                        console.info(
+                            'loading the following shortcircuit parameters : ' +
+                                parameters.uuid
+                        );
+                        // Replace form data with fetched data
+                        reset(
+                            fromShortCircuitParamsDataToFormValues(parameters),
+                            {
+                                keepDefaultValues: true,
+                            }
+                        );
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [snackError, fromShortCircuitParamsDataToFormValues, reset]
+    );
+
+    const getCurrentValues = useCallback(() => {
+        console.log('DBR getCurrentValues init=', shortCircuitParams);
+        const currentValues = getValues();
+        console.log('DBR getCurrentValues currentValues=', currentValues);
+        //return { ...shortCircuitParams }; // TODO use getValues rather than original values
+        return { ...prepareDataToSend(shortCircuitParams, currentValues) };
+    }, [shortCircuitParams, getValues]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -254,6 +324,12 @@ export const ShortCircuitParameters = ({
                     styles.marginTopButton
                 )}
             >
+                <Button onClick={() => setOpenSelectParameterDialog(true)}>
+                    <FormattedMessage id="settings.button.chooseSettings" />
+                </Button>
+                <Button onClick={() => setOpenCreateParameterDialog(true)}>
+                    <FormattedMessage id="save" />
+                </Button>
                 <SubmitButton
                     variant="outlined"
                     onClick={handleSubmit(onSubmit)}
@@ -261,6 +337,30 @@ export const ShortCircuitParameters = ({
                 >
                     <FormattedMessage id="validate" />
                 </SubmitButton>
+                {openCreateParameterDialog && (
+                    <CreateParameterDialog
+                        open={openCreateParameterDialog}
+                        onClose={() => setOpenCreateParameterDialog(false)}
+                        parameterValues={() => getCurrentValues()}
+                        parameterFormatter={(newParams) => newParams}
+                        parameterType={ElementType.SHORT_CIRCUIT_PARAMETERS}
+                    />
+                )}
+                {openSelectParameterDialog && (
+                    <DirectoryItemSelector
+                        open={openSelectParameterDialog}
+                        onClose={updateParameters}
+                        types={[ElementType.SHORT_CIRCUIT_PARAMETERS]}
+                        title={intl.formatMessage({
+                            id: 'showSelectParameterDialog',
+                        })}
+                        onlyLeaves={true}
+                        multiselect={false}
+                        validationButtonText={intl.formatMessage({
+                            id: 'validate',
+                        })}
+                    />
+                )}
             </Grid>
         </CustomFormProvider>
     );
