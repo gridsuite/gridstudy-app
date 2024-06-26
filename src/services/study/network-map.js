@@ -92,7 +92,7 @@ export function fetchEquipmentsIds(
     nominalVoltages = null
 ) {
     console.info(
-        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' for ${substationsIds.length} substations ids and [${nominalVoltages}] nominal voltages.`
+        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' for ${substationsIds?.length} substations ids and [${nominalVoltages}] nominal voltages.`
     );
     let urlSearchParams = new URLSearchParams();
 
