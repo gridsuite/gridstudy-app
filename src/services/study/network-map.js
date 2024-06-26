@@ -86,13 +86,16 @@ export function fetchVoltageLevelEquipments(
 export function fetchEquipmentsIds(
     studyUuid,
     currentNodeUuid,
-    substationsIds,
+    substationsIds = undefined,
     equipmentType,
     inUpstreamBuiltParentNode,
     nominalVoltages = undefined
 ) {
+    const substationsCount = substationsIds ? substationsIds.length : 0;
+    const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
+
     console.info(
-        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' for ${substationsIds?.length} substations ids and [${nominalVoltages}] nominal voltages.`
+        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' for ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
     );
     let urlSearchParams = new URLSearchParams();
 
