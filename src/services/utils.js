@@ -140,33 +140,7 @@ function fetchEnv() {
 }
 
 export function fetchIdpSettings() {
-    return fetch('idpSettings.json');
-}
-
-export function fetchAuthorizationCodeFlowFeatureFlag() {
-    console.info(`Fetching authorization code flow feature flag...`);
-    return fetchEnv()
-        .then((env) =>
-            fetch(env.appsMetadataServerUrl + '/authentication.json')
-        )
-        .then((res) => res.json())
-        .then((res) => {
-            console.log(
-                `Authorization code flow is ${
-                    res.authorizationCodeFlowFeatureFlag
-                        ? 'enabled'
-                        : 'disabled'
-                }`
-            );
-            return res.authorizationCodeFlowFeatureFlag;
-        })
-        .catch((error) => {
-            console.error(error);
-            console.warn(
-                `Something wrong happened when retrieving authentication.json: authorization code flow will be disabled`
-            );
-            return false;
-        });
+    return fetch('idpSettings.json').then((res) => res.json());
 }
 
 export function fetchVersion() {
