@@ -63,7 +63,6 @@ export const useGetShortCircuitParameters = () => {
             getShortCircuitParameters(studyUuid)
                 .then((params) => {
                     setShortCircuitParams(params);
-                    console.log('DBR getShortCircuitParameters: ', params);
                 })
                 .catch((error) => {
                     snackError({
@@ -204,27 +203,20 @@ export const ShortCircuitParameters = ({
         ]
     );
 
-    // when ever the predefined parameter changes we need to reset all parameters
+    // when ever the predefined parameter is manually changed, we need to reset all parameters
     const resetAll = useCallback(
         (predefinedParameter) => {
-            setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, true, {
-                shouldDirty: true,
-            });
-            setValue(SHORT_CIRCUIT_WITH_LOADS, false, { shouldDirty: true });
+            const dirty = { shouldDirty: true };
+            setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, true, dirty);
+            setValue(SHORT_CIRCUIT_WITH_LOADS, false, dirty);
             setValue(
                 SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
                 predefinedParameter !==
                     PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP,
-                {
-                    shouldDirty: true,
-                }
+                dirty
             );
-            setValue(SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS, false, {
-                shouldDirty: true,
-            });
-            setValue(SHORT_CIRCUIT_WITH_NEUTRAL_POSITION, false, {
-                shouldDirty: true,
-            });
+            setValue(SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS, false, dirty);
+            setValue(SHORT_CIRCUIT_WITH_NEUTRAL_POSITION, false, dirty);
             const initialVoltageProfileMode =
                 predefinedParameter ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909
@@ -234,13 +226,13 @@ export const ShortCircuitParameters = ({
             setValue(
                 SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
                 initialVoltageProfileMode,
-                {
-                    shouldDirty: true,
-                }
+                dirty
             );
-            setValue(SHORT_CIRCUIT_PREDEFINED_PARAMS, predefinedParameter, {
-                shouldDirty: true,
-            });
+            setValue(
+                SHORT_CIRCUIT_PREDEFINED_PARAMS,
+                predefinedParameter,
+                dirty
+            );
         },
         [setValue]
     );
@@ -249,25 +241,49 @@ export const ShortCircuitParameters = ({
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
 
-    const fromShortCircuitParamsDataToFormValues = useCallback((param) => {
-        console.log('DBR fromShortCircuitParamsDataToFormValues', param);
-        return {
-            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]:
+    const replaceFormValues = useCallback(
+        (param) => {
+            const dirty = { shouldDirty: true };
+            setValue(
+                SHORT_CIRCUIT_WITH_FEEDER_RESULT,
                 param.parameters.withFeederResult,
-            [SHORT_CIRCUIT_PREDEFINED_PARAMS]: param.predefinedParameters,
-            [SHORT_CIRCUIT_WITH_LOADS]: param.parameters.withLoads,
-            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]:
+                dirty
+            );
+            setValue(
+                SHORT_CIRCUIT_PREDEFINED_PARAMS,
+                param.predefinedParameters,
+                dirty
+            );
+            setValue(
+                SHORT_CIRCUIT_WITH_LOADS,
+                param.parameters.withLoads,
+                dirty
+            );
+            setValue(
+                SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
                 param.parameters.withVSCConverterStations,
-            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]:
+                dirty
+            );
+            setValue(
+                SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
                 param.parameters.withShuntCompensators,
-            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]:
+                dirty
+            );
+            setValue(
+                SHORT_CIRCUIT_WITH_NEUTRAL_POSITION,
                 !param.parameters.withNeutralPosition,
-            [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
+                dirty
+            );
+            setValue(
+                SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
                 param.parameters.initialVoltageProfileMode,
-        };
-    }, []);
+                dirty
+            );
+        },
+        [setValue]
+    );
 
-    const updateParameters = useCallback(
+    const loadParameters = useCallback(
         (newParams) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
@@ -278,12 +294,7 @@ export const ShortCircuitParameters = ({
                                 parameters.uuid
                         );
                         // Replace form data with fetched data
-                        reset(
-                            fromShortCircuitParamsDataToFormValues(parameters),
-                            {
-                                keepDefaultValues: true,
-                            }
-                        );
+                        replaceFormValues(parameters);
                     })
                     .catch((error) => {
                         console.error(error);
@@ -295,14 +306,11 @@ export const ShortCircuitParameters = ({
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, fromShortCircuitParamsDataToFormValues, reset]
+        [snackError, replaceFormValues]
     );
 
     const getCurrentValues = useCallback(() => {
-        console.log('DBR getCurrentValues init=', shortCircuitParams);
         const currentValues = getValues();
-        console.log('DBR getCurrentValues currentValues=', currentValues);
-        //return { ...shortCircuitParams }; // TODO use getValues rather than original values
         return { ...prepareDataToSend(shortCircuitParams, currentValues) };
     }, [shortCircuitParams, getValues]);
 
@@ -349,7 +357,7 @@ export const ShortCircuitParameters = ({
                 {openSelectParameterDialog && (
                     <DirectoryItemSelector
                         open={openSelectParameterDialog}
-                        onClose={updateParameters}
+                        onClose={loadParameters}
                         types={[ElementType.SHORT_CIRCUIT_PARAMETERS]}
                         title={intl.formatMessage({
                             id: 'showSelectParameterDialog',
