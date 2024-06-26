@@ -89,7 +89,7 @@ export function fetchEquipmentsIds(
     substationsIds,
     equipmentType,
     inUpstreamBuiltParentNode,
-    nominalVoltages = null
+    nominalVoltages = undefined
 ) {
     console.info(
         `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' for ${substationsIds?.length} substations ids and [${nominalVoltages}] nominal voltages.`
