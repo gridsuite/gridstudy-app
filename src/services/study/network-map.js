@@ -86,7 +86,7 @@ export function fetchVoltageLevelEquipments(
 export function fetchEquipmentsIds(
     studyUuid,
     currentNodeUuid,
-    substationsIds = undefined,
+    substationsIds,
     equipmentType,
     inUpstreamBuiltParentNode,
     nominalVoltages = undefined
