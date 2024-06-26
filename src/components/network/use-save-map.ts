@@ -28,7 +28,8 @@ export type UseSaveMapOutput = {
     onSaveSelection: (
         equipments: EquipmentInfos[],
         selection: ISelection,
-        distDir: TreeViewFinderNodeProps
+        distDir: TreeViewFinderNodeProps,
+        nominalVoltages: number[]
     ) => Promise<boolean>;
 };
 
@@ -45,7 +46,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
         async (
             equipments: EquipmentInfos[],
             selection: ISelection,
-            distDir: TreeViewFinderNodeProps
+            distDir: TreeViewFinderNodeProps,
+            nominalVoltages: number[]
         ) => {
             const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
 
@@ -74,7 +76,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
                             distDir,
                             studyUuid,
                             currentNodeUuid,
-                            selectedEquipmentsIds
+                            selectedEquipmentsIds,
+                            nominalVoltages
                         );
                         snackInfo({
                             messageTxt: intl.formatMessage({
