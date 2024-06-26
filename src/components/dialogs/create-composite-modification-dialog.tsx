@@ -13,13 +13,19 @@ import {
     ExpandingTextField,
     fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { UniqueNameInput } from './commons/unique-name-input';
-import { DESCRIPTION, NAME } from '../utils/field-constants';
+import {
+    DESCRIPTION,
+    FOLDER_ID,
+    FOLDER_NAME,
+    NAME,
+} from '../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../utils/yup-config';
@@ -31,13 +37,12 @@ import DialogContent from '@mui/material/DialogContent';
 interface ICompositeCreateModificationDialog {
     [NAME]: string;
     [DESCRIPTION]: string;
+    [FOLDER_NAME]: string;
+    [FOLDER_ID]: string;
 }
 interface CreateCompositeModificationDialogProps {
     open: boolean;
-    onSave: (
-        data: ICompositeCreateModificationDialog,
-        distDir: TreeViewFinderNodeProps
-    ) => void;
+    onSave: (data: ICompositeCreateModificationDialog) => void;
     onClose: () => void;
 }
 
@@ -46,11 +51,15 @@ const formSchema = yup
     .shape({
         [NAME]: yup.string().required(),
         [DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
+        [FOLDER_NAME]: yup.string().required(),
+        [FOLDER_ID]: yup.string().required(),
     })
     .required();
 const emptyFormData = {
     [NAME]: '',
     [DESCRIPTION]: '',
+    [FOLDER_NAME]: '',
+    [FOLDER_ID]: '',
 };
 
 const CreateCompositeModificationDialog: React.FC<
@@ -58,6 +67,7 @@ const CreateCompositeModificationDialog: React.FC<
 > = ({ open, onSave, onClose }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: any) => state.studyUuid);
+    const { snackError } = useSnackMessage();
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -67,15 +77,26 @@ const CreateCompositeModificationDialog: React.FC<
         useState<TreeViewFinderNodeProps>();
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchDirectoryElementPath(studyUuid).then((res) => {
-            if (res) {
-                const parentFolderIndex = res.length - 2;
-                setDestinationFolder({
-                    id: res[parentFolderIndex].elementUuid,
-                    name: res[parentFolderIndex].elementName,
+            if (!res || res.length < 2) {
+                snackError({
+                    messageTxt: 'unknown study directory',
+                    headerId: 'errCreateModificationsMsg',
                 });
+                return;
             }
+
+            const parentFolderIndex = res.length - 2;
+            const { elementUuid, elementName } = res[parentFolderIndex];
+
+            setDestinationFolder({
+                id: elementUuid,
+                name: elementName,
+            });
+
+            formMethods.setValue(FOLDER_NAME, elementName);
+            formMethods.setValue(FOLDER_ID, elementUuid);
         });
-    }, [studyUuid]);
+    }, [studyUuid, formMethods, snackError]);
 
     useEffect(() => {
         const getCurrentDateTime = () => new Date().toISOString();
@@ -98,13 +119,11 @@ const CreateCompositeModificationDialog: React.FC<
         setDirectorySelectorOpen(true);
     };
     const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
-        if (folder && folder.length > 0) {
-            if (folder[0].id !== destinationFolder?.id) {
-                setDestinationFolder({
-                    id: folder[0].id,
-                    name: folder[0].name,
-                });
-            }
+        if (folder?.length > 0 && folder[0].id !== destinationFolder?.id) {
+            const { id, name } = folder[0];
+            setDestinationFolder({ id, name });
+            formMethods.setValue(FOLDER_NAME, name);
+            formMethods.setValue(FOLDER_ID, id);
         }
         setDirectorySelectorOpen(false);
     };
@@ -112,8 +131,7 @@ const CreateCompositeModificationDialog: React.FC<
         formMethods.trigger().then((isValid) => {
             if (isValid && destinationFolder) {
                 onSave(
-                    formMethods.getValues() as ICompositeCreateModificationDialog,
-                    destinationFolder
+                    formMethods.getValues() as ICompositeCreateModificationDialog
                 );
             }
         });

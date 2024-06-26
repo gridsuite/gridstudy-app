@@ -6,10 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    fetchDirectoryElementPath,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -176,7 +173,6 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const [studyPath, setStudyPath] = useState(undefined);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState([]);
@@ -531,14 +527,6 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
-    const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid).then((pathArray) => {
-            if (pathArray?.length > 0) {
-                setStudyPath(pathArray);
-            }
-        });
-    }, [studyUuid]);
-
     const updateSelectedItems = useCallback((modifications) => {
         const toKeepIdsSet = new Set(modifications.map((e) => e.uuid));
         setSelectedItems((oldselectedItems) =>
@@ -685,12 +673,6 @@ const NetworkModificationNodeEditor = () => {
         cleanClipboard,
     ]);
 
-    useEffect(() => {
-        if (studyUuid) {
-            fetchDefaultDirectoryForStudy();
-        }
-    }, [studyUuid, fetchDefaultDirectoryForStudy]);
-
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] =
         useState(false);
 
@@ -751,29 +733,12 @@ const NetworkModificationNodeEditor = () => {
         copiedModifications,
     ]);
 
-    const doCreateCompositeModificationsElements = ({ name, description }) => {
-        // studyPath contains [studyElement, parentDirElement, parentDirElement, ..., RootDirElement]
-        if (!studyPath || studyPath.length < 2) {
-            snackError({
-                messageTxt: 'unknown study directory',
-                headerId: 'errCreateModificationsMsg',
-            });
-            return;
-        }
-
-        const studyIndex = studyPath.length - 1; // Should always be the last element
-        const parentDirectoryIndex = studyPath.length - 2; // Should always be the second to last element
-
-        const studyDirectoryPath =
-            '/' +
-            studyPath
-                .slice(0, studyIndex)
-                .map((r) => r.elementName)
-                .join('/');
-
-        const studyParentDirectoryUuid =
-            studyPath[parentDirectoryIndex].elementUuid;
-
+    const doCreateCompositeModificationsElements = ({
+        name,
+        description,
+        folderName,
+        folderId,
+    }) => {
         const selectedModificationsUuid = selectedItems.map(
             (item) => item.uuid
         );
@@ -782,7 +747,7 @@ const NetworkModificationNodeEditor = () => {
         createCompositeModifications(
             name,
             description,
-            studyParentDirectoryUuid,
+            folderId,
             selectedModificationsUuid
         )
             .then(() => {
@@ -790,7 +755,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'infoCreateModificationsMsg',
                     headerValues: {
                         nbModifications: selectedItems.length,
-                        studyDirectory: studyDirectoryPath,
+                        studyDirectory: '/' + folderName,
                     },
                 });
             })
