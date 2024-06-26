@@ -15,95 +15,46 @@ import {
     USER,
     USER_VALIDATION_ERROR,
 } from '@gridsuite/commons-ui';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { getAllChildren } from 'components/graph/util/model-functions';
+import { CopyType } from 'components/network-modification-tree-pane';
+import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { RunningStatus } from 'components/utils/running-status';
 import {
-    ADD_TO_RECENT_GLOBAL_FILTERS,
-    ADD_NOTIFICATION,
-    CENTER_LABEL,
-    CENTER_ON_SUBSTATION,
-    CHANGE_DISPLAYED_COLUMNS_NAMES,
-    CHANGE_LOCKED_COLUMNS_NAMES,
-    CHANGE_REORDERED_COLUMNS,
-    CLOSE_DIAGRAM,
-    CLOSE_DIAGRAMS,
-    CLOSE_STUDY,
-    COMPONENT_LIBRARY,
-    CURRENT_TREE_NODE,
-    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    DIAGONAL_LABEL,
-    ENABLE_DEVELOPER_MODE,
-    FAVORITE_CONTINGENCY_LISTS,
-    FLUX_CONVENTION,
-    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    LIMIT_REDUCTION,
-    LIMIT_REDUCTION_MODIFIED,
-    LINE_FLOW_ALERT_THRESHOLD,
-    LINE_FLOW_COLOR_MODE,
-    LINE_FLOW_MODE,
-    LINE_FULL_PATH,
-    LINE_PARALLEL_PATH,
-    LOAD_EQUIPMENTS,
-    LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
-    MAP_BASEMAP,
-    MAP_DATA_LOADING,
-    MAP_EQUIPMENTS_CREATED,
-    MAP_EQUIPMENTS_INITIALIZED,
-    MAP_MANUAL_REFRESH,
-    MINIMIZE_DIAGRAM,
-    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
-    NETWORK_MODIFICATION_HANDLE_SUBTREE,
-    NETWORK_MODIFICATION_TREE_NODE_ADDED,
-    NETWORK_MODIFICATION_TREE_NODE_MOVED,
-    NETWORK_MODIFICATION_TREE_NODES_REMOVED,
-    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    OPEN_DIAGRAM,
-    OPEN_STUDY,
-    REMOVE_NOTIFICATION_BY_NODE,
-    RESET_EQUIPMENTS,
-    RESET_EQUIPMENTS_POST_LOADFLOW,
-    RESET_MAP_RELOADED,
-    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
-    SELECT_COMPUTED_LANGUAGE,
-    SELECT_LANGUAGE,
-    SELECT_THEME,
-    SELECTION_FOR_COPY,
-    SET_COMPUTATION_STARTING,
-    SET_COMPUTING_STATUS,
-    SET_EVENT_SCENARIO_DRAWER_OPEN,
-    SET_FULLSCREEN_DIAGRAM,
-    SET_LAST_COMPLETED_COMPUTATION,
-    SET_MODIFICATIONS_DRAWER_OPEN,
-    SET_MODIFICATIONS_IN_PROGRESS,
-    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-    SET_OPTIONAL_SERVICES,
-    SET_PARAMS_LOADED,
-    SET_STUDY_DISPLAY_MODE,
-    SET_STUDY_INDEXATION_STATUS,
-    STOP_DIAGRAM_BLINK,
-    LOADFLOW_RESULT_FILTER,
-    SECURITY_ANALYSIS_RESULT_FILTER,
-    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-    SENSITIVITY_ANALYSIS_RESULT_FILTER,
-    SPREADSHEET_FILTER,
-    DYNAMIC_SIMULATION_RESULT_FILTER,
-    STUDY_UPDATED,
-    USE_NAME,
-    SUBSTATION_LAYOUT,
-    TOGGLE_PIN_DIAGRAM,
-    UPDATE_EQUIPMENTS,
-    RESET_EQUIPMENTS_BY_TYPES,
-    DELETE_EQUIPMENTS,
-} from './actions';
-import {
-    getLocalStorageComputedLanguage,
-    getLocalStorageLanguage,
-    getLocalStorageTheme,
-    saveLocalStorageLanguage,
-    saveLocalStorageTheme,
-} from './local-storage/local-storage';
+    ALL_BUSES,
+    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    LOADFLOW_CURRENT_LIMIT_VIOLATION,
+    LOADFLOW_RESULT,
+    LOADFLOW_RESULT_STORE_FIELD,
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    ONE_BUS,
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+    SPREADSHEET_STORE_FIELD,
+    TIMELINE,
+} from 'utils/store-filter-fields';
+import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
+import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
+import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/config-tables';
+import { NodeInsertModes } from '../components/utils/node-insert-modes';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../components/utils/optional-services';
 import {
     MAP_BASEMAP_MAPBOX,
+    PARAMS_LOADED,
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DEVELOPER_MODE,
@@ -122,45 +73,100 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
-    PARAMS_LOADED,
 } from '../utils/config-params';
-import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
+import {
+    ADD_NOTIFICATION,
+    ADD_TO_RECENT_GLOBAL_FILTERS,
+    CENTER_LABEL,
+    CENTER_ON_SUBSTATION,
+    CHANGE_DISPLAYED_COLUMNS_NAMES,
+    CHANGE_LOCKED_COLUMNS_NAMES,
+    CHANGE_REORDERED_COLUMNS,
+    CLOSE_DIAGRAM,
+    CLOSE_DIAGRAMS,
+    CLOSE_STUDY,
+    COMPONENT_LIBRARY,
+    CURRENT_TREE_NODE,
+    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    DELETE_EQUIPMENTS,
+    DIAGONAL_LABEL,
+    DYNAMIC_SIMULATION_RESULT_FILTER,
+    ENABLE_DEVELOPER_MODE,
+    FAVORITE_CONTINGENCY_LISTS,
+    FLUX_CONVENTION,
+    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    LIMIT_REDUCTION,
+    LIMIT_REDUCTION_MODIFIED,
+    LINE_FLOW_ALERT_THRESHOLD,
+    LINE_FLOW_COLOR_MODE,
+    LINE_FLOW_MODE,
+    LINE_FULL_PATH,
+    LINE_PARALLEL_PATH,
+    LOADFLOW_RESULT_FILTER,
+    LOAD_EQUIPMENTS,
+    LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
+    MAP_BASEMAP,
+    MAP_DATA_LOADING,
+    MAP_EQUIPMENTS_CREATED,
+    MAP_EQUIPMENTS_INITIALIZED,
+    MAP_MANUAL_REFRESH,
+    MINIMIZE_DIAGRAM,
+    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
+    NETWORK_MODIFICATION_HANDLE_SUBTREE,
+    NETWORK_MODIFICATION_TREE_NODES_REMOVED,
+    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+    NETWORK_MODIFICATION_TREE_NODE_ADDED,
+    NETWORK_MODIFICATION_TREE_NODE_MOVED,
+    OPEN_DIAGRAM,
+    OPEN_STUDY,
+    REMOVE_NOTIFICATION_BY_NODE,
+    RESET_EQUIPMENTS,
+    RESET_EQUIPMENTS_BY_TYPES,
+    RESET_EQUIPMENTS_POST_LOADFLOW,
+    RESET_MAP_RELOADED,
+    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    SECURITY_ANALYSIS_RESULT_FILTER,
+    SELECTION_FOR_COPY,
+    SELECT_COMPUTED_LANGUAGE,
+    SELECT_LANGUAGE,
+    SELECT_THEME,
+    SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    SET_COMPUTATION_STARTING,
+    SET_COMPUTING_STATUS,
+    SET_EVENT_SCENARIO_DRAWER_OPEN,
+    SET_FULLSCREEN_DIAGRAM,
+    SET_LAST_COMPLETED_COMPUTATION,
+    SET_MODIFICATIONS_DRAWER_OPEN,
+    SET_MODIFICATIONS_IN_PROGRESS,
+    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    SET_OPTIONAL_SERVICES,
+    SET_PARAMS_LOADED,
+    SET_STUDY_DISPLAY_MODE,
+    SET_STUDY_INDEXATION_STATUS,
+    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+    SPREADSHEET_FILTER,
+    STOP_DIAGRAM_BLINK,
+    STUDY_UPDATED,
+    SUBSTATION_LAYOUT,
+    TOGGLE_PIN_DIAGRAM,
+    UPDATE_EQUIPMENTS,
+    USE_NAME,
+} from './actions';
+import {
+    ADD_LISTENER_WEBSOCKET,
+    CLOSE_WEBSOCKET,
+    OPEN_WEBSOCKET,
+    REMOVE_LISTENER_WEBSOCKET,
+} from './actionsTyped';
+import {
+    getLocalStorageComputedLanguage,
+    getLocalStorageLanguage,
+    getLocalStorageTheme,
+    saveLocalStorageLanguage,
+    saveLocalStorageTheme,
+} from './local-storage/local-storage';
+import { StudyDisplayMode, StudyIndexationStatus } from './reducer.type';
 import { loadDiagramStateFromSessionStorage } from './session-storage';
-import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
-import { getAllChildren } from 'components/graph/util/model-functions';
-import { CopyType } from 'components/network-modification-tree-pane';
-import { ComputingType } from 'components/computing-status/computing-type';
-import { RunningStatus } from 'components/utils/running-status';
-import { NodeInsertModes } from '../components/utils/node-insert-modes';
-import {
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../components/utils/optional-services';
-import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
-import {
-    LOADFLOW_CURRENT_LIMIT_VIOLATION,
-    LOADFLOW_RESULT,
-    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
-    SECURITY_ANALYSIS_RESULT_N,
-    SECURITY_ANALYSIS_RESULT_N_K,
-    SENSITIVITY_AT_NODE_N,
-    SENSITIVITY_AT_NODE_N_K,
-    SENSITIVITY_IN_DELTA_A_N,
-    SENSITIVITY_IN_DELTA_A_N_K,
-    SENSITIVITY_IN_DELTA_MW_N,
-    SENSITIVITY_IN_DELTA_MW_N_K,
-    ALL_BUSES,
-    LOADFLOW_RESULT_STORE_FIELD,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    TIMELINE,
-    SPREADSHEET_STORE_FIELD,
-    ONE_BUS,
-} from 'utils/store-filter-fields';
-import { StudyIndexationStatus, StudyDisplayMode } from './reducer.type';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -239,6 +245,11 @@ export const defaultOptionalServicesState = Object.keys(
     status: OptionalServicesStatus.Pending,
 }));
 
+const initSSHState = {
+    listeners: [],
+    isSSHConnected: false,
+};
+
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
@@ -316,6 +327,7 @@ const initialState = {
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
+    ...initSSHState,
 };
 
 export const reducer = createReducer(initialState, (builder) => {
@@ -1201,6 +1213,21 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SPREADSHEET_FILTER, (state, action) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] =
             action[SPREADSHEET_STORE_FIELD];
+    });
+
+    builder.addCase(CLOSE_WEBSOCKET, (state) => {
+        state.isSSHConnected = false;
+    });
+    builder.addCase(OPEN_WEBSOCKET, (state) => {
+        state.isSSHConnected = true;
+    });
+    builder.addCase(ADD_LISTENER_WEBSOCKET, (state, action) => {
+        state.listeners.push(action.payload);
+    });
+    builder.addCase(REMOVE_LISTENER_WEBSOCKET, (state, action) => {
+        state.listeners = state.listeners.filter(
+            (l) => l.id !== action.payload
+        );
     });
 });
 

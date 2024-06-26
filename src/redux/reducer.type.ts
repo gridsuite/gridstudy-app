@@ -8,8 +8,8 @@
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
-import { IOptionalService } from '../components/utils/optional-services';
 import { Filter } from '../components/results/common/results-global-filter';
+import { IOptionalService } from '../components/utils/optional-services';
 
 export enum UpdateTypes {
     STUDY = 'study',
@@ -28,6 +28,11 @@ export enum StudyDisplayMode {
     DRAW = 'Draw',
 }
 
+export type ListenerWS = {
+    id: string;
+    callback: (event: MessageEvent) => void;
+    eventsListenerKeys: string[];
+};
 export interface ReduxState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID;
@@ -48,6 +53,8 @@ export interface ReduxState {
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
+    isSSHConnected: boolean;
+    listeners: ListenerWS[];
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
