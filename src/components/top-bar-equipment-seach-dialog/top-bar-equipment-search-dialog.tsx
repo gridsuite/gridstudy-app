@@ -14,7 +14,6 @@ import {
     EquipmentType,
     equipmentStyles,
     useSnackMessage,
-    // Equipment,
 } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';

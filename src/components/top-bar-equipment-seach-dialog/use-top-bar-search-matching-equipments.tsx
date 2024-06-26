@@ -29,7 +29,7 @@ export const useTopBarSearchMatchingEquipment = (
 
     // when searching from topbar, if user input is empty, display last clicked element from localstorage
     const equipmentsToReturn = useMemo(() => {
-        if (searchTerm.length > 0 || equipmentType != null) {
+        if (searchTerm.length > 0 || equipmentType !== undefined) {
             return equipmentsFound;
         } else {
             return getLocalStorageSearchEquipmentHistory(studyUuid); //elements from localstorage
