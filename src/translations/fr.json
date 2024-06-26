@@ -1190,7 +1190,7 @@
     "SaveModificationTo": "Enregistrer dans GridExplore",
     "ModificationsSelection": "Sélection des modifications",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
-    "infoCreateModificationsMsg": "{nbModifications, plural, =1 {1 modification créée} other {# modifications créées}} avec succès dans {studyDirectory}",
+    "infoCreateModificationsMsg": "Création d'une modification composite de {nbModifications} modifications unitaires dans {studyDirectory}",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
     "partialCopyShuntCompensator": "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
