@@ -107,7 +107,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         ]
     );
 
-    const SuffixRenderer = useCallback(
+    const suffixRenderer = useCallback(
         (props: TagRendererProps) => (
             <CustomSuffixRenderer {...props} onClose={closeDialog} />
         ),
@@ -130,7 +130,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     styles={equipmentStyles}
                     {...props}
                     key={'ei-' + props.element.key}
-                    suffixRenderer={SuffixRenderer}
+                    suffixRenderer={suffixRenderer}
                 />
             )}
             searchTermDisabled={disabledSearchReason !== ''}
