@@ -70,7 +70,7 @@ const handleError = (response) => {
 
 export const getToken = () => {
     const state = store.getState();
-    return state.user.id_token;
+    return state.user?.id_token;
 };
 
 const prepareRequest = (init, token) => {
