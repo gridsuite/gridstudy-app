@@ -133,7 +133,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             }
             renderInput={(displayedValue, params) => (
                 <TopBarEquipmentSearchInput
-                    disabledSearchReason={disabledSearchReason}
+                    isSearchDisabled={disabledSearchReason !== ''}
                     displayedValue={displayedValue}
                     params={params}
                     setEquipmentType={setEquipmentTypeFilter}

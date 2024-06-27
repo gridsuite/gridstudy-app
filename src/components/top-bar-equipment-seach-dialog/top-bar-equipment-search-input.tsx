@@ -19,7 +19,7 @@ import { TopBarEquipmentSearchPopover } from './top-bar-equipment-search-popover
 interface TopBarEquipmentSearchInputProps {
     displayedValue: string;
     params: AutocompleteRenderInputParams;
-    disabledSearchReason: string;
+    isSearchDisabled: boolean;
     equipmentType: EquipmentType | null;
     setEquipmentType: Dispatch<SetStateAction<EquipmentType | null>>;
 }
@@ -29,7 +29,7 @@ export const TopBarEquipmentSearchInput = (
 ) => {
     const {
         displayedValue,
-        disabledSearchReason,
+        isSearchDisabled,
         params,
         equipmentType,
         setEquipmentType,
@@ -54,7 +54,7 @@ export const TopBarEquipmentSearchInput = (
                     ...params.InputProps,
                     startAdornment: (
                         <>
-                            {disabledSearchReason !== '' ? (
+                            {isSearchDisabled ? (
                                 <SearchOff color="disabled" />
                             ) : (
                                 <Search color="disabled" />
