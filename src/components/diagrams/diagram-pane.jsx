@@ -45,7 +45,7 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import {
@@ -649,7 +649,8 @@ export function DiagramPane({
             });
         }
     }, []);
-
+    // We debounce the updateNAD function to avoid generating unnecessary NADs
+    const debounceUpdateNAD = useDebounce(updateNAD, 500);
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
         if (
@@ -664,7 +665,7 @@ export function DiagramPane({
         // SLD MANAGEMENT (adding or removing SLDs)
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
-        updateNAD(diagramStates);
+        debounceUpdateNAD(diagramStates);
     }, [
         diagramStates,
         visible,
@@ -673,6 +674,7 @@ export function DiagramPane({
         updateDiagramStates,
         updateSLDs,
         updateNAD,
+        debounceUpdateNAD,
     ]);
 
     const displayedDiagrams = views
