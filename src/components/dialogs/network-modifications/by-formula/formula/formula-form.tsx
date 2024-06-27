@@ -6,7 +6,12 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    DirectoryItemsInput,
+    ElementType,
+    Option,
+} from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -16,7 +21,6 @@ import {
     REFERENCE_FIELD_OR_VALUE_2,
 } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { gridItem } from '../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
@@ -26,17 +30,25 @@ import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 
 interface FormulaProps {
-    name: String;
+    name: string;
     index: number;
 }
 
-export const OPERATOR_OPTIONS = [
+export const OPERATOR_OPTIONS: Exclude<Option, string>[] = [
     { id: 'ADDITION', label: '+' },
     { id: 'SUBTRACTION', label: '-' },
     { id: 'MULTIPLICATION', label: '*' },
     { id: 'DIVISION', label: '/' },
     { id: 'PERCENTAGE', label: '%' },
 ];
+
+function operatorInputTransform(value: Option | null) {
+    return (
+        OPERATOR_OPTIONS.find((option) => option?.id === getIdOrValue(value)) ??
+        value
+    );
+}
+
 const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     const equipmentTypeWatch = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
@@ -51,8 +63,8 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             name={`${name}.${index}.${FILTERS}`}
             equipmentTypes={[equipmentTypeWatch]}
             elementType={ElementType.FILTER}
-            label={'filter'}
-            titleId={'FiltersListsSelection'}
+            label="filter"
+            titleId="FiltersListsSelection"
             disable={!equipmentTypeWatch}
         />
     );
@@ -61,13 +73,13 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         <AutocompleteInput
             name={`${name}.${index}.${EDITED_FIELD}`}
             options={equipmentFields}
-            label={'EditedField'}
-            size={'small'}
-            inputTransform={(value: any) =>
+            label="EditedField"
+            size="small"
+            inputTransform={(value: Option | null) =>
                 equipmentFields.find((option) => option?.id === value) || value
             }
-            outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) =>
+            outputTransform={getIdOrValue}
+            getOptionLabel={(option: Option) =>
                 intl.formatMessage({ id: getLabelOrValue(option) })
             }
         />
@@ -80,25 +92,14 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
         />
     );
 
-    const inputTransform = (
-        value: { id: string; label: string } | string | null
-    ) => {
-        const newVal = value ?? null;
-        return (
-            OPERATOR_OPTIONS.find(
-                (option) => option?.id === getIdOrValue(value)
-            ) || newVal
-        );
-    };
-
     const operatorField = (
         <AutocompleteInput
             name={`${name}.${index}.${OPERATOR}`}
             options={OPERATOR_OPTIONS}
             readOnly
-            label={'Operator'}
-            size={'small'}
-            inputTransform={inputTransform}
+            label="Operator"
+            size="small"
+            inputTransform={operatorInputTransform}
             outputTransform={getIdOrValue}
             getOptionLabel={getLabelOrValue}
         />
