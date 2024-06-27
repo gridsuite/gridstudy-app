@@ -6,12 +6,18 @@
  */
 
 import React, { FunctionComponent, useState } from 'react';
-import { useParameterState, styles } from '../parameters';
-import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
+import { styles, useParameterState } from '../parameters';
+import {
+    Grid,
+    MenuItem,
+    Select,
+    SelectProps,
+    Slider,
+    Switch,
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
-import { SelectInputProps } from '@mui/material/Select/SelectInput';
 import { mergeSx } from '../../../utils/functions';
 
 export enum ParameterType {
@@ -38,7 +44,7 @@ type DropDownParameterLineProps = {
     labelValue?: string;
     values: Record<string, string>;
     defaultValueIfNull?: boolean;
-    onPreChange?: SelectInputProps<any>['onChange'];
+    onPreChange?: SelectProps<any>['onChange'];
 };
 
 type SliderParameterLineProps = {

@@ -5,26 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemsInput,
+    ElementType,
+    FloatInput,
+    MuiSelectInput,
+} from '@gridsuite/commons-ui';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
     VARIATION_MODE,
     VARIATION_TYPE,
     VARIATION_VALUE,
-} from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import React, { useCallback } from 'react';
+} from '../../../../utils/field-constants';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
-import { SelectInput } from '@gridsuite/commons-ui';
 import {
     ACTIVE_VARIATION_MODES,
     REACTIVE_VARIATION_MODES,
     VARIATION_TYPES,
-} from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
+} from '../../../../network/constants';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
-import { ElementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
@@ -69,12 +71,11 @@ const VariationForm = ({ name, index }) => {
     );
 
     const variationModeField = (
-        <SelectInput
+        <MuiSelectInput
             name={`${name}.${index}.${VARIATION_MODE}`}
-            label={'VariationMode'}
+            label="VariationMode"
             options={Object.values(ACTIVE_VARIATION_MODES)}
-            size={'small'}
-            disableClearable
+            size="small"
         />
     );
 
@@ -87,12 +88,11 @@ const VariationForm = ({ name, index }) => {
     );
 
     const reactiveVariationModeField = (
-        <SelectInput
+        <MuiSelectInput
             name={`${name}.${index}.${REACTIVE_VARIATION_MODE}`}
-            label={'ReactiveVariationMode'}
+            label="ReactiveVariationMode"
             options={Object.values(REACTIVE_VARIATION_MODES)}
-            size={'small'}
-            disableClearable
+            size="small"
         />
     );
 

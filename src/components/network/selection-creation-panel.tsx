@@ -4,43 +4,47 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    fetchDirectoryElementPath,
     FILTER_EQUIPMENTS,
-    SelectInput,
     FormEquipment,
+    MuiSelectInput,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import yup from '../utils/yup-config';
 import { useForm, useWatch } from 'react-hook-form';
 import {
-    NAME,
     EQUIPMENT_TYPE_FIELD,
+    NAME,
     SELECTION_TYPE,
-} from 'components/utils/field-constants';
-import { GridSection } from 'components/dialogs/dialogUtils';
+} from '../utils/field-constants';
+import { GridSection } from '../dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
+import { UniqueNameInput } from '../dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import {
     equipementTypeToLabel,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
-import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
-import { ReduxState } from 'redux/reducer.type';
+import { ReduxState } from '../../redux/reducer.type';
 import {
     SELECTION_TYPES,
     selectionTypeToLabel,
-} from 'components/utils/selection-types';
+} from '../utils/selection-types';
 import { useSaveMap } from './use-save-map';
 
 const formSchema = yup
@@ -65,11 +69,9 @@ type SelectionCreationPanelProps = {
     nominalVoltages: number[];
 };
 
-const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
-    getEquipments,
-    onCancel,
-    nominalVoltages,
-}) => {
+const SelectionCreationPanel: FunctionComponent<
+    SelectionCreationPanelProps
+> = ({ getEquipments, onCancel, nominalVoltages }) => {
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
@@ -191,7 +193,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 <Grid container rowGap={2}>
                     <GridSection title="createNewSelection" />
                     <Grid container>
-                        <SelectInput
+                        <MuiSelectInput
                             name={SELECTION_TYPE}
                             options={Object.values(SELECTION_TYPES).map(
                                 (value) => ({
@@ -201,25 +203,22 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                             )}
                             label={SELECTION_TYPE}
                             fullWidth
-                            size={'medium'}
-                            disableClearable={true}
+                            size="medium"
                             disabled={pendingState}
                         />
                     </Grid>
                     {watchSelectionType !== '' && (
                         <>
                             <Grid container>
-                                <SelectInput
+                                <MuiSelectInput
                                     name={EQUIPMENT_TYPE_FIELD}
                                     options={equipmentTypesOptions}
-                                    label={'EquipmentType'}
+                                    label="EquipmentType"
                                     fullWidth
-                                    size={'medium'}
-                                    disableClearable={true}
+                                    size="medium"
                                     disabled={pendingState}
                                 />
                             </Grid>
-
                             <Grid container>
                                 <UniqueNameInput
                                     name={NAME}
@@ -241,7 +240,6 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                             </Grid>
                             <Grid container>
                                 {/* icon directory */}
-
                                 <Typography m={1} component="span">
                                     <Box
                                         fontWeight={'fontWeightBold'}

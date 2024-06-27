@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemsInput,
+    ElementType,
+    fetchElementsInfos,
+    FloatInput,
+    MuiSelectInput,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     FILTERS,
     ID,
@@ -18,13 +25,9 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
-import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
-import { fetchElementsInfos } from '@gridsuite/commons-ui';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
@@ -133,12 +136,11 @@ const VariationForm = ({ name, index }) => {
     );
 
     const variationModeField = (
-        <SelectInput
+        <MuiSelectInput
             name={`${name}.${index}.${VARIATION_MODE}`}
             label={'VariationMode'}
             options={Object.values(VARIATION_MODES)}
-            size={'small'}
-            disableClearable
+            size="small"
         />
     );
 

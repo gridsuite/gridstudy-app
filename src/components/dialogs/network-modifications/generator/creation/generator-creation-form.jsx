@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, MuiSelectInput, TextInput } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -29,12 +29,10 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogUtils';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
@@ -73,14 +71,13 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const energySourceField = (
-        <SelectInput
+        <MuiSelectInput
             name={ENERGY_SOURCE}
-            label={'energySource'}
+            label="energySource"
             options={ENERGY_SOURCES}
             fullWidth
-            size={'small'}
-            disableClearable={true}
-            formProps={{ ...italicFontTextField, ...filledTextField }}
+            size="small"
+            slotProps={{ ...italicFontTextField, ...filledTextField }}
         />
     );
 

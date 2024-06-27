@@ -29,7 +29,7 @@ import { CONNECTION_DIRECTIONS } from '../../network/constants';
 import {
     AutocompleteInput,
     IntegerInput,
-    SelectInput,
+    MuiSelectInput,
     SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
@@ -203,12 +203,12 @@ export const ConnectivityForm = ({
     );
 
     const newConnectionDirectionField = (
-        <SelectInput
+        <MuiSelectInput
             name={`${id}.${CONNECTION_DIRECTION}`}
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
             fullWidth
-            size={'small'}
+            size="small"
         />
     );
 

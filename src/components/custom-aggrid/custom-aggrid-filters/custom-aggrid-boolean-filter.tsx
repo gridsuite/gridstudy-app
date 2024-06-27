@@ -6,12 +6,11 @@
  */
 
 import { FunctionComponent } from 'react';
-import { IconButton, MenuItem, Select } from '@mui/material';
+import { IconButton, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { BooleanFilterValue } from '../custom-aggrid-header-utils';
-import { mergeSx } from 'components/utils/functions';
+import { mergeSx } from '../../utils/functions';
 
 const styles = {
     input: {

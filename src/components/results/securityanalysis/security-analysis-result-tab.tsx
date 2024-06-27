@@ -6,18 +6,25 @@
  */
 
 import React, {
-    SyntheticEvent,
     FunctionComponent,
-    useState,
+    SyntheticEvent,
     useCallback,
-    useMemo,
     useEffect,
+    useMemo,
+    useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { ReduxState } from '../../../redux/reducer.type';
 import { Box } from '@mui/system';
-import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
+import {
+    LinearProgress,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Tab,
+    Tabs,
+} from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
@@ -31,27 +38,25 @@ import {
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
 import {
+    convertFilterValues,
     DEFAULT_PAGE_COUNT,
+    getIdType,
+    getStoreFields,
+    mappingColumnToField,
     NMK_TYPE,
     RESULT_TYPE,
-    useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
-    getIdType,
-    mappingColumnToField,
-    getStoreFields,
-    convertFilterValues,
+    useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { mapFieldsToColumnsFilter } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { setSecurityAnalysisResultFilter } from 'redux/actions';
-import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
-import { useIntl } from 'react-intl/lib';
+import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from '../../../utils/store-filter-fields';
 
 const styles = {
     tabsAndToolboxContainer: {

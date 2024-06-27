@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
     P0,
     Q0,
-} from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+} from '../../../../utils/field-constants';
+import { useEffect, useState } from 'react';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -21,12 +21,9 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
-import { LOAD_TYPES } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { SelectInput } from '@gridsuite/commons-ui';
-import { TextInput } from '@gridsuite/commons-ui';
+import { LOAD_TYPES } from '../../../../network/constants';
+import { FloatInput, MuiSelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
 
@@ -63,13 +60,13 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
     );
 
     const loadTypeField = (
-        <SelectInput
+        <MuiSelectInput
             name={LOAD_TYPE}
             label="Type"
             options={LOAD_TYPES}
             fullWidth
-            size={'small'}
-            formProps={filledTextField}
+            size="small"
+            slotProps={{ filledTextField }}
         />
     );
 
