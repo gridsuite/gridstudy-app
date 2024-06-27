@@ -62,11 +62,13 @@ type ISelectionCreation = yup.InferType<typeof formSchema>;
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: string) => [];
     onCancel: () => void;
+    nominalVoltages: number[];
 };
 
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
     onCancel,
+    nominalVoltages,
 }) => {
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
@@ -158,7 +160,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 onSaveSelection(
                     getEquipments(formData.equipmentType),
                     formMethods.getValues() as ISelectionCreation,
-                    destinationFolder
+                    destinationFolder,
+                    nominalVoltages
                 ).then((result) => {
                     if (result) {
                         formMethods.setValue(NAME, '', {

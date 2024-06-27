@@ -91,6 +91,7 @@ export const NetworkMapTab = ({
     onPolygonChanged,
     onDrawEvent,
     isInDrawingMode,
+    onNominalVoltagesChange,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1077,13 +1078,18 @@ export const NetworkMapTab = ({
         />
     );
 
+    function handleChange(newValues) {
+        setFilteredNominalVoltages(newValues);
+        onNominalVoltagesChange(newValues);
+    }
+
     function renderNominalVoltageFilter() {
         return (
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
-                    onChange={setFilteredNominalVoltages}
+                    onChange={handleChange}
                 />
             </Box>
         );
@@ -1125,6 +1131,7 @@ NetworkMapTab.propTypes = {
     onPolygonChanged: PropTypes.func,
     onDrawEvent: PropTypes.func,
     isInDrawingMode: PropTypes.bool,
+    onNominalVoltagesChange: PropTypes.func,
 };
 
 export default NetworkMapTab;

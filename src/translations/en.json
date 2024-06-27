@@ -554,6 +554,8 @@
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
+    "CreateCompositeModification": "Créer une modification réseau composée",
+    "descriptionProperty": "Description (optional)",
     "RestoreModificationText": "Please select modifications to restore",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
     "HybridDisplay": "Hybrid display",
@@ -944,7 +946,7 @@
     "ContingencyListCreationSuccess": "Contingency list successfully created",
     "FilterCreationIgnored": "The creation of the filter didn't complete",
     "ContingencyListCreationIgnored": "The creation of the contingency list didn't complete",
-    
+
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
     "DeltaReactance": "Δ Reactance (%)",
@@ -1184,9 +1186,8 @@
     "InsertModificationFrom": "Insert from GridExplore",
     "SaveModificationTo": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
-    "SaveModificationDescription": "Saved from {nodePath}",
     "errCreateModificationsMsg": "Network modifications creation error",
-    "infoCreateModificationsMsg": "{nbModifications, plural, =1 {1 network modification} other {# network modifications}} successfully created in {studyDirectory}",
+    "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
     "partialCopyShuntCompensator": "Partial copy : copying sections is not supported for this shunt compensator",
@@ -1369,5 +1370,6 @@
     "TieLines": "Tie lines",
     "StateEstimation": "State estimation",
     "startStateEstmationError": "An error occurred while launching the state estimation",
-    "stateEstimationError": "An error occured when executing the state estimation"
+    "stateEstimationError": "An error occured when executing the state estimation",
+    "GeneratedModification": "Generated-modification"
 }
