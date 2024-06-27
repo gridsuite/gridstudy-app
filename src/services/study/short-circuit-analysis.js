@@ -12,6 +12,13 @@ import {
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
+const PREFIX_SHORT_CIRCUIT_SERVER_QUERIES =
+    import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
+
+function getShortCircuitUrl() {
+    return `${PREFIX_SHORT_CIRCUIT_SERVER_QUERIES}/v1/`;
+}
+
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(
         `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
@@ -20,12 +27,12 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     const urlSearchParams = new URLSearchParams();
     busId && urlSearchParams.append('busId', busId);
 
-    const startShortCircuitAnanysisUrl =
+    const startShortCircuitAnalysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/run?' +
         urlSearchParams.toString();
-    console.debug(startShortCircuitAnanysisUrl);
-    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' });
+    console.debug(startShortCircuitAnalysisUrl);
+    return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
 
 export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
@@ -157,6 +164,15 @@ export function setShortCircuitParameters(studyUuid, newParams) {
         },
         body: JSON.stringify(newParams),
     });
+}
+
+export function fetchShortCircuitParameters(parameterUuid) {
+    console.info('get short circuit analysis parameters');
+    const url =
+        getShortCircuitUrl() +
+        'parameters/' +
+        encodeURIComponent(parameterUuid);
+    return backendFetchJson(url);
 }
 
 export function invalidateShortCircuitStatus(studyUuid) {
