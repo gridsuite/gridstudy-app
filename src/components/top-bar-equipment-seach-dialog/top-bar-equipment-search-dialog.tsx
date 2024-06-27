@@ -12,11 +12,11 @@ import {
     EquipmentInfos,
     EquipmentItem,
     TagRendererProps,
+    EquipmentType,
     equipmentStyles,
     useSnackMessage,
-    // Equipment,
 } from '@gridsuite/commons-ui';
-import { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
 import { useDisabledSearchReason } from './use-disabled-search-reason';
@@ -28,8 +28,7 @@ import {
 } from 'redux/local-storage/search-equipment-history';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-import { TextField } from '@mui/material';
-import { Search, SearchOff } from '@mui/icons-material';
+import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -51,11 +50,14 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
+    const [equipmentTypeFilter, setEquipmentTypeFilter] =
+        useState<EquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
         useTopBarSearchMatchingEquipment({
             studyUuid: studyUuid,
             nodeUuid: currentNode?.id,
+            equipmentType: equipmentTypeFilter ?? undefined,
         });
     const disabledSearchReason = useDisabledSearchReason();
 
@@ -135,6 +137,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             )}
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
+            disableClearable
             loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
             getOptionLabel={(equipment) => equipment.label}
@@ -142,26 +145,12 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                 equipment1.id === equipment2.id
             }
             renderInput={(displayedValue, params) => (
-                <TextField
-                    autoFocus={true}
-                    {...params}
-                    label={intl.formatMessage({
-                        id: 'equipment_search/label',
-                    })}
-                    InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                            <>
-                                {disabledSearchReason !== '' ? (
-                                    <SearchOff color="disabled" />
-                                ) : (
-                                    <Search color="disabled" />
-                                )}
-                                {params.InputProps.startAdornment}
-                            </>
-                        ),
-                    }}
-                    value={displayedValue}
+                <TopBarEquipmentSearchInput
+                    isSearchDisabled={disabledSearchReason !== ''}
+                    displayedValue={displayedValue}
+                    params={params}
+                    setEquipmentType={setEquipmentTypeFilter}
+                    equipmentType={equipmentTypeFilter}
                 />
             )}
         />
