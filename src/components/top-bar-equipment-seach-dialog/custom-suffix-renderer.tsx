@@ -19,7 +19,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
-import { FunctionComponent, MouseEvent, useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { centerOnSubstation, openDiagram } from 'redux/actions';
 import { fetchNetworkElementInfos } from 'services/study/network';
@@ -50,7 +50,7 @@ export const CustomSuffixRenderer: FunctionComponent<
 
     const centerOnSubstationCB = useCallback(
         (
-            e: MouseEvent<HTMLButtonElement, MouseEvent>,
+            e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
             element: EquipmentInfos
         ) => {
             e.stopPropagation();
@@ -81,7 +81,7 @@ export const CustomSuffixRenderer: FunctionComponent<
 
     const openNetworkAreaDiagramCB = useCallback(
         (
-            e: MouseEvent<HTMLButtonElement, MouseEvent>,
+            e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
             element: EquipmentInfos
         ) => {
             dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
