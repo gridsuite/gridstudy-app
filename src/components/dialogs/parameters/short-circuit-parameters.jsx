@@ -276,7 +276,10 @@ export const ShortCircuitParameters = ({
             );
             setValue(
                 SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
-                param.parameters.initialVoltageProfileMode,
+                param.parameters.initialVoltageProfileMode ===
+                    INITIAL_VOLTAGE.CONFIGURED
+                    ? INITIAL_VOLTAGE.CEI909
+                    : param.parameters.initialVoltageProfileMode,
                 dirty
             );
         },
@@ -287,11 +290,12 @@ export const ShortCircuitParameters = ({
         (newParams) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
-                fetchShortCircuitParameters(newParams[0].id)
+                const paramUuid = newParams[0].id;
+                fetchShortCircuitParameters(paramUuid)
                     .then((parameters) => {
                         console.info(
                             'loading the following shortcircuit parameters : ' +
-                                parameters.uuid
+                                paramUuid
                         );
                         // Replace form data with fetched data
                         replaceFormValues(parameters);
