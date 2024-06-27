@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -96,8 +90,6 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         return intlInitialVoltageProfileMode();
     }, []);
 
-    const predefinedParamsRef = useRef(watchPredefinedParams);
-
     const statusToShow = useMemo(() => {
         const styles = {
             succeed: {
@@ -109,6 +101,15 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         };
         return getStatus(status, styles);
     }, [status]);
+
+    const onPredefinedParametersManualChange = (event: any) => {
+        const newPredefinedParameters = event.target.value;
+        console.debug(
+            'onPredefinedParametersManualChange new:',
+            newPredefinedParameters
+        );
+        resetAll(newPredefinedParameters);
+    };
 
     // fields definition
     const feederResult = (
@@ -125,6 +126,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         <MuiSelectInput
             name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
             options={predefinedParamsOptions}
+            onChange={onPredefinedParametersManualChange}
             fullWidth
         />
     );
@@ -204,15 +206,6 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         isIccMaxFeaturesDefaultConfiguration,
         isIccMinFeaturesDefaultConfiguration,
     ]);
-
-    // reset all fields when predefined parameters changes
-    useEffect(() => {
-        // compare with ref to prevent executing resetAll on first render
-        if (predefinedParamsRef.current !== watchPredefinedParams) {
-            resetAll(watchPredefinedParams);
-            predefinedParamsRef.current = watchPredefinedParams;
-        }
-    }, [watchPredefinedParams, resetAll]);
 
     return (
         <Grid container spacing={2} paddingLeft={2}>
