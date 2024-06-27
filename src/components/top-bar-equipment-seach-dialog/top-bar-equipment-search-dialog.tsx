@@ -11,6 +11,7 @@ import {
     Equipment,
     EquipmentInfos,
     EquipmentItem,
+    TagRendererProps,
     EquipmentType,
     equipmentStyles,
     useSnackMessage,
@@ -63,11 +64,16 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const enableSearchDialog = useCallback(() => {
         setIsDialogSearchOpen(true);
     }, [setIsDialogSearchOpen]);
+
     const { snackWarning } = useSnackMessage();
+
+    const closeDialog = useCallback(() => {
+        setIsDialogSearchOpen(false);
+    }, [setIsDialogSearchOpen]);
 
     const onSelectionChange = useCallback(
         (equipment: EquipmentInfos) => {
-            setIsDialogSearchOpen(false);
+            closeDialog();
             updateSearchTerm('');
             addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
             fetchNetworkElementInfos(
@@ -95,12 +101,19 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         },
         [
             updateSearchTerm,
-            setIsDialogSearchOpen,
+            closeDialog,
             showVoltageLevelDiagram,
             studyUuid,
             snackWarning,
             currentNode,
         ]
+    );
+
+    const suffixRenderer = useCallback(
+        (props: TagRendererProps) => (
+            <CustomSuffixRenderer {...props} onClose={closeDialog} />
+        ),
+        [closeDialog]
     );
 
     useSearchEvent(enableSearchDialog);
@@ -109,7 +122,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         <ElementSearchDialog
             open={isDialogSearchOpen}
             showResults={equipmentsFound.length > 0 || isLoading}
-            onClose={() => setIsDialogSearchOpen(false)}
+            onClose={closeDialog}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={onSelectionChange}
@@ -119,7 +132,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     styles={equipmentStyles}
                     {...props}
                     key={'ei-' + props.element.key}
-                    suffixRenderer={CustomSuffixRenderer}
+                    suffixRenderer={suffixRenderer}
                 />
             )}
             searchTermDisabled={disabledSearchReason !== ''}
