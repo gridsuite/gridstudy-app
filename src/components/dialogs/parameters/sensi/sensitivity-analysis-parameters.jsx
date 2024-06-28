@@ -503,7 +503,7 @@ export const SensitivityAnalysisParameters = ({
                 fetchSensitivityAnalysisParameters(newParams[0].id)
                     .then((parameters) => {
                         console.info(
-                            'loading the following loadflow parameters : ' +
+                            'loading the following sensi parameters : ' +
                                 parameters.uuid
                         );
                         reset(
