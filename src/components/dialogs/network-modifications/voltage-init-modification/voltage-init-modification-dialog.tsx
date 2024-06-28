@@ -12,7 +12,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
 import {
     DefaultCellRenderer,
@@ -35,6 +34,8 @@ import {
     ANGLE,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { AgGridReact } from 'ag-grid-react';
 
 export const ALLOWED_KEYS = [
     'Escape',
@@ -195,7 +196,7 @@ const VoltageInitModificationDialog: FunctionComponent<
         setTabIndex(newValue);
     }, []);
 
-    const gridRef = useRef();
+    const gridRef = useRef<AgGridReact<any>>(null);
 
     const generatorsColumnDefs = useMemo(() => {
         return [

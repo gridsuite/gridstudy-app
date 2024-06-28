@@ -11,6 +11,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
+    CustomAGGrid,
     ErrorInput,
     FieldErrorAlert,
     useSnackMessage,
@@ -33,7 +34,6 @@ import {
     TABULAR_MODIFICATION_FIELDS,
     styles,
 } from './tabular-modification-utils';
-import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     BooleanNullableCellRenderer,
     DefaultCellRenderer,
