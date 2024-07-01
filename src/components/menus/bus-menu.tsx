@@ -24,6 +24,14 @@ import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
+import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../utils/optional-services';
+import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
+import { tripEquipment } from '../../services/study/network-modifications';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 interface BusMenuProps {
     busId: string;
@@ -35,6 +43,7 @@ interface BusMenuProps {
     ) => void;
     position: [number, number];
     onClose: () => void;
+    setModificationInProgress: (arg0: boolean) => void;
 }
 
 const styles = {
@@ -57,8 +66,11 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     onOpenDynamicSimulationEventDialog,
     position,
     onClose,
+    setModificationInProgress,
 }) => {
+    const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
 
     // to check is node editable
     const currentNode = useSelector(
@@ -75,6 +87,10 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 
     const computationStarting = useSelector(
         (state: ReduxState) => state.computationStarting
+    );
+
+    const shortCircuitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.ShortCircuit
     );
 
     const oneBusShortcircuitAnalysisState = useSelector(
@@ -99,6 +115,33 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         [onClose, onOpenDynamicSimulationEventDialog]
     );
 
+    function handleError(error: string, translationKey: string) {
+        snackError({
+            messageTxt: error,
+            headerId: translationKey,
+        });
+        if (setModificationInProgress !== undefined) {
+            setModificationInProgress(false);
+        }
+    }
+
+    function startModification() {
+        onClose();
+        if (setModificationInProgress !== undefined) {
+            setModificationInProgress(true);
+        }
+    }
+
+    function handleTrip() {
+        startModification();
+        const equipmentInfos = { id: busId }; // We only need the ID for the moment
+        tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
+            (error) => {
+                handleError(error.message, 'UnableToTripBusbarSection');
+            }
+        );
+    }
+
     return (
         <Menu
             sx={styles.menu}
@@ -110,24 +153,46 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             }}
             onClose={onClose}
         >
+            {shortCircuitAvailability === OptionalServicesStatus.Up && (
+                <CustomMenuItem
+                    sx={styles.menuItem}
+                    onClick={handleClickRunShortcircuitAnalysis}
+                    selected={false}
+                    disabled={
+                        computationStarting ||
+                        oneBusShortcircuitAnalysisState ===
+                            RunningStatus.RUNNING ||
+                        !isNodeEditable
+                    }
+                >
+                    <ListItemIcon>
+                        <BoltIcon />
+                    </ListItemIcon>
+
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                <FormattedMessage id="ShortCircuitAnalysis" />
+                            </Typography>
+                        }
+                    />
+                </CustomMenuItem>
+            )}
+
             <CustomMenuItem
                 sx={styles.menuItem}
-                onClick={handleClickRunShortcircuitAnalysis}
+                onClick={() => handleTrip()}
                 selected={false}
-                disabled={
-                    computationStarting ||
-                    oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
-                    !isNodeEditable
-                }
+                disabled={!isNodeEditable}
             >
                 <ListItemIcon>
-                    <BoltIcon />
+                    <OfflineBoltOutlinedIcon />
                 </ListItemIcon>
 
                 <ListItemText
                     primary={
                         <Typography noWrap>
-                            <FormattedMessage id="ShortCircuitAnalysis" />
+                            <FormattedMessage id="TripBusbarSection" />
                         </Typography>
                     }
                 />
