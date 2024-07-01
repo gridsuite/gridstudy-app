@@ -15,8 +15,8 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { SELECTION_TYPES } from '../utils/selection-types';
 import {
-    createMapContingencyList,
-    createMapFilter,
+    useCreateMapContingencyList,
+    useCreateMapFilter,
 } from '../../services/study/network-map';
 
 export interface ISelection {
@@ -41,6 +41,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
     );
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);
+    const createMapFilter = useCreateMapFilter();
+    const createMapContingencyList = useCreateMapContingencyList();
 
     const onSaveSelection = useCallback(
         async (
@@ -71,7 +73,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                     return false;
                 } else {
                     if (isFilter) {
-                        await createMapFilter(
+                        const success = await createMapFilter(
                             selection,
                             distDir,
                             studyUuid,
@@ -79,24 +81,28 @@ export const useSaveMap = (): UseSaveMapOutput => {
                             selectedEquipmentsIds,
                             nominalVoltages
                         );
-                        snackInfo({
-                            messageTxt: intl.formatMessage({
-                                id: 'FilterCreationSuccess',
-                            }),
-                        });
+                        if (success) {
+                            snackInfo({
+                                messageTxt: intl.formatMessage({
+                                    id: 'FilterCreationSuccess',
+                                }),
+                            });
+                        }
                     } else {
-                        await createMapContingencyList(
+                        const success = await createMapContingencyList(
                             selection,
                             distDir,
                             studyUuid,
                             currentNodeUuid,
                             equipments
                         );
-                        snackInfo({
-                            messageTxt: intl.formatMessage({
-                                id: 'ContingencyListCreationSuccess',
-                            }),
-                        });
+                        if (success) {
+                            snackInfo({
+                                messageTxt: intl.formatMessage({
+                                    id: 'ContingencyListCreationSuccess',
+                                }),
+                            });
+                        }
                     }
                 }
             } catch (error: any) {
@@ -114,7 +120,16 @@ export const useSaveMap = (): UseSaveMapOutput => {
             }
             return true; // success
         },
-        [currentNodeUuid, intl, snackError, snackInfo, snackWarning, studyUuid]
+        [
+            currentNodeUuid,
+            intl,
+            snackError,
+            snackInfo,
+            snackWarning,
+            studyUuid,
+            createMapFilter,
+            createMapContingencyList,
+        ]
     );
 
     return { pendingState, onSaveSelection };
