@@ -12,10 +12,11 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../components/utils/equipment-types';
-import { createFilter } from '@gridsuite/commons-ui';
+import { createFilter, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { createIdentifierContingencyList } from './contingency-list';
+import { useIntl } from 'react-intl';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -184,118 +185,163 @@ function createEquipmentIdentifierList(equipmentType, equipmentList) {
         }),
     };
 }
+export const useCreateMapFilter = () => {
+    const intl = useIntl();
+    const { snackWarning } = useSnackMessage();
 
-export async function createMapFilter(
-    filter,
-    distDir,
-    studyUuid,
-    currentNodeUuid,
-    selectedEquipmentsIds,
-    nominalVoltages
-) {
-    let equipmentFilters = [];
-    switch (filter.equipmentType) {
-        case EQUIPMENT_TYPES.SUBSTATION:
-        case EQUIPMENT_TYPES.LINE:
-            equipmentFilters = createEquipmentIdentifierList(
-                filter.equipmentType,
-                selectedEquipmentsIds
-            );
-            break;
+    const createMapFilter = async (
+        filter,
+        distDir,
+        studyUuid,
+        currentNodeUuid,
+        selectedEquipmentsIds,
+        nominalVoltages
+    ) => {
+        let equipmentFilters = [];
+        switch (filter.equipmentType) {
+            case EQUIPMENT_TYPES.SUBSTATION:
+            case EQUIPMENT_TYPES.LINE:
+                equipmentFilters = createEquipmentIdentifierList(
+                    filter.equipmentType,
+                    selectedEquipmentsIds
+                );
+                break;
 
-        default:
-            if (selectedEquipmentsIds.length === 0) {
-                throw new Error('EmptySelection');
-            }
+            default:
+                if (selectedEquipmentsIds.length === 0) {
+                    snackWarning({
+                        messageTxt: intl.formatMessage({
+                            id: 'EmptySelection',
+                        }),
+                        headerId: 'FilterCreationIgnored',
+                    });
+                    return false;
+                }
 
-            const elementsIds = await fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                selectedEquipmentsIds,
-                filter.equipmentType,
-                false,
-                nominalVoltages
-            );
+                const elementsIds = await fetchEquipmentsIds(
+                    studyUuid,
+                    currentNodeUuid,
+                    selectedEquipmentsIds,
+                    filter.equipmentType,
+                    false,
+                    nominalVoltages
+                );
 
-            equipmentFilters = createEquipmentIdentifierList(
-                filter.equipmentType,
-                elementsIds
-            );
-            break;
-    }
-    if (
-        equipmentFilters.filterEquipmentsAttributes === undefined ||
-        equipmentFilters.filterEquipmentsAttributes?.length === 0
-    ) {
-        throw new Error('EmptySelection');
-    }
+                equipmentFilters = createEquipmentIdentifierList(
+                    filter.equipmentType,
+                    elementsIds
+                );
+                break;
+        }
+        if (
+            equipmentFilters.filterEquipmentsAttributes === undefined ||
+            equipmentFilters.filterEquipmentsAttributes?.length === 0
+        ) {
+            snackWarning({
+                messageTxt: intl.formatMessage({
+                    id: 'EmptySelection',
+                }),
+                headerId: 'FilterCreationIgnored',
+            });
+            return false;
+        }
 
-    return createFilter(
-        equipmentFilters,
-        filter[NAME],
-        '',
-        distDir.id?.toString() ?? ''
-    );
-}
+        await createFilter(
+            equipmentFilters,
+            filter[NAME],
+            '',
+            distDir.id?.toString() ?? ''
+        );
 
-export async function createMapContingencyList(
-    contingencyList,
-    distDir,
-    studyUuid,
-    currentNodeUuid,
-    selectedEquipments
-) {
-    let equipmentContingencyList = [];
-    switch (contingencyList.equipmentType) {
-        case EQUIPMENT_TYPES.SUBSTATION:
-        case EQUIPMENT_TYPES.LINE:
-            equipmentContingencyList = createIdentifierContingencyList(
-                contingencyList.name,
-                selectedEquipments
-            );
+        return true;
+    };
 
-            break;
+    return createMapFilter;
+};
 
-        default:
-            if (selectedEquipments.length === 0) {
-                throw new Error('EmptySelection');
-            }
+export const useCreateMapContingencyList = () => {
+    const intl = useIntl();
+    const { snackWarning } = useSnackMessage();
 
-            const selectedEquipmentsIds = selectedEquipments.map(
-                (element) => element.id
-            );
-            const elementsIds = await fetchNetworkElementsInfos(
-                studyUuid,
-                currentNodeUuid,
-                selectedEquipmentsIds,
-                contingencyList.equipmentType,
-                EQUIPMENT_INFOS_TYPES.LIST.type,
-                false
-            );
+    const createMapContingencyList = async (
+        contingencyList,
+        distDir,
+        studyUuid,
+        currentNodeUuid,
+        selectedEquipments
+    ) => {
+        let equipmentContingencyList = [];
+        switch (contingencyList.equipmentType) {
+            case EQUIPMENT_TYPES.SUBSTATION:
+            case EQUIPMENT_TYPES.LINE:
+                equipmentContingencyList = createIdentifierContingencyList(
+                    contingencyList.name,
+                    selectedEquipments
+                );
+                break;
 
-            if (elementsIds?.length === 0) {
-                throw new Error('EmptySelection');
-            }
-            equipmentContingencyList = createIdentifierContingencyList(
-                contingencyList.name,
-                elementsIds
-            );
-            break;
-    }
-    if (
-        equipmentContingencyList === undefined ||
-        equipmentContingencyList?.length === 0
-    ) {
-        throw new Error('EmptySelection');
-    }
+            default:
+                if (selectedEquipments.length === 0) {
+                    snackWarning({
+                        messageTxt: intl.formatMessage({
+                            id: 'EmptySelection',
+                        }),
+                        headerId: 'ContingencyListCreationIgnored',
+                    });
+                    return false;
+                }
 
-    return createContingencyList(
-        equipmentContingencyList,
-        contingencyList[NAME],
-        '',
-        distDir.id?.toString() ?? ''
-    );
-}
+                const selectedEquipmentsIds = selectedEquipments.map(
+                    (element) => element.id
+                );
+                const elementsIds = await fetchNetworkElementsInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    selectedEquipmentsIds,
+                    contingencyList.equipmentType,
+                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    false
+                );
+
+                if (elementsIds?.length === 0) {
+                    snackWarning({
+                        messageTxt: intl.formatMessage({
+                            id: 'EmptySelection',
+                        }),
+                        headerId: 'ContingencyListCreationIgnored',
+                    });
+                    return false;
+                }
+                equipmentContingencyList = createIdentifierContingencyList(
+                    contingencyList.name,
+                    elementsIds
+                );
+                break;
+        }
+        if (
+            equipmentContingencyList === undefined ||
+            equipmentContingencyList?.length === 0
+        ) {
+            snackWarning({
+                messageTxt: intl.formatMessage({
+                    id: 'EmptySelection',
+                }),
+                headerId: 'ContingencyListCreationIgnored',
+            });
+            return false;
+        }
+
+        await createContingencyList(
+            equipmentContingencyList,
+            contingencyList[NAME],
+            '',
+            distDir.id?.toString() ?? ''
+        );
+        return true;
+    };
+
+    return createMapContingencyList;
+};
 
 export function fetchAllNominalVoltages(studyUuid, currentNodeUuid) {
     console.info(
