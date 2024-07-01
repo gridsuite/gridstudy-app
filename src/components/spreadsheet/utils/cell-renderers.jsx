@@ -174,7 +174,15 @@ export const DefaultCellRenderer = (props) => {
                 disableTouchListener
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
-                <Box sx={styles.overflow} children={cellValue.value} />
+                <Box
+                    sx={mergeSx(
+                        styles.overflow,
+                        props?.colDef?.cellRendererParams?.isValueInvalid
+                            ? styles.valueInvalid
+                            : undefined
+                    )}
+                    children={cellValue.value}
+                />
             </Tooltip>
         </Box>
     );
