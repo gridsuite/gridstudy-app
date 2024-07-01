@@ -5,13 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getOptionalServiceByServerName,
-    OptionalServicesStatus,
-} from './utils/optional-services';
 import {
     Navigate,
     Route,
@@ -20,6 +16,10 @@ import {
     useMatch,
     useNavigate,
 } from 'react-router-dom';
+import {
+    OptionalServicesStatus,
+    getOptionalServiceByServerName,
+} from './utils/optional-services';
 
 import { StudyView } from './study-pane';
 
@@ -31,53 +31,9 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 
-import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
+import PageNotFound from './page-not-found';
 
-import {
-    APP_NAME,
-    COMMON_APP_NAME,
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
-    PARAM_DEVELOPER_MODE,
-    PARAM_DIAGONAL_LABEL,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_FLUX_CONVENTION,
-    PARAM_LANGUAGE,
-    PARAM_LIMIT_REDUCTION,
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_BASEMAP,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_SUBSTATION_LAYOUT,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-} from '../utils/config-params';
-import {
-    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_DEFINITION_INDEXES,
-    TABLES_NAMES_INDEXES,
-} from './spreadsheet/utils/config-tables';
-import { getComputedLanguage } from '../utils/language';
-import AppTopBar from './app-top-bar';
-import { StudyContainer } from './study-container';
-import { fetchValidateUser } from '../services/user-admin';
-import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
-import {
-    fetchConfigParameter,
-    fetchConfigParameters,
-} from '../services/config';
-import {
-    fetchAuthorizationCodeFlowFeatureFlag,
-    fetchDefaultParametersValues,
-    fetchIdpSettings,
-} from '../services/utils';
-import { getOptionalServices } from '../services/study';
 import {
     changeDisplayedColumns,
     changeLockedColumns,
@@ -106,6 +62,51 @@ import {
     setParamsLoaded,
 } from '../redux/actions';
 import { defaultOptionalServicesState } from '../redux/reducer';
+import {
+    fetchConfigParameter,
+    fetchConfigParameters,
+} from '../services/config';
+import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
+import { getOptionalServices } from '../services/study';
+import { fetchValidateUser } from '../services/user-admin';
+import {
+    fetchAuthorizationCodeFlowFeatureFlag,
+    fetchDefaultParametersValues,
+    fetchIdpSettings,
+} from '../services/utils';
+import {
+    APP_NAME,
+    COMMON_APP_NAME,
+    PARAM_CENTER_LABEL,
+    PARAM_COMPONENT_LIBRARY,
+    PARAM_DEVELOPER_MODE,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_FAVORITE_CONTINGENCY_LISTS,
+    PARAM_FLUX_CONVENTION,
+    PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_MAP_BASEMAP,
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+import { getComputedLanguage } from '../utils/language';
+import AppTopBar from './app-top-bar';
+import {
+    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_DEFINITION_INDEXES,
+    TABLES_NAMES_INDEXES,
+} from './spreadsheet/utils/config-tables';
+import { StudyContainer } from './study-container';
+import Websocket from './websocket/Websocket';
 
 const noUserManager = { instance: null, error: null };
 
@@ -550,6 +551,7 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
+            <Websocket />
             <AppTopBar
                 user={user}
                 tabIndex={tabIndex}
