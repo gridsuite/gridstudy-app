@@ -320,6 +320,31 @@ const TableWrapper = (props) => {
 
                 if (column.normed) {
                     column.cellRendererParams.fluxConvention = fluxConvention;
+                    column.comparator = (valueA, valueB) => {
+                        const normedValueA =
+                            valueA !== undefined
+                                ? column.normed(fluxConvention, valueA)
+                                : undefined;
+                        const normedValueB =
+                            valueB !== undefined
+                                ? column.normed(fluxConvention, valueB)
+                                : undefined;
+                        if (
+                            normedValueA !== undefined &&
+                            normedValueB !== undefined
+                        ) {
+                            return normedValueA - normedValueB;
+                        } else if (
+                            normedValueA === undefined &&
+                            normedValueB === undefined
+                        ) {
+                            return 0;
+                        } else if (normedValueA === undefined) {
+                            return -1;
+                        } else if (normedValueB === undefined) {
+                            return 1;
+                        }
+                    };
                 }
             }
 

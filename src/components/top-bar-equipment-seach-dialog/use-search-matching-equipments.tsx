@@ -62,8 +62,8 @@ export const useSearchMatchingEquipments = (
     );
 
     useEffect(() => {
-        updateSearchTerm('');
-    }, [equipmentType, updateSearchTerm]);
+        updateSearchTerm(searchTerm);
+    }, [searchTerm, equipmentType, updateSearchTerm]);
 
     return {
         searchTerm,
