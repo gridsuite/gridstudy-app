@@ -53,7 +53,11 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const { setValue } = useFormContext();
 
     const richTypeLabel = (rt) => {
-        return intl.formatMessage({ id: rt });
+        if (rt === "HVDC_LINE") {
+            return intl.formatMessage({ id: "HVDC" })
+        } else {
+            return intl.formatMessage({ id: rt });
+        }
     };
 
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
