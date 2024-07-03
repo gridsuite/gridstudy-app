@@ -12,8 +12,8 @@ import GridButtons from './curve/grid-buttons';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from '../../../spreadsheet/global-filter';
-import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import { useFieldArray, useFormContext } from 'react-hook-form';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
     grid: {

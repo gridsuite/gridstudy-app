@@ -18,7 +18,6 @@ import {
     RowClassParams,
     ValueGetterParams,
 } from 'ag-grid-community';
-import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     getNoRowsMessage,
     getRows,
@@ -40,6 +39,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { unitToKiloUnit } from '../../../utils/unit-converter';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
