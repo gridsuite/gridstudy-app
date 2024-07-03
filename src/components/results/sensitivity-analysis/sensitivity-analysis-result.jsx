@@ -8,7 +8,6 @@
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import {
@@ -27,6 +26,7 @@ import {
     SENSITIVITY_AT_NODE,
     SUFFIX_TYPES,
 } from './sensitivity-analysis-result-utils';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
