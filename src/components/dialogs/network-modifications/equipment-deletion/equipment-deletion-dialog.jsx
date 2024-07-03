@@ -81,7 +81,7 @@ const EquipmentDeletionDialog = ({
     const fromMenuDataValues = useCallback(
         (menuSelectId) => {
             reset({
-                [TYPE]: EQUIPMENT_TYPES.HVDC_LINE,
+                [TYPE]: EQUIPMENT_TYPES.HVDC,
                 [EQUIPMENT_ID]: menuSelectId,
                 [DELETION_SPECIFIC_DATA]: null,
             });
