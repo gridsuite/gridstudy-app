@@ -37,7 +37,7 @@ const styles = {
     radioButtonColor: (theme) => ({
         '& .Mui-checked + .MuiFormControlLabel-label': {
             color: theme.palette.primary.main,
-        }
+        },
     }),
 };
 
