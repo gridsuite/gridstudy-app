@@ -13,15 +13,10 @@ import {
     Popover,
     Radio,
     RadioGroup,
+    Theme,
 } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { FormattedMessage } from 'react-intl';
-
-const unsearchableTypes = [
-    EquipmentType.SWITCH,
-    EquipmentType.VSC_CONVERTER_STATION,
-    EquipmentType.LCC_CONVERTER_STATION,
-];
 
 const styles = {
     popoverPaper: {
@@ -34,7 +29,7 @@ const styles = {
         paddingBottom: 1,
         cursor: 'pointer',
     },
-    radioButtonColor: (theme) => ({
+    radioButtonColor: (theme: Theme) => ({
         '& .Mui-checked + .MuiFormControlLabel-label': {
             color: theme.palette.primary.main,
         },
@@ -97,7 +92,6 @@ export const TopBarEquipmentSearchPopover = (
                         </Box>
                         {Object.values(FILTER_EQUIPMENTS)
                             .map((type) => type.id)
-                            .filter((type) => !unsearchableTypes.includes(type))
                             .map((type) => {
                                 return (
                                     <FormControlLabel
