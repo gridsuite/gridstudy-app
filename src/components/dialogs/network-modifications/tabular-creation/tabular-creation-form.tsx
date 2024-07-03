@@ -11,6 +11,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
     AutocompleteInput,
+    CustomAGGrid,
     ErrorInput,
     FieldErrorAlert,
 } from '@gridsuite/commons-ui';
@@ -32,7 +33,6 @@ import {
     styles,
     TabularCreationField,
 } from './tabular-creation-utils';
-import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
     BooleanNullableCellRenderer,
     DefaultCellRenderer,
