@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
 import { HorizontalRule } from '@mui/icons-material';
 import {
     Box,
@@ -34,6 +34,11 @@ const styles = {
         paddingBottom: 1,
         cursor: 'pointer',
     },
+    radioButtonColor: (theme) => ({
+        '& .Mui-checked + .MuiFormControlLabel-label': {
+            color: theme.palette.primary.main,
+        }
+    }),
 };
 
 interface TopBarEquipmentSearchPopoverProps {
@@ -90,7 +95,8 @@ export const TopBarEquipmentSearchPopover = (
                             <HorizontalRule />
                             <FormattedMessage id="NoFilter" />
                         </Box>
-                        {Object.values(EquipmentType)
+                        {Object.values(FILTER_EQUIPMENTS)
+                            .map((type) => type.id)
                             .filter((type) => !unsearchableTypes.includes(type))
                             .map((type) => {
                                 return (
@@ -98,6 +104,7 @@ export const TopBarEquipmentSearchPopover = (
                                         key={type.toString()}
                                         value={type.toString()}
                                         control={<Radio />}
+                                        sx={styles.radioButtonColor}
                                         label={
                                             <FormattedMessage
                                                 id={type.toString()}
