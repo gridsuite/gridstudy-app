@@ -62,11 +62,13 @@ type ISelectionCreation = yup.InferType<typeof formSchema>;
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: string) => [];
     onCancel: () => void;
+    nominalVoltages: number[];
 };
 
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
     onCancel,
+    nominalVoltages,
 }) => {
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
@@ -77,6 +79,9 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         resolver: yupResolver(formSchema),
     });
 
+    const {
+        formState: { errors },
+    } = formMethods;
     const watchSelectionType = useWatch({
         name: SELECTION_TYPE,
         control: formMethods.control,
@@ -155,7 +160,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 onSaveSelection(
                     getEquipments(formData.equipmentType),
                     formMethods.getValues() as ISelectionCreation,
-                    destinationFolder
+                    destinationFolder,
+                    nominalVoltages
                 ).then((result) => {
                     if (result) {
                         formMethods.setValue(NAME, '', {
@@ -167,6 +173,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         });
     };
     const filterSelected = watchSelectionType === SELECTION_TYPES.FILTER;
+    const nameError = errors[NAME];
+    const isValidating = errors.root?.isValidating;
     return (
         <CustomFormProvider
             removeOptional={true}
@@ -288,7 +296,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         variant="outlined"
                         type={'submit'}
                         disabled={
-                            !formMethods.formState.isValid || pendingState
+                            !formMethods.formState.isDirty ||
+                            pendingState ||
+                            !!nameError ||
+                            !!isValidating
                         }
                         onClick={handleSubmit}
                         size={'large'}

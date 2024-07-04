@@ -100,7 +100,7 @@ export const SensitivityAnalysisParameters = ({
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
-    const [providers, , , , params, ,] = parametersBackend;
+    const [providers, , , , params, updateParameters] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] =
@@ -139,7 +139,10 @@ export const SensitivityAnalysisParameters = ({
         setSensitivityAnalysisParameters(studyUuid, null)
             .then(() => {
                 return getSensitivityAnalysisParameters(studyUuid)
-                    .then((params) => setSensitivityAnalysisParams(params))
+                    .then((params) => {
+                        setSensitivityAnalysisParams(params);
+                        updateParameters(params);
+                    })
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
@@ -153,7 +156,7 @@ export const SensitivityAnalysisParameters = ({
                     headerId: 'paramsChangingError',
                 });
             });
-    }, [studyUuid, setSensitivityAnalysisParams, snackError]);
+    }, [studyUuid, setSensitivityAnalysisParams, snackError, updateParameters]);
 
     const formatNewParams = useCallback((newParams) => {
         return {
@@ -471,7 +474,9 @@ export const SensitivityAnalysisParameters = ({
                 formatNewParams(newParams)
             )
                 .then(() => {
-                    setSensitivityAnalysisParams(formatNewParams(newParams));
+                    let formattedParams = formatNewParams(newParams);
+                    setSensitivityAnalysisParams(formattedParams);
+                    updateParameters(formattedParams);
                     initRowsCount();
                 })
                 .catch((error) => {
@@ -487,6 +492,7 @@ export const SensitivityAnalysisParameters = ({
             studyUuid,
             formatNewParams,
             initRowsCount,
+            updateParameters,
         ]
     );
 
@@ -497,7 +503,7 @@ export const SensitivityAnalysisParameters = ({
                 fetchSensitivityAnalysisParameters(newParams[0].id)
                     .then((parameters) => {
                         console.info(
-                            'loading the following loadflow parameters : ' +
+                            'loading the following sensi parameters : ' +
                                 parameters.uuid
                         );
                         reset(

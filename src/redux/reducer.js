@@ -212,11 +212,13 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.LOAD]: null,
     [EQUIPMENT_TYPES.BATTERY]: null,
     [EQUIPMENT_TYPES.DANGLING_LINE]: null,
+    [EQUIPMENT_TYPES.TIE_LINE]: null,
     [EQUIPMENT_TYPES.HVDC_LINE]: null,
     [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: null,
     [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: null,
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
+    [EQUIPMENT_TYPES.BUS]: null,
 };
 
 const initialSpreadsheetFilter = {
@@ -1277,6 +1279,8 @@ function getEquipmentTypeFromUpdateType(updateType) {
             return EQUIPMENT_TYPES.VOLTAGE_LEVEL;
         case 'substations':
             return EQUIPMENT_TYPES.SUBSTATION;
+        case 'buses':
+            return EQUIPMENT_TYPES.BUS;
         default:
             return;
     }
