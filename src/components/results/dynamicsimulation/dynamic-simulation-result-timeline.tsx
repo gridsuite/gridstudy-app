@@ -6,7 +6,6 @@
  */
 import { UUID } from 'crypto';
 import { Box, LinearProgress } from '@mui/material';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import React, { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
@@ -42,6 +41,7 @@ import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     TIMELINE,
 } from 'utils/store-filter-fields';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
     loader: {
