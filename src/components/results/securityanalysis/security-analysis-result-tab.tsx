@@ -99,6 +99,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const N_RESULTS_TAB_INDEX = 0;
     const NMK_RESULTS_TAB_INDEX = 1;
     const LOGS_TAB_INDEX = 2;
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
@@ -111,20 +112,18 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     });
 
     const resultType = useMemo(() => {
-        if (tabIndex === N_RESULTS_TAB_INDEX) {
+        if (enableDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
         } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
             return RESULT_TYPE.NMK_CONTINGENCIES;
         } else {
             return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
         }
-    }, [tabIndex, nmkType]);
+    }, [tabIndex, nmkType, enableDeveloperMode]);
 
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
     }, []);
-
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
         {
@@ -137,7 +136,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
-            if (tabIndex === LOGS_TAB_INDEX) {
+            if (
+                tabIndex ===
+                (enableDeveloperMode ? LOGS_TAB_INDEX : LOGS_TAB_INDEX - 1)
+            ) {
                 return Promise.resolve();
             }
 
@@ -184,6 +186,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             filterSelector,
             resultType,
             intl,
+            enableDeveloperMode,
         ]
     );
 
@@ -298,6 +301,56 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         // empty array result
         result.length === 0;
 
+    // Function to render the content of the tabs
+    const renderTabContent = () => {
+        if (enableDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
+            return (
+                <SecurityAnalysisResultN
+                    result={result}
+                    isLoadingResult={isLoadingResult}
+                    columnDefs={columnDefs}
+                />
+            );
+        }
+        if (
+            tabIndex ===
+            (enableDeveloperMode
+                ? NMK_RESULTS_TAB_INDEX
+                : NMK_RESULTS_TAB_INDEX - 1)
+        ) {
+            return (
+                <SecurityAnalysisResultNmk
+                    result={result}
+                    isLoadingResult={isLoadingResult || filterEnumsLoading}
+                    isFromContingency={
+                        nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                    }
+                    paginationProps={{
+                        count,
+                        rowsPerPage,
+                        page,
+                        onPageChange: handleChangePage,
+                        onRowsPerPageChange: handleChangeRowsPerPage,
+                    }}
+                    columnDefs={columnDefs}
+                />
+            );
+        }
+        if (
+            tabIndex ===
+            (enableDeveloperMode ? LOGS_TAB_INDEX : LOGS_TAB_INDEX - 1)
+        ) {
+            return (
+                (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                    securityAnalysisStatus === RunningStatus.FAILED) && (
+                    <ComputationReportViewer
+                        reportType={REPORT_TYPES.SECURITY_ANALYSIS}
+                    />
+                )
+            );
+        }
+    };
+
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -316,7 +369,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 </Box>
 
                 <Box sx={styles.toolboxContainer}>
-                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                    {tabIndex ===
+                        (enableDeveloperMode
+                            ? NMK_RESULTS_TAB_INDEX
+                            : NMK_RESULTS_TAB_INDEX - 1) && (
                         <Select
                             labelId="nmk-type-label"
                             value={nmkType}
@@ -336,8 +392,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             </MenuItem>
                         </Select>
                     )}
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX ||
-                        tabIndex === N_RESULTS_TAB_INDEX) && (
+                    {(tabIndex ===
+                        (enableDeveloperMode
+                            ? NMK_RESULTS_TAB_INDEX
+                            : NMK_RESULTS_TAB_INDEX - 1) ||
+                        (tabIndex === N_RESULTS_TAB_INDEX &&
+                            enableDeveloperMode)) && (
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -351,39 +411,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             <Box sx={styles.loader}>
                 {shouldOpenLoader && <LinearProgress />}
             </Box>
-            <Box sx={styles.resultContainer}>
-                {tabIndex === N_RESULTS_TAB_INDEX && (
-                    <SecurityAnalysisResultN
-                        result={result}
-                        isLoadingResult={isLoadingResult}
-                        columnDefs={columnDefs}
-                    />
-                )}
-                {tabIndex === NMK_RESULTS_TAB_INDEX && (
-                    <SecurityAnalysisResultNmk
-                        result={result}
-                        isLoadingResult={isLoadingResult || filterEnumsLoading}
-                        isFromContingency={
-                            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                        }
-                        paginationProps={{
-                            count,
-                            rowsPerPage,
-                            page,
-                            onPageChange: handleChangePage,
-                            onRowsPerPageChange: handleChangeRowsPerPage,
-                        }}
-                        columnDefs={columnDefs}
-                    />
-                )}
-                {tabIndex === LOGS_TAB_INDEX &&
-                    (securityAnalysisStatus === RunningStatus.SUCCEED ||
-                        securityAnalysisStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer
-                            reportType={REPORT_TYPES.SECURITY_ANALYSIS}
-                        />
-                    )}
-            </Box>
+            <Box sx={styles.resultContainer}>{renderTabContent()}</Box>
         </>
     );
 };
