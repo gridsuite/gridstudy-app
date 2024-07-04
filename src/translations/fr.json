@@ -1372,6 +1372,6 @@
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "NoFilter": "Aucun filtre",
-    "EquipmentSearchPlaceholder": "Recherche un poste, une ligne, un ouvrage...",
+    "EquipmentSearchPlaceholder": "Recherche",
     "GeneratedModification": "Modification-générée"
 }
