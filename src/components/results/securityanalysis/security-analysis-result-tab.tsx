@@ -52,6 +52,8 @@ import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid
 import { setSecurityAnalysisResultFilter } from 'redux/actions';
 import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
 import { useIntl } from 'react-intl/lib';
+import { useParameterState } from 'components/dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -121,6 +123,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
     }, []);
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const { updateFilter, filterSelector } = useAggridRowFilter(
         {
@@ -299,7 +303,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             <Box sx={styles.tabsAndToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
-                        <Tab label="N" />
+                        {enableDeveloperMode && <Tab label="N" />}
                         <Tab label="N-K" />
                         <Tab
                             label={
