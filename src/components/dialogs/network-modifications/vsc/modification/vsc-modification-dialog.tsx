@@ -20,6 +20,12 @@ import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
@@ -27,6 +33,7 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
+    ID,
     MAX_P,
     MAX_Q,
     MIN_Q,
@@ -39,6 +46,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
+    VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -55,7 +63,10 @@ import {
 } from '../converter-station/converter-station-utils';
 import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    FORM_LOADING_DELAY,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { VscModificationInfo } from 'services/network-modification-types';
@@ -72,12 +83,17 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils';
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().nullable(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
+        ...getConnectivityWithPositionValidationSchema(),
         ...getVscHvdcLineModificationPaneSchema(HVDC_LINE_TAB),
         ...getVscConverterStationModificationSchema(CONVERTER_STATION_1),
         ...getVscConverterStationModificationSchema(CONVERTER_STATION_2),
@@ -87,6 +103,7 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
+    ...getConnectivityWithPositionEmptyFormData(),
     ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB, true),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1, true),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2, true),
@@ -296,7 +313,14 @@ const VscModificationDialog: React.FC<any> = ({
             converterStation2,
             toModificationProperties(hvdcLine),
             !!editData,
-            editData?.uuid ?? null
+            editData?.uuid ?? null,
+            hvdcLineTab[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+            hvdcLineTab[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+            sanitizeString(hvdcLineTab[CONNECTIVITY]?.[CONNECTION_NAME]),
+            hvdcLineTab[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
+                UNDEFINED_CONNECTION_DIRECTION,
+            hvdcLineTab[CONNECTIVITY]?.[CONNECTION_POSITION],
+            hvdcLineTab[CONNECTIVITY]?.[CONNECTED]
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,

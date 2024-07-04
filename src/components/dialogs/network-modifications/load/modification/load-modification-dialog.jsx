@@ -8,13 +8,24 @@
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    FORM_LOADING_DELAY,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from 'components/network/constants';
 import {
     ADDITIONAL_PROPERTIES,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     EQUIPMENT_NAME,
+    ID,
     LOAD_TYPE,
     P0,
     Q0,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -38,12 +49,17 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import {
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils.js';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
     [P0]: null,
     [Q0]: null,
+    ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
 };
 
@@ -54,6 +70,7 @@ const formSchema = yup
         [LOAD_TYPE]: yup.string().nullable(),
         [P0]: yup.number().nullable(),
         [Q0]: yup.number().nullable(),
+        ...getConnectivityWithPositionValidationSchema(),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -100,6 +117,7 @@ const LoadModificationDialog = ({
                 [LOAD_TYPE]: load.loadType?.value ?? null,
                 [P0]: load.p0?.value ?? null,
                 [Q0]: load.q0?.value ?? null,
+                ...getConnectivityWithPositionEmptyFormData(),
                 ...getPropertiesFromModification(load.properties),
             });
         },
@@ -166,8 +184,13 @@ const LoadModificationDialog = ({
                 load?.loadType,
                 load?.p0,
                 load?.q0,
-                undefined,
-                undefined,
+                load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
+                load[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
+                    UNDEFINED_CONNECTION_DIRECTION,
+                load[CONNECTIVITY]?.[CONNECTION_POSITION],
+                load[CONNECTIVITY]?.[CONNECTED],
                 !!editData,
                 editData ? editData.uuid : undefined,
                 toModificationProperties(load)
@@ -229,6 +252,8 @@ const LoadModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <LoadModificationForm
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
                         loadToModify={loadToModify}
                         equipmentId={selectedId}
                     />

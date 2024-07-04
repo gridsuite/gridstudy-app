@@ -20,7 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
@@ -30,7 +30,6 @@ import {
     AutocompleteInput,
     IntegerInput,
     SelectInput,
-    SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
 import {
@@ -41,6 +40,7 @@ import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
 } from '../../../services/study/network';
+import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input.jsx';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -54,6 +54,8 @@ import {
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
+ * @param isEquipmentModification
+ * @param previousValues
  * @returns JSX.Element
  */
 export const ConnectivityForm = ({
@@ -67,6 +69,8 @@ export const ConnectivityForm = ({
     studyUuid,
     currentNode,
     onVoltageLevelChangeCallback = undefined,
+    isEquipmentModification = false,
+    previousValues,
 }) => {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
@@ -165,14 +169,32 @@ export const ConnectivityForm = ({
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
             label={voltageLevelSelectLabel}
+            previousValue={
+                isEquipmentModification ? previousValues?.voltageLevelId : null
+            }
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             size={'small'}
         />
     );
 
+    const previousConnected = useMemo(() => {
+        if (previousValues?.connected) {
+            return intl.formatMessage({ id: 'On' });
+        } else if (
+            previousValues?.connected === false ||
+            (previousValues && previousValues?.connected === undefined)
+        ) {
+            return intl.formatMessage({ id: 'Off' });
+        }
+    }, [intl, previousValues]);
+
     const connectedField = (
-        <SwitchInput name={`${id}.${CONNECTED}`} label="connected" />
+        <CheckboxNullableInput
+            name={`${id}.${CONNECTED}`}
+            label="connected"
+            previousValue={isEquipmentModification ? previousConnected : null}
+        />
     );
 
     const newBusOrBusbarSectionField = (
@@ -186,6 +208,11 @@ export const ConnectivityForm = ({
             options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
+            previousValue={
+                isEquipmentModification
+                    ? previousValues?.busOrBusbarSectionId
+                    : null
+            }
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) =>
                 typeof value === 'string'
@@ -199,7 +226,15 @@ export const ConnectivityForm = ({
     );
 
     const newConnectionNameField = (
-        <TextInput name={`${id}.${CONNECTION_NAME}`} label="ConnectionName" />
+        <TextInput
+            name={`${id}.${CONNECTION_NAME}`}
+            label="ConnectionName"
+            previousValue={
+                isEquipmentModification
+                    ? previousValues?.connectablePosition?.connectionName
+                    : null
+            }
+        />
     );
 
     const newConnectionDirectionField = (
@@ -207,6 +242,11 @@ export const ConnectivityForm = ({
             name={`${id}.${CONNECTION_DIRECTION}`}
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
+            previousValue={
+                isEquipmentModification
+                    ? previousValues?.connectablePosition?.connectionDirection
+                    : null
+            }
             fullWidth
             size={'small'}
         />
@@ -224,6 +264,11 @@ export const ConnectivityForm = ({
         <IntegerInput
             name={`${id}.${CONNECTION_POSITION}`}
             label="ConnectionPosition"
+            previousValue={
+                isEquipmentModification
+                    ? previousValues?.connectablePosition?.connectionPosition
+                    : null
+            }
             clearable={true}
         />
     );

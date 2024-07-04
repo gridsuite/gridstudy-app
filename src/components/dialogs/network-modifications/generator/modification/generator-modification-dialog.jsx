@@ -14,12 +14,19 @@ import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     ADDITIONAL_PROPERTIES,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
+    ID,
     MARGINAL_COST,
     MAX_Q,
     MAXIMUM_ACTIVE_POWER,
@@ -44,7 +51,10 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
-import { REGULATION_TYPES } from 'components/network/constants';
+import {
+    REGULATION_TYPES,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import {
     getSetPointsEmptyFormData,
@@ -79,6 +89,11 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils.js';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -92,6 +107,7 @@ const emptyFormData = {
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
+    ...getConnectivityWithPositionEmptyFormData(),
     ...getSetPointsEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...emptyProperties,
@@ -129,6 +145,7 @@ const formSchema = yup
             .nullable()
             .min(0, 'RealPercentage')
             .max(1, 'RealPercentage'),
+        ...getConnectivityWithPositionValidationSchema(),
         ...getSetPointsSchema(true),
         ...getReactiveLimitsSchema(true),
     })
@@ -187,6 +204,17 @@ const GeneratorModificationDialog = ({
                 [VOLTAGE_REGULATION_TYPE]:
                     editData?.voltageRegulationType?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,
+                ...getConnectivityFormData({
+                    voltageLevelId: editData?.voltageLevelId.value ?? null,
+                    busbarSectionId:
+                        editData?.busOrBusbarSectionId.value ?? null,
+                    connectionName: editData?.connectionName?.value ?? '',
+                    connectionDirection:
+                        editData?.connectionDirection?.value ?? null,
+                    connectionPosition:
+                        editData?.connectionPosition?.value ?? null,
+                    connected: editData?.connected?.value ?? false,
+                }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: editData
                         ?.reactiveCapabilityCurve?.value
@@ -376,10 +404,14 @@ const GeneratorModificationDialog = ({
                 generator[ACTIVE_POWER_SET_POINT],
                 generator[REACTIVE_POWER_SET_POINT],
                 generator[VOLTAGE_REGULATION],
-
                 generator[VOLTAGE_SET_POINT],
-                undefined,
-                undefined,
+                generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
+                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
+                    UNDEFINED_CONNECTION_DIRECTION,
+                generator[CONNECTIVITY]?.[CONNECTION_POSITION],
+                generator[CONNECTIVITY]?.[CONNECTED],
                 editData?.uuid,
                 generator[Q_PERCENT],
                 generator[PLANNED_ACTIVE_POWER_SET_POINT],

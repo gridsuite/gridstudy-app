@@ -14,9 +14,16 @@ import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     ADDITIONAL_PROPERTIES,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     DROOP,
     EQUIPMENT_NAME,
     FREQUENCY_REGULATION,
+    ID,
     MAX_Q,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
@@ -28,6 +35,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
 import BatteryModificationForm from './battery-modification-form';
@@ -63,6 +71,12 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils.js';
+import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants.js';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -70,6 +84,7 @@ const emptyFormData = {
     [MINIMUM_ACTIVE_POWER]: null,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
+    ...getConnectivityWithPositionEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getFrequencyRegulationEmptyFormData(true),
     ...emptyProperties,
@@ -93,6 +108,7 @@ const formSchema = yup
             }),
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+        ...getConnectivityWithPositionValidationSchema(),
         ...getReactiveLimitsSchema(true),
         ...getFrequencyRegulationSchema(true),
     })
@@ -134,6 +150,17 @@ const BatteryModificationDialog = ({
                 [REACTIVE_POWER_SET_POINT]: editData?.targetQ?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
+                ...getConnectivityFormData({
+                    voltageLevelId: editData?.voltageLevelId.value ?? null,
+                    busbarSectionId:
+                        editData?.busOrBusbarSectionId.value ?? null,
+                    connectionName: editData?.connectionName?.value ?? '',
+                    connectionDirection:
+                        editData?.connectionDirection?.value ?? null,
+                    connectionPosition:
+                        editData?.connectionPosition?.value ?? null,
+                    connected: editData?.connected?.value ?? false,
+                }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: editData
                         ?.reactiveCapabilityCurve?.value
@@ -301,8 +328,13 @@ const BatteryModificationDialog = ({
                 battery[MAXIMUM_ACTIVE_POWER],
                 battery[ACTIVE_POWER_SET_POINT],
                 battery[REACTIVE_POWER_SET_POINT],
-                undefined,
-                undefined,
+                battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
+                battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
+                    UNDEFINED_CONNECTION_DIRECTION,
+                battery[CONNECTIVITY]?.[CONNECTION_POSITION],
+                battery[CONNECTIVITY]?.[CONNECTED],
                 editData?.uuid,
                 battery[FREQUENCY_REGULATION],
                 battery[DROOP],
@@ -377,6 +409,8 @@ const BatteryModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <BatteryModificationForm
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
                         equipmentId={selectedId}
                         batteryToModify={batteryToModify}
                         updatePreviousReactiveCapabilityCurveTable={

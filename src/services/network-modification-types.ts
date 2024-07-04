@@ -29,4 +29,11 @@ export interface VscModificationInfo {
     hvdcAngleDroopActivePowerControl: HvdcAngleDroopActivePowerControlInfo;
     converterStation1: ConverterStationElementModificationInfos;
     converterStation2: ConverterStationElementModificationInfos;
+    voltageLevelId: string;
+    busOrBusbarSectionId: string;
+    busbarSectionName?: string;
+    connectionDirection: string | null;
+    connectionName?: string | null;
+    connectionPosition?: string | null;
+    connected?: boolean | null;
 }

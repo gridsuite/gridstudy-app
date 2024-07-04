@@ -352,6 +352,10 @@ export function modifyBattery(
     targetQ,
     voltageLevelId,
     busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    connected,
     modificationId,
     participate,
     droop,
@@ -378,6 +382,10 @@ export function modifyBattery(
         equipmentName: toModificationOperation(name),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        connectionName: toModificationOperation(connectionName),
+        connectionDirection: toModificationOperation(connectionDirection),
+        connectionPosition: toModificationOperation(connectionPosition),
+        connected: toModificationOperation(connected),
         minP: toModificationOperation(minP),
         maxP: toModificationOperation(maxP),
         targetP: toModificationOperation(targetP),
@@ -465,6 +473,10 @@ export function modifyLoad(
     q0,
     voltageLevelId,
     busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    connected,
     isUpdate = false,
     modificationUuid,
     properties
@@ -491,6 +503,10 @@ export function modifyLoad(
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
+            connectionName: toModificationOperation(connectionName),
+            connectionDirection: toModificationOperation(connectionDirection),
+            connectionPosition: toModificationOperation(connectionPosition),
+            connected: toModificationOperation(connected),
             p0: toModificationOperation(p0),
             q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
@@ -515,6 +531,10 @@ export function modifyGenerator(
     targetV,
     voltageLevelId,
     busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    connected,
     modificationId,
     qPercent,
     plannedActivePowerSetPoint,
@@ -560,6 +580,10 @@ export function modifyGenerator(
         targetV: toModificationUnsetOperation(targetV),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        connectionName: toModificationOperation(connectionName),
+        connectionDirection: toModificationOperation(connectionDirection),
+        connectionPosition: toModificationOperation(connectionPosition),
+        connected: toModificationOperation(connected),
         qPercent: toModificationOperation(qPercent),
         plannedActivePowerSetPoint: toModificationOperation(
             plannedActivePowerSetPoint
@@ -1789,7 +1813,13 @@ export function modifyVsc(
     converterStation2,
     properties,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    connected
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1825,6 +1855,12 @@ export function modifyVsc(
         converterStation1: converterStation1,
         converterStation2: converterStation2,
         properties: properties,
+        voltageLevelId: toModificationOperation(voltageLevelId),
+        busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        connectionName: toModificationOperation(connectionName),
+        connectionDirection: toModificationOperation(connectionDirection),
+        connectionPosition: toModificationOperation(connectionPosition),
+        connected: toModificationOperation(connected),
     }; //FIXME add missing informations
 
     return backendFetchText(modificationUrl, {

@@ -23,13 +23,34 @@ import { SelectInput } from '@gridsuite/commons-ui';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network.js';
 
-const LoadModificationForm = ({ loadToModify, equipmentId }) => {
+const LoadModificationForm = ({
+    studyUuid,
+    currentNode,
+    loadToModify,
+    equipmentId,
+}) => {
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a.id.localeCompare(b.id))
+                    );
+                }
+            );
+        }
+    }, [studyUuid, currentNodeUuid]);
 
     const loadIdField = (
         <TextField
@@ -93,12 +114,28 @@ const LoadModificationForm = ({ loadToModify, equipmentId }) => {
         />
     );
 
+    const connectivityForm = (
+        <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
+            withPosition={true}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            isEquipmentModification={true}
+            previousValues={loadToModify}
+        />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
                 {gridItem(loadIdField, 4)}
                 {gridItem(loadNameField, 4)}
                 {gridItem(loadTypeField, 4)}
+            </Grid>
+            {/* Connectivity part */}
+            <GridSection title="Connectivity" />
+            <Grid container spacing={2}>
+                {gridItem(connectivityForm, 12)}
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
