@@ -112,13 +112,15 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
-    const connectivityForm = isModification ? null : (
+    const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            isEquipmentModification={isModification}
+            previousValues={previousValues}
         />
     );
 
