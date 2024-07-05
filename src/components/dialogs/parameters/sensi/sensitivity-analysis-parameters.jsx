@@ -526,7 +526,12 @@ export const SensitivityAnalysisParameters = ({
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, fromSensitivityAnalysisParamsDataToFormValues, reset]
+        [
+            snackError,
+            fromSensitivityAnalysisParamsDataToFormValues,
+            reset,
+            initRowsCount,
+        ]
     );
 
     useEffect(() => {
