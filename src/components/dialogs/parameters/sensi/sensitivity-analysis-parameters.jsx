@@ -427,9 +427,9 @@ export const SensitivityAnalysisParameters = ({
                         };
                     }) ?? [],
             };
-            reset(values);
+            return values;
         },
-        [reset]
+        []
     );
 
     const initRowsCount = useCallback(() => {
@@ -514,6 +514,7 @@ export const SensitivityAnalysisParameters = ({
                                 keepDefaultValues: true,
                             }
                         );
+                        initRowsCount();
                     })
                     .catch((error) => {
                         console.error(error);
@@ -530,8 +531,10 @@ export const SensitivityAnalysisParameters = ({
 
     useEffect(() => {
         if (sensitivityAnalysisParams) {
-            fromSensitivityAnalysisParamsDataToFormValues(
-                sensitivityAnalysisParams
+            reset(
+                fromSensitivityAnalysisParamsDataToFormValues(
+                    sensitivityAnalysisParams
+                )
             );
             !isSubmitAction && initRowsCount();
         }
@@ -540,6 +543,7 @@ export const SensitivityAnalysisParameters = ({
         sensitivityAnalysisParams,
         initRowsCount,
         isSubmitAction,
+        reset,
     ]);
 
     const clear = useCallback(() => {
