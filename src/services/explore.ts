@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
 
@@ -50,26 +51,51 @@ export function elementExists(
     );
 }
 
-export interface ModificationElementCreationProps {
-    elementUuid: UUID;
-    description: string;
-    elementName: string;
-}
-
-export function createModifications(
+export function createCompositeModifications(
+    name: string,
+    description: string,
     parentDirectoryUuid: UUID,
-    modificationList: ModificationElementCreationProps[]
+    selectedModificationsUuid: (string | UUID)[]
 ) {
     let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(
         PREFIX_EXPLORE_SERVER_QUERIES +
-            '/v1/explore/modifications?' +
+            '/v1/explore/composite-modifications?' +
             urlSearchParams.toString(),
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(modificationList),
+            body: JSON.stringify(selectedModificationsUuid),
         }
     );
+}
+
+/**
+ * Create Contingency List
+ * @returns {Promise<Response>}
+ */
+export function createContingencyList(
+    newContingencyList: ContingencyList[],
+    contingencyListName: string,
+    description: string,
+    parentDirectoryUuid: string
+) {
+    console.info('Creating a new contingency list...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const createContingencyListUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/identifier-contingency-lists/' +
+        encodeURIComponent(contingencyListName) +
+        '?' +
+        urlSearchParams.toString();
+    return backendFetch(createContingencyListUrl, {
+        method: 'post',
+        body: JSON.stringify(newContingencyList),
+    });
 }

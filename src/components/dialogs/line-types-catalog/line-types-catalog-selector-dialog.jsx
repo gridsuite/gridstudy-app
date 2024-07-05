@@ -12,12 +12,12 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import BasicModificationDialog from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 export const ALLOWED_KEYS = [
     'Escape',

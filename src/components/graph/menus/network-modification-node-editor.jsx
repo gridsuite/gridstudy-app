@@ -17,7 +17,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
@@ -69,8 +69,8 @@ import TabularCreationDialog from 'components/dialogs/network-modifications/tabu
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
-    stashModifications,
     fetchNetworkModifications,
+    stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
@@ -80,11 +80,11 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer';
-import { createModifications } from '../../../services/explore';
+import { createCompositeModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import EditIcon from '@mui/icons-material/Edit.js';
+import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -184,6 +184,7 @@ export function isPartial(s1, s2) {
 export const CopyType = {
     COPY: 'COPY',
     MOVE: 'MOVE',
+    INSERT: 'INSERT',
 };
 
 const NetworkModificationNodeEditor = () => {
@@ -191,7 +192,6 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const [studyPath, setStudyPath] = useState(undefined);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState([]);
@@ -215,16 +215,16 @@ const NetworkModificationNodeEditor = () => {
     );
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
     const [importDialogOpen, setImportDialogOpen] = useState(false);
-
+    const [
+        createCompositeModificationDialogOpen,
+        setCreateCompositeModificationDialogOpen,
+    ] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef();
-
-    const { computeLabel } = useModificationLabelComputer();
-    const intl = useIntl();
 
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
@@ -546,14 +546,6 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
-    const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid).then((pathArray) => {
-            if (pathArray?.length > 0) {
-                setStudyPath(pathArray);
-            }
-        });
-    }, [studyUuid]);
-
     const updateSelectedItems = useCallback((modifications) => {
         const toKeepIdsSet = new Set(modifications.map((e) => e.uuid));
         setSelectedItems((oldselectedItems) =>
@@ -700,12 +692,6 @@ const NetworkModificationNodeEditor = () => {
         cleanClipboard,
     ]);
 
-    useEffect(() => {
-        if (studyUuid) {
-            fetchDefaultDirectoryForStudy();
-        }
-    }, [studyUuid, fetchDefaultDirectoryForStudy]);
-
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] =
         useState(false);
 
@@ -730,6 +716,10 @@ const NetworkModificationNodeEditor = () => {
 
     const openImportModificationsDialog = useCallback(() => {
         setImportDialogOpen(true);
+    }, []);
+
+    const openCreateCompositeModificationDialog = useCallback(() => {
+        setCreateCompositeModificationDialogOpen(true);
     }, []);
 
     const doDeleteModification = useCallback(() => {
@@ -762,67 +752,32 @@ const NetworkModificationNodeEditor = () => {
         copiedModifications,
     ]);
 
-    const buildModificationCreationProps = (modification, description) => {
-        // Element name will be like the displayed modification name.
-        // Note: having a unique name is done implicitly in explore-server
-        const modificationComputedLabel = intl
-            .formatMessage(
-                { id: 'network_modifications.' + modification.messageType },
-                {
-                    ...modification,
-                    ...computeLabel(modification, false),
-                }
-            )
-            .trim();
-        return {
-            elementUuid: modification.uuid,
-            description: description,
-            elementName: modificationComputedLabel,
-        };
-    };
-
-    const doCreateModificationsElements = () => {
-        // studyPath contains [studyElement, parentDirElement, parentDirElement, ..., RootDirElement]
-        const STUDY_ELEMENT_INDEX = 0;
-        const PARENT_DIRECTORY_INDEX = 1;
-        if (!studyPath || studyPath.length < 2) {
-            snackError({
-                messageTxt: 'unknown study directory',
-                headerId: 'errCreateModificationsMsg',
-            });
-            return;
-        }
-        const studyDirectoryUuid =
-            studyPath[PARENT_DIRECTORY_INDEX].elementUuid;
-        const studyDirName =
-            '/' +
-            studyPath
-                .slice(PARENT_DIRECTORY_INDEX)
-                .reverse()
-                .map((r) => r.elementName)
-                .join('/');
-        const studyFullName =
-            studyDirName + '/' + studyPath[STUDY_ELEMENT_INDEX].elementName;
-        const description = intl.formatMessage(
-            { id: 'SaveModificationDescription' },
-            {
-                nodePath: studyFullName + ':' + currentNode.data.label,
-            }
-        );
-
-        const modificationPropsList = [...selectedItems].map((modification) =>
-            buildModificationCreationProps(modification, description)
+    const doCreateCompositeModificationsElements = ({
+        name,
+        description,
+        folderName,
+        folderId,
+    }) => {
+        const selectedModificationsUuid = selectedItems.map(
+            (item) => item.uuid
         );
 
         setSaveInProgress(true);
-        snackInfo({
-            headerId: 'infoCreateModificationsMsg',
-            headerValues: {
-                nbModifications: selectedItems.length,
-                studyDirectory: studyDirName,
-            },
-        });
-        createModifications(studyDirectoryUuid, modificationPropsList)
+        createCompositeModifications(
+            name,
+            description,
+            folderId,
+            selectedModificationsUuid
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'infoCreateModificationsMsg',
+                    headerValues: {
+                        nbModifications: selectedItems.length,
+                        studyDirectory: '/' + folderName,
+                    },
+                });
+            })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
@@ -1163,6 +1118,15 @@ const NetworkModificationNodeEditor = () => {
             />
         );
     };
+    const renderCreateCompositeNetworkModificationsDialog = () => {
+        return (
+            <CreateCompositeModificationDialog
+                open={createCompositeModificationDialogOpen}
+                onSave={doCreateCompositeModificationsElements}
+                onClose={() => setCreateCompositeModificationDialogOpen(false)}
+            />
+        );
+    };
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
@@ -1214,7 +1178,7 @@ const NetworkModificationNodeEditor = () => {
                 <Tooltip title={<FormattedMessage id={'SaveModificationTo'} />}>
                     <span>
                         <IconButton
-                            onClick={doCreateModificationsElements}
+                            onClick={openCreateCompositeModificationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
                             disabled={
@@ -1342,7 +1306,8 @@ const NetworkModificationNodeEditor = () => {
             </Toolbar>
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
             {importDialogOpen && renderImportNetworkModificationsDialog()}
-
+            {createCompositeModificationDialogOpen &&
+                renderCreateCompositeNetworkModificationsDialog()}
             {renderPaneSubtitle()}
 
             {renderNetworkModificationsList()}

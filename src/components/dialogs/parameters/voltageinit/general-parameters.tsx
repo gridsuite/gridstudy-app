@@ -73,6 +73,8 @@ export const GeneralParameters = () => {
                 style={styles.parameterName}
                 label={'ReactiveSlacksThreshold'}
                 adornment={ReactivePowerAdornment}
+                labelSize={8}
+                inputSize={4}
             />
         </Grid>
     );
