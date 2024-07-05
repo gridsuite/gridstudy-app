@@ -7,7 +7,6 @@
 
 import { Box } from '@mui/system';
 import { CsvExport } from '../spreadsheet/export-csv';
-import { CustomAGGrid } from '../custom-aggrid/custom-aggrid';
 import React, { FunctionComponent, Ref } from 'react';
 import {
     ColDef,
@@ -16,6 +15,7 @@ import {
     RowDataUpdatedEvent,
     RowStyle,
 } from 'ag-grid-community';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
     gridContainer: {

@@ -8,8 +8,8 @@
 import React, { useMemo, useCallback } from 'react';
 import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
-import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
