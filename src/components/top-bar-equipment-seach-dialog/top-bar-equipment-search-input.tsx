@@ -24,6 +24,16 @@ interface TopBarEquipmentSearchInputProps {
     setEquipmentType: Dispatch<SetStateAction<EquipmentType | null>>;
 }
 
+const styles = {
+    chip: {
+        backgroundColor: 'lightblue',
+        color: 'black',
+        '& .MuiChip-deleteIcon': {
+            color: 'black',
+        },
+    },
+};
+
 export const TopBarEquipmentSearchInput = (
     props: TopBarEquipmentSearchInputProps
 ) => {
@@ -72,6 +82,7 @@ export const TopBarEquipmentSearchInput = (
                                             id={equipmentType.toString()}
                                         />
                                     }
+                                    sx={styles.chip}
                                 />
                             )}
                             <IconButton onClick={() => setIsPopoverOpen(true)}>
