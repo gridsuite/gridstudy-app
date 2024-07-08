@@ -100,14 +100,25 @@ export const useSaveMap = (): UseSaveMapOutput => {
                     }
                 }
             } catch (error: any) {
-                snackError({
-                    messageTxt: intl.formatMessage({
-                        id: error.message,
-                    }),
-                    headerId: isFilter
-                        ? 'FilterCreationError'
-                        : 'ContingencyListCreationError',
-                });
+                if (error.message === 'EmptySelection') {
+                    snackWarning({
+                        messageTxt: intl.formatMessage({
+                            id: error.message,
+                        }),
+                        headerId: isFilter
+                            ? 'FilterCreationError'
+                            : 'ContingencyListCreationError',
+                    });
+                } else {
+                    snackError({
+                        messageTxt: intl.formatMessage({
+                            id: error.message,
+                        }),
+                        headerId: isFilter
+                            ? 'FilterCreationError'
+                            : 'ContingencyListCreationError',
+                    });
+                }
                 return false;
             } finally {
                 setPendingState(false);
