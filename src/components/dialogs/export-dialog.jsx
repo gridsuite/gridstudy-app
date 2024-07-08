@@ -34,7 +34,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
-import { CGMES } from 'components/utils/constants';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 const STRING_LIST = 'STRING_LIST';
@@ -137,11 +136,12 @@ const ExportDialog = ({
             if (Object.keys(currentParameters).length > 0) {
                 const jsoned = JSON.stringify(currentParameters);
                 urlSearchParams.append('formatParameters', jsoned);
-                // we have already as parameters, the tokens, so use '&' in stead of '?'
             }
             if (!isBlankOrEmpty(studyName)) {
                 urlSearchParams.append('studyName', studyName);
             }
+
+            // we have already as parameters, the access tokens, so use '&' instead of '?'
             suffix = urlSearchParams.toString()
                 ? '&' + urlSearchParams.toString()
                 : '';
