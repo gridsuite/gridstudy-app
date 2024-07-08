@@ -554,6 +554,8 @@
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
+    "CreateCompositeModification": "Créer une modification réseau composée",
+    "descriptionProperty": "Description (optional)",
     "RestoreModificationText": "Please select modifications to restore",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
     "HybridDisplay": "Hybrid display",
@@ -641,6 +643,7 @@
     "LOAD": "Load",
     "BATTERY": "Battery",
     "DANGLING_LINE": "Dangling Line",
+    "Hvdc": "HVDC",
     "HVDC_LINE": "HVDC Line",
     "HVDC_CONVERTER_STATION": "HVDC Converter Station",
     "LCC_CONVERTER_STATION": "Lcc Converter Station",
@@ -943,7 +946,7 @@
     "ContingencyListCreationSuccess": "Contingency list successfully created",
     "FilterCreationIgnored": "The creation of the filter didn't complete",
     "ContingencyListCreationIgnored": "The creation of the contingency list didn't complete",
-    
+
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
     "DeltaReactance": "Δ Reactance (%)",
@@ -1138,7 +1141,7 @@
 
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
-    "NetworkElementNotFound": "The network element \"{elementId}\" does not exist",
+    "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
@@ -1183,9 +1186,8 @@
     "InsertModificationFrom": "Insert from GridExplore",
     "SaveModificationTo": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
-    "SaveModificationDescription": "Saved from {nodePath}",
     "errCreateModificationsMsg": "Network modifications creation error",
-    "infoCreateModificationsMsg": "Creation of {nbModifications} network modifications in {studyDirectory}",
+    "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
     "partialCopyShuntCompensator": "Partial copy : copying sections is not supported for this shunt compensator",
@@ -1365,5 +1367,11 @@
     "FieldRequired": "At least one value is missing for required field : ",
     "ReactiveSlacksThreshold": "Alert threshold on reactive slacks",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
-    "TieLines": "Tie lines"
+    "TieLines": "Tie lines",
+    "StateEstimation": "State estimation",
+    "startStateEstmationError": "An error occurred while launching the state estimation",
+    "stateEstimationError": "An error occured when executing the state estimation",
+    "NoFilter": "No filter",
+    "EquipmentSearchPlaceholder": "Search",
+    "GeneratedModification": "Generated-modification"
 }

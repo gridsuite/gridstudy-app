@@ -8,20 +8,27 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import {
     ElementSearchDialog,
+    Equipment,
     EquipmentInfos,
     EquipmentItem,
+    TagRendererProps,
+    EquipmentType,
     equipmentStyles,
-    // Equipment,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
-// TODO remove this hack when commons-ui fix this export bug
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
-import { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
 import { useDisabledSearchReason } from './use-disabled-search-reason';
 import { useSearchEvent } from './use-search-event';
 import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-equipments';
-import { addToLocalStorageSearchEquipmentHistory } from 'redux/local-storage/search-equipment-history';
+import {
+    addToLocalStorageSearchEquipmentHistory,
+    excludeElementFromCurrentSearchHistory,
+} from 'redux/local-storage/search-equipment-history';
+import { fetchNetworkElementInfos } from 'services/study/network';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -43,11 +50,14 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
+    const [equipmentTypeFilter, setEquipmentTypeFilter] =
+        useState<EquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
         useTopBarSearchMatchingEquipment({
             studyUuid: studyUuid,
             nodeUuid: currentNode?.id,
+            equipmentType: equipmentTypeFilter ?? undefined,
         });
     const disabledSearchReason = useDisabledSearchReason();
 
@@ -55,19 +65,55 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         setIsDialogSearchOpen(true);
     }, [setIsDialogSearchOpen]);
 
+    const { snackWarning } = useSnackMessage();
+
+    const closeDialog = useCallback(() => {
+        setIsDialogSearchOpen(false);
+    }, [setIsDialogSearchOpen]);
+
     const onSelectionChange = useCallback(
-        (element: EquipmentInfos) => {
-            setIsDialogSearchOpen(false);
+        (equipment: EquipmentInfos) => {
+            closeDialog();
             updateSearchTerm('');
-            addToLocalStorageSearchEquipmentHistory(studyUuid, element);
-            showVoltageLevelDiagram(element);
+            addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
+            fetchNetworkElementInfos(
+                studyUuid,
+                currentNode?.id,
+                equipment.type,
+                EQUIPMENT_INFOS_TYPES.LIST.type,
+                equipment.id,
+                false
+            )
+                .then(() => {
+                    showVoltageLevelDiagram(equipment);
+                })
+                .catch(() => {
+                    excludeElementFromCurrentSearchHistory(
+                        studyUuid,
+                        equipment
+                    );
+                    updateSearchTerm('');
+                    snackWarning({
+                        messageId: 'NetworkEquipmentNotFound',
+                        messageValues: { equipmentId: equipment.id },
+                    });
+                });
         },
         [
             updateSearchTerm,
-            setIsDialogSearchOpen,
+            closeDialog,
             showVoltageLevelDiagram,
             studyUuid,
+            snackWarning,
+            currentNode,
         ]
+    );
+
+    const suffixRenderer = useCallback(
+        (props: TagRendererProps) => (
+            <CustomSuffixRenderer {...props} onClose={closeDialog} />
+        ),
+        [closeDialog]
     );
 
     useSearchEvent(enableSearchDialog);
@@ -75,10 +121,8 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     return (
         <ElementSearchDialog
             open={isDialogSearchOpen}
-            onClose={() => setIsDialogSearchOpen(false)}
-            searchingLabel={intl.formatMessage({
-                id: 'equipment_search/label',
-            })}
+            showResults={equipmentsFound.length > 0 || isLoading}
+            onClose={closeDialog}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={onSelectionChange}
@@ -88,13 +132,27 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     styles={equipmentStyles}
                     {...props}
                     key={'ei-' + props.element.key}
-                    suffixRenderer={CustomSuffixRenderer}
+                    suffixRenderer={suffixRenderer}
                 />
             )}
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
-            isLoading={isLoading}
+            disableClearable
+            loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
+            getOptionLabel={(equipment) => equipment.label}
+            isOptionEqualToValue={(equipment1, equipment2) =>
+                equipment1.id === equipment2.id
+            }
+            renderInput={(displayedValue, params) => (
+                <TopBarEquipmentSearchInput
+                    isSearchDisabled={disabledSearchReason !== ''}
+                    displayedValue={displayedValue}
+                    params={params}
+                    setEquipmentType={setEquipmentTypeFilter}
+                    equipmentType={equipmentTypeFilter}
+                />
+            )}
         />
     );
 };

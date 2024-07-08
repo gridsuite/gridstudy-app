@@ -17,9 +17,8 @@ import {
     useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
 import { Box } from '@mui/system';
-import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';

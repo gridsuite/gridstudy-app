@@ -46,9 +46,14 @@ import {
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
 } from 'utils/store-filter-fields';
-import { UUID } from 'crypto';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType from '../../computing-status/computing-type';
+import computingType, {
+    ComputingType,
+} from '../../computing-status/computing-type';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
+import RunningStatus from 'components/utils/running-status';
+import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -603,68 +608,81 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 };
 
 // We can use this custom hook for fetching enums for AutoComplete filter
-export const useFetchFiltersEnums = (
-    studyUuid: UUID,
-    nodeUuid: UUID,
-    hasResult: boolean = false,
-    setFilter: (value: boolean) => void
-): { error: boolean; loading: boolean; result: FilterEnumsType } => {
+export const useFetchFiltersEnums = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [result, setResult] = useState<FilterEnumsType>({
-        status: null,
-        limitType: null,
-        side: null,
+    const [result, setResult] = useState<SecurityAnalysisFilterEnumsType>({
+        n: {
+            limitType: null,
+            side: null,
+        },
+        nmk: {
+            status: null,
+            limitType: null,
+            side: null,
+        },
     });
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
+    const securityAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+    );
 
     useEffect(() => {
-        if (!hasResult) {
-            const promises = [
-                // We can add another fetch for other enums
-                fetchAvailableFilterEnumValues(
-                    studyUuid,
-                    nodeUuid,
-                    computingType.SECURITY_ANALYSIS,
-                    'computation-status'
-                ),
-                fetchAvailableFilterEnumValues(
-                    studyUuid,
-                    nodeUuid,
-                    computingType.SECURITY_ANALYSIS,
-                    'limit-types'
-                ),
-                fetchAvailableFilterEnumValues(
-                    studyUuid,
-                    nodeUuid,
-                    computingType.SECURITY_ANALYSIS,
-                    'branch-sides'
-                ),
-            ];
-
-            setLoading(true);
-            Promise.all(promises)
-                .then(
-                    ([
-                        computationsStatusResult,
-                        limitTypesResult,
-                        branchSidesResult,
-                    ]) => {
-                        setResult({
-                            status: computationsStatusResult,
-                            limitType: limitTypesResult,
-                            side: branchSidesResult,
-                        });
-                        setFilter(true);
-                        setLoading(false);
-                    }
-                )
-                .catch((err) => {
-                    setFilter(false);
-                    setError(err);
-                    setLoading(false);
-                });
+        if (securityAnalysisStatus !== RunningStatus.SUCCEED) {
+            return;
         }
-    }, [hasResult, setFilter, studyUuid, nodeUuid]);
+
+        const filterTypes = [
+            'n-limit-types',
+            'n-branch-sides',
+            'nmk-computation-status',
+            'nmk-limit-types',
+            'nmk-branch-sides',
+        ];
+
+        const promises = filterTypes.map((filterType) =>
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                computingType.SECURITY_ANALYSIS,
+                filterType
+            )
+        );
+
+        setLoading(true);
+        Promise.all(promises)
+            .then(
+                ([
+                    nLimitTypesResult,
+                    nBranchSidesResult,
+                    nmkComputationsStatusResult,
+                    nmkLimitTypesResult,
+                    nmkBranchSidesResult,
+                ]) => {
+                    setResult({
+                        n: {
+                            limitType: nLimitTypesResult,
+                            side: nBranchSidesResult,
+                        },
+                        nmk: {
+                            status: nmkComputationsStatusResult,
+                            limitType: nmkLimitTypesResult,
+                            side: nmkBranchSidesResult,
+                        },
+                    });
+                }
+            )
+            .catch((err) => {
+                setError(err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [securityAnalysisStatus, studyUuid, currentNode.id]);
 
     return { loading, result, error };
 };
