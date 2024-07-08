@@ -301,56 +301,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         // empty array result
         result.length === 0;
 
-    // Function to render the content of the tabs
-    const renderTabContent = () => {
-        if (enableDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
-            return (
-                <SecurityAnalysisResultN
-                    result={result}
-                    isLoadingResult={isLoadingResult}
-                    columnDefs={columnDefs}
-                />
-            );
-        }
-        if (
-            tabIndex ===
-            (enableDeveloperMode
-                ? NMK_RESULTS_TAB_INDEX
-                : NMK_RESULTS_TAB_INDEX - 1)
-        ) {
-            return (
-                <SecurityAnalysisResultNmk
-                    result={result}
-                    isLoadingResult={isLoadingResult || filterEnumsLoading}
-                    isFromContingency={
-                        nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                    }
-                    paginationProps={{
-                        count,
-                        rowsPerPage,
-                        page,
-                        onPageChange: handleChangePage,
-                        onRowsPerPageChange: handleChangeRowsPerPage,
-                    }}
-                    columnDefs={columnDefs}
-                />
-            );
-        }
-        if (
-            tabIndex ===
-            (enableDeveloperMode ? LOGS_TAB_INDEX : LOGS_TAB_INDEX - 1)
-        ) {
-            return (
-                (securityAnalysisStatus === RunningStatus.SUCCEED ||
-                    securityAnalysisStatus === RunningStatus.FAILED) && (
-                    <ComputationReportViewer
-                        reportType={REPORT_TYPES.SECURITY_ANALYSIS}
-                    />
-                )
-            );
-        }
-    };
-
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -411,7 +361,45 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             <Box sx={styles.loader}>
                 {shouldOpenLoader && <LinearProgress />}
             </Box>
-            <Box sx={styles.resultContainer}>{renderTabContent()}</Box>
+            <Box sx={styles.resultContainer}>
+                {tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode && (
+                    <SecurityAnalysisResultN
+                        result={result}
+                        isLoadingResult={isLoadingResult}
+                        columnDefs={columnDefs}
+                    />
+                )}
+                {tabIndex ===
+                    (enableDeveloperMode
+                        ? NMK_RESULTS_TAB_INDEX
+                        : NMK_RESULTS_TAB_INDEX - 1) && (
+                    <SecurityAnalysisResultNmk
+                        result={result}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
+                        isFromContingency={
+                            nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                        }
+                        paginationProps={{
+                            count,
+                            rowsPerPage,
+                            page,
+                            onPageChange: handleChangePage,
+                            onRowsPerPageChange: handleChangeRowsPerPage,
+                        }}
+                        columnDefs={columnDefs}
+                    />
+                )}
+                {tabIndex ===
+                    (enableDeveloperMode
+                        ? LOGS_TAB_INDEX
+                        : LOGS_TAB_INDEX - 1) &&
+                    (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                        securityAnalysisStatus === RunningStatus.FAILED) && (
+                        <ComputationReportViewer
+                            reportType={REPORT_TYPES.SECURITY_ANALYSIS}
+                        />
+                    )}
+            </Box>
         </>
     );
 };
