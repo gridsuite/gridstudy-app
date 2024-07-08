@@ -621,7 +621,7 @@
     "ConnectedComponent": "Composante connexe",
     "SynchronousComponent": "Composante synchrone",
     "Setpoints": "Consignes",
-    "EmptySelection": "Aucun équipement n'est sélectionné",
+    "EmptySelection": "Aucun ouvrage n'est sélectionné",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
@@ -1372,6 +1372,6 @@
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "NoFilter": "Aucun filtre",
-    "EquipmentSearchPlaceholder": "Rechercher un poste, une ligne, un ouvrage...",
+    "EquipmentSearchPlaceholder": "Recherche",
     "GeneratedModification": "Modification-générée"
 }
