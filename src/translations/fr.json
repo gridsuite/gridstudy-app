@@ -645,7 +645,7 @@
     "LOAD": "Consommation",
     "BATTERY": "Batterie",
     "DANGLING_LINE": "Ligne frontière",
-    "HVDC": "HVDC",
+    "Hvdc": "HVDC",
     "HVDC_LINE": "Ligne HVDC",
     "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
     "LCC_CONVERTER_STATION": "Station de conversion LCC",
