@@ -35,5 +35,5 @@ export interface VscModificationInfo {
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
-    connected?: boolean | null;
+    terminalConnected?: boolean | null;
 }

@@ -120,7 +120,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName:
                         shuntCompensator.connectablePosition.connectionName,
                     voltageLevelId: shuntCompensator.voltageLevelId,
-                    // connected is not copied on purpose: we use the default value (true) in all cases
+                    // terminalConnected is not copied on purpose: we use the default value (true) in all cases
                 }),
                 ...getCharacteristicsCreateFormDataFromSearchCopy({
                     bperSection: shuntCompensator.bperSection,

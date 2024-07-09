@@ -88,7 +88,7 @@ export interface ConverterStationInterfaceEditData {
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
-    connected?: boolean | null;
+    terminalConnected?: boolean | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
@@ -110,7 +110,7 @@ export interface ConverterStationModificationInterfaceEditData {
     connectionDirection: AttributeModification<string> | null;
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<string> | null;
-    connected?: AttributeModification<boolean> | null;
+    terminalConnected?: AttributeModification<boolean> | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
     minQ: AttributeModification<number> | null;

@@ -108,7 +108,7 @@ const LoadCreationDialog = ({
                 connectionDirection:
                     load.connectablePosition.connectionDirection,
                 connectionName: load.connectablePosition.connectionName,
-                // connected is not copied on purpose: we use the default value (true) in all cases
+                // terminalConnected is not copied on purpose: we use the default value (true) in all cases
             }),
             ...copyEquipmentPropertiesForCreation(load),
         });
@@ -168,7 +168,7 @@ const LoadCreationDialog = ({
                     UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null,
-                load.connectivity?.connected,
+                load.connectivity?.terminalConnected,
                 toModificationProperties(load)
             ).catch((error) => {
                 snackError({
