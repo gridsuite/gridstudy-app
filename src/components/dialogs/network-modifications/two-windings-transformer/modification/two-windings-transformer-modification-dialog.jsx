@@ -763,7 +763,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setTwtToModify(null);
-                            reset(emptyFormData)
+                            reset(emptyFormData);
                         }
                     });
             } else {
@@ -771,7 +771,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues, editData]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues]
     );
 
     useEffect(() => {

@@ -328,7 +328,7 @@ const GeneratorModificationDialog = ({
             getValues,
             setValue,
             setValuesAndEmptyOthers,
-            editData
+            editData,
         ]
     );
 

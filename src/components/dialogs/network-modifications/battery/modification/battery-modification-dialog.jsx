@@ -274,7 +274,7 @@ const BatteryModificationDialog = ({
             setValue,
             setValuesAndEmptyOthers,
             reset,
-            editData
+            editData,
         ]
     );
 
