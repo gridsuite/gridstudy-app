@@ -753,3 +753,12 @@ export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {
         spreadsheetFilter: spreadsheetFilter,
     };
 }
+
+export const SET_DRAWING_MODE = 'SET_DRAWING_MODE';
+
+export function setMapDrawingMode(isDrawingMode) {
+    return {
+        type: SET_DRAWING_MODE,
+        isDrawingMode: isDrawingMode,
+    };
+}

@@ -9,7 +9,10 @@ import { legacy_createStore as createStore } from 'redux';
 import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 
-export const store = createStore(reducer);
+export const store = createStore(
+    reducer,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 setCommonStore(store);
 
 // to avoid to reset the state with HMR

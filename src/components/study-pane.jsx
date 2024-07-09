@@ -66,6 +66,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     function openVoltageLevelDiagram(vlId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
+            //TODO: it's ok
             props.onChangeTab(0); // switch to map view
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         }

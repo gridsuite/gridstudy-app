@@ -14,7 +14,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params.js';
-import { setStudyDisplayMode } from '../redux/actions.js';
+import { setMapDrawingMode, setStudyDisplayMode } from '../redux/actions.js';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
 import { DiagramType } from './diagrams/diagram-common.js';
 import { ReactFlowProvider } from 'react-flow-renderer';
@@ -95,6 +95,8 @@ const MapViewer = ({
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
+    const isDrawingMode = useSelector((state) => state.isDrawingMode);
+
     const [
         shouldOpenSelectionCreationPanel,
         setShouldOpenSelectionCreationPanel,
@@ -122,9 +124,14 @@ const MapViewer = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+            console.log(' innnnnnnnnnnnnnn');
+            console.log(' isDrawingMode: ', isDrawingMode);
+            console.log(' !isDrawingMode: ', !isDrawingMode);
+            if (!isDrawingMode) {
+                openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+            }
         },
-        [openDiagramView]
+        [openDiagramView, isDrawingMode]
     );
 
     function showInSpreadsheet(equipment) {
@@ -160,6 +167,7 @@ const MapViewer = ({
         setShouldOpenSelectionCreationPanel(false);
         if (isInDrawingMode) {
             dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
+            dispatch(setMapDrawingMode(false));
             previousStudyDisplayMode.current = undefined;
         }
     }, [dispatch, isInDrawingMode]);
@@ -189,6 +197,7 @@ const MapViewer = ({
             if (!isInDrawingMode) {
                 previousStudyDisplayMode.current = studyDisplayMode;
             }
+            dispatch(setMapDrawingMode(true));
             //go to map full screen mode
             dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
         }
@@ -202,6 +211,7 @@ const MapViewer = ({
                     ?.length > 1
             ) {
                 setShouldOpenSelectionCreationPanel(false);
+                dispatch(setMapDrawingMode(true));
                 const idFirstPolygon = networkMapref.current
                     .getMapDrawer()
                     .getAll().features[0].id;
@@ -229,11 +239,16 @@ const MapViewer = ({
         switch (event) {
             case DRAW_EVENT.DELETE:
                 setShouldOpenSelectionCreationPanel(false);
+                console.log(' event delete  ', event);
                 break;
             case DRAW_EVENT.CREATE:
                 setShouldOpenSelectionCreationPanel(true);
+                console.log(' event create  ', event);
+
                 break;
             case DRAW_EVENT.UPDATE:
+                console.log(' event update  ', event);
+
                 break;
             default:
                 break;
