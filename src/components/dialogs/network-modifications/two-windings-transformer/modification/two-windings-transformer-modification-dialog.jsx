@@ -760,15 +760,18 @@ const TwoWindingsTransformerModificationDialog = ({
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
-                        setTwtToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setTwtToModify(null);
+                            reset(emptyFormData)
+                        }
                     });
             } else {
                 setTwtToModify(null);
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues, editData]
     );
 
     useEffect(() => {

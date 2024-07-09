@@ -162,16 +162,18 @@ const VoltageLevelModificationDialog = ({
                         }
                     })
                     .catch(() => {
-                        setVoltageLevelInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        reset(emptyFormData);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setVoltageLevelInfos(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setVoltageLevelInfos(null);
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues]
+        [studyUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {
