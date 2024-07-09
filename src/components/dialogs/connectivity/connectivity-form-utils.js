@@ -39,13 +39,15 @@ export const getConnectivityPropertiesValidationSchema = () => {
 };
 
 export const getConnectivityWithPositionValidationSchema = (
-    id = CONNECTIVITY
+    isEquipmentModification = false
 ) => ({
-    [id]: yup.object().shape({
+    [CONNECTIVITY]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
-        [CONNECTED]: yup.bool().required(),
+        [CONNECTED]: isEquipmentModification
+            ? yup.bool().nullable()
+            : yup.bool().required(),
         ...getConnectivityPropertiesValidationSchema(),
     }),
 });
@@ -152,7 +154,7 @@ export const getConnectivityFormData = (
         connectionDirection,
         connectionName,
         connectionPosition,
-        connected,
+        terminalConnected,
     },
     id = CONNECTIVITY
 ) => {
@@ -166,7 +168,7 @@ export const getConnectivityFormData = (
             [CONNECTION_DIRECTION]: connectionDirection ?? null,
             [CONNECTION_NAME]: connectionName ?? '',
             [CONNECTION_POSITION]: connectionPosition ?? null,
-            [CONNECTED]: connected ?? true,
+            [CONNECTED]: terminalConnected ?? true,
         },
     };
 };

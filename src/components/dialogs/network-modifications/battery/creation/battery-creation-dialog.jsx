@@ -173,7 +173,7 @@ const BatteryCreationDialog = ({
                     connectionDirection: editData.connectionDirection,
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
-                    connected: editData.connected,
+                    terminalConnected: editData.terminalConnected,
                 }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice:

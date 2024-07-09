@@ -284,7 +284,7 @@ export function createBattery(
     connectionName,
     connectionDirection,
     connectionPosition,
-    connected,
+    terminalConnected,
     minP,
     maxP,
     isReactiveCapabilityCurveOn,
@@ -325,7 +325,7 @@ export function createBattery(
             connectionName,
             connectionDirection,
             connectionPosition,
-            connected,
+            terminalConnected,
             minP,
             maxP,
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
@@ -355,7 +355,7 @@ export function modifyBattery(
     connectionName,
     connectionDirection,
     connectionPosition,
-    connected,
+    terminalConnected,
     modificationId,
     participate,
     droop,
@@ -385,7 +385,7 @@ export function modifyBattery(
         connectionName: toModificationOperation(connectionName),
         connectionDirection: toModificationOperation(connectionDirection),
         connectionPosition: toModificationOperation(connectionPosition),
-        connected: toModificationOperation(connected),
+        terminalConnected: toModificationOperation(terminalConnected),
         minP: toModificationOperation(minP),
         maxP: toModificationOperation(maxP),
         targetP: toModificationOperation(targetP),
@@ -425,7 +425,7 @@ export function createLoad(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected,
+    terminalConnected,
     properties
 ) {
     let createLoadUrl =
@@ -457,7 +457,7 @@ export function createLoad(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
-            connected: connected,
+            terminalConnected: terminalConnected,
             properties,
         }),
     });
@@ -476,7 +476,7 @@ export function modifyLoad(
     connectionName,
     connectionDirection,
     connectionPosition,
-    connected,
+    terminalConnected,
     isUpdate = false,
     modificationUuid,
     properties
@@ -506,7 +506,7 @@ export function modifyLoad(
             connectionName: toModificationOperation(connectionName),
             connectionDirection: toModificationOperation(connectionDirection),
             connectionPosition: toModificationOperation(connectionPosition),
-            connected: toModificationOperation(connected),
+            terminalConnected: toModificationOperation(terminalConnected),
             p0: toModificationOperation(p0),
             q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
@@ -534,7 +534,7 @@ export function modifyGenerator(
     connectionName,
     connectionDirection,
     connectionPosition,
-    connected,
+    terminalConnected,
     modificationId,
     qPercent,
     plannedActivePowerSetPoint,
@@ -583,7 +583,7 @@ export function modifyGenerator(
         connectionName: toModificationOperation(connectionName),
         connectionDirection: toModificationOperation(connectionDirection),
         connectionPosition: toModificationOperation(connectionPosition),
-        connected: toModificationOperation(connected),
+        terminalConnected: toModificationOperation(terminalConnected),
         qPercent: toModificationOperation(qPercent),
         plannedActivePowerSetPoint: toModificationOperation(
             plannedActivePowerSetPoint
@@ -653,7 +653,7 @@ export function createGenerator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected,
+    terminalConnected,
     properties
 ) {
     let createGeneratorUrl =
@@ -706,7 +706,7 @@ export function createGenerator(
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
             connectionPosition: connectionPosition,
-            connected: connected,
+            terminalConnected: terminalConnected,
             properties,
         }),
     });
@@ -728,7 +728,7 @@ export function createShuntCompensator(
     connectionDirection,
     connectionName,
     connectionPosition,
-    connected,
+    terminalConnected,
     properties
 ) {
     let createShuntUrl =
@@ -762,7 +762,7 @@ export function createShuntCompensator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
-            connected: connected,
+            terminalConnected: terminalConnected,
             properties,
         }),
     });
@@ -783,7 +783,7 @@ export function modifyShuntCompensator(
     connectionName,
     connectionDirection,
     connectionPosition,
-    connected,
+    terminalConnected,
     isUpdate,
     modificationUuid,
     properties
@@ -819,7 +819,7 @@ export function modifyShuntCompensator(
             connectionDirection: toModificationOperation(connectionDirection),
             connectionName: toModificationOperation(connectionName),
             connectionPosition: toModificationOperation(connectionPosition),
-            connected: toModificationOperation(connected),
+            terminalConnected: toModificationOperation(terminalConnected),
             properties,
         }),
     });

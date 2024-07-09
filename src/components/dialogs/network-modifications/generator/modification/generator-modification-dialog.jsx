@@ -213,7 +213,8 @@ const GeneratorModificationDialog = ({
                         editData?.connectionDirection?.value ?? null,
                     connectionPosition:
                         editData?.connectionPosition?.value ?? null,
-                    connected: editData?.connected?.value ?? false,
+                    terminalConnected:
+                        editData?.terminalConnected?.value ?? false,
                 }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: editData

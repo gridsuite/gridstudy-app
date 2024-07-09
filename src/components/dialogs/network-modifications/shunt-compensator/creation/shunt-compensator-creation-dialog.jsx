@@ -150,7 +150,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
                     voltageLevelId: shuntCompensator.voltageLevelId,
-                    connected: shuntCompensator.connected,
+                    terminalConnected: shuntCompensator.terminalConnected,
                 }),
                 ...getCharacteristicsFormData({
                     maxSusceptance: shuntCompensator.maxSusceptance ?? null,

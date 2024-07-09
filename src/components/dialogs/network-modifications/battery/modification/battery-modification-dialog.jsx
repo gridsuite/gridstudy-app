@@ -108,7 +108,7 @@ const formSchema = yup
             }),
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        ...getConnectivityWithPositionValidationSchema(),
+        ...getConnectivityWithPositionValidationSchema(true),
         ...getReactiveLimitsSchema(true),
         ...getFrequencyRegulationSchema(true),
     })
@@ -159,7 +159,8 @@ const BatteryModificationDialog = ({
                         editData?.connectionDirection?.value ?? null,
                     connectionPosition:
                         editData?.connectionPosition?.value ?? null,
-                    connected: editData?.connected?.value ?? false,
+                    terminalConnected:
+                        editData?.terminalConnected?.value ?? false,
                 }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: editData

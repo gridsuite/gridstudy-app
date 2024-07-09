@@ -30,6 +30,7 @@ import {
     AutocompleteInput,
     IntegerInput,
     SelectInput,
+    SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
 import {
@@ -189,12 +190,14 @@ export const ConnectivityForm = ({
         }
     }, [intl, previousValues]);
 
-    const connectedField = (
+    const connectedField = isEquipmentModification ? (
         <CheckboxNullableInput
             name={`${id}.${CONNECTED}`}
-            label="connected"
-            previousValue={isEquipmentModification ? previousConnected : null}
+            label="Connected"
+            previousValue={previousConnected}
         />
+    ) : (
+        <SwitchInput name={`${id}.${CONNECTED}`} label="Connected" />
     );
 
     const newBusOrBusbarSectionField = (

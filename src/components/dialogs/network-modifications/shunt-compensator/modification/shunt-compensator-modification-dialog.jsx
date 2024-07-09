@@ -128,7 +128,8 @@ const ShuntCompensatorModificationDialog = ({
                         shuntCompensator.connectionDirection?.value ?? null,
                     connectionPosition:
                         shuntCompensator.connectionPosition?.value ?? null,
-                    connected: shuntCompensator.connected?.value ?? false,
+                    terminalConnected:
+                        shuntCompensator.terminalConnected?.value ?? false,
                 }),
                 ...getCharacteristicsFormData({
                     maxSusceptance:

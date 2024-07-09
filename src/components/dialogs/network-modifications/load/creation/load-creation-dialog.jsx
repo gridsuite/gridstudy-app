@@ -128,7 +128,7 @@ const LoadCreationDialog = ({
                     connectionDirection: load.connectionDirection,
                     connectionName: load.connectionName,
                     connectionPosition: load.connectionPosition,
-                    connected: load.connected,
+                    terminalConnected: load.terminalConnected,
                 }),
                 ...getPropertiesFromModification(load.properties),
             });
