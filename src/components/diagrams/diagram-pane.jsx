@@ -1098,6 +1098,7 @@ export function DiagramPane({
                                 )}
                                 fullscreenWidth={width}
                                 fullscreenHeight={height}
+                                loadingState={diagramView.loadingState}
                             >
                                 {(diagramView.svgType ===
                                     DiagramType.VOLTAGE_LEVEL ||
