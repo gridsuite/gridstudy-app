@@ -650,7 +650,7 @@ export function DiagramPane({
         }
     }, []);
     // We debounce the updateNAD function to avoid generating unnecessary NADs
-    const debounceUpdateNAD = useDebounce(updateNAD, 500);
+    const debounceUpdateNAD = useDebounce(updateNAD, 300);
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
         if (
