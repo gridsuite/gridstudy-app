@@ -179,11 +179,11 @@ export const ConnectivityForm = ({
     );
 
     const previousConnected = useMemo(() => {
-        if (previousValues?.connected) {
+        if (previousValues?.terminalConnected) {
             return intl.formatMessage({ id: 'On' });
         } else if (
-            previousValues?.connected === false ||
-            (previousValues && previousValues?.connected === undefined)
+            previousValues?.terminalConnected === false ||
+            (previousValues && previousValues?.terminalConnected === undefined)
         ) {
             return intl.formatMessage({ id: 'Off' });
         }

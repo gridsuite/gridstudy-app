@@ -8,14 +8,22 @@
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     ADDITIONAL_PROPERTIES,
+    BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     EQUIPMENT_NAME,
+    ID,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
+    VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import {
     getCharacteristicsEmptyFormData,
@@ -29,7 +37,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import ModificationDialog from '../../../commons/modificationDialog';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
+import {
+    FORM_LOADING_DELAY,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
 import {
     EQUIPMENT_INFOS_TYPES,
@@ -46,9 +57,15 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils.js';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
+    ...getConnectivityWithPositionEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
     ...emptyProperties,
 };
@@ -57,6 +74,7 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_NAME]: yup.string(),
+        ...getConnectivityWithPositionValidationSchema(),
         ...getCharacteristicsFormValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)
@@ -94,8 +112,24 @@ const ShuntCompensatorModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
+            if (shuntCompensator?.equipmentId) {
+                setSelectedId(shuntCompensator.equipmentId);
+            }
             reset({
                 [EQUIPMENT_NAME]: shuntCompensator?.equipmentName?.value ?? '',
+                ...getConnectivityFormData({
+                    voltageLevelId:
+                        shuntCompensator.voltageLevelId?.value ?? null,
+                    busbarSectionId:
+                        shuntCompensator?.busOrBusbarSectionId?.value ?? null,
+                    connectionName:
+                        shuntCompensator.connectionName?.value ?? '',
+                    connectionDirection:
+                        shuntCompensator.connectionDirection?.value ?? null,
+                    connectionPosition:
+                        shuntCompensator.connectionPosition?.value ?? null,
+                    connected: shuntCompensator.connected?.value ?? false,
+                }),
                 ...getCharacteristicsFormData({
                     maxSusceptance:
                         shuntCompensator.maxSusceptance?.value ?? null,
@@ -223,7 +257,15 @@ const ShuntCompensatorModificationDialog = ({
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
                     ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
                     : null,
-                shuntCompensatorInfos?.voltageLevelId,
+                shuntCompensator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                shuntCompensator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                sanitizeString(
+                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
+                ),
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
+                    UNDEFINED_CONNECTION_DIRECTION,
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION],
+                shuntCompensator[CONNECTIVITY]?.[CONNECTED],
                 !!editData,
                 editData?.uuid,
                 toModificationProperties(shuntCompensator)
@@ -234,14 +276,7 @@ const ShuntCompensatorModificationDialog = ({
                 });
             });
         },
-        [
-            currentNodeUuid,
-            shuntCompensatorInfos,
-            studyUuid,
-            editData,
-            snackError,
-            selectedId,
-        ]
+        [currentNodeUuid, studyUuid, editData, snackError, selectedId]
     );
 
     return (
@@ -284,6 +319,8 @@ const ShuntCompensatorModificationDialog = ({
                         // The case for creating a Shunt Compensator with free text in the selector
                         idExists) && (
                         <ShuntCompensatorModificationForm
+                            studyUuid={studyUuid}
+                            currentNode={currentNode}
                             shuntCompensatorInfos={shuntCompensatorInfos}
                             equipmentId={selectedId}
                         />

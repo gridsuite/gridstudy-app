@@ -183,6 +183,9 @@ const BatteryModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);

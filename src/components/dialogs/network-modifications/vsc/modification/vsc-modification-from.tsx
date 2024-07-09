@@ -11,7 +11,7 @@ import {
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
 } from '../../../../utils/field-constants';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import { UUID } from 'crypto';
@@ -19,13 +19,11 @@ import { CurrentTreeNode } from '../../../../../redux/reducer.type';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { TextInput } from '@gridsuite/commons-ui';
 import { Box, TextField } from '@mui/material';
-import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
+import { gridItem } from 'components/dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -50,23 +48,6 @@ export const VscModificationForm: FunctionComponent<
     tabIndexesWithError,
     updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const currentNodeUuid = currentNode?.id;
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a: { id: string }, b: { id: string }) =>
-                            a.id.localeCompare(b.id)
-                        )
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
-
     const vscIdField = (
         <TextField
             size="small"
@@ -91,17 +72,6 @@ export const VscModificationForm: FunctionComponent<
         />
     );
 
-    const connectivityForm = (
-        <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
-            withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            isEquipmentModification={true}
-            previousValues={vscToModify}
-        />
-    );
-
     const headersAndTabs = (
         <Box
             sx={{
@@ -113,11 +83,6 @@ export const VscModificationForm: FunctionComponent<
             <Grid container spacing={2}>
                 {gridItem(vscIdField, 4)}
                 {gridItem(vscNameField, 4)}
-            </Grid>
-            {/* Connectivity part */}
-            <GridSection title="Connectivity" />
-            <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
             </Grid>
             <VscTabs
                 tabIndex={tabIndex}

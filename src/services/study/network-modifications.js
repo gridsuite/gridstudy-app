@@ -779,6 +779,11 @@ export function modifyShuntCompensator(
     maxQAtNominalV,
     shuntCompensatorType,
     voltageLevelId,
+    busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    connected,
     isUpdate,
     modificationUuid,
     properties
@@ -810,6 +815,11 @@ export function modifyShuntCompensator(
             maxQAtNominalV: toModificationOperation(maxQAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
             voltageLevelId: toModificationOperation(voltageLevelId),
+            busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+            connectionDirection: toModificationOperation(connectionDirection),
+            connectionName: toModificationOperation(connectionName),
+            connectionPosition: toModificationOperation(connectionPosition),
+            connected: toModificationOperation(connected),
             properties,
         }),
     });
@@ -1813,13 +1823,7 @@ export function modifyVsc(
     converterStation2,
     properties,
     isUpdate,
-    modificationUuid,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    connectionName,
-    connectionDirection,
-    connectionPosition,
-    connected
+    modificationUuid
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1855,12 +1859,6 @@ export function modifyVsc(
         converterStation1: converterStation1,
         converterStation2: converterStation2,
         properties: properties,
-        voltageLevelId: toModificationOperation(voltageLevelId),
-        busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-        connectionName: toModificationOperation(connectionName),
-        connectionDirection: toModificationOperation(connectionDirection),
-        connectionPosition: toModificationOperation(connectionPosition),
-        connected: toModificationOperation(connected),
     }; //FIXME add missing informations
 
     return backendFetchText(modificationUrl, {
