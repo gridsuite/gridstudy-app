@@ -142,9 +142,13 @@ export function fetchNetworkElementsInfos(
     inUpstreamBuiltParentNode,
     nominalVoltages = undefined
 ) {
+    const substationsCount = substationsIds ? substationsIds.length : 0;
+    const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
+
     console.info(
-        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${substationsIds?.length} substations ids.`
+        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
     );
+
     const nominalVoltagesParams = getQueryParamsList(
         nominalVoltages,
         'nominalVoltages'
