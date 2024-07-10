@@ -99,7 +99,7 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, resetField, getValues } = formMethods;
+    const { reset, getValues } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -157,13 +157,8 @@ const VoltageLevelModificationDialog = ({
                                         voltageLevel,
                                         getValues
                                     ),
+                                [SUBSTATION_ID]: voltageLevel?.substationId,
                             }));
-                            //TODO We display the previous value of the substation id in the substation field because we can't change it
-                            // To be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
-                            // Note: we use resetField and a defaultValue instead of setValue to not trigger react hook form's dirty flag
-                            resetField(SUBSTATION_ID, {
-                                defaultValue: voltageLevel?.substationId,
-                            });
                         }
                     })
                     .catch(() => {
@@ -176,7 +171,7 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, resetField, reset, getValues]
+        [studyUuid, currentNodeUuid, reset, getValues]
     );
 
     useEffect(() => {
