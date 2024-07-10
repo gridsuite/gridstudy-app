@@ -39,7 +39,6 @@ interface CheckboxListProps {
     secondaryAction?: (item: any) => React.ReactElement;
     enableSecondaryActionOnHover?: boolean;
     isDisabled?: (item: any) => boolean;
-    [key: string]: any;
 }
 
 export const areIdsEqual = (val1: any, val2: any) => {

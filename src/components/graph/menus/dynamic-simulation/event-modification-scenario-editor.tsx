@@ -316,6 +316,7 @@ const EventModificationScenarioEditor = () => {
                         </IconButton>
                     )
                 }
+                disabled={isLoading()}
             />
         );
     };
