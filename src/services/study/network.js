@@ -140,7 +140,7 @@ export function fetchNetworkElementsInfos(
     elementType,
     infoType,
     inUpstreamBuiltParentNode,
-    nominalVoltages = null
+    nominalVoltages = undefined
 ) {
     console.info(
         `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${substationsIds?.length} substations ids.`
