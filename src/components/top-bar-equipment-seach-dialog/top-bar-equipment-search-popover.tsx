@@ -93,13 +93,13 @@ export const TopBarEquipmentSearchPopover = (
                         {Object.values(FILTER_EQUIPMENTS).map((type) => {
                             return (
                                 <FormControlLabel
-                                    key={type.id.toString()}
-                                    value={type.id.toString()}
+                                    key={type.id}
+                                    value={type.id}
                                     control={<Radio />}
                                     sx={styles.radioButtonColor}
                                     label={
                                         <FormattedMessage
-                                            id={type.label.toString()}
+                                            id={type.label}
                                         />
                                     }
                                 />
