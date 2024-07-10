@@ -120,7 +120,8 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                                 <Checkbox
                                     color={'primary'}
                                     edge="start"
-                                    checked={isAllSelected}
+                                    checked={selectedNodes.length === nodes.length}
+                                    onClick={() => setSelectedNodes(selectedNodes.length === 0 ? nodes : [])}
                                     disableRipple
                                 />
                                 <OverflowableText
@@ -131,8 +132,8 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                             </Box>
                             <CheckboxList
                                 values={nodes}
-                                isAllSelected={isAllSelected}
-                                setIsAllSelected={setIsAllSelected}
+                                selectedItems={selectedNodes}
+                                setSelectedItems={setSelectedNodes}
                                 getValueId={(v) => v.first.id}
                                 getValueLabel={(v) =>
                                     v.first.name +

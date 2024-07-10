@@ -3,7 +3,6 @@ import { Checkbox, ListItemIcon } from '@mui/material';
 import { SxProps } from '@mui/material';
 import { OverflowableText } from '@gridsuite/commons-ui';
 
-
 export interface CheckBoxItemProps {
     item: any;
     checkBoxIconSx?: SxProps;

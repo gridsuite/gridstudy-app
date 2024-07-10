@@ -7,7 +7,6 @@
 
 import React, {
     FunctionComponent,
-    MouseEvent,
     useCallback,
     useState,
 } from 'react';
@@ -96,7 +95,7 @@ const CheckboxList: FunctionComponent<CheckboxListProps> = ({
                 );
             }
         },
-        [values, selectedItems]
+        [values, selectedItems, getValueId, setSelectedItems]
     );
 
     const isChecked = useCallback(

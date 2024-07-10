@@ -24,6 +24,7 @@ import { isPartial } from 'components/graph/menus/network-modification-node-edit
 import { areUuidsEqual } from 'components/utils/utils';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
 import CheckboxList from '../utils/CheckBoxList/check-box-list';
+import { isChecked } from '../graph/menus/network-modification-node-editor.jsx';
 
 const styles = {
     text: (theme) => ({
@@ -114,8 +115,6 @@ const RestoreModificationDialog = ({
         setStashedModifications(modifToRestore);
     }, [modifToRestore]);
 
-    const [isAllSelected, setIsAllSelected] = useState(false);
-    const [isAnySelected, setIsAnySelected] = useState(false);
     const getLabel = (modif) => {
         if (!modif) {
             return null;
@@ -162,8 +161,13 @@ const RestoreModificationDialog = ({
                                     <Checkbox
                                         color={'primary'}
                                         edge="start"
-                                        checked={isAllSelected}
-                                        indeterminate={isPartial(isAnySelected)}
+                                        checked={isChecked(
+                                            selectedItems.length
+                                        )}
+                                        indeterminate={isPartial(
+                                            selectedItems.length,
+                                            stashedModifications?.length
+                                        )}
                                         onClick={handleSelectAll}
                                         disableRipple
                                     />
@@ -177,9 +181,8 @@ const RestoreModificationDialog = ({
                                     sx={styles.list}
                                     values={stashedModifications}
                                     itemComparator={areUuidsEqual}
-                                    isAllSelected={isAllSelected}
-                                    setIsAllSelected={setIsAllSelected}
-                                    setIsPartiallySelected={setIsAnySelected}
+                                    selectedItems={selectedItems}
+                                    setSelectedItems={setSelectedItems}
                                     getValueId={(v) => v.uuid}
                                     getValueLabel={getLabel}
                                     labelSx={{ flexGrow: '1' }}

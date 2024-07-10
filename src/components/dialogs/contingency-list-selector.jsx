@@ -208,6 +208,8 @@ const ContingencyListSelector = (props) => {
                                 values={contingencyList || []}
                                 getValueId={(v) => v.id}
                                 getValueLabel={(v) => v.name}
+                                selectedItems={checkedContingencyList}
+                                setSelectedItems={setCheckedContingencyList}
                                 secondaryAction={(item) => (
                                     <IconButton
                                         style={{
