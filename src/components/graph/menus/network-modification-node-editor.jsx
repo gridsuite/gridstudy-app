@@ -1138,14 +1138,11 @@ const NetworkModificationNodeEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={
-                        selectedItems.length > 0 &&
-                        selectedItems.length === modifications.length
-                    }
-                    indeterminate={
-                        selectedItems.length > 0 &&
-                        selectedItems.length !== modifications.length
-                    }
+                    checked={isChecked(selectedItems.length)}
+                    indeterminate={isPartial(
+                        selectedItems.length,
+                        modifications?.length
+                    )}
                     disableRipple
                     onClick={toggleSelectAllModifications}
                 />

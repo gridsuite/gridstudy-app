@@ -44,7 +44,7 @@ import {
     getStartTime,
     getStartTimeUnit,
 } from '../../../dialogs/dynamicsimulation/event/model/event.model';
-import { styles } from '../network-modification-node-editor';
+import { isChecked, isPartial, styles } from "../network-modification-node-editor";
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import { areUuidsEqual } from 'components/utils/utils';
 import EditIcon from '@mui/icons-material/Edit';
@@ -294,17 +294,14 @@ const EventModificationScenarioEditor = () => {
         );
     };
 
-    const [isAllSelected, setIsAllSelected] = useState(false);
-    const [isAnySelected, setIsAnySelected] = useState(false);
     const renderEventList = () => {
         return (
             <CheckboxList
                 sx={styles.list}
                 values={events}
                 itemComparator={areUuidsEqual}
-                isAllSelected={isAllSelected}
-                setIsAllSelected={setIsAllSelected}
-                setIsPartiallySelected={setIsAnySelected}
+                selectedItems={selectedItems}
+                setSelectedItems={setSelectedItems}
                 getValueId={(v) => v.equipmentId}
                 getValueLabel={getItemLabel}
                 labelSx={{ flexGrow: '1' }}
@@ -398,8 +395,11 @@ const EventModificationScenarioEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={isAllSelected}
-                    indeterminate={isAnySelected}
+                    checked={isChecked(selectedItems.length)}
+                    indeterminate={isPartial(
+                      selectedItems.length,
+                      events?.length
+                    )}
                     disableRipple
                     onClick={toggleSelectAllEvents}
                 />
