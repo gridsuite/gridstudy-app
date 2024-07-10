@@ -245,8 +245,10 @@ const VscModificationDialog: React.FC<any> = ({
                     })
                     .catch((_error) => {
                         setDataFetchStatus(FetchStatus.FAILED);
-                        setVcsToModify(null);
-                        reset(emptyFormData);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setVcsToModify(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -260,6 +262,7 @@ const VscModificationDialog: React.FC<any> = ({
             getValues,
             reset,
             setValuesAndEmptyOthers,
+            editData,
         ]
     );
     useEffect(() => {
