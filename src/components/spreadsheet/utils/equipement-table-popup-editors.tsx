@@ -11,6 +11,7 @@ import {
     forwardRef,
     useImperativeHandle,
     useMemo,
+    useEffect,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -32,6 +33,7 @@ import {
 } from '@mui/material';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import yup from 'components/utils/yup-config';
+import { ICellEditorParams } from 'ag-grid-community';
 
 const validationSchema = yup
     .array()
@@ -65,15 +67,17 @@ function initializeLocalRowData(rowData: any) {
 }
 
 export const SitePropertiesEditor = forwardRef(
-    ({ colDef, gridApi, rowData }: any, ref) => {
+    ({ colDef, data, stopEditing }: ICellEditorParams, ref) => {
         const theme = useTheme();
         const [error, setError] = useState('');
         const intl = useIntl();
         const [open, setOpen] = useState(true);
+        const [cancel, setCancel] = useState(false);
         const [localRowData, setRowData] = useState(() =>
-            initializeLocalRowData(rowData)
+            initializeLocalRowData(data)
         );
 
+        // Documented in https://www.ag-grid.com/archive/31.2.0/react-data-grid/component-cell-editor-imperative-react/
         useImperativeHandle(
             ref,
             () => {
@@ -84,10 +88,19 @@ export const SitePropertiesEditor = forwardRef(
                     getField: () => {
                         return colDef.field;
                     },
+                    isCancelAfterEnd: () => {
+                        return cancel;
+                    },
                 };
             },
-            [colDef.field, localRowData]
+            [colDef.field, localRowData, cancel]
         );
+
+        useEffect(() => {
+            if (cancel) {
+                stopEditing();
+            }
+        }, [cancel, stopEditing]);
 
         const handleRemoveRow = useCallback(
             (index: number) => {
@@ -125,7 +138,7 @@ export const SitePropertiesEditor = forwardRef(
             if (!hasError) {
                 setError('');
                 setOpen(false);
-                gridApi.stopEditing();
+                stopEditing();
             }
 
             return !hasError;
@@ -145,7 +158,7 @@ export const SitePropertiesEditor = forwardRef(
 
         const handleCancelPopupSelectEditSiteProperties = () => {
             setOpen(false);
-            gridApi.stopEditing();
+            setCancel(true);
         };
 
         return (
