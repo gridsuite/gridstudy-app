@@ -658,11 +658,10 @@ export function DiagramPane({
     // We debounce the updateNAD function to avoid generating unnecessary NADs
     const debounceUpdateNAD = useDebounce(updateNAD, 300);
 
-    function shouldDebounceUpdateNAD(
-        estimatedNbVoltageLevels,
-        networkAreaDiagramDepth,
-        previousNetworkAreaDiagramDepth
-    ) {
+    function shouldDebounceUpdateNAD(networkAreaDiagramDepth) {
+        const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
+            networkAreaDiagramDepth
+        );
         return (
             estimatedNbVoltageLevels <
                 NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
@@ -684,17 +683,7 @@ export function DiagramPane({
         // SLD MANAGEMENT (adding or removing SLDs)
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
-        const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
-            networkAreaDiagramDepth
-        );
-
-        if (
-            shouldDebounceUpdateNAD(
-                estimatedNbVoltageLevels,
-                networkAreaDiagramDepth,
-                previousNetworkAreaDiagramDepth.current
-            )
-        ) {
+        if (shouldDebounceUpdateNAD(networkAreaDiagramDepth)) {
             debounceUpdateNAD(diagramStates);
         } else {
             updateNAD(diagramStates);
