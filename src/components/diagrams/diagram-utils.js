@@ -52,3 +52,9 @@ const sortByIndex = (a, b, diagramStates) => {
 export const makeDiagramSorter = (diagramStates) => {
     return (a, b) => sortByAlign(a, b) || sortByIndex(a, b, diagramStates);
 };
+
+// estimate the number of voltage levels for a given depth
+export function getEstimatedNbVoltageLevels(depth) {
+    // The coefficients are based on some tests and are not based on any scientific method.
+    return Math.round(3 * Math.pow(depth, 2) - 1 * depth + 1);
+}

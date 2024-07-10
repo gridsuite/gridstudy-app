@@ -29,11 +29,15 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     DiagramType,
     MAP_BOTTOM_OFFSET,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     NoSvg,
     useDiagram,
     ViewState,
 } from './diagram-common';
-import { makeDiagramSorter } from './diagram-utils';
+import {
+    getEstimatedNbVoltageLevels,
+    makeDiagramSorter,
+} from './diagram-utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -353,6 +357,8 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
+    const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
+
     const { translate } = useLocalizedCountries();
 
     const notificationIdList = useSelector((state) => state.notificationIdList);
@@ -651,6 +657,19 @@ export function DiagramPane({
     }, []);
     // We debounce the updateNAD function to avoid generating unnecessary NADs
     const debounceUpdateNAD = useDebounce(updateNAD, 300);
+
+    function shouldDebounceUpdateNAD(
+        estimatedNbVoltageLevels,
+        networkAreaDiagramDepth,
+        previousNetworkAreaDiagramDepth
+    ) {
+        return (
+            estimatedNbVoltageLevels <
+                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
+            previousNetworkAreaDiagramDepth.current > networkAreaDiagramDepth
+        );
+    }
+
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
         if (
@@ -665,7 +684,22 @@ export function DiagramPane({
         // SLD MANAGEMENT (adding or removing SLDs)
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
-        debounceUpdateNAD(diagramStates);
+        const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
+            networkAreaDiagramDepth
+        );
+
+        if (
+            shouldDebounceUpdateNAD(
+                estimatedNbVoltageLevels,
+                networkAreaDiagramDepth,
+                previousNetworkAreaDiagramDepth.current
+            )
+        ) {
+            debounceUpdateNAD(diagramStates);
+        } else {
+            updateNAD(diagramStates);
+        }
+        previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
     }, [
         diagramStates,
         visible,
@@ -675,6 +709,7 @@ export function DiagramPane({
         updateSLDs,
         updateNAD,
         debounceUpdateNAD,
+        networkAreaDiagramDepth,
     ]);
 
     const displayedDiagrams = views
