@@ -19,7 +19,7 @@ import Grid from '@mui/material/Grid';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { ElementType } from '@gridsuite/commons-ui';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
@@ -27,7 +27,6 @@ import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete.js';
 import IconButton from '@mui/material/IconButton';
-import CheckboxList from '../utils/CheckBoxList/check-box-list';
 
 function makeButton(onClick, message, disabled) {
     return (

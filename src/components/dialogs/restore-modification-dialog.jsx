@@ -18,12 +18,15 @@ import {
     deleteModifications,
     restoreModifications,
 } from 'services/study/network-modifications';
-import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    OverflowableText,
+    CheckboxList,
+} from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { isPartial } from 'components/graph/menus/network-modification-node-editor';
 import { areUuidsEqual } from 'components/utils/utils';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
-import CheckboxList from '../utils/CheckBoxList/check-box-list';
 import { isChecked } from '../graph/menus/network-modification-node-editor.jsx';
 
 const styles = {

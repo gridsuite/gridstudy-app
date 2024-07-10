@@ -20,9 +20,12 @@ import {
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
-import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    OverflowableText,
+    CheckboxList,
+} from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
-import CheckboxList from '../utils/CheckBoxList/check-box-list';
 
 const styles = {
     selectAll: (theme) => ({
@@ -47,6 +50,14 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     const [selectedNodes, setSelectedNodes] = useState([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
         useState(false);
+
+    const handleSelectAll = () => {
+        if (selectedNodes.length === nodes.length) {
+            setSelectedNodes([]);
+        } else {
+            setSelectedNodes(nodes);
+        }
+    };
 
     const handleClose = () => {
         onClose();
@@ -80,7 +91,6 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
         }
     }, [studyUuid, open]);
 
-    const [isAllSelected, setIsAllSelected] = useState(false);
     return (
         <Dialog
             fullWidth
@@ -120,8 +130,10 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                                 <Checkbox
                                     color={'primary'}
                                     edge="start"
-                                    checked={selectedNodes.length === nodes.length}
-                                    onClick={() => setSelectedNodes(selectedNodes.length === 0 ? nodes : [])}
+                                    checked={
+                                        selectedNodes.length === nodes.length
+                                    }
+                                    onClick={handleSelectAll}
                                     disableRipple
                                 />
                                 <OverflowableText

@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Box,
@@ -44,11 +44,14 @@ import {
     getStartTime,
     getStartTimeUnit,
 } from '../../../dialogs/dynamicsimulation/event/model/event.model';
-import { isChecked, isPartial, styles } from "../network-modification-node-editor";
+import {
+    isChecked,
+    isPartial,
+    styles,
+} from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import { areUuidsEqual } from 'components/utils/utils';
 import EditIcon from '@mui/icons-material/Edit';
-import CheckboxList from '../../../utils/CheckBoxList/check-box-list';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -398,8 +401,8 @@ const EventModificationScenarioEditor = () => {
                     edge="start"
                     checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(
-                      selectedItems.length,
-                      events?.length
+                        selectedItems.length,
+                        events?.length
                     )}
                     disableRipple
                     onClick={toggleSelectAllEvents}

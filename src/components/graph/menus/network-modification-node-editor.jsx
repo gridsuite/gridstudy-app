@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -85,7 +85,6 @@ import { areUuidsEqual } from 'components/utils/utils';
 import EditIcon from '@mui/icons-material/Edit.js';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
-import CheckboxList from '../../utils/CheckBoxList/check-box-list';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -992,6 +991,8 @@ const NetworkModificationNodeEditor = () => {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
+
+
                             <CheckboxList
                                 sx={styles.list}
                                 selectedItems={selectedItems}
