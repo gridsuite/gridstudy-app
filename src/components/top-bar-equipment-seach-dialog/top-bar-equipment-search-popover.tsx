@@ -97,11 +97,7 @@ export const TopBarEquipmentSearchPopover = (
                                     value={type.id}
                                     control={<Radio />}
                                     sx={styles.radioButtonColor}
-                                    label={
-                                        <FormattedMessage
-                                            id={type.label}
-                                        />
-                                    }
+                                    label={<FormattedMessage id={type.label} />}
                                 />
                             );
                         })}
