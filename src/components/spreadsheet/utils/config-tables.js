@@ -473,13 +473,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -649,13 +642,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -1571,13 +1557,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -2649,13 +2628,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -2800,13 +2772,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -3021,13 +2986,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -3367,13 +3325,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
