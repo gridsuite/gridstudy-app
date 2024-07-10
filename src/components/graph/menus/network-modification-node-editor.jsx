@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -17,7 +17,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
@@ -82,9 +82,10 @@ import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
 import { createCompositeModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import EditIcon from '@mui/icons-material/Edit.js';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
+import CheckboxList from '../../utils/CheckBoxList/check-box-list';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -900,7 +901,6 @@ const NetworkModificationNodeEditor = () => {
 
     const toggleSelectAllModifications = useCallback(
         (event) => {
-            setIsAllModificationSelected(event.target.checked);
             setSelectedItems((oldVal) =>
                 oldVal.length === 0 ? modifications : []
             );
@@ -959,11 +959,8 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
-    const [isAllModificationSelected, setIsAllModificationSelected] =
-        useState(false);
-    const [isAnyModificationSelected, setIsAnyModificationSelected] =
-        useState(false);
-
+    const intl = useIntl();
+    const { computeLabel } = useModificationLabelComputer();
     const getModificationLabel = (modif) => {
         if (!modif) {
             return null;
@@ -997,13 +994,10 @@ const NetworkModificationNodeEditor = () => {
                         >
                             <CheckboxList
                                 sx={styles.list}
+                                selectedItems={selectedItems}
+                                setSelectedItems={setSelectedItems}
                                 values={modifications}
                                 itemComparator={areUuidsEqual}
-                                isAllSelected={isAllModificationSelected}
-                                setIsAllSelected={setIsAllModificationSelected}
-                                setIsPartiallySelected={
-                                    setIsAnyModificationSelected
-                                }
                                 getValueId={(val) => val.uuid}
                                 getValueLabel={getModificationLabel}
                                 checkboxListSx={styles.listItem}
@@ -1144,8 +1138,14 @@ const NetworkModificationNodeEditor = () => {
                     sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
-                    checked={isAllModificationSelected}
-                    indeterminate={isAnyModificationSelected}
+                    checked={
+                        selectedItems.length > 0 &&
+                        selectedItems.length === modifications.length
+                    }
+                    indeterminate={
+                        selectedItems.length > 0 &&
+                        selectedItems.length !== modifications.length
+                    }
                     disableRipple
                     onClick={toggleSelectAllModifications}
                 />

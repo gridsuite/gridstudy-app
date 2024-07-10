@@ -20,12 +20,9 @@ import {
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
-import {
-    CancelButton,
-    CheckboxList,
-    OverflowableText,
-} from '@gridsuite/commons-ui';
+import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
+import CheckboxList from '../utils/CheckBoxList/check-box-list';
 
 const styles = {
     selectAll: (theme) => ({

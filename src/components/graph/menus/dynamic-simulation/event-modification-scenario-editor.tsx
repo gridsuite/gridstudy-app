@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Box,
@@ -48,6 +48,7 @@ import { styles } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import { areUuidsEqual } from 'components/utils/utils';
 import EditIcon from '@mui/icons-material/Edit';
+import CheckboxList from '../../../utils/CheckBoxList/check-box-list';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();

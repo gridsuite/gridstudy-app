@@ -421,6 +421,7 @@ const App = () => {
                 setUserManager({ instance: userManager, error: null });
             })
             .catch(function (error) {
+                console.log('u know, an error : ', error);
                 setUserManager({ instance: null, error: error.message });
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
