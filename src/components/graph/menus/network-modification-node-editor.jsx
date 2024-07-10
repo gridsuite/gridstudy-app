@@ -991,8 +991,6 @@ const NetworkModificationNodeEditor = () => {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-
-
                             <CheckboxList
                                 sx={styles.list}
                                 selectedItems={selectedItems}
