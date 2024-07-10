@@ -1,4 +1,11 @@
 {
+    "General": "General",
+    "LimitReductions" : "Abattements de limites",
+    "IST" : "IST",
+    "LimitDuration10" : "Surcharge > 10min",
+    "LimitDuration5" : "Surcharge >= 5min",
+    "LimitDuration0" : "Surcharge > 0min",
+
     "button.delete": "Supprimer",
     "button.changeType": "Modifier",
     "filter": "Filtre",
