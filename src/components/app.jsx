@@ -73,7 +73,6 @@ import {
     fetchConfigParameters,
 } from '../services/config';
 import {
-    fetchAuthorizationCodeFlowFeatureFlag,
     fetchDefaultParametersValues,
     fetchIdpSettings,
 } from '../services/utils';
@@ -406,24 +405,23 @@ const App = () => {
     });
 
     useEffect(() => {
-        fetchAuthorizationCodeFlowFeatureFlag()
-            .then((authorizationCodeFlowEnabled) => {
-                return initializeAuthenticationProd(
-                    dispatch,
-                    initialMatchSilentRenewCallbackUrl != null,
-                    fetchIdpSettings(),
-                    fetchValidateUser,
-                    authorizationCodeFlowEnabled,
-                    initialMatchSigninCallbackUrl != null
-                );
-            })
-            .then((userManager) => {
-                setUserManager({ instance: userManager, error: null });
-            })
-            .catch(function (error) {
-                console.log('u know, an error : ', error);
+        // need subfunction when async as suggested by rule react-hooks/exhaustive-deps
+        (async function initializeAuthentication() {
+            try {
+                setUserManager({
+                    instance: await initializeAuthenticationProd(
+                        dispatch,
+                        initialMatchSilentRenewCallbackUrl != null,
+                        fetchIdpSettings,
+                        fetchValidateUser,
+                        initialMatchSigninCallbackUrl != null
+                    ),
+                    error: null,
+                });
+            } catch (error) {
                 setUserManager({ instance: null, error: error.message });
-            });
+            }
+        })();
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [
         initialMatchSilentRenewCallbackUrl,
