@@ -132,6 +132,7 @@ export const SensitivityAnalysisParameters = ({
 
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
         useState(params);
 
@@ -225,6 +226,7 @@ export const SensitivityAnalysisParameters = ({
             setLaunchLoader(true);
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
+                currentNode.id,
                 arrayFormName === SENSI_INJECTIONS_SET,
                 formatFilteredParams(row)
             )

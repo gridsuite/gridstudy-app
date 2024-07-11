@@ -132,6 +132,7 @@ export function setSensitivityAnalysisParameters(studyUuid, newParams) {
 
 export function getSensitivityAnalysisFactorsCount(
     studyUuid,
+    currentNodeUuid,
     isInjectionsSet,
     newParams
 ) {
@@ -146,7 +147,7 @@ export function getSensitivityAnalysisFactorsCount(
         );
 
     const url =
-        getStudyUrl(studyUuid) +
+      getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         `/sensitivity-analysis/factors-count?${urlSearchParams}`;
     console.debug(url);
     return backendFetch(url, {
