@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
 import { Search, SearchOff, Tune } from '@mui/icons-material';
 import {
     AutocompleteRenderInputParams,
@@ -79,7 +79,14 @@ export const TopBarEquipmentSearchInput = (
                                     onDelete={() => setEquipmentType(null)}
                                     label={
                                         <FormattedMessage
-                                            id={equipmentType.toString()}
+                                            id={
+                                                Object.values(
+                                                    FILTER_EQUIPMENTS
+                                                ).find(
+                                                    (eq) =>
+                                                        eq.id === equipmentType
+                                                )?.label
+                                            }
                                         />
                                     }
                                     sx={styles.chip}
