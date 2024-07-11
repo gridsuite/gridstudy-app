@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -14,6 +14,17 @@ import {
     OptionalServicesStatus,
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
+    Navigate,
+    Route,
+    Routes,
+    useLocation,
+    useMatch,
+    useNavigate,
+} from 'react-router-dom';
+import {
+    getOptionalServiceByServerName,
+    OptionalServicesStatus,
+} from './utils/optional-services';
 
 import { StudyView } from './study-pane';
 
@@ -23,11 +34,52 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     useSnackMessage,
+    Websocket
 } from '@gridsuite/commons-ui';
 
-import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
+import PageNotFound from './page-not-found';
 
+import useWebsocketUrlGenerator from 'hooks/use-websocket-url-generator';
+import {
+    changeDisplayedColumns,
+    changeLockedColumns,
+    changeReorderedColumns,
+    limitReductionModified,
+    selectCenterLabelState,
+    selectComponentLibrary,
+    selectComputedLanguage,
+    selectDiagonalLabelState,
+    selectEnableDeveloperMode,
+    selectFavoriteContingencyLists,
+    selectFluxConvention,
+    selectLanguage,
+    selectLimitReduction,
+    selectLineFlowAlertThreshold,
+    selectLineFlowColorMode,
+    selectLineFlowMode,
+    selectLineFullPathState,
+    selectLineParallelPathState,
+    selectMapBaseMap,
+    selectMapManualRefresh,
+    selectSubstationLayout,
+    selectTheme,
+    selectUseName,
+    setOptionalServices,
+    setParamsLoaded,
+} from '../redux/actions';
+import { defaultOptionalServicesState } from '../redux/reducer';
+import {
+    fetchConfigParameter,
+    fetchConfigParameters,
+} from '../services/config';
+import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
+import { getOptionalServices } from '../services/study';
+import { fetchValidateUser } from '../services/user-admin';
+import {
+    fetchDefaultParametersValues,
+    fetchIdpSettings,
+} from '../services/utils';
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -51,6 +103,8 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
+import { getComputedLanguage } from '../utils/language';
+import AppTopBar from './app-top-bar';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -58,8 +112,6 @@ import {
     TABLES_DEFINITION_INDEXES,
     TABLES_NAMES_INDEXES,
 } from './spreadsheet/utils/config-tables';
-import { getComputedLanguage } from '../utils/language';
-import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';
 import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
@@ -437,6 +489,7 @@ const App = () => {
         setTabIndex(newTabIndex);
     }, []);
 
+    const urlMapper = useWebsocketUrlGenerator();
     return (
         <div
             className="singlestretch-child"
@@ -445,6 +498,8 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
+         <Websocket urls={urlMapper}>
+
             <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
             <CardErrorBoundary>
                 <div
@@ -495,7 +550,8 @@ const App = () => {
                     )}
                 </div>
             </CardErrorBoundary>
-        </div>
+        </Websocket>
+    </div>
     );
 };
 

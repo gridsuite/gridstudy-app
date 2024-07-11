@@ -1,0 +1,6 @@
+export enum WS_URL_KEYS {
+    APP = 'APP',
+    STUDY = 'STUDY',
+    DELETE_STUDY = 'DELETE_STUDY',
+    DIRECTORIES = 'DIRECTORIES',
+}
