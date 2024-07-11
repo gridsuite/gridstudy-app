@@ -248,7 +248,14 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
+        [
+            snackError,
+            studyUuid,
+            formatFilteredParams,
+            setValue,
+            getResultCount,
+            currentNode,
+        ]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
