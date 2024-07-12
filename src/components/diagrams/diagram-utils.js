@@ -67,7 +67,7 @@ export function getEstimatedNbVoltageLevels(
     previousVoltagesNB
 ) {
     // We assume that the number of vl grows exponentially
-    // real world exemple :
+    // real world example :
     // depth : number of voltage levels
     // 1     : 3
     // 2     : 7
