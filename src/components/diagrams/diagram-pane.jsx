@@ -359,6 +359,10 @@ export function DiagramPane({
     );
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
 
+    const networkAreaDiagramNbVoltageLevels = useSelector(
+        (state) => state.networkAreaDiagramNbVoltageLevels
+    );
+
     const { translate } = useLocalizedCountries();
 
     const notificationIdList = useSelector((state) => state.notificationIdList);
@@ -556,6 +560,7 @@ export function DiagramPane({
 
     const updateNAD = useCallback(
         (diagramStates) => {
+            previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
             const networkAreaIds = [];
             let networkAreaViewState = ViewState.OPENED;
             diagramStates.forEach((diagramState) => {
@@ -658,16 +663,22 @@ export function DiagramPane({
     // We debounce the updateNAD function to avoid generating unnecessary NADs
     const debounceUpdateNAD = useDebounce(updateNAD, 300);
 
-    function shouldDebounceUpdateNAD(networkAreaDiagramDepth) {
-        const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
-            networkAreaDiagramDepth
-        );
-        return (
-            estimatedNbVoltageLevels <
-                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
-            previousNetworkAreaDiagramDepth.current > networkAreaDiagramDepth
-        );
-    }
+    const shouldDebounceUpdateNAD = useCallback(
+        (networkAreaDiagramDepth) => {
+            const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
+                previousNetworkAreaDiagramDepth.current,
+                networkAreaDiagramDepth,
+                networkAreaDiagramNbVoltageLevels
+            );
+            return (
+                estimatedNbVoltageLevels <
+                    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
+                previousNetworkAreaDiagramDepth.current >
+                    networkAreaDiagramDepth
+            );
+        },
+        [networkAreaDiagramNbVoltageLevels]
+    );
 
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
@@ -688,7 +699,6 @@ export function DiagramPane({
         } else {
             updateNAD(diagramStates);
         }
-        previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
     }, [
         diagramStates,
         visible,
@@ -699,6 +709,7 @@ export function DiagramPane({
         updateNAD,
         debounceUpdateNAD,
         networkAreaDiagramDepth,
+        shouldDebounceUpdateNAD,
     ]);
 
     const displayedDiagrams = views
