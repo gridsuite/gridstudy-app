@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
+//TODO: File in JSX because @powsybl/diagram-viewer doesn't provide type. change to TSX when types are awailable.
 import { Grid } from '@mui/material';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
 import { useState } from 'react';
@@ -99,7 +99,6 @@ export const MapParameters = () => {
                     label="AlertThresholdLabel"
                     disabled={isLineFlowNominal}
                     marks={alertThresholdMarks}
-
                 />
                 <LineSeparator />
                 <ParameterLineSwitch
