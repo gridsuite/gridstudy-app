@@ -53,6 +53,7 @@ export const makeDiagramSorter = (diagramStates) => {
     return (a, b) => sortByAlign(a, b) || sortByIndex(a, b, diagramStates);
 };
 
+const VL_DEPTH_GROWTH_RATE = 2;
 // estimate the number of voltage levels for a requested depth
 // based on the current depth and the previous number of voltage levels
 // this allows the user to increase the depth quickly without having to wait
@@ -66,5 +67,8 @@ export function getEstimatedNbVoltageLevels(
     previousVoltagesNB
 ) {
     // The coefficients are based on some tests and are not based on any scientific method.
-    return previousVoltagesNB * Math.pow(2, requestedDepth - currentDepth);
+    return (
+        previousVoltagesNB *
+        Math.pow(VL_DEPTH_GROWTH_RATE, requestedDepth - currentDepth)
+    );
 }
