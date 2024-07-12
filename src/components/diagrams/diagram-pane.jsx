@@ -694,6 +694,7 @@ export function DiagramPane({
         // SLD MANAGEMENT (adding or removing SLDs)
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
+        // updateNAD is recreated at each render, which clears the debounce timer
         if (shouldDebounceUpdateNAD(networkAreaDiagramDepth)) {
             debounceUpdateNAD(diagramStates);
         } else {
