@@ -60,9 +60,10 @@ const network_modifications_locale_fr = {
         "Modification d'un moyen de compensation {computedLabel}",
     'network_modifications.GENERATOR_SCALING':
         'Variation plan de production {computedLabel}',
-    'network_modifications.VSC_CREATION': 'Création du vsc {computedLabel}',
+    'network_modifications.VSC_CREATION':
+        'Création de la HVDC (VSC) {computedLabel}',
     'network_modifications.VSC_MODIFICATION':
-        'Modification du vsc {computedLabel}',
+        'Modification de la HVDC (VSC) {computedLabel}',
     'network_modifications.GROOVY_SCRIPT': 'Modification par script',
     'network_modifications.EQUIPMENT_ATTRIBUTE_MODIFICATION':
         "{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Ouverture de {computedLabel}} other {Fermeture de {computedLabel}}}} other {Modification de l'equipement {computedLabel}}}",
