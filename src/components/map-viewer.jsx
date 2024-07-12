@@ -124,9 +124,7 @@ const MapViewer = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            console.log(' innnnnnnnnnnnnnn');
-            console.log(' isDrawingMode: ', isDrawingMode);
-            console.log(' !isDrawingMode: ', !isDrawingMode);
+            // don't open the sld if the drawing mode is activated
             if (!isDrawingMode) {
                 openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
             }
@@ -239,16 +237,11 @@ const MapViewer = ({
         switch (event) {
             case DRAW_EVENT.DELETE:
                 setShouldOpenSelectionCreationPanel(false);
-                console.log(' event delete  ', event);
                 break;
             case DRAW_EVENT.CREATE:
                 setShouldOpenSelectionCreationPanel(true);
-                console.log(' event create  ', event);
-
                 break;
             case DRAW_EVENT.UPDATE:
-                console.log(' event update  ', event);
-
                 break;
             default:
                 break;

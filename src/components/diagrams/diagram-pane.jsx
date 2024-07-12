@@ -697,7 +697,6 @@ export function DiagramPane({
 
     const handleOpenDiagramView = useCallback(
         (id, type) => {
-            //TODO: when chips are opened
             if (!studyUuid || !currentNode) {
                 return;
             }
