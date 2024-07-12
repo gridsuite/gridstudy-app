@@ -663,6 +663,9 @@ export function DiagramPane({
     // We debounce the updateNAD function to avoid generating unnecessary NADs
     const debounceUpdateNAD = useDebounce(updateNAD, 300);
 
+    // To allow a small number of fast clicks
+    // and then stop before we get too close to
+    // NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
     const shouldDebounceUpdateNAD = useCallback(
         (networkAreaDiagramDepth) => {
             const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
@@ -694,7 +697,11 @@ export function DiagramPane({
         // SLD MANAGEMENT (adding or removing SLDs)
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
-        // updateNAD is recreated at each render, which clears the debounce timer
+        // Here we call either the debounced or the non-debounced function
+        // to force a server fetch after a few clicks to get the actual number of voltage levels.
+        // it's ok to do this and doesn't cause two fetches at the end
+        // beacause the debounced function is recreated after each networkAreaDiagramDepth
+        // change so the debounce hook clears the debounce timer
         if (shouldDebounceUpdateNAD(networkAreaDiagramDepth)) {
             debounceUpdateNAD(diagramStates);
         } else {

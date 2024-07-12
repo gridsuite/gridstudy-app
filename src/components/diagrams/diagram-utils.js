@@ -54,6 +54,12 @@ export const makeDiagramSorter = (diagramStates) => {
 };
 
 // estimate the number of voltage levels for a requested depth
+// based on the current depth and the previous number of voltage levels
+// this allows the user to increase the depth quickly without having to wait
+// for the actual number of voltage levels at each step but
+// to avoid increasing the depth too much.
+// we want this estimation to be slightly pessimistic to avoid bad UX of going to far
+// and not being able to do the same thing step by step.
 export function getEstimatedNbVoltageLevels(
     currentDepth,
     requestedDepth,
