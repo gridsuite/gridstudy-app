@@ -16,7 +16,7 @@ export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     const wsBase = getWsBase();
     // Add params to Url
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('updateType', 'deleteElement');
+    urlSearchParams.append('updateType', 'deleteStudy');
     urlSearchParams.append('elementUuid', studyUuid);
 
     const wsAdress = `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?${urlSearchParams}`;
