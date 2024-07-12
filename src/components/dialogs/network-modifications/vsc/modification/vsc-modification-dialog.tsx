@@ -174,15 +174,15 @@ const VscModificationDialog: React.FC<any> = ({
     );
 
     const onEquipmentIdChange = useCallback(
-        (equipementId: string | null) => {
-            if (equipementId) {
+        (equipmentId: string | null) => {
+            if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipementId,
+                    equipmentId,
                     true
                 )
                     .then((value: any) => {
@@ -243,7 +243,7 @@ const VscModificationDialog: React.FC<any> = ({
                         }));
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch((_error) => {
+                    .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setVcsToModify(null);
