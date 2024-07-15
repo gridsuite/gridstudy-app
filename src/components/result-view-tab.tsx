@@ -320,9 +320,17 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             previousEnableDeveloperMode !== enableDeveloperMode
         ) {
             // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
-            setTabIndex(0);
+            if (lastCompletedComputation === ComputingType.SECURITY_ANALYSIS) {
+                setTabIndex(1);
+            } else {
+                setTabIndex(0);
+            }
         }
-    }, [enableDeveloperMode, previousEnableDeveloperMode]);
+    }, [
+        enableDeveloperMode,
+        previousEnableDeveloperMode,
+        lastCompletedComputation,
+    ]);
 
     const handleChangeTab = useCallback(
         (event: React.SyntheticEvent, newTabIndex: number) => {
