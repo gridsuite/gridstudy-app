@@ -29,11 +29,15 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     DiagramType,
     MAP_BOTTOM_OFFSET,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     NoSvg,
     useDiagram,
     ViewState,
 } from './diagram-common';
-import { makeDiagramSorter } from './diagram-utils';
+import {
+    getEstimatedNbVoltageLevels,
+    makeDiagramSorter,
+} from './diagram-utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -45,7 +49,7 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import {
@@ -353,6 +357,12 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
+    const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
+
+    const networkAreaDiagramNbVoltageLevels = useSelector(
+        (state) => state.networkAreaDiagramNbVoltageLevels
+    );
+
     const { translate } = useLocalizedCountries();
 
     const notificationIdList = useSelector((state) => state.notificationIdList);
@@ -550,6 +560,7 @@ export function DiagramPane({
 
     const updateNAD = useCallback(
         (diagramStates) => {
+            previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
             const networkAreaIds = [];
             let networkAreaViewState = ViewState.OPENED;
             diagramStates.forEach((diagramState) => {
@@ -649,6 +660,28 @@ export function DiagramPane({
             });
         }
     }, []);
+    // We debounce the updateNAD function to avoid generating unnecessary NADs
+    const debounceUpdateNAD = useDebounce(updateNAD, 300);
+
+    // To allow a small number of fast clicks
+    // and then stop before we get too close to
+    // NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+    const shouldDebounceUpdateNAD = useCallback(
+        (networkAreaDiagramDepth) => {
+            const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
+                previousNetworkAreaDiagramDepth.current,
+                networkAreaDiagramDepth,
+                networkAreaDiagramNbVoltageLevels
+            );
+            return (
+                estimatedNbVoltageLevels <
+                    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
+                previousNetworkAreaDiagramDepth.current >
+                    networkAreaDiagramDepth
+            );
+        },
+        [networkAreaDiagramNbVoltageLevels]
+    );
 
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
@@ -664,7 +697,16 @@ export function DiagramPane({
         // SLD MANAGEMENT (adding or removing SLDs)
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
-        updateNAD(diagramStates);
+        // Here we call either the debounced or the non-debounced function
+        // to force a server fetch after a few clicks to get the actual number of voltage levels.
+        // it's ok to do this and doesn't cause two fetches at the end
+        // beacause the debounced function is recreated after each networkAreaDiagramDepth
+        // change so the debounce hook clears the debounce timer
+        if (shouldDebounceUpdateNAD(networkAreaDiagramDepth)) {
+            debounceUpdateNAD(diagramStates);
+        } else {
+            updateNAD(diagramStates);
+        }
     }, [
         diagramStates,
         visible,
@@ -673,6 +715,9 @@ export function DiagramPane({
         updateDiagramStates,
         updateSLDs,
         updateNAD,
+        debounceUpdateNAD,
+        networkAreaDiagramDepth,
+        shouldDebounceUpdateNAD,
     ]);
 
     const displayedDiagrams = views
@@ -1096,6 +1141,7 @@ export function DiagramPane({
                                 )}
                                 fullscreenWidth={width}
                                 fullscreenHeight={height}
+                                loadingState={diagramView.loadingState}
                             >
                                 {(diagramView.svgType ===
                                     DiagramType.VOLTAGE_LEVEL ||
