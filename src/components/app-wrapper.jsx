@@ -135,9 +135,11 @@ let lightTheme = createTheme({
         'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
         'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-    aggrid: 'ag-theme-alpine',
-    overlay: {
-        background: '#e6e6e6',
+    aggrid: {
+        theme: 'ag-theme-alpine',
+        overlay: {
+            background: '#e6e6e6',
+        },
     },
 });
 
@@ -212,9 +214,11 @@ let darkTheme = createTheme({
         'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
         'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-    aggrid: 'ag-theme-alpine-dark',
-    overlay: {
-        background: '#121212',
+    aggrid: {
+        theme: 'ag-theme-alpine-dark',
+        overlay: {
+            background: '#121212',
+        },
     },
 });
 

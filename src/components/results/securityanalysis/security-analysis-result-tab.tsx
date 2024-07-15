@@ -93,7 +93,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
-    const [hasFilter, setHasFilter] = useState<boolean>(false);
 
     const N_RESULTS_TAB_INDEX = 0;
     const NMK_RESULTS_TAB_INDEX = 1;
@@ -251,7 +250,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     );
 
     const { loading: filterEnumsLoading, result: filterEnums } =
-        useFetchFiltersEnums(studyUuid, nodeUuid, hasFilter, setHasFilter);
+        useFetchFiltersEnums();
 
     useEffect(() => {
         if (result) {

@@ -174,7 +174,7 @@ const VscModificationDialog: React.FC<any> = ({
     );
 
     const onEquipmentIdChange = useCallback(
-        (equipementId: string | null) => {
+        (equipmentId: string | null) => {
             if (!equipmentId) {
                 setValuesAndEmptyOthers();
                 setVcsToModify(null);
@@ -185,7 +185,7 @@ const VscModificationDialog: React.FC<any> = ({
                     currentNodeUuid,
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipementId,
+                    equipmentId,
                     true
                 )
                     .then((value: any) => {
@@ -248,7 +248,7 @@ const VscModificationDialog: React.FC<any> = ({
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch((_error) => {
+                    .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setVcsToModify(null);
@@ -257,16 +257,7 @@ const VscModificationDialog: React.FC<any> = ({
                     });
             }
         },
-        [
-            equipmentId,
-            setValuesAndEmptyOthers,
-            studyUuid,
-            currentNodeUuid,
-            setValue,
-            reset,
-            getValues,
-            editData?.equipmentId,
-        ]
+        [studyUuid, currentNodeUuid, setValue, reset, getValues, editData.equipmentId]
     );
 
     useEffect(() => {

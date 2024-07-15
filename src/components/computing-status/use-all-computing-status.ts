@@ -14,6 +14,7 @@ import {
     getVoltageInitRunningStatus,
     getLoadFlowRunningStatus,
     getNonEvacuatedEnergyRunningStatus,
+    getStateEstimationRunningStatus,
 } from '../utils/running-status';
 
 import { UUID } from 'crypto';
@@ -30,6 +31,7 @@ import { fetchLoadFlowStatus } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
+import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
@@ -61,7 +63,10 @@ const voltageInitStatusInvalidations = [
     'voltageInit_status',
     'voltageInit_failed',
 ];
-
+const stateEstimationStatusInvalidations = [
+    'stateEstimation_status',
+    'stateEstimation_failed',
+];
 const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
 
 const securityAnalysisStatusCompletions = [
@@ -92,7 +97,10 @@ const voltageInitStatusCompletions = [
     'voltageInitResult',
     'voltageInit_failed',
 ];
-
+const stateEstimationStatusCompletions = [
+    'stateEstimationResult',
+    'stateEstimation_failed',
+];
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (
     studyUuid: UUID,
@@ -115,6 +123,9 @@ export const useAllComputingStatus = (
     );
     const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
+    );
+    const stateEstimationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.StateEstimation
     );
 
     useComputingStatus(
@@ -202,5 +213,16 @@ export const useAllComputingStatus = (
         getVoltageInitRunningStatus,
         ComputingType.VOLTAGE_INITIALIZATION,
         voltageInitAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        fetchStateEstimationStatus,
+        stateEstimationStatusInvalidations,
+        stateEstimationStatusCompletions,
+        getStateEstimationRunningStatus,
+        ComputingType.STATE_ESTIMATION,
+        stateEstimationAvailability
     );
 };

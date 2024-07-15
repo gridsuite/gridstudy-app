@@ -92,6 +92,8 @@ export function getShortCircuitAnalysisRunningStatus(
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
+        case 'FAILED':
+            return RunningStatus.FAILED;
         default:
             return RunningStatus.IDLE;
     }
@@ -122,6 +124,21 @@ export function getVoltageInitRunningStatus(
             return RunningStatus.SUCCEED;
         case 'NOT_OK':
             return RunningStatus.FAILED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
+export function getStateEstimationRunningStatus(
+    stateEstimationStatus: string
+): RunningStatus {
+    switch (stateEstimationStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'NOT_DONE':

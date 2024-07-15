@@ -13,6 +13,9 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const FOLDER_NAME = 'folderName';
+export const FOLDER_ID = 'folderId';
+export const DESCRIPTION = 'description';
 export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
 export const NOMINAL_V = 'nominalV';
@@ -256,6 +259,8 @@ export const LEG_SIDE = 'legSide';
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
+export const SELECTION_TYPE = 'selectionType';
+
 export const CONNECT = 'connect';
 
 export const CONTAINER_ID = 'containerId';

@@ -4,7 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { TagRenderer, equipmentStyles } from '@gridsuite/commons-ui';
+import {
+    EquipmentInfos,
+    TagRenderer,
+    TagRendererProps,
+    equipmentStyles,
+} from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
 import {
     DiagramType,
@@ -14,7 +19,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
-import { useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { centerOnSubstation, openDiagram } from 'redux/actions';
 import { fetchNetworkElementInfos } from 'services/study/network';
@@ -22,20 +27,32 @@ import {
     GpsFixed as GpsFixedIcon,
     Timeline as TimelineIcon,
 } from '@mui/icons-material';
+import { ReduxState } from 'redux/reducer.type';
 
-export const CustomSuffixRenderer = ({ props, element }) => {
+interface CustomSuffixRendererProps extends TagRendererProps {
+    onClose?: () => void;
+}
+
+export const CustomSuffixRenderer: FunctionComponent<
+    CustomSuffixRendererProps
+> = ({ props, element, onClose }) => {
     const dispatch = useDispatch();
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
     const networkAreaDiagramNbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels
+        (state: ReduxState) => state.networkAreaDiagramNbVoltageLevels
     );
     const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth
+        (state: ReduxState) => state.networkAreaDiagramDepth
     );
 
     const centerOnSubstationCB = useCallback(
-        (e, element) => {
+        (
+            e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+            element: EquipmentInfos
+        ) => {
             e.stopPropagation();
             if (!studyUuid || !currentNode) {
                 return;
@@ -55,20 +72,23 @@ export const CustomSuffixRenderer = ({ props, element }) => {
             }
             substationIdPromise.then((substationId) => {
                 dispatch(centerOnSubstation(substationId));
-                props.onClose && props.onClose();
+                onClose?.();
                 e.stopPropagation();
             });
         },
-        [dispatch, props, studyUuid, currentNode]
+        [dispatch, onClose, studyUuid, currentNode]
     );
 
     const openNetworkAreaDiagramCB = useCallback(
-        (e, element) => {
+        (
+            e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+            element: EquipmentInfos
+        ) => {
             dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
-            props.onClose && props.onClose();
+            onClose?.();
             e.stopPropagation();
         },
-        [dispatch, props]
+        [dispatch, onClose]
     );
 
     if (
@@ -105,8 +125,7 @@ export const CustomSuffixRenderer = ({ props, element }) => {
     } else {
         return (
             <TagRenderer
-                styles={equipmentStyles}
-                props={props}
+                props={{ ...props, styles: equipmentStyles }}
                 element={element}
             />
         );

@@ -102,6 +102,15 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         return getStatus(status, styles);
     }, [status]);
 
+    const onPredefinedParametersManualChange = (event: any) => {
+        const newPredefinedParameters = event.target.value;
+        console.debug(
+            'onPredefinedParametersManualChange new:',
+            newPredefinedParameters
+        );
+        resetAll(newPredefinedParameters);
+    };
+
     // fields definition
     const feederResult = (
         <Grid container alignItems="center" spacing={2} direction={'row'}>
@@ -117,6 +126,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         <MuiSelectInput
             name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
             options={predefinedParamsOptions}
+            onChange={onPredefinedParametersManualChange}
             fullWidth
         />
     );
@@ -196,11 +206,6 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         isIccMaxFeaturesDefaultConfiguration,
         isIccMinFeaturesDefaultConfiguration,
     ]);
-
-    // reset all fields when predefined parameters changes
-    useEffect(() => {
-        resetAll(watchPredefinedParams);
-    }, [watchPredefinedParams, resetAll]);
 
     return (
         <Grid container spacing={2} paddingLeft={2}>

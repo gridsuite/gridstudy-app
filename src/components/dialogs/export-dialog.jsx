@@ -29,7 +29,6 @@ import IconButton from '@mui/material/IconButton';
 import { CancelButton, FlatParameters } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
-import { CGMES } from 'components/utils/constants';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -167,17 +166,11 @@ const ExportDialog = ({
                             id: 'select-format',
                         }}
                     >
-                        {Object.keys(formatsWithParameters)
-                            .filter(
-                                (format) =>
-                                    // Hide the CGMES item while waiting for the Fix of getIdentifiable on the back end
-                                    format !== CGMES
-                            )
-                            .map((formatKey) => (
-                                <MenuItem key={formatKey} value={formatKey}>
-                                    {formatKey}
-                                </MenuItem>
-                            ))}
+                        {Object.keys(formatsWithParameters).map((formatKey) => (
+                            <MenuItem key={formatKey} value={formatKey}>
+                                {formatKey}
+                            </MenuItem>
+                        ))}
                     </Select>
                     <Stack
                         marginTop="0.7em"
