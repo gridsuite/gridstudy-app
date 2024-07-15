@@ -586,6 +586,7 @@
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
     "buildNode": "Réaliser le nœud",
+    "maxBuiltNodeExceededError": "Vous avez atteint votre quota utilisateur en termes de noeuds réalisés. Merci de supprimer des réalisations dans cette étude afin de redescendre sous le seuil de {limit} réalisations.",
     "createNetworkModificationNode": "Créer un nouveau nœud",
     "createNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "pasteNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
