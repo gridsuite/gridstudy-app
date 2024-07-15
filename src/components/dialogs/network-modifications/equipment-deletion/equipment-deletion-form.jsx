@@ -52,8 +52,12 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const { specificUpdate: hvdcLccSpecificUpdate } = useHvdcLccDeletion();
     const { setValue } = useFormContext();
 
-    const richTypeLabel = (rt) => {
-        return intl.formatMessage({ id: rt });
+    const richTypeLabel = (richType) => {
+        if (richType === EQUIPMENT_TYPES.HVDC_LINE) {
+            return intl.formatMessage({ id: 'Hvdc' });
+        } else {
+            return intl.formatMessage({ id: richType });
+        }
     };
 
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
