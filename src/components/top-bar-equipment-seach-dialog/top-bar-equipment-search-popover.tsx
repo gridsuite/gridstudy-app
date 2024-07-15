@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
 import { HorizontalRule } from '@mui/icons-material';
 import {
     Box,
@@ -13,15 +13,10 @@ import {
     Popover,
     Radio,
     RadioGroup,
+    Theme,
 } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { FormattedMessage } from 'react-intl';
-
-const unsearchableTypes = [
-    EquipmentType.SWITCH,
-    EquipmentType.VSC_CONVERTER_STATION,
-    EquipmentType.LCC_CONVERTER_STATION,
-];
 
 const styles = {
     popoverPaper: {
@@ -34,6 +29,11 @@ const styles = {
         paddingBottom: 1,
         cursor: 'pointer',
     },
+    radioButtonColor: (theme: Theme) => ({
+        '& .Mui-checked + .MuiFormControlLabel-label': {
+            color: theme.palette.primary.main,
+        },
+    }),
 };
 
 interface TopBarEquipmentSearchPopoverProps {
@@ -90,22 +90,17 @@ export const TopBarEquipmentSearchPopover = (
                             <HorizontalRule />
                             <FormattedMessage id="NoFilter" />
                         </Box>
-                        {Object.values(EquipmentType)
-                            .filter((type) => !unsearchableTypes.includes(type))
-                            .map((type) => {
-                                return (
-                                    <FormControlLabel
-                                        key={type.toString()}
-                                        value={type.toString()}
-                                        control={<Radio />}
-                                        label={
-                                            <FormattedMessage
-                                                id={type.toString()}
-                                            />
-                                        }
-                                    />
-                                );
-                            })}
+                        {Object.values(FILTER_EQUIPMENTS).map((type) => {
+                            return (
+                                <FormControlLabel
+                                    key={type.id}
+                                    value={type.id}
+                                    control={<Radio />}
+                                    sx={styles.radioButtonColor}
+                                    label={<FormattedMessage id={type.label} />}
+                                />
+                            );
+                        })}
                     </RadioGroup>
                 </FormControl>
             </Box>

@@ -621,7 +621,7 @@
     "ConnectedComponent": "Composante connexe",
     "SynchronousComponent": "Composante synchrone",
     "Setpoints": "Consignes",
-    "EmptySelection": "Aucun équipement n'est sélectionné",
+    "EmptySelection": "Aucun ouvrage n'est sélectionné",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
@@ -650,7 +650,7 @@
     "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
     "LCC_CONVERTER_STATION": "Station de conversion LCC",
     "VSC_CONVERTER_STATION": "Station de conversion VSC",
-    "VSC": "Ligne HVDC (VSC)",
+    "VSC": "HVDC (VSC)",
     "BUS": "Bus",
     "BUSBAR_SECTION": "Section de jeux de barres",
     "BY_FORMULA": "Par formule",
@@ -763,7 +763,7 @@
     "BatteryModificationError": "Erreur lors de la modification d'une batterie ",
     "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
-    "CreateVsc": "Création d'une ligne HVDC (VSC)",
+    "CreateVsc": "Création d'une HVDC (VSC)",
     "Characteristics": "Caractéristiques",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
@@ -815,7 +815,7 @@
     "DuplicatedPropsError": "Propriétés dupliquées : chaque propriété doit être unique",
     "FillAllFields": "Veuillez remplir tous les champs",
     "ModifySubstation": "Modifier un site",
-    "ModifyVsc": "Modifier une ligne HVDC (VSC)",
+    "ModifyVsc": "Modifier une HVDC (VSC)",
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
@@ -1372,6 +1372,6 @@
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "NoFilter": "Aucun filtre",
-    "EquipmentSearchPlaceholder": "Rechercher un poste, une ligne, un ouvrage...",
+    "EquipmentSearchPlaceholder": "Recherche",
     "GeneratedModification": "Modification-générée"
 }
