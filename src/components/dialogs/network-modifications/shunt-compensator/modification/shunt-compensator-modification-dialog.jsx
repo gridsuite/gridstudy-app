@@ -212,19 +212,21 @@ const ShuntCompensatorModificationDialog = ({
                         setLoading(false);
                     })
                     .catch((error) => {
-                        setShuntCompensatorInfos(null);
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (error.status === 404) {
                             setIdExists(true);
                         }
                         setLoading(false);
-                        reset(emptyFormData);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setShuntCompensatorInfos(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNode.id, snackError, studyUuid, reset, getValues]
+        [currentNode.id, snackError, studyUuid, reset, getValues, editData]
     );
 
     useEffect(() => {

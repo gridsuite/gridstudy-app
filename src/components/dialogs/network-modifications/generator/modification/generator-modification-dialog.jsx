@@ -339,9 +339,11 @@ const GeneratorModificationDialog = ({
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
-                        setGeneratorToModify(null);
-                        reset(emptyFormData);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setGeneratorToModify(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -355,6 +357,7 @@ const GeneratorModificationDialog = ({
             getValues,
             setValue,
             setValuesAndEmptyOthers,
+            editData,
         ]
     );
 
