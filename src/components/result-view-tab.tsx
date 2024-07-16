@@ -319,12 +319,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             !enableDeveloperMode &&
             previousEnableDeveloperMode !== enableDeveloperMode
         ) {
-            // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
-            if (lastCompletedComputation === ComputingType.SECURITY_ANALYSIS) {
-                setTabIndex(1);
-            } else {
-                setTabIndex(0);
-            }
+            setTabIndex(0);
         }
     }, [
         enableDeveloperMode,

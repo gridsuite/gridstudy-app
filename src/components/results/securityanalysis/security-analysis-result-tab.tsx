@@ -54,6 +54,7 @@ import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields'
 import { useIntl } from 'react-intl/lib';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { usePrevious } from 'components/utils/utils';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -100,7 +101,28 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const NMK_RESULTS_TAB_INDEX = 1;
     const LOGS_TAB_INDEX = 2;
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const previousEnableDeveloperMode = usePrevious(enableDeveloperMode);
 
+    useEffect(() => {
+        if (previousEnableDeveloperMode !== undefined) {
+            if (
+                !enableDeveloperMode &&
+                previousEnableDeveloperMode !== enableDeveloperMode &&
+                tabIndex !== 0
+            ) {
+                // handle tabIndex when dev mode is disabled
+                setTabIndex(tabIndex - 1);
+            }
+
+            if (
+                enableDeveloperMode &&
+                previousEnableDeveloperMode !== enableDeveloperMode
+            ) {
+                // handle tabIndex when dev mode is enabled
+                setTabIndex(tabIndex + 1);
+            }
+        }
+    }, [enableDeveloperMode, tabIndex, previousEnableDeveloperMode]);
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
@@ -258,6 +280,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const { loading: filterEnumsLoading, result: filterEnums } =
         useFetchFiltersEnums();
+
+    useEffect(() => {
+        console.log('$$$$$$$$$$$ ', tabIndex);
+    }, [tabIndex]);
 
     useEffect(() => {
         if (result) {
