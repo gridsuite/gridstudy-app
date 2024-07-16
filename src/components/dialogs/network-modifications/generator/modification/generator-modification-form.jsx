@@ -32,14 +32,14 @@ import {
     getEnergySourceLabel,
 } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos.ts';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -48,21 +48,12 @@ const GeneratorModificationForm = ({
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
+    const voltageLevelOptions = useVoltageLevelsListInfos(
+        studyUuid,
+        currentNodeUuid
+    );
 
     const energySourceLabelId = getEnergySourceLabel(
         generatorToModify?.energySource

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
@@ -14,7 +14,7 @@ import { TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network.js';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos.ts';
 
 const ShuntCompensatorModificationForm = ({
     studyUuid,
@@ -22,20 +22,11 @@ const ShuntCompensatorModificationForm = ({
     shuntCompensatorInfos,
     equipmentId,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const currentNodeUuid = currentNode?.id;
+    const voltageLevelOptions = useVoltageLevelsListInfos(
+        studyUuid,
+        currentNode?.id
+    );
 
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
     const shuntCompensatorIdField = (
         <TextField
             size="small"

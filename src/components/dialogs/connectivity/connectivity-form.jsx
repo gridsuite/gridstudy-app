@@ -55,8 +55,8 @@ import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
- * @param isEquipmentModification
- * @param previousValues
+ * @param isEquipmentModification connectivity form is used in a modification form or not
+ * @param previousValues previous values of connectivity form's fields
  * @returns JSX.Element
  */
 export const ConnectivityForm = ({

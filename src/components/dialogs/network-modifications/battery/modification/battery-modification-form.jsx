@@ -20,7 +20,7 @@ import {
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { TextField } from '@mui/material';
@@ -28,7 +28,7 @@ import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network.js';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos.ts';
 
 const BatteryModificationForm = ({
     studyUuid,
@@ -37,20 +37,11 @@ const BatteryModificationForm = ({
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const currentNodeUuid = currentNode?.id;
+    const voltageLevelOptions = useVoltageLevelsListInfos(
+        studyUuid,
+        currentNode?.id
+    );
 
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
     const batteryIdField = (
         <TextField
             size="small"
