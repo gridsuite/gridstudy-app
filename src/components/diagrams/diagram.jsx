@@ -57,6 +57,13 @@ const Diagram = (props) => {
         (state) => state.networkAreaDiagramNbVoltageLevels
     );
 
+    const incrementCounterDisabled =
+        props.loadingState ||
+        nbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS;
+
+    const decrementCounterDisabled =
+        props.loadingState || networkAreaDiagramDepth === 0;
+
     /**
      * DIAGRAM CONTROL HANDLERS
      */
@@ -161,13 +168,8 @@ const Diagram = (props) => {
                             fullScreenActive={shouldBeFullscreen}
                             onStartFullScreen={onShowFullScreenHandler}
                             onStopFullScreen={onHideFullScreenHandler}
-                            incrementCounterDisabled={
-                                nbVoltageLevels >
-                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
-                            }
-                            decrementCounterDisabled={
-                                networkAreaDiagramDepth === 0
-                            }
+                            incrementCounterDisabled={incrementCounterDisabled}
+                            decrementCounterDisabled={decrementCounterDisabled}
                         />
                     </Box>
                 )}
@@ -198,6 +200,7 @@ Diagram.propTypes = {
     height: PropTypes.number,
     fullscreenWidth: PropTypes.number,
     fullscreenHeight: PropTypes.number,
+    loadingState: PropTypes.bool,
 };
 
 export default Diagram;
