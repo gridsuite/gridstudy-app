@@ -583,7 +583,7 @@
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
     "buildNode": "Build node",
-    "maxBuiltNodeExceededError": "You have reached your user quota for built nodes number. Please unbuild some nodes in the current study in order to go below the limit of {limit} builds",
+    "maxBuiltNodeExceededError": "You have reached your user quota for builds per study, therefore you cannot build further nodes within this study. Please unbuild nodes in order to go below the limit of {limit} builds",
     "createNetworkModificationNode": "Create a new node",
     "createNetworkModificationNodeInNewBranch": "in a new branch",
     "pasteNetworkModificationNodeInNewBranch": "in a new branch",
