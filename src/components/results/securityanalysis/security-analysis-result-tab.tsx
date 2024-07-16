@@ -282,10 +282,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         useFetchFiltersEnums();
 
     useEffect(() => {
-        console.log('$$$$$$$$$$$ ', tabIndex);
-    }, [tabIndex]);
-
-    useEffect(() => {
         if (result) {
             setCount(tabIndex ? result.totalElements : result.length);
         }
