@@ -5,6 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { UUID } from 'crypto';
+import { RefObject } from 'react';
+import { IntlShape } from 'react-intl';
+import { Dispatch } from 'redux';
+import { UseSnackMessageReturn } from '@gridsuite/commons-ui/dist/hooks/useSnackMessage';
 import {
     mapEquipmentsCreated,
     setMapEquipementsInitialized,
@@ -15,10 +20,13 @@ import {
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
 } from '../../services/study/network';
-import { MapEquipments } from '@powsybl/diagram-viewer';
 
-export default class GSMapEquipments extends MapEquipments {
-    initEquipments(studyUuid, currentNodeUuid) {
+export default class GSMapEquipments {
+    dispatch: Dispatch;
+    errHandler?: UseSnackMessageReturn['snackError'];
+    intlRef: RefObject<IntlShape>;
+
+    initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {
         const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(
             studyUuid,
             currentNodeUuid,
@@ -144,8 +152,13 @@ export default class GSMapEquipments extends MapEquipments {
         });
     }
 
-    constructor(studyUuid, currentNodeUuid, errHandler, dispatch, intlRef) {
-        super();
+    constructor(
+        studyUuid: UUID,
+        currentNodeUuid: UUID,
+        errHandler: UseSnackMessageReturn['snackError'],
+        dispatch: Dispatch,
+        intlRef: RefObject<IntlShape>
+    ) {
         this.dispatch = dispatch;
         this.errHandler = errHandler;
         this.intlRef = intlRef;
@@ -153,9 +166,9 @@ export default class GSMapEquipments extends MapEquipments {
     }
 
     reloadImpactedSubstationsEquipments(
-        studyUuid,
-        currentNode,
-        substationsIds
+        studyUuid: UUID,
+        currentNode: any,
+        substationsIds: string
     ) {
         const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
