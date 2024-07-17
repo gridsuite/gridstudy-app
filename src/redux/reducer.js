@@ -165,7 +165,6 @@ import {
     TIMELINE,
     SPREADSHEET_STORE_FIELD,
     ONE_BUS,
-    defaultSpreadsheetSort,
 } from 'utils/store-filter-fields';
 import { StudyIndexationStatus, StudyDisplayMode } from './reducer.type';
 
@@ -239,6 +238,11 @@ const initialSpreadsheetFilter = {
     [EQUIPMENT_TYPES.DANGLING_LINE]: [],
     [EQUIPMENT_TYPES.BUS]: [],
     [EQUIPMENT_TYPES.TIE_LINE]: [],
+};
+
+const defaultSpreadsheetSort = {
+    colId: 'id',
+    sortWay: 'asc',
 };
 
 const initialSpreadsheetSort = {
