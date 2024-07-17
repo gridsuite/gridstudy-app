@@ -223,7 +223,6 @@ const TableWrapper = (props) => {
             state.spreadsheetSort[TABLES_DEFINITION_INDEXES.get(tabIndex).type]
     );
 
-    console.log('test sortConfigType : ', sortConfigType);
     const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
         gridRef,
         sortConfigType,

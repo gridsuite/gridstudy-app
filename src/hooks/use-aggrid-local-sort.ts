@@ -16,7 +16,7 @@ import { AnyAction } from 'redux';
 
 export const useAgGridLocalSort = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
-    initSortConfig: SortConfigType,
+    initSortConfig: SortConfigType[],
     sortAction?: (colId: string, sortWay: string, tab: string) => AnyAction,
     tab?: string
 ): SortPropsType => {

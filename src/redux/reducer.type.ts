@@ -10,6 +10,17 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { IOptionalService } from '../components/utils/optional-services';
 import { Filter } from '../components/results/common/results-global-filter';
+import {
+    ALL_BUSES,
+    LOADFLOW_CURRENT_LIMIT_VIOLATION,
+    LOADFLOW_RESULT,
+    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    ONE_BUS,
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+    TIMELINE,
+} from '../utils/store-filter-fields';
+import { SortConfigType } from '../hooks/use-aggrid-sort';
 
 export enum UpdateTypes {
     STUDY = 'study',
@@ -26,6 +37,25 @@ export enum StudyDisplayMode {
     TREE = 'Tree',
     HYBRID = 'Hybrid',
     DRAW = 'Draw',
+}
+interface DynamicSimulationResultSortType {
+    [TIMELINE]: SortConfigType[];
+}
+
+interface LoadflowResultSortType {
+    [LOADFLOW_CURRENT_LIMIT_VIOLATION]: SortConfigType[];
+    [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: SortConfigType[];
+    [LOADFLOW_RESULT]: SortConfigType[];
+}
+
+interface SecurityAnalysisResultSortType {
+    [SECURITY_ANALYSIS_RESULT_N]: SortConfigType[];
+    [SECURITY_ANALYSIS_RESULT_N_K]: SortConfigType[];
+}
+
+interface ShortcircuitAnalysisResultSortType {
+    [ONE_BUS]: SortConfigType[];
+    [ALL_BUSES]: SortConfigType[];
 }
 
 export interface ReduxState {
@@ -48,6 +78,10 @@ export interface ReduxState {
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
+    shortcircuitAnalysisResultSort: ShortcircuitAnalysisResultSortType;
+    dynamicSimulationResultSort: DynamicSimulationResultSortType;
+    securityAnalysisResultSort: SecurityAnalysisResultSortType;
+    loadflowResultSort: LoadflowResultSortType;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {

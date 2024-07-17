@@ -18,7 +18,7 @@ export type SortConfigType = {
 export type SortPropsType = {
     onSortChanged: (sortConfig: SortConfigType) => void;
     sortConfig: SortConfigType[];
-    initSort?: (colKey: string) => void;
+    initSort?: (sortConfig: SortConfigType[]) => void;
     children?: boolean;
 };
 
@@ -29,7 +29,7 @@ export enum SortWay {
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType[],
-    sortAction?: (sortConfig: SortConfigType[], tab: string) => AnyAction,
+    sortAction?: (tab: string, sortConfig: SortConfigType[]) => AnyAction,
     tab?: string
 ): SortPropsType => {
     const [sortConfig, setSortConfig] =
@@ -53,7 +53,7 @@ export const useAgGridSort = (
     );
 
     const initSort = useCallback(
-        (config: SortConfigType) => setSortConfig(config),
+        (config: SortConfigType[]) => setSortConfig(config),
         []
     );
 
