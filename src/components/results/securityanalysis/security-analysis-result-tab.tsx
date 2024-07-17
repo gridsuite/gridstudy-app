@@ -41,7 +41,7 @@ import {
     convertFilterValues,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { SortConfigType, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
@@ -141,7 +141,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     }, [tabIndex, nmkType, enableDeveloperMode]);
 
     const sortConfigType = useSelector(
-        (state) => state.securityAnalysisResultSort[getStoreFields(tabIndex)]
+        (state: ReduxState) =>
+            state.securityAnalysisResultSort[getStoreFields(tabIndex)]
     );
 
     const { onSortChanged, initSort } = useAgGridSort(
@@ -183,10 +184,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
             if (sortConfigType?.length) {
                 const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['sort'] = sortConfigType.map((sort) => ({
-                    ...sort,
-                    colId: columnToFieldMapping[sort.colId],
-                }));
+                queryParams['sort'] = sortConfigType.map(
+                    (sort: SortConfigType) => ({
+                        ...sort,
+                        colId: columnToFieldMapping[sort.colId],
+                    })
+                );
             }
 
             if (filterSelector) {
@@ -237,12 +240,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     }, [initSort, setResult, sortConfigType]);
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {
-        const newNmkType = event.target.value;
-        resetResultStates(
-            newNmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? 'contingencyId'
-                : 'subjectId'
-        );
+        resetResultStates();
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                 ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS

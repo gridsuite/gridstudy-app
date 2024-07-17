@@ -28,8 +28,8 @@ export enum SortWay {
 }
 
 export const useAgGridSort = (
-    initSortConfig: SortConfigType,
-    sortAction?: (colId: string, sortWay: string, tab: string) => AnyAction,
+    initSortConfig: SortConfigType[],
+    sortAction?: (sortConfig: SortConfigType[], tab: string) => AnyAction,
     tab?: string
 ): SortPropsType => {
     const [sortConfig, setSortConfig] =

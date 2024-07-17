@@ -84,7 +84,7 @@ const DynamicSimulationResultTimeline = memo(
         );
 
         const sortConfigType = useSelector(
-            (state) => state.dynamicSimulationResultSort[TIMELINE]
+            (state: ReduxState) => state.dynamicSimulationResultSort[TIMELINE]
         );
 
         const { onSortChanged, sortConfig } = useAgGridLocalSort(

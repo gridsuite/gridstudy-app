@@ -36,7 +36,7 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { SortConfigType, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     useAggridRowFilter,
@@ -96,7 +96,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         : FROM_COLUMN_TO_FIELD;
 
     const sortConfigType = useSelector(
-        (state) =>
+        (state: ReduxState) =>
             state.shortcircuitAnalysisResultSort[mappingTabs(analysisType)]
     );
 
@@ -143,7 +143,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        const backSortConfig = sortConfigType?.map((sort) => ({
+        const backSortConfig = sortConfigType?.map((sort: SortConfigType) => ({
             ...sort,
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
