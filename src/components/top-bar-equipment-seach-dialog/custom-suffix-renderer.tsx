@@ -34,8 +34,7 @@ interface CustomSuffixRendererProps extends TagRendererProps {
 
 export const CustomSuffixRenderer: FunctionComponent<
     CustomSuffixRendererProps
-> = ({ onClose, ...tagRendererProps }) => {
-    const element = tagRendererProps.element;
+> = ({ element, onClose, ...tagRendererProps }) => {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
@@ -121,6 +120,12 @@ export const CustomSuffixRenderer: FunctionComponent<
             </>
         );
     } else {
-        return <TagRenderer {...tagRendererProps} styles={equipmentStyles} />;
+        return (
+            <TagRenderer
+                {...tagRendererProps}
+                element={element}
+                styles={equipmentStyles}
+            />
+        );
     }
 };
