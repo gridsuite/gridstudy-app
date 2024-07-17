@@ -119,8 +119,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         (state) => state.securityAnalysisResultSort[getStoreFields(tabIndex)]
     );
 
-    console.log('test sort config : ', getStoreFields(tabIndex), sortConfigType);
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort(
+    const { onSortChanged, initSort } = useAgGridSort(
         sortConfigType,
         setSecurityAnalysisResultSort,
         getStoreFields(tabIndex)
@@ -154,9 +153,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams['size'] = rowsPerPage;
             }
 
-            if (sortConfig?.length) {
+            if (sortConfigType?.length) {
                 const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['sort'] = sortConfig.map((sort) => ({
+                queryParams['sort'] = sortConfigType.map((sort) => ({
                     ...sort,
                     colId: columnToFieldMapping[sort.colId],
                 }));
@@ -184,7 +183,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             page,
             tabIndex,
             rowsPerPage,
-            sortConfig,
+            sortConfigType,
             filterSelector,
             resultType,
             intl,
@@ -272,7 +271,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const columnDefs = useSecurityAnalysisColumnsDefs(
         {
             onSortChanged,
-            sortConfig,
+            sortConfig: sortConfigType,
         },
         {
             updateFilter,

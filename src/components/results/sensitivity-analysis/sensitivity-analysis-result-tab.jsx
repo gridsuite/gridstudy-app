@@ -73,7 +73,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             ]
     );
 
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort(
+    const { onSortChanged, initSort } = useAgGridSort(
         sortConfigType,
         setSensitivityAnalysisResultSort,
         SensitivityResultTabs[nOrNkIndex].id
@@ -199,7 +199,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         setPage={setPage}
                         sortProps={{
                             onSortChanged,
-                            sortConfig,
+                            sortConfig: sortConfigType,
                         }}
                         filterProps={{
                             updateFilter,

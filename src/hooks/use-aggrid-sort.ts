@@ -32,9 +32,8 @@ export const useAgGridSort = (
     sortAction?: (colId: string, sortWay: string, tab: string) => AnyAction,
     tab?: string
 ): SortPropsType => {
-    const [sortConfig, setSortConfig] = useState<SortConfigType[]>([
-        initSortConfig,
-    ]);
+    const [sortConfig, setSortConfig] =
+        useState<SortConfigType[]>(initSortConfig);
     const dispatch = useDispatch();
 
     const onSortChanged = useCallback(
@@ -50,11 +49,11 @@ export const useAgGridSort = (
             setSortConfig(updatedSortConfig);
             sortAction && tab && dispatch(sortAction(tab, updatedSortConfig));
         },
-        [dispatch, sortAction, tab]
+        [dispatch, sortAction, tab, sortConfig]
     );
 
     const initSort = useCallback(
-        (config: SortConfigType) => setSortConfig([config]),
+        (config: SortConfigType) => setSortConfig(config),
         []
     );
 
