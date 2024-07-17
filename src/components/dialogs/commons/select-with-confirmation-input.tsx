@@ -9,7 +9,7 @@ import { useController } from 'react-hook-form';
 import { Select, SelectChangeEvent } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import { CustomDialog } from '../../../utils/custom-dialog';
+import { CustomDialog } from '../../utils/custom-dialog';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 

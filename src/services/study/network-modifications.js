@@ -1871,6 +1871,41 @@ export function modifyByFormula(
     });
 }
 
+export function modifyByFilter(
+    studyUuid,
+    currentNodeUuid,
+    equipmentType,
+    byFilterModifications,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating by filter modification');
+    } else {
+        console.info('Creating by filter modification');
+    }
+
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.BY_FILTER_MODIFICATION.type,
+        identifiableType: equipmentType,
+        byFilterModificationsInfosList: byFilterModifications,
+    });
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: body,
+    });
+}
+
 export function createTabularCreation(
     studyUuid,
     currentNodeUuid,

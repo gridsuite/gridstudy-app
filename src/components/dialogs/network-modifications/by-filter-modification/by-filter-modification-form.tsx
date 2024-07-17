@@ -7,12 +7,15 @@
 
 import React, { FunctionComponent } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../utils/field-constants';
+import {
+    EQUIPMENT_TYPE_FIELD,
+    MODIFICATION_LINE,
+} from '../../../utils/field-constants';
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
-import FormulaForm from './formula/formula-form';
+import ModificationLineForm from './modification-line/modification-line-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
-import { getFormulaInitialValue } from './formula/formula-utils';
+import { getModificationLineInitialValue } from './modification-line/modification-line-utils';
 import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../commons/select-with-confirmation-input';
 
@@ -27,7 +30,7 @@ const EQUIPMENT_TYPE_OPTIONS = [
     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
 ];
 
-const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
+const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
     const { setValue, getValues } = useFormContext();
 
     const equipmentTypeField = (
@@ -37,21 +40,21 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
             options={EQUIPMENT_TYPE_OPTIONS}
             onValidate={() => {
                 setValue(
-                    FORMULAS,
-                    getValues(FORMULAS).map(() => ({
-                        ...getFormulaInitialValue(),
+                    MODIFICATION_LINE,
+                    getValues(MODIFICATION_LINE).map(() => ({
+                        ...getModificationLineInitialValue(),
                     }))
                 );
             }}
         />
     );
 
-    const formulasField = (
+    const modificationLinesField = (
         <ExpandableInput
-            name={FORMULAS}
-            Field={FormulaForm}
-            addButtonLabel={'addNewFormula'}
-            initialValue={getFormulaInitialValue()}
+            name={MODIFICATION_LINE}
+            Field={ModificationLineForm}
+            addButtonLabel={'addNewModificationLine'}
+            initialValue={getModificationLineInitialValue()}
         />
     );
 
@@ -60,9 +63,9 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
             <Grid container paddingTop={'20px'}>
                 {gridItem(equipmentTypeField, 2.15)}
             </Grid>
-            <Grid container>{gridItem(formulasField, 12)}</Grid>
+            <Grid container>{gridItem(modificationLinesField, 12)}</Grid>
         </>
     );
 };
 
-export default ByFormulaForm;
+export default ByFilterModificationForm;

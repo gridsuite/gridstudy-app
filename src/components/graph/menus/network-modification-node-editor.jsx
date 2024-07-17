@@ -85,6 +85,7 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { createCompositeModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
+import ByFilterModificationDialog from '../../dialogs/network-modifications/by-filter-modification/by-filter-modification-dialog.jsx';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -254,6 +255,20 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
+    function getMenuItemById(menu, id) {
+        const stack = Array.isArray(menu) ? [...menu] : [menu];
+        while (stack.length) {
+            const item = stack.shift();
+            if (item?.id === id) {
+                return item;
+            }
+            if (item?.subItems) {
+                stack.push(...item?.subItems);
+            }
+        }
+        return null;
+    }
+
     const menuDefinition = [
         {
             id: 'CREATE',
@@ -304,6 +319,17 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VSC_CREATION.type,
                     label: 'VSC',
                     action: () => adapt(VscCreationDialog),
+                },
+                {
+                    id: 'CREATE_MODIFY_MULTIPLE',
+                    label: 'menu.modifyMultiple',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.BY_FILTER_MODIFICATION.type,
+                            label: 'BY_FILTER',
+                            action: () => adapt(ByFilterModificationDialog),
+                        },
+                    ],
                 },
             ],
         },
@@ -378,6 +404,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                     label: 'BY_FORMULA',
                     action: () => adapt(ByFormulaDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.BY_FILTER_MODIFICATION.type,
+                    label: 'BY_FILTER',
+                    action: () => adapt(ByFilterModificationDialog),
                 },
             ],
         },
@@ -886,9 +917,10 @@ const NetworkModificationNodeEditor = () => {
     }, [modifications]);
 
     const renderDialog = () => {
-        return subMenuItemsList
-            .find((menuItem) => menuItem.id === editDialogOpen)
-            .action();
+        return getMenuItemById(menuDefinition, editDialogOpen)?.action();
+        // return subMenuItemsList
+        //     .find((menuItem) => menuItem.id === editDialogOpen)
+        //     .action();
     };
 
     const commit = useCallback(
