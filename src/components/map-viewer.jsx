@@ -95,7 +95,7 @@ const MapViewer = ({
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
-    const isDrawingMode = useSelector((state) => state.isDrawingMode);
+    const disableSldInteraction = useSelector((state) => state.isDrawingMode);
 
     const [
         shouldOpenSelectionCreationPanel,
@@ -125,11 +125,11 @@ const MapViewer = ({
     const openVoltageLevel = useCallback(
         (vlId) => {
             // don't open the sld if the drawing mode is activated
-            if (!isDrawingMode) {
+            if (!disableSldInteraction) {
                 openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
             }
         },
-        [openDiagramView, isDrawingMode]
+        [openDiagramView, disableSldInteraction]
     );
 
     function showInSpreadsheet(equipment) {
