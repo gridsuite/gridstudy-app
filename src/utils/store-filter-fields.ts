@@ -1,3 +1,5 @@
+import { SortWay } from '../hooks/use-aggrid-sort';
+
 /**
  * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -40,3 +42,8 @@ export const TIMELINE = 'timeline';
 
 //spreadsheet filter store fields
 export const SPREADSHEET_STORE_FIELD = 'spreadsheetFilter';
+
+export const defaultSpreadsheetSort = {
+    colId: 'id',
+    sortWay: SortWay.ASC,
+};

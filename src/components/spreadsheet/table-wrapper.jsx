@@ -84,13 +84,13 @@ import {
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
-import { SortWay } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
+import { setSpreadSheetSort } from '../../redux/actions.js';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -218,19 +218,17 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
-    const defaultSortColKey = useMemo(() => {
-        const defaultSortCol = columnData.find(
-            (column) => column.isDefaultSort
-        );
-        return defaultSortCol?.field;
-    }, [columnData]);
+    const sortConfigType = useSelector(
+        (state) =>
+            state.spreadsheetSort[TABLES_DEFINITION_INDEXES.get(tabIndex).type]
+    );
 
+    console.log('test sortConfigType : ', sortConfigType);
     const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
         gridRef,
-        {
-            colId: defaultSortColKey,
-            sort: SortWay.ASC,
-        }
+        sortConfigType,
+        setSpreadSheetSort,
+        TABLES_DEFINITION_INDEXES.get(tabIndex).type
     );
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
@@ -388,6 +386,7 @@ const TableWrapper = (props) => {
                 };
             }
 
+            console.log('test useCallback sortConfig', sortConfig);
             return makeAgGridCustomHeaderColumn({
                 headerName: column.headerName,
                 field: column.field,
@@ -430,8 +429,8 @@ const TableWrapper = (props) => {
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        initSort(defaultSortColKey);
-    }, [tabIndex, defaultSortColKey, initSort]);
+        initSort(sortConfigType);
+    }, [tabIndex, sortConfigType, initSort]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {

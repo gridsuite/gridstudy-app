@@ -93,6 +93,12 @@ import {
     UPDATE_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     DELETE_EQUIPMENTS,
+    LOADFLOW_RESULT_SORT,
+    SECURITY_ANALYSIS_RESULT_SORT,
+    SENSITIVITY_ANALYSIS_RESULT_SORT,
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT,
+    DYNAMIC_SIMULATION_RESULT_SORT,
+    SPREADSHEET_SORT,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -159,6 +165,7 @@ import {
     TIMELINE,
     SPREADSHEET_STORE_FIELD,
     ONE_BUS,
+    defaultSpreadsheetSort,
 } from 'utils/store-filter-fields';
 import { StudyIndexationStatus, StudyDisplayMode } from './reducer.type';
 
@@ -232,6 +239,25 @@ const initialSpreadsheetFilter = {
     [EQUIPMENT_TYPES.DANGLING_LINE]: [],
     [EQUIPMENT_TYPES.BUS]: [],
     [EQUIPMENT_TYPES.TIE_LINE]: [],
+};
+
+const initialSpreadsheetSort = {
+    [EQUIPMENT_TYPES.SUBSTATION]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.LINE]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.GENERATOR]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.LOAD]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.BATTERY]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.HVDC_LINE]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.DANGLING_LINE]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.BUS]: [defaultSpreadsheetSort],
+    [EQUIPMENT_TYPES.TIE_LINE]: [defaultSpreadsheetSort],
 };
 
 export const defaultOptionalServicesState = Object.keys(
@@ -314,6 +340,50 @@ const initialState = {
 
     // Spreadsheet filters
     [SPREADSHEET_STORE_FIELD]: { ...initialSpreadsheetFilter },
+
+    loadflowResultSort: {
+        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
+            {
+                colId: 'overload',
+                sortWay: 'desc',
+            },
+        ],
+        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [
+            {
+                colId: 'subjectId',
+                sortWay: 'desc',
+            },
+        ],
+        [LOADFLOW_RESULT]: [
+            { colId: 'connectedComponentNum', sortWay: 'desc' },
+        ],
+    },
+    securityAnalysisResultSort: {
+        [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sortWay: 'asc' }],
+        [SECURITY_ANALYSIS_RESULT_N_K]: [
+            {
+                colId: 'contingencyId',
+                sortWay: 'asc',
+            },
+        ],
+    },
+    sensitivityAnalysisResultSort: {
+        N: [{ colId: 'value', sortWay: 'asc' }],
+        N_K: [{ colId: 'valueAfter', sortWay: 'asc' }],
+    },
+    shortcircuitAnalysisResultSort: {
+        [ONE_BUS]: [{ colId: 'current', sortWay: 'desc' }],
+        [ALL_BUSES]: [{ colId: 'elementId', sortWay: 'asc' }],
+    },
+    dynamicSimulationResultSort: {
+        [TIMELINE]: [
+            {
+                colId: 'time',
+                sort: 'asc',
+            },
+        ],
+    },
+    spreadsheetSort: { ...initialSpreadsheetSort },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1203,6 +1273,33 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SPREADSHEET_FILTER, (state, action) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] =
             action[SPREADSHEET_STORE_FIELD];
+    });
+
+    builder.addCase(LOADFLOW_RESULT_SORT, (state, action) => {
+        state.loadflowResultSort[action.tab] = action.loadflowResultSort;
+    });
+
+    builder.addCase(SECURITY_ANALYSIS_RESULT_SORT, (state, action) => {
+        state.securityAnalysisResultSort[action.tab] =
+            action.securityAnalysisResultSort;
+    });
+
+    builder.addCase(SENSITIVITY_ANALYSIS_RESULT_SORT, (state, action) => {
+        state.sensitivityAnalysisResultSort[action.tab] =
+            action.sensitivityAnalysisResultSort;
+    });
+
+    builder.addCase(SHORTCIRCUIT_ANALYSIS_RESULT_SORT, (state, action) => {
+        state.shortcircuitAnalysisResultSort[action.tab] =
+            action.shortcircuitAnalysisResultSort;
+    });
+    builder.addCase(DYNAMIC_SIMULATION_RESULT_SORT, (state, action) => {
+        state.dynamicSimulationResultSort[action.tab] =
+            action.dynamicSimulationResultSort;
+    });
+
+    builder.addCase(SPREADSHEET_SORT, (state, action) => {
+        state.spreadsheetSort[action.tab] = action.spreadsheetSort;
     });
 });
 

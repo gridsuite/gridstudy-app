@@ -30,11 +30,10 @@ import { ReduxState } from 'redux/reducer.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { SortWay, useAgGridSort } from 'hooks/use-aggrid-sort';
+import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import {
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
-    getIdType,
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowResultColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
@@ -50,7 +49,7 @@ import {
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setLoadflowResultFilter } from 'redux/actions';
+import { setLoadflowResultFilter, setLoadflowResultSort } from 'redux/actions';
 import {
     NumberCellRenderer,
     StatusCellRender,
@@ -105,10 +104,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colId: getIdType(tabIndex),
-        sort: SortWay.DESC,
-    });
+    const sortConfigType = useSelector(
+        (state) => state.loadflowResultSort[mappingTabs(tabIndex)]
+    );
+
+    const { onSortChanged, sortConfig, initSort } = useAgGridSort(
+        sortConfigType,
+        setLoadflowResultSort,
+        mappingTabs(tabIndex)
+    );
 
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: LOADFLOW_RESULT_STORE_FIELD,
@@ -298,18 +302,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         tabIndex,
     ]);
 
-    const resetResultStates = useCallback(
-        (defaultSortColKey: string) => {
-            setResult(null);
-            if (initSort) {
-                initSort(defaultSortColKey);
-            }
-        },
-        [initSort, setResult]
-    );
+    const resetResultStates = useCallback(() => {
+        setResult(null);
+        if (initSort) {
+            initSort(sortConfigType);
+        }
+    }, [initSort, setResult, sortConfigType]);
 
     const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
-        resetResultStates(getIdType(newTabIndex));
+        resetResultStates();
         setTabIndex(newTabIndex);
     };
 

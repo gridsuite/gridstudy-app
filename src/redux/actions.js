@@ -688,6 +688,16 @@ export function setLoadflowResultFilter(filterTab, loadflowResultFilter) {
     };
 }
 
+export const LOADFLOW_RESULT_SORT = 'LOADFLOW_RESULT_SORT';
+
+export function setLoadflowResultSort(tab, loadflowResultSort) {
+    return {
+        type: LOADFLOW_RESULT_SORT,
+        tab: tab,
+        loadflowResultSort: loadflowResultSort,
+    };
+}
+
 export const SECURITY_ANALYSIS_RESULT_FILTER =
     'SECURITY_ANALYSIS_RESULT_FILTER';
 
@@ -699,6 +709,16 @@ export function setSecurityAnalysisResultFilter(
         type: SECURITY_ANALYSIS_RESULT_FILTER,
         filterTab: filterTab,
         securityAnalysisResultFilter: securityAnalysisResultFilter,
+    };
+}
+
+export const SECURITY_ANALYSIS_RESULT_SORT = 'SECURITY_ANALYSIS_RESULT_SORT';
+
+export function setSecurityAnalysisResultSort(tab, securityAnalysisResultSort) {
+    return {
+        type: SECURITY_ANALYSIS_RESULT_SORT,
+        tab: tab,
+        securityAnalysisResultSort: securityAnalysisResultSort,
     };
 }
 
@@ -716,6 +736,20 @@ export function setSensitivityAnalysisResultFilter(
     };
 }
 
+export const SENSITIVITY_ANALYSIS_RESULT_SORT =
+    'SENSITIVITY_ANALYSIS_RESULT_SORT';
+
+export function setSensitivityAnalysisResultSort(
+    tab,
+    sensitivityAnalysisResultSort
+) {
+    return {
+        type: SENSITIVITY_ANALYSIS_RESULT_SORT,
+        tab: tab,
+        sensitivityAnalysisResultSort: sensitivityAnalysisResultSort,
+    };
+}
+
 export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER =
     'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
 
@@ -727,6 +761,20 @@ export function setShortcircuitAnalysisResultFilter(
         type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
         filterTab: filterTab,
         shortcircuitAnalysisResultFilter: shortcircuitAnalysisResultFilter,
+    };
+}
+
+export const SHORTCIRCUIT_ANALYSIS_RESULT_SORT =
+    'SHORTCIRCUIT_ANALYSIS_RESULT_SORT';
+
+export function setShortcircuitAnalysisResultSort(
+    tab,
+    shortcircuitAnalysisResultSort
+) {
+    return {
+        type: SHORTCIRCUIT_ANALYSIS_RESULT_SORT,
+        tab: tab,
+        shortcircuitAnalysisResultSort: shortcircuitAnalysisResultSort,
     };
 }
 
@@ -744,6 +792,19 @@ export function setDynamicSimulationResultFilter(
     };
 }
 
+export const DYNAMIC_SIMULATION_RESULT_SORT = 'DYNAMIC_SIMULATION_RESULT_SORT';
+
+export function setDynamicSimulationResultSort(
+    tab,
+    dynamicSimulationResultSort
+) {
+    return {
+        type: DYNAMIC_SIMULATION_RESULT_SORT,
+        tab: tab,
+        dynamicSimulationResultSort: dynamicSimulationResultSort,
+    };
+}
+
 export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
 
 export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {
@@ -751,5 +812,15 @@ export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {
         type: SPREADSHEET_FILTER,
         filterTab: filterTab,
         spreadsheetFilter: spreadsheetFilter,
+    };
+}
+
+export const SPREADSHEET_SORT = 'SPREADSHEET_SORT';
+
+export function setSpreadSheetSort(tab, spreadsheetSort) {
+    return {
+        type: SPREADSHEET_SORT,
+        tab: tab,
+        spreadsheetSort: spreadsheetSort,
     };
 }

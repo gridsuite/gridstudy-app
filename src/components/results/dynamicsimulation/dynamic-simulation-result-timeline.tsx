@@ -23,7 +23,6 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import ComputingType from '../../computing-status/computing-type';
 import { useAgGridLocalSort } from '../../../hooks/use-aggrid-local-sort';
-import { SortWay } from '../../../hooks/use-aggrid-sort';
 import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
@@ -36,7 +35,10 @@ import {
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
-import { setDynamicSimulationResultFilter } from 'redux/actions';
+import {
+    setDynamicSimulationResultFilter,
+    setDynamicSimulationResultSort,
+} from 'redux/actions';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     TIMELINE,
@@ -81,10 +83,16 @@ const DynamicSimulationResultTimeline = memo(
             dynamicSimulationResultInvalidations
         );
 
-        const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
-            colId: COL_TIME,
-            sort: SortWay.ASC,
-        });
+        const sortConfigType = useSelector(
+            (state) => state.dynamicSimulationResultSort[TIMELINE]
+        );
+
+        const { onSortChanged, sortConfig } = useAgGridLocalSort(
+            gridRef,
+            sortConfigType,
+            setDynamicSimulationResultSort,
+            TIMELINE
+        );
 
         const { updateFilter, filterSelector } = useAggridLocalRowFilter(
             gridRef,

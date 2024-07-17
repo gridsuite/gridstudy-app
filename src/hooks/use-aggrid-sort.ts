@@ -6,6 +6,8 @@
  */
 
 import { useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AnyAction } from 'redux';
 
 export type SortConfigType = {
     colId: string;
@@ -26,29 +28,34 @@ export enum SortWay {
 }
 
 export const useAgGridSort = (
-    initSortConfig: SortConfigType
+    initSortConfig: SortConfigType,
+    sortAction?: (colId: string, sortWay: string, tab: string) => AnyAction,
+    tab?: string
 ): SortPropsType => {
     const [sortConfig, setSortConfig] = useState<SortConfigType[]>([
         initSortConfig,
     ]);
+    const dispatch = useDispatch();
 
-    const onSortChanged = useCallback((newSortConfig: SortConfigType) => {
-        setSortConfig((prevSortConfig) =>
-            prevSortConfig
-                // for now, we can have only one parent sort and one children sort
+    const onSortChanged = useCallback(
+        (newSortConfig: SortConfigType) => {
+            const updatedSortConfig = sortConfig
                 .filter(
                     (sort) =>
                         (sort.children ?? false) !==
                         (newSortConfig.children ?? false)
                 )
-                .concat(newSortConfig)
-        );
-    }, []);
+                .concat(newSortConfig);
+
+            setSortConfig(updatedSortConfig);
+            sortAction && tab && dispatch(sortAction(tab, updatedSortConfig));
+        },
+        [dispatch, sortAction, tab]
+    );
 
     const initSort = useCallback(
-        (colKey: string) =>
-            setSortConfig([{ colId: colKey, sort: initSortConfig.sort }]),
-        [initSortConfig.sort]
+        (config: SortConfigType) => setSortConfig([config]),
+        []
     );
 
     return { onSortChanged, sortConfig, initSort };
