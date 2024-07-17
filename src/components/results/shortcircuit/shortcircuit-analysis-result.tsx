@@ -96,7 +96,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         : FROM_COLUMN_TO_FIELD;
 
     const sortConfigType = useSelector(
-        (state: ReduxState) =>
+        (state: any) =>
             state.shortcircuitAnalysisResultSort[mappingTabs(analysisType)]
     );
 

@@ -141,7 +141,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     }, [tabIndex, nmkType, enableDeveloperMode]);
 
     const sortConfigType = useSelector(
-        (state: ReduxState) =>
+        (state: any) =>
             state.securityAnalysisResultSort[getStoreFields(tabIndex)]
     );
 

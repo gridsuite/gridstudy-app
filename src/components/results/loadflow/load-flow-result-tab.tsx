@@ -105,7 +105,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     );
 
     const sortConfigType = useSelector(
-        (state: ReduxState) => state.loadflowResultSort[mappingTabs(tabIndex)]
+        (state: any) => state.loadflowResultSort[mappingTabs(tabIndex)]
     );
 
     const { onSortChanged, initSort } = useAgGridSort(
